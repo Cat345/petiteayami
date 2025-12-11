@@ -43,3 +43,42 @@ add_action('admin_notices', function () {
         );
     }
 });
+
+
+add_action( 'get_header', 'usota_storefront_remove_sidebar' );
+function usota_storefront_remove_sidebar() {
+    if ( is_product() || is_checkout() || is_cart() || is_account_page() ) {
+     
+        ?>
+        <style>
+            #tm-sidebar {
+               display: none;
+            }
+        </style>
+        <?php
+    }
+}
+
+
+
+add_filter( 'woocommerce_sale_flash', 'truemisha_custom_sale_badge', 10, 3 );
+
+function truemisha_custom_sale_badge( $html, $post, $product ) {
+
+	if ( $product->is_on_sale() && $product->get_regular_price() ) {
+
+		$regular_price = (float) $product->get_regular_price();
+		$sale_price = (float) $product->get_sale_price();
+
+		if ( $regular_price > 0 ) {
+			$percentage = round( ( $regular_price - $sale_price ) / $regular_price * 100 );
+
+			// Создаём кастомный бейдж с процентом
+			$html = '<span class="onsale">Sale -' . $percentage . '%</span>';
+		}
+	}
+
+	return $html;
+    
+}
+
