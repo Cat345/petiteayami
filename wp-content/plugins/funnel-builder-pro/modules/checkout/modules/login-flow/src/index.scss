@@ -1,0 +1,73 @@
+// Define variables for colors, z-index values, etc.
+$modal-background-color: rgba(0, 0, 0, 0.4);
+$modal-content-background: #fefefe;
+$modal-border-color: #888;
+$close-button-color: #aaa;
+$close-button-hover-color: black;
+
+
+#wfacp-sec-wrapper {
+  .wfacp_model_top_sec {
+    position: relative;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      display: inline-flex;
+      width: 100%;
+
+    }
+
+    a {
+      display: inline-flex;
+    }
+  }
+
+  .wfacp-login-button {
+    margin-bottom: 0;
+    clear: both;
+  }
+
+  .wfacp_main_form.woocommerce {
+    .wfacp-form-control-wrapper.wfacp-mb-24 {
+      margin-bottom: 24px;
+    }
+
+    .wfacp-form-control-wrapper.wfacp-mb-0 {
+      margin-bottom: 0px;
+    }
+
+    .wfacp-modal-content button[type=submit] {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    label.woocommerce-form__label.woocommerce-form__label-for-checkbox.inline span {
+      color: #737373 !important;
+    }
+
+  }
+
+}
+
+#funnelkitLoginAction {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid #F1F2F9;
+  background: #F9F9FF;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: #82838E;
+  }
+
+}

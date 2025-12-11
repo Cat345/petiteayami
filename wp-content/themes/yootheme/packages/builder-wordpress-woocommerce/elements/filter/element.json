@@ -1,0 +1,586 @@
+{
+    "@import": "./element.php",
+    "name": "woo_filter",
+    "title": "Products Filter",
+    "group": "woocommerce",
+    "icon": "${url:./images/icon.svg}",
+    "iconSmall": "${url:./images/iconSmall.svg}",
+    "element": true,
+    "defaults": {
+        "show_attribute_filters": true,
+        "show_price_filter": true,
+        "show_rating_filter": true,
+        "show_active_filters": true,
+        "show_result_count": true,
+        "show_product_ordering": true,
+        "filters_align": "left",
+        "active_filters_align": "left",
+        "result_count_align": "right",
+        "product_ordering_align": "right",
+        "grid_column_gap": "small",
+        "grid_row_gap": "small",
+        "grid_breakpoint": "s",
+        "filter": "dropnav",
+        "filter_dropnav_breakpoint": "m",
+        "filter_dropnav_fallback": "dropdown",
+        "filter_dropdown_parent_icon": true,
+        "filter_dropnav_dropdown_align": "left",
+        "filter_dropdown_grid": "4",
+        "filter_dropdown_grid_breakpoint": "m",
+        "filter_dropdown_dropbar_content_width": "container",
+        "filter_offcanvas_flip": true,
+        "filter_toggle_style": "default",
+        "filter_toggle_icon_align": "left",
+        "product_ordering_icon_align": "left"
+    },
+    "templates": {
+        "render": "./templates/template.php"
+    },
+    "fields": {
+        "show_attribute_filters": {
+            "label": "Display",
+            "type": "checkbox",
+            "text": "Show attribute filters"
+        },
+        "show_price_filter": {
+            "type": "checkbox",
+            "text": "Show price filter"
+        },
+        "show_rating_filter": {
+            "type": "checkbox",
+            "text": "Show rating filter"
+        },
+        "show_active_filters": {
+            "type": "checkbox",
+            "text": "Show active filters"
+        },
+        "show_result_count": {
+            "type": "checkbox",
+            "text": "Show result count"
+        },
+        "show_product_ordering": {
+            "type": "checkbox",
+            "text": "Show product ordering"
+        },
+        "filters_align": {
+            "label": "Filters",
+            "description": "Set the alignment.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            }
+        },
+        "active_filters_align": {
+            "label": "Active Filters",
+            "description": "Set the alignment.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            }
+        },
+        "active_filters_below": {
+            "type": "checkbox",
+            "text": "Show below"
+        },
+        "result_count_align": {
+            "label": "Result Count",
+            "description": "Set the alignment.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            }
+        },
+        "result_count_below": {
+            "type": "checkbox",
+            "text": "Show below"
+        },
+        "product_ordering_align": {
+            "label": "Product Ordering",
+            "description": "Set the alignment.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            }
+        },
+        "grid_column_gap": {
+            "label": "Column Gap",
+            "description": "Set the size of the gap between the grid columns.",
+            "type": "select",
+            "options": {
+                "Small": "small",
+                "Medium": "medium",
+                "Default": "",
+                "Large": "large"
+            }
+        },
+        "grid_row_gap": {
+            "label": "Row Gap",
+            "description": "Set the size of the gap between the grid rows.",
+            "type": "select",
+            "options": {
+                "Small": "small",
+                "Medium": "medium",
+                "Default": "",
+                "Large": "large"
+            }
+        },
+        "grid_breakpoint": {
+            "label": "Grid Breakpoint",
+            "description": "Set the breakpoint from which grid items will stack.",
+            "type": "select",
+            "options": {
+                "Always": "",
+                "Small (Phone Landscape)": "s",
+                "Medium (Tablet Landscape)": "m",
+                "Large (Desktop)": "l",
+                "X-Large (Large Screens)": "xl"
+            }
+        },
+        "subgrid_breakpoint": {
+            "label": "Subgrid Breakpoint",
+            "description": "Set the breakpoint from which grid items will stack.",
+            "type": "select",
+            "options": {
+                "Always": "",
+                "Small (Phone Landscape)": "s",
+                "Medium (Tablet Landscape)": "m",
+                "Large (Desktop)": "l",
+                "X-Large (Large Screens)": "xl"
+            }
+        },
+        "filter": {
+            "label": "Mode",
+            "description": "Choose between a navigation that shows filter controls separately in single dropdowns or a toggle button that shows all filters in a dropdown or an offcanvas dialog.",
+            "type": "select",
+            "options": {
+                "Dropnav": "dropnav",
+                "Dropdown": "dropdown",
+                "Offcanvas": "offcanvas"
+            }
+        },
+        "filter_dropnav_breakpoint": {
+            "label": "Breakpoint",
+            "description": "Define the device width from which the dropnav will be shown.",
+            "type": "select",
+            "options": {
+                "Always": "",
+                "Small (Phone Landscape)": "s",
+                "Medium (Tablet Landscape)": "m",
+                "Large (Desktop)": "l",
+                "X-Large (Large Screens)": "xl"
+            },
+            "enable": "filter == 'dropnav'"
+        },
+        "filter_dropnav_fallback": {
+            "label": "Fallback",
+            "description": "Define the filter fallback mode for device widths below the breakpoint.",
+            "type": "select",
+            "options": {
+                "Dropdown": "dropdown",
+                "Offcanvas": "offcanvas"
+            },
+            "enable": "filter == 'dropnav' && filter_dropnav_breakpoint"
+        },
+        "filter_dropdown_size": {
+            "label": "Dropdown",
+            "description": "Set a larger dropdown padding, show dropdowns in a full-width section called dropbar and display an icon to indicate dropdowns.",
+            "type": "checkbox",
+            "text": "Large padding",
+            "enable": "filter != 'offcanvas'"
+        },
+        "filter_dropdown_dropbar": {
+            "type": "checkbox",
+            "text": "Enable dropbar",
+            "enable": "filter != 'offcanvas'"
+        },
+        "filter_dropdown_parent_icon": {
+            "type": "checkbox",
+            "text": "Show parent icon",
+            "enable": "filter != 'offcanvas'"
+        },
+        "filter_active_all": {
+            "label": "Active Filters",
+            "description": "Show a clear all filters button and display the active filters together with the filters in the dropdown or offcanvas.",
+            "type": "select",
+            "options": {
+                "No Clear all button": "",
+                "Only Clear all button": "only",
+                "With Clear all button": "both"
+            }
+        },
+        "filter_active_display": {
+            "type": "checkbox",
+            "text": "Display together with filters",
+            "enable": "filter != 'dropnav'"
+        },
+        "filter_active_count": {
+            "label": "Active Filters Count",
+            "description": "Show the active filter count in parenthesis or as superscript.",
+            "type": "select",
+            "options": {
+                "None": "",
+                "In parenthesis": "parenthesis",
+                "As superscript": "superscript"
+            }
+        },
+        "filter_attribute_columns": {
+            "label": "Attribute Filters",
+            "type": "checkbox",
+            "text": "Break into multiple columns"
+        },
+        "filter_dropnav_style": {
+            "label": "Style",
+            "description": "Select the filter navigation style.",
+            "type": "select",
+            "options": {
+                "Default": "",
+                "Divider": "divider",
+                "Pill": "pill",
+                "Tab": "tab",
+                "Button": "button"
+            },
+            "enable": "filter == 'dropnav'"
+        },
+        "filter_dropnav_dropdown_align": {
+            "label": "Dropdown",
+            "description": "Open dropdowns on click instead of hover and align dropdowns to the filter bar instead of their item.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right",
+                "Center": "center"
+            },
+            "enable": "filter == 'dropnav'"
+        },
+        "filter_dropnav_dropdown_click": {
+            "type": "checkbox",
+            "text": "Enable click mode",
+            "enable": "filter == 'dropnav'"
+        },
+        "filter_dropnav_dropdown_target": {
+            "type": "checkbox",
+            "text": "Align to filter bar",
+            "enable": "filter == 'dropnav'"
+        },
+        "filter_dropdown_grid": {
+            "label": "Grid",
+            "description": "Set the number of grid columns for the filters in a single dropdown.",
+            "type": "select",
+            "options": {
+                "Auto": "auto",
+                "Auto Grow": "grow",
+                "1 Column": "1",
+                "2 Columns": "2",
+                "3 Columns": "3",
+                "4 Columns": "4",
+                "5 Columns": "5",
+                "6 Columns": "6"
+            },
+            "enable": "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')"
+        },
+        "filter_dropdown_grid_column_gap": {
+            "label": "Column Gap",
+            "description": "Set the size of the gap between the grid columns.",
+            "type": "select",
+            "options": {
+                "Small": "small",
+                "Medium": "medium",
+                "Default": ""
+            },
+            "enable": "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')"
+        },
+        "filter_dropdown_grid_row_gap": {
+            "label": "Row Gap",
+            "description": "Set the size of the gap between the grid rows.",
+            "type": "select",
+            "options": {
+                "Small": "small",
+                "Medium": "medium",
+                "Default": ""
+            },
+            "enable": "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')"
+        },
+        "filter_dropdown_grid_breakpoint": {
+            "label": "Grid Breakpoint",
+            "description": "Set the breakpoint from which grid items will stack.",
+            "type": "select",
+            "options": {
+                "Always": "",
+                "Small (Phone Landscape)": "s",
+                "Medium (Tablet Landscape)": "m",
+                "Large (Desktop)": "l",
+                "X-Large (Large Screens)": "xl"
+            },
+            "enable": "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown') && filter_dropdown_grid != 1"
+        },
+        "filter_dropdown_dropbar_content_width": {
+            "label": "Dropbar Content Width",
+            "description": "Set the width of the dropbar content.",
+            "type": "select",
+            "options": {
+                "Container Default": "container",
+                "Container Small": "container-small",
+                "Container Large": "container-large",
+                "Container X-Large": "container-xlarge",
+                "Expand": ""
+            },
+            "enable": "(filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')) && filter_dropdown_dropbar"
+        },
+        "filter_offcanvas_flip": {
+            "label": "Offcanvas",
+            "type": "checkbox",
+            "text": "Display on the right",
+            "enable": "filter == 'offcanvas' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'offcanvas')"
+        },
+        "filter_offcanvas_overlay": {
+            "type": "checkbox",
+            "text": "Overlay the site",
+            "enable": "filter == 'offcanvas' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'offcanvas')"
+        },
+        "filter_toggle_style": {
+            "label": "Style",
+            "description": "Set the filter toggle style.",
+            "type": "select",
+            "options": {
+                "Button Default": "default",
+                "Button Primary": "primary",
+                "Button Secondary": "secondary",
+                "Button Danger": "danger",
+                "Button Text": "text",
+                "Link": "",
+                "Link Muted": "link-muted",
+                "Link Text": "link-text"
+            },
+            "enable": "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)"
+        },
+        "filter_toggle_icon": {
+            "label": "Icon",
+            "description": "Pick an optional icon from the icon library.",
+            "type": "icon",
+            "enable": "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)"
+        },
+        "filter_toggle_icon_align": {
+            "label": "Icon Alignment",
+            "description": "Choose the icon position.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            },
+            "enable": "filter_toggle_icon && (filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint))"
+        },
+        "filter_title_style": {
+            "label": "Style",
+            "description": "Select the title style.",
+            "type": "select",
+            "options": {
+                "Heading H1": "h1",
+                "Heading H2": "h2",
+                "Heading H3": "",
+                "Heading H4": "h4",
+                "Heading H5": "h5",
+                "Heading H6": "h6"
+            },
+            "enable": "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)"
+        },
+        "product_ordering_style": {
+            "label": "Style",
+            "description": "Set the product ordering style.",
+            "type": "select",
+            "options": {
+                "Select": "",
+                "Link": "link",
+                "Link Muted": "link-muted",
+                "Link Text": "link-text"
+            }
+        },
+        "product_ordering_icon": {
+            "label": "Icon",
+            "description": "Pick an optional icon from the icon library.",
+            "type": "icon"
+        },
+        "product_ordering_icon_align": {
+            "label": "Icon Alignment",
+            "description": "Choose the icon position.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            },
+            "enable": "product_ordering_icon"
+        },
+        "position": "${builder.position}",
+        "position_left": "${builder.position_left}",
+        "position_right": "${builder.position_right}",
+        "position_top": "${builder.position_top}",
+        "position_bottom": "${builder.position_bottom}",
+        "position_z_index": "${builder.position_z_index}",
+        "margin": "${builder.margin}",
+        "margin_remove_top": "${builder.margin_remove_top}",
+        "margin_remove_bottom": "${builder.margin_remove_bottom}",
+        "animation": "${builder.animation}",
+        "_parallax_button": "${builder._parallax_button}",
+        "visibility": "${builder.visibility}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "id": "${builder.id}",
+        "class": "${builder.cls}",
+        "attributes": "${builder.attrs}",
+        "css": {
+            "label": "CSS",
+            "description": "Enter your own custom CSS. The following selectors will be prefixed automatically for this element: <code>.el-element</code>",
+            "type": "editor",
+            "editor": "code",
+            "mode": "css",
+            "attrs": {
+                "debounce": 500,
+                "hints": [
+                    ".el-element"
+                ]
+            }
+        }
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Settings",
+                    "fields": [
+                        {
+                            "label": "WooCommerce",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "show_attribute_filters",
+                                "show_price_filter",
+                                "show_rating_filter",
+                                "show_active_filters",
+                                "show_result_count",
+                                "show_product_ordering"
+                            ]
+                        },
+                        {
+                            "label": "Layout",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filters_align",
+                                "active_filters_align",
+                                "active_filters_below",
+                                "result_count_align",
+                                "result_count_below",
+                                "product_ordering_align",
+                                "grid_column_gap",
+                                "grid_row_gap",
+                                "grid_breakpoint",
+                                "subgrid_breakpoint"
+                            ]
+                        },
+                        {
+                            "label": "Filters",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter",
+                                "filter_dropnav_breakpoint",
+                                "filter_dropnav_fallback",
+                                "filter_dropdown_size",
+                                "filter_dropdown_dropbar",
+                                "filter_dropdown_parent_icon",
+                                "filter_active_all",
+                                "filter_active_display",
+                                "filter_active_count",
+                                "filter_attribute_columns"
+                            ]
+                        },
+                        {
+                            "label": "Dropnav",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter_dropnav_style",
+                                "filter_dropnav_dropdown_align",
+                                "filter_dropnav_dropdown_click",
+                                "filter_dropnav_dropdown_target"
+                            ]
+                        },
+                        {
+                            "label": "Dropdown",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter_dropdown_grid",
+                                "filter_dropdown_grid_column_gap",
+                                "filter_dropdown_grid_row_gap",
+                                "filter_dropdown_grid_breakpoint",
+                                "filter_dropdown_dropbar_content_width"
+                            ]
+                        },
+                        {
+                            "label": "Offcanvas",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter_offcanvas_flip",
+                                "filter_offcanvas_overlay"
+
+                            ]
+                        },
+                        {
+                            "label": "Filter Toggle",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter_toggle_style",
+                                "filter_toggle_icon",
+                                "filter_toggle_icon_align"
+                            ]
+                        },
+                        {
+                            "label": "Filter Title",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "filter_title_style"
+                            ]
+                        },
+                        {
+                            "label": "Product Ordering",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "product_ordering_style",
+                                "product_ordering_icon",
+                                "product_ordering_icon_align"
+                            ]
+                        },
+                        {
+                            "label": "General",
+                            "type": "group",
+                            "fields": [
+                                "position",
+                                "position_left",
+                                "position_right",
+                                "position_top",
+                                "position_bottom",
+                                "position_z_index",
+                                "margin",
+                                "margin_remove_top",
+                                "margin_remove_bottom",
+                                "animation",
+                                "_parallax_button",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                "${builder.advanced}"
+            ]
+        }
+    }
+}

@@ -1,0 +1,19 @@
+/*
+ Theme Name:   YOOtheme PetitAyamy
+ Template:     yootheme
+ Author:       Cat345
+ Description:  YOOtheme Child Theme for PetitAyamy
+ Version:      1.0.0
+ Text Domain:  yootheme-petiteayami
+*/
+
+/* Hides the reCAPTCHA on every page */
+.grecaptcha-badge {
+    visibility: hidden !important;
+}
+
+/* Shows the reCAPTCHA on the Contact page */
+/* Obviously change the page number to your own */
+.page-id-17 .grecaptcha-badge {
+    visibility: visible !important;
+}

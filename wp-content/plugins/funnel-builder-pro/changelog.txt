@@ -1,0 +1,817 @@
+*** FunnelKit Funnel Builder Pro ***
+= 3.12.1 (August 08, 2025) = 
+* Improved: Checkout: Enhanced compatibility with the "DIGITS: WordPress Mobile Number Signup and Login" plugin by UnitedOver. (#7983)
+* Fixed: Checkout: Resolved an issue with checkout tabs not functioning properly in the Legacy admin UI. (#7992)
+* Fixed: Checkout: Corrected the display of the "You Save" value and percentage when multiple products have discounts applied. (#7993)
+* Fixed: Checkout: Addressed an issue where the Date of Birth (DOB) field was appearing on the single order screen, despite not being added in the checkout fields. (#7991)
+
+= 3.12.0 (August 02, 2025) =
+* Improved: Upsells: Enhanced compatibility with Braintree for WooCommerce Payment Gateway. (#7889)
+* Improved: Bump: Optimized bump selection process for smoother user experience when accepting or rejecting options. (#7886)
+* Improved: A/B experiment: Enhanced A/B Experiments traffic allocation for better performance in cache environments. (#7922)
+* Improved: Cart: Special add-on now supports adding variation products. (#873)
+* Fixed: Upsells: Resolved emails not sending after orders when BACS or cheque was used, and upsells were skipped in an edge case. (#7895)
+* Fixed: Upsells: Resolved PHP notice on admin pages for upsells. (#7868)
+* Fixed: Upsells: Resolved test gateway not showing in checkout when WooCommerce PayPal Payments is active. (#7880)
+* Fixed: Upsells: Resolved issue where purchase events were not firing for Facebook CAPI when there was more than one pixel on offer pages. (#7942)
+
+= 3.11.2 (July 04, 2025) =
+* Fixed: Checkout: Checkout form fields were flickering on focus since the last update. (#7806)
+* Fixed: Checkout: DOB field showing with blank '-' when not required in thankyou page. (#7805)
+
+= 3.11.1 (July 03, 2025) =
+* Fixed: Cart: Cart Analytics admin reports showing invalid version error. (#7802)
+
+= 3.11.0.1 (July 02, 2025) =
+* Improved: Checkout: Google address autocompleted improved for United Kingdom addresses. (#5909)
+* Improved: Checkout: Compatibility with "ShopLentor – WooCommerce Builder for Elementor & Gutenberg by HasThemes" plugin. (#5910)
+* Fixed: Checkout: Compatibility with Klaviyo plugin updated for checkout fields default value. (#7790)
+
+= 3.11.0 (July 01, 2025) =
+* Added: Funnels: A new feature "Funnel Categories" to manage funnels more efficiently. (#7036)
+* Added: Funnels: A new settings feature to allow multiple pixel IDs in Pixel Tracking for better tracking. (#  )
+* Added: Checkout: New design elements on mini cart and collapsible order summary for strike-through prices, low stock trigger, and savings message. (#5326)
+* Added: A/B experiment: Show order count in opt-in and sales steps in A/B tests for clearer reporting. (#7331)
+* Added: Cart: New 'modern' skin introduced for the rewards progress bar for a fresh and modern look. (#584)
+* Added: Bump: New bump skin introduced for a more modern and engaging user experience. (#6643)
+* Added: Bump: Added new element on design for social tooltips to enhance user interaction. (#6643)
+* Added: Funnels: A new filter 'device' added under analytics conversion reports for more refined tracking. (#7343)
+* Added: Cart: Introduced data-rich cart analytics for deeper insights into customer behavior. (#584)
+* Added: Cart: Introduced a new special addon feature for added flexibility in your funnel designs. (#584)
+* Added: Bump: A new setting for Mobile positions added to improve display on mobile devices. (#6508)
+* Added: Funnels: New dashboard widgets for top-performing upsells & a chart for "Conversions by Revenue." (#6613)
+* Added: Funnels: Inline stats visibility for the steps and funnel listing for better insights. (#7454, #7453)
+* Added: Checkout: Custom Date of Birth field now added in the checkout field editor, enhancing customization. (#7580)
+* Added: Checkout: Bulgarian and Chinese translations for FunnelKit Checkout to enhance multilingual support. (#6342)
+* Added: Thankyou: [Dev] Support for all native WooCommerce thank you page hooks to support third-party add-ons. (#7630)
+* Added: Cart: A new setting for rewards to calculate on `total` instead of `subtotal`, providing better flexibility. (#7377)
+* Added: Cart: [Dev] New filter `fkcart_rewards_list` to customize rewards data as needed. (#114)
+* Added: Cart: [Dev] Cart: Added filter `fkcart_free_shipping_text` to customize free shipping text. (#624)
+* Improved: Bump: Order Bump duplicate step not having product tag when no products are added, streamlining the process. (#7199)
+* Improved: Optin: PHP Deprecated notices in opt-in popup widget controls in Elementor 3.28.0 for better compatibility. (#7212)
+* Improved: Optin: Recaptcha in opt-in popup improved to handle multiple forms cases for better security. (#7288)
+* Improved: Upsells: Compatibility with Braintree gateway with 3DS card scenario improved for upsell payments. (#7296)
+* Improved: Funnels: Admin UI for automation onboarding page to enhance the user interface and improve user experience. (#7555)
+* Improved: Funnels: Query to get WordPress users updated for performance improvements. (#7256)
+* Improved: Bump: views improved for broken WooCommerce sessions, ensuring smoother experiences. (#7402)
+* Improved: Checkout: Google map JS loading optimized by adding "async" for better performance. (#7456)
+* Improved: Funnels: Zero states improved during onboarding to provide clearer guidance to users. (#7348)
+* Improved: Checkout: Quantity switcher improved for Firefox browser compatibility. (#7420)
+* Improved: Checkout: Added WooCommerce login form end hook in custom form login popup for better compatibility. (#7467)
+* Improved: Checkout: Styling improved to prevent conflict in login form eye icon background color. (#7697)
+* Improved: Checkout: Compatibility with Checkout Field Editor for WooCommerce by ThemeHigh for smoother integration. (#7407)
+* Improved: Checkout: Optimized usage of Geocode service when using Google address autocomplete for faster loading. (#7680)
+* Improved: Cart: Enhanced price display for upsells to improve clarity. (#708)
+* Improved: Cart: Prevented upsell products from showing if marked as not purchasable for better UX. (#711)
+* Improved: Cart: Revalidated card rewards now properly removed from existing carts when deleted from backend. (#632)
+* Improved: Cart: Support for Booster for WooCommerce in rewards analytics for better integration. (#596)
+* Improved: Cart: Support for Yaycurrencies in rewards analytics to enhance reporting. (#582)
+* Fixed: Cart: Past free gift rewards were not getting removed with user's current cart when updated in admin settings. (#7253)
+* Fixed: Cart: Addressed customer address autofill issues when using free shipping rewards for smoother checkout. (#106, #647, #669)
+* Fixed: Optin: Send opt-in page title and link in opt-in webhook data. (#7264)
+* Fixed: Funnels: Rule for customer UI fixed for selected inputs. (#7223)
+* Fixed: Checkout: CSS issue with checkout custom fields if placed after payment gateways. (#7299)
+* Fixed: A/B experiments: Variant stats for thank you page A/B tests not updating. (#7335)
+* Fixed: A/B Experiments: Admin UI fixed for AB tests reset stats doesn't reflect straight away. (#7671)
+* Fixed: Checkout: Address autocomplete not working correctly in case of shipping address dragged but shipping is disabled. (#7441)
+* Fixed: Checkout: Validation class on street address field not applying correctly with house number validation. (#7531)
+* Fixed: Checkout: Admin UI Checkout URL getting distorted when no products during slug modification. (#7558)
+* Fixed: Checkout: Font family issue with collapsible order summary. (#7566)
+* Fixed: Checkout: PHP Error when shipping rate or tax is returned as a blank string instead of a float. (#726)
+* Fixed: Checkout: Shipping calculations now work correctly in multistep checkout when shipping country is hidden for accurate shipping calculations. (#7653)
+* Fixed: Bumps: Fixed PHP Error with WPML compatibility. (#7588)
+* Fixed: Funnels: Edge case handled in analytics when order ID matches with opt-in entry ID causing conflicts. (#7632)
+* Fixed: Upsells: Gutenberg blocks causing JS errors when switching to style tabs. (#7313)
+* Fixed: Upsells: PHP Error during PayPal IPN with WooCommerce subscription v7.5.0. (#7570)
+* Fixed: Upsells: Mollie compatibility improved to handle edge cases of multiple user return & skipping upsells in v7.5.0. (#7373, #7400, #7565)
+
+= 3.10.2 (Mar 13, 2025) =
+* Fixed: Upsells - Resolved an issue where the rule for customers was not prefilled correctly in some cases. (#7233)
+* Fixed: Checkout - Resolved an issue where street address was appended twice in the address autocomplete for certain cases. (#7227)
+* Fixed: Checkout - Ensured that checkout views are now properly recorded, even if the order review update call is aborted. (#7238)
+
+= 3.10.1 (Mar 07, 2025) =
+* Fixed: PHP Error and warning during offer design edit page made using customizer. (#7217)
+
+= 3.10.0 (Mar 06, 2025) =
+* Improved: Upsells - Enhanced Authorize.net CIM integration to ensure the CIM feature is checked before setting up upsells. (#7117)
+* Improved: Upsells - Updated compatibility with WooPayments plugin to handle 3DS card scenarios more effectively. (#7135)
+* Improved: Upsells - Fixed upsell setup issues that occurred during `apply_coupon` requests in Funnel Builder checkout. (#7136)
+* Improved: FunnelKit analytics revenue metrics now handle missing data during checkout for more accurate reporting. (#7130)
+* Improved: UTM campaign reports now support date filtering and default sorting by date descending for improved data analysis. (#7097)
+* Improved: Optin - Webhook now supports all UTM parameters along with posted data for better tracking. (#7142)
+* Improved: Checkout - Address autocomplete suggestions now support the current user language for a more localized experience. (#7123)
+* Improved: A/B experiments - Checkout views are getting recorded multiple times in rare cases when WC session validation fails, improving stats. (#7105)
+* Improved: Checkout - Address autocomplete API arguments modify to show more results in the suggestions. (#7185)
+* Improved: Checkout - prevent copying entries in billing & shipping phone in multi step form. (#7196)
+* Fixed: Upsells - Resolved CSS issues with Divi Visual Builder on the upsell page for a more polished appearance. (#7121)
+* Fixed: Cart - Automatically removes free gifts from the cart when removed from admin settings for better cart management. (#7175)
+* Fixed: Cart - Addressed issues related to PHP 8.2 compatibility for smoother functionality. (#7156)
+* Fixed: Bump - Resolved issues with PHP 8.2 for better performance. (#7156)
+* Fixed: Order Bumps - Moved bumps placeholders to `template_redirect` to ensure they are printed correctly on the page. (#7155)
+* Fixed: Resolved PHP warnings from `we_get_orders` custom method during rule execution on thank you pages for cleaner code. (#7140)
+* Fixed: Resolved errors on the conversion page when navigating from UTM Campaigns in certain cases for smoother admin experience. (#7153)
+* Fixed: Upsells - Resolved upsell order note duplication that happened when `getReturnRedirectUriForOrder` ran multiple times. (#7107)
+* Fixed: Order Bumps - Prevented preview helper fields from being included in posted data during bump save, resolving server firewall issues. (#7105)
+
+= 3.9.1 (Feb 06, 2025) =
+* Fixed: Resolved a PHP error that occurred in rare cases when `woocommerce_init` ran multiple times within a single request. (#7078)
+
+= 3.9.0 (Feb 04, 2025) =
+* Added: Introduced a new analytics feature for UTM campaigns, providing detailed reports based on UTM parameters. (#6581)
+* Added: Added a new revenue metric for sales and opt-in pages, now visible under analytics and A/B tests for better insights. (#6912)
+* Added: OrderBump - Introduced a filter hook, `wfob_printed_price`, to allow customization of bump prices before they are displayed. (#6946)
+* Added: OrderBump - Now supports two new positions: "above" and "below" the mini cart for greater flexibility. (#6905)
+* Added: Upsells - Compatibility with Mollie Payments is now built in, enhancing payment options. (#6950)
+* Added: Email notification to wordpress site admin when license expired. (#7028)
+* Added: Added a new column in conversion analytics for UTM Terms & filter added for UTM Terms & UTM Content. (#6935)
+* Improved: Upsells - Updated compatibility with WooPayments for smoother functionality. (#6961)
+* Improved: Opt-in - Enhanced AffiliateWP integration to handle scenarios where the setting to ignore referrals for $0 amounts is turned on. (#7010)
+* Improved: License authentication is now more robust for sites with multiple site URLs, ensuring seamless verification. (#6983)
+* Improved: Order note added in order in case of Order Bump skipped because of invalid/expired license. (#7043)
+* Improved: Upsells - Purchase event tracking improved to send new order ID in Google tag and Facebook events to provide support for Conversion Adjustments. (#7051)
+* Improved: Bump - Compatibility with All product subscriptions plugin improved to handle a default-plan scheme when no discount is added. (#7034)
+* Improved: Checkout- Display of custom checkbox field improved for thankyou pages and emails. (#7059)
+* Fixed: Resolved an issue where contacts under analytics were not being calculated for upsell recovery orders. (#6900)
+* Fixed: Upsells - Addressed PHP notices for improved compatibility with PHP 8.2. (#6985)
+* Fixed: Upsells - PHP Error during offer when offer contains subscriptions & no subscription supported gateway exists. (#6900)
+
+= 3.8.1 (Dec 19, 2024) =
+* Fixed: Upsells - Compatibility fix with FunnelKit Stripe webhook payments in scheduled actions. (#6951)
+
+= 3.8.0 (Dec 17, 2024) =
+* Improved: Upsells - Updated compatibility with WooPayments for seamless handling of 3DS authentication payments. (#6885)
+* Improved: Upsells - Enhanced compatibility with All Product Subscriptions and Bundled Products for smoother functionality. (#6838)
+* Improved: Checkout - Refined address autocomplete to better support users in Chile. (#6913)
+* Improved: Checkout - Updated translations for the login popup to improve the user experience. (#6916)
+* Fixed: Checkout - Resolved a PHP error on the single order screen in the backend when advanced fields had blank options set. (#6929)
+
+= 3.7.1 (Nov 25, 2024) =
+* Fixed: Checkout - Resolved issues with deprecated Typography method in elementor v3.26.x. (#6879)
+
+= 3.7.1 (Nov 25, 2024) =
+* Fixed: PHP Notice regarding text_domain coming in WP v6.7.1. (#6873)
+
+= 3.7.0 (Nov 21, 2024) =
+* Added: Upsells- Upsell Recovery feature that allows new credit card form input when a transaction fails with FunnelKit Stripe Gateway. (#6822)
+* Added: Upsells- New rule in upsells for FunnelKit Automations contact tags. (#6853)
+* Improved: Upsells- Handling for the shipping address-related scenario for the case where upsell contains shippable product but the parent order is virtual. (#6822)
+* Improved: License checks were failing for cases where the site domain contains a slash at the end of site URL. (#6823)
+* Improved: Upsells- New icons were added for upsells processing, failed & confirmation popups. (#1802)
+* Fixed: OrderBump- The sticky button is not showing Order Bump functionality for variable products. (#6843)
+* Fixed: A/B experiments - The infinite redirection issue was fixed for the incorrect setup where caching is enabled and the same permalink setting is enabled. (#6845)
+* Fixed: Upsells- Compatibility with WooPayments for v8.5.0 (#6865)
+
+
+= 3.6.1 (Oct 24, 2024) =
+* Improved: Upsells: Compatibility with Stripe Gateway for WooCommerce for UPE mode. (#6783)
+* Fixed: OrderBump: Preview image in bump design tab for admin was not showing correctly. (#6785)
+
+= 3.6.0 (Oct 10, 2024) =
+* Improved: Analytics - Funnel Step analytics now have source breakdown for the checkout conversions. (#5664)
+* Improved: OrderBump - Bump position on mobile updated to not render after the mini cart. (#6656)
+* Improved: OrderBump - Replace Bump settings behavior improved with product switcher. (#6755)
+* Improved: Upsells - Upsell skipped order notes reordered for accurate skipped reasons. (#6715)
+* Fixed: OrderBump - Bump prevented from re-adding on product switcher when the default option is checked. (#6635)
+* Fixed: OrderBump - Fatal error during price discount when price is a non-integer value. (#6636)
+* Fixed: Upsells - Upsell conversions for new order settings were not tracking correctly in a few cases. (#6637)
+* Fixed: Checkout- Copy billing and shipping phone was not working correctly in multistep forms with fields on different steps. (#6672)
+* Fixed: Checkout - Custom select field placeholder was getting overridden by the first option value. (#6675)
+* Fixed: Upsells - Updated Compatibility with PayPal payments by WooCommerce. (#6741)
+* Fixed: Licenses resetting in cases of Polylang with multiple domains for each language. (#6724)
+
+= 3.5.2 (Aug 26, 2024) =
+* Fixed: Upsells with mollie gateways are not working since the last update. (#1872)
+* Fixed: Checkout: Advanced phone field validations are not working well for the country Chile. (#6607)
+
+= 3.5.1 (Aug 23, 2024)  =
+* Fixed: Upsells- Oxygen widgets having issue in upsell product selection in backend when product title contains special characters. (#6598)
+* Fixed: OrderBump - Rules were not working when the product was removed from product switcher in case of replace settings are enabled. (#6596)
+
+= 3.5.0 (Aug 22, 2024)  =
+* Added: Upsells- Detailed reasons for skipped upsells are now included in order notes, facilitating easier troubleshooting. (#6390)
+* Added: Upsells- A new personalization shortcode is available to display any order metadata. (#6554)
+* Added: AB Experiments- Support added for sales, optin pages to allow A/B experiments on cached setups. (#6220)
+* Added: OrderBump- A new settings added to change pointer arrow color. (#6563)
+* Improved: Security measures have been strengthened to better protect the plugin. (#5919, #6540)
+* Improved: Checkout- product_id attribute added to delete cart anchor tag to support analytics plugin. (#6519)
+* Improved: Checkout- Address autocomplete improved for Mexico country. (#6531)
+* Improved: Upsells- The loading sequence of external scripts has been optimized to ensure they load after the event tracking script. (#6535)
+* Improved: Upsells- Gateway integrations are now restricted to known and supported integrations, enhancing reliability. (#6393)
+* Improved: Upsells- Security measures have been strengthened to better protect the plugin. (#5919, #6540)
+* Improved: OrderBump- Product Switching in Order bump backend editor redesigned. (#6320)
+* Fixed: Upsells- Resolved a styling issue with the Short Description block widget within the editor. (#6514)
+* Fixed: Upsells- Addressed an issue where certain upsell rules dependent on order data were not functioning correctly when using OR conditions. (#6492)
+* Fixed: OrderBump- Bumps getting hidden in cases of multiple checkout opened at once. (#6550)
+
+= 3.4.5 (July 22, 2024)  =
+Fixed: Compatibility with Bricks theme updated for the embed forms. (#6489)
+
+= 3.4.4 (July 19, 2024)  =
+* Improved: Checkout: Advanced phone field validations improved for a few countries. (#6394)
+* Fixed: Checkout: Placeholder option for the custom select fields in the checkout form. (#6473)
+* Added: OrderBump: A new filter hook was added to modify the default bump position dynamically. (#6465)
+* Fixed: OrderBump: Order Bumps with FK checkout not showing up on tablets if the mini cart position was set and if it was hidden on tablets. (#6464)
+* Fixed: Upsells: Upsells compatibility with WooCommerce Stripe gateway for the v3.8.0 and above. (#6482)
+* Fixed: Upsells: Offer duplicate action was not copying all the content in case of block editor. (#6482)
+* Fixed: Upsells: PHP Error was handled in order-edit the screen for the upsell refund metabox in an edge case. (#6453)
+
+= 3.4.3 (July 16, 2024)  =
+* Added: Compatibility with WordPress version 6.6.(#6422)
+* Fixed: Checkout: Last step preview was not working correctly in some cases. (#5481)
+* Fixed: Upsell subscription renewals were not working for PayPal payments in new order + guest + upsell subscription scenarios with v2.8.1 of WooCommerce Paypal payments.
+
+= 3.4.2 (June 28, 2024)  =
+* Fixed: PHP Error in case of Polylang PRO & Funnelkit Cart plugins are active. (#6376)
+
+= 3.4.1 (June 28, 2024)  =
+* Improved: Checkout- Smart login feature rate limit added to restrict five attempts per WooCommerce session. (#6365)
+* Improved: Analytics export now follow WooCommerce currency decimal and a thousand separator settings. (#6360)
+* Fixed: Analytics export failing to download in path based site URLs. (#6353)
+* Fixed: Checkout- Generate Checkout URL tool copying old url during export and duplicate. (#6351)
+
+= 3.4.0 (June 25, 2024)  =
+* Added: Checkout- New & improved user login experience with FunnelKit Checkout. (#5344)
+* Added: Optin BirthDay field support added for Funnelkit automation. (#6093)
+* Improved: New query parameter to set custom referrer as 'fkreferrer' for services like email. (#6170)
+* Improved: Bump: Compatibility with Discount Rules Core Plugin by Fly Cart updated. (#6086)
+* Improved: Time to convert was incorrect for a few cases where the timezone diff is negative. (#6115)
+* Improved: Bump price display improved for WooCommerce Subscriptions. (#6097)
+* Improved: Upsell: Compatibility with Woodmart theme updated. (#6079)
+* Improved: Bump: Compatibility with YITH WooCommerce Product Add-ons & Extra Options Premium by YITH. (#6098)
+* Improved: Checkout - Language translations for the checkout form improved for different design templates. (#6133, #6205)
+* Improved: Checkout- Compatibility with Checkout Field Editor for WooCommerce (Pro) updated. (#6103)
+* Improved: A/B tests- Compatibility with php v8.2 improved. (#6160)
+* Improved: Checkout: Address autocomplete is not working fine for country Turkey. (#6187)
+* Improved: Custom Date filter was not working fine on analytics pages. (#6195)
+* Improved: Upsell: Compatibility with WooCommerce Payments updated. (#6216, #6296, #6323)
+* Improved: Bump - Re-run rules in case of replace cart item settings are enabled. (#6290)
+* Improved: Add device column in Conversion analytics export. (#6313)
+* Improved: Optin- Handling for the case where the user entered country code in the phone field. (#6321)
+* Improved: Checkout- German Translation for the checkout form improved. (#6205)
+* Fixed: Upsell: upgrade funnel calculation was missing shipping tax calculation. (#6223)
+* Fixed: Dynamic Checkout URL under optimization was not working in case of empty values. (#6231)
+* Fixed: Upsell analytics were not getting deleted on order deletion in the case of HPOS. (#6091)
+* Fixed: Bump: Compatibility with CURCY – Multi-Currency for WooCommerce updated. (#6099)
+* Fixed: Bump: Removing and reading products causing few style settings to set as default. (#5918)
+* Fixed: Upsell: Image slider assets showing not found in case of shortcode used for image slider. (#6156)
+* Fixed: Bump - Global settings for custom CSS were not working. (#6166)
+* Fixed: Upsell: Compatibility with WooCommerce Germanized was not loading. (#6188)
+* Fixed: Analytics to handle scenarios for COD orders getting canceled. (#6179)
+* Fixed: A/B tests- Unable to start AB experiment on store checkouts in an edge case when ab experiment meta doesn't exist. (#6229)
+* Fixed: Upsell: PHP Error on WooCommerce order edit screens in a few cases where meta boxes reordered and ACF plugin is active. (#6259)
+* Fixed: Checkout- Close checkout after a date optimization was not working with some builders. (#6087)
+* Fixed: Checkout- Quantity switcher in products section getting hidden in case of 100% coupon discounts. (#6332)
+
+= 3.3.1 (Apr 08, 2024)  =
+* Added: Cart: Compatibility added with WPML & Polylang plugin to map rewards products with their linked product for another language. (#84, ->#499, ->#506)
+* Added: Cart: Filter hook 'fkcart_default_upsells' added to modify the upsell products. (#82)
+* Improved: Checkout - Language translations for the checkout form improved for different design templates. (#5261)
+* Improved: Cart: PHP 8.2 compatibility fixes. (#86)
+* Improved: Cart: Product null checking code improved. (#90)
+* Improved: Cart: Rewards > Free shipping code improvement. Allow user to change at checkout. (#78)
+* Improved: Cart: Rewards > Performance improvement in rewards. Shipping zone call code optimized. (#92)
+* Fixed: OrderBump- Order Bumps adding multiple times in the cart upon product switch with product switcher. (#5977)
+* Fixed: Checkout- Fatal error on checkout page when slingblocks plugin is deactivated and block editor template is set. (#6068)
+* Fixed: Cart: Compatibility fix with TableRate shipping plugin. Property checking added. (#88)
+
+= 3.3.0 (Apr 02, 2024)  =
+* Improved: Bump: Compatibility with Divi updated. (#721)
+* Improved: Bump: Discounting improved to avoid conflicts with 3rd party discounts & currency switcher plugins. (#700)
+* Improved: Bump: Compatibility with Klaviyo updated. (#1705)
+* Improved: Bump: Compatibility with WPC Fly Cart for WooCommerce. (#5877)
+* Improved: Setting to adjust fonts on mini cart added for customizer templates. (#4957)
+* Improved: Checkout:  Code improved to make custom fields more extendable. (#5888)
+* Improved: Upsells: Handle offer redirect link in case the offer post is deleted but its metadata still exists. (#1761)
+* Improved: Upsells: Compatibility with WooCommerce Payments updated. (#1758)
+* Improved: Upsells: Compatibility with Authorize.Net CIM gateway updated. (#1770)
+* Improved: Upsells: Upsells are now displayed on the store checkout page even for orders placed without going through the checkout process. (#1756)
+* Fixed: WooCommerce Order attribution was not working on WC v8.7.0. (#5294)
+* Fixed: A/B test: Analytics were not getting refreshed after declaring a winner. (#5891)
+* Fixed: Checkout: Date field missing required option. (#5890)
+* Fixed: Checkout: Multistep field preview settings were not working correctly in a few cases. (#5942)
+* Fixed: Checkout: Hide quantity and deletion on free products. (#5255)
+* Fixed: Checkout: Do not display the embed form as an order-pay page. (#5257)
+* Fixed: Checkout: The billing last name field was causing for to not submit when used separately. (#5877)
+* Fixed: Checkout: Settings to override global checkout were hidden in the case of FB pro + Checkout individual plugin. (#5266)
+* Fixed: Checkout: The shipping country field was not populated after address autocomplete in a few cases. (#5287)
+* Fixed: Checkout: Address autocomplete improved for Denmark. (#5985)
+* Fixed: Bump: Duplicate Order bumps on the store checkout funnel with native checkout were not working fine. (#5934)
+* Fixed: Bump: Compatibility with Yith currency exchange plugin updated (#713)
+* Fixed: Upsells: Preview links were not correct in admin when offers were created using legacy custom page mode. (#5903)
+* Fixed: Upsells: Restricted phone number to prevent sending empty values on TikTok. (#1768)
+* Fixed: Upsells: WooCommerce Order meta-box drag was not working for non-HPOS setups. (#1762)
+* Fixed: Upsells: Rules were not working correctly in a few cases on the order-pay page. (#1757)
+* Fixed: Upsells: Compatibility with WooCommerce Memberships plugin not working since v3.0.0. (#5984)
+
+= 3.2.4 (Feb 21, 2024) =
+* Improved: Checkout: Postal Code by Google address autocomplete now supports the Netherlands. (#5843)
+* Fixed: Bump: Pre-select order bump was not working correctly in case of variable products. (#5845)
+
+= 3.2.3 (Feb 16, 2024) =
+* Fixed: Upsells: Offer tracking code settings were not saving in v3.0 or greater. (#5769)
+* Fixed: PHP notice when admins create a new order from the backend in case of HPOS. (#5790)
+* Fixed: Upsell refunds are not working with WooPayments v7.0.0 or greater. (#5779)
+
+= 3.2.2 (Feb 09, 2024) =
+* Added: Checkout- Compatibility with the plugin Iubenda cookie solution by iubenda. (#5223)
+* Fixed: Bump- Code refactored to prevent any issues in add to cart functionality.(#5765)
+
+= 3.2.1 (Feb 08, 2024) =
+* Improved: Behaviour of filters on referrer analytics. (#5676)
+* Improved: Bump- Compatibility with CURCY – Multi Currency for WooCommerce updated. (#5159)
+
+= 3.2.0 (Feb 06, 2024) =
+* Improved: Checkout - RTL styling for customizer templates. (#5657)
+* Fixed: Bump- Item quantity was getting increased on each page refresh in case pre-checked settings are ON. (#5677)
+* Fixed: Bump- Title and description fields are switching to default content in case of blank input. (#5631)
+* Fixed: Analytics data was not showing correctly in the case of more than one completed experiment. (#5692)
+* Fixed: Checkout - Enable Icon and button subtext not working correctly on customizer templates. (#5722)
+
+= 3.1.1 (Jan 31, 2024) =
+* Improved: Upsell: Compatibility updated with GeneratePress plugin. (#5639)
+* Fixed: Upsell Rules admin UI not working correctly in case of non english language setup loco translate. (#1752)
+
+= 3.1.0 (Jan 30, 2024) =
+* Improved: Checkout: Compatibility updated with SiteGround Optimizer plugin. (#5639)
+* Fixed: Bump: Infinite loop causing issues in case of bump pre-check settings enabled. (#5651)
+* Fixed: Funnel analytics conversions were not showing correct in case of date filter applied. (#5632)
+
+= 3.0.2 (Jan 25, 2024) =
+* Fixed: Bump: Skins 3 and 4 causing issues in mobile responsive design.(#675)
+
+= 3.0.1 (Jan 25, 2024) =
+* Fixed: Google address autocomplete was not working when user saved new settings in v3.0.0. (#5608)
+
+= 3.0.0 (Jan 24, 2024) =
+* Added: Completely revamped admin interface and made all interfaces REACT gaining speed benefits and making workflow faster
+    - Dashboard
+    - Funnel listing
+    - Store checkout
+    - Funnel Step listing
+    - Global settings
+    - Single step tabs like Products, Design and Rules.
+* Added: New Dashboard widgets UTM Performance tracking & Referrer tracking Widget on Dashboard
+* Added: Global Analytics giving a site wide view
+* Added: New Global Reports for Funnels
+* Added: New Global Reports for Referrers
+* Added: Global Conversions (Orders/Options) with advanced Filters ( such as Funnels,UTM, Referrer etc.....)
+* Added: Export Orders, Optins and Referrers
+* Added: Single Contact Profile view with Conversion Activity, Order Details and Rich Insights
+* Added: Canvas Mode with ability to add/ delete nodes along with viewing of analytics
+* Added: New Order Bump Skins
+* Added: Ability to pre-check order bumps and hide them after selection
+* Added: Order Bump New Design Controls
+* Added: Ability to arrange multiple order bumps or upsells right from Step listings screen
+* Added: Enhanced Funnel Export with ability to check few Funnels and Export them
+* Added: Quick setup in Dashboard
+* Improved: Refactored parts of code for overall performance gains
+* Improved: Workflow for adding upsell offers, you can create new offers and adding to existing upsell sequences or create new upsell
+* Improved: Cloning steps workflow improved.
+* Fixed: Checkout: Compatibility with Shipmondo updated.
+* Fixed: Checkout: PayPal Express checkout button showing twice with payPal for woocommerce addon.
+* Fixed: Checkout: Express button by Woo payment were not showing up since v7.0.0
+
+= 2.17.5 (Jan 20, 2024) =
+* Fixed: Express Checkout buttons styling on mobile devices distorted since last update. (#5578)
+
+= 2.17.4 (Jan 18, 2024) =
+* Fixed: Upsells: Compatibility with Aelia - Currency Switcher plugin updated to resolve error on checkout in some servers. (#1705)
+* Fixed: Upsells: Compatibility with Curcy currency swither premium plugin updated to resolve error on customizer template editing. (#1712)
+* Fixed: Checkout: PHP Error on customizer templates editor in case of WooCommerce v8.5 (#5561)
+
+= 2.17.3 (Jan 12, 2024) =
+* Fixed: Checkout: Phone field required wasn't working, fixed. (#5159)
+
+= 2.17.2 (Jan 12, 2024) =
+* Improved: Compatibility with Woodmart theme updated. (#1704)
+* Fixed: PHP warning showing in case of plugin Price Based on Country exists. (#666)
+
+= 2.17.1 (Jan 11, 2024) =
+* Fixed: PHP Error in case of auto apply coupon query parameter used in checkout page.
+
+= 2.17.0 (Jan 11, 2024) =
+* Added: Checkout: A new filter 'wfacp_show_advanced_field_order' was added to allow custom fields on new manual orders. (#5140)
+* Improved: Checkout: Better Handling for no default variation (any) case in the product switcher. (#5111)
+* Improved: Checkout: RTL styling for coupon field improved. (#5130)
+* Improved: Upsells: File I/O time improved by conditionally loading compatibility and rules PHP files. (#1659)
+* Improved: Upsells: Query to fetch upsell abandoned orders during cron optimized. (#1695)
+* Improved: Upsells: Compatibility with CURCY - WooCommerce Multi Currency plugin updated. (#1689)
+* Improved: Upsells: Compatibility with Aelia - Currency Switcher plugin updated. (#1698)
+* Improved: Bump: File I/O time improved by conditionally loading compatibility and rules PHP files. (#1659)
+* Fixed: Checkout: Phone field showing distorted with multistep form in case of field label position outside. (#5328)
+* Fixed: Checkout: Down arrow for custom select fields on checkout was not working. (#5382)
+* Fixed: Checkout: Javascript error coming on checkout during removing the item with GTM server side plugin.(#5142)
+* Fixed: Bump: Regular price strike-through was not working when the sale price was zero. (#666)
+* Fixed: Bump: Order Bump accept button CSS was getting overridden in case of checkouts designed using block editor. (#5250)
+
+= 2.15.0 (Nov 23, 2023) =
+* Improved: Upsells: Show parent order in single order UI in case of upsells new order. (#1685)
+* Improved: Upsells: Compatibility updated with germaized plugin. (#1683)
+* Fixed: Upsells: Template edit URL for oxygen builder was now allowing editing in some cases. (#5158)
+* Fixed: Upsells: Some price-layout settings do not sustain while switching devices in block editor. (#1675)
+* Fixed: Upsells: Taxes were not working correctly with multiple quantity from quantity switcher. (#1678)
+* Fixed: Upsells: Fatal error during cron emails send in case of bacs in some cases. (#1681)
+* Fixed: Upsells: PHP error during checkout from WooCommerce Payments integration when plugin version is 7.1.0 or greater in case of 3ds cards. (#1687)
+
+= 2.14.3 (Nov 09, 2023) =
+* Fixed: Checkout: Place Order button amount not updating on bump selection for customizer templates. (#5050)
+* Fixed: Upsells: Some price-layout settings do not sustain while switching devices in block editor. (#1675)
+* Fixed: Upsells: Taxes were not working correctly with multiple quantity from quantity switcher. (#1678)
+
+= 2.14.2 (Oct 20, 2023) =
+* Fixed: Checkout: Handled Fatal error on single order admin page when WooCommerce unable to unserialize item data.(#5038)
+
+= 2.14.1 (Oct 19, 2023) =
+* Fixed: Checkout: Address2 field was showing default collapsible for a few templates after import. (#5157)
+* Fixed: Upsell: Template edit URL for oxygen builder was now allowing editing in some cases. (#5158)
+
+= 2.14.0 (Oct 18, 2023) =
+* Improved: Checkout: Google Address autocomplete UI improved.
+* Improved: Checkout: Google address autocomplete now supports subpremise for the US. (#5045)
+* Improved: Upsell: Handling for the PHP Error on the edit order screen when the user meta was set incorrectly. (#5106)
+* Improved: OrderBump: Compatibility with OceanWP theme updated. (#5137)
+* Fixed: Upsell: Dynamic shipping was not working for the variations with no default attributes. (#5038)
+* Fixed: OrderBump: The position above payment gateways was not working when the Rank Math SEO plugin was active. (#5118)
+* Fixed: OrderBump: Revenue was saved without taxes. (#5120)
+* Fixed: Upsell: Subscriptions were having total zero when WooCommerce PayPal Payments v2.3.1 was active. (#5135)
+
+= 2.13.2 (Sept 20, 2023) =
+* Improved: Custom text area field behavior when text is added with a line break. (#4783)
+
+= 2.13.1 (Sept 19, 2023) =
+* Fixed: Upsells- HPOS Compatibility logging a notice inside WooCommerce logs. (#192)
+
+= 2.13.0 (Sept 18, 2023) =
+* Added: WooCommerce HPOS feature compatibility. (#1622)
+* Added: Orderbump- New settings added to replace all products. (#605)
+* Added: Orderbump- New rule operator 'contains exactly' added for cart item tags and category rule. (#629)
+* Added: Cart Pro- Show default upsells always, new option added. (#21)
+* Added: Optin- New field type 'number' added. (#199)
+* Improved: Checkout- Custom text area field behavior when text is added with a line break. (#4783)
+* Improved: Checkout- Google Address autocomplete now populates address_2 field. (#4972)
+* Improved: Orderbump- Mercadopago compatibility updated. (#627)
+* Improved: Orderbump- addtocart pixel events are now compatible with bundle products. (#633)
+* Improved: Thankyou page- The order item rule now includes new orders created during the upsell funnel. (#194)
+* Improved: Cart Pro - Free shipping reward wasn't working when coming from external plugins. Handling added. (#51)
+* Improved: Upsells- Better error handling during the tokenization to prevent 'INTENT_MISMATCH' error. (#1637)
+* Fixed: Checkout- Prevent phone field from getting reset on step switching. (#4839)
+* Fixed: Checkout- tracks.js file not found in case of TikTok integration is enabled on checkout. (#4818)
+* Fixed: Upsells-  Refund parent order not working in case of free product + shipping. (#1611)
+* Fixed: Upsells- Free trial upsells were not working in case of a few gateways. (#4726)
+* Fixed: Upsells- Dynamic Shipping was not working in the case of elementor popups on offer pages. (#1626)
+* Fixed: Upsell - upsells with Bundle product + subscriptions + free trial getting charged for subscription amount. (#1634)
+* Fixed: A/B experiment- upsell conversion rates were showing incorrectly in the cases with multiple offers. (#222)
+* Fixed: Cart Pro - Rewards: Error handling when empty value passed in a method. (#49)
+* Fixed: Cart Pro - WooCommerce Geolocation class does not exist error handling in a rare scenario, fixed. (#56)
+
+= 2.12.0 (June 20, 2023) =
+* Improved: Checkout: Shimmer effect during product quantity changes. (#4309)
+* Improved: Checkout: up-to-date Subscription cart shipping html templates. ($4737)
+* Improved: Checkout: Express buttons compatibility with PayPal Commerce Platform by Angelleye. (#4698)
+* Improved: Checkout: Compatibility with WC Payments updated. (#4730)
+* Improved: OrderBump: Item quantity rule improved to exclude bump products. (#597)
+* Improved: Upsell- Gutenberg blocks now support custom color pallet. (#1552)
+* Fixed: Upsell- Elementor templates were not imported correctly on WPML setups. (#1584)
+* Fixed: Core: Graph intervals were not showing correct data for quarter intervals. (#186)
+* Fixed: Upsells: Upsell compatibility with WooCommerce Payments v5.8.0 (#1575)
+* Fixed: Upsells: PHP Error admin for the PayPal gateway missing case. (#1579)
+* Fixed: Upsells: Free trial subscriptions failing for PayPal non-reference transactions cases. (#4296)
+* Fixed: Checkout: PHP Error on renewal orders when the shipping address is unset. (#4734)
+* Fixed: Checkout: Console warning related to Google address autocomplete. (#4741)
+* Fixed: Checkout- Spain City was not getting filled using address autocomplete. (#4671)
+
+= 2.11.4 (Apr 14, 2023) =
+* Added: Bump: Cart Items Quantity Count Rule Added.(#590)
+* Added: Cart Pro- Show default upsells always, new option added. (#21)
+* Improved : Bump- Compatibility with Woomulticurcy updated. (4700)
+* Improved : Core- : Handling while importing elementor template to avoid conflict with WP Offload Media.(#1568)
+* Improved: Upsell- Setting to toggle display of icon in oxygen accept button widget.(1566)
+* Improved: Checkout- Compatibility with Brazilian gateway updated. (#4694)
+* Improved: Checkout- Compatibility with Angelleye gateway updated. (#4715)
+* Improved: Cart Pro- Get user country and other geographic fields based on IP address. (#15)
+* Improved: Cart Pro- Displayed WooCommerce older cart notices. (#27)
+* Improved: Cart Pro- Don't adding back the coupon from reward if removed manually by user. (#17)
+* Fixed: Bump- Prices with Strikethrough not showing up in few cases. (#586)
+* Fixed: Bump- Text color CSS to prevent override by elementor.(#587)
+* Fixed: Checkout: Box shadow settings with Divi checkout widget was not working. (#4706)
+
+= 2.11.3 (Mar 22, 2023) =
+* Added: Checkout- Compatibility with FOX – Currency Switcher Professional for WooCommerce plugin. (#4686)
+* Added: Upsell/Thankyou- A new rule 'Order Item - Text Match' added. (#1554)
+* Improved: Checkout- Compatibility with FunnelKit Stripe Payment gateway updated. (#4682)
+* Improved: Checkout- Compatibility with Mailchimp for WooCommerce By Mailchimp updated. (#4662)
+* Fixed: Checkout- Spain City was not getting filled using address autocomplete. (#4671)
+* Fixed: Checkout- Price not coming with strikethrough when discount is 100%. (#4692)
+* Fixed: Upsells- Rule for Coupon text match was not working with doesn't contain operator. (#178)
+* Fixed: Upsells- Dynamic offer path settings were not cloning correctly during duplicate action. (#1564)
+* Fixed: Cart Pro - Rewards free product showing undo notice with FunnelKit Checkout's mini cart module. (#3)
+* Fixed: Cart Pro - Show only published products for selection in upsells. (#9)
+* Fixed: Cart Pro - A PHP error during adding multiple coupons from rewards. (#11)
+
+= 2.11.2 (Mar 13, 2023) =
+* Improved: Checkout- Compatibility with Breakdance builder updated for customizer templates . (#4663)
+* Improved: Checkout- Compatibility with Omnisend for Woocommerce . (#4670)
+* Improved: Checkout- Compatibility with angelleye smart buttons improved for multistep forms . (#4670)
+* Fixed: Upsells- Upsell refunds are not working for the offer payments by PayPal Payments with 'create new order' settings enabled. (#1548)
+* Fixed: Cart Pro - Sub total amount corrected in Rewards.
+
+= 2.11.1 (Mar 07, 2023) =
+* Fixed: A/B experiments-  Analytics for A/B tests were not getting recorded when same URL variant setting is enabled. (#4139)
+
+= 2.11.0 (Mar 01, 2023) =
+* Added: Upsells: A filter is added to modify cancel order settings. (#1536)
+* Added: A/B experiments- New settings to show variant on original variant link. (#205)
+* Added: Checkout- Settings to control price visibility on the place order button on customizer. (#4634)
+* Improved: Upsells- Compatibility with the square Payment gateway to handle cases with existing users. (#1534)
+* Improved: Upsells- Removed old updater methods. (#1539)
+* Improved: Upsells- CSS improved w.r.t background color for canvas and boxed templates. (#1541)
+* Improved: Upsells- SQL query optimized during thankyou hook cron action. (#1543)
+* Improved: A/B experiments- Handling for the case when a completed experiment has no variants. (#208)
+* Improved: OrderBump- Prevent adding duplicate product to the cart. (#581)
+* Improved: Checkout- Styling for customizer multistep preview improved.(#4599)
+* Improved: Checkout- Styling for multi-select custom field. (#4598)
+* Improved: Checkout- Styling for shimmer animation on product switcher field. (#4614)
+* Fixed: Checkout- Settings to background color for Best value tag not working in some cases. (#4645)
+* Fixed: Optin- A PHP error showing up from optin lifterLMS compatibility. (#174)
+* Fixed: Upsells- Subscriptions created by upsells are only having a single quantity. (#87)
+
+= 2.10.0 (Jan 27, 2023) =
+* Improved: One Click Upsells: Compatibility with Bricks builder updated. (#1527)
+* Improved: Bump: Do not allow bump product to add to cart if already added once. (#581)
+* Fixed: One Click Upsells: Error during processing automatic renewals for the subscriptions created by upsells for stripe gateway from v3.5.0. (#1529)
+* Fixed: One Click Upsells: Upsell cancel primary order settings was not working for free trial order. (#1523)
+* Fixed: One Click Upsells: PHP deprecated hook notice for elementor v3.5.0 or greater. (#1525)
+
+= 2.9.2 (Jan 11, 2023) =
+* Fixed: Checkout: 301 redirect was not working on dedicated checkout pages since v2.9.0. (#3930)
+
+= 2.9.1 (Jan 10, 2023) =
+* Fixed: Checkout: Issue with advanced phone field showing country 'Afghanistan' when billing country and shipping country is hidden. (#4580)
+
+= 2.9.0 (Jan 09, 2023) =
+* Added: Bump: Coupon text match rule added. (#574)
+* Added: One Click Upsells: Compatibility with WooCommerce Sequential Order Numbers Pro. (#1454)
+* Added: One Click Upsells: Added a filter `wfocu_gateways_paypal_support_non_reference_trans` to allow devs to show settings for their PayPal gateway. (#1487) 
+* Improved: One Click Upsells: Compatibility with WooCommerce Amazon Fulfillment updated for v4.0.0. (#1471)
+* Improved: One Click Upsells: Upsell timeline updated to show appropriate reason when the gateway does not support subscription products. (#1475)
+* Improved: One Click Upsells: Restrict registering offer page assets to site pages, causing conflicts in some cases. (#1480)
+* Improved: One Click Upsells: Updated new order creation script to execute woocommerce_new_order action hook. (#1486)
+* Fixed: One Click Upsells: Compatibility with Square gateway updated, showing errors during upsell accept. (#1506)
+* Fixed: One Click Upsells: PHP error was showing up with learndash compatibility in a few cases. (#1508)
+* Fixed: License Admin UI to handle the case when the license gets deactivated after scheduled action. (#1471)
+
+= 2.7.1 (Nov 09, 2022) =
+* Added: One Click Upsells: Compatibility with WooCommerce Sequential order number PRO. (#3283)
+* Fixed: Admin design tab was not showing correctly on safari browser. (#4457)
+* Fixed: Intl field not showing correctly on multi-step form's 2nd or 3rd step. (#4449)
+* Fixed: Upsell signup fees and free trail cases were not working correctly. (#3368)
+
+= 2.7.0 (Nov 01, 2022) =
+* Added: One Click Upsells: A filter to modify dynamic shipping options order. (#3283)
+* Improved: Checkout- Advanced custom fields will not show up on order page even with no values.(#3317)
+* Fixed: Checkout- Error with shoptimizer theme in checkout embed forms. (#3287)
+* Fixed: Checkout- Terms and condition error notice was not coming with some cases with multistep forms and PayPal gateway. (#3315)
+* Fixed: OrderBump- Background color settings were not getting applied in the backend in some cases. (#3237)
+* Fixed: AB Tests: Duplicated variants were not sustaining its design if made using a block editor. (#3241)
+* Fixed: One Click Upsells: Order refund metabox was not showing in some cases. (#3266)
+* Fixed: OrderBump: Checkbox checked state is not showing up on native checkout. (#3175)
+* Fixed: AB Tests: post content was not getting copied correctly from upsell ab test after declaring a winner. (#1458)
+
+= 2.6.1 (Oct 19, 2022) =
+* Improved: Order Bump Compatibility with WC Germanized plugin. (#557)
+* Fixed: Database table creation failing since v2.6.0. (#3256)
+* Fixed: Checkout styling improved for the cases of shimmer animation with oxygen builder since v2.6.0. (#3258)
+* Fixed: Order Bump showing twice when WooCommerce Germanized plugin is active. (#558)
+* Fixed: Order Bump- PHP fatal error when width settings are set as blank. (#561)
+
+= 2.6.0 (2022-11-18) =
+* Removed: Checkout-The processing loader as it was causing unintended behaviour with certain plugins and gateways in variety of different cases (PRO)
+* Added: Checkout-A filter to disable shimmer animation on the checkout. (#3238)
+* Improved: Checkout-Compatibility updated for the Mercado Pago credit card gateway. (#3299)
+* Improved: Checkout-Compatibility with Nav theme. (#3244)
+* Fixed: Checkout-Advanced phone field showing up duplicate countries for the US and UK. (#3239)
+* Fixed: Checkout-Space getting added in validation message for email field. (#3193)
+* Fixed: Checkout-Quick view was not working with embedded forms. (#4292)
+
+= 2.5.0 (2022-11-14) =
+* Added: Checkout- Filter to allow phone field values without the country code in order. (#4377)
+* Added: Checkout- Filter to allow plugins to modiify mini card item name image HTML. (#4365)
+* Added: OrderBump- Loader effect on bump add and remove button. (#549)
+* Improved: Checkout- Admin UI improved for the RTL languages. (#4358)
+* Improved: Checkout- Shimmer effect improved on mini cart. (#4376)
+* Improved: One Click Upsells- Compatibility with PYS CostOfGoods plugin updated. (#1452)
+* Fixed: Checkout- Error caused by unsetting gateway fragments during order review update. (#4368)
+* Fixed: Checkout- Field focus color settings was not working for selects on gutenberg checkout pages. (#4371)
+* Fixed: Checkout- AddPaymentInfo event was not getting tracked since v3.5.0 (#3179)
+
+= 2.4.2 (2022-11-05) =
+* Added: Checkout- New filter to change the text when removing the product from the product switcher. (#4341)
+* Added: One Click Upsells- New filter to modify shipping methods priority on upsell pages for dynamic shipping. (#1145)
+* Improved: Checkout- compatibility updated for the Divi Den Pro by WP Den. (#4345)
+* Improved: Checkout- compatibility updated for the Nextend Social Login and Register addon. (#4345)
+* Improved: Checkout- Advanced phone field with flags improved for better handling for default country and preferred countries. (#4334)
+* Improved: Checkout- Better design and translation support for the RTL languages. (#4341)
+* Fixed: Checkout- Express checkout buttons not showing up with the plugin WooCommerce PayPal Payments by WooCommerce v1.9.3. (#4332)
+* Fixed: Checkout- Template importing not working for the new license activations since v3.5.3. (#4351)
+* Fixed: Checkout- PHP error while quantity merge-tag used and no quantity is set. (#4330)
+
+= 2.4.1 (2022-10-05) =
+* Tweak: Rebranding related changes.
+* Fixed: Store checkout was not showing up when template is default for the builder gutenberg. (#3092)
+
+= 2.4.0 (2022-09-29) =
+* Added: Checkout- New Processing loader added when place order button clicked. (#4244)
+* Added: Checkout- International phone field support for phone field. (#4244)
+* Added: Checkout- Primary color settings for global form buttons and inputs. (#4244)
+* Added: Checkout- New loading effect (Shimmer Animation) on all elements of checkout. (#4244)
+* Added: Checkout- Live validation for email and phone fields. (#4244)
+* Added: Checkout- Floating labels for the input fields. (#4244)
+* Added: Checkout- Compatibility added with EU/UK VAT for WooCommerce by WPWhale. (#4077)
+* Added: Checkout- Compatibility added with Payoneer Checkout by Inpsyde GmbH v.0.2.1. (#4197)
+* Added: Checkout- Shortcode Compatibility with Bricks Builder. (#4194)
+* Added: Checkout- Filter hook added to change the price of the collapsible order summary. (#4088)
+* Added: Checkout- Compatibility with WP fusion abandoned cart functionality. (#4275)
+* Added: Checkout- Javascript filters to skip tracking in favor of cookie consent plugins. (#4299)
+* Added: One Click Upsells- Shortcode Compatibility with Bricks themes. (#1347)
+* Added: One Click Upsells- Filter hook 'wfocu_script_tags' to allow dynamic attributes to the script tag for the tracking snippets. (#1322)
+* Added: One Click Upsells- Shortcode added to display product original sale price. (#1360)
+* Added: One Click Upsells- Javascript filters to skip tracking in favor of cookie consent plugins. (#1305)
+* Added: One Click Upsells- Compatibility with Kedence theme. (#1412)
+* Added: OrderBump- Action hook added when order bump accepted/rejected. (#523)
+* Added: OrderBump- Hook added to modify rules matching behavior for order bumps. (#472)
+* Improved: Checkout- Compatibility with elementor 3.7.0 version. (#455)
+* Improved: Checkout- Implementation of express checkout buttons optimized for better speed. (#4455)
+* Improved: Checkout- No product in this checkout message was removed for all users. (#4148)
+* Improved: Checkout- Compatibility with the plugin ThemeSky.(#4239)
+* Improved: Checkout- Method to get the client IP address to improve event match quality for Facebook conversion events. (#1391)
+* Improved: Checkout- Sustain Credit card inputs during address changes. (#4277)
+* Improved: Checkout- Compatibility with Hubspot integration by makewebbetter updated for abandoned carts. (#4265)
+* Improved: Checkout- Compatibility with MDS Collivery Plugin updated. (#4269)
+* Improved: Checkout- Compatibility with Beaver builder for embed form global checkout updated. (#4272)
+* Improved: Checkout- Compatibility with the WooCommerce Product bundle. (#4246)
+* Improved: Checkout- Compatibility with the angelleye plugin for smart buttons showing outside of the form. (#4234)
+* Improved: Checkout- Beaver Builder support updated for the duplicated checkout page. (#4298)
+* Improved: Checkout- Compatibility with the angelleye plugin for smart buttons showing outside of the form. (#4234)
+* Improved: A/B experiments- Query for the ab variants optimized when hook to get ab tests to work multiple times. (#173)
+* Improved: A/B experiments- Optimised controller posts searching by making the delayed query. (#156)
+* Improved: One Click Upsells- Compatibility with elementor 3.7.0 version. (#455)
+* Improved: One Click Upsells- WooCommerce multicurrency compatibility updated to check if enabled in settings before conversion. (#1320)
+* Improved: One Click Upsells- Google ads enhanced e-commerce data pass with the purchase events. (#1324)
+* Improved: One Click Upsells- The product description widget will now show product description from the parent in case of variation product. (#1335)
+* Improved: One Click Upsells- Handle dynamic shipping taxes for the offers when tax is exempted in order. (#66)
+* Improved: One Click Upsells- Behaviour for the cancel and upgrade feature modified in favor of processing fewer refunds. (#1331)
+* Improved: One Click Upsells- Author support added for the offer post type. (#1376)
+* Improved: One Click Upsells- Method to get the client IP address to improve event match quality for Facebook conversion events. (#1391)
+* Improved: One Click Upsells- Facebook events will now have external_id param for the logged-in user to improve event match quality. (#1371)
+* Fixed: Core- Google Tag manager showing warning when google ads and more than one GA Ids are used. (#4455)
+* Fixed: Checkout- Fix duplicate pixel when the page is marked as the checkout page. (#4224)
+* Fixed: Checkout- Header font size issue in Gutenberg checkout block. (#4169)
+* Fixed: Checkout- Checkout advanced custom field will be shown without login user on thank page. (#4204)
+* Fixed: Checkout- Chronopost block shipping methods are shown two times in the checkout form and the sidebar. (#4176)
+* Fixed: Checkout- Thrive Architect - shortcode checkout Form not showing in front. (#4202)
+* Fixed: Checkout- Beaver builder designing not working when setting the checkout as global. (#4190)
+* Fixed: Checkout- Product Switcher Hide when back button pressed from PayPal gateway. (#4155)
+* Fixed: Checkout- WooCS currency switcher is not working correctly on dedicated checkout pages. (#4133)
+* Fixed: Checkout- Nextend social registration button is not showing on checkout. (#4116)
+* Fixed: Checkout- Gutenberg icon background is messing up with panels. (#4230)
+* Fixed: Checkout- The field color setting is not working for the coupon field. (#4178)
+* Fixed: Checkout- Shipping prices were not showing up on the first load when address autocomplete is configured. (#4135)
+* Fixed: Checkout- Apple pay button not showing full width in mac. (#4124)
+* Fixed: Checkout- Conversion tracking for checkout not working for the infusionsoft CC gateway. (#4297)
+* Fixed: OrderBump- Few PHP notices resolved for PHP v8.1. (#526)
+* Fixed: OrderBump- The order bump was not showing up in a few cases when the customer changes the address. (#475)
+* Fixed: OrderBump- Quantity selector showing up twice on firefox. (#498)
+* Fixed: OrderBump- Global settings page was not showing up when only the order bump is active. (#530)
+* Fixed: A/B experiments- An issue in deleting variant data on completion of A/B tests. (#165)
+* Fixed: A/B experiments- Original tag on the original variant was not showing up after declaring a winner. (#167)
+* Fixed: A/B experiments- Upsell offers were not showing up in the correct order in analytics in some cases. (#175)
+* Fixed: A/B experiments- Optin A/B tests custom redirection settings are not working when variant serves. (#184)
+* Fixed: One Click Upsells- Issue with the WooCommerce Payments, refunding offer was not working. (#1318)
+* Fixed: One Click Upsells- Block Compatibility issues with WordPress v6.0 (#1316)
+* Fixed: One Click Upsells- An issue of reporting data not getting inserted properly in MySQL table due to column length. (#1333)
+* Fixed: One Click Upsells- Few Styling-related bug fixes for the Gutenberg image gallery block. (#1334)
+* Fixed: One Click Upsells- Few PHP notices resolved for PHP v8.1. (#1369)
+* Fixed: One Click Upsells- Offer refund was failing in some cases for the authorize.net CIM gateway v3.7.2 (#1392)
+* Fixed: One Click Upsells- Tax on upsell offers not getting applied for some cases with default customer address set add shop address. (#1396)
+* Fixed: One Click Upsells- Deprecated PHP warning showing up during Facebook pixel after WooCommerce v6.0.0 when coupon used in the order. (#1414)
+* Fixed: One Click Upsells- Offer payments were failing for WooCommerce PayPal payments in some cases when subscriptions in the primary order. (#1423)
+* Fixed: One Click Upsells- Javascript error showing up when jquery is loaded deferred for the checkout. (#1426)
+
+
+= 2.3.4 (2022-05-10) =
+* Added: Checkout - Compatibility with WooCommerce PayPal Payments credit card gateway. (#4107)
+* Fixed: One Click Upsells - Offer Payments were failing with WooCommerce Square gateway v3.0.0 in case of different shipping address than billing. (#1312)
+
+= 2.3.3 (2022-05-09) =
+* Added: Checkout - Compatibility with Brick Builder for embed shortcodes. (#4094)
+* Improved: Checkout - Compatibility with plugin 'WooCommerce InPost' updated. (#4098)
+* Improved: Checkout - Compatibility updated with MDS Collivery By MDS Technologies. (#4096)
+* Fixed: One Click Upsells - Offer Payments and primary checkout payments were not working with WooCommerce Square gateway v3.0.0 (#1306)
+* Fixed: One Click Upsells - Checkout payments done by WooCommerce PayPal payment's credit card method was not working in case of 3ds since v4.1.0. (#1308)
+
+= 2.3.2 (2022-04-30) =
+* Fixed: Checkout - Checkout created using shortcode had an issue, fixed. (#4082)
+* Fixed: Checkout - Compatibility updated with 'Amazon Pay' plugin. Logout message was coming at the top, fixed. (#4048)
+
+= 2.3.1 (2022-04-25) =
+* Fixed: Checkout - Customizer and Custom templates import button was not clickable since the last update. (#4034)
+
+= 2.3.0 (2022-04-25) =
+* Improved: One Click Upsells - Compatibility with Woodmart theme. (#1268)
+* Improved: Checkout - Compatibility with plugin 'Points and Rewards for WooCommerce' updated. (#2324)
+* Improved: Checkout - Featured Image support added for all steps. (#2364)
+* Improved: Checkout - Additional handling for the checkout block for Gutenberg when used as a reusable block. (#2380)
+* Improved: Checkout - Event 'addtocart' data improved to pass product tags, categories, and prices for snapchat, pinteret and tiktok. (#2341)
+* Improved: Checkout - Compatibility with DiviDenPro. (#2337)
+* Improved: One Click Upsells - Avoid setting up upsell sessions multiple times in any case of conflict. (#1285)
+* Improved: One Click Upsells - Item totals passing to Google Analytics, Google ads, and Pinterest now cover a few tax edge cases. (#1278)
+* Fixed: Checkout - An issue with Account creation when billing email contains some special character. (#2328)
+* Fixed: Checkout - Checkout custom field with type select placeholder not working on the checkout. (#4022)
+* Fixed: Checkout - PayPal buttons alignment when the German market plugin was used. (#2312)
+* Fixed: Checkout - Override e-commerce event behavior per checkout page settings were not working for Pinterest. (#4054)
+* Fixed: Checkout - Javascript console error showing up on native checkout page with few themes overriding wp footer behavior. (#4062)
+
+= 2.2.0 (2022-04-12) =
+* Added: Checkout - Compatibility with WooCommerce Ship to Multiple Addresses by WooCommerce.
+* Added: Checkout - Compatibility with FluentCRM Pro by Fluent CRM.
+* Added: Checkout - Compatibility with Yoast SEO: WooCommerce By Team Yoast.
+* Added: Checkout - Compatibility with WooCommerce Coupon URL By Skyverge.
+* Added: Checkout - Back to checkout button added from post edit screen.
+* Added: Checkout - Compatibility with Divi Den PRO plugin.
+* Improved: Checkout - Compatibility with Divi Page Builder updated.
+* Improved: Checkout - Disable Events tracking on order pay page.
+* [Critical] Checkout - Fixed: PayPal smart buttons were not showing up for the checkout pages after WooCommerce PayPal Payments v1.7.1.
+* Fixed: Checkout - A conflict with Yoast SEO news plugin causing page builder actions to break in some cases.
+* Fixed: One Click Upsells - Pass item total instead of item subtotal to cover discount cases at item level in GA analytics.
+* Fixed: Checkout - An issue where page builder dependency were not getting installed correctly.
+* Fixed: Checkout - An issue of autopopulating country based on Geo Location for logged in user.
+
+= 2.1.4 (2022-04-06) =
+* Added: Checkout - Compatibility with FluentCRM Pro  by Fluent CRM. (#3992)
+* Improved: Checkout - Compatibility updated with 'PostNL' Plugin. (#3977)
+* Fixed: Checkout - Multiple checkout form showing when Divi Den PRO plugin activated. (#3989)
+* Fixed: Upsells - Offer payments were failing for the WooCommerce Payments v3.9.0. (#1279)
+
+= 2.1.3 (2022-03-29) =
+* Added: Upsells - Compatibility with Woodmart theme. (#1267)
+* Improved: Checkout - Compatibility updated with 'URL Coupons' Plugin by SkyVerge. (#3972)
+* Improved: Checkout - Compatibility updated with 'Checkout WC' Plugin. (#3970)
+* Improved; Upsells - Improved Google Tag execution to prevent double events in case of Backward/Forward browser cache. (#1262)
+* Fixed: Upsells - Offer payments were failing for the WooCommerce Payments v3.9.0. (#1269)
+
+= 2.1.2 (2022-03-23) =
+* Improved: Checkout - Move Order bump position From mini cart to payment gateway at mobile devices. (#3929)
+* Improved: Checkout - Divi theme builder override the checkout canvas and box template. (#3938)
+* Improved: Checkout - Optimized express checkout buttons for fast visibility. (#3926)
+* [Critical] Fixed: Checkout - Deprecated warning for elementor _register_controls is deprecated since version 3.1.0. (#3963)
+* Fixed: Checkout - Sometimes products don't re-added in cart when multiple Page is open. (#3910)
+* Fixed: Checkout - Woodmart theme - Elementor Checkout form not visible on the frontend page. (#3920)
+* Fixed: Checkout - Error on the checkout page with RY invoice plugin version 1.3.9. (#3932)
+* Fixed: Checkout - Mini cart coupon link color setting CSS was override was not working. (#3961)
+* [Critical] Fixed: Upsell - PHP Errors showing up on offer pages built using elementor on elementor version 3.6.0. (#1130)
+* Fixed: Upsell - Google ads conversion label passing with the custom events. (#1261)
+
+= 2.1.1 (2022-03-16) =
+* Improved: Checkout - Compatibility updated with the Woodmart theme. (#3921)
+* Improved: Checkout - Divi compatibility improved to handle a few page templates cases. (#3939)
+* Fixed: Upsell - Issue with a variable product purchase, variation ID was not getting attached as item meta since the last release. (#1251)
+* Fixed: Upsell - Issue with Upsell Payments failing for WooCommerce PayPal Payments gateway returning invalid token in some rare cases. (#1254)
+* Fixed: Upsell - A PHP notice showing up on update_order_review ajax request in some scenarios when WP_DEBUG set to TRUE. (#1256)
+* Improved: Order Bump - Bumps now automatically show under payment gateway in case they are added in Mini Cart and mini cart is hidden on mobile". (#3929)
+
+= 2.1.0 (2022-03-11) =
+* Added: Checkout - Compatibility with 'Cost of Goods by PixelYourSite' plugin. (#3881)
+* Added: Checkout - Filter hook 'wfacp_collapsible_order_summary_dropdown_icon' to allow change in icon for the collapsable order summary. (#3908)
+* Added: Checkout - Enable event tracking for the native checkout page too. (#3872)
+* Added: Checkout - Compatibility with All in One SEO by  All in One SEO Team. (#3841)
+* Added: Checkout - Compatibility with Conditional Discounts for WooCommerce by ORION. (#3852)
+* Added: Upsell - Support for WordPress revision feature for the offer post type. (#1211)
+* Added: Upsell - Few more controls in Gutenberg quantity selector widget. (#1218)
+* Added: Upsell - Compatibility with 'Cost of Goods by PixelYourSite' plugin. (#1215)
+* Improved: Checkout - Compatibility with PostNL updated. (#3813)
+* Improved: Checkout - Compatibility with Smart Coupons updated. (#3853)
+* Improved: Checkout - Compatibility with Yith AJAX product Filter plugin updated. (#3853)
+* Improved: Checkout - CSS improvement to allow external CSS rules to apply. (#3866)
+* Improved: Checkout - Express checkout buttons improved for better visibility. (#3737)
+* Improved: Upsell - Snapchat events firing add billing along with the purchase. (#1203)
+* Improved: Upsell - Application of quantity selector improved to add qty instead of multiple line items. (#1233)
+* Improved: Upsell - Fire PageView event even if storewide settings are ON by funnel builder. (#1209)
+* Fixed: Checkout - Issue with fresh elementor setups requiring toolkit generation. (#3878)
+* Fixed: Checkout - Add field popup getting stuck in some cases. (#3918)
+* Fixed: Checkout - Extra pageview event firing for Pinterest. (#3861)
+* Fixed: Checkout - A fatal error while importing templates with few cases when WPML is active. (#3850)
+* Fixed: Checkout - Update edit URL operation not working. (#3875)
+* Fixed: Checkout - Styling fix for the RTL cases. (#3858)
+* Fixed: Checkout - Order Bump add to cart event was not working for some cases. (#3863)
+* Fixed: Upsell - PayPal standard primary payments were throwing PHP error on WooCommerce version 6.3.1. (#1248)
+* Fixed: Upsell - Fatal error showing up while accessible past oxygen template after oxygen builder deactivated. (#1227)
+* Fixed: Upsell - Error while tracking custom events due to special characters in bump name. (#1223)
+* Fixed: Upsell - A fatal error while importing templates with few cases when WPML is active. (#1200)
+* Fixed: Upsell - Issue with PayPal payments offer payments showing incorrect total errors in a few cases. (#1180)
+* Fixed: Upsell - Issue with fresh elementor setups requiring toolkit generation. (#1213)
+* Fixed: Upsell - Remove extra line items getting added in square order for offer payments in a few cases. (#1230)
+* Fixed: Upsell - Snapchat tracking not working with native thankyou page. (#1243)
+
+[See changelog for all versions](https://account.buildwoofunnels.com/changelog/changelog-funnel-builder-pro/).
+

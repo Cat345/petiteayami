@@ -1,0 +1,34 @@
+&.ubermenu.ubermenu-responsive .ubermenu-item-level-0{
+	width:100%;
+}
+&.ubermenu.ubermenu-responsive .ubermenu-column,
+&.ubermenu.ubermenu-responsive .ubermenu-column-auto{
+	min-width:100%;
+}
+&.ubermenu .ubermenu-autocolumn:not(:first-child),
+&.ubermenu .ubermenu-autocolumn:not(:first-child) .ubermenu-submenu-type-stack{
+    padding-top:0;
+}
+&.ubermenu .ubermenu-autocolumn:not(:last-child),
+&.ubermenu .ubermenu-autocolumn:not(:last-child) .ubermenu-submenu-type-stack{
+    padding-bottom:0;
+}
+&.ubermenu .ubermenu-autocolumn > .ubermenu-submenu-type-stack > .ubermenu-item-normal:first-child{
+    margin-top:0;
+}
+
+
+
+
+/* Accordion submenus mobile */
+&.ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-item > .ubermenu-submenu-drop,
+&.ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-tab > .ubermenu-tab-content-panel{
+    box-shadow:none;
+		box-sizing:border-box;
+		border-left:none;
+		border-right:none;
+}
+&.ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-item.ubermenu-active > .ubermenu-submenu-drop,
+&.ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-tab.ubermenu-active > .ubermenu-tab-content-panel{
+    position:static;
+}

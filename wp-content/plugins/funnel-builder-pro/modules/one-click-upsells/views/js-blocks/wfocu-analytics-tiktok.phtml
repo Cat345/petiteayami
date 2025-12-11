@@ -1,0 +1,44 @@
+<?php $get_hash = $this->get_localstorage_hash( 'tiktok' ); ?>
+var wfocuTIKTOKHash = '<?php echo $get_hash; ?>';
+var wfocuTIKTOKResult = false;
+try {
+
+if ('1' === localStorage.getItem("wfocuH_" + wfocuTIKTOKHash)) {
+wfocuTIKTOKResult = true;
+}
+
+} catch (exception) {
+
+}
+
+if(false === wfocuTIKTOKResult) {
+<?php
+
+if ( is_array( $data ) && isset( $data['tiktok'] ) && ( true === $purchase ) ) {
+
+	if ( isset( $data['tiktok']['advanced'] ) ) {
+		unset( $data['tiktok']['advanced'] );
+	}
+	?>
+
+    var wfocuTikTokPurchaseData = JSON.parse('<?php echo wp_json_encode( $data['tiktok'] ); ?>');
+
+    wfocuTikTokPurchaseData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wfocuTikTokPurchaseData):wfocuTikTokPurchaseData;
+	<?php if ( true === $purchase ) { ?>
+        ttq.instance('<?php echo $id; ?>').track('Purchase',wfocuTikTokPurchaseData);
+	<?php } ?>
+
+
+
+	<?php
+}
+
+?>
+try {
+
+localStorage.setItem("wfocuH_" + wfocuTIKTOKHash, "1");
+
+} catch (exception) {
+
+}
+}

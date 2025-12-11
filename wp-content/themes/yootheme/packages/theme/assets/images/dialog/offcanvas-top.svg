@@ -1,0 +1,13 @@
+<svg width="130" height="90" viewBox="0 0 130 90" xmlns="http://www.w3.org/2000/svg">
+    <path class="uk-preserve" fill="#fff" d="M85,0h45V90h-45V0Z" />
+    <circle fill="#444" cx="93.5" cy="80.5" r="1.5" />
+    <circle fill="#444" cx="98.5" cy="80.5" r="1.5" />
+    <circle fill="#444" cx="103.5" cy="80.5" r="1.5" />
+    <rect width="17" height="2" fill="#444" x="92" y="12" />
+    <rect width="17" height="2" fill="#444" x="92" y="22" />
+    <rect width="20" height="2" fill="#444" x="92" y="17" />
+    <path fill="none" stroke="#444" stroke-width="2" d="M1,1H129V89H1V1Z" />
+    <rect width="1" height="90" fill="#444" x="85" />
+    <line fill="none" stroke="#444" stroke-width="1.5" x1="116.5" y1="7.5" x2="122.5" y2="13.5" />
+    <line fill="none" stroke="#444" stroke-width="1.5" x1="122.5" y1="7.5" x2="116.5" y2="13.5" />
+</svg>

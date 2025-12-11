@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle name="FunnelKit Funnel Builder Pro">
+  <domain name="funnel-builder-pro">
+    <project name="FunnelKit Funnel Builder Pro" slug="funnel-builder-pro">
+      <source>
+        <directory>.</directory>
+      </source>
+      <target>
+        <directory>languages</directory>
+      </target>
+      <template>
+        <file>funnel-builder-pro.pot</file>
+      </template>
+    </project>
+  </domain>
+  <domain name="woofunnels-order-bump">
+    <project name="FunnelKit Order Bumps" slug="woofunnels-order-bump">
+      <source>
+        <directory>modules/order-bumps</directory>
+      </source>
+      <target>
+        <directory>.</directory>
+      </target>
+      <template>
+        <file>modules/order-bumps/languages/woofunnels-order-bump.pot</file>
+      </template>
+    </project>
+  </domain>
+  <domain name="woofunnels-upstroke-one-click-upsell">
+    <project name="FunnelKit One Click Upsells" slug="woofunnels-upstroke-one-click-upsell">
+      <source>
+        <directory>modules/one-click-upsells</directory>
+      </source>
+      <target>
+        <directory>.</directory>
+      </target>
+      <template>
+        <file>modules/one-click-upsells/languages/woofunnels-upstroke-one-click-upsell.pot</file>
+      </template>
+    </project>
+  </domain>
+  <domain name="woofunnels-aero-checkout">
+    <project name="FunnelKit Checkout" slug="woofunnels-aero-checkout">
+      <source>
+        <directory>modules/checkout</directory>
+      </source>
+      <target>
+        <directory>.</directory>
+      </target>
+      <template>
+        <file>modules/checkout/languages/woofunnels-aero-checkout.pot</file>
+      </template>
+    </project>
+  </domain>
+  <domain name="woofunnels-ab-tests">
+    <project name="FunnelKit AB Test" slug="woofunnels-ab-tests">
+      <source>
+        <directory>modules/woofunnels-ab-tests</directory>
+      </source>
+      <target>
+        <directory>.</directory>
+      </target>
+      <template>
+        <file>modules/woofunnels-ab-tests/languages/woofunnels-ab-tests.pot</file>
+      </template>
+    </project>
+  </domain>
+</bundle>

@@ -1,0 +1,59 @@
+/* General */
+.ubermenu .ubermenu-target-woo-price{
+  font-weight:normal;
+}
+
+
+/* Layout - Image Above, Price */
+.ubermenu .ubermenu-target.ubermenu-item-layout-woocommerce_image_above_price{
+  display:flex;
+  flex-wrap:wrap;
+}
+.ubermenu .ubermenu-target.ubermenu-item-layout-woocommerce_image_above_price .ubermenu-image{
+  width:100%;
+  margin-bottom:10px;
+  align-self:center;
+}
+.ubermenu .ubermenu-target.ubermenu-item-layout-woocommerce_image_above_price .ubermenu-target-title{
+  flex:1;
+}
+.ubermenu .ubermenu-target.ubermenu-item-layout-woocommerce_image_above_price .ubermenu-target-description{
+  margin-top:.5em;
+}
+
+
+/* Layout - Image Left, Price */
+.ubermenu .ubermenu-item-layout-woocommerce_image_left_price > .ubermenu-image{
+  float:left;
+}
+.ubermenu .ubermenu-target.ubermenu-item-layout-woocommerce_image_left_price > .ubermenu-target-woo-sale-badge{
+  right:auto;
+  left:10px;
+}
+
+
+/* Sale badge */
+.ubermenu .ubermenu-item-object-product .ubermenu-target{
+	position:relative;
+}
+.ubermenu .ubermenu-item .ubermenu-target-woo-sale-badge{
+	position:absolute;
+	top:10px;
+	right:10px;
+	z-index:30;
+
+	display:flex;
+	align-items:center;
+	justify-content:center;
+
+  padding:.4em .6em;
+
+	background:#222;
+	color:#fff;
+	font-weight:normal;
+	border-radius:2px;
+
+
+  transform: translateZ(0); // z-index layering with transformed image
+
+}

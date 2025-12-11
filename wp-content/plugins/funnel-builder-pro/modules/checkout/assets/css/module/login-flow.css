@@ -1,0 +1,326 @@
+/* Login flow */
+body #wfacp-sec-wrapper .wfacp_model_top_sec {
+    position: relative;
+}
+
+
+body #wfacp-sec-wrapper .wfacp_model_top_sec {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+body #wfacp-sec-wrapper .wfacp_model_top_sec h2 {
+    margin: 0;
+    display: inline-flex;
+    width: 100%;
+}
+
+body #wfacp-sec-wrapper .wfacp_model_top_sec a {
+    display: inline-flex;
+}
+
+body #wfacp-sec-wrapper .wfacp-login-button {
+    margin-bottom: 0;
+    clear: both;
+}
+
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .wfacp-form-control-wrapper.wfacp-mb-24 {
+    margin-bottom: 24px;
+}
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .wfacp-form-control-wrapper.wfacp-mb-0 {
+    margin-bottom: 0;
+}
+
+
+body #wfacp-sec-wrapper .wfacp_main_form .wfacp-modal-content button[type=submit] {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+body #wfacp-sec-wrapper label.woocommerce-form__label.woocommerce-form__label-for-checkbox.inline span {
+    color: #737373 !important;
+}
+
+/* close button */
+body #wfacp-sec-wrapper #funnelkitResetPasswordMessage .wfacp_notice_list .wfacp-success .wfacp-quickv-close {
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 40px;
+    display: block;
+    max-width: 180px;
+    margin: 16px auto auto;
+    line-height: 1.5;
+}
+
+
+/* Forgot wrapper */
+body #wfacp-sec-wrapper .wfacp-forgot-wrapper {
+    margin: 0 -8px;
+}
+
+body #wfacp-sec-wrapper .wfacp-ta-center {
+    text-align: center;
+}
+
+/* Forgot message */
+body #wfacp-sec-wrapper .wfacp-success {
+    min-height: 1px;
+    background-size: 56px;
+    background-position: 50% 0;
+    background-color: transparent;
+    color: #353030 !important;
+    font-size: 14px;
+    text-align: center;
+    padding-top: 70px;
+    margin: 0;
+
+}
+
+
+/* Pop up css */
+
+
+body #wfacp-sec-wrapper .wfacp-quickv-opacity {
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    opacity: .8;
+    display: none;
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-panel {
+    position: fixed;
+    opacity: 0;
+    transition: opacity .25s ease-in;
+    z-index: 999999;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-opl {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-preloader {
+    text-align: center;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-content_wrap {
+    overflow: auto;
+    position: relative;
+    top: 0;
+    height: 100%;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-content-inner-wrap {
+    position: absolute;
+    top: 50%;
+    background: #fff;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    margin: auto;
+    box-shadow: 3px 3px 20px 0 rgba(0, 0, 0, .15);
+    -webkit-box-shadow: 3px 3px 20px 0 rgba(0, 0, 0, .15);
+    -moz-box-shadow: 3px 3px 20px 0 rgba(0, 0, 0, .15);
+    max-width: 564px;
+    max-height: calc(100vh - 72px);
+    overflow: auto;
+    border-radius: 12px;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-main {
+    overflow: auto;
+    position: relative;
+    top: 0;
+    height: 100%;
+    background-color: #fff;
+    padding: 24px 36px 36px;
+}
+
+body #wfacp-sec-wrapper .wfacp-quickv-panel-active {
+    opacity: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+body #wfacp-sec-wrapper .wfacp_main_form .wfacp_notice_list .wfacp_error * {
+    font-size: 12px;
+}
+
+/*body #wfacp-sec-wrapper #funnelkitResetPasswordMessage {*/
+/*    margin-top: 12px;*/
+/*}*/
+
+body #wfacp-sec-wrapper .wfacp_searching .woocommerce-input-wrapper.wfacp_searching {
+    position: relative;
+}
+
+body #wfacp-sec-wrapper .woocommerce-input-wrapper.wfacp_searching:after {
+    position: absolute;
+    left: auto;
+    right: 16px;
+    top: 50%;
+    content: '';
+    width: 16px;
+    margin: -8px auto auto;
+    height: 16px;
+    border: 2px solid #000;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: block !important;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+body #wfacp-sec-wrapper #funnelkitResetPasswordMessage .wfacp-success {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Validation user prompt */
+body #wfacp-sec-wrapper #funnelkitLoginAction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+
+    background: #F1F2F9;
+}
+
+body #wfacp-sec-wrapper #funnelkitLoginAction svg {
+    width: 28px;
+    height: 28px;
+    color: #82838e;
+}
+
+body #wfacp-sec-wrapper #funnelkitLoginAction p {
+    margin-bottom: 0 !important;
+}
+
+body #wfacp-sec-wrapper #funnelkitLoginAction button[type="button"] {
+
+    margin-left: auto;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid #dedfea;
+    background: #fff !important;
+    color: #353030;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+body #wfacp-sec-wrapper #funnelkitLoginAction > span {
+    background-size: 28px;
+    padding-left: 42px;
+    line-height: 28px;
+}
+
+body #wfacp-sec-wrapper p.form-row.wfacp-search-wrap:empty {
+    display: none;
+}
+
+body #wfacp-sec-wrapper .wfacp-hide-element {
+    display: none;
+}
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #funnelkitLoginForm .wfacp-form-control-wrapper:last-child {
+    margin: 0;
+}
+
+body #wfacp-sec-wrapper p.form-row.wfacp-col-full.wfacp-search-wrap {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+}
+body #wfacp-sec-wrapper p.form-row.wfacp-col-full.wfacp-search-wrap.wfacp-show-field {
+    opacity: 1;
+}
+
+@media only screen and (max-width: 768px) {
+    body #wfacp-sec-wrapper .wfacp_main_form .wfacp_notice_list .wfacp_error {
+        background-position: 12px 12px !important;
+    }
+
+    body #wfacp-sec-wrapper .wfacp-quickv-content-inner-wrap {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        max-height: 100%;
+    }
+
+    body #wfacp-sec-wrapper .wfacp-quickv-opacity {
+        background-color: #fff;
+        opacity: 1;
+        display: none;
+    }
+
+    body #wfacp-sec-wrapper .wfacp-quickv-main {
+        padding: 24px;
+    }
+
+    body #wfacp-sec-wrapper #funnelkitLoginModal .wfacp-login-wrapper .wfacp-remember-me {
+        padding-right: 0;
+    }
+
+    body #wfacp-sec-wrapper .wfacp-quickv-content_wrap:not(.wfacp-reset-pass-message) .wfacp-quickv-content-inner-wrap {
+        top: 0;
+        left: 0;
+        bottom: 0;
+        max-height: 100%;
+        transform: none;
+        width: 100%;
+        margin: auto;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        max-width: 100%;
+        border-radius: 0;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    body #wfacp-sec-wrapper #funnelkitLoginAction button[type="button"] {
+        word-break: normal;
+        text-align: left;
+        display: inline-block;
+        margin-left: 42px;
+    }
+
+    body #wfacp-sec-wrapper #funnelkitLoginAction > span {
+        line-height: 1.5;
+        display: block;
+        margin: 0 0 12px;
+    }
+
+    body #wfacp-sec-wrapper #funnelkitLoginAction {
+        display: block;
+        gap: inherit;
+        text-align: left;
+    }
+}

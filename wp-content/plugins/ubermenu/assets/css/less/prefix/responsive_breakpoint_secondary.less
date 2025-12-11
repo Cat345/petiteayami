@@ -1,0 +1,32 @@
+PREFIX  {
+  /* Accordion submenus mobile */
+}
+PREFIX .ubermenu.ubermenu-responsive .ubermenu-item-level-0 {
+  width: 100%;
+}
+PREFIX .ubermenu.ubermenu-responsive .ubermenu-column,
+PREFIX .ubermenu.ubermenu-responsive .ubermenu-column-auto {
+  min-width: 100%;
+}
+PREFIX .ubermenu .ubermenu-autocolumn:not(:first-child),
+PREFIX .ubermenu .ubermenu-autocolumn:not(:first-child) .ubermenu-submenu-type-stack {
+  padding-top: 0;
+}
+PREFIX .ubermenu .ubermenu-autocolumn:not(:last-child),
+PREFIX .ubermenu .ubermenu-autocolumn:not(:last-child) .ubermenu-submenu-type-stack {
+  padding-bottom: 0;
+}
+PREFIX .ubermenu .ubermenu-autocolumn > .ubermenu-submenu-type-stack > .ubermenu-item-normal:first-child {
+  margin-top: 0;
+}
+PREFIX .ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-item > .ubermenu-submenu-drop,
+PREFIX .ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-tab > .ubermenu-tab-content-panel {
+  box-shadow: none;
+  box-sizing: border-box;
+  border-left: none;
+  border-right: none;
+}
+PREFIX .ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-item.ubermenu-active > .ubermenu-submenu-drop,
+PREFIX .ubermenu.ubermenu-responsive.ubermenu-mobile-accordion.ubermenu-interaction-press .ubermenu-tab.ubermenu-active > .ubermenu-tab-content-panel {
+  position: static;
+}

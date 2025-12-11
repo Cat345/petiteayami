@@ -1,0 +1,11 @@
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+partners/
+wp-content/themes/yootheme/vendor/
+wp-content/cache/
+wp-content/themes/*/cache/
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/wpo-cache/

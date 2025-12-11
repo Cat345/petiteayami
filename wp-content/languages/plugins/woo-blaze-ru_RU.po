@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-05-01 15:54:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: ru\n"
+"Project-Id-Version: WooCommerce - Woo Blaze\n"
+
+#: includes/class-blaze-dependency-service.php:208
+msgid "Update WordPress"
+msgstr "Обновить WordPress"
+
+#. translators: %1: Woo Blaze, %2: required WP version number, %3: currently
+#. installed WP version number
+#: includes/class-blaze-dependency-service.php:197
+msgid "%1$s requires <strong>WordPress %2$s</strong> or greater (you are using %3$s)."
+msgstr "%1$s требует установки <strong>WordPress %2$s</strong> или более поздней версии (у вас установлена версия %3$s)."
+
+#. translators: %1: Woo Blaze, %2: current Woo Blaze version, %3: WooCommerce,
+#. %4: required WC version number, %5: currently installed WC version number
+#: includes/class-blaze-dependency-service.php:179
+msgid "%1$s %2$s requires <strong>%3$s %4$s</strong> or greater to be installed (you are using %5$s). "
+msgstr "%1$s %2$s требует <strong>%3$s %4$s</strong> или более поздней версии (у вас установлена версия %5$s). "
+
+#: includes/class-blaze-dependency-service.php:169
+msgid "Activate WooCommerce"
+msgstr "Активировать WooCommerce"
+
+#: includes/class-blaze-dependency-service.php:162
+msgid "Install WooCommerce"
+msgstr "Установить WooCommerce"
+
+#. translators: %1$s: Woo Blaze, %2$s: WooCommerce
+#: includes/class-blaze-dependency-service.php:148
+msgid "%1$s requires <a>%2$s</a> to be installed and active."
+msgstr "Для %1$s требуется установка и активация <a>%2$s</a>."
+
+#: includes/class-blaze-dashboard.php:51 includes/class-blaze-dashboard.php:52
+msgid "Blaze for WooCommerce"
+msgstr "Blaze для WooCommerce"
+
+#: includes/class-blaze-compat-dashboard.php:89
+msgid "Loading"
+msgstr "загрузка..."
+
+#: includes/class-blaze-compat-dashboard.php:77
+msgid "Your Woo Blaze dashboard requires JavaScript to function properly."
+msgstr "Чтобы консоль Woo Blaze работала корректно, требуется JavaScript."

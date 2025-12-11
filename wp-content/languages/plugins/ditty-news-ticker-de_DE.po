@@ -1,0 +1,1154 @@
+# Translation of Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-23 11:11:05+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release)\n"
+
+#: build/blocks/ditty/block.json build/displays/blocks/ditty/block.json
+msgctxt "block title"
+msgid "Ditty"
+msgstr "Ditty"
+
+#: legacy/eddsl/eddsl.php:495 legacy/eddsl/eddsl.php:588
+msgid "Error: %s."
+msgstr "Fehler: %s"
+
+#: legacy/inc/helpers.php:126
+msgid "Twitter Feed"
+msgstr "Twitter-Feed"
+
+#: legacy/inc/helpers.php:134
+msgid "Single Tweet"
+msgstr "Einzelner Tweet"
+
+#: includes/class-ditty-extensions.php:370 legacy/inc/helpers.php:458
+msgid "Refresh License"
+msgstr "Lizenz erneuern"
+
+#: includes/class-ditty-extensions.php:369 legacy/inc/helpers.php:457
+msgid "Activate License"
+msgstr "Lizenz aktivieren"
+
+#: legacy/inc/helpers.php:456
+msgid "Deactivate License"
+msgstr "Lizenz deaktivieren"
+
+#: includes/admin/Ditty_Plugin_Updater.php:486
+msgid "Error"
+msgstr "Fehler"
+
+#: legacy/eddsl/eddsl.php:214 legacy/inc/helpers.php:452
+msgid "Your license is activated!"
+msgstr "Deine Lizenz ist aktiviert!"
+
+#: legacy/eddsl/eddsl.php:460
+msgid "This license is not active."
+msgstr "Diese Lizenz ist nicht aktiv."
+
+#: legacy/eddsl/eddsl.php:242
+msgid "Sorry, your license has been disabled."
+msgstr "Deine Lizenz wurde leider deaktiviert."
+
+#: legacy/eddsl/eddsl.php:216
+msgid "Your license key expires on %s"
+msgstr "Dein Lizenzschlüssel läuft am %s ab."
+
+#: includes/class-ditty-extensions.php:368 legacy/eddsl/eddsl.php:202
+msgid "Add your license key here"
+msgstr "Gib deinen Lizenzschlüssel hier ein"
+
+#: legacy/inc/helpers.php:455
+msgid "Sorry, something went wrong with the deactivation."
+msgstr "Bei der Deaktivierung ist leider ein Fehler aufgetreten."
+
+#: legacy/inc/helpers.php:454
+msgid "Your license has been deactivated."
+msgstr "Deine Lizenz wurde deaktiviert."
+
+#: legacy/inc/helpers.php:453
+msgid "Sorry, this license is not valid."
+msgstr "Diese Lizenz ist leider nicht gültig."
+
+#: includes/admin/Ditty_Plugin_Updater.php:486
+msgid "You do not have permission to install plugin updates"
+msgstr "Du hast keine Berechtigung, Plugin-Aktualisierungen zu installieren"
+
+#: legacy/inc/widget.php:160
+msgid "Hide widget if no ticks exist?"
+msgstr "Widget ausblenden, wenn keine Ticks vorhanden sind?"
+
+#: legacy/inc/admin/meta-boxes.php:1083
+msgid "Hide ticker if no ticks exist"
+msgstr "Ticker ausblenden, wenn keine Ticks vorhanden sind"
+
+#: legacy/inc/composer.php:19
+msgid "Select the ticker you want to display"
+msgstr "Wähle den Ticker, den du anzeigen möchtest"
+
+#: legacy/inc/composer.php:27
+msgid "Add a custom class name to the ticker"
+msgstr "Gib dem Ticker einen individuellen Klassennamen"
+
+#: legacy/inc/helpers.php:410
+msgid "Select a Ticker"
+msgstr "Wähle einen Ticker"
+
+#: legacy/inc/helpers.php:420
+msgid "No tickers found"
+msgstr "Keine Ticker gefunden"
+
+#: legacy/inc/composer.php:25
+msgid "Custom Class"
+msgstr "Eigene CSS-Klasse"
+
+#: legacy/inc/admin/meta-boxes.php:1074
+msgid "General ticker options"
+msgstr "Allgemeine Ticker-Optionen"
+
+#: legacy/inc/admin/meta-boxes.php:1115
+msgid "Add a play/pause button to scrolling and auto-rotating tickers"
+msgstr "Füge scrollenden und auto-rotierenden Tickern einen Abspielen/Pause-Button hinzu"
+
+#: legacy/inc/admin/meta-boxes.php:1073
+msgid "Ticker options"
+msgstr "Ticker-Optionen"
+
+#: legacy/inc/admin/meta-boxes.php:1107
+msgid "Remove margin and padding from all tick contents"
+msgstr "Entferne Außen- und Innenabstände von allen Tick-Inhalten"
+
+#: legacy/inc/static.php:35
+msgid "Use Image"
+msgstr "Bild verwenden"
+
+#: legacy/inc/admin/meta-boxes.php:104 legacy/inc/admin/meta-boxes.php:139
+msgid "More Extensions"
+msgstr "Mehr Erweiterungen"
+
+#: legacy/inc/admin/meta-boxes.php:271
+msgid "Use the '+' and 'x' buttons on the right to add and delete ticks. Drag and drop the arrows on the left to re-order your ticks."
+msgstr "Benutze die „+“ und „x“-Buttons zur Rechten, um Ticks hinzuzufügen und zu löschen. Benutze Drag & Drop mit den Pfeilen zur Linken, um deine Ticks umzuordnen."
+
+#: legacy/inc/admin/meta-boxes.php:280
+msgid "Add the content of your tick. HTML and inline styles are supported."
+msgstr "Füge deinem Tick Inhalt hinzu. HTML und Inline-Styles werden unterstützt."
+
+#: legacy/inc/admin/meta-boxes.php:282
+msgid "Add your content here. HTML and inline styles are supported."
+msgstr "Füge hier deinen Inhalt hinzu. HTML und Inline-Styles werden unterstützt."
+
+#: legacy/inc/admin/meta-boxes.php:291
+msgid "Add a URL (optional)"
+msgstr "Füge eine URL hinzu (optional)"
+
+#: includes/class-ditty-item-type-default.php:67
+#: legacy/inc/admin/meta-boxes.php:307 build/dittyEditor.js:1
+#: build/dittyEditor.js:8909
+msgid "No Follow"
+msgstr "No Follow"
+
+#: legacy/inc/admin/meta-boxes.php:394
+msgid "All ticks"
+msgstr "Alle Ticks"
+
+#: legacy/inc/admin/meta-boxes.php:387
+msgid "Select the ticker type to use."
+msgstr "Wähle den zu benutzenden Ticker-Typ"
+
+#: legacy/inc/admin/meta-boxes.php:397
+msgid "Display all ticks"
+msgstr "Zeige alle Ticks"
+
+#: legacy/inc/admin/meta-boxes.php:1052
+msgid "Ticker title"
+msgstr "Titel des Tickers"
+
+#: legacy/inc/admin/meta-boxes.php:1122
+msgid "Ticker width"
+msgstr "Breite des Tickers"
+
+#: legacy/inc/admin/meta-boxes.php:1123
+msgid "Set a static width for the ticker"
+msgstr "Wähle eine feste Breite für den Ticker"
+
+#: includes/fields/ditty-field-image.php:25 legacy/inc/static.php:34
+msgid "Upload or select an image"
+msgstr "Wähle ein Bild oder lade eines hoch"
+
+#: legacy/inc/admin/meta-boxes.php:402
+msgid "Offset"
+msgstr "Versatz"
+
+#: legacy/inc/admin/meta-boxes.php:318
+msgid "Force line breaks on carriage returns (not used for wysiwyg editors)"
+msgstr "Erzwinge Zeilenumbruch bei Wagenrücklauf (nicht für WYSIWYG-Editoren benutzt)"
+
+#: legacy/inc/admin/meta-boxes.php:395
+msgid "All ticks from the specified type will be show when this is enabled."
+msgstr "Alle Ticks des spezifischen Typs werden angezeigt, wenn dies aktiviert ist."
+
+#: legacy/inc/admin/meta-boxes.php:1053
+msgid "Set the display of the title"
+msgstr "Wähle die Anzeige des Titels"
+
+#: legacy/inc/admin/meta-boxes.php:661
+msgid "Select the rotation type. Enable 'Dynamic Slide Direction' to reverse the slide direction when previous items are selected."
+msgstr "Wähle den Typ der Rotation. Aktiviere „Dynamische Richtung“, um die Richtung umzudrehen, wenn vorherige Elemente ausgewählt wurden"
+
+#: legacy/inc/admin/meta-boxes.php:1145
+msgid "You should only use this option if you need to display multiple ticks at the same time. You should not use this functionality if you are using a normal scrolling ticker."
+msgstr "Du solltest diese Option nur wählen, falls du mehrere Ticks zur gleichen Zeit anzeigen möchtest. Du solltest diese Funktion nicht wählen, falls du einen normalen, scrollenden Ticker benutzt."
+
+#: includes/class-ditty-item-type-default.php:68
+#: includes/class-ditty-item-type.php:431 legacy/inc/admin/meta-boxes.php:310
+#: build/dittyEditor.js:1 build/dittyEditor.js:8910
+msgid "Add \"nofollow\" to link"
+msgstr "Füge dem Link „nofollow“ hinzu"
+
+#: includes/class-ditty-item-type-default.php:69
+#: legacy/inc/admin/meta-boxes.php:308 build/dittyEditor.js:1
+#: build/dittyEditor.js:8911
+msgid "Enabling this setting will add an attribute called 'nofollow' to your link. This tells search engines to not follow this link."
+msgstr "Das Aktivieren dieser Einstellung fügt deinem Link das „nofollow“-Attribut hinzu. Dies weist Suchmaschinen an, diesem Link nicht zu folgen"
+
+#: legacy/inc/admin/meta-boxes.php:319
+msgid "Enabling this setting will create new lines for all carrige returns contained in your tick text"
+msgstr "Das Aktivieren dieser Einstellung erstellt neue Zeilen für alle Wagenrückläufe, die in deinem Tick-Text erhalten sind"
+
+#: legacy/inc/admin/meta-boxes.php:509
+msgid "Set a specific width and height for the ticks. When using a vertically scrolling ticker the height will define the overall height of the ticker."
+msgstr "Wähle eine bestimmte Breite und Höhe für die Ticks. Wenn du einen vertikal scrollenden Ticker benutzt, wird die Höhe die Gesamthöhe des Tickers definieren."
+
+#: legacy/inc/admin/meta-boxes.php:476
+msgid "Set the direction you want the ticker to scroll. By default, the ticker starts off-screen, but you can enable the 'Show first tick on init' setting to force the content to start on-screen."
+msgstr "Wähle die Richtung, in die der Ticker scrollen soll. Als Standard startet der Ticker außerhalb des Bildschirms, aber du kannst die Einstellung „Zeige den ersten Tick beim Initialisieren“ aktivieren, um zu das Starten des Inhaltes auf dem Bildschirm zu erzwingen."
+
+#: legacy/inc/admin/meta-boxes.php:1144
+msgid "Enable a grid display of your tickers and adjust the grid settings"
+msgstr "Aktiviere die Raster-Anzeige deiner Ticker und passe die Raster-Einstellungen an"
+
+#: legacy/inc/admin/meta-boxes.php:575
+msgid "Set the amount of space that should be rendered between the ticks within your ticker."
+msgstr "Wähle den Abstand, der zwischen deinen Ticks innerhalb deines Tickers eingefügt werden soll."
+
+#: legacy/inc/admin/meta-boxes.php:532 legacy/inc/admin/meta-boxes.php:700
+#: legacy/inc/admin/meta-boxes.php:892
+msgid "Add custom vertical padding and margins to each of your ticks."
+msgstr "Füge individuelle vertikale Innenabstände und Außenabstände zu jedem deiner Ticks hinzu."
+
+#: legacy/inc/admin/meta-boxes.php:797
+msgid "Enable the control navigation and choose the type of display."
+msgstr "Aktiviere die Richtungs-Navigation und wähle den Anzeige-Typ"
+
+#: legacy/inc/admin/meta-boxes.php:1054
+msgid "Enable the display and set the position of the ticker title."
+msgstr "Aktiviere die Anzeige und wähle die Position des Ticker-Titels"
+
+#: legacy/inc/admin/meta-boxes.php:1124
+msgid "Leave blank or set to '0' if you want the ticker width to be responsive."
+msgstr "Leer lassen oder wähle '0', falls du die Ticker-Breite bedarfsabhängig haben möchtest."
+
+#: legacy/inc/admin/meta-boxes.php:555
+msgid "Set the speed of the ticker. You may need to try different speeds to get optimum results when using different fonts. Enable the checkbox to pause the ticker when a user's have their mouse over the ticker."
+msgstr "Wähle die Geschwindigkeit des Tickers. Du musst vielleicht verschiedene Geschwindigkeiten versuchen, um optimale Ergebnisse zu erhalten, wenn du verschiedene Schriften benutzt. Aktiviere das Feld, um den Ticker anzuhalten, wenn ein Benutzer die Maus über den Ticker bewegt."
+
+#: includes/class-ditty-item-type-default.php:57
+#: legacy/inc/admin/meta-boxes.php:297 build/dittyEditor.js:1
+#: build/dittyEditor.js:8899
+msgid "Set a target for your link."
+msgstr "Lege ein Ziel für deinen Link fest"
+
+#: legacy/inc/admin/meta-boxes.php:915
+msgid "Set the amount of space that should be added between the ticks."
+msgstr "Lege die Größe des Abstandes zwischen den Ticks fest."
+
+#: legacy/inc/admin/meta-boxes.php:289
+msgid "Wrap a link around your tick content. You can also add a link directly into your content."
+msgstr "Erstelle einen Link um deinen Tick-Inhalt. Du kannst einen Link auch direkt im Inhalt angeben."
+
+#: legacy/inc/admin/meta-boxes.php:688
+msgid "Set a specific height for the ticks."
+msgstr "Wähle eine konkrete Höhe für die Ticks."
+
+#: legacy/inc/admin/meta-boxes.php:403
+msgid "Choose the specific tick you would like to use from the specified type. '0' will display the first tick, '1' will display the second tick, and so on."
+msgstr "Wähle den konkreten Tick eines bestimmten Typs. '0' wird den ersten Tick anzeigen, '1' wird den zweiten Tick anzeigen, usw."
+
+#: legacy/inc/admin/meta-boxes.php:926
+msgid "Break your list up into pages with navigation. Set the number of ticks to show per page and customize the previous and next links."
+msgstr "Teilt deine Liste in Seiten mit Navigation auf. Wähle die Anzahl der Ticks, die pro Seite angezeigt werden und individualisiere die Vorher- und Nachher-Links."
+
+#: legacy/inc/admin/meta-boxes.php:752
+msgid "Set the speed of the rotation based on tenths of a second. Also, choose the type of easing you want to use when the ticks rotate."
+msgstr "Wähle die Geschwindigkeit der Rotation, basierend auf Zehntelsekunden. Wähle auch den Typ der Abschwächung, den du benutzen möchtest, wenn die Ticks rotieren."
+
+#: legacy/inc/admin/meta-boxes.php:723
+msgid "Enable auto rotation of your ticks with and set the amount of time each tick should display. Optionally, force the rotator to pause when the user hovers over the ticker."
+msgstr "Aktiviere Auto-Rotation deiner Ticks und wähle die Anzeigedauer jedes Ticks. Optional kannst du den Rotator anhalten lassen, wenn ein Benutzer den Ticker mit der Maus berührt."
+
+#: legacy/inc/admin/meta-boxes.php:776
+msgid "Enable the directional navigation. Optionally, set the navigation to auto-hide when the user is not hovering over the ticker."
+msgstr "Aktiviere die Richtungs-Navigation. Wähle optional das Auto-Verbergen, wenn der Benutzer nicht mit der Maus den Ticker berührt."
+
+#: legacy/inc/admin/fields/helpers.php:337
+msgid "Use Default Value"
+msgstr "Benutze den Standardwert"
+
+#: legacy/inc/admin/meta-boxes.php:71
+msgid "<span>Ticker </span>Type"
+msgstr "<span>Ticker </span>Typ"
+
+#: legacy/inc/admin/meta-boxes.php:73
+msgid "<span>Ticker </span>Mode"
+msgstr "<span>Ticker </span>Modus"
+
+#: legacy/inc/admin/meta-boxes.php:75
+msgid "<span>Global </span>Settings"
+msgstr "<span>Globale </span>Einstellungen"
+
+#: includes/class-ditty-display-type.php:207
+#: includes/class-ditty-extensions.php:385 legacy/inc/admin/meta-boxes.php:76
+msgid "Update"
+msgstr "Aktualisieren"
+
+#: includes/class-ditty-display-type-list.php:146
+#: includes/class-ditty-display-type-ticker.php:141
+#: legacy/inc/admin/fields/fields.php:609
+#: legacy/inc/admin/fields/fields.php:625 build/dittyScripts.js:1
+#: build/dittyScripts.js:65810
+msgid "seconds"
+msgstr "Sekunden"
+
+#: legacy/inc/admin/fields/fields.php:593
+msgid "Animation"
+msgstr "Animations-"
+
+#: legacy/inc/admin/fields/fields.php:594
+msgid "Delay"
+msgstr "Verzögern"
+
+#: legacy/inc/admin/fields/fields.php:494
+#: legacy/inc/admin/fields/fields.php:496
+msgid "Add Image"
+msgstr "Bild hinzufügen"
+
+#: legacy/inc/admin/fields/fields.php:545
+msgid "Opacity"
+msgstr "Deckkraft"
+
+#: includes/class-ditty-display-type.php:493
+#: legacy/inc/admin/fields/fields.php:592 build/dittyEditor.js:1
+#: build/dittyEditor.js:8219
+msgid "Element"
+msgstr "Element"
+
+#: legacy/inc/admin/fields/fields.php:543
+msgid "Override default opacity"
+msgstr "Standard-Deckkraft überschreiben"
+
+#: legacy/inc/admin/fields/fields.php:417
+#: legacy/inc/admin/fields/fields.php:457
+msgid "Use default"
+msgstr "Standardwert"
+
+#: includes/class-ditty-display-type.php:482
+#: includes/class-ditty-item-type.php:277
+#: includes/class-ditty-item-type.php:343 includes/layout-tag-fields.php:108
+#: includes/layout-tag-fields.php:131 legacy/inc/admin/fields/fields.php:419
+#: legacy/inc/admin/fields/helpers.php:339 build/dittyEditor.js:1
+#: build/dittyEditor.js:8194
+msgid "None"
+msgstr "leer"
+
+#: legacy/inc/admin/fields/fields.php:150
+msgid "Descending"
+msgstr "Absteigend"
+
+#: legacy/inc/admin/fields/fields.php:146
+msgid "Menu Order"
+msgstr "Menü Anordnung"
+
+#: legacy/inc/admin/fields/fields.php:149
+msgid "Ascending"
+msgstr "Aufsteigend"
+
+#: legacy/inc/admin/fields/fields.php:145
+msgid "Comment Count"
+msgstr "Kommentaranzahl"
+
+#: legacy/inc/admin/fields/fields.php:142
+msgid "Modified"
+msgstr "Modifiziert"
+
+#: legacy/inc/admin/fields/fields.php:143
+msgid "Parent"
+msgstr "Vorläufer"
+
+#: legacy/inc/admin/fields/fields.php:144
+msgid "Random"
+msgstr "Zuf&auml;llig"
+
+#: legacy/inc/admin/fields/fields.php:141
+msgid "Date"
+msgstr "Datum"
+
+#: includes/class-ditty-item-type-default.php:49
+#: includes/class-ditty-singles.php:115 legacy/inc/admin/fields/fields.php:139
+#: build/dittyEditor.js:1 build/dittyScripts.js:1 build/dittyEditor.js:8175
+#: build/dittyEditor.js:8892 build/dittyScripts.js:6304
+msgid "Title"
+msgstr "Position"
+
+#: legacy/inc/admin/fields/fields.php:138
+msgid "Author"
+msgstr "Autor"
+
+#: legacy/inc/admin/fields/fields.php:137
+msgid "ID"
+msgstr "ID"
+
+#: legacy/inc/admin/fields/fields.php:36 legacy/inc/admin/fields/fields.php:66
+#: legacy/inc/admin/fields/fields.php:113
+#: legacy/inc/admin/fields/fields.php:157
+#: legacy/inc/admin/fields/fields.php:187
+#: legacy/inc/admin/fields/fields.php:224
+#: legacy/inc/admin/fields/fields.php:259
+#: legacy/inc/admin/fields/fields.php:298
+#: legacy/inc/admin/fields/fields.php:327
+#: legacy/inc/admin/fields/fields.php:360
+#: legacy/inc/admin/fields/fields.php:392
+#: legacy/inc/admin/fields/fields.php:431
+#: legacy/inc/admin/fields/fields.php:470
+#: legacy/inc/admin/fields/fields.php:503
+#: legacy/inc/admin/fields/fields.php:563
+#: legacy/inc/admin/fields/fields.php:636
+#: legacy/inc/admin/fields/fields.php:682
+#: legacy/inc/admin/fields/fields.php:761
+msgid "Missing required data"
+msgstr "Erforderliche Daten fehlen"
+
+#: includes/admin/settings.php:11 includes/admin/settings.php:12
+#: includes/class-ditty-singles.php:80 legacy/inc/settings.php:11
+#: legacy/inc/settings.php:12 build/dittyEditor.js:1 build/dittyEditor.js:6398
+#: build/dittyEditor.js:7592 build/dittyEditor.js:8085
+#: build/dittyEditor.js:8086
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/widget.php:86 legacy/inc/widget.php:130
+msgid "Title:"
+msgstr "Titel:"
+
+#: legacy/inc/widget.php:136
+msgid "Select a Ticker:"
+msgstr "Wähle einen Ticker:"
+
+#. Author of the plugin
+msgid "Metaphor Creations"
+msgstr "Metaphor Creations"
+
+#: legacy/inc/post-types.php:19
+msgid "New News Ticker"
+msgstr "Neuer News-Ticker"
+
+#: legacy/inc/post-types.php:21
+msgid "Search News Tickers"
+msgstr "Suche News-Ticker"
+
+#: legacy/inc/post-types.php:22
+msgid "No News Tickers Found"
+msgstr "Keine News-Ticker gefunden"
+
+#: legacy/inc/post-types.php:23
+msgid "No News Tickers Found In Trash"
+msgstr "Keine News-Ticker im Papierkorb gefunden"
+
+#: legacy/inc/post-types.php:61
+msgid "Ditty News Ticker Updated!"
+msgstr "Ditty News Ticker aktualisiert!"
+
+#: legacy/inc/settings.php:44
+msgid "Ditty News Ticker Settings"
+msgstr "Ditty News Ticker Einstellungen"
+
+#: legacy/inc/settings.php:116
+msgid "Ditty News Ticker settings"
+msgstr "Ditty News Ticker Einstellungen"
+
+#: legacy/inc/settings.php:132
+msgid "Add custom css to style your ticker without modifying any external files"
+msgstr "Füge individuellen CSS-Code hinzu, um deinen Ticker-Stil zu gestalten, ohne externe Dateien zu verändern"
+
+#: legacy/inc/post-types.php:20
+msgid "View News Ticker"
+msgstr "News-Ticker ansehen"
+
+#: legacy/inc/widget.php:17
+msgid "Displays a Ditty News Ticker."
+msgstr "Zeigt einen Ditty News Ticker"
+
+#: legacy/inc/settings.php:28
+msgid "The global settings to your news tickers."
+msgstr "Die globalen Einstellungen deiner News-Ticker."
+
+#: legacy/inc/settings.php:120
+msgid "Use the visual editor to create tick contents"
+msgstr "Benutze den visuellen Editor, um Tick-Inhalte zu erstellen"
+
+#: legacy/inc/widget.php:154
+msgid "Display Ticker Title?"
+msgstr "Titel des Tickers anzeigen?"
+
+#: legacy/inc/settings.php:172
+msgid "Add quick edit links"
+msgstr "Füge Quick-Edit-Links hinzu"
+
+#: legacy/inc/settings.php:158
+msgid "Use the visual editor for ticks"
+msgstr "Den visuellen Editor für Ticks benutzen"
+
+#: legacy/inc/settings.php:124
+msgid "Add quick edit links on the front-end of the site for editors and admins"
+msgstr "Füge Quick-Edit-Links zum Frontend der Website für Redakteure und Administratoren hinzu"
+
+#: legacy/inc/settings.php:120
+msgid "Visual Editor"
+msgstr "Visueller Editor"
+
+#: legacy/inc/settings.php:124
+msgid "Quick Edit Links"
+msgstr "Quick-Edit-Links"
+
+#: legacy/inc/admin/meta-boxes.php:522 legacy/inc/admin/meta-boxes.php:692
+msgid "Height"
+msgstr "Höhe"
+
+#: includes/helpers.php:1240 legacy/inc/admin/meta-boxes.php:666
+#: build/dittyEditor.js:1 build/dittyScripts.js:1 build/dittyEditor.js:8732
+#: build/dittyScripts.js:6466
+msgid "Fade"
+msgstr "Ein-/ Ausblenden"
+
+#: includes/class-ditty-display-type-ticker.php:55
+#: includes/class-ditty-display-type.php:398
+#: includes/class-ditty-display-type.php:447
+#: includes/class-ditty-display-type.php:485
+#: includes/class-ditty-display-type.php:555
+#: includes/class-ditty-display-type.php:568
+#: includes/fields/ditty-field-spacing.php:27
+#: legacy/inc/admin/meta-boxes.php:481 build/dittyEditor.js:1
+#: build/dittyScripts.js:1 build/dittyEditor.js:8135 build/dittyEditor.js:8197
+#: build/dittyEditor.js:8272 build/dittyEditor.js:8287
+#: build/dittyEditor.js:8564 build/dittyEditor.js:9935
+#: build/dittyScripts.js:7414 build/dittyScripts.js:65469
+msgid "Left"
+msgstr "Links"
+
+#: includes/class-ditty-display-type-ticker.php:56
+#: includes/class-ditty-display-type.php:399
+#: includes/class-ditty-display-type.php:448
+#: includes/class-ditty-display-type.php:486
+#: includes/class-ditty-display-type.php:556
+#: includes/class-ditty-display-type.php:569
+#: includes/fields/ditty-field-spacing.php:28
+#: legacy/inc/admin/meta-boxes.php:482 build/dittyEditor.js:1
+#: build/dittyScripts.js:1 build/dittyEditor.js:8136 build/dittyEditor.js:8198
+#: build/dittyEditor.js:8273 build/dittyEditor.js:8288
+#: build/dittyEditor.js:8565 build/dittyEditor.js:9936
+#: build/dittyScripts.js:7415 build/dittyScripts.js:65470
+msgid "Right"
+msgstr "Rechts"
+
+#: legacy/inc/admin/meta-boxes.php:825
+msgid "Disable"
+msgstr "Deaktivieren"
+
+#: legacy/inc/help.php:110
+msgid "For more information:"
+msgstr "Für weiterführende Informationen:"
+
+#: legacy/inc/admin/meta-boxes.php:513
+msgid "Width"
+msgstr "Breite"
+
+#: includes/class-ditty-item-type-posts-lite.php:138
+#: includes/class-ditty-item-type.php:159
+#: includes/class-ditty-item-type.php:297 includes/helpers.php:106
+#: legacy/inc/helpers.php:76 legacy/inc/helpers.php:119 build/dittyEditor.js:1
+#: build/dittyEditor.js:8768
+msgid "Default"
+msgstr "Standard"
+
+#: legacy/inc/admin/edit-columns.php:13
+msgid "Type"
+msgstr "Typ"
+
+#: legacy/inc/admin/edit-columns.php:14
+msgid "Mode"
+msgstr "Modus"
+
+#: includes/class-ditty-item-type-default.php:39
+#: legacy/inc/admin/meta-boxes.php:288 build/dittyEditor.js:1
+#: build/dittyEditor.js:8880
+msgid "Link"
+msgstr "Link"
+
+#: includes/admin/columns.php:26 includes/class-ditty-singles.php:122
+#: legacy/inc/admin/edit-columns.php:15 legacy/inc/admin/meta-boxes.php:19
+#: build/dittyScripts.js:1 build/dittyScripts.js:6340
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/class-ditty-display-type-ticker.php:57
+#: legacy/inc/admin/meta-boxes.php:484 build/dittyScripts.js:1
+#: build/dittyScripts.js:65471
+msgid "Down"
+msgstr "&darr;"
+
+#: includes/class-ditty-display-type-ticker.php:58
+#: legacy/inc/admin/meta-boxes.php:483 build/dittyScripts.js:1
+#: build/dittyScripts.js:65472
+msgid "Up"
+msgstr "&uarr;"
+
+#: legacy/inc/admin/meta-boxes.php:727 legacy/inc/admin/meta-boxes.php:780
+#: legacy/inc/admin/meta-boxes.php:801 legacy/inc/admin/meta-boxes.php:930
+msgid "Enable"
+msgstr "Aktivieren"
+
+#: includes/helpers.php:161 legacy/inc/helpers.php:205 build/dittyEditor.js:1
+#: build/dittyEditor.js:7932
+msgid "List"
+msgstr "Liste"
+
+#: includes/admin/columns.php:185 legacy/inc/admin/edit-columns.php:138
+msgid "Show all Types"
+msgstr "Zeige alle Typen"
+
+#: legacy/inc/admin/edit-columns.php:147
+msgid "Show all Modes"
+msgstr "Zeige alle Modi"
+
+#: legacy/inc/admin/meta-boxes.php:386
+msgid "Ticker type"
+msgstr "Typ des Tickers"
+
+#: legacy/inc/admin/meta-boxes.php:317
+msgid "Line breaks"
+msgstr "Zeilenumbrüche"
+
+#: legacy/inc/admin/meta-boxes.php:269
+msgid "Ticks"
+msgstr "Ticks"
+
+#: legacy/inc/admin/meta-boxes.php:270
+msgid "Add an unlimited number of ticks to your ticker"
+msgstr "Füge deinem Ticker eine unbegrenzte Anzahl Ticks hinzu"
+
+#: legacy/inc/admin/meta-boxes.php:279
+msgid "Ticker text"
+msgstr "Text des Tickers"
+
+#: includes/class-ditty-item-type-default.php:56
+#: legacy/inc/admin/meta-boxes.php:296 build/dittyEditor.js:1
+#: build/dittyEditor.js:8898
+msgid "Target"
+msgstr "Ziel"
+
+#: legacy/inc/admin/meta-boxes.php:377
+msgid "Tick selection"
+msgstr "Tick-Auswahl"
+
+#: legacy/inc/admin/meta-boxes.php:474
+msgid "Scroll direction"
+msgstr "Scroll-Richtung"
+
+#: legacy/inc/admin/meta-boxes.php:508 legacy/inc/admin/meta-boxes.php:687
+msgid "Override the auto dimensions with specific values"
+msgstr "Überschreibe die automatischen Ausmaße mit bestimmten Werten"
+
+#: legacy/inc/admin/meta-boxes.php:573 legacy/inc/admin/meta-boxes.php:913
+msgid "Tick spacing"
+msgstr "Abstand der Ticks"
+
+#: legacy/inc/admin/meta-boxes.php:514 legacy/inc/admin/meta-boxes.php:523
+#: legacy/inc/admin/meta-boxes.php:537 legacy/inc/admin/meta-boxes.php:546
+#: legacy/inc/admin/meta-boxes.php:579 legacy/inc/admin/meta-boxes.php:693
+#: legacy/inc/admin/meta-boxes.php:705 legacy/inc/admin/meta-boxes.php:714
+#: legacy/inc/admin/meta-boxes.php:897 legacy/inc/admin/meta-boxes.php:906
+#: legacy/inc/admin/meta-boxes.php:919 legacy/inc/admin/meta-boxes.php:1128
+#: legacy/inc/admin/meta-boxes.php:1138
+msgid "pixels"
+msgstr "Pixel"
+
+#: legacy/inc/admin/meta-boxes.php:574
+msgid "Set the spacing between scrolling data"
+msgstr "Wähle den Abstand zwischen scrollenden Daten"
+
+#: legacy/inc/admin/meta-boxes.php:531
+msgid "Set the vertical spacing of the scrolling data"
+msgstr "Wähle den vertikalen Abstand der scrollenden Daten"
+
+#: legacy/inc/admin/meta-boxes.php:536 legacy/inc/admin/meta-boxes.php:704
+#: legacy/inc/admin/meta-boxes.php:896
+msgid "Vertical padding"
+msgstr "Vertikaler Innenabstand"
+
+#: legacy/inc/admin/meta-boxes.php:545 legacy/inc/admin/meta-boxes.php:713
+#: legacy/inc/admin/meta-boxes.php:905
+msgid "Vertical margin"
+msgstr "Vertikaler Außenabstand"
+
+#: legacy/inc/admin/meta-boxes.php:553
+msgid "Scroll speed"
+msgstr "Scroll-Geschwindigkeit"
+
+#: legacy/inc/admin/meta-boxes.php:554
+msgid "Set the speed of the scrolling data"
+msgstr "Wähle die Geschwindigkeit der scrollenden Daten"
+
+#: legacy/inc/admin/meta-boxes.php:492
+msgid "Show first tick on init"
+msgstr "Zeige den ersten Tick beim Initialisieren"
+
+#: legacy/inc/admin/meta-boxes.php:1133
+msgid "Offset ticks"
+msgstr "Versatz für Ticks"
+
+#: legacy/inc/admin/meta-boxes.php:378
+msgid "Select the ticks you would like to display by choosing the tick type and the offset position of the selected feed"
+msgstr "Wähle die Ticks, die du anzeigen möchtest, durch Wählen des Typs und der Versatz-Position des gewählten Feeds"
+
+#: legacy/inc/admin/meta-boxes.php:667
+msgid "Slide left"
+msgstr "Nach links gleiten"
+
+#: legacy/inc/admin/meta-boxes.php:668
+msgid "Slide right"
+msgstr "Nach rechts gleiten"
+
+#: legacy/inc/admin/meta-boxes.php:669
+msgid "Slide up"
+msgstr "Nach oben gleiten"
+
+#: legacy/inc/admin/meta-boxes.php:678
+msgid "Dynamic slide direction"
+msgstr "Dynamische Richtung"
+
+#: legacy/inc/admin/meta-boxes.php:721
+msgid "Auto rotate"
+msgstr "Auto-rotieren"
+
+#: legacy/inc/admin/meta-boxes.php:735
+msgid "Seconds delay"
+msgstr "Sekunden Verzögerung"
+
+#: legacy/inc/admin/meta-boxes.php:750
+msgid "Rotate speed"
+msgstr "Rotationsgeschwindigkeit"
+
+#: legacy/inc/admin/meta-boxes.php:756
+msgid "Tenths of a second"
+msgstr "Zehntelsekunden"
+
+#: legacy/inc/admin/meta-boxes.php:811
+msgid "Numbers"
+msgstr "Zahlen"
+
+#: legacy/inc/admin/meta-boxes.php:810
+msgid "Buttons"
+msgstr "Buttons"
+
+#: legacy/inc/admin/meta-boxes.php:788
+msgid "Autohide navigation"
+msgstr "Auto-Ausblenden der Navigation"
+
+#: legacy/inc/admin/meta-boxes.php:852 legacy/inc/admin/meta-boxes.php:1381
+#: legacy/inc/helpers.php:43
+msgid "Next »"
+msgstr "Nächster »"
+
+#: legacy/inc/admin/meta-boxes.php:962
+msgid "Next text"
+msgstr "Nächster Text"
+
+#: legacy/inc/admin/meta-boxes.php:1058
+msgid "Display title"
+msgstr "Titel anzeigen"
+
+#: legacy/inc/admin/meta-boxes.php:954
+msgid "Previous text"
+msgstr "Vorheriger Text"
+
+#: legacy/inc/admin/meta-boxes.php:1066
+msgid "Inline title"
+msgstr "Eingereihter Titel"
+
+#: legacy/inc/admin/meta-boxes.php:1181
+msgid "Rows"
+msgstr "Zeilen"
+
+#: legacy/inc/helpers.php:81
+msgid "Mixed"
+msgstr "Diverse"
+
+#: legacy/inc/helpers.php:195
+msgid "Scroll"
+msgstr "Scrollen"
+
+#: legacy/inc/helpers.php:200
+msgid "Rotate"
+msgstr "Rotieren"
+
+#: legacy/inc/post-types.php:14 legacy/inc/post-types.php:25
+msgid "News Tickers"
+msgstr "News-Ticker"
+
+#: legacy/inc/post-types.php:15
+msgid "News Ticker"
+msgstr "News-Ticker"
+
+#: legacy/inc/admin/meta-boxes.php:938
+msgid "Ticks per page"
+msgstr "Ticks pro Seite"
+
+#: legacy/inc/admin/meta-boxes.php:946
+msgid "Enable previous & next links"
+msgstr "Aktiviere Links für Vorherige und Nächste"
+
+#: legacy/inc/help.php:66
+msgid "Rotate Mode"
+msgstr "Rotations-Modus"
+
+#: includes/admin/settings.php:308 legacy/inc/composer.php:10
+#: legacy/inc/composer.php:17 legacy/inc/help.php:95 legacy/inc/widget.php:14
+msgid "Ditty News Ticker"
+msgstr "Ditty News Ticker"
+
+#: legacy/inc/help.php:111
+msgid "Visit the <a href=\"http://www.metaphorcreations.com\" target=\"_blank\">documentation</a> on the Ditty News Ticker website"
+msgstr "Lies die <a href=\"http://www.metaphorcreations.com\" target=\"_blank\">Dokumentation</a> auf der Ditty News Ticker Website"
+
+#: legacy/inc/filters.php:223
+msgid "<i class=\"mtphr-dnt-icon-gear\"></i> Edit ticker"
+msgstr "<i class=\"mtphr-dnt-icon-gear\"></i> Ticker bearbeiten"
+
+#: legacy/inc/help.php:59
+msgid "Scroll Mode"
+msgstr "Scroll-Modus"
+
+#: legacy/inc/admin/meta-boxes.php:659
+msgid "Rotation type"
+msgstr "Typ der Rotation"
+
+#: legacy/inc/admin/meta-boxes.php:660
+msgid "Set the type of rotation for the ticker"
+msgstr "Wähle den Typ der Rotation für den Ticker"
+
+#: legacy/inc/admin/edit-columns.php:16 legacy/inc/admin/meta-boxes.php:27
+msgid "Direct Function"
+msgstr "Direkte Funktion"
+
+#: legacy/inc/admin/meta-boxes.php:1173
+msgid "Columns"
+msgstr "Spalten"
+
+#: legacy/inc/help.php:135
+msgid "Add scroll mode info."
+msgstr "Füge Scroll-Modus-Information hinzu"
+
+#: includes/helpers.php:266 legacy/inc/admin/meta-boxes.php:1143
+msgid "Grid Display"
+msgstr "Raster-Anzeige"
+
+#: legacy/inc/admin/meta-boxes.php:1197
+msgid "Remove padding on table edges"
+msgstr "Entferne Innenabstände bei Tabellenrändern"
+
+#: legacy/inc/admin/meta-boxes.php:795
+msgid "Control navigation"
+msgstr "Navigations-Steuerung"
+
+#: legacy/inc/admin/meta-boxes.php:796
+msgid "Set the control navigation options"
+msgstr "Wähle die Optionen für die Navigations-Steuerung"
+
+#: legacy/inc/admin/meta-boxes.php:820 legacy/inc/admin/meta-boxes.php:821
+msgid "Disable touchswipe navigation on touch devices"
+msgstr "Deaktiviere TouchSwipe-Navigation auf Touch-Geräten"
+
+#: legacy/inc/admin/meta-boxes.php:775
+msgid "Set the directional navigation options"
+msgstr "Wähle die Optionen für die Richtungs-Navigation"
+
+#: legacy/inc/admin/meta-boxes.php:774
+msgid "Directional navigation"
+msgstr "Richtungs-Navigation"
+
+#: legacy/inc/admin/meta-boxes.php:819
+msgid "Disable Touchswipe"
+msgstr "Deaktiviere TouchSwipe"
+
+#: legacy/inc/admin/meta-boxes.php:751
+msgid "Set the speed & easing of the rotation"
+msgstr "Wähle die Geschwindigkeit und Abschwächung der Rotation"
+
+#: legacy/inc/admin/meta-boxes.php:924
+msgid "List paging"
+msgstr "Liste als Seiten"
+
+#: legacy/inc/admin/meta-boxes.php:925
+msgid "Break the list up into pages"
+msgstr "Teile die Liste in Seiten"
+
+#: legacy/inc/admin/meta-boxes.php:891
+msgid "Set the vertical spacing of the list container"
+msgstr "Wähle den vertikalen Abstand des Listen-Containers"
+
+#: legacy/inc/help.php:153
+msgid "Add list mode info."
+msgstr "Füge Listen-Modus-Information hinzu"
+
+#: legacy/inc/admin/meta-boxes.php:699
+msgid "Set the vertical spacing of the rotating data"
+msgstr "Wähle den vertikalen Abstand der rotierenden Daten"
+
+#: legacy/inc/admin/meta-boxes.php:914
+msgid "Set the spacing between ticks"
+msgstr "Wähle den Abstand zwischen Ticks"
+
+#: legacy/inc/help.php:112
+msgid "View DNT extensions"
+msgstr "DNT-Erweiterungen ansehen"
+
+#: legacy/inc/help.php:126
+msgid "Add general information about Ditty News Ticker."
+msgstr "Füge allgemeine Informationen über Ditty News Ticker hinzu"
+
+#: legacy/inc/help.php:144
+msgid "Add rotate mode info."
+msgstr "Füge Rotations-Modus-Information hinzu"
+
+#: legacy/inc/help.php:73
+msgid "List Mode"
+msgstr "Listen-Modus"
+
+#: legacy/inc/admin/meta-boxes.php:475
+msgid "Set the scroll direction of the ticker"
+msgstr "Scroll-Richtung des Tickers festlegen"
+
+#: legacy/inc/admin/meta-boxes.php:1091
+msgid "Randomly shuffle the ticks"
+msgstr "Ticks zufällig abwechseln"
+
+#: legacy/inc/post-types.php:18
+msgid "Edit News Ticker"
+msgstr "News-Ticker bearbeiten"
+
+#: legacy/inc/post-types.php:17
+msgid "Add New News Ticker"
+msgstr "Neuen News-Ticker hinzufügen"
+
+#: legacy/inc/admin/meta-boxes.php:1157
+msgid "Render empty rows"
+msgstr "Leere Zeilen darstellen"
+
+#: legacy/inc/admin/meta-boxes.php:323
+msgid "Force line breaks"
+msgstr "Zeilenumbrüche erzwingen"
+
+#: legacy/inc/admin/meta-boxes.php:507 legacy/inc/admin/meta-boxes.php:686
+msgid "Tick dimensions"
+msgstr "Tick-Abmessungen"
+
+#: legacy/inc/admin/meta-boxes.php:722
+msgid "Set the delay between rotations"
+msgstr "Wähle die Pause zwischen Rotationen"
+
+#: legacy/inc/admin/meta-boxes.php:1149
+msgid "Display ticks in a grid"
+msgstr "Ticks in einem Raster anzeigen"
+
+#: legacy/inc/admin/meta-boxes.php:1165
+msgid "Force equal column width"
+msgstr "Einheitliche Spaltenbreite erzwingen"
+
+#: legacy/inc/admin/meta-boxes.php:566 legacy/inc/admin/meta-boxes.php:743
+msgid "Pause on mouse over"
+msgstr "Beim Überfahren mit der Maus pausieren"
+
+#: legacy/inc/admin/meta-boxes.php:1134
+msgid "Set the amount of pixels ticks should start and end off the screen"
+msgstr "Wähle die Anzahl Pixel, bei denen die Ticks außerhalb des Bildschirms beginnen und enden sollen"
+
+#: legacy/inc/admin/meta-boxes.php:890
+msgid "List padding"
+msgstr "Innenabstand Liste"
+
+#: legacy/inc/admin/meta-boxes.php:1189
+msgid "Cell padding"
+msgstr "Innenabstand Zelle"
+
+#: legacy/inc/admin/meta-boxes.php:530
+msgid "Scroller padding"
+msgstr "Scroller-Innenabstand"
+
+#: legacy/inc/admin/meta-boxes.php:698
+msgid "Rotator padding"
+msgstr "Rotator-Innenabstand"
+
+#: legacy/inc/admin/meta-boxes.php:28
+msgid "Copy and paste this code directly into one of your theme files to display the ticker any where you want on your site."
+msgstr "Füge diesen Code per „Kopieren und Einfügen“ einer Theme-Datei hinzu, um den Ticker wo immer du möchtest auf deiner Website anzuzeigen."
+
+#: legacy/inc/admin/meta-boxes.php:20
+msgid "Copy and paste this shortcode into a page or post to display the ticker within the post content."
+msgstr "Füge diesen Shortcode per „Kopieren und Einfügen“ einer Seite oder einem Beitrag hinzu, um den Ticker innerhalb des Inhaltes anzuzeigen."
+
+#: legacy/inc/admin/meta-boxes.php:670
+msgid "Slide down"
+msgstr "Nach unten gleiten"
+
+#: legacy/inc/admin/meta-boxes.php:851 legacy/inc/admin/meta-boxes.php:1380
+#: legacy/inc/helpers.php:42
+msgid "« Previous"
+msgstr "« Vorherige"
+
+#: legacy/inc/admin/fields/fields.php:603
+msgid "Header"
+msgstr "Header"
+
+#. Author URI of the plugin
+msgid "https://www.metaphorcreations.com"
+msgstr "https://www.metaphorcreations.com"
+
+#: includes/helpers.php:154 build/dittyEditor.js:1 build/dittyEditor.js:7918
+msgid "Ticker"
+msgstr "Ticker"
+
+#: includes/post-types.php:22 includes/post-types.php:55
+#: includes/post-types.php:87 legacy/inc/post-types.php:16
+msgid "Add New"
+msgstr "Erstellen"
+
+#: legacy/inc/settings.php:132
+msgid "Custom CSS"
+msgstr "Individuelles CSS"
+
+#: includes/admin/settings.php:355
+msgid "Position"
+msgstr "Position"
+
+#: includes/admin/settings.php:164 includes/admin/settings.php:187
+#: includes/admin/settings.php:199 includes/admin/settings.php:291
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: includes/admin/settings.php:163 includes/admin/settings.php:186
+#: includes/admin/settings.php:198 includes/admin/settings.php:292
+#: includes/class-ditty-singles.php:131 build/dittyScripts.js:1
+#: build/dittyScripts.js:6349
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#. Plugin Name of the plugin
+#: includes/admin/info.php:26 includes/admin/settings.php:368
+#: includes/builders/fusion/builder.php:8
+#: includes/builders/fusion/builder.php:17
+#: includes/class-ditty-extensions.php:81 includes/class-ditty-singles.php:267
+#: includes/class-ditty-singles.php:268 includes/post-types.php:20
+#: includes/post-types.php:21 includes/post-types.php:31 includes/widget.php:17
+#: build/blocks/ditty/index.js:1 build/blocks/ditty/index.js:75
+msgid "Ditty"
+msgstr "Ditty"
+
+#: includes/admin/info.php:12
+msgid "Upgrade Details"
+msgstr "Upgrade-Details"
+
+#: includes/admin/columns.php:16 includes/admin/columns.php:20
+msgid "Version"
+msgstr "Version"
+
+#. Plugin URI of the plugin
+msgid "https://www.metaphorcreations.com/ditty"
+msgstr "https://www.metaphorcreations.com/ditty"
+
+#: includes/class-ditty-display-type.php:235
+#: includes/class-ditty-display-type.php:308 build/dittyEditor.js:1
+#: build/dittyEditor.js:8337 build/dittyEditor.js:8427
+msgid "Show"
+msgstr "Anzeigen"
+
+#: includes/class-ditty-display-type.php:231 build/dittyEditor.js:1
+#: build/dittyEditor.js:8330
+msgid "Arrows"
+msgstr "Pfeile"
+
+#: includes/class-ditty-display-type-ticker.php:130 build/dittyScripts.js:1
+#: build/dittyScripts.js:65556
+msgid "Empty"
+msgstr "Leer"
+
+#: includes/class-ditty-display-type-list.php:59
+#: includes/class-ditty-display-type-list.php:129
+#: includes/class-ditty-display-type-ticker.php:155
+#: includes/class-ditty-display-type-ticker.php:167
+#: includes/class-ditty-display-type-ticker.php:179
+#: includes/class-ditty-item-type.php:389 includes/class-ditty-singles.php:142
+#: includes/class-ditty-singles.php:153 includes/layout-tag-fields.php:49
+#: build/dittyScripts.js:1 build/dittyScripts.js:6360
+#: build/dittyScripts.js:6371 build/dittyScripts.js:65583
+#: build/dittyScripts.js:65597 build/dittyScripts.js:65699
+#: build/dittyScripts.js:65788
+msgid "Yes"
+msgstr "Ja"
+
+#: includes/class-ditty-display-type-list.php:58
+#: includes/class-ditty-display-type-list.php:128
+#: includes/class-ditty-display-type-ticker.php:156
+#: includes/class-ditty-display-type-ticker.php:168
+#: includes/class-ditty-display-type-ticker.php:180
+#: includes/class-ditty-item-type.php:390 includes/class-ditty-singles.php:141
+#: includes/class-ditty-singles.php:152 includes/layout-tag-fields.php:48
+#: build/dittyScripts.js:1 build/dittyScripts.js:6359
+#: build/dittyScripts.js:6370 build/dittyScripts.js:65584
+#: build/dittyScripts.js:65598 build/dittyScripts.js:65698
+#: build/dittyScripts.js:65787
+msgid "No"
+msgstr "Nein"
+
+#: includes/class-ditty-displays.php:190 includes/class-ditty-layouts.php:245
+msgid "Install Version %s"
+msgstr "Version %s installieren"
+
+#: includes/class-ditty-displays.php:121 includes/class-ditty-displays.php:177
+#: includes/class-ditty-displays.php:185 includes/class-ditty-layouts.php:128
+#: includes/class-ditty-layouts.php:232 includes/class-ditty-layouts.php:240
+msgid "Installed"
+msgstr "Installiert"
+
+#: legacy/inc/admin/fields/fields.php:140
+msgid "Name"
+msgstr "Name"
+
+#: includes/class-ditty-item-type-default.php:32
+#: includes/class-ditty-item-type-wp-editor.php:32
+#: legacy/inc/admin/fields/fields.php:619 build/dittyEditor.js:1
+#: build/dittyEditor.js:8598 build/dittyEditor.js:8867
+#: build/dittyEditor.js:8924
+msgid "Content"
+msgstr "Inhalt"
+
+#: includes/class-ditty-display-type.php:234
+#: includes/class-ditty-display-type.php:307 build/dittyEditor.js:1
+#: build/dittyEditor.js:8336 build/dittyEditor.js:8426
+msgid "Hide"
+msgstr "Ausblenden"

@@ -1,0 +1,17 @@
+.wfocu-responsive-btns,.customize-control-wfocu-responsive-font .customize-control-title{display:inline-block}
+.wfocu-responsive-btns{float:right;line-height:1;margin-top:5px}
+.wfocu-responsive-btns > li{margin-bottom:0;display:none}
+.wfocu-responsive-btns > li.active{display:inline-block}
+.wfocu-responsive-btns button[type="button"]{padding:0;cursor:pointer;background:none;border:none;opacity:.75;outline:none}
+.wfocu-responsive-btns button[type="button"] > i{width:15px;height:15px;font-size:15px}
+.customize-control-wfocu-responsive .input-wrapper input{display:none;width:calc(100% - 52px);float:left}
+.customize-control-wfocu-responsive .input-wrapper input.active{display:inline-block}
+.customize-control-wfocu-responsive .input-wrapper .wfocu-responsive-select{width:50px;margin:0;display:none;padding:.1em;margin-left:2px}
+.customize-control-wfocu-responsive .input-wrapper .wfocu-responsive-input.active + .wfocu-responsive-select{display:inline-block}
+input.wfocu-responsive-input.active{display:block}
+input.wfocu-responsive-input{display:none}
+select.wfocu-responsive-select{display:none}
+select.wfocu-responsive-select.active{display:block}
+.wfocu-responsive-wrapper{position:relative;padding-right:60px}
+input.wfocu-responsive-input.desktop.active{width:100%;display:inline-block}
+select.wfocu-responsive-select.active{display:inline-block;width:auto;position:absolute;right:0;top:0;z-index:1}

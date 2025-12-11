@@ -1,0 +1,367 @@
+.wfocu-urgency-bar {
+    background: #fff
+}
+
+.wfocu-urgency-header-bar {
+    top: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 1000
+}
+
+.wfocu-urgency-footer-bar {
+    bottom: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 1000
+}
+
+.wfocu-close {
+    position: absolute;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    line-height: 14px;
+    text-align: center;
+    font-size: 15px;
+    font-family: arial, sans-serif;
+    cursor: pointer;
+    z-index: 99
+}
+
+.wfocu-urgency-bar .wfocu-close {
+    top: 5px
+}
+
+.wfocu-urgency-bar .wfocu-urgency-inner {
+    display: table;
+    width: 100%;
+    height: 100%
+}
+
+.wfocu-urgency-bar .wfocu-urgency-left-col {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.wfocu-urgency-bar .wfocu-urgency-right-col {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.wfocu-urgency-bar .wfocu-close {
+    color: #fff;
+    border: 1px solid #fff
+}
+
+.wfocu-urgency-bar .wfocu-table-cell {
+    float: none
+}
+
+.wfocu-urgency-bar .wfocu-content-div {
+    padding: 11px 5px;
+    font-size: 18px;
+    line-height: 1.3
+}
+
+.wfocu-urgency-bar.wfocu-no-ctimer .wfocu-urgency-col {
+    width: 100%;
+    text-align: center;
+    display: block
+}
+
+.wfocu-countdown-timer .wfocu-table-cell {
+    vertical-align: middle
+}
+
+.wfocu-countdown-square-ghost .wfocu-square-wrap .wfocu-timer-label {
+    font-size: 13px;
+    line-height: 1.2
+}
+
+.wfocu-countdown-square-ghost .wfocu-timer-label {
+    display: block
+}
+
+.wfocu-countdown-square-ghost .wfocu-square-wrap {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    color: #fff;
+    float: left;
+    margin: 0 2px;
+    text-align: center;
+    padding: 10px;
+    background-color: #ce3362;
+    color: #fff;
+    min-width: 85px;
+    height: 100%
+}
+
+.wfocu-countdown-square-ghost .wfocu-square-wrap .wfocu-timer-digit {
+    display: block;
+    max-width: 80%;
+    margin: 0 auto;
+    font-size: 28px;
+    line-height: 1
+}
+
+.wfocu-countdown-square-ghost .wfocu-wrap-border {
+    background-color: #ce3362;
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+    display: none
+}
+
+.wfocu-countdown-timer-wrap {
+    height: 100%
+}
+
+.wfocu-countdown-square-ghost {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: -moz-box;
+    display: flex;
+    height: 100%;
+    align-items: stretch
+}
+
+.wfocu-countdown-square-ghost.wfocu-countdown-timer .wfocu-table-cell {
+    vertical-align: middle
+}
+
+.wfocu-countdown-square-ghost .wfocu-square-wrap {
+    flex: 1
+}
+
+.wfocu-countdown-highlight .wfocu-highlight-wrap .wfocu-timer-digit {
+    font-size: 22px;
+    font-weight: 700
+}
+
+.wfocu-countdown-highlight .wfocu-highlight-wrap span {
+    display: inline-block;
+    margin: 0 auto
+}
+
+.wfocu-countdown-highlight .wfocu-timer-wrap .wfocu-highlight-wrap {
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
+    padding: 0 3px
+}
+
+.wfocu-countdown-highlight .wfocu-highlight-wrap .wfocu-timer-label {
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400
+}
+
+.wfocu-countdown-highlight {
+    margin-bottom: 0;
+    font-size: 0;
+    line-height: 0
+}
+
+.wfocu-countdown-highlight .wfocu-colon-sep {
+    padding: 0 0 0 2px;
+    font-size: 18px;
+    font-weight: 700
+}
+
+.wfocu-countdown-timer-wrap .wfocu-countdown-timer-text {
+    font-size: 12px;
+    line-height: 1;
+    color: #fff;
+    text-transform: uppercase
+}
+
+.wfocu-countdown-highlight .wfocu-countdown-timer-text {
+    color: #fff
+}
+
+.wfocu-countdown-highlight .wfocu-timer-wrap {
+    color: #fff
+}
+
+.wfocu-countdown-timer-wrap {
+    display: table;
+    height: 100%;
+    width: 100%
+}
+
+.wfocu-countdown-timer {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.wfocu-ctimer-style1 .wfocu-countdown-timer-wrap {
+    min-width: 270px
+}
+
+.wfocu-ctimer-style2 .wfocu-countdown-timer-wrap {
+    padding: 7px 0;
+    min-width: 290px;
+    background: #d51724
+}
+
+.wfocu-countdown-timer.wfocu-hide-ctlabels .wfocu-timer-label {
+    display: none !important
+}
+
+.wfocu-urgency-bar[data-on-desktop = no], .wfocu-urgency-bar[data-on-mobile = no] {
+    display: none
+}
+
+@media ( min-width: 768px ) {
+    .wfocu-countdown-timer .wfocu-timer-wrap {
+        width: 100%;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        -ms-flex-pack: center;
+        justify-content: center
+    }
+
+    .wfocu-urgency-bar.wfocu-ctimer-right .wfocu-content-div {
+        padding-left: 0;
+        padding-right: 10px
+    }
+
+    .wfocu-urgency-bar.wfocu-ctimer-left .wfocu-content-div {
+        padding-left: 10px;
+        padding-right: 0
+    }
+
+    div[class*="test"] {
+        background: #ff0
+    }
+
+    .wfocu-urgency-bar[data-on-desktop = yes] {
+        display: block
+    }
+}
+
+@media ( min-width: 992px ) {
+    .wfocu-countdown-timer-wrap {
+        margin: auto
+    }
+}
+
+@media ( max-width: 991px ) {
+    .wfocu-urgency-bar .wfocu-content-div {
+        font-size: 16px
+    }
+}
+
+@media ( max-width: 767px ) {
+    .wfocu-urgency-bar .wfocu-urgency-inner {
+        display: block
+    }
+
+    .wfocu-urgency-bar .wfocu-urgency-right-col {
+        display: block;
+        width: 100%
+    }
+
+    .wfocu-urgency-bar .wfocu-urgency-left-col {
+        display: block;
+        width: 100%
+    }
+
+    .wfocu-close {
+        width: 15px;
+        height: 15px;
+        line-height: 12px;
+        font-size: 13px
+    }
+
+    .wfocu-urgency-bar .wfocu-content-div {
+        text-align: center;
+        padding: 8px 0;
+        font-size: 13px
+    }
+
+    .wfocu-ctimer-style2.wfocu-ctimer-left .wfocu-urgency-left-col {
+        margin-left: -15px;
+        margin-right: -15px;
+        width: auto
+    }
+
+    .wfocu-ctimer-style2.wfocu-ctimer-right .wfocu-urgency-right-col {
+        margin-left: -15px;
+        margin-right: -15px;
+        width: auto
+    }
+
+    .wfocu-countdown-timer-wrap {
+        max-width: 280px;
+        margin: auto;
+        height: auto
+    }
+
+    .wfocu-ctimer-style2 .wfocu-countdown-timer-wrap {
+        max-width: 100%
+    }
+
+    .wfocu-countdown-square-ghost .wfocu-square-wrap .wfocu-timer-label {
+        font-size: 10px
+    }
+
+    .wfocu-countdown-square-ghost .wfocu-square-wrap .wfocu-timer-digit {
+        font-size: 20px
+    }
+
+    .wfocu-countdown-square-ghost .wfocu-square-wrap {
+        min-height: auto;
+        padding: 8px
+    }
+
+    .wfocu-countdown-highlight .wfocu-highlight-wrap, .wfocu-countdown-highlight .wfocu-highlight-wrap .wfocu-timer-label {
+        font-size: 10px
+    }
+
+    .wfocu-countdown-highlight .wfocu-highlight-wrap .wfocu-timer-digit {
+        font-size: 20px
+    }
+
+    .wfocu-ctimer-style1.wfocu-ctimer-right .wfocu-urgency-right-col {
+        padding-bottom: 11px
+    }
+
+    .wfocu-ctimer-style1.wfocu-ctimer-left .wfocu-urgency-left-col {
+        padding-top: 11px
+    }
+
+    .wfocu-countdown-square-ghost.wfocu-countdown-timer {
+        display: block
+    }
+
+    .wfocu-ctimer-style1.wfocu-urgency-inline .wfocu-urgency-inner {
+        padding: 15px 0
+    }
+
+    .wfocu-ctimer-style1.wfocu-urgency-inline .wfocu-countdown-timer-wrap {
+        margin-bottom: 7px
+    }
+
+    .wfocu-urgency-bar .wfocu-urgency-col {
+        height: auto !important
+    }
+
+    .wfocu-urgency-bar[data-on-mobile = yes] {
+        display: block
+    }
+}

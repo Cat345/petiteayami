@@ -1,0 +1,107 @@
+/*
+
+Name: Woolberry
+Background: White
+Color: Red
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/default.jpg
+
+Style: white-green
+Name: White Green
+Background: White
+Color: Green
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/white-green.jpg
+
+Style: white-blue
+Name: White Blue
+Background: White
+Color: Blue
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/white-blue.jpg
+
+Style: white-darkblue
+Name: White Darkblue
+Background: White
+Color: Blue
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/white-darkblue.jpg
+
+Style: white-orange
+Name: White Orange
+Background: White
+Color: Orange
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/white-orange.jpg
+
+Style: light-red
+Name: Light Red
+Background: Light
+Color: Red
+Type: Flat
+Preview: https://yootheme.com/api/style/woolberry/light-red.jpg
+
+*/
+
+// Platform
+@import "platform.less";
+
+// UIkit Core
+@import "../vendor/assets/uikit/src/less/uikit.less";
+
+// UIkit Theme
+@import "../vendor/assets/uikit-themes/master/_import.less";
+@import "../vendor/assets/uikit-themes/master-woolberry/_import.less";
+
+// Theme
+@import "theme.less";
+
+
+// Variables
+// ========================================================================
+
+//
+// Box Decoration
+//
+
+@theme-box-decoration-primary-background:                @global-primary-background;
+@theme-box-decoration-secondary-background:              @global-secondary-background;
+
+//
+// Section
+//
+
+@section-title-color:                                    @global-emphasis-color;
+@section-title-font-weight:                              600;
+@section-title-text-transform:                           uppercase;
+
+@internal-section-title-dash-border-height:              16px;
+@internal-section-title-dash-border-width:               2px;
+
+//
+// WooCommerce
+//
+
+@woocommerce-cart-page-layout:                          columns;
+@woocommerce-order-page-layout:                         columns;
+
+@woocommerce-product-page-price-font-family:            'Work Sans';
+@woocommerce-product-page-price-font-size:              18px;
+@woocommerce-product-page-price-font-weight:            500;
+
+@woocommerce-widget-active-filters-border-radius:       0;
+@woocommerce-widget-active-filters-color:               @global-emphasis-color;
+@woocommerce-widget-active-filters-padding-horizontal:  10px;
+
+@woocommerce-product-page-add-to-cart-expand:           true;
+@woocommerce-product-page-add-to-cart-large:            true;
+
+@woocommerce-filter-element-column-count-break:         5;
+
+
+// Style
+// ========================================================================
+
+@import (optional) "../vendor/assets/uikit-themes/master-woolberry/styles/@{internal-style}.less";
+
+@internal-style: ~'';

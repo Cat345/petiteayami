@@ -1,0 +1,53 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2024-08-10 10:35+0530\n"
+"PO-Revision-Date: 2020-05-08 14:07+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.4\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: includes/class-xoo-wl-core.php:41 includes/class-xoo-wl-frontend.php:143
+msgid "Product ID not found, please contact support."
+msgstr ""
+
+#: includes/class-xoo-wl-core.php:45
+msgid "Email address is required."
+msgstr ""
+
+#: includes/class-xoo-wl-core.php:49
+msgid "Product is already in stock, Please add to cart"
+msgstr ""
+
+#: includes/class-xoo-wl-frontend.php:144
+msgid "Email address cannot be empty."
+msgstr ""
+
+#: includes/emails/class-xoo-wl-back-in-stock-email.php:63
+msgid "No product found"
+msgstr ""
+
+#: includes/emails/class-xoo-wl-email.php:96
+msgid "No row found"
+msgstr ""
+
+#: templates/xoo-wl-form.php:31
+msgid "You need to Login for joining waitlist."
+msgstr ""
+
+#: templates/xoo-wl-form.php:34
+msgid "Login"
+msgstr ""
+
+#: templates/xoo-wl-form.php:36
+msgid "Register"
+msgstr ""

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg class="ubermenu-essential-icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs/>
+<symbol id="ubermenu-icon-angle" viewBox="0 0 16 16"><title>icon-angle</title><g id="angle"><g id="path"><path d="M13.48,4.64a.24.24,0,0,1,.35,0l.36.35a.27.27,0,0,1,0,.36l-6,6a.25.25,0,0,1-.36,0l-6-6a.27.27,0,0,1,0-.36l.36-.35a.24.24,0,0,1,.35,0L8,10.12H8Z"/></g></g></symbol>
+<symbol id="ubermenu-icon-bars" viewBox="0 0 16 16"><title>icon-bars</title><g id="bars"><rect id="top" x="2" y="4" width="12" height="1" rx="0.25"/><rect id="middle" x="2" y="8" width="12" height="1" rx="0.25"/><rect id="bottom" x="2" y="12" width="12" height="1" rx="0.25"/></g></symbol>
+<symbol id="ubermenu-icon-times" viewBox="0 0 16 16"><title>icon-times</title><g id="times"><rect id="up" x="3" y="7.5" width="10" height="1" rx="0.25" transform="translate(-3.31 8) rotate(-45)"/><rect id="down" x="7.5" y="3" width="1" height="10" rx="0.25" transform="translate(-3.31 8) rotate(-45)"/></g></symbol>
+</svg>

@@ -1,0 +1,6 @@
+<wpml-config>
+  <custom-fields>
+    <custom-field action="copy">_ubermenu_settings</custom-field>
+    <custom-field action="copy">_ubermenu_custom_item_type</custom-field>
+  </custom-fields>
+</wpml-config>

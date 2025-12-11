@@ -1,0 +1,281 @@
+<div style="display:none;" data-cust-popover="yes" class="wffn_sortable_field wfop-cust-settings">
+	<div class="wffn_billing_accordion_inner bwf_open_accordion">
+		<div class="accordion_left">
+			<div class="accordion_heading"><?php esc_html_e( 'Progress Bar', 'funnel-builder-powerpack' ); ?></div>
+		</div>
+		<div class="accordion_right"><i class="dashicons dashicons-arrow-down"></i>
+		</div>
+		<div class="wffn_clear"></div>
+	</div>
+	<div class="wffn_billing_accordion_content">
+		<!--Progress bar -->
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_pp"><?php esc_html_e( 'Enable', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select id="popup_bar_pp" onchange="window.wfop_design.onChangeStylingOptions('popup_bar_pp', this.value)" placeholder="type">
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_pp', WFOPP_Core()->optin_pages->get_edit_id() ), 'enable', true ); ?> value="enable"><?php esc_html_e( 'Yes', 'funnel-builder-powerpack' ); ?></option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_pp', WFOPP_Core()->optin_pages->get_edit_id() ), 'disable', true ); ?> value="disable"><?php esc_html_e( 'No', 'funnel-builder-powerpack' ); ?></option>
+				</select>
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_animation"><?php esc_html_e( 'Animation', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select id="popup_bar_animation" onchange="window.wfop_design.onChangeStylingOptions('popup_bar_animation', this.value)" placeholder="type">
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_animation', WFOPP_Core()->optin_pages->get_edit_id() ), 'enable', true ); ?> value="yes"><?php esc_html_e( 'Yes', 'funnel-builder-powerpack' ); ?></option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_animation', WFOPP_Core()->optin_pages->get_edit_id() ), 'disable', true ); ?> value="no"><?php esc_html_e( 'No', 'funnel-builder-powerpack' ); ?></option>
+				</select>
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_width"><?php esc_html_e( 'Percentage', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_width" onChange="window.wfop_design.onChangeStylingOptions('popup_bar_width', this.value)" type="number" min="0" max="100" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_width', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="0-100%" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_height"><?php esc_html_e( 'Height', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_height" onChange="window.wfop_design.onChangeStylingOptions('popup_bar_height', this.value)" type="number" min="10" max="100" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_height', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="20" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_inner_gap"><?php esc_html_e( 'Padding', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_inner_gap" onChange="window.wfop_design.onChangeStylingOptions('popup_bar_inner_gap', this.value)" type="number" min="0" max="100" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_inner_gap', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="4" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_text"><?php esc_html_e( 'Text', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_text" onkeyup="window.wfop_design.onChangeStylingOptions('popup_bar_text', this.value)" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_text', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_font_size"><?php esc_html_e( 'Text Font Size', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_font_size" onChange="window.wfop_design.onChangeStylingOptions('popup_bar_font_size', this.value)" type="number" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_font_size', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="16" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_font_family"><?php esc_html_e( 'Font Family', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select class="wffn_font_family" id="popup_bar_font_family" onchange="window.wfop_design.onChangeStylingOptions('popup_bar_font_family', this.value)" placeholder="type">
+					<?php foreach ( bwf_get_fonts_list() as $font ) {
+						?>
+						<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_font_family', WFOPP_Core()->optin_pages->get_edit_id() ), $font['id'], true ); ?> value="<?php echo $font['id']; ?>"><?php echo $font['name']; ?></option>
+						<?php
+					} ?>
+				</select>
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_text_color"><?php esc_html_e( 'Text Color', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_text_color" name="popup_bar_text_color" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_text_color', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wfop_color_picker" placeholder="#ffffff">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_color"><?php esc_html_e( 'Color', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_color" name="popup_bar_color" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_color', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wfop_color_picker" placeholder="#338d48">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_bar_bg_color"><?php esc_html_e( 'Background Color', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_bar_bg_color" name="popup_bar_bg_color" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_bar_bg_color', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wfop_color_picker" placeholder="#efefef">
+			</div>
+		</div>
+	</div>
+</div>
+<div style="display:none;" data-cust-popover="yes" class="wffn_sortable_field wfop-cust-settings">
+	<div class="wffn_billing_accordion_inner bwf_open_accordion">
+		<div class="accordion_left">
+			<div class="accordion_heading"><?php esc_html_e( 'Heading', 'funnel-builder-powerpack' ); ?></div>
+		</div>
+		<div class="accordion_right"><i class="dashicons dashicons-arrow-down"></i>
+		</div>
+		<div class="wffn_clear"></div>
+	</div>
+	<div class="wffn_billing_accordion_content">
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_heading"><?php esc_html_e( 'Text', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_heading" onkeyup="window.wfop_design.onChangeStylingOptions('popup_heading', this.value)" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_heading_color"><?php esc_html_e( 'Color', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_heading_color" name="popup_heading_color" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading_color', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wfop_color_picker" placeholder="#ffffff">
+			</div>
+		</div>
+
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_heading_font_size"><?php esc_html_e( 'Font Size', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_heading_font_size" onChange="window.wfop_design.onChangeStylingOptions('popup_heading_font_size', this.value)" type="number" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading_font_size', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="14" class="form-control wffn_placeholder">
+			</div>
+		</div>
+
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_heading_font_family"><?php esc_html_e( 'Font Family', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select class="wffn_font_family" id="popup_heading_font_family" onchange="window.wfop_design.onChangeStylingOptions('popup_heading_font_family', this.value)" placeholder="type">
+					<?php foreach ( bwf_get_fonts_list() as $font ) {
+						?>
+						<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading_font_family', WFOPP_Core()->optin_pages->get_edit_id() ), $font['id'], true ); ?> value="<?php echo $font['id']; ?>"><?php echo $font['name']; ?></option>
+						<?php
+					} ?>
+				</select>
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_heading_font_weight"><?php esc_html_e( 'Font Weight', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select id="popup_heading_font_weight" onchange="window.wfop_design.onChangeStylingOptions('popup_heading_font_weight', this.value)" placeholder="type">
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading_font_weight', WFOPP_Core()->optin_pages->get_edit_id() ), '400', true ); ?> value="400">
+						<?php esc_html_e( 'Normal 400', 'funnel-builder-powerpack' ); ?>
+					</option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_heading_font_weight', WFOPP_Core()->optin_pages->get_edit_id() ), '700', true ); ?> value="700">
+						<?php esc_html_e( 'Bold 700', 'funnel-builder-powerpack' ); ?>
+					</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="wffn_row_billing wfop_setting_top_border">
+			<div class="wffn_billing_left">
+				<label for="popup_sub_heading"><?php esc_html_e( 'Sub Heading Text', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_sub_heading" onkeyup="window.wfop_design.onChangeStylingOptions('popup_sub_heading', this.value)" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_sub_heading_color"><?php esc_html_e( 'Color', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_sub_heading_color" name="popup_sub_heading_color" type="text" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading_color', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control wfop_color_picker" placeholder="#ffffff">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_sub_heading_font_size"><?php esc_html_e( 'Font Size', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="popup_sub_heading_font_size">
+				<input id="popup_sub_heading_font_size" onChange="window.wfop_design.onChangeStylingOptions('popup_sub_heading_font_size', this.value)" type="number" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading_font_size', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" placeholder="14" class="form-control wffn_placeholder">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_sub_heading_font_family"><?php esc_html_e( 'Font Family', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select class="wffn_font_family" id="popup_sub_heading_font_family" onchange="window.wfop_design.onChangeStylingOptions('popup_sub_heading_font_family', this.value)" placeholder="type">
+					<?php foreach ( bwf_get_fonts_list() as $font ) {
+						?>
+						<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading_font_family', WFOPP_Core()->optin_pages->get_edit_id() ), $font['id'], true ); ?> value="<?php echo $font['id']; ?>"><?php echo $font['name']; ?></option>
+						<?php
+					} ?>
+				</select>
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_sub_heading_font_weight"><?php esc_html_e( 'Font Weight', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select id="popup_sub_heading_font_weight" onchange="window.wfop_design.onChangeStylingOptions('popup_sub_heading_font_weight', this.value)" placeholder="type">
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading_font_weight', WFOPP_Core()->optin_pages->get_edit_id() ), '400', true ); ?> value="400">
+						<?php esc_html_e( 'Normal 400', 'funnel-builder-powerpack' ); ?>
+					</option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_sub_heading_font_weight', WFOPP_Core()->optin_pages->get_edit_id() ), '700', true ); ?> value="700">
+						<?php esc_html_e( 'Bold 700', 'funnel-builder-powerpack' ); ?>
+					</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="display:none;" data-cust-popover="yes" class="wffn_sortable_field wfop-cust-settings">
+	<div class="wffn_billing_accordion_inner bwf_open_accordion">
+		<div class="accordion_left">
+			<div class="accordion_heading"><?php esc_html_e( 'Popup', 'funnel-builder-powerpack' ); ?></div>
+		</div>
+		<div class="accordion_right"><i class="dashicons dashicons-arrow-down"></i>
+		</div>
+		<div class="wffn_clear"></div>
+	</div>
+	<div class="wffn_billing_accordion_content">
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_width"><?php esc_html_e( 'Width', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_width" onchange="window.wfop_design.onChangeStylingOptions('popup_width', this.value)" name="popup_width" type="number" min="200" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_width', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_padding"><?php esc_html_e( 'Padding', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<input id="popup_padding" onchange="window.wfop_design.onChangeStylingOptions('popup_padding', this.value)" name="popup_padding" type="number" min="0" value="<?php echo WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_padding', WFOPP_Core()->optin_pages->get_edit_id() ); ?>" class="form-control">
+			</div>
+		</div>
+		<div class="wffn_row_billing">
+			<div class="wffn_billing_left">
+				<label for="popup_open_animation"><?php esc_html_e( 'Open Animation', 'funnel-builder-powerpack' ); ?></label>
+			</div>
+			<div class="wffn_billing_right">
+				<select id="popup_open_animation" onchange="window.wfop_design.onChangeStylingOptions('popup_open_animation', this.value)">
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_open_animation', WFOPP_Core()->optin_pages->get_edit_id() ), 'fade', true ); ?> value="fade">
+						<?php esc_html_e( 'Fade', 'funnel-builder-powerpack' ); ?>
+					</option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_open_animation', WFOPP_Core()->optin_pages->get_edit_id() ), 'slide-up', true ); ?> value="slide-up">
+						<?php esc_html_e( 'Slide Up', 'funnel-builder-powerpack' ); ?>
+					</option>
+					<option <?php selected( WFOPP_Core()->optin_pages->form_builder->get_form_customization_option( 'popup_open_animation', WFOPP_Core()->optin_pages->get_edit_id() ), 'slide-down', true ); ?> value="slide-down">
+						<?php esc_html_e( 'Slide Down', 'funnel-builder-powerpack' ); ?>
+					</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+

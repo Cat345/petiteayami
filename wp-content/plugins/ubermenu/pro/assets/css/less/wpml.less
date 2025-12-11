@@ -1,0 +1,44 @@
+.ubermenu {
+    
+
+    .ubermenu-wpml-ls-item{
+
+
+        > .ubermenu-target > .ubermenu-target-title{
+            display:flex;
+            align-items:center;
+            flex-wrap:nowrap;
+
+            .wpml-ls-flag + span{
+                margin-left:.5em;
+                display:flex;
+            }
+        }
+        > .ubermenu-submenu-type-flyout{
+            right:0;
+
+            > .ubermenu-item{
+                min-width:0;
+                width:100%;
+            }
+        }
+
+        &.ubermenu-item-level-0:not(.ubermenu-wpml-ls-current-language){
+            > .ubermenu-target{
+                padding-left:10px;
+                padding-right:10px;
+            }
+        }
+    }
+}
+
+.rtl .ubermenu-wpml-ls-item{
+    > .ubermenu-target > .ubermenu-target-title .wpml-ls-flag + span{
+        margin-left:0;
+        margin-right:.5em;
+    }
+    > .ubermenu-submenu-type-flyout{
+        left:0;
+        right:auto;
+    }
+}

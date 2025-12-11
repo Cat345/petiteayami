@@ -1,0 +1,9 @@
+parameters:
+    bootstrapFiles:
+        - /home/aman/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    level: 4
+    paths:
+        - ./
+    excludePaths:
+        - admin/views*
+        - node_modules

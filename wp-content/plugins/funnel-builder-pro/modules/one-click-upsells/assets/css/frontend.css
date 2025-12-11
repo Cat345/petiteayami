@@ -1,0 +1,991 @@
+/**
+ * Theme compatibility css
+ */
+html {
+    line-height: 1.15; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+     ========================================================================== */
+
+/**
+ * Remove the margin in all browsers.
+ */
+body {
+    margin: 0;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+/* Grouping content
+     ========================================================================== */
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+
+hr {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box; /* 1 */
+    height: 0; /* 1 */
+    overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+pre {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+     ========================================================================== */
+
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+
+a {
+    background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+    border-bottom: none; /* 1 */
+    text-decoration: underline; /* 2 */
+    -webkit-text-decoration: underline dotted;
+    -moz-text-decoration: underline dotted;
+    text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+code,
+kbd,
+samp {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+/* Embedded content
+     ========================================================================== */
+
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+
+img {
+    border-style: none;
+}
+
+/* Forms
+     ========================================================================== */
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit; /* 1 */
+    font-size: 100%; /* 1 */
+    line-height: 1.15; /* 1 */
+    margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input { /* 1 */
+    overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+
+button,
+select { /* 1 */
+    text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+
+fieldset {
+    padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *      `fieldset` elements in all browsers.
+ */
+
+.single-wfocu_offer label {
+    font-size: 16px;
+}
+
+legend {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; /* 1 */
+    color: inherit; /* 2 */
+    display: table; /* 1 */
+    max-width: 100%; /* 1 */
+    padding: 0; /* 3 */
+    white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+
+progress {
+    vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+
+textarea {
+    overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+
+[type="checkbox"],
+[type="radio"] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+    -webkit-appearance: button; /* 1 */
+    font: inherit; /* 2 */
+}
+
+/* Interactive
+     ========================================================================== */
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+    display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+    display: list-item;
+}
+
+/* Misc
+     ========================================================================== */
+
+/**
+ * Add the correct display in IE 10+.
+ */
+
+template {
+    display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/*--------------------------------------------------------------
+# Typography
+--------------------------------------------------------------*/
+body,
+button,
+input,
+select,
+optgroup,
+textarea {
+    color: #404040;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    clear: both;
+    margin-top: 0;
+}
+
+p {
+    margin-bottom: 1.5em;
+}
+
+dfn, cite, em, i {
+    font-style: italic;
+}
+
+blockquote {
+    margin: 0 1.5em;
+}
+
+address {
+    margin: 0 0 1.5em;
+}
+
+pre {
+    background: #eee;
+    font-family: "Courier 10 Pitch", Courier, monospace;
+    font-size: 15px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin-bottom: 1.6em;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1.6em;
+}
+
+code, kbd, tt, var {
+    font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+    font-size: 15px;
+    font-size: 0.9375rem;
+}
+
+abbr, acronym {
+    border-bottom: 1px dotted #666;
+    cursor: help;
+}
+
+mark, ins {
+    background: #fff9c0;
+    text-decoration: none;
+}
+
+big {
+    font-size: 125%;
+}
+
+/*--------------------------------------------------------------
+# Elements
+--------------------------------------------------------------*/
+html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    /* Inherit box-sizing to make it easier to change the property for components that leverage other behavior; see https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/ */
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+body {
+    background: #fff;
+    /* Fallback for when there is no custom background color defined. */
+}
+
+hr {
+    background-color: #ccc;
+    border: 0;
+    height: 1px;
+    margin-bottom: 1.5em;
+}
+
+ul, ol {
+    margin: 0 0 1.5em 3em;
+}
+
+ul {
+    list-style: disc;
+}
+
+ol {
+    list-style: decimal;
+}
+
+li > ul,
+li > ol {
+    margin-bottom: 0;
+    margin-left: 1.5em;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin: 0 1.5em 1.5em;
+}
+
+img {
+    height: auto;
+    /* Make sure images are scaled correctly. */
+    max-width: 100%;
+    /* Adhere to container width. */
+}
+
+figure {
+    margin: 1em 0;
+    /* Extra wide images within figure tags don't overflow the content area. */
+}
+
+table {
+    margin: 0 0 1.5em;
+    width: 100%;
+}
+
+/*--------------------------------------------------------------
+# Forms
+--------------------------------------------------------------*/
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    border: 1px solid;
+    border-color: #ccc #ccc #bbb;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background: #e6e6e6;
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 12px;
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: .6em 1em .4em;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+    border-color: #ccc #bbb #aaa;
+}
+
+button:active, button:focus,
+input[type="button"]:active,
+input[type="button"]:focus,
+input[type="reset"]:active,
+input[type="reset"]:focus,
+input[type="submit"]:active,
+input[type="submit"]:focus {
+    border-color: #aaa #bbb #bbb;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="range"],
+input[type="date"],
+input[type="month"],
+input[type="week"],
+input[type="time"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="color"],
+textarea {
+    color: #666;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="range"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+input[type="time"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="color"]:focus,
+textarea:focus {
+    color: #111;
+}
+
+select {
+    font-family: "Open Sans", Sans-serif;
+    font-size: 14px;
+    border: 1px solid #cecece;
+    border-radius: 3px;
+    background-color: transparent;
+    width: 250px;
+    color: #333;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    padding: 8px;
+}
+
+textarea {
+    width: 100%;
+}
+
+.single-wfocu_offer td label, .single-wfocu_offer td .label, .single-wfocu_offer td input, .single-wfocu_offer td select, .single-wfocu_offer td form, .single-wfocu_offer td dl, .single-wfocu_offer td p {
+    margin: inherit;
+}
+
+.single-wfocu_offer .button, .single-wfocu_offer button, .single-wfocu_offer input, .single-wfocu_offer textarea, .single-wfocu_offer select, .single-wfocu_offer fieldset {
+    margin-bottom: inherit;
+}
+
+.single-wfocu_offer label {
+    font-size: 16px;
+    display: inline;
+    margin-bottom: 0;
+}
+
+/*--------------------------------------------------------------
+# Navigation
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+## Links
+--------------------------------------------------------------*/
+a {
+    color: royalblue;
+}
+
+/*a:visited {
+    color: purple;
+}*/
+
+/*a:hover, a:focus, a:active {
+    color: midnightblue;
+}
+
+a:focus {
+    outline: thin dotted;
+}*/
+
+a:hover, a:active {
+    outline: 0;
+}
+
+/*--------------------------------------------------------------
+# Accessibility
+--------------------------------------------------------------*/
+/* Text meant only for screen readers. */
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    -webkit-clip-path: inset(50%);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    width: 1px;
+    word-wrap: normal !important; /* Many screen reader and browser combinations announce broken words as they would appear visually. */
+}
+
+.screen-reader-text:focus {
+    background-color: #f1f1f1;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+    clip: auto !important;
+    -webkit-clip-path: none;
+    clip-path: none;
+    color: #21759b;
+    display: block;
+    font-size: 14px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    height: auto;
+    left: 5px;
+    line-height: normal;
+    padding: 15px 23px 14px;
+    text-decoration: none;
+    top: 5px;
+    width: auto;
+    z-index: 100000;
+    /* Above WP toolbar. */
+}
+
+/* Do not show the outline on the skip link target. */
+#content[tabindex="-1"]:focus {
+    outline: 0;
+}
+
+/*--------------------------------------------------------------
+# Alignments
+--------------------------------------------------------------*/
+.alignleft {
+    display: inline;
+    float: left;
+    margin-right: 1.5em;
+}
+
+.alignright {
+    display: inline;
+    float: right;
+    margin-left: 1.5em;
+}
+
+.aligncenter {
+    clear: both;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*--------------------------------------------------------------
+# Clearings
+--------------------------------------------------------------*/
+.clear:before,
+.clear:after {
+    content: "";
+    display: table;
+    table-layout: fixed;
+}
+
+.clear:after {
+    clear: both;
+}
+
+/*--------------------------------------------------------------
+# Widgets
+--------------------------------------------------------------*/
+.widget {
+    margin: 0 0 1.5em;
+    /* Make sure select elements fit in widgets. */
+}
+
+.widget select {
+    max-width: 100%;
+}
+
+/*--------------------------------------------------------------
+# Content
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Media
+--------------------------------------------------------------*/
+/* Make sure embeds and iframes fit their containers. */
+embed,
+iframe,
+object {
+    max-width: 100%;
+}
+
+.single-wfocu_offer .elementor-widget-container .elementor-image-gallery .gallery-item {
+    padding: 0;
+}
+
+/** OceanWP theme */
+.single-wfocu_offer #oceanwp-cart-sidebar-wrap, .single-wfocu_offer #owp-qv-wrap {
+    display: none;
+}
+
+/** Jupiter theme */
+.single-wfocu_offer .mk-post-nav.mk-post-prev, .single-wfocu_offer .mk-post-nav.mk-post-next {
+    display: none;
+}
+
+/** Avada theme */
+.single-wfocu_offer .fusion-privacy-bar.fusion-privacy-bar-bottom {
+    display: none;
+}
+
+/** Impreza theme */
+.single-wfocu_offer .elementor-image-gallery .w-gallery-item:last-child {
+    padding-right: 0;
+}
+
+.single-wfocu_offer .elementor-image-gallery .w-gallery-item {
+    padding-right: 5px;
+    display: inline-block;
+}
+
+.single-wfocu_offer .elementor-image-gallery .w-gallery-list {
+    display: block;
+    text-align: center;
+}
+
+.single-wfocu_offer.elementor-page .wfocu_skip_offer span, .wfocu_upsell span:not(.elementor-button-icon) {
+    display: block;
+}
+
+.wfocu_upsell span:not(.elementor-button-icon) span {
+    display: inline;
+}
+
+/** woodmart */
+.single-wfocu_offer .variations td {
+    border: none;
+}
+
+.single-wfocu_offer .woodmart-search-full-screen, .single-wfocu_offer .mobile-nav.slide-from-left, .single-wfocu_offer .cart-widget-side, .single-wfocu_offer .pswp__scroll-wrap {
+    display: none;
+}
+
+.wfocu-product-gallery a {
+    display: block;
+    text-align: center;
+}
+
+.wfocu-product-carousel-nav .wfocu-thumb-col {
+    text-align: -webkit-center;
+}
+
+.wfocu-skip-offer-link {
+    -webkit-transition: ease-in-out .4s all;
+    -khtml-transition: ease-in-out .4s all;
+    -moz-transition: ease-in-out .4s all;
+    -ms-transition: ease-in-out .4s all;
+    -o-transition: ease-in-out .4s all;
+    transition: ease-in-out .4s all;
+}
+.wfocuswal-modal.wfocuswal-popup {
+    width: 480px;
+    border-radius: 12px;
+}
+.wfocuswal-popup #wfocuswal-content {
+    font-size: 19px;
+    font-family: "Open Sans" sans-serif;
+}
+
+.single-wfocu_offer span.amount {
+    white-space: nowrap;
+    color: inherit;
+    font-weight: inherit;
+}
+
+.wfocu_upsell span.woocommerce-Price-amount.amount span,
+.wfocu_upsell span.woocommerce-Price-amount.amount {
+    display: inline-block;
+}
+
+/* Responsive CSS */
+
+@media (max-width: 767px) {
+    .single-wfocu_offer .elementor-widget-container .elementor-image-gallery {
+        text-align: center;
+    }
+
+    .single-wfocu_offer .elementor-widget-container .elementor-image-gallery figure img {
+        width: 50px
+    }
+
+    .single-wfocu_offer .elementor-widget-container .elementor-image-gallery .gallery {
+        display: block;
+    }
+
+    .single-wfocu_offer .elementor-widget-container .elementor-image-gallery .gallery-item {
+        padding-right: 5px;
+        display: inline-block;
+        float: none;
+        width: auto;
+    }
+
+    .single-wfocu_offer .elementor-widget-container .elementor-image-gallery .gallery-item:last-child {
+        padding-right: 0
+    }
+
+}
+
+/** Default Price CSS */
+
+.wfocu_default_price_full {
+    font-size: 32px;
+}
+
+.wfocu_default_price_full .woocommerce-Price-amount.amount {
+    color: #000 !important;
+    font-weight: bold !important;
+}
+
+.wfocu_default_price_full strike .woocommerce-Price-amount.amount {
+    color: #777 !important;
+    font-weight: 300 !important;
+    margin-right: 8px !important;
+}
+
+@media only screen and (max-width: 768px) {
+
+    .wfocu_default_price_full {
+        font-size: 24px;
+    }
+
+}
+
+@media only screen and (max-width: 480px) {
+    .wfocu_default_price_full {
+        font-size: 18px;
+    }
+}
+
+html.wfocu_html_boxed, body.wfocu_offer-template-wfocu-boxed {
+    background: #f5f5f5;
+}
+
+html.wfocu_html_canvas {
+    background: transparent;
+}
+
+@media (max-width: 767px) {
+    body .woofunnels-container.wfocu-boxed .woofunnels-primary {
+        padding: 15px;
+    }
+}
+
+@media (min-width: 768px) {
+    body .woofunnels-container.wfocu-boxed {
+        max-width: 1200px;
+        width: 100%;
+        margin: 60px auto;
+    }
+
+    body .woofunnels-container.wfocu-boxed .woofunnels-primary {
+        background-color: #fff;
+        padding: 70px;
+        overflow: hidden;
+        max-width: 100%;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .bwfac_reverse, .bwf_reverse_column {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
+
+.elementor-widget-wfocu-accept-offer-button .elementor-button-icon.elementor-align-icon-left {
+    display: inline-block;
+}
+
+body .et_pb_section.wfocu-divi-fullwidth .et_pb_row {
+    width: 100% !important
+}
+
+#page-container.wfocu-canvas {
+    padding-top: 0 !important;
+}
+
+.elementor-widget-wfocu-variation-selector.elementor-align-center .variations {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.elementor-widget-wfocu-variation-selector.elementor-align-right .variations {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.elementor-widget-wfocu-variation-selector.elementor-align-left .variations {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+@media (max-width: 1024px) {
+    .elementor-widget-wfocu-variation-selector.elementor-tablet-align-center .variations {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .elementor-widget-wfocu-variation-selector.elementor-tablet-align-right .variations {
+        margin-right: 0;
+        margin-left: auto;
+    }
+
+    .elementor-widget-wfocu-variation-selector.elementor-tablet-align-left .variations {
+        margin-right: auto;
+        margin-left: 0;
+    }
+
+}
+
+@media (max-width: 767px) {
+    .elementor-widget-wfocu-variation-selector.elementor-mobile-align-center .variations {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .elementor-widget-wfocu-variation-selector.elementor-mobile-align-right .variations {
+        margin-right: 0;
+        margin-left: auto;
+    }
+
+    .elementor-widget-wfocu-variation-selector.elementor-mobile-align-left .variations {
+        margin-right: auto;
+        margin-left: 0;
+    }
+}
+
+.wfocu_upsell .elementor-button-text.elementor-inline-editing {
+    display: inline-block !important;
+}
+
+.wfocu_offer-template .cardinalOverlay-content {
+    z-index: 9999999;
+}
+
+body.wfocu_credit_card_open .wfocuswal-icon.wfocuswal-success.wfocuswal-animate-success-icon {
+    display: none !important;
+}
+body.wfocu_credit_card_open.wfocu_credit_card_incomplete .wfocuswal-confirm{
+    opacity: 0.5
+}

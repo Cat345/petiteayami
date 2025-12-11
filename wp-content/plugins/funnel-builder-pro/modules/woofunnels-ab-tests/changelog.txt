@@ -1,0 +1,72 @@
+=== A/B Experiments for FunnelKit ===
+
+== Change log ==
+= 1.7.0 (24/01/2024) =
+* Added: Compatibility with Funnelkit Funnel Builder v3.0.0
+* Added: Feature to A/B test upsell single offer.
+
+= 1.6.0 (19/04/2023) =
+* Added: New settings to show variant on original variant link. (#205)
+* Improved: Handling for the case when a completed experiment has no variants. (#208)
+* Fixed: Duplicated variants were not sustaining its design if made using a block editor. (#3241)
+* Fixed: Post content was not getting copied correctly from upsell ab test after declaring a winner. (#1458)
+* Fixed: Analytics for A/B tests were not getting recorded when same URL variant setting is enabled. (#4139)
+
+= 1.5.1 (05/10/2022) =
+* Tweak: Rebranding related changes.
+
+= 1.5.0 (28/09/2022) =
+* Improved: Query for the ab variants optimized when hook to get ab tests works multiple times. (#173)
+* Improved: Optimised controller posts searching by making delayed query.(#156)
+* Fixed: An issue in deleting variant data on completion of A/B tests. (#165)
+* Fixed: Original tag on the original variant was not showing up after declaring winner. (#167)
+* Fixed: Upsell offers were not showing up in the correct order in analytics in some cases.(#175)
+* Fixed: Optin A/B tests custom redirection settings are not working when variant serves. (#184)
+* Fixed: An issue with not all meta copying when creating variant for the checkouts. (#185)
+
+= 1.4.1 (01/02/2022) =
+* Improved: Creating database tables on earlier priority. (#152)
+* Fixed: PHP 8.1 compatibility fixes. (#154)
+
+= 1.4.0 (17/01/2022) =
+* Added: Support for the Funnel Builder 2.0 with in built experiments module.
+* Improved: Better validation checks before experiments.
+* Improved: Removed archiving the variant and replaced it with draft mode for better consistency.
+* Fixed: Issue with replaced control being placed in the bottom instead of top of the list.
+* Fixed: Few edge cases when graph was not showing correct data of same day.
+* Fixed: Redirect issue with the variants when plain permalink settings is chosen in WordPress settings.
+
+= 1.3.5 (15/07/2021) =
+* Fixed: Add new button not showing after conflict with elementor v3.3.0. (#959)
+
+= 1.3.4 (31/05/2021) =
+* Improved: Optimized frond end mysql queries.
+* Improved: URL query parameters to be passed while redirecting to variants.
+* Fixed: Issue with limited search results while choosing control.
+* Fixed: Duplicating upsell variant with changes through customizer.
+
+= 1.3.3 (19/02/2021) =
+* Fixed: duplicating variant/control was failing on some edge cases.
+
+= 1.3.2 (10/02/2021) =
+* Fixed: Issue with upsells built under funnels were not showing in control search.
+* Fixed: Issue with ab test variant showing up when editor mode.
+
+= 1.3.1 (04/01/2021) =
+* Fixed: Issue with optin page redirecting to home page.
+* Fixed: Issue with limited search results while choosing control.
+
+= 1.3.0 (26/11/2020) =
+* Added: Ability to run A/B tests on sales pages, optin pages, optin thankyou, wc thankyou & checkout pages.
+
+= 1.2.0 (18/06/2020) =
+* Added: Compatibility with WC v4.2
+* Fixed: An issue with duplicate upsell variant not copying customizer changes.
+
+= 1.1.0 (12/02/2020) =
+* Improved: Reset stats feature.
+* Fixed: Critical error for breadcrumb class dependency.
+* Fixed: Text domain and textual changes.
+
+= 1.0.0 (20/11/2019) =
+* Public Release

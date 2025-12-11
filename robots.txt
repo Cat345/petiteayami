@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Crawl-delay:3
+Sitemap:https://petiteayami.com/sitemap.xml
+Sitemap:https://petiteayami.com/index.php?sitemap-announce093.xml
+Sitemap:https://petiteayami.com/index.php?sitemap-release076.xml
+Sitemap:https://petiteayami.com/index.php?sitemap-mostlike084.xml
+Sitemap:https://petiteayami.com/index.php?sitemap-scoop097.xml
+Sitemap:https://petiteayami.com/index.php?sitemap-offer061.xml

@@ -1,0 +1,55 @@
+.ubermenu .ubermenu-badge{
+  display:inline-block;
+  padding:.2em .5em;
+  border-radius:2px;
+  font-weight:normal;
+  font-size:11px;
+  margin-left:.6em;
+  background:#222;
+  color:#fff;
+  transform: translateZ(0); // layering with images on mobile
+}
+
+.rtl .ubermenu-badge{
+  margin-left:0;
+  margin-right:.6em;
+}
+.ubermenu .ubermenu-badge-inline-absolute{
+  position:absolute;
+}
+.ubermenu .ubermenu-badge-raised{
+  transform: translateY(-50%);
+}
+.ubermenu .ubermenu-badge-raised-absolute{
+  transform: translateY(-50%);
+  position:absolute;
+}
+
+.ubermenu .ubermenu-badge-topleft{
+  position:absolute;
+  top:0px;
+  left:0px;
+  margin:4px;
+}
+.ubermenu .ubermenu-badge-topright{
+  position:absolute;
+  top:0px;
+  right:0px;
+  margin:4px;
+}
+.ubermenu .ubermenu-badge-bottomleft{
+  position:absolute;
+  bottom:0px;
+  left:0px;
+  margin:4px;
+}
+.ubermenu .ubermenu-badge-bottomright{
+  position:absolute;
+  bottom:0px;
+  right:0px;
+  margin:4px;
+}
+
+.ubermenu .ubermenu-item-layout-image_above > .ubermenu-badge-inline{
+  margin:4px 0;
+}

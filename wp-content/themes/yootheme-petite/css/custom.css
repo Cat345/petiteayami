@@ -1,0 +1,26 @@
+.onsale{background:#f4c9dd!important;}
+.onsale2{
+  position: absolute;
+  top: 60px;
+  left: 15px;
+  z-index: 1;
+  height: 26px;
+  padding-left: 8px;
+  padding-right: 8px;
+  background: #000000;
+  color: #ffffff;
+  font-size: 11px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
+  font-family: 'Nunito Sans';
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.price {
+  font-size: 15px!important;}
+del .woocommerce-Price-amount bdi{color:#000; font-size: 14px!important;}
+ins .woocommerce-Price-amount bdi{color:#94295b;font-size: 18px!important; font-weight: 700;}
+.product .onsale{height: 30px!important;font-size: 15px!important;}

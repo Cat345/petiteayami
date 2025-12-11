@@ -1,0 +1,219 @@
+{
+    "@import": "./element.php",
+    "name": "button_item",
+    "title": "Item",
+    "width": 500,
+    "defaults": {
+        "button_style": "default",
+        "icon_align": "left",
+        "dialog_layout": "modal",
+        "dialog_offcanvas_flip": true
+    },
+    "placeholder": {
+        "props": {
+            "content": "Button",
+            "icon": "",
+            "link": "#"
+        }
+    },
+    "updates": "./updates.php",
+    "templates": {
+        "render": "./templates/template.php",
+        "content": "./templates/content.php"
+    },
+    "fields": {
+        "content": {
+            "label": "Content",
+            "source": true
+        },
+        "icon": {
+            "label": "Icon",
+            "description": "Pick an optional icon from the icon library.",
+            "type": "icon",
+            "source": true
+        },
+        "link": "${builder.link}",
+        "link_title": "${builder.link_title}",
+        "link_aria_label": "${builder.link_aria_label}",
+        "dialog": {
+            "label": "Dialog",
+            "description": "Instead of opening a link, display an alternative content in a modal or an offcanvas sidebar.",
+            "type": "editor",
+            "source": true,
+            "enable": "!link"
+        },
+        "button_style": {
+            "label": "Style",
+            "description": "Set the button style.",
+            "type": "select",
+            "options": {
+                "Default": "default",
+                "Primary": "primary",
+                "Secondary": "secondary",
+                "Danger": "danger",
+                "Text": "text",
+                "Link": "",
+                "Link Muted": "link-muted",
+                "Link Text": "link-text"
+            }
+        },
+        "icon_align": {
+            "label": "Alignment",
+            "description": "Choose the icon position.",
+            "type": "select",
+            "options": {
+                "Left": "left",
+                "Right": "right"
+            },
+            "enable": "icon"
+        },
+        "link_target": {
+            "label": "Target",
+            "type": "select",
+            "options": {
+                "Same Window": "",
+                "New Window": "blank",
+                "Modal": "modal"
+            },
+            "enable": "link"
+        },
+        "image_width": {
+            "attrs": {
+                "placeholder": "auto"
+            },
+            "enable": "link && link_target == 'modal'"
+        },
+        "image_height": {
+            "attrs": {
+                "placeholder": "auto"
+            },
+            "enable": "link && link_target == 'modal'"
+        },
+        "image_focal_point": {
+            "label": "Focal Point",
+            "description": "Set a focal point to adjust the image focus when cropping.",
+            "type": "select",
+            "options": {
+                "Top Left": "top-left",
+                "Top Center": "top-center",
+                "Top Right": "top-right",
+                "Center Left": "center-left",
+                "Center Center": "",
+                "Center Right": "center-right",
+                "Bottom Left": "bottom-left",
+                "Bottom Center": "bottom-center",
+                "Bottom Right": "bottom-right"
+            },
+            "source": true,
+            "enable": "link && link_target == 'modal'"
+        },
+        "dialog_layout": {
+            "label": "Target",
+            "type": "select",
+            "options": {
+                "Modal": "modal",
+                "Offcanvas": "offcanvas"
+            },
+            "enable": "dialog && !link"
+        },
+        "dialog_close_large": {
+            "label": "Close",
+            "type": "checkbox",
+            "text": "Display large icon",
+            "enable": "dialog && !link && dialog_layout"
+        },
+        "dialog_close_outside": {
+            "type": "checkbox",
+            "text": "Display outside",
+            "enable": "dialog && !link && dialog_layout == 'modal'"
+        },
+        "dialog_modal_width": {
+            "label": "Modal Width",
+            "type": "select",
+            "options": {
+                "Default": "",
+                "Container": "container",
+                "Expand": "expand"
+            },
+            "enable": "dialog && !link && dialog_layout == 'modal'"
+        },
+        "dialog_offcanvas_flip": {
+            "label": "Offcanvas",
+            "type": "checkbox",
+            "text": "Display on the right",
+            "enable": "dialog && !link && dialog_layout == 'offcanvas'"
+        },
+        "dialog_offcanvas_overlay": {
+            "type": "checkbox",
+            "text": "Overlay the site",
+            "enable": "dialog && !link && dialog_layout == 'offcanvas'"
+        },
+        "status": "${builder.statusItem}",
+        "source": "${builder.source}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Content",
+                    "fields": [
+                        "content",
+                        "icon",
+                        "link",
+                        "link_title",
+                        "link_aria_label",
+                        "dialog"
+                    ]
+                },
+                {
+                    "title": "Settings",
+                    "fields": [
+                        {
+                            "label": "Button",
+                            "type": "group",
+                            "divider": true,
+                            "fields": ["button_style"]
+                        },
+                        {
+                            "label": "Icon",
+                            "type": "group",
+                            "divider": true,
+                            "fields": ["icon_align"]
+                        },
+                        {
+                            "label": "Link",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "link_target",
+                                {
+                                    "label": "Width/Height",
+                                    "description": "Set the width and height for the content the link is linking to, i.e. image, video or iframe.",
+                                    "type": "grid",
+                                    "width": "1-2",
+                                    "fields": ["image_width", "image_height"]
+                                },
+                                "image_focal_point"
+                            ]
+                        },
+                        {
+                            "label": "Dialog",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "dialog_layout",
+                                "dialog_close_large",
+                                "dialog_close_outside",
+                                "dialog_modal_width",
+                                "dialog_offcanvas_flip",
+                                "dialog_offcanvas_overlay"
+                            ]
+                        }
+                    ]
+                },
+                "${builder.advancedItem}"
+            ]
+        }
+    }
+}

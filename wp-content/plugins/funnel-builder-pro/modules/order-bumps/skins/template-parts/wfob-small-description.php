@@ -1,0 +1,1 @@
+<div class="wfob_l3_c_sub_desc  show-read-more"><?php echo $small_description; ?></div>

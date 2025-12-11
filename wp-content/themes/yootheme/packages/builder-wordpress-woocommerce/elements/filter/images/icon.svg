@@ -1,0 +1,11 @@
+<svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <line fill="none" stroke="#444" stroke-width="2" x1="13" y1="6" x2="29" y2="6" />
+    <line fill="none" stroke="#444" stroke-width="2" x1="24" y1="15" x2="29" y2="15" />
+    <line fill="none" stroke="#444" stroke-width="2" x1="1" y1="15" x2="17" y2="15" />
+    <line fill="none" stroke="#444" stroke-width="2" x1="13" y1="24" x2="29" y2="24" />
+    <line fill="none" stroke="#444" stroke-width="2" x1="1" y1="24" x2="6" y2="24" />
+    <line fill="none" stroke="#444" stroke-width="2" x1="1" y1="6" x2="6" y2="6" />
+    <path fill="none" stroke="#444" stroke-width="2" d="m24.11,15.08c0,1.92-1.57,3.52-3.6,3.52-1.88,0-3.6-1.6-3.6-3.52s1.57-3.68,3.6-3.68c1.88,0,3.6,1.6,3.6,3.68Z" />
+    <path fill="none" stroke="#444" stroke-width="2" d="m13.19,6.08c0,1.92-1.57,3.52-3.6,3.52-1.88,0-3.6-1.6-3.6-3.52s1.57-3.68,3.6-3.68c1.88,0,3.6,1.6,3.6,3.68Z" />
+    <path fill="none" stroke="#444" stroke-width="2" d="m13.19,24.08c0,1.92-1.57,3.52-3.6,3.52-1.88,0-3.6-1.6-3.6-3.52s1.57-3.68,3.6-3.68c1.88,0,3.6,1.6,3.6,3.68Z" />
+</svg>

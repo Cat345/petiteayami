@@ -1,0 +1,2537 @@
+# Translation of Plugins - YITH WooCommerce Ajax Product Filter - Stable (latest release) in Russian
+# This file is distributed under the same license as the Plugins - YITH WooCommerce Ajax Product Filter - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-05-02 17:46:11+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - YITH WooCommerce Ajax Product Filter - Stable (latest release)\n"
+
+#. translators: 1. Number of terms shown of first loading.
+#: plugin-options/general-options.php:44
+msgctxt "[ADMIN] General settings page"
+msgid "When enabled, taxonomy filters won't show more than %d terms. If there are more terms available, the system will show a \"Load more\" link to show the remaining terms"
+msgstr "Если этот параметр включен, фильтры таксономии не будут отображать более %d терминов. Если доступно больше терминов, система отобразит ссылку «Загрузить еще», чтобы отобразить оставшиеся термины."
+
+#: plugin-options/general-options.php:41
+msgctxt "[ADMIN] General settings page"
+msgid "Paginate terms"
+msgstr "Разбивка на страницы терминов"
+
+#: plugin-options/general-options.php:33
+msgctxt "[ADMIN] General settings page"
+msgid "Choose whether to use lazy loading for the filters in the preset to speed up the initial page loading"
+msgstr "Выберите, следует ли использовать отложенную загрузку фильтров в предустановке, чтобы ускорить первоначальную загрузку страницы"
+
+#: plugin-options/general-options.php:32
+msgctxt "[ADMIN] General settings page"
+msgid "Lazy filters loading"
+msgstr "Отложенная загрузка фильтров"
+
+#: includes/class-yith-wcan-frontend.php:790
+#: templates/admin/preset-filter-terms.php:42
+#: templates/filters/filter-tax.php:48
+msgctxt "[FRONTEND] Show more link on tax filters"
+msgid "Show more"
+msgstr "Показать еще"
+
+#: plugin-fw/includes/class-yith-post-type-admin.php:470
+msgid "Reset filters"
+msgstr "Сбросить фильтры"
+
+#. translators: Hidden accessibility text.
+#: plugin-fw/includes/class-yith-post-type-admin.php:414
+msgid "Show more details"
+msgstr "Показать больше информации"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-filters.php:74
+msgctxt "[GUTENBERG]: block empty message"
+msgid "Please, choose the preset to render"
+msgstr "Пожалуйста, выберите пресет для рендеринга"
+
+#: plugin-options/seo-options.php:25
+msgctxt "[ADMIN] Seo settings page"
+msgid "SEO settings"
+msgstr "Настройки СЕО"
+
+#: plugin-options/general-options.php:59
+msgctxt "[ADMIN] General settings page"
+msgid "Reset button"
+msgstr "Кнопка сброса"
+
+#: plugin-fw/includes/class-yit-plugin-panel-woocommerce.php:500
+#: plugin-fw/includes/class-yit-plugin-panel.php:1562
+msgid "Options saved!"
+msgstr "Параметры сохранены!"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:203
+msgid ""
+"This item will be removed from the list.\n"
+"Do you wish to continue?"
+msgstr ""
+"Этот пункт будет удален из списка.\n"
+"Вы хотите продолжить?"
+
+#: includes/class-yith-wcan-admin.php:208
+msgctxt "[Admin] Tab description"
+msgid "Configure options to optimize SEO indexing on any page that includes filters."
+msgstr "Настройте параметры для оптимизации SEO-индексации на любой странице, включающей фильтры."
+
+#: includes/class-yith-wcan-admin.php:203
+msgctxt "[Admin] tab description"
+msgid "Configure the general settings of the plugin"
+msgstr "Настройка общих параметров плагина"
+
+#: includes/class-yith-wcan-admin.php:199
+msgid "The list of all filter sets created and configured for your shop."
+msgstr "Список всех наборов фильтров, созданных и настроенных для вашего магазина."
+
+#: plugin-fw/templates/panel/v2/premium-tab.php:24
+msgctxt "Premium Tab"
+msgid "Check out the advanced features you can get by upgrading to premium!"
+msgstr "Ознакомьтесь с расширенными функциями, которые вы можете получить, перейдя на премиум-версию!"
+
+#: plugin-fw/templates/panel/v2/premium-tab.php:22
+msgctxt "Premium Tab"
+msgid "Upgrade to unlock premium features"
+msgstr "Обновите, чтобы разблокировать премиум-функции"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:124
+msgctxt "Premium Tab"
+msgid "Verified Customer"
+msgstr "Проверенный клиент"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:98
+msgctxt "Premium Tab"
+msgid "100% Money-back guarantee"
+msgstr "100% гарантия возврата денег"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:97
+msgctxt "Premium Tab"
+msgid "Technical support"
+msgstr "Техническая поддержка"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:96
+msgctxt "Premium Tab"
+msgid "Regular updates"
+msgstr "Регулярные обновления"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:95
+msgctxt "Premium Tab"
+msgid "Advanced features"
+msgstr "Расширенные возможности"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:83
+msgctxt "Premium Tab"
+msgid "Upgrade now to unlock premium features"
+msgstr "Обновите сейчас, чтобы разблокировать премиум-функции"
+
+#. translators: %s is the discount percentage.
+#: plugin-fw/templates/panel/premium-tab-content.php:79
+msgctxt "Premium Tab"
+msgid "Upgrade now to get a %s%% off"
+msgstr "Обновите сейчас, чтобы получить скидку %s%%"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1305
+msgid ""
+"At first, I was hesitant to buy the premium version so I started with the free option.\n"
+"After a while, seeing the quality of the plugin and the results I was getting, I decided to give it a shot and switch to premium. No regrets!\n"
+"They have an amazing support team that is always there no matter how big or small your problem is. Do yourself a favor and stop using free plugins that kind of work and just buy whatever plugin you need from YITH."
+msgstr ""
+"Сначала я не решался покупать премиум-версию, поэтому начал с бесплатной версии.\n"
+"Через некоторое время, увидев качество плагина и результаты, которые я получаю, я решил попробовать и перейти на премиум. Без сожалений!\n"
+"У них замечательная команда поддержки, которая всегда рядом, независимо от того, насколько велика или мала ваша проблема. Сделайте себе одолжение и перестаньте использовать бесплатные плагины, которые работают, и просто купите любой плагин, который вам нужен, у YITH."
+
+#: plugin-fw/templates/panel/v2/your-store-tools-tab.php:51
+msgctxt "Plugin in \"Your Store Tools\" tab"
+msgid "Get it"
+msgstr "Получить это"
+
+#: plugin-fw/templates/panel/v2/your-store-tools-tab.php:46
+msgctxt "Plugin in \"Your Store Tools\" tab"
+msgid "Active"
+msgstr "Активен"
+
+#: plugin-fw/templates/panel/v2/your-store-tools-tab.php:35
+msgctxt "Plugin in \"Your Store Tools\" tab"
+msgid "Best choice"
+msgstr "Лучший выбор"
+
+#: plugin-fw/templates/panel/v2/your-store-tools-tab.php:21
+msgid "Additional tools to improve UX, increase conversions, and loyalize customers."
+msgstr "Дополнительные инструменты для улучшения пользовательского интерфейса, увеличения конверсии и повышения лояльности клиентов."
+
+#: plugin-fw/templates/panel/v2/your-store-tools-tab.php:17
+msgid "#1 Independent Seller of <mark>WooCommerce plugins</mark>"
+msgstr "#Независимый продавец № 1 плагинов <mark>WooCommerce</mark>"
+
+#: plugin-fw/templates/fields/ajax-orders.php:16
+msgid "Search for an order..."
+msgstr "Поиск заказа..."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:992
+msgctxt "Panel tab name"
+msgid "Your Store Tools"
+msgstr "Инструменты магазина"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:45
+#: plugin-fw/templates/panel/v2/panel-option-label-tags.php:16
+msgctxt "Panel option tag"
+msgid "PREMIUM"
+msgstr "ПРЕМИУМ"
+
+#: plugin-fw/templates/panel/v2/panel-nav.php:36
+#: plugin-fw/templates/sysinfo/system-information-panel.php:46
+msgid "Collapse"
+msgstr "Свернуть"
+
+#: plugin-fw/templates/fields/media.php:72
+msgid "Upload a file"
+msgstr "Загрузить файл"
+
+#. translators: %s is the alternative action "Upload a file".
+#: plugin-fw/templates/fields/media.php:71
+msgid "Drag or %s"
+msgstr "Перетащить или %s"
+
+#: plugin-fw/templates/fields/media.php:53
+msgid "Enter URL"
+msgstr "Введите URL"
+
+#: plugin-fw/templates/fields/media.php:47
+msgid "Upload file"
+msgstr "Загрузить файл"
+
+#: plugin-fw/templates/fields/file.php:14
+msgid "Drag or upload a file."
+msgstr "Перетащите или загрузите файл."
+
+#: plugin-fw/includes/class-yit-plugin-panel-woocommerce.php:557
+msgid "Options reset correctly!"
+msgstr "Параметры сброшены корректно!"
+
+#: plugin-fw/includes/class-yit-assets.php:214
+msgid "You cannot drop files here."
+msgstr "Сюда нельзя сбрасывать файлы."
+
+#: plugin-fw/includes/class-yit-assets.php:213
+msgid "No file provided."
+msgstr "Файл не предоставлен."
+
+#: plugin-fw/includes/class-yit-assets.php:212
+msgctxt "Title"
+msgid "Error"
+msgstr "Ошибка"
+
+#: plugin-fw/includes/class-yit-assets.php:200
+msgctxt "Enhanced select"
+msgid "Searching&hellip;"
+msgstr "Идет поиск&hellip;"
+
+#. translators: %s is the number of characters.
+#: plugin-fw/includes/class-yit-assets.php:199
+msgctxt "Enhanced select"
+msgid "Please enter %s or more characters"
+msgstr "Введите %s или более символов"
+
+#: plugin-fw/includes/class-yit-assets.php:197
+msgctxt "Enhanced select"
+msgid "Please enter 1 or more characters"
+msgstr "Введите 1 или более символов"
+
+#: plugin-fw/includes/class-yit-assets.php:196
+msgctxt "Enhanced select"
+msgid "No matches found"
+msgstr "Подходящие значения не найдены"
+
+#. translators: %s is the number of steps.
+#: plugin-fw/templates/panel/welcome-modals/welcome.php:45
+msgid "Start with these %s steps:"
+msgstr "Начните с этих %s шагов:"
+
+#: plugin-fw/templates/panel/welcome-modals/welcome.php:30
+msgid "Thank you for using our plugin"
+msgstr "Благодарим вас за использование нашего плагина"
+
+#: plugin-fw/templates/panel/welcome-modals/update.php:64
+#: plugin-fw/templates/panel/welcome-modals/welcome.php:60
+msgid "Got it, close this window"
+msgstr "Понял, закрой это окно"
+
+#: plugin-fw/templates/panel/welcome-modals/update.php:49
+msgid "Check the changelog >"
+msgstr "Проверьте список изменений >"
+
+#. translators: %s is the plugin version.
+#: plugin-fw/templates/panel/welcome-modals/update.php:44
+msgid "What's new in version %s"
+msgstr "Что нового в версии %s"
+
+#. translators: %s is the plugin version.
+#: plugin-fw/templates/panel/welcome-modals/update.php:34
+msgid "is successfully updated to version %s."
+msgstr "успешно обновлен до версии %s."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1185
+msgid "See how it works before you start using it"
+msgstr "Посмотрите, как это работает, прежде чем начать его использовать"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1184
+msgid "Watch our <mark>\"First Steps\" video</mark>"
+msgstr "Посмотрите наше <mark>видео \"Первые шаги\"</mark>"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1174
+msgid "Learn what you can really do with this powerful tool"
+msgstr "Узнайте, что вы действительно можете сделать с помощью этого мощного инструмента"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1173
+msgid "Read the <mark>plugin documentation</mark>"
+msgstr "Прочитайте <mark>документацию</mark> по плагину"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:66
+msgctxt "Premium Tab"
+msgid "Check the premium features >"
+msgstr "Проверьте премиум-возможности >"
+
+#: plugin-fw/templates/panel/help-tab.php:241
+msgctxt "Help tab support"
+msgid "Yes, I need help"
+msgstr "Да, мне нужна помощь"
+
+#: plugin-fw/templates/panel/help-tab.php:238
+msgctxt "Help tab support"
+msgid "Call or chat 24/7 with our support agents, or let our experts build your site."
+msgstr "Звоните или общайтесь с нашими агентами поддержки 24/7 или позвольте нашим специалистам создать ваш сайт."
+
+#: plugin-fw/templates/panel/help-tab.php:235
+msgctxt "Help tab support"
+msgid "From DIY to full-service help"
+msgstr "От «сделай сам» до комплексной помощи"
+
+#: plugin-fw/templates/panel/help-tab.php:231
+#: plugin-fw/templates/panel/help-tab.php:233
+msgctxt "Help tab support"
+msgid "Need some help?"
+msgstr "Нужна помощь?"
+
+#: plugin-fw/templates/panel/help-tab.php:220
+msgctxt "Help tab documentation"
+msgid "to learn how it works from the basics."
+msgstr "чтобы узнать, как это работает, с самых основ."
+
+#: plugin-fw/templates/panel/help-tab.php:216
+#: plugin-fw/templates/panel/help-tab.php:218
+#: plugin-fw/templates/panel/help-tab.php:223
+msgctxt "Help tab documentation"
+msgid "Read the plugin documentation"
+msgstr "Ознакомьтесь с документацией плагина"
+
+#: plugin-fw/templates/bh-onboarding/onboarding-tabs.php:60
+msgid "Save"
+msgstr "Сохранить"
+
+#: plugin-fw/includes/class-yith-bh-onboarding.php:85
+msgid "It is not possible save the options"
+msgstr "Невозможно сохранить параметры"
+
+#. translators: 1. Plugin name.
+#: plugin-fw/includes/class-yit-plugin-panel.php:920
+msgctxt "Help tab default title"
+msgid "Thank you for using %s!"
+msgstr "Благодарим за использование %s!"
+
+#: init.php:177
+msgid "YITH WooCommerce Ajax Product Filter was deactivated as you're running an higher tier version of the same plugin."
+msgstr "YITH WooCommerce Ajax Product Filter был деактивирован, так как вы используете версию того же подключаемого модуля более высокого уровня."
+
+#. translators: 1. Plugin(s) name(s).
+#: plugin-fw/yit-plugin.php:282
+msgid "%s was deactivated as you're running an higher tier version of the same plugin."
+msgid_plural "%s were deactivated as you're running higher tier versions of the same plugins."
+msgstr[0] "%s был деактивирован, так как вы используете версию того же плагина более высокого уровня."
+msgstr[1] "%s был деактивирован, так как вы используете версию того же плагина более высокого уровня."
+msgstr[2] "%s был деактивирован, так как вы используете версию того же плагина более высокого уровня."
+
+#: plugin-fw/templates/fields/ajax-terms.php:41
+msgid "Search for a category..."
+msgstr "Поиск по категории..."
+
+#: plugin-fw/templates/fields/ajax-posts.php:41
+msgid "Search for a post..."
+msgstr "Поиск по записи..."
+
+#: plugin-fw/templates/fields/ajax-customers.php:41
+msgid "Search for a customer..."
+msgstr "Поиск по клиенту..."
+
+#: plugin-fw/templates/panel/help-tab.php:142
+msgctxt "Help tab Watch video tutorials link"
+msgid "to see some helpful use cases."
+msgstr "чтобы увидеть некоторые полезные варианты использования."
+
+#: plugin-fw/templates/panel/help-tab.php:129
+msgctxt "Help tab Read Documentation link"
+msgid "to learn how the plugin works from the basics."
+msgstr "чтобы узнать, как работает плагин, с самых основ."
+
+#: includes/class-yith-wcan-admin.php:232
+msgid "<b>Regular updates, Translations and Premium Support</b>"
+msgstr "<b>Регулярные обновления, переводы и премиум-поддержка</b>"
+
+#: includes/class-yith-wcan-admin.php:231
+msgid "Choose how to manage terms not availables: hide them OR shown them in grey color and not clickables "
+msgstr "Выберите способ управления недоступными терминами: скрыть их или показать серым цветом и не кликабельными "
+
+#: includes/class-yith-wcan-admin.php:230
+msgid "Choose the <b>order of the options</b> (alphabetical, terms order, terms count, etc.), enable tooltips and show each set of filters in toggle"
+msgstr "Выберите <b>порядок настроек</b> (алфавитный, по порядку терминов, по количеству терминов и т. д.), включите подсказки и показывайте каждый набор фильтров в виде переключателя."
+
+#: includes/class-yith-wcan-admin.php:229
+msgid "Show the options using <b>custom images or icons</b>"
+msgstr "Показать настройки с использованием <b>пользовательских изображений или иконок</b>"
+
+#: includes/class-yith-wcan-admin.php:228
+msgid "Create <b>color swatches with image support</b> (to better identify gradients, textures, patterns, etc.) and with 2 colors"
+msgstr "Создайте <b>палитру цветов с поддержкой изображений</b> (для лучшего определения градиентов, текстур, паттернов и т. д.) и с 2 цветами."
+
+#: includes/class-yith-wcan-admin.php:227
+msgid "<b>Show the active filters</b> (with X to remove them) and choose their position (above products, above or under filters area)"
+msgstr "<b>Показать активные фильтры</b> (с X для их удаления) и выбрать их положение (над товарами, над или под областью фильтров)"
+
+#: includes/class-yith-wcan-admin.php:226
+msgid "Allow users to <b>order products</b> (by popularity, date, price, date of publishing, average rating, etc) and see only \tproducts in stock/featured/on sale"
+msgstr "Разрешить пользователям <b>заказывать товары</b> (по популярности, дате, цене, дате публикации, среднему рейтингу и т. д.) и видеть только товары в наличии/рекомендуемые товары/в продаже"
+
+#: includes/class-yith-wcan-admin.php:225
+msgid "Allow customers to <b>filter for review</b> and <b>for brand</b> (with the support to YITH WooCommerce Brands plugin)"
+msgstr "Разрешить клиентам <b>фильтровать для обзора</b> и <b>для бренда</b> (с поддержкой плагина YITH WooCommerce Brands)"
+
+#: includes/class-yith-wcan-admin.php:224
+msgid "Allow customers to <b>filter for price ranges</b> (unlimited ranges and the last range can show: “& above”) or using the <b>price slider</b>"
+msgstr "Разрешить клиентам <b>фильтровать ценовые диапазоны</b> (неограниченное количество диапазонов, последний диапазон может показывать: «& выше») или использовать <b>ползунок цен</b>"
+
+#: includes/class-yith-wcan-admin.php:223
+msgid "Show filters in the default layout or also in an <b>horizontal toolbar above products</b> (like Zalando)"
+msgstr "Показывать фильтры в стандартной разметке или также в горизонтальной панели инструментов над товарами (как у Zalando)."
+
+#: includes/class-yith-wcan-admin.php:222
+msgid "<b>100% mobile friendly:</b> Show filters in a modal view which is purposely designed for users visiting your site by smartphones or tablets"
+msgstr "<b>100% мобильная дружественность:</b> Показывайте фильтры в модальном представлении, которое специально разработано для пользователей, посещающих ваш сайт со смартфонов или планшетов"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:102
+msgctxt "Premium Tab"
+msgid "Get the premium version"
+msgstr "Получите премиум-версию"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:62
+msgctxt "Premium Tab"
+msgid "Check the free vs premium features >"
+msgstr "Проверьте бесплатные и премиум-функции >"
+
+#: plugin-fw/templates/panel/premium-tab-content.php:59
+msgctxt "Premium Tab"
+msgid "...and so much more!"
+msgstr "и много других возможностей!"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:977
+msgctxt "Premium tab name"
+msgid "Get premium"
+msgstr "Получить премиум"
+
+#. Translators: %1$f: Table size, %2$f: Index size, %3$f: Free size, %4$s
+#. Engine.
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:57
+msgid "Data: %1$.2fMB | Index: %2$.2fMB | Free: %3$.2fMB | Engine: %4$s"
+msgstr "Данные: %1$.2fMB | Индексы: %2$.2fMB | Свободно: %3$.2fMB | Движок: %4$s"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:46
+msgid "Database Free Size"
+msgstr "База данных в свободном размере"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:42
+msgid "Database Index Size"
+msgstr "Размер индекса базы данных"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:38
+msgid "Database Data Size"
+msgstr "Размер данных в базе данных"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:34
+msgid "Total Database Size"
+msgstr "Общий размер базы данных"
+
+#. Translators: %s: Codex link.
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:19
+msgid "WordPress requirements"
+msgstr "Требования WordPress"
+
+#. Translators: %s: Codex link.
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:19
+msgid "WordPress recommends a minimum MySQL version of 5.6. See: %s"
+msgstr "WordPress рекомендует минимальную версию MySQL 5.6. Смотрите: %s"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:28
+msgid "MySQL version"
+msgstr "Версия MYSQL"
+
+#: plugin-fw/templates/sysinfo/tabs/db-info.php:24
+msgid "Database Info"
+msgstr "Данные о БД"
+
+#. translators: %s is the name of the plugin that is loading the framework.
+#: plugin-fw/templates/sysinfo/tabs/main.php:66
+msgid "loaded by %s"
+msgstr "загружено %s"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:61
+msgid "YITH Plugin Framework Version"
+msgstr "Версия фреймворка плагинов YITH"
+
+#: templates/admin/preset-edit.php:47
+msgctxt "[ADMIN] Preset save message"
+msgid "Preset saved correctly"
+msgstr "Предустановка сохранена правильно"
+
+#: plugin-options/filter-options.php:138
+msgctxt "[Admin] Filter edit form"
+msgid "Terms options"
+msgstr "Варианты настройки"
+
+#: plugin-options/filter-options.php:128
+msgctxt "[Admin] Filter edit form"
+msgid ""
+"Configure your terms individually; system will otherwise use default labels/images for terms.\n"
+"\t\t\t\t\t<span class=\"wccl-notice\"><b>Notice:</b> optionally,  you can configure labels/images/colors for your attributes using YITH WooCommerce Color and Label Variations options, in the term's edit page. Otherwise, just enable this option and use boxes below.</span>\n"
+"\t\t\t\t\t<span class=\"images-notice\"><b>Notice:</b> optionally, you can configure the images in ‘edit page’ for the terms. Otherwise, just enable this option and use the boxes below</span>"
+msgstr ""
+"Настройте свои условия индивидуально; в противном случае система будет использовать ярлыки / изображения по умолчанию для терминов.\n"
+"\t\t\t\t\t<span class=\"wccl-notice\"><b>Примечание:</b> при желании вы можете настроить ярлыки / изображения / цвета для своих атрибутов с помощью параметров YITH WooCommerce Color и Label Variations на странице редактирования термина. В противном случае просто включите этот параметр и используйте поля ниже.</span>\n"
+"\t\t\t\t\t<span class=\"images-notice\"><b>Примечание:</b> при желании вы можете настроить изображения на «странице редактирования» для условий. В противном случае просто включите эту опцию и используйте поля ниже</span>"
+
+#: plugin-options/filter-options.php:112
+msgctxt "[Admin] Filter edit form"
+msgid "Choose if and where to show the label inside your filter"
+msgstr "Выберите, нужно ли и где отображать метку внутри вашего фильтра"
+
+#: plugin-options/filter-options.php:110
+msgctxt "[Admin] Filter edit form"
+msgid "Hide"
+msgstr "Скрыть"
+
+#: plugin-options/filter-options.php:109
+msgctxt "[Admin] Filter edit form"
+msgid "Show on the right"
+msgstr "Показать справа"
+
+#: plugin-options/filter-options.php:108
+msgctxt "[Admin] Filter edit form"
+msgid "Show below"
+msgstr "Показать ниже"
+
+#: plugin-options/filter-options.php:105
+msgctxt "[Admin] Filter edit form"
+msgid "Labels"
+msgstr "Этикетки"
+
+#: plugin-options/filter-options.php:79
+msgctxt "[Admin] Filter edit form"
+msgid ""
+"Populate this filter with all existing terms of the selected taxonomy.\n"
+"\t\t\t\t\t<span class=\"future-terms-notice\"><b>Notice:</b> if you enable this option, all terms created in the future will be added to this filter as well.</span>"
+msgstr ""
+"Заполните этот фильтр всеми существующими терминами из выбранной таксономии.\n"
+"<span class=\"future-terms-notice\"><b>Предупреждение:</b> Если вы активируете этот параметр, все термины, созданные в будущем, также будут добавлены в этот фильтр.</span>"
+
+#: plugin-options/filter-options.php:77
+msgctxt "[Admin] Filter edit form"
+msgid "Auto-populate with all terms"
+msgstr "Заполнить автоматически всеми терминами"
+
+#: plugin-fw/templates/fields/image-dimensions.php:23
+msgctxt "Image height field label"
+msgid "Height"
+msgstr "Высота"
+
+#: plugin-fw/templates/fields/image-dimensions.php:18
+msgctxt "Image width field label"
+msgid "Width"
+msgstr "Ширина"
+
+#: plugin-fw/templates/panel/help-tab.php:204
+msgctxt "Help tab submit ticket button"
+msgid "Submit a ticket"
+msgstr "Отправить запрос"
+
+#: plugin-fw/templates/panel/help-tab.php:196
+msgctxt "Help tab submit ticket description"
+msgid "If you are experiencing any technical issues, ask for help from our developers. Submit a ticket through our support desk and we will help you as soon as possible."
+msgstr "Если у вас возникли какие-то технические проблемы, обратитесь за помощью к нашим разработчикам. Отправьте заявку в нашу службу поддержки, и мы поможем вам как можно скорее."
+
+#: plugin-fw/templates/panel/help-tab.php:193
+msgctxt "Help tab submit ticket title"
+msgid "Need help?"
+msgstr "Нужна помощь?"
+
+#: plugin-fw/templates/panel/help-tab.php:184
+msgctxt "Help tab FAQ link"
+msgid "View all FAQs >"
+msgstr "Просмотреть все часто задаваемые вопросы >"
+
+#: plugin-fw/templates/panel/help-tab.php:170
+msgctxt "Help tab FAQ title"
+msgid "Last FAQs in our Help Center"
+msgstr "Последние часто задаваемые вопросы в нашем Справочном центре"
+
+#: plugin-fw/templates/panel/help-tab.php:155
+msgctxt "Help tab view FAQs link"
+msgid "to find answers to your doubts."
+msgstr "найти ответы на свои сомнения."
+
+#: plugin-fw/templates/panel/help-tab.php:152
+msgctxt "Help tab view FAQs link"
+msgid "Check the FAQs"
+msgstr "Проверьте ответы на часто задаваемые вопросы"
+
+#: plugin-fw/templates/panel/help-tab.php:139
+msgctxt "Help tab Watch video tutorials link"
+msgid "Watch our video tutorials"
+msgstr "Просмотрите наши видеоинструкции"
+
+#: plugin-fw/templates/panel/help-tab.php:126
+msgctxt "Help tab Read Documentation link"
+msgid "Read the documentation"
+msgstr "Читать документацию"
+
+#: plugin-fw/templates/panel/help-tab.php:96
+msgctxt "Help tab Watch Videotutorials link"
+msgid "Videos are also available in:"
+msgstr "Видео также доступны на:"
+
+#. translators: 1. Url to EN playlist.
+#: plugin-fw/templates/panel/help-tab.php:89
+msgctxt "Help tab view all video link"
+msgid "Check the full <a href=\"%s\" target=\"_blank\">Playlist on Youtube</a> to learn more >"
+msgstr "Просмотрите полный <a href=\"%s\" target=\"_blank\">плейлист на Youtube</a>, чтобы узнать больше >"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:929
+msgctxt "Help tab default description"
+msgid "We want to help you enjoy a wonderful experience with all of our products."
+msgstr "Мы хотим помочь вам насладиться прекрасным опытом работы со всеми нашими продуктами."
+
+#. translators: 1. Plugin name.
+#: plugin-fw/includes/class-yit-plugin-panel.php:920
+msgctxt "Help tab default title"
+msgid "Thank you for purchasing %s!"
+msgstr "Благодарим за покупку %s!"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1007
+msgctxt "Help tab name"
+msgid "Help"
+msgstr "Помощь"
+
+#: plugin-fw/includes/class-yit-assets.php:241
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Вы уверены, что хотите удалить выбранные элементы?"
+
+#: plugin-fw/includes/class-yit-assets.php:237
+msgid "Are you sure you want to trash the selected items?"
+msgstr "Вы уверены, что хотите удалить выбранные элементы?"
+
+#: plugin-fw/includes/class-yit-help-desk.php:148
+msgid "There was an error with your request; please try again later."
+msgstr "Возникла ошибка при обработке вашего запроса. Повторите попытку."
+
+#: plugin-fw/includes/class-yit-assets.php:238 plugin-fw/yit-functions.php:1996
+msgctxt "Trash confirmation action"
+msgid "Yes, move to trash"
+msgstr "Да, переместить в корзину"
+
+#: includes/class-yith-wcan-admin.php:240
+msgctxt "[HELP TAB] Video title"
+msgid "Check this video to learn how to <b>create a filter preset and show it on the shop page:</b>"
+msgstr "Посмотрите это видео, чтобы узнать, как <b>создать предустановку фильтра и показать ее на странице магазина:</b>"
+
+#: includes/class-yith-wcan-admin.php:108
+msgctxt "[Admin] Error message"
+msgid "\"Filter title\" is a required field"
+msgstr "\"Название фильтра\" - обязательное поле."
+
+#: includes/class-yith-wcan-presets-factory.php:167
+msgctxt "[Admin] Label in new preset page"
+msgid "Default"
+msgstr "По умолчанию"
+
+#: includes/class-yith-wcan-frontend.php:792
+msgctxt "[FRONTEND] Label for filter button, on horizontal layout"
+msgid "Save"
+msgstr "Сохранить"
+
+#. translators: %s is the name of the post type (example Back to "Membership
+#. Plans").
+#: plugin-fw/includes/class-yith-post-type-admin.php:294
+msgid "Back to the list"
+msgstr "Вернуться к списку"
+
+#. translators: %s is the name of the post type (example Back to "Membership
+#. Plans").
+#: plugin-fw/includes/class-yith-post-type-admin.php:294
+msgid "Back to \"%s\""
+msgstr "Вернуться к \"%s\""
+
+#: plugin-fw/includes/class-yit-assets.php:225
+msgctxt "Button text"
+msgid "Cancel"
+msgstr "Отмена"
+
+#: plugin-fw/includes/class-yit-assets.php:224
+msgctxt "Button text"
+msgid "Confirm"
+msgstr "Подтверждаю"
+
+#: plugin-fw/templates/panel/woocommerce/woocommerce-form.php:31
+msgid "Options Saved"
+msgstr "Параметры сохранены"
+
+#: plugin-fw/templates/panel/v2/panel-content-page.php:57
+#: plugin-fw/templates/panel/v2/woocommerce/woocommerce-form.php:69
+#: plugin-fw/templates/panel/woocommerce/woocommerce-form.php:27
+#: plugin-fw/templates/panel/woocommerce/woocommerce-form.php:31
+msgid "Save Options"
+msgstr "Сохранить параметры"
+
+#: plugin-fw/yit-functions.php:2131
+msgctxt "Term action"
+msgid "Delete"
+msgstr "Удалить"
+
+#: plugin-fw/yit-functions.php:2118
+msgctxt "Term action"
+msgid "Duplicate"
+msgstr "Дублировать"
+
+#: plugin-fw/yit-functions.php:2110
+msgctxt "Term action"
+msgid "Edit"
+msgstr "Изменить"
+
+#: plugin-fw/yit-functions.php:2100
+msgctxt "Term action"
+msgid "View"
+msgstr "Перейти"
+
+#: plugin-fw/yit-functions.php:2025 plugin-fw/yit-functions.php:2033
+#: plugin-fw/yit-functions.php:2149
+msgid "Further actions"
+msgstr "Дальнейшие действия"
+
+#: plugin-fw/includes/class-yit-assets.php:242 plugin-fw/yit-functions.php:2014
+#: plugin-fw/yit-functions.php:2140
+msgctxt "Delete confirmation action"
+msgid "Yes, delete"
+msgstr "Да, удалить"
+
+#: plugin-fw/includes/class-yit-assets.php:240 plugin-fw/yit-functions.php:2011
+#: plugin-fw/yit-functions.php:2138
+msgid "Confirm delete"
+msgstr "Подтвердите удаление"
+
+#: plugin-fw/yit-functions.php:2004
+msgctxt "Post action"
+msgid "Delete Permanently"
+msgstr "Удалить навсегда"
+
+#: plugin-fw/includes/class-yit-assets.php:236 plugin-fw/yit-functions.php:1993
+msgid "Confirm trash"
+msgstr "Подтвердить корзину"
+
+#: plugin-fw/yit-functions.php:1987
+msgctxt "Post action"
+msgid "Trash"
+msgstr "Корзина"
+
+#: plugin-fw/yit-functions.php:1979
+msgctxt "Post action"
+msgid "Restore"
+msgstr "Восстановить"
+
+#: plugin-fw/yit-functions.php:1967
+msgctxt "Post action"
+msgid "Duplicate"
+msgstr "Дублировать"
+
+#: plugin-fw/yit-functions.php:1959
+msgctxt "Post action"
+msgid "Edit"
+msgstr "Изменить"
+
+#: plugin-fw/yit-functions.php:1948
+msgctxt "Post action"
+msgid "View"
+msgstr "Перейти"
+
+#: plugin-fw/yit-functions.php:1939
+msgctxt "Post action"
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#. translators: %s is the title of the post object.
+#: plugin-fw/includes/class-yit-assets.php:241 plugin-fw/yit-functions.php:1927
+#: plugin-fw/yit-functions.php:2086
+msgid "This action cannot be undone and you will not be able to recover this data."
+msgstr "Это действие нельзя отменить, и вы не сможете восстановить эти данные."
+
+#. translators: %s is the title of the post object.
+#: plugin-fw/yit-functions.php:1927 plugin-fw/yit-functions.php:2086
+msgid "Are you sure you want to delete \"%s\"?"
+msgstr "Вы уверены, что хотите удалить \"%s\"?"
+
+#. translators: %s is the title of the post object.
+#: plugin-fw/yit-functions.php:1925
+msgid "Are you sure you want to move \"%s\" to trash?"
+msgstr "Вы уверены, что хотите переместить %s\" в корзину?"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:493
+msgctxt "[ADMIN] Ajax Filter Widget; logical operator that affects query behaviour"
+msgid "AND"
+msgstr "И"
+
+#: plugin-options/filter-options.php:165
+msgctxt "[Admin] Filter edit form; logical operator that affects query behaviour"
+msgid "OR - Results need to match at least one of the selected terms"
+msgstr "ИЛИ - Результаты должны соответствовать хотя бы одному из выбранных терминов."
+
+#: plugin-options/filter-options.php:164
+msgctxt "[Admin] Filter edit form; logical operator that affects query behaviour"
+msgid "AND - Results need to match all selected terms at the same time"
+msgstr "И - Результаты должны соответствовать всем выбранным терминам одновременно"
+
+#. translators: 1. number of items to show.
+#: templates/admin/preset-load-more-filters.php:18
+msgctxt "[Admin] Add new filter in new preset page"
+msgid "See %d more filters"
+msgstr "Смотрите больше фильтров %d"
+
+#. translators: 1. Url to Ajax Product filter admin panel.
+#: includes/widgets/class-yith-wcan-filters-widget.php:63
+msgctxt "[ADMIN] Preset widget options"
+msgid "Please, go to <a href=\"%s\">WP Dashboard -> YITH -> Ajax Product Filter -> Presets</a> and create your first preset"
+msgstr "Пожалуйста, перейдите в <a href=\"%s\">WP Dashboard -> YITH -> Ajax Product Filter -> Presets</a> и создайте свою первую предустановку."
+
+#: includes/widgets/class-yith-wcan-filters-widget.php:50
+msgctxt "[ADMIN] Preset widget options"
+msgid "Preset"
+msgstr "Предустановка"
+
+#: includes/widgets/class-yith-wcan-filters-widget.php:33
+msgctxt "[ADMIN] Name of the preset widget"
+msgid "YITH AJAX Filters Preset"
+msgstr "YITH AJAX Filters Preset"
+
+#: includes/filters/class-yith-wcan-filter.php:132
+msgctxt "[Admin] Default filter title"
+msgid "New filter"
+msgstr "Новый фильтр"
+
+#: includes/elementor/class-yith-wcan-elementor-filters.php:106
+msgctxt "[ELEMENTOR] Control label"
+msgid "Preset"
+msgstr "Предустановка"
+
+#: includes/elementor/class-yith-wcan-elementor-filters.php:98
+msgctxt "[ELEMENTOR] Section title"
+msgid "Filters"
+msgstr "Фильтры"
+
+#: includes/elementor/class-yith-wcan-elementor-filters.php:48
+msgctxt "[ADMIN] Name of the preset elementor widget"
+msgid "YITH AJAX Filters Preset"
+msgstr "Предварительная установка фильтров YITH AJAX"
+
+#: includes/elementor/class-yith-wcan-elementor-reset-button.php:108
+msgctxt "[ELEMENTOR] Widget description"
+msgid "You can use this block to place \"Reset filters\" button inside your page, when \"Reset button position\" option won't work for your product's loop"
+msgstr "Вы можете использовать этот блок, чтобы разместить кнопку «Сбросить фильтры» на своей странице, когда опция «Сбросить положение кнопки» не работает для цикла вашего продукта."
+
+#: includes/elementor/class-yith-wcan-elementor-reset-button.php:104
+msgctxt "[ELEMENTOR] Widget description"
+msgid "It will allow users to reset the filer selection; it will only appear when there is an active filter."
+msgstr "Это позволит пользователям сбросить выбор фильтра; он появится только тогда, когда есть активный фильтр."
+
+#: includes/elementor/class-yith-wcan-elementor-reset-button.php:101
+msgctxt "[ELEMENTOR] Widget description"
+msgid "This widget will display \"Filters reset\" button, wherever it is placed"
+msgstr "Этот виджет будет отображать кнопку «Сброс фильтров», где бы он ни находился."
+
+#: includes/elementor/class-yith-wcan-elementor-reset-button.php:90
+msgctxt "[ELEMENTOR] Section title"
+msgid "General"
+msgstr "Общее"
+
+#: includes/elementor/class-yith-wcan-elementor-reset-button.php:48
+msgctxt "[ADMIN] Name of the preset elementor widget"
+msgid "YITH AJAX Filters Reset Button"
+msgstr "Кнопка сброса фильтров YITH"
+
+#. translators: 1. Rating.
+#: includes/functions-yith-wcan.php:1081
+msgctxt "[FRONTEND] Star rating label"
+msgid "Rated %s out of 5"
+msgstr "Рейтинг %s из 5"
+
+#: includes/functions-yith-wcan.php:1057
+msgctxt "[FRONTEND] Star rating template"
+msgid "star"
+msgid_plural "stars"
+msgstr[0] ""
+"звезда\n"
+"звезды"
+msgstr[1] ""
+"звезда\n"
+"звезды"
+msgstr[2] ""
+"звезда\n"
+"звезды"
+
+#: includes/class-yith-wcan-filters-factory.php:139
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Sort by price: high to low"
+msgstr "Цены: по убыванию"
+
+#: includes/class-yith-wcan-filters-factory.php:138
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Sort by price: low to high"
+msgstr "Цены: по возрастанию"
+
+#: includes/class-yith-wcan-filters-factory.php:137
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Sort by latest"
+msgstr "Сортировка по более позднему"
+
+#: includes/class-yith-wcan-filters-factory.php:136
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Sort by average rating"
+msgstr "Сортировать по средней оценке"
+
+#: includes/class-yith-wcan-filters-factory.php:135
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Sort by popularity"
+msgstr "Сортировка по популярности"
+
+#: includes/class-yith-wcan-filters-factory.php:134
+msgctxt "[Admin] Filter edit form, sorting options"
+msgid "Default sorting"
+msgstr "Исходная сортировка"
+
+#: includes/class-yith-wcan-filters-factory.php:93
+msgctxt "[Admin] Filter edit form"
+msgid "Taxonomy"
+msgstr "Таксономия"
+
+#. translators: 1. Title of original preset.
+#: includes/data-stores/class-yith-wcan-preset-data-store.php:284
+msgctxt "[ADMIN] Title of the cloned preset"
+msgid "%s - Copy"
+msgstr "%s - Копия"
+
+#: includes/data-stores/class-yith-wcan-preset-data-store.php:123
+msgctxt "[Generic] Error that happens when trying to read a filter preset that does not exist"
+msgid "Invalid preset."
+msgstr "Неверная предустановка."
+
+#: includes/data-stores/class-yith-wcan-preset-data-store.php:65
+msgid "Draft Preset"
+msgstr "Черновик по умолчанию"
+
+#: includes/class-yith-wcan-admin.php:576
+msgctxt "[ADMIN] WooCommerce Tools tab, description of the tool"
+msgid "This will create a preset for any sidebar of your shop containing filter widgets; preset will be configured to match widgets specifications"
+msgstr "Это создаст предустановку для любой боковой панели вашего магазина, содержащей виджеты фильтров; пресет будет настроен в соответствии со спецификациями виджетов"
+
+#: includes/class-yith-wcan-admin.php:575
+msgctxt "[ADMIN] WooCommerce Tools tab, button for the tool"
+msgid "Run"
+msgstr "Запустить"
+
+#: includes/class-yith-wcan-admin.php:574
+msgctxt "[ADMIN] WooCommerce Tools tab, name of the tool"
+msgid "Run filter widgets upgrade"
+msgstr "Запустите обновление виджетов фильтров"
+
+#: includes/class-yith-wcan-admin.php:570
+msgctxt "[ADMIN] WooCommerce Tools tab, description of the tool"
+msgid "This will clear all transients related to the YITH WooCommerce AJAX Product Filter plugin. It may be useful if you changed your product's configuration, and filters do not display the expected results."
+msgstr "Это очистит все переходные процессы, связанные с подключаемым модулем фильтра продуктов AJAX для WooCommerce. Это может быть полезно, если вы изменили конфигурацию своего продукта, и фильтры не отображают ожидаемые результаты."
+
+#: includes/class-yith-wcan-admin.php:569
+msgctxt "[ADMIN] WooCommerce Tools tab, button for the tool"
+msgid "Clear"
+msgstr "Очистить"
+
+#: includes/class-yith-wcan-admin.php:568
+msgctxt "[ADMIN] WooCommerce Tools tab, name of the tool"
+msgid "Clear Product Filter transients"
+msgstr "Очищает переходные данные фильтра товаров."
+
+#: includes/class-yith-wcan-admin.php:421
+msgctxt "[Admin] Preset table empty message second line"
+msgid "But don't worry, here you can create your first one!"
+msgstr "Но не волнуйтесь, здесь вы можете создать свой первый!"
+
+#: includes/class-yith-wcan-admin.php:420
+msgctxt "[Admin] Generic item name, in \"You have no x yet\""
+msgid "item"
+msgstr "элемент"
+
+#: includes/class-yith-wcan-admin.php:297
+msgctxt "[Admin] Plugin description"
+msgid "It allows your users to find the product they are looking for as quickly as possible."
+msgstr "это позволяет вашим пользователям как можно быстрее находить нужный им товар."
+
+#: includes/class-yith-wcan-admin.php:216
+msgctxt "[Admin] tab name"
+msgid "Legacy"
+msgstr "Наследовать"
+
+#: includes/class-yith-wcan-admin.php:207
+msgctxt "[Admin] tab name"
+msgid "SEO"
+msgstr "SEO"
+
+#: includes/class-yith-wcan-admin.php:202
+msgctxt "[Admin] tab name"
+msgid "General options"
+msgstr "Общие настройки"
+
+#: includes/class-yith-wcan-admin.php:195
+msgctxt "[Admin] tab name"
+msgid "Filter presets"
+msgstr "Предустановки фильтров"
+
+#: includes/class-yith-wcan-admin.php:113
+msgctxt "[Admin] Media library confirm button, when selecting images"
+msgid "Use this media"
+msgstr "Использовать файл"
+
+#: includes/class-yith-wcan-admin.php:112
+msgctxt "[Admin] Media library title, when selecting images"
+msgid "Select media you want to use"
+msgstr "Выберите носитель, который хотите использовать"
+
+#. translators: 1. Number of items that will be added.
+#: includes/class-yith-wcan-admin.php:107
+msgctxt "[Admin] Confirm add all terms message"
+msgid "Are you sure you want to proceed? This operation will add %s items"
+msgstr "Вы уверены, что хотите продолжить? Эта операция добавит элементы %s"
+
+#: includes/class-yith-wcan-admin.php:105
+msgctxt "[Admin] Confirm filter delete message"
+msgid "Are you sure you want to delete this item?"
+msgstr "Вы действительно хотите удалить этот пункт?"
+
+#: includes/class-yith-wcan-admin.php:104
+msgctxt "[Admin] Copy confirmation message"
+msgid "Content copied to your clipboard"
+msgstr "Содержимое скопировано в буфер обмена"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-filters.php:78
+msgctxt "[GUTENBERG]: attribute description"
+msgid "Preset"
+msgstr "Набор предустановок"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-filters.php:72
+msgctxt "[GUTENBERG]: block description"
+msgid "Show filters from a preset"
+msgstr "Показывать фильтры из предустановки"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-filters.php:71
+msgctxt "[GUTENBERG]: block name"
+msgid "YITH AJAX Filters Preset"
+msgstr "Предварительные настройки фильтров YITH AJAX"
+
+#: includes/elementor/class-yith-wcan-elementor-filters.php:90
+#: includes/shortcodes/class-yith-wcan-shortcode-filters.php:62
+msgctxt "[ELEMENTOR] Default preset option"
+msgid "Choose an option"
+msgstr "Выбрать опцию"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-reset-button.php:50
+msgctxt "[GUTENBERG]: block description"
+msgid "Show reset filters button, when a filter is applied and button is enabled in plugins settings. You can use this block to place \"Reset filters\" button inside your page, when \"Reset button position\" option won't work for your product's loop"
+msgstr "Показывать кнопку сброса фильтров, когда фильтр применен и кнопка включена в настройках плагинов. Вы можете использовать этот блок для размещения кнопки \"Сбросить фильтры\" на своей странице, когда опция \"Сбросить положение кнопки\" не будет работать для цикла вашего продукта"
+
+#: includes/shortcodes/class-yith-wcan-shortcode-reset-button.php:49
+msgctxt "[GUTENBERG]: block name"
+msgid "YITH Reset Filters Button"
+msgstr "Кнопка сброса фильтров YITH"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:260
+msgctxt "[Admin] New preset button label"
+msgid "Create a new preset"
+msgstr "Создайте новую предустановку"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:259
+msgctxt "[Admin] Name of the item missing, shown in preset-empty-content template"
+msgid "filter preset"
+msgstr "предустановка фильтра"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:202
+msgctxt "[Admin] Preset delete action label"
+msgid "Delete this preset"
+msgstr "Удалить эту предустановку"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:178
+msgctxt "[Admin] Preset clone action label"
+msgid "Clone this preset"
+msgstr "Клонировать эту предустановку"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:160
+msgctxt "[Admin] Preset edit action label"
+msgid "Edit this preset"
+msgstr "Отредактируйте эту предустановку"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:142
+msgctxt "[Admin] Preset table column header"
+msgid "Shortcode"
+msgstr "Шорткод"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:141
+msgctxt "[Admin] Preset table column header"
+msgid "Preset name"
+msgstr "Название предустановки"
+
+#: includes/class-yith-wcan-presets.php:151
+msgctxt "[ADMIN] Convert widgets tools, in preset tab"
+msgid "Convert widgets in a preset"
+msgstr "Преобразование виджетов в предустановку"
+
+#: includes/class-yith-wcan-presets.php:111
+msgctxt "[Admin] add new filter preset label"
+msgid "Add new preset"
+msgstr "Добавить новую предустановку"
+
+#: includes/class-yith-wcan-presets.php:110
+msgctxt "[Admin] singular name of presets custom post type"
+msgid "Filter preset"
+msgstr "Предустановка фильтра"
+
+#: includes/class-yith-wcan-presets.php:109
+#: includes/class-yith-wcan-presets.php:114
+msgctxt "[Admin] name of presets custom post type"
+msgid "Filter presets"
+msgstr "Настройки фильтров"
+
+#: includes/class-yith-wcan-frontend.php:795
+msgctxt "[FRONTEND] Label for clear selection link, that appears above filter after selection"
+msgid "Clear All"
+msgstr "Очистить все"
+
+#: includes/class-yith-wcan-frontend.php:794
+msgctxt "[FRONTEND] Label for clear selection link, that appears above filter after selection"
+msgid "Clear"
+msgstr "Очистить"
+
+#: includes/class-yith-wcan-frontend.php:793
+msgctxt "[FRONTEND] Label for filter button, on mobile modal"
+msgid "Show results"
+msgstr "Показать результаты"
+
+#: includes/class-yith-wcan-frontend.php:791
+msgctxt "[FRONTEND] Alt text for modal close button on mobile"
+msgid "Close"
+msgstr "Закрыть"
+
+#: includes/class-yith-wcan-frontend.php:789
+msgctxt "[FRONTEND] Empty items list in the dropdown"
+msgid "No item found"
+msgstr "Ничего не найдено"
+
+#: includes/class-yith-wcan-frontend.php:788
+msgctxt "[FRONTEND] Search placeholder shown in terms dropdown"
+msgid "Search..."
+msgstr "Поиск…"
+
+#: includes/class-yith-wcan-frontend.php:787
+#: includes/filters/class-yith-wcan-filter-tax.php:100
+msgctxt "[FRONTEND] \"All\" label shown when no term is selected"
+msgid "All"
+msgstr "Все"
+
+#. translators: 1. Taxonomy name.
+#: includes/class-yith-wcan-install.php:455
+msgctxt "[ADMIN] Name of default taxonomy filter created by plugin"
+msgid "Filter by %s"
+msgstr "Фильтровать по %s"
+
+#: includes/class-yith-wcan-install.php:194
+msgctxt "[ADMIN] Name of default preset that is installed with the plugin"
+msgid "Default preset"
+msgstr "Предустановка по умолчанию"
+
+#: templates/admin/preset-edit.php:123
+msgctxt "[Admin] Preset save button, in new/edit preset page"
+msgid "Save preset"
+msgstr "Сохранить набор"
+
+#: plugin-options/preset-options.php:25
+msgctxt "[Admin] Label in new preset page"
+msgid "Enter a name to identify this filter preset"
+msgstr "Введите имя, чтобы идентифицировать этот набор настроек фильтра"
+
+#: plugin-options/preset-options.php:23
+msgctxt "[Admin] Label in new preset page"
+msgid "Preset name"
+msgstr "Название предустановки"
+
+#: templates/admin/preset-edit.php:40
+msgctxt "[ADMIN] Title for new preset page"
+msgid "Add new filter preset"
+msgstr "Добавить новую предустановку фильтра"
+
+#: templates/admin/preset-edit.php:38
+msgctxt "[ADMIN] Title for new preset page"
+msgid "Edit filter preset"
+msgstr "Изменить предустановку фильтра"
+
+#: templates/admin/preset-edit.php:31
+msgctxt "[Admin] Back link in new preset page"
+msgid "< back to preset list"
+msgstr "< назад к списку предустановок"
+
+#: templates/admin/premium.php:419
+msgctxt "[ADMIN] Premium tab"
+msgid "Configure the URL pattern of the pages with active filters: you can choose whether to keep the page URL unchanged, to add the selected filters, or to edit it from the plugin permalinks (this will make the URLs shorter and easier to share)"
+msgstr "Настройте шаблон URL-адресов страниц с активными фильтрами: вы можете выбрать, следует ли сохранить URL-адрес страницы без изменений, добавить выбранные фильтры или отредактировать его с помощью постоянных ссылок плагина (это сделает URL-адреса короче и проще для совместного использования)"
+
+#: templates/admin/premium.php:415
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose how to configure the permalinks of the page with the filtered results"
+msgstr "Выберите, как настроить постоянные ссылки страницы с отфильтрованными результатами."
+
+#: templates/admin/premium.php:399
+msgctxt "[ADMIN] Premium tab"
+msgid "Use the default loader image or upload your own one, if you want to give it your personal touch"
+msgstr "Используйте изображение загрузчика по умолчанию или загрузите свое, если хотите придать ему индивидуальный подход."
+
+#: templates/admin/premium.php:396
+msgctxt "[ADMIN] Premium tab"
+msgid "Customize the loader"
+msgstr "Настроить загрузчик"
+
+#: templates/admin/premium.php:385
+msgctxt "[ADMIN] Premium tab"
+msgid "If you choose the plugin style, you can further customize it and choose the background color of the filters area, the text colors and the accent color through which the active options are highlighted"
+msgstr "Если вы выберете стиль плагина, вы можете дополнительно настроить его и выбрать цвет фона области фильтров, цвета текста и цвет акцента, с помощью которого выделяются активные параметры."
+
+#: templates/admin/premium.php:381
+msgctxt "[ADMIN] Premium tab"
+msgid "Customize the colors of the filters area"
+msgstr "Настройте цвета области фильтров"
+
+#: templates/admin/premium.php:365
+msgctxt "[ADMIN] Premium tab"
+msgid "To improve the user experience on your shop you can show the active filters (and choose whether they should appear in the filters panel on top, above the list of products) and a button that allows resetting all the filters in one click and to go back to the original product list"
+msgstr "Чтобы улучшить пользовательский интерфейс в вашем магазине, вы можете отобразить активные фильтры (и выбрать, должны ли они отображаться на панели фильтров вверху, над списком товаров) и кнопку, которая позволяет сбросить все фильтры одним щелчком мыши и вернуться к исходному списку товаров."
+
+#: templates/admin/premium.php:362
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose if and where to show the “Reset Filters” button and the selected filters"
+msgstr "Выберите, показывать ли и где кнопку “Сбросить фильтры” и выбранные фильтры"
+
+#: templates/admin/premium.php:351
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose whether to show the filter results on the same page or redirect the user to a new page"
+msgstr "Выберите, показывать ли и где кнопку “Сбросить фильтры” и выбранные фильтры. Выберите, показывать ли результаты фильтра на той же странице или перенаправлять пользователя на новую страницу"
+
+#: templates/admin/premium.php:347
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose where to show the filtered results"
+msgstr "Выберите, где будут отображаться отфильтрованные результаты"
+
+#: templates/admin/premium.php:331
+msgctxt "[ADMIN] Premium tab"
+msgid "Allow your users to view the results of the filters and to get feedback in real-time. Or, if you want to, disable the AJAX option and show a button “Apply filters” to show the filtered products"
+msgstr "Позвольте вашим пользователям просматривать результаты фильтров и получать отзывы в режиме реального времени. Или, если вы хотите, отключите опцию AJAX и покажите кнопку “Применить фильтры”, чтобы показать отфильтрованные товары"
+
+#: templates/admin/premium.php:328
+msgctxt "[ADMIN] Premium tab"
+msgid "Make filters work in AJAX"
+msgstr "Заставить фильтры работать в AJAX"
+
+#: templates/admin/premium.php:317
+msgctxt "[ADMIN] Premium tab"
+msgid "For every filter you can choose whether to show it in a toggle — open or collapsed to optimize the available space — or simply show all the options on the page"
+msgstr "Для каждого фильтра вы можете выбрать, показывать ли его в переключателе — открытым или свернутым, чтобы оптимизировать доступное пространство, — или просто показать все параметры на странице"
+
+#: templates/admin/premium.php:313
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose whether to show the filters in a toggle or not"
+msgstr "Выберите, показывать ли фильтры в переключателе или нет"
+
+#: templates/admin/premium.php:297
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose whether to show filters as checkboxes, radio buttons, select dropdowns, multi-select, labels or images. For example, for the color filter, you can use a text list, color swatches or upload custom images that better represent the product color shades or specific patterns. For product categories, you can also use textual labels or use custom icons to visually represent each of your categories"
+msgstr "Выберите, отображать ли фильтры в виде флажков, переключателей, раскрывающихся списков выбора, множественного выбора, меток или изображений. Например, для цветового фильтра можно использовать текстовый список, образцы цветов или загружать пользовательские изображения, которые лучше отражают цветовые оттенки продукта или определенные узоры. Для категорий товаров вы также можете использовать текстовые метки или пользовательские значки, чтобы визуально представить каждую из ваших категорий"
+
+#: templates/admin/premium.php:294
+msgctxt "[ADMIN] Premium tab"
+msgid "Choose the style of your filters"
+msgstr "Выберите стиль ваших фильтров"
+
+#: templates/admin/premium.php:271
+msgctxt "[ADMIN] Premium tab"
+msgid ""
+"<b>Filter by category</b>: to let users choose which product category to view<br/>\n"
+"<b>Filter by tag</b>: to let users filter products by tag<br/>\n"
+"<b>Filter by price</b>: to let users filter products by a specific price range (based on their budget availability)<br/>\n"
+"<b>Filter by color and size</b>: you can create filters for all the attributes available in your store, like color and size. For the color filter, you can either choose square or circular color swatches or use custom images to recall a specific pattern, shade or fabric texture<br/>\n"
+"<b>Filter by rating</b>: to let your users filter products based on other customers’ reviews (most e-buyers want to skip low-rated products and concentrate only on high-rated ones)<br/>\n"
+"<b>Filter by brand</b>: thanks to the integration with our YITH Brands Add-on plugin, you can also filter products by specific brands<br/>\n"
+"<b>Show only on-sale products</b>: thanks to this option, your users can filter products and view only those with a discount<br/>\n"
+"<b>Show only in-stock products</b>: thanks to this option, your users can filter products based on their needs and exclude out-of-stock products from the list"
+msgstr ""
+"<b>Фильтр по категории</b>: чтобы пользователи могли выбирать, какую категорию товаров просматривать<br/>\n"
+"<b>Фильтр по тегу</b>: чтобы пользователи могли фильтровать товары по тегу <br/>\n"
+"<b>Фильтр по цене</b>: чтобы пользователи могли фильтровать товары по определенному диапазону цен (в зависимости от наличия бюджета) <br/>\n"
+"<b>Фильтр по цвету и размеру</b>: вы можете создавать фильтры для всех атрибутов, доступных в вашем магазине, таких как цвет и размер. Для цветового фильтра вы можете выбрать квадратные или круглые образцы цвета или использовать собственные изображения, чтобы вспомнить определенный узор, оттенок или текстуру ткани <br/>\n"
+"<b>Фильтр по рейтингу</b>: чтобы позволить вашим пользователям фильтровать товары на основе отзывов других клиентов (большинство электронных покупателей хотят пропустить товары с низким рейтингом и сосредоточиться только на товарах с высоким рейтингом) <br/>\n"
+"<b>Фильтр по бренду</b>: благодаря интеграции с нашим плагином YITH Brands Add-on вы также можете фильтровать товары по определенным брендам<br/>\n"
+"<b>Показывать только товары со скидкой</b>: благодаря этой опции ваши пользователи могут фильтровать товары и просматривать только те, на которые есть скидка<br/>\n"
+"<b>Показывать только товары, имеющиеся в наличии</b>: благодаря этой опции ваши пользователи могут фильтровать товары в соответствии со своими потребностями и исключать товары, отсутствующие в наличии, из списка"
+
+#: templates/admin/premium.php:266
+msgctxt "[ADMIN] Premium tab"
+msgid "The plugin includes:"
+msgstr "Плагин включает в себя:"
+
+#: templates/admin/premium.php:254
+msgctxt "[ADMIN] Premium tab"
+msgid "Based on the research made by the Baymard Institute, there are five essential filters for e-buyers: before buying they want to filter by price, brand, size, color, and rating. YITH WooCommerce Ajax Product Filter includes these and more filters to extensively meet your needs and your customers’ demands too"
+msgstr "Основываясь на исследовании, проведенном Институтом Беймарда, для покупателей существует пять основных фильтров: перед покупкой они хотят отфильтровать по цене, бренду, размеру, цвету и рейтингу. Фильтр продуктов WooCommerce Ajax включает в себя эти и другие фильтры, чтобы полностью удовлетворить ваши потребности и запросы ваших клиентов"
+
+#: templates/admin/premium.php:251
+msgctxt "[ADMIN] Premium tab"
+msgid "An astonishing filter library that you can activate"
+msgstr "Потрясающая библиотека фильтров, которую можно активировать"
+
+#: templates/admin/premium.php:242
+msgctxt "[ADMIN] Premium tab"
+msgid "An ever-increasing number of users that visit e-commerce sites and purchase products online will do so using mobile devices.<br>That's why we have carefully developed a filter modal view, specifically optimized for users visiting the shop using a smartphone or tablet. When filtering of your products is required, it will open in a modal view and the user will be able to select them as recommended by the main guidelines about usability and user experience."
+msgstr "Все большее число пользователей, посещающие интернет-магазины и покупающих товары онлайн, будут делать это с помощью мобильных устройств.<br> Вот почему мы тщательно разработали модальное представление фильтра, специально оптимизированное для пользователей, посещающих магазин с помощью смартфона или планшета. Когда потребуется фильтрация ваших продуктов, он откроется в модальном представлении, и пользователь сможет выбрать их в соответствии с рекомендациями основных рекомендаций по удобству использования и удобству использования."
+
+#: templates/admin/premium.php:239
+msgctxt "[ADMIN] Premium tab"
+msgid "Show filters in a modal view which is purposely designed for users visiting your site by smartphones or tablets"
+msgstr "Показывать фильтры в модальном представлении, специально предназначенном для пользователей, посещающих ваш сайт со смартфонов или планшетов."
+
+#: templates/admin/premium.php:232
+msgctxt "[ADMIN] Premium tab"
+msgid "Premium Features"
+msgstr "Премиум возможности"
+
+#: templates/admin/premium.php:225 templates/admin/premium.php:436
+msgctxt "[ADMIN] Premium tab"
+msgid "UPGRADE"
+msgstr "ОБНОВИТЬ"
+
+#. translators: HIGHLIGHT content should be placed between square brackets [].
+#: templates/admin/premium.php:221 templates/admin/premium.php:432
+msgctxt "[ADMIN] Premium tab"
+msgid "Upgrade to [premium version] of<br/>[YITH WooCommerce Ajax Product Filter] to benefit<br/>from all features!"
+msgstr "Обновите до [premium version]<br/>[YITH WooCommerce Ajax Product Filter], чтобы воспользоваться<br/> всеми функциями!"
+
+#: templates/admin/preset-filter.php:95
+msgctxt "[Admin] Delete filter button, in new/edit preset page"
+msgid "Delete Filter"
+msgstr "Удалить фильтр"
+
+#: templates/admin/preset-filter.php:94
+msgctxt "[Admin] Save filter button, in new/edit preset page"
+msgid "Save Filter"
+msgstr "Сохранить фильтр"
+
+#: includes/class-yith-wcan-admin.php:111 templates/admin/preset-filter.php:34
+msgctxt "[Admin] Message shown when filter has empty title"
+msgid "&lt; no title &gt;"
+msgstr "&lt; без названия &gt;"
+
+#: templates/admin/preset-filter-term.php:40
+msgctxt "[Admin] Term edit field label (preset edit page)"
+msgid "Color"
+msgstr "Цвет"
+
+#: templates/admin/preset-filter-term.php:34
+msgctxt "[Admin] Term edit field label (preset edit page)"
+msgid "Tooltip"
+msgstr "Подсказка"
+
+#: templates/admin/preset-filter-term.php:29
+msgctxt "[Admin] Term edit field label (preset edit page)"
+msgid "Label"
+msgstr "Этикетка"
+
+#: templates/admin/upgrade-note-modal.php:99
+msgctxt "[ADMIN] Upgrade note modal dismiss label"
+msgid "No thanks"
+msgstr "Нет, спасибо"
+
+#: templates/admin/upgrade-note-modal.php:98
+msgctxt "[ADMIN] Upgrade note modal button label"
+msgid "Convert your widgets in a preset now"
+msgstr "Конвертируйте свои виджеты в предустановку прямо сейчас"
+
+#: templates/admin/upgrade-note-modal.php:89
+msgctxt "[ADMIN] Upgrade note modal content"
+msgid "After converting the widgets into presets, go to <b>WordPress Dashboard -> Appearance -> Widgets</b> and replace classic widgets with new <b>YITH AJAX Filter Preset</b>, selecting the appropriate preset for current sidebar."
+msgstr "После преобразования виджетов в предустановки перейдите в <b> Панель управления WordPress -> Внешний вид -> Виджеты </b> и замените классические виджеты новым <b> YITH AJAX Filter Preset </b>, выбрав соответствующую предустановку для текущей боковой панели."
+
+#: templates/admin/upgrade-note-modal.php:78
+msgctxt "[ADMIN] Upgrade note modal content"
+msgid "We offer a tool to automatically convert the widget filters of your shop in a preset. If you convert the widgets now all the settings of your widget will be moved inside the filter presets table.<br/><b>Don’t worry, no data will be lost during the process.</b>"
+msgstr "Мы предлагаем инструмент для автоматического преобразования фильтров виджетов вашего магазина в предустановку. Если вы конвертируете виджеты сейчас, все настройки вашего виджета будут перенесены в таблицу настроек фильтра. <br/><b> Не волнуйтесь, данные не будут потеряны во время процесса.</b>"
+
+#. translators: 1. Url to docs.
+#: templates/admin/upgrade-note-modal.php:64
+msgctxt "[ADMIN] Upgrade note modal content"
+msgid "We suggest you to <a href=\"%1$s\">read the documentation</a> to learn how to use this new feature."
+msgstr "Мы предлагаем вам <a href=\"%1$s\"> прочитать документацию </a>, чтобы узнать, как использовать эту новую функцию."
+
+#. translators: 1. Url to demo video. 2. Url to docs.
+#: templates/admin/upgrade-note-modal.php:51
+msgctxt "[ADMIN] Upgrade note modal content"
+msgid "We suggest you to <a href=\"%1$s\">check this video</a> or <a href=\"%2$s\">read the documentation</a> to learn how to use this new feature."
+msgstr "Мы предлагаем вам <a href=\"%1$s\"> посмотреть это видео </a> или <a href=\"%2$s\"> прочитать документацию </a>, чтобы узнать, как использовать эту новую функцию."
+
+#: templates/admin/upgrade-note-modal.php:38
+msgctxt "[ADMIN] Upgrade note modal content"
+msgid "From the version 4.0 we built a powerful system that allows you to create unlimited preset of filters. After the preset configuration, you can incorporate it in your shop using the widget, the shortcode, the Gutenberg block or the Elementor widget."
+msgstr "Начиная с версии 4.0 мы создали мощную систему, которая позволяет создавать неограниченное количество предустановленных фильтров. После предварительной настройки вы можете включить его в свой магазин с помощью виджета, шорткода, Gutenberg или виджета Elementor."
+
+#: templates/admin/upgrade-note-modal.php:33
+msgctxt "[ADMIN] Upgrade note modal title"
+msgid "Use the new filter preset feature for your filters"
+msgstr "Используйте новую функцию предустановки фильтров для ваших фильтров"
+
+#. translators: 1. Missing item name.
+#: templates/admin/preset-empty-content.php:35
+msgctxt "[Admin] Preset table empty message"
+msgid "You don't have any %s yet."
+msgstr "У вас еще нет %s."
+
+#: templates/admin/preset-empty-content.php:29
+msgctxt "Alt text for empty preset image"
+msgid "Empty preset"
+msgstr "Пустая предустановка"
+
+#: templates/admin/preset-filters.php:61
+msgctxt "[Admin] Add new filter in new preset page"
+msgid "+ Add filter"
+msgstr "+ Добавить фильтр"
+
+#: templates/admin/preset-filters.php:34
+msgctxt "[Admin] New filter button label"
+msgid "Add a new filter"
+msgstr "Добавить новый фильтр"
+
+#: templates/admin/preset-filters.php:32
+msgctxt "[Admin] Name of the item missing, shown in preset-empty-content template"
+msgid "filter"
+msgstr "фильтр"
+
+#: templates/admin/preset-filters.php:22
+msgctxt "[Admin] Label in new preset page"
+msgid "Filters of this preset"
+msgstr "Фильтры этой предустановки"
+
+#: templates/filters/global/reset-filters.php:43
+msgctxt "[FRONTEND] Reset button for preset shortcode"
+msgid "Reset filters"
+msgstr "Сбросить фильтры"
+
+#: plugin-options/legacy-options.php:68
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Default"
+msgstr "По умолчанию"
+
+#: plugin-options/legacy-options.php:67
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Alphabetical"
+msgstr "По алфавиту"
+
+#: plugin-options/legacy-options.php:66
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Product count"
+msgstr "Счётчик товаров"
+
+#: plugin-options/legacy-options.php:60
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Choose how to sort terms inside filters"
+msgstr "Выберите способ сортировки терминов внутри фильтров"
+
+#: plugin-options/legacy-options.php:59
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Terms sorting"
+msgstr "Сортировка терминов"
+
+#: plugin-options/legacy-options.php:51
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Enter here the CSS selector (class or ID) of the \"Scroll to to top\" anchor"
+msgstr "Введите здесь CSS-селектор (класс или идентификатор) привязки \"Прокрутка вверх\""
+
+#: plugin-options/legacy-options.php:50
+msgctxt "[ADMIN] Legacy settings page"
+msgid "\"Scroll to top\" anchor selector"
+msgstr "Селектор привязки \"Прокрутка вверх\""
+
+#: plugin-options/legacy-options.php:42
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Enter here the CSS selector (class or ID) of the results count container"
+msgstr "Введите здесь селектор CSS (класс или идентификатор) контейнера подсчета результатов"
+
+#: plugin-options/legacy-options.php:41
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Result count container"
+msgstr "Контейнер для подсчета результатов"
+
+#: plugin-options/legacy-options.php:33
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Enter here the CSS selector (class or ID) of the shop pagination container"
+msgstr "Введите здесь CSS-селектор (класс или идентификатор) контейнера для разбиения магазина на страницы"
+
+#: plugin-options/legacy-options.php:32
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Shop pagination container"
+msgstr "Контейнер для разбиения магазина на страницы"
+
+#: plugin-options/legacy-options.php:24
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Enter here the CSS selector (class or ID) of the product container"
+msgstr "Введите здесь CSS-селектор (класс или идентификатор) контейнера продукта"
+
+#: plugin-options/legacy-options.php:23
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Product container"
+msgstr "Контейнер для товара"
+
+#: plugin-options/legacy-options.php:16
+msgctxt "[ADMIN] Legacy settings page"
+msgid "Frontend options"
+msgstr "Параметры интерфейса"
+
+#: plugin-options/general-options.php:84
+msgctxt "[ADMIN] General settings page"
+msgid "Above products list<small>When using WooCommerce's Gutenberg product blocks, this may not work as expected; in these cases you can place Reset Button anywhere in the page using <code>[yith_wcan_reset_button]</code> shortcode or <code>YITH Filters Reset Button</code> block</small>"
+msgstr "Приведенный выше список товаров<small>При использовании блоков продуктов WooCommerce Gutenberg это может работать не так, как ожидалось; в этих случаях вы можете разместить кнопку сброса в любом месте страницы с помощью шорткода<code>[yith_wcan_reset_button]</code> шорткод или <code>Кнопка сброса фильтров YITH</code> блок</small>"
+
+#: plugin-options/general-options.php:83
+msgctxt "[ADMIN] General settings page"
+msgid "After filters"
+msgstr "После фильтров"
+
+#: plugin-options/general-options.php:82
+msgctxt "[ADMIN] General settings page"
+msgid "Before filters"
+msgstr "Перед фильтрами"
+
+#: plugin-options/general-options.php:76
+msgctxt "[ADMIN] General settings page"
+msgid "Choose the default position for reset button"
+msgstr "Выберите положение по умолчанию для кнопки сброса"
+
+#: plugin-options/general-options.php:75
+msgctxt "[ADMIN] General settings page"
+msgid "Reset button position"
+msgstr "Положение кнопки сброса"
+
+#: plugin-options/general-options.php:67
+msgctxt "[ADMIN] General settings page"
+msgid "Enable to show the \"Reset filter\" button to allow the user to cancel the filter selection in one click"
+msgstr "Включите отображение кнопки \"Сбросить фильтр\", чтобы пользователь мог отменить выбор фильтра одним щелчком мыши"
+
+#: plugin-options/general-options.php:66
+msgctxt "[ADMIN] General settings page"
+msgid "Show reset button"
+msgstr "Показать кнопку сброса"
+
+#: plugin-options/general-options.php:25
+msgctxt "[ADMIN] General settings page"
+msgid "General options"
+msgstr "Общие настройки"
+
+#: plugin-options/filter-preset-options.php:53
+msgctxt "[Admin] Add Preset button"
+msgid "Add preset"
+msgstr "Добавить предустановку"
+
+#: plugin-options/filter-preset-options.php:47
+msgctxt "[Admin] Filter Presets table title"
+msgid "Filter Presets"
+msgstr "Предустановки фильтров"
+
+#: plugin-options/filter-preset-options.php:41
+msgctxt "[Admin] Filter Presets tab"
+msgid "Filter Presets"
+msgstr "Предустановки фильтров"
+
+#: plugin-options/filter-options.php:167
+msgctxt "[Admin] Filter edit form"
+msgid "Choose how multiple terms selection should behave"
+msgstr "Выберите, как должен вести себя выбор нескольких терминов"
+
+#: plugin-options/filter-options.php:161
+msgctxt "[Admin] Filter edit form"
+msgid "Multiselect relation"
+msgstr "Список с несколькими вариантами выбора"
+
+#: plugin-options/filter-options.php:157
+msgctxt "[Admin] Filter edit form"
+msgid "Enable if the user can select multiple terms when filtering products"
+msgstr "Включите, если пользователь может выбрать несколько терминов при фильтрации товара."
+
+#: plugin-options/filter-options.php:155
+msgctxt "[Admin] Filter edit form"
+msgid "Allow multiple selection"
+msgstr "Разрешить множественный выбор"
+
+#: plugin-options/filter-options.php:151
+msgctxt "[Admin] Filter edit form"
+msgid "Choose how to show terms hierarchy"
+msgstr "Выберите способ отображения иерархии терминов"
+
+#: plugin-options/filter-options.php:149
+msgctxt "[Admin] Filter edit form"
+msgid "Yes"
+msgstr "Да"
+
+#: plugin-options/filter-options.php:148
+msgctxt "[Admin] Filter edit form"
+msgid "No, show only parent terms"
+msgstr "Нет, показывать только родительские термины"
+
+#: plugin-options/filter-options.php:147
+msgctxt "[Admin] Filter edit form"
+msgid "No, show all terms in same level"
+msgstr "Нет, покажите все термины на одном уровне"
+
+#: plugin-options/filter-options.php:144
+msgctxt "[Admin] Filter edit form"
+msgid "Show hierarchy"
+msgstr "Отображать иерархию"
+
+#: plugin-options/filter-options.php:125
+msgctxt "[Admin] Filter edit form"
+msgid "Customize terms"
+msgstr "Настройка условий"
+
+#: plugin-options/filter-options.php:121
+msgctxt "[Admin] Filter edit form"
+msgid "Set the number of items per row you want to show for this design"
+msgstr "Установите количество элементов в строке, которое вы хотите показать для этого дизайна."
+
+#: plugin-options/filter-options.php:116
+msgctxt "[Admin] Filter edit form"
+msgid "Columns number"
+msgstr "Количество столбцов"
+
+#: plugin-options/filter-options.php:101
+msgctxt "[Admin] Filter edit form"
+msgid "Select the filter type for this filter"
+msgstr "Выберите тип фильтра для этого фильтра"
+
+#: includes/class-yith-wcan-filters-factory.php:120
+msgctxt "[Admin] Filter edit form"
+msgid "Label"
+msgstr "Этикетка"
+
+#: includes/class-yith-wcan-filters-factory.php:119
+msgctxt "[Admin] Filter edit form"
+msgid "Color Swatches"
+msgstr "Образцы цвета"
+
+#: includes/class-yith-wcan-filters-factory.php:118
+msgctxt "[Admin] Filter edit form"
+msgid "Text"
+msgstr "Текстовое"
+
+#: includes/class-yith-wcan-filters-factory.php:117
+msgctxt "[Admin] Filter edit form"
+msgid "Select"
+msgstr "Выбрать"
+
+#: includes/class-yith-wcan-filters-factory.php:116
+msgctxt "[Admin] Filter edit form"
+msgid "Checkbox"
+msgstr "Отметка"
+
+#: plugin-options/filter-options.php:97
+msgctxt "[Admin] Filter edit form"
+msgid "Filter type"
+msgstr "Тип фильтра"
+
+#: plugin-options/filter-options.php:93
+msgctxt "[Admin] Filter edit form"
+msgid "Select which terms to use for filtering"
+msgstr "Выберите, какие термины использовать для фильтрации"
+
+#: plugin-options/filter-options.php:88
+msgctxt "[Admin] Filter edit form"
+msgid "Choose terms"
+msgstr "Выберите условия"
+
+#: plugin-options/filter-options.php:72
+msgctxt "[Admin] Filter edit form"
+msgid "Select which taxonomy to use for this filter"
+msgstr "Выберите, какую таксономию использовать для этого фильтра"
+
+#: plugin-options/filter-options.php:68
+msgctxt "[Admin] Filter edit form"
+msgid "Choose taxonomy"
+msgstr "Выберите атрибут товара"
+
+#: plugin-options/filter-options.php:63
+msgctxt "[Admin] Filter edit form"
+msgid "Select the parameters you wish to filter for"
+msgstr "Выберите параметры, которые вы хотите отфильтровать"
+
+#: plugin-options/filter-options.php:59
+msgctxt "[Admin] Filter edit form"
+msgid "Filter for"
+msgstr "Фильтр для"
+
+#: plugin-options/filter-options.php:54
+msgctxt "[Admin] Filter edit form"
+msgid "Enter a name to identify this filter"
+msgstr "Введите имя, чтобы идентифицировать этот фильтр"
+
+#: plugin-options/filter-options.php:51
+msgctxt "[Admin] Filter edit form"
+msgid "Filter name"
+msgstr "Имя фильтра"
+
+#: plugin-options/seo-options.php:81
+msgctxt "[ADMIN] Seo settings page"
+msgid "Don't change URL"
+msgstr "Не меняйте URL-адрес"
+
+#: plugin-options/seo-options.php:80
+msgctxt "[ADMIN] Seo settings page"
+msgid "Add filters parameters to default URL"
+msgstr "Добавьте параметры фильтров в URL-адрес по умолчанию"
+
+#: plugin-options/seo-options.php:74
+msgctxt "[ADMIN] Seo settings page"
+msgid "Choose how to manage browser URL during filtering"
+msgstr "Выберите, как управлять URL-адресом браузера во время фильтрации"
+
+#: plugin-options/seo-options.php:73
+msgctxt "[ADMIN] Seo settings page"
+msgid "URL permalinks"
+msgstr "Постоянные ссылки на URL"
+
+#: plugin-options/seo-options.php:61
+msgctxt "[ADMIN] Seo settings page"
+msgid "When enabled, adds rel=\"nofollow\" attribute to all the filter anchors across the plugin"
+msgstr "При включении добавляет атрибут rel=\"nofollow\" ко всем фильтрационным якорям в плагине."
+
+#: plugin-options/seo-options.php:60
+msgctxt "[ADMIN] Seo settings page"
+msgid "Add \"nofollow\" to filter anchors"
+msgstr "Добавьте \"nofollow\" для фильтрации якорей"
+
+#: plugin-options/seo-options.php:47
+msgctxt "[ADMIN] Seo settings page"
+msgid "Disabled"
+msgstr "Отключен"
+
+#: plugin-options/seo-options.php:41
+msgctxt "[ADMIN] Seo settings page"
+msgid "Select which tag to use on filtered pages"
+msgstr "Выберите, какой тег использовать на отфильтрованных страницах"
+
+#: plugin-options/seo-options.php:40
+msgctxt "[ADMIN] Seo settings page"
+msgid "Meta tag"
+msgstr "Метатег"
+
+#: plugin-options/seo-options.php:33
+msgctxt "[ADMIN] Seo settings page"
+msgid "Add \"robots\" meta tag in head tag of HTML page if filters have been activated."
+msgstr "Добавьте метатег \"robots\" в тег заголовка HTML-страницы, если фильтры активированы."
+
+#: plugin-options/seo-options.php:32
+msgctxt "[ADMIN] Seo settings page"
+msgid "Enable SEO option"
+msgstr "Включить SEO опцию"
+
+#: plugin-fw/templates/panel/panel-header.php:26
+#: plugin-fw/templates/panel/v2/panel-header.php:21
+msgid "help us by leaving a good review"
+msgstr "поддержите нас, оставив хороший отзыв"
+
+#. translators: %s it the Elementor Widget title.
+#: plugin-fw/includes/builders/elementor/class-yith-elementor-widget.php:252
+msgctxt "Elementor Widget - section title"
+msgid "%s - Options"
+msgstr "%s - Параметры"
+
+#: plugin-fw/templates/fields/copy-to-clipboard.php:45
+msgctxt "Copy-to-clipboard button text"
+msgid "Copy"
+msgstr "Копировать"
+
+#: plugin-fw/templates/fields/copy-to-clipboard.php:41
+msgctxt "Copy-to-clipboard message"
+msgid "Copied!"
+msgstr "Скопировано!"
+
+#: plugin-fw/includes/class-yit-pointers.php:97
+msgid "From now on, you can find the option panel of YITH plugins in YITH menu. Every time one of our plugins is added, a new entry will be added to this menu. For example, after the update, plugin options (such as for YITH WooCommerce Wishlist, YITH WooCommerce Ajax Search, etc.) will be moved from previous location to YITH menu."
+msgstr "С этого момента вы можете найти панель опций плагинов YITH в меню YITH. Каждый раз, когда добавляется один из наших плагинов, в это меню будет добавляться новая запись. Например, после обновления параметры плагина (например, для YITH WooCommerce Wishlist, YITH WooCommerce Ajax Search и т.д.) будут перемещены из предыдущего места в меню YITH."
+
+#. translators: 1. YITH site link; 2. WordPress site link.
+#: plugin-fw/includes/class-yit-pointers.php:84
+#: plugin-fw/includes/class-yit-pointers.php:100
+msgid "Discover all our plugins available on: %1$s and %2$s"
+msgstr "Посмотрите все наши плагины на: %1$s и %2$s"
+
+#: plugin-fw/includes/class-yit-pointers.php:81
+msgid "From now on, you can find all plugin options in YITH menu. Plugin customization settings will be available as a new entry in YITH menu."
+msgstr "С настоящего времени вы можете найти все опции плагинов в разделе меню YITH. Персональные настройки плагинов будут доступны в виде новых пунктов раздела меню YITH."
+
+#: plugin-fw/templates/fields/date-format.php:70
+msgid "Preview:"
+msgstr "Предпросмотр:"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:95
+msgid "Copy Code"
+msgstr "Копировать код"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:95
+msgid "Copied!"
+msgstr "Скопировано!"
+
+#. translators: %s file name.
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:86
+msgid "No Log file available. Enable the WordPress debug by adding this in the %s file of your installation"
+msgstr "Нет доступного лог-файла. Включите отладку WordPress добавив следующие инструкции в %s файл вашей установки"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:59
+msgid "The file size exceeds 8 megabytes so it must be downloaded"
+msgstr "Размер файла превышает 8 Мб, поэтому его необходимо скачать"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:48
+msgid "Download"
+msgstr "Скачать"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:72
+msgid "Plugins Requirements"
+msgstr "Требования плагинов"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:41
+msgid "Site Info"
+msgstr "Информация о сайте"
+
+#: plugin-fw/includes/class-yith-system-status.php:199
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:108
+msgid "Log Files"
+msgstr "Файлы журналов"
+
+#: plugin-fw/includes/class-yith-system-status.php:191
+msgid "PHPInfo"
+msgstr "PHPInfo"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:57
+msgid "External object cache"
+msgstr "Внешний кэш объектов"
+
+#: plugin-fw/includes/class-yit-assets.php:278
+msgid "Color value"
+msgstr "Значение цвета"
+
+#: plugin-fw/includes/class-yit-assets.php:277
+msgid "Select Color"
+msgstr "Выбрать цвет"
+
+#: plugin-fw/includes/class-yit-assets.php:276
+msgid "Select default color"
+msgstr "Выбрать цвет по умолчанию"
+
+#: plugin-fw/includes/class-yit-assets.php:275
+msgid "Default"
+msgstr "По умолчанию"
+
+#: plugin-fw/includes/class-yit-assets.php:274
+msgid "Clear color"
+msgstr "Очистить цвет"
+
+#: plugin-fw/includes/class-yit-assets.php:273
+msgid "Clear"
+msgstr "Очистить"
+
+#: plugin-fw/includes/class-yit-assets.php:239
+#: plugin-fw/includes/class-yit-assets.php:243
+#: plugin-fw/templates/sysinfo/tabs/main.php:54
+#: plugin-fw/templates/sysinfo/tabs/main.php:58
+#: plugin-fw/yit-functions.php:1995 plugin-fw/yit-functions.php:2013
+msgid "No"
+msgstr "Нет"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:54
+#: plugin-fw/templates/sysinfo/tabs/main.php:58
+msgid "Yes"
+msgstr "Да"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:53
+msgid "Defined WP_CACHE"
+msgstr "Определённый WP_CACHE"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:18
+msgid "PHP error_log file"
+msgstr "Файл PHP error_log"
+
+#: plugin-fw/templates/sysinfo/tabs/error-log.php:13
+msgid "WP debug.log file"
+msgstr "Файл WP debug.log"
+
+#. translators: %1$s TLS label
+#: plugin-fw/includes/class-yith-system-status.php:624
+msgid "The system check cannot determine which %1$s version is installed due to a connection issue between your site and our server."
+msgstr "Проверка системы не может определить, какая версия %1$s установлена ​​из-за проблем с подключением между вашим сайтом и нашим сервером."
+
+#. translators: %1$s TLS label, %2$s cURL label
+#: plugin-fw/includes/class-yith-system-status.php:621
+msgid "The system check cannot determine which %1$s version is installed because %2$s module is disabled. Ask your hosting company to enable it."
+msgstr "Системная проверка не может определить, какая версия %1$s установлена, поскольку модуль %2$s отключен. Попросите поддержку своего хостинга включить его."
+
+#: plugin-fw/includes/class-yith-system-status.php:563
+msgid "Contact your hosting company in order to install it."
+msgstr "Обратитесь к своему хостингу для установки."
+
+#: plugin-fw/templates/fields/dimensions.php:94
+msgctxt "Tooltip in the \"Dimensions\" field"
+msgid "Link values together"
+msgstr "Объединить значения друг с другом"
+
+#: plugin-fw/templates/fields/dimensions.php:16
+msgctxt "Position in the \"Dimensions\" field"
+msgid "Left"
+msgstr "Слева"
+
+#: plugin-fw/templates/fields/dimensions.php:15
+msgctxt "Position in the \"Dimensions\" field"
+msgid "Bottom"
+msgstr "Снизу"
+
+#: plugin-fw/templates/fields/dimensions.php:14
+msgctxt "Position in the \"Dimensions\" field"
+msgid "Right"
+msgstr "Справа"
+
+#: plugin-fw/templates/fields/dimensions.php:13
+msgctxt "Position in the \"Dimensions\" field"
+msgid "Top"
+msgstr "Вверху"
+
+#: plugin-fw/templates/panel/panel-header.php:27
+#: plugin-fw/templates/panel/v2/panel-header.php:22
+msgid ":) Thanks!"
+msgstr ":) Спасибо!"
+
+#: plugin-fw/templates/panel/panel-header.php:24
+#: plugin-fw/templates/panel/v2/panel-header.php:19
+msgid "to keep updating and improving the plugin. Please,"
+msgstr "чтобы постоянно обновлять и улучшать плагин. Пожалуйста,"
+
+#: plugin-fw/templates/panel/panel-header.php:23
+#: plugin-fw/templates/panel/v2/panel-header.php:18
+msgid "We need your support"
+msgstr "Нам нужна ваша поддержка"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:49
+msgid "Output IP Address"
+msgstr "Выходной IP-адрес"
+
+#: plugin-fw/templates/sysinfo/tabs/main.php:45
+msgid "Site URL"
+msgstr "URL сайта"
+
+#: plugin-fw/includes/class-yith-system-status.php:522
+msgid "N/A"
+msgstr "Н/Д"
+
+#. translators: %1$s open link tag, %2$s open link tag
+#: plugin-fw/includes/class-yith-system-status.php:372
+msgid "The system check has detected some compatibility issues on your installation.%1$sClick here%2$s to know more"
+msgstr "Проверка системы выявила некоторые проблемы совместимости в вашей установке.%1$sНажмите здесь%2$s, чтобы узнать больше"
+
+#: plugin-fw/includes/class-yith-system-status.php:368
+msgid "Warning!"
+msgstr "Внимание!"
+
+#: plugin-fw/includes/class-yith-system-status.php:225
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: plugin-fw/includes/class-yith-system-status.php:146
+msgid "URL FOpen"
+msgstr "URL FOpen"
+
+#: plugin-fw/includes/class-yith-system-status.php:145
+msgid "OPCache Save Comments"
+msgstr "OPCache Сохранение комментариев"
+
+#: plugin-fw/includes/class-yith-system-status.php:144
+msgid "Iconv Module"
+msgstr "Модуль Iconv"
+
+#: plugin-fw/includes/class-yith-system-status.php:143
+msgid "GD Library"
+msgstr "Библиотека GD"
+
+#: plugin-fw/includes/class-yith-system-status.php:142
+msgid "ImageMagick Version"
+msgstr "Версия ImageMagick"
+
+#: plugin-fw/includes/class-yith-system-status.php:141
+msgid "MultiByte String"
+msgstr "Многобайтовая строка"
+
+#: plugin-fw/includes/class-yith-system-status.php:140
+msgid "SimpleXML"
+msgstr "SimpleXML"
+
+#: plugin-fw/includes/class-yith-system-status.php:139
+msgid "WordPress Cron"
+msgstr "WordPress Cron"
+
+#: plugin-fw/includes/class-yith-system-status.php:138
+msgid "TLS Version"
+msgstr "Версия TLS"
+
+#: plugin-fw/includes/class-yith-system-status.php:137
+msgid "PHP Version"
+msgstr "Версия PHP"
+
+#: plugin-fw/includes/class-yith-system-status.php:136
+msgid "Available Memory"
+msgstr "Доступная память"
+
+#: plugin-fw/includes/class-yith-system-status.php:135
+msgid "WooCommerce Version"
+msgstr "Версия WooCommerce"
+
+#: plugin-fw/includes/class-yith-system-status.php:134
+msgid "WordPress Version"
+msgstr "Версия WordPress"
+
+#: plugin-fw/includes/class-yith-system-status.php:161
+#: plugin-fw/includes/class-yith-system-status.php:162
+#: plugin-fw/includes/class-yith-system-status.php:187
+msgid "System Status"
+msgstr "Системная информация"
+
+#. translators: 1. user display name; 2. user ID; 3. user email.
+#: plugin-fw/templates/fields/ajax-customers.php:68
+#: plugin-fw/templates/fields/ajax-customers.php:79
+msgid "%1$s (#%2$s &ndash; %3$s)"
+msgstr "%1$s (#%2$s &ndash; %3$s)"
+
+#. translators: %1$s opening link tag, %2$s closing link tag
+#: plugin-fw/includes/class-yith-system-status.php:582
+#: plugin-fw/includes/class-yith-system-status.php:616
+msgid "Read more %1$shere%2$s or contact your hosting company in order to increase it."
+msgstr "Прочтите %1$shere%2$s или обратитесь в свою хостинговую компанию, чтобы увеличить ее."
+
+#: plugin-fw/includes/class-yith-system-status.php:578
+msgid "Contact your hosting company in order to enable it."
+msgstr "Свяжитесь с вашей хостинговой компанией, чтобы включить его."
+
+#. translators: %1$s code, %2$s file name
+#: plugin-fw/includes/class-yith-system-status.php:570
+msgid "Remove %1$s from %2$s file"
+msgstr "Удалить %1$s из файла %2$s"
+
+#: plugin-fw/includes/class-yith-system-status.php:559
+#: plugin-fw/includes/class-yith-system-status.php:565
+msgid "Contact your hosting company in order to update it."
+msgstr "Свяжитесь с хостинговой компанией, чтобы обновить ее."
+
+#: plugin-fw/includes/class-yith-system-status.php:555
+msgid "Update it to the latest version in order to benefit of all new features and security updates."
+msgstr "Обновите его до последней версии, чтобы воспользоваться всеми новыми функциями и обновлениями безопасности."
+
+#. translators: %1$s plugin name, %2$s version number
+#: plugin-fw/includes/class-yith-system-status.php:549
+msgid "%1$s needs at least %2$s version"
+msgstr "%1$s требуется как минимум версия %2$s"
+
+#. translators: %s recommended memory amount
+#: plugin-fw/includes/class-yith-system-status.php:613
+msgid "For optimal functioning of our plugins, we suggest setting at least %s of available memory"
+msgstr "Для оптимальной работы наших плагинов мы предлагаем установить не менее %s доступной памяти"
+
+#. translators: %1$s plugin name, %2$s required memory amount
+#: plugin-fw/includes/class-yith-system-status.php:546
+msgid "%1$s needs at least %2$s of available memory"
+msgstr "%1$s требуется не менее %2$s доступной памяти"
+
+#. translators: %1$s plugin name, %2$s requirement name
+#: plugin-fw/includes/class-yith-system-status.php:543
+msgid "%1$s needs %2$s enabled"
+msgstr "%1$s требует включения %2$s"
+
+#: plugin-fw/includes/class-yith-system-status.php:518
+msgid "Disabled"
+msgstr "Отключено"
+
+#: plugin-fw/includes/class-yith-system-status.php:518
+msgid "Enabled"
+msgstr "Включено"
+
+#: plugin-fw/templates/sysinfo/system-information-panel.php:27
+msgid "YITH System Information"
+msgstr "Системная информация YITH"
+
+#: plugin-fw/templates/fields/select-buttons.php:20
+msgid "Remove All"
+msgstr "Удалить все"
+
+#: plugin-fw/templates/fields/select-buttons.php:19
+msgid "Add All"
+msgstr "Добавить все"
+
+#: plugin-fw/templates/fields/date-format.php:65
+msgid "Custom:"
+msgstr "Пользовательский:"
+
+#: plugin-fw/includes/builders/gutenberg/class-yith-gutenberg.php:156
+msgctxt "[gutenberg]: Category Name"
+msgid "YITH"
+msgstr "YITH"
+
+#: plugin-fw/includes/class-yith-dashboard.php:137
+msgctxt "Button label"
+msgid "Close"
+msgstr "Закрыть"
+
+#: plugin-fw/includes/class-yith-dashboard.php:97
+msgctxt "Plugin FW"
+msgid "Latest update released on"
+msgstr "Последнее обновление выпущено"
+
+#: plugin-fw/includes/class-yith-dashboard.php:96
+msgctxt "Plugin FW"
+msgid "View Changelog"
+msgstr "Просмотр журнала изменений"
+
+#: plugin-fw/includes/class-yith-dashboard.php:63
+msgid "An error has occurred, which probably means the feed is down. Try again later."
+msgstr "Произошла ошибка, которая, вероятно, означает, что канал не работает. Повторите попытку позже."
+
+#: plugin-fw/includes/class-yith-dashboard.php:56
+msgid "RSS Error:"
+msgstr "Ошибка RSS:"
+
+#: plugin-fw/includes/class-yith-dashboard.php:36
+msgid "Latest news from YITH Blog"
+msgstr "Последние новости из блога YITH"
+
+#: plugin-fw/includes/class-yith-dashboard.php:35
+msgid "YITH Latest Updates"
+msgstr "Последние обновления YITH"
+
+#: includes/widgets/class-yith-wcan-reset-navigation-widget.php:37
+msgid "YITH AJAX Reset Filter"
+msgstr "YITH Ajax сброс фильтров"
+
+#. Author of the plugin
+#: init.php
+msgid "YITH"
+msgstr "YITH"
+
+#. Description of the plugin
+#: init.php
+msgid "<code><strong>YITH WooCommerce AJAX Product Filter</strong></code> allows your users to find the product they are looking for as quickly as possible. Thanks to the plugin you will be able to set up one or more search filters for your WooCommerce products and improve the user experience of your shop. <a href=\"https://yithemes.com/\" target=\"_blank\">Get more plugins for your e-commerce shop on <strong>YITH</strong></a>"
+msgstr "<code><strong>YITH WooCommerce AJAX Product Filter</strong></code> позволяет пользователям как можно быстрее найти продукт, который они ищут. Благодаря этому плагину вы сможете настроить один или несколько поисковых фильтров для своих продуктов WooCommerce и улучшить пользовательский интерфейс вашего магазина. <a href=\"https://yithemes.com/\" target=\"_blank\">Получите дополнительные плагины для своего интернет - магазина на <strong>YITH</strong></a>"
+
+#. Plugin URI of the plugin
+#: init.php
+msgid "https://wordpress.org/plugins/yith-woocommerce-ajax-navigation/"
+msgstr "https://wordpress.org/plugins/yith-woocommerce-ajax-navigation/"
+
+#: includes/widgets/class-yith-wcan-reset-navigation-widget.php:30
+msgctxt "[Plugin Name]"
+msgid "Reset all filters set by YITH WooCommerce AJAX Product Filter"
+msgstr "Сбросить все фильтры, установленные YITH WooCommerce Ajax фильтром продуктов"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:53
+msgctxt "[Plugin Name] Admin: Widget Title"
+msgid "YITH AJAX Product Filter"
+msgstr "YITH Ajax фильтр товаров"
+
+#: plugin-fw/yit-plugin.php:243
+msgid "License"
+msgstr "Лицензия"
+
+#: plugin-fw/yit-plugin.php:239
+msgctxt "Action links"
+msgid "Settings"
+msgstr "Настройки"
+
+#: plugin-fw/yit-plugin.php:98
+msgctxt "Plugin Row Meta"
+msgid "Premium version"
+msgstr "Премиум версия"
+
+#: plugin-fw/yit-plugin.php:94
+msgctxt "Plugin Row Meta"
+msgid "Support"
+msgstr "Поддержка"
+
+#: plugin-fw/yit-plugin.php:90
+msgctxt "Plugin Row Meta"
+msgid "Documentation"
+msgstr "Документация"
+
+#: plugin-fw/yit-plugin.php:86
+msgctxt "Plugin Row Meta"
+msgid "Live Demo"
+msgstr "Демонстрация в реальном времени"
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:106
+msgctxt "Privacy Policy Content"
+msgid "Payments"
+msgstr "Платежи"
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:103
+msgctxt "Privacy Policy Content"
+msgid "What we share with others"
+msgstr "Чем мы делимся с другими"
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:100
+msgctxt "Privacy Policy Content"
+msgid "Who on our team has access"
+msgstr "У каких членов нашей команды есть доступ"
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:97
+msgctxt "Privacy Policy Content"
+msgid "What we collect and store"
+msgstr "Что мы собираем и храним"
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:93
+msgctxt "Privacy Policy Content"
+msgid "This sample language includes the basics around what personal data your store may be collecting, storing and sharing, as well as who may have access to that data. Depending on what settings are enabled and which additional plugins are used, the specific information shared by your store will vary. We recommend consulting with a lawyer when deciding what information to disclose on your privacy policy."
+msgstr "Этот образец содержит основную информацию о том, какие персональные данные ваш магазин может собирать, хранить и передавать третьей стороне, а также о том, кто может получить доступ к этим данным. Информация относительно вашего магазина может отличаться в зависимости от используемых вами настроек и плагинов. Рекомендуем проконсультироваться с юристом о том, какие сведения следует раскрывать в вашей политике конфиденциальности."
+
+#: plugin-fw/includes/privacy/class-yith-privacy.php:61
+msgctxt "Privacy Policy Guide Title"
+msgid "YITH Plugins"
+msgstr "Плагины YITH"
+
+#: plugin-fw/templates/fields/icons.php:78
+msgid "Set Default"
+msgstr "Установить по умолчанию"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:46
+msgid "Filter the list of products without reloading the page"
+msgstr "Отфильтровать список товаров без перезагрузки страниц"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:559
+#: plugin-fw/includes/class-yit-plugin-panel.php:562
+msgid "How to install premium version"
+msgstr "Как установить премиум-версию"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:517
+msgid "CSS custom class"
+msgstr "Пользовательский класс CSS"
+
+#: plugin-fw/templates/fields/upload.php:39
+msgid "Reset"
+msgstr "Сброс"
+
+#. Author URI of the plugin
+#: init.php
+msgid "https://yithemes.com/"
+msgstr "https://yithemes.com/"
+
+#. Plugin Name of the plugin
+#: init.php
+msgid "YITH WooCommerce Ajax Product Filter"
+msgstr "YITH WooCommerce Ajax фильтр товаров"
+
+#: includes/widgets/class-yith-wcan-reset-navigation-widget.php:200
+msgid "Button Label"
+msgstr "Этикетка кнопки"
+
+#: includes/widgets/class-yith-wcan-reset-navigation-widget.php:187
+msgid "Reset All Filters"
+msgstr "Сбросить фильтры"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:510
+msgid "Only Parent"
+msgstr "Только родительские"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:509
+msgid "All (hierarchical)"
+msgstr "Все (иерархические)"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:508
+msgid "All (no hierarchical)"
+msgstr "Все (без иерархии)"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:506
+msgid "Display (default All):"
+msgstr "Показывать (по умолчанию все):"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:499
+msgid "Attribute:"
+msgstr "Атрибут:"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:494
+msgid "OR"
+msgstr "ИЛИ"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:491
+msgid "Query Type:"
+msgstr "Тип запроса:"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:472
+msgid "Type:"
+msgstr "Тип:"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:466
+#: includes/widgets/class-yith-wcan-reset-navigation-widget.php:194
+msgid "Title"
+msgstr "Заголовок"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:459
+msgid "Dropdown"
+msgstr "Выпадающий список"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:458
+msgid "Label"
+msgstr "Этикетка"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:456
+msgid "List"
+msgstr "Список"
+
+#: includes/widgets/class-yith-wcan-navigation-widget.php:211
+msgid "Filters:"
+msgstr "Фильтры"
+
+#: plugin-fw/templates/panel/v2/panel-content-page.php:58
+#: plugin-fw/templates/panel/v2/woocommerce/woocommerce-form.php:70
+#: plugin-fw/templates/panel/woocommerce/woocommerce-form.php:41
+msgid "Reset Defaults"
+msgstr "Вернуть стандартные настройки"
+
+#: plugin-fw/templates/fields/sidebars.php:54
+msgid "Right Sidebar"
+msgstr "Правая боковая панель"
+
+#: plugin-fw/templates/fields/sidebars.php:39
+msgid "Left Sidebar"
+msgstr "Левая боковая панель"
+
+#: plugin-fw/templates/fields/sidebars.php:41
+#: plugin-fw/templates/fields/sidebars.php:56
+msgid "Choose a sidebar"
+msgstr "Выберите боковую панель"
+
+#: plugin-fw/templates/fields/sidebars.php:23
+msgid "Right sidebar"
+msgstr "Боковая панель справа"
+
+#: plugin-fw/templates/fields/sidebars.php:26
+#: plugin-fw/templates/fields/sidebars.php:29
+msgid "No sidebar"
+msgstr "Без боковой панели"
+
+#: plugin-fw/templates/fields/sidebars.php:20
+msgid "Left sidebar"
+msgstr "Боковая панель слева"
+
+#: includes/tables/class-yith-wcan-filter-presets-table.php:195
+#: plugin-fw/templates/fields/image-gallery.php:26
+#: plugin-fw/templates/fields/image-gallery.php:37
+msgid "Delete"
+msgstr "Удалить"
+
+#: plugin-fw/templates/fields/image-gallery.php:35
+msgid "Add images"
+msgstr "Добавить изображения"
+
+#: plugin-fw/templates/fields/image-gallery.php:34
+msgid "Add to gallery"
+msgstr "Добавить в галерею"
+
+#: plugin-fw/templates/fields/image-gallery.php:33
+msgid "Add Images to Gallery"
+msgstr "Добавить изображения в галерею"
+
+#: plugin-fw/templates/fields/image-gallery.php:36
+msgid "Delete image"
+msgstr "Удалить изображение"
+
+#: plugin-fw/templates/fields/customtabs.php:93
+msgid "Do you want to remove the custom tab?"
+msgstr "Вы хотите удалить пользовательскую вкладку?"
+
+#: plugin-fw/templates/fields/customtabs.php:52
+msgid "Add custom product tab"
+msgstr "Добавить вкладку пользовательского товара"
+
+#: plugin-fw/templates/fields/customtabs.php:41
+#: plugin-fw/templates/fields/customtabs.php:82
+msgid "Content of the tab. (HTML is supported)"
+msgstr "Содержимое вкладки. (HTML поддерживается)"
+
+#: plugin-fw/templates/fields/customtabs.php:40
+#: plugin-fw/templates/fields/customtabs.php:81
+msgid "Value"
+msgstr "Значение"
+
+#: plugin-fw/templates/fields/customtabs.php:17
+msgid "Expand all"
+msgstr "Развернуть все"
+
+#: plugin-fw/templates/fields/customtabs.php:17
+msgid "Close all"
+msgstr "Закрыть все"
+
+#: plugin-fw/templates/fields/upload.php:34
+#: plugin-fw/templates/panel/woocommerce/woocommerce-upload.php:37
+msgid "Upload"
+msgstr "Загрузка"
+
+#: plugin-fw/templates/fields/customtabs.php:25
+#: plugin-fw/templates/fields/customtabs.php:68
+msgid "Remove"
+msgstr "Удалить"
+
+#: plugin-fw/templates/fields/ajax-products.php:16
+msgid "Search for a product..."
+msgstr "Поиск по товару..."
+
+#: plugin-fw/includes/class-yit-pointers.php:96
+msgid "Plugins Upgraded"
+msgstr "Плагины обновлены"
+
+#: plugin-fw/includes/class-yit-pointers.php:80
+msgid "Plugins Activated"
+msgstr "Плагины активированы"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1567
+msgid "Sorting successful."
+msgstr "Сортировка прошла успешно."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1566
+msgid "Sorry, import is disabled."
+msgstr "Извините, импорт отключен."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1565
+msgid "The added file is not valid."
+msgstr "Добавлен некорректный файл."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1564
+msgid "An error has occurred during import. Please try again."
+msgstr "Произошла ошибка при импорте. Пожалуйста, попробуйте еще раз."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1563
+msgid "Database imported correctly."
+msgstr "База данных импортирована правильно."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1561
+msgid "Element updated correctly."
+msgstr "Элемент обновлен правильно."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1560
+msgid "Element deleted correctly."
+msgstr "Элемент удален правильно."
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1559
+msgid "Settings reset"
+msgstr "Сброс настроек"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1558
+msgid "Settings saved"
+msgstr "Изменения сохранены"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:1557
+msgid "The element you have entered already exists. Please, enter another name."
+msgstr "Введенный вами элемент уже существует. Пожалуйста, введите другое имя."
+
+#: plugin-fw/includes/class-yit-assets.php:261
+#: plugin-fw/includes/class-yit-plugin-subpanel.php:134
+#: plugin-fw/templates/panel/panel-content-page.php:14
+msgid "Are you sure?"
+msgstr "Уверены?"
+
+#: plugin-fw/includes/class-yit-plugin-subpanel.php:137
+#: plugin-fw/templates/panel/panel-content-page.php:38
+msgid "Reset to default"
+msgstr "Вернуть установки по умолчанию"
+
+#: plugin-fw/includes/class-yit-assets.php:262
+#: plugin-fw/includes/class-yit-plugin-subpanel.php:134
+#: plugin-fw/templates/panel/panel-content-page.php:14
+msgid "If you continue with this action, you will reset all options in this page."
+msgstr "Если вы продолжите это действие, вы сбросите все параметры на этой странице."
+
+#: plugin-fw/includes/class-yit-plugin-subpanel.php:127
+#: plugin-fw/templates/panel/panel-content-page.php:29
+msgid "Save Changes"
+msgstr "Сохранить изменения"
+
+#: plugin-fw/includes/class-yith-system-status.php:217
+msgid "YITH Plugins"
+msgstr "Плагины YITH"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:89
+msgid "Plugin Settings"
+msgstr "Настройки плагина"
+
+#: plugin-fw/includes/class-yit-plugin-panel-woocommerce.php:607
+msgid "The changes you have made will be lost if you leave this page."
+msgstr "Внесенные вами изменения будут утеряны, если вы покинете эту страницу."
+
+#: plugin-fw/templates/fields/customtabs.php:34
+#: plugin-fw/templates/fields/customtabs.php:76
+msgid "Name"
+msgstr "Название"
+
+#: plugin-fw/includes/class-yit-plugin-panel.php:90
+msgid "Settings"
+msgstr "Настройки"
+
+#: init.php:159
+msgid "YITH WooCommerce Ajax Product Filter is enabled but not effective. It requires WooCommerce in order to work."
+msgstr "YITH WooCommerce Ajax Product Filter включен, но не работает. Для работы требуется WooCommerce."
+
+#: includes/functions-yith-wcan.php:132
+msgid "Labels"
+msgstr "Этикетки"
+
+#: includes/functions-yith-wcan.php:112
+msgctxt "For multicolor: I.E. white and red T-Shirt"
+msgid "Color 2"
+msgstr "Цвет 2"
+
+#: includes/functions-yith-wcan.php:112
+msgctxt "For multicolor: I.E. white and red T-Shirt"
+msgid "Color 1"
+msgstr "Цвет 1"
+
+#: includes/functions-yith-wcan.php:98
+#: includes/widgets/class-yith-wcan-navigation-widget.php:457
+msgid "Color"
+msgstr "Цвет"
+
+#: includes/functions-yith-wcan.php:98 includes/functions-yith-wcan.php:112
+#: includes/functions-yith-wcan.php:132
+msgid "Term"
+msgstr "Термин"

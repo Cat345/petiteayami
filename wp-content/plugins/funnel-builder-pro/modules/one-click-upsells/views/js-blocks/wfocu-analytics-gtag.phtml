@@ -1,0 +1,122 @@
+<?php $get_hash = $this->get_localstorage_hash( 'gtag' ); ?>
+var wfocugadEvent = '<?php echo $get_hash . "$k"; ?>';
+var eventName = 'load';
+window.addEventListener('pageshow', (event) => {
+	localStorage.setItem("wfocuShowEvent" + wfocugadEvent, "1");
+});
+if ('1' === localStorage.getItem("wfocuShowEvent" + wfocugadEvent)) {
+eventName = 'pageshow';
+}
+window.addEventListener(eventName, (event) => {
+if (event.persisted) {
+//do nothing
+} else {
+var wfocugadHash = '<?php echo $get_hash . "$k"; ?>';
+var wfocugadResult = false;
+try {
+
+if ('1' === localStorage.getItem("wfocuH_" + wfocugadHash)) {
+wfocugadResult = false;
+}
+
+} catch (exception) {
+
+}
+if (false === wfocugadResult) {
+
+
+<?php if ( true === $is_gads ) { ?>
+    var wfocuvarGadPurchaseData = <?php echo wp_json_encode( $data['gad'] ); ?>;
+    wfocuvarGadPurchaseData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wfocuvarGadPurchaseData):wfocuvarGadPurchaseData;
+
+    var wfocuvarSend_id = '<?php echo esc_js( $code ); ?>';
+
+	<?php if ( false !== $label ) { ?>
+        wfocuvarSend_id = '<?php echo esc_js( $code ); ?>/<?php echo esc_js( $label ) ?>';
+	<?php } ?>
+
+    wfocuvarGadPurchaseData.send_to = wfocuvarSend_id;
+    gtag('event', 'purchase', wfocuvarGadPurchaseData);
+
+
+	<?php if ( false !== $label ) { ?>
+        var wfocuvarGadPurchaseDataClone = JSON.parse(JSON.stringify(wfocuvarGadPurchaseData));
+
+
+        wfocuvarGadPurchaseDataClone.send_to = wfocuvarSend_id;
+        delete wfocuvarGadPurchaseDataClone.items;
+        delete wfocuvarGadPurchaseDataClone.ecomm_pagetype;
+        delete wfocuvarGadPurchaseDataClone.ecomm_prodid;
+        delete wfocuvarGadPurchaseDataClone.ecomm_totalvalue;
+
+
+        var wfocu_gad_user_data = {
+        "email": wfocuvarGadPurchaseDataClone.email,
+        "address": {
+        "first_name": wfocuvarGadPurchaseDataClone.fname,
+        "last_name": wfocuvarGadPurchaseDataClone.lname
+        }
+        };
+
+      
+        if (Object.prototype.hasOwnProperty.call(wfocuvarGadPurchaseDataClone.address, 'ph')) {
+        wfocu_gad_user_data.phone_number = wfocuvarGadPurchaseDataClone.address.ph;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(wfocuvarGadPurchaseDataClone.address, 'ct')) {
+        wfocu_gad_user_data.address.city = wfocuvarGadPurchaseDataClone.address.ct;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(wfocuvarGadPurchaseDataClone.address, 'st')) {
+        wfocu_gad_user_data.address.region = wfocuvarGadPurchaseDataClone.address.st;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(wfocuvarGadPurchaseDataClone.address, 'zp')) {
+        wfocu_gad_user_data.address.postal_code = wfocuvarGadPurchaseDataClone.address.zp;
+        }
+        if (Object.prototype.hasOwnProperty.call(wfocuvarGadPurchaseDataClone.address, 'country')) {
+        wfocu_gad_user_data.address.country = wfocuvarGadPurchaseDataClone.address.country;
+        }
+
+        gtag('set', 'user_data', wfocu_gad_user_data);
+
+        gtag('event', 'conversion', wfocuvarGadPurchaseDataClone);
+		<?php
+
+	}
+
+} else { ?>
+
+    var wfocuvarGaPurchaseData = <?php echo wp_json_encode( $data['ga'] ); ?>;
+    wfocuvarGaPurchaseData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wfocuvarGaPurchaseData):wfocuvarGaPurchaseData;
+	<?php if ( $this->is_ga4_tracking() ) { ?>
+        if( ( typeof wfocuvarGaPurchaseData !== "undefined" ) && wfocuvarGaPurchaseData !== null && ( typeof wfocuvarGaPurchaseData.traffic_source !== "undefined" )) {
+        delete wfocuvarGaPurchaseData.traffic_source;
+        }
+	<?php } ?>
+
+
+
+
+    wfocuvarGaPurchaseData.non_interaction = false;
+    wfocuvarGaPurchaseData.send_to = '<?php echo esc_js( $code ); ?>';
+
+    gtag('event', 'purchase', wfocuvarGaPurchaseData);
+
+<?php } ?>
+
+
+try {
+
+localStorage.setItem("wfocuH_" + wfocugadHash, "1");
+
+} catch (exception) {
+
+}
+
+}
+
+}
+});
+
+

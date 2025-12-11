@@ -1,0 +1,24 @@
+== 2.0.6 == 22-04-2025
+* Form fields title fix and improvement
+
+== 2.0.5 22-04-2025
+* Form fields title
+
+== 2.0.4 == 17-04-2025
+* Radio one line options
+* Fix - Fetch location translation missing.
+
+== 2.0.3 == 22-03-2025
+* New - Autocomplete address
+
+== 2.0.2 == 12-02-2025
+* Fix - Placeholder for country
+
+== 2.0.1 ==
+* Fix - Settings Priority
+
+== 2.0 ==
+* Profile Picture Field
+
+== 1.7 ==
+* Select 2 library optional

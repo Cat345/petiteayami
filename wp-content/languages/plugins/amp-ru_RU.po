@@ -1,0 +1,1327 @@
+# Translation of Plugins - AMP - Stable (latest release) in Russian
+# This file is distributed under the same license as the Plugins - AMP - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-11-06 20:44:05+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.0-alpha.11\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - AMP - Stable (latest release)\n"
+
+#: src/ReaderThemeSupportFeatures.php:650
+msgid "Raw size value must be a string, integer, or float."
+msgstr "Необработанное значение размера должно быть строкой, целым числом или числом с плавающей запятой."
+
+#. translators: %s: option name
+#: src/Cli/OptionCommand.php:199
+msgid "Updated \"%s\" option."
+msgstr "Обновлена опция \"%s\"."
+
+#. translators: %1$s: option name, %2$s: error message
+#: src/Cli/OptionCommand.php:195
+msgid "Could not update \"%1$s\" option: %2$s"
+msgstr "Не получилось обновить опцию \"%1$s\": %2$s"
+
+#. translators: %1$s: option name, %2$s: list of allowed options
+#: src/Cli/OptionCommand.php:183
+msgid "The option \"%1$s\" is not among the following options that can currently be managed via CLI: %2$s"
+msgstr "Опции \"%1$s\" нет среди следующих опций, которыми можно управлять черет CLI: %2$s"
+
+#. translators: %s: option name
+#: src/Cli/OptionCommand.php:144
+msgid "Could not get \"%s\" option. Does it exist?"
+msgstr "Не удалось получить опцию \"%s\". Она существует?"
+
+#. translators: %s: error message
+#: src/Cli/OptionCommand.php:139 src/Cli/OptionCommand.php:251
+msgid "Could not retrieve options: %s"
+msgstr "Не удалось получить опции: %s"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3312
+msgid "(empty)"
+msgstr "(пусто)"
+
+#: src/Admin/SiteHealth.php:1338
+msgid "Update site icon"
+msgstr "Обновить иконку сайта"
+
+#: src/Admin/SiteHealth.php:217
+msgid "Publisher Logo"
+msgstr "Логотип издателя"
+
+#: src/Admin/SiteHealth.php:1325
+msgid "Publisher logo is defined"
+msgstr "Логотип издателя задан"
+
+#: src/Admin/SiteHealth.php:1329
+msgid "Publisher logo is not defined"
+msgstr "Логотип издателя не задан"
+
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:2182
+msgid "Off"
+msgstr "Выключить"
+
+#: includes/sanitizers/class-amp-accessibility-sanitizer.php:156
+msgid "Skip to content"
+msgstr "Перейти к содержимому"
+
+#: src/Validation/ScannableURLsRestController.php:247
+msgid "Label"
+msgstr "Ярлык"
+
+#: src/Admin/SupportScreen.php:168 src/Admin/SupportScreen.php:169
+msgid "Support"
+msgstr "Поддержка"
+
+#: src/LoadingError.php:37 assets/js/amp-onboarding-wizard.js:1
+#: assets/js/amp-settings.js:8 assets/js/amp-site-scan-notice.js:1
+#: assets/js/amp-support.js:6
+msgid "Something went wrong."
+msgstr "Что-то пошло не так."
+
+#: src/Validation/URLValidationRESTController.php:132
+msgid "Invalid post ID."
+msgstr "Неверный ID записи."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3412
+msgid "CSS selector"
+msgstr "Селектор CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3083
+msgid "Disallowed class name"
+msgstr "Запрещенное имя класса"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3081
+msgid "Illegal CSS selector"
+msgstr "Недопустимый селектор CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3414
+msgid "Class name"
+msgstr "Имя класса"
+
+#: includes/class-amp-theme-support.php:1743
+msgid "Failed to prepare AMP page"
+msgstr "Не удалось подготовить страницу AMP"
+
+#: src/Admin/ReaderThemes.php:247 assets/js/amp-settings.js:11
+msgid "Error:"
+msgstr "Ошибка:"
+
+#: includes/admin/class-amp-template-customizer.php:554
+msgid "Import settings"
+msgstr "Импорт настроек"
+
+#: src/ReaderThemeLoader.php:240 assets/js/amp-onboarding-wizard.js:13
+msgid "Customize"
+msgstr "Настроить"
+
+#: src/Admin/SiteHealth.php:965
+msgid "The operation failed, please reload the page and try again."
+msgstr "Операция не удалась, пожалуйста, перезагрузите страницу и повторите попытку."
+
+#: src/Admin/SiteHealth.php:964
+msgid "Reload the page to refresh the diagnostic check."
+msgstr "Перезагрузите страницу для обновления диагностической проверки."
+
+#: src/Admin/SiteHealth.php:963
+msgid "Re-enable transient caching"
+msgstr "Перезапустить кеширование временных опций"
+
+#: src/Admin/SiteHealth.php:960
+msgid "If you have identified and eliminated the cause of the variable CSS, please re-enable transient caching to reduce the amount of CSS processing required to generate AMP pages."
+msgstr "Если вы определили и устранили причину изменений в CSS, пожалуйста, повторно включите кэширование временных опций, чтобы уменьшить объем обработки CSS, необходимый для генерации страниц AMP."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3467
+msgid "Message"
+msgstr "Сообщение"
+
+#. translators: %1$s: the fetched URL, %2$s the error message that was returned
+#: includes/sanitizers/class-amp-style-sanitizer.php:1601
+msgid "Failed to fetch: %1$s (%2$s)"
+msgstr "Не удалось получить: %1$s (%2$s)"
+
+#: includes/class-amp-theme-support.php:2109
+msgid "AMP optimization could not be completed due to the following:"
+msgstr "Оптимизация AMP не может быть завершена по следующим причинам:"
+
+#: includes/validation/class-amp-validation-manager.php:2573
+msgid "URL validation failed due to unexpected JSON in AMP validation response."
+msgstr "Проверка URL-адреса не прошла из-за неожиданного JSON в ответе на проверку AMP."
+
+#: includes/validation/class-amp-validation-manager.php:2334
+msgid "Too many redirects."
+msgstr "Слишком много перенаправлений."
+
+#: includes/validation/class-amp-validation-manager.php:514
+msgid "Preview link expired. Please try again."
+msgstr "Ссылка на предпросмотр истекла. Пожалуйста, попробуйте еще раз."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3157
+msgid "Missing at least one mandatory attribute"
+msgstr "Не хватает хотя бы одного обязательного атрибута"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3130
+msgid "Missing required attribute"
+msgstr "Отсутствует необходимый атрибут"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3101
+msgid "Invalid JSON"
+msgstr "Неверный объект JSON"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2602
+msgid "Order"
+msgstr "Порядок"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2604
+msgid "Original"
+msgstr "Оригинальный"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2613
+msgid "Priority"
+msgstr "Приоритет"
+
+#. translators: The accessibility text.
+#. translators: accessibility text
+#: src/Admin/AmpPlugins.php:326 src/Admin/SiteHealth.php:252
+#: src/Admin/SiteHealth.php:489 src/Admin/SiteHealth.php:803
+#: src/Admin/SiteHealth.php:887 assets/js/amp-block-editor.js:4
+#: assets/js/amp-onboarding-wizard.js:9 assets/js/amp-settings.js:28
+#: assets/js/amp-support.js:2 assets/js/amp-theme-install.js:1
+msgid "(opens in a new tab)"
+msgstr "(откроется в новой вкладке)"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1323
+msgid "Invalid Markup"
+msgstr "Невалидная разметка"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3410
+msgid "CSS property"
+msgstr "CSS-свойство"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3103
+msgid "Illegal CSS !important property"
+msgstr "Недопустимое свойство CSS - !important"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3075
+msgid "Illegal CSS property"
+msgstr "Недопустимое свойство CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3070
+msgid "CSS parse error"
+msgstr "Ошибка обработки CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3068
+msgid "Unrecognized CSS"
+msgstr "Нераспознанный CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3026
+msgid "Invalid script"
+msgstr "Некорректный скрипт"
+
+#. translators: %s is the byte count
+#: includes/validation/class-amp-validation-error-taxonomy.php:2762
+msgid "%s byte"
+msgid_plural "%s bytes"
+msgstr[0] "%s байт"
+msgstr[1] "%s байта"
+msgstr[2] "%s байт"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2613
+msgid "Shortcode"
+msgstr "Шорткод"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2631
+msgid "Action"
+msgstr "Действие"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2629
+msgid "Filter"
+msgstr "Фильтр"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2622
+msgid "Location"
+msgstr "Расположение"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2619
+msgid "Function"
+msgstr "Функция"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2610
+msgid "Block Name"
+msgstr "Название блока"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2607
+msgid "Block Index"
+msgstr "Индекс блока"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2581
+msgid "Post ID"
+msgstr "ID записи"
+
+#. translators: 1: Documentation URL, 2: Documentation URL.
+#: includes/validation/class-amp-validation-error-taxonomy.php:2166
+msgid "AMP allows a specific set of elements and attributes on valid AMP pages. Learn about the <a href=\"%1$s\">AMP HTML specification</a>. If an element or attribute is not allowed in AMP, it must be removed for the page to be <a href=\"%2$s\">cached and eligible for prerendering</a>."
+msgstr "На страницах с AMP разрешено использовать определенный набор элементов и атрибутов. Подробнее о <a href=\"%1$s\">спецификации HTML для AMP</a>. Если элемент или атрибут не разрешен в AMP, его необходимо удалить, чтобы страница была доступна для <a href=\"%2$s\">кеширования и предварительной обработки</a>."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3401
+msgid "Attribute name"
+msgstr "Название атрибута"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3403
+msgid "Element name"
+msgstr "Название элемента"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3393
+msgid "Code"
+msgstr "Код"
+
+#. translators: %s error code
+#: includes/validation/class-amp-validation-error-taxonomy.php:3379
+msgid "Unknown error (%s)"
+msgstr "Неизвестная ошибка (%s)"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3064
+msgid "Duplicate element"
+msgstr "Дублировать элемент"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3048
+msgid "Invalid processing instruction"
+msgstr "Неверная инструкция обработки"
+
+#. translators: %d is the hook priority
+#: includes/validation/class-amp-validation-error-taxonomy.php:2685
+msgid "(priority %d)"
+msgstr "(приоритет %d)"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2652
+#: assets/js/amp-settings.js:17
+msgid "Plugin"
+msgstr "Плагин"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2648
+msgid "Theme"
+msgstr "Тема"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3408
+msgid "Parent element"
+msgstr "Родительский элемент"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3418
+msgid "Text content"
+msgstr "Текстовое содержимое"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2790
+msgid "Custom HTML"
+msgstr "HTML-код"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2578
+msgid "Name"
+msgstr "Имя"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2584
+msgid "Post Type"
+msgstr "Тип записи"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1607
+msgid "Excerpt"
+msgstr "Отрывок"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1603
+msgid "Content"
+msgstr "Содержимое"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1361
+#: includes/validation/class-amp-validated-url-post-type.php:1365
+#: includes/validation/class-amp-validation-error-taxonomy.php:890
+#: includes/validation/class-amp-validation-error-taxonomy.php:894
+msgid "Context"
+msgstr "Контекст"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1511
+msgid "Invalid CSS"
+msgstr "Некорректный CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1504
+msgid "Invalid JS"
+msgstr "Некорректный JS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1497
+msgid "Invalid HTML attributes"
+msgstr "Некорректные атрибуты HTML"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1490
+msgid "Invalid HTML elements"
+msgstr "Некорректные HTML-элементы"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1404
+msgid "Filter by markup status"
+msgstr "Фильтр по статусу разметки"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2330
+msgid "AMP is enabled because no invalid markup is being kept."
+msgstr "AMP включен, так как нет некорректной разметки."
+
+#: includes/validation/class-amp-validated-url-post-type.php:2951
+msgid "Keep"
+msgstr "Оставить"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2128
+msgid "Information"
+msgstr "Информация"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1931
+#: includes/validation/class-amp-validation-error-taxonomy.php:3490
+#: assets/js/amp-block-validation.js:12
+msgid "Kept"
+msgstr "Сохранено"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2069
+msgid "Misc"
+msgstr "Прочее"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1786
+msgid "HTML element"
+msgstr "Элемент HTML"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1314
+#: includes/validation/class-amp-validated-url-post-type.php:1318
+#: includes/validation/class-amp-validated-url-post-type.php:1373
+#: includes/validation/class-amp-validated-url-post-type.php:1377
+#: includes/validation/class-amp-validation-error-taxonomy.php:879
+#: includes/validation/class-amp-validation-error-taxonomy.php:883
+#: includes/validation/class-amp-validation-error-taxonomy.php:1924
+msgid "Markup Status"
+msgstr "Статус разметки"
+
+#: includes/validation/class-amp-validated-url-post-type.php:646
+msgid "Invalid markup removed"
+msgstr "Неверная разметка удалена"
+
+#: includes/validation/class-amp-validated-url-post-type.php:622
+msgid "Invalid markup kept"
+msgstr "Неверная разметка сохранена"
+
+#: includes/options/class-amp-options-manager.php:474
+msgid "https://wordpress.org/support/article/why-should-i-use-https/"
+msgstr "https://wordpress.org/support/article/why-should-i-use-https/"
+
+#. translators: %s: "Why should I use HTTPS" support URL
+#: includes/options/class-amp-options-manager.php:473
+msgid "Your site is not being fully served over a secure connection (using HTTPS).<br>As some AMP functionality requires a secure connection, you might experience degraded performance or broken components.<br><a href=\"%s\">More details</a>"
+msgstr "Для вашего сайта не используется защищенное соединение (HTTPS).<br>Поскольку оно требуется для некоторых функций AMP, вы можете столкнуться со снижением производительности или неработающими компонентами.<br><a href=\"%s\">Подробнее…</a>"
+
+#: includes/deprecated.php:279
+msgid "Your server currently has the Xdebug PHP extension loaded. This can cause some of the AMP plugin's processes to timeout depending on your system resources and configuration. Please deactivate Xdebug for the best experience."
+msgstr "На ваш сервер загружено расширение Xdebug для PHP. Это может привести к истечению времени ожидания некоторых процессов плагина AMP (в зависимости от системных ресурсов и конфигурации). Для повышения производительности рекомендуется отключить Xdebug."
+
+#: includes/validation/class-amp-validated-url-post-type.php:2950
+msgid "Remove"
+msgstr "Удалить"
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:356
+msgid "Please contact the developer of this form processor to improve this message."
+msgstr "Свяжитесь с автором обработчика форм, чтобы улучшить это сообщение."
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:354
+msgid "Even though the server responded OK, it is possible the submission was not processed."
+msgstr "Несмотря на положительный ответ сервера, отправка, возможно, не была выполнена."
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:353
+msgid "It appears your submission was successful."
+msgstr "Отправка выполнена."
+
+#. translators: %1$s: HTTP status text, %2$s: HTTP status code
+#: includes/sanitizers/class-amp-form-sanitizer.php:351
+msgid "The server responded with %1$s (code %2$s)."
+msgstr "Ответ сервера: %1$s (код: %2$s)."
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:349
+msgid "Your submission failed."
+msgstr "Отправка не выполнена."
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:338
+msgid "Submitting…"
+msgstr "Отправка…"
+
+#. translators: %s: CSS selector for admin bar element
+#: includes/sanitizers/class-amp-style-sanitizer.php:3232
+msgid "Admin bar (%s) was removed to preserve AMP validity due to excessive CSS."
+msgstr "Панель администратора (%s) удалена для сохранения допустимости AMP в связи с чрезмерным количеством элементов CSS."
+
+#. translators: Admin screen title. %s: Admin screen name
+#: includes/validation/class-amp-validated-url-post-type.php:3101
+msgid "%s &#8212; WordPress"
+msgstr "%s – WordPress"
+
+#: includes/class-amp-http.php:398
+msgid "Redirecting…"
+msgstr "Переадресация…"
+
+#: includes/templates/amp-paired-browsing.php:30
+msgid "Non-AMP"
+msgstr "Без AMP"
+
+#: amp.php:171 amp.php:191
+msgid "AMP plugin unable to initialize."
+msgstr "Не удалось инициализировать плагин AMP."
+
+#. translators: %s is list of missing extensions
+#: amp.php:146
+msgid "The following PHP function is missing: %s. Please contact your host to finish installation."
+msgid_plural "The following PHP functions are missing: %s. Please contact your host to finish installation."
+msgstr[0] "Отсутствует следующая функция PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[1] "Отсутствует следующая функция PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[2] "Отсутствует следующая функция PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+
+#. translators: %s is list of missing extensions
+#: amp.php:131
+msgid "The following PHP class is missing: %s. Please contact your host to finish installation."
+msgid_plural "The following PHP classes are missing: %s. Please contact your host to finish installation."
+msgstr[0] "Отсутствует следующий класс PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[1] "Отсутствует следующий класс PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[2] "Отсутствует следующий класс PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+
+#. translators: %s is list of missing extensions
+#: amp.php:116
+msgid "The following PHP extension is missing: %s. Please contact your host to finish installation."
+msgid_plural "The following PHP extensions are missing: %s. Please contact your host to finish installation."
+msgstr[0] "Отсутствует следующее расширение PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[1] "Отсутствует следующее расширение PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+msgstr[2] "Отсутствует следующее расширение PHP: %s. Чтобы завершить установку, обратитесь к своему хостинг-провайдеру."
+
+#. translators: 1: AMP_Comment_Walker. 2: AMP_Comments_Sanitizer.
+#: includes/class-amp-comment-walker.php:11
+msgid "%1$s functionality has been moved to %2$s."
+msgstr "Функции %1$s перенесены в %2$s."
+
+#. translators: %s: WP_Service_Worker_Cache_Registry.
+#: includes/class-amp-service-worker.php:110
+msgid "Please update to PWA v0.2. Expected argument to be %s."
+msgstr "Обновите версию PWA до 0.2. Ожидаемый аргумент: %s."
+
+#. translators: %s is error code
+#: includes/validation/class-amp-validation-manager.php:2582
+msgid "URL validation failed. Error code: %s."
+msgstr "Не удалось проверить URL. Код ошибки: %s."
+
+#: includes/sanitizers/class-amp-style-sanitizer.php:1616
+msgid "Response did not contain the expected text/css content type."
+msgstr "В ответе нет ожидаемого типа контента (текстового или css)."
+
+#. translators: 1: amp_add_amphtml_link(). 2: amp-helper-functions.php
+#: includes/amp-frontend-actions.php:16
+msgid "Use %1$s function which is already included from %2$s"
+msgstr "Используйте функцию %1$s, которая уже включена из %2$s."
+
+#. translators: %s: the URL to the edit post screen.
+#: includes/class-amp-theme-support.php:710
+#: includes/class-amp-theme-support.php:719
+msgid "Currently disabled at the <a href=\"%s\">page level</a>."
+msgstr "Отключено на <a href=\"%s\">уровне страницы</a>."
+
+#. translators: 1: embed handler. 2: AMP_Base_Embed_Handler
+#: includes/class-amp-theme-support.php:993
+#: includes/templates/class-amp-content.php:179
+msgid "Embed Handler (%1$s) must extend `%2$s`"
+msgstr "Обработчик встроенных элементов (%1$s) должен расширять %2$s."
+
+#. translators: 1: sanitizer class. 2: AMP_Base_Sanitizer
+#: includes/templates/class-amp-content-sanitizer.php:100
+msgid "Sanitizer (%1$s) must extend `%2$s`"
+msgstr "Санитайзер (%1$s) должен расширять %2$s."
+
+#. translators: localized date and time format, see http://php.net/date
+#: includes/validation/class-amp-validation-error-taxonomy.php:1968
+msgid "F j, Y g:i a"
+msgstr "F j, Y g:i a"
+
+#: includes/class-amp-service-worker.php:344
+msgid "Installing service worker..."
+msgstr "Установка service worker…"
+
+#: includes/class-amp-service-worker.php:328
+#: includes/class-amp-service-worker.php:340
+msgid "Service Worker Installation"
+msgstr "Установка service worker"
+
+#: includes/class-amp-service-worker.php:327
+msgid "No service workers registered for the requested scope."
+msgstr "Нет зарегистрированных service worker для запрошенной области."
+
+#: includes/class-amp-service-worker.php:151
+#: includes/class-amp-service-worker.php:185
+msgid "Please update to PWA v0.2. Expected argument to be WP_Service_Worker_Scripts."
+msgstr "Обновите версию PWA до 0.2. Ожидаемый аргумент: WP_Service_Worker_Scripts."
+
+#. Author of the plugin
+msgid "AMP Project Contributors"
+msgstr "Авторы проекта AMP"
+
+#: includes/options/class-amp-options-manager.php:443
+msgid "PHP-CSS-Parser is not available so CSS processing will not be available."
+msgstr "PHP-CSS-Parser недоступен, поэтому обработка CSS будет недоступна."
+
+#. translators: %s: path to the conflicting library
+#: includes/options/class-amp-options-manager.php:434
+msgid "A conflicting version of PHP-CSS-Parser appears to be installed by another plugin or theme (located in %s). Because of this, CSS processing will be limited, and tree shaking will not be available."
+msgstr "Другим плагином или темой установлена конфликтующая версия PHP-CSS-Parser (%s), поэтому обработка CSS будет ограничена, а встряхивание дерева – недоступно."
+
+#: includes/validation/class-amp-validated-url-post-type.php:2507
+msgid "AMP CSS processing is limited because a conflicting version of PHP-CSS-Parser has been loaded by another plugin or theme. Tree shaking is not available."
+msgstr "Внимание! Обработка CSS AMP ограничена из-за загрузки конфликтующей версии PHP-CSS-Parser другим плагином или темой. Встряхивание дерева недоступно."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:259
+msgid "All AMP Validation Errors"
+msgstr "Все ошибки проверки AMP"
+
+#. Plugin URI of the plugin
+msgid "https://amp-wp.org"
+msgstr "https://amp-wp.org"
+
+#. translators: %s: the human-readable time difference.
+#: back-compat/templates-v0-3/meta-time.php:21
+#: includes/validation/class-amp-validation-error-taxonomy.php:1972
+#: templates/meta-time.php:28
+msgid "%s ago"
+msgstr "%s назад"
+
+#: includes/amp-helper-functions.php:738
+msgid "There is no amphtml version available for this URL."
+msgstr "Нет версии AMPHTML для этого URL."
+
+#. translators: 1: @import. 2: wp_enqueue_style(). 3: font CDN URL.
+#: includes/sanitizers/class-amp-style-sanitizer.php:1816
+msgid "It is not a best practice to use %1$s to load font CDN stylesheets. Please use %2$s to enqueue %3$s as its own separate script."
+msgstr "Для загрузки таблиц стилей СДК для шрифтов не рекомендуется использовать %1$s. Используйте %2$s, чтобы поставить %3$s в очередь как собственный отдельный скрипт."
+
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:388
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:414
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:430
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:446
+#: includes/sanitizers/class-amp-nav-menu-dropdown-sanitizer.php:155
+msgid "collapse child menu"
+msgstr "свернуть подменю"
+
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:387
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:413
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:429
+#: includes/sanitizers/class-amp-core-theme-sanitizer.php:445
+#: includes/sanitizers/class-amp-nav-menu-dropdown-sanitizer.php:152
+msgid "expand child menu"
+msgstr "развернуть подменю"
+
+#: includes/class-amp-theme-support.php:745
+msgid "Not Found (404)"
+msgstr "Не найдено (404)"
+
+#: includes/class-amp-theme-support.php:738 assets/js/amp-block-editor.js:1
+msgid "Date"
+msgstr "Дата"
+
+#: includes/class-amp-theme-support.php:734
+msgid "Author"
+msgstr "Автор"
+
+#: includes/class-amp-theme-support.php:715
+#: src/Validation/ScannableURLProvider.php:151
+msgid "Blog"
+msgstr "Блог"
+
+#. translators: %s: amp_supportable_templates
+#: includes/class-amp-theme-support.php:633
+msgid "Did not expect there to be more than one matching template. Did you filter %s to not honor the template hierarchy?"
+msgstr "Не ожидалось, что соответствующих шаблонов будет больше одного. Вы отфильтровали %s, чтобы не учитывать иерархию шаблонов?"
+
+#. translators: %s: the supportable template ID.
+#: includes/class-amp-theme-support.php:496
+msgid "Supportable template \"%s\" does not have a callable callback."
+msgstr "В поддерживаемом шаблоне \"%s\" нет вызываемой функции обратного вызова."
+
+#: includes/class-amp-theme-support.php:467
+msgid "No WP_Query available."
+msgstr "Нет доступных WP_Query."
+
+#: includes/validation/class-amp-validation-manager.php:2544
+msgid "An internal server error occurred when fetching the URL for validation."
+msgstr "При получении URL для проверки произошла внутренняя ошибка сервера."
+
+#: includes/validation/class-amp-validation-manager.php:2536
+msgid "The fetched URL was not found. It may have been deleted. If so, you can trash this."
+msgstr "Полученный URL не найден. Возможно, он был удален. В этом случае можно отправить объект в корзину."
+
+#: includes/amp-helper-functions.php:1997
+#: includes/validation/class-amp-validation-manager.php:442
+#: includes/validation/class-amp-validation-manager.php:464
+msgid "View AMP version"
+msgstr "Посмотреть AMP-версию"
+
+#: includes/amp-helper-functions.php:1996
+#: includes/validation/class-amp-validation-manager.php:464
+msgid "View non-AMP version"
+msgstr "Посмотреть обычную версию"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3054
+msgid "Excessive CSS"
+msgstr "Слишком много элементов CSS."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3042
+#: includes/validation/class-amp-validation-error-taxonomy.php:3461
+msgid "Invalid attribute"
+msgstr "Недопустимый атрибут."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:3035
+msgid "Invalid element"
+msgstr "Недопустимый элемент."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2975
+msgid "You do not have authorization."
+msgstr "Вы не прошли авторизацию."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2809
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2808
+msgid "HTML Attribute"
+msgstr "Атрибут HTML"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2807
+msgid "HTML Element"
+msgstr "Элемент HTML"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1961
+msgid "n/a"
+msgstr "–"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1792
+#: includes/validation/class-amp-validation-error-taxonomy.php:2810
+msgid "CSS"
+msgstr "CSS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1783
+msgid "JS"
+msgstr "JS"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1697
+#: includes/validation/class-amp-validation-error-taxonomy.php:1845
+msgid "Toggle error details"
+msgstr "Скрыть/показать сведения об ошибке"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1529
+msgid "Clear Empty"
+msgstr "Очистить пустые"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1481
+msgid "Filter by error type"
+msgstr "Отфильтровать по типу ошибки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1305
+msgid "View Validated URLs"
+msgstr "Посмотреть проверенные URL"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1260
+msgid "Apply Filter"
+msgstr "Применить фильтр"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:900
+msgid "Last Seen"
+msgstr "Последний просмотр"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:318
+msgid "Method must be passed a term slug (string) or error attributes (array)."
+msgstr "Метод должен передавать ярлык термина (строку) или атрибуты ошибки (массив)."
+
+#. translators: Tab heading when selecting from the most used terms
+#: includes/validation/class-amp-validation-error-taxonomy.php:273
+msgid "Most Used Validation Errors"
+msgstr "Наиболее частые ошибки проверки."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:271
+msgid "Validation errors list"
+msgstr "Список ошибок проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:270
+msgid "Validation errors navigation"
+msgstr "Навигация по ошибкам проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:267
+msgid "New Validation Error Hash"
+msgstr "Хеш новой ошибки проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:266
+msgid "Add New Validation Error"
+msgstr "Добавить новую ошибку проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:265
+msgid "View Validation Error"
+msgstr "Посмотреть ошибку проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:264
+msgid "Frequent Validation Errors"
+msgstr "Частые ошибки проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:263
+msgid "Back to AMP Validation Errors"
+msgstr "Назад к ошибкам проверки AMP"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:262
+#: includes/validation/class-amp-validation-error-taxonomy.php:1744
+#: assets/js/amp-settings.js:32
+msgid "Error Index"
+msgstr "Номер ошибки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:258
+msgid "Search AMP Validation Errors"
+msgstr "Найти ошибки проверки AMP"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:257
+msgctxt "taxonomy singular name"
+msgid "AMP Validation Error"
+msgstr "Ошибка проверки AMP"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:256
+msgctxt "taxonomy general name"
+msgid "AMP Validation Error Index"
+msgstr "Номер ошибки проверки AMP"
+
+#. translators: %s is the number of posts restored from trash.
+#: includes/validation/class-amp-validated-url-post-type.php:3264
+msgid "%s validated URL unforgotten."
+msgid_plural "%s validated URLs unforgotten."
+msgstr[0] "%s проверенный URL восстановлен."
+msgstr[1] "%s проверенный URL восстановлен."
+msgstr[2] "%s проверенный URL восстановлен."
+
+#. translators: %s is the number of posts forgotten
+#: includes/validation/class-amp-validated-url-post-type.php:3250
+#: includes/validation/class-amp-validated-url-post-type.php:3257
+msgid "%s validated URL forgotten."
+msgid_plural "%s validated URLs forgotten."
+msgstr[0] "%s проверенный URL удален."
+msgstr[1] "%s проверенный URL удален."
+msgstr[2] "%s проверенный URL удален."
+
+#: includes/validation/class-amp-validated-url-post-type.php:3229
+msgid "Forgotten"
+msgstr "Удалено"
+
+#. translators: %s: post title
+#: includes/validation/class-amp-validated-url-post-type.php:3205
+msgid "Forget &#8220;%s&#8221;"
+msgstr "Удалить запись \"%s\""
+
+#: includes/validation/class-amp-validated-url-post-type.php:2946
+msgid "Search Errors"
+msgstr "Найти ошибки"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2391
+msgid "Update"
+msgstr "Обновить"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2341
+msgid "View URL"
+msgstr "Посмотреть URL"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2293
+msgid "Please recheck."
+msgstr "Перепроверьте."
+
+#: includes/validation/class-amp-validated-url-post-type.php:2268
+msgid "Preview Changes"
+msgstr "Предварительный просмотр изменений"
+
+#. translators: %s: The date this was published
+#: includes/validation/class-amp-validated-url-post-type.php:2254
+msgid "Last checked: <b>%s</b>"
+msgstr "Последняя проверка: <b>%s</b>"
+
+#: includes/sanitizers/class-amp-iframe-sanitizer.php:220
+#: assets/js/amp-validated-url-post-edit-screen.js:2
+msgid "Show all"
+msgstr "Показать все"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1918
+#: includes/validation/class-amp-validated-url-post-type.php:2047
+msgid "You do not have permissions to validate an AMP URL. Did you get logged out?"
+msgstr "У вас недостаточно прав для проверки URL AMP. Возможно, вы вышли из системы."
+
+#. translators: %s is count of validation errors updated
+#: includes/validation/class-amp-validated-url-post-type.php:1786
+msgid "Updated %s validation error."
+msgid_plural "Updated %s validation errors."
+msgstr[0] "Обновлена %s ошибка проверки."
+msgstr[1] "Обновлена %s ошибка проверки."
+msgstr[2] "Обновлена %s ошибка проверки."
+
+#: includes/validation/class-amp-validated-url-post-type.php:1649
+#: includes/validation/class-amp-validated-url-post-type.php:2387
+#: includes/validation/class-amp-validated-url-post-type.php:3206
+msgid "Forget"
+msgstr "Удалить"
+
+#. translators: %s is the guessed theme as the source for the error
+#: includes/validation/class-amp-validated-url-post-type.php:1630
+msgid "%s (?)"
+msgstr "%s (?)"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1569
+#: assets/js/amp-settings.js:32
+msgid "Other"
+msgstr "Другое"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1542
+#: assets/js/amp-block-validation.js:10
+msgid "Plugins"
+msgstr "Плагины"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1542
+msgid "Must-Use Plugins"
+msgstr "Обязательные плагины"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1416
+#: includes/validation/class-amp-validated-url-post-type.php:2280
+#: assets/js/amp-settings.js:30
+msgid "Stale results"
+msgstr "Старые результаты"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1358
+#: includes/validation/class-amp-validation-error-taxonomy.php:899
+#: includes/validation/class-amp-validation-error-taxonomy.php:2616
+#: includes/validation/class-amp-validation-error-taxonomy.php:3420
+#: src/Validation/ScannableURLsRestController.php:241
+msgid "Type"
+msgstr "Тип"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1366
+#: includes/validation/class-amp-validation-error-taxonomy.php:895
+msgid "The parent element of where the error occurred."
+msgstr "Родительский элемент объекта с ошибкой."
+
+#: includes/validation/class-amp-validated-url-post-type.php:1357
+#: includes/validation/class-amp-validation-error-taxonomy.php:876
+#: includes/validation/class-amp-validation-manager.php:515
+msgid "Error"
+msgstr "Ошибка"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1336
+#: includes/validation/class-amp-validated-url-post-type.php:1342
+msgid "Last Checked"
+msgstr "Последняя проверка"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1330
+#: includes/validation/class-amp-validated-url-post-type.php:1343
+#: includes/validation/class-amp-validation-error-taxonomy.php:3465
+#: src/Validation/ScannableURLsRestController.php:227
+msgid "URL"
+msgstr "URL"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1324
+#: includes/validation/class-amp-validated-url-post-type.php:1341
+#: includes/validation/class-amp-validated-url-post-type.php:1370
+#: includes/validation/class-amp-validated-url-post-type.php:2616
+#: includes/validation/class-amp-validated-url-post-type.php:2763
+#: includes/validation/class-amp-validation-error-taxonomy.php:2625
+#: includes/validation/class-amp-validation-error-taxonomy.php:3422
+msgid "Sources"
+msgstr "Источники"
+
+#: includes/validation/class-amp-validated-url-post-type.php:435
+msgid "View Error Index"
+msgstr "Посмотреть номер ошибки"
+
+#: includes/validation/class-amp-validated-url-post-type.php:169
+msgid "Search validated URLs"
+msgstr "Найти проверенные URL"
+
+#: includes/validation/class-amp-validated-url-post-type.php:168
+msgid "No forgotten validated URLs"
+msgstr "Нет удаленных проверенных URL."
+
+#: includes/validation/class-amp-validated-url-post-type.php:167
+msgid "No validated URLs found"
+msgstr "Проверенные URL не найдены."
+
+#: includes/validation/class-amp-validated-url-post-type.php:166
+msgid "Validated URL"
+msgstr "Проверенный URL"
+
+#: includes/validation/class-amp-validated-url-post-type.php:165
+#: assets/js/amp-settings.js:32
+msgid "Validated URLs"
+msgstr "Проверенные URL"
+
+#: includes/validation/class-amp-validated-url-post-type.php:164
+msgctxt "post type general name"
+msgid "AMP Validated URLs"
+msgstr "Проверенные URL AMP"
+
+#: includes/admin/class-amp-admin-pointers.php:68
+msgid "You can now reuse your theme's templates and styles in AMP responses, in both &#8220;Transitional&#8221; and &#8220;Standard&#8221; modes."
+msgstr "Теперь вы можете повторно использовать стили и шаблоны тем в ответах AMP (и в режиме Transitional, и в режиме Standard)."
+
+#: includes/admin/class-amp-admin-pointers.php:67
+msgid "New AMP Template Modes"
+msgstr "Новые режимы шаблонов AMP"
+
+#: includes/sanitizers/class-amp-form-sanitizer.php:366
+#: assets/js/amp-settings.js:11
+msgid "Learn More"
+msgstr "Подробнее"
+
+#: src/Admin/PluginActivationNotice.php:78
+msgid "Welcome to AMP for WordPress"
+msgstr "Представляем AMP для WordPress"
+
+#: includes/validation/class-amp-validation-manager.php:484
+#: src/Admin/OptionsMenu.php:136 src/Admin/OptionsMenu.php:174
+msgid "Settings"
+msgstr "Настройки"
+
+#. translators: %1$s is the current directory name, and %2$s is the required
+#. directory name
+#: amp.php:226
+msgid "You appear to have installed the AMP plugin incorrectly. It is currently installed in the <code>%1$s</code> directory, but it needs to be placed in a directory named <code>%2$s</code>. Please rename the directory. This is important for WordPress plugin auto-updates."
+msgstr "Плагин AMP установлен некорректно – в каталог <code>%1$s</code>, а не <code>%2$s</code>. Измените название каталога. Это необходимо для автоматического обновления плагина WordPress."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:261
+msgid "Update AMP Validation Error"
+msgstr "Обновить ошибку проверки AMP"
+
+#: includes/class-amp-theme-support.php:700
+msgid "Singular"
+msgstr "Одиночные записи"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1406
+msgid "All statuses"
+msgstr "Все статусы"
+
+#: includes/admin/class-amp-post-meta-box.php:516
+#: includes/validation/class-amp-validated-url-post-type.php:2323
+msgid "AMP enabled"
+msgstr "AMP включен"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2325
+msgid "AMP disabled"
+msgstr "AMP выключен"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1789
+msgid "HTML attribute"
+msgstr "HTML-атрибут"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2355
+msgid "Edit User"
+msgstr "Редактировать пользователя"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1578
+#: assets/js/amp-block-editor.js:1 assets/js/amp-block-validation.js:12
+msgid "Embed"
+msgstr "Объект"
+
+#: includes/class-amp-theme-support.php:705
+#: includes/class-amp-theme-support.php:723
+#: src/Validation/ScannableURLProvider.php:124
+#: src/Validation/ScannableURLProvider.php:138
+msgid "Homepage"
+msgstr "Домашняя страница"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2911
+msgid "Invalid taxonomy."
+msgstr "Неверная таксономия."
+
+#: includes/class-amp-theme-support.php:742
+msgid "Search"
+msgstr "Поиск"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:2970
+msgid "The link you followed has expired."
+msgstr "Ссылка, по которой вы перешли, устарела."
+
+#: includes/validation/class-amp-validated-url-post-type.php:3183
+msgid "View"
+msgstr "Перейти"
+
+#: includes/validation/class-amp-validated-url-post-type.php:2357
+msgid "View User"
+msgstr "Просмотр пользователя"
+
+#: includes/class-amp-theme-support.php:731
+#: includes/widgets/class-amp-widget-archives.php:49
+msgid "Archives"
+msgstr "Архивы"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:901
+msgid "URLs"
+msgstr "URLs"
+
+#. translators: Meta box date format
+#: includes/validation/class-amp-validated-url-post-type.php:2256
+msgid "M j, Y @ H:i"
+msgstr "M j, Y @ H:i"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1851
+#: includes/validation/class-amp-validated-url-post-type.php:2195
+#: assets/js/amp-settings.js:17
+msgid "Status"
+msgstr "Статус"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1653
+#: includes/validation/class-amp-validated-url-post-type.php:2264
+#: includes/validation/class-amp-validated-url-post-type.php:3190
+msgid "Recheck"
+msgstr "Перепроверить"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1453
+#: includes/validation/class-amp-validated-url-post-type.php:1492
+#: includes/validation/class-amp-validated-url-post-type.php:2737
+#: includes/validation/class-amp-validation-error-taxonomy.php:2048
+msgid "--"
+msgstr "--"
+
+#: includes/class-amp-http.php:492
+msgid "Your comment has been posted."
+msgstr "Ваш комментарий был опубликован."
+
+#. Author URI of the plugin
+msgid "https://github.com/ampproject/amp-wp/graphs/contributors"
+msgstr "https://github.com/ampproject/amp-wp/graphs/contributors"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:269
+msgid "Validation Error"
+msgstr "Ошибка проверки"
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:268
+msgid "No validation errors found."
+msgstr "Не найдено ошибок проверки."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:260
+msgid "Edit AMP Validation Error"
+msgstr "Изменить ошибку проверки AMP"
+
+#. translators: %s: $post
+#: includes/amp-helper-functions.php:1328
+msgid "The %s argument is deprecated when theme supports AMP."
+msgstr "Аргумент %s не подходит, если тема поддерживает AMP."
+
+#. translators: %s: required PHP version
+#: amp.php:36
+msgid "The AMP plugin requires PHP %s. Please contact your host to update your PHP version."
+msgstr "Для плагина AMP требуется PHP %s. Чтобы обновить версию PHP, обратитесь к своему хостинг-провайдеру."
+
+#: includes/validation/class-amp-validation-error-taxonomy.php:1928
+#: includes/validation/class-amp-validation-error-taxonomy.php:3487
+#: assets/js/amp-block-validation.js:12
+msgid "Removed"
+msgstr "Удалено"
+
+#: includes/widgets/class-amp-widget-categories.php:44
+msgid "Categories"
+msgstr "Рубрики"
+
+#: includes/class-amp-theme-support.php:1188
+msgid "Click here to cancel reply."
+msgstr "Нажмите, чтобы отменить ответ."
+
+#: includes/validation/class-amp-validated-url-post-type.php:3173
+#: includes/validation/class-amp-validation-error-taxonomy.php:1698
+#: includes/validation/class-amp-validation-error-taxonomy.php:1718
+#: assets/js/amp-onboarding-wizard.js:1 assets/js/amp-settings.js:8
+#: assets/js/amp-settings.js:17 assets/js/amp-site-scan-notice.js:1
+#: assets/js/amp-support.js:6
+msgid "Details"
+msgstr "Подробности"
+
+#: includes/widgets/class-amp-widget-categories.php:65
+msgid "Select Category"
+msgstr "Выберите рубрику"
+
+#: includes/widgets/class-amp-widget-archives.php:81
+msgid "Select Day"
+msgstr "Выберите день"
+
+#: includes/widgets/class-amp-widget-archives.php:78
+msgid "Select Month"
+msgstr "Выберите месяц"
+
+#: includes/widgets/class-amp-widget-archives.php:87
+msgid "Select Post"
+msgstr "Выберите запись"
+
+#: includes/widgets/class-amp-widget-archives.php:84
+msgid "Select Week"
+msgstr "Выберите неделю"
+
+#: includes/widgets/class-amp-widget-archives.php:75
+msgid "Select Year"
+msgstr "Выберите год"
+
+#: includes/class-amp-http.php:494
+msgid "Your comment is awaiting moderation."
+msgstr "Ваш комментарий ожидает проверки."
+
+#: includes/embeds/class-amp-crowdsignal-embed-handler.php:59
+msgid "View Survey"
+msgstr "Просмотр опроса"
+
+#: includes/embeds/class-amp-crowdsignal-embed-handler.php:61
+msgid "View Poll"
+msgstr "Посмотреть опрос"
+
+#: includes/admin/class-amp-post-meta-box.php:104
+msgid "AMP status."
+msgstr "Статус AMP."
+
+#: includes/admin/class-amp-post-meta-box.php:204
+msgid "Preview changes in AMP (opens in new window)"
+msgstr "Предпросмотр изменений AMP (откроется в новом окне)"
+
+#: includes/admin/class-amp-post-meta-box.php:369
+msgid "Enabled"
+msgstr "Включено"
+
+#: includes/admin/class-amp-post-meta-box.php:370
+msgid "Disabled"
+msgstr "Отключено"
+
+#: includes/templates/amp-enabled-classic-editor-toggle.php:26
+msgid "AMP:"
+msgstr "AMP:"
+
+#: includes/templates/amp-enabled-classic-editor-toggle.php:67
+msgid "Cancel"
+msgstr "Отмена"
+
+#: includes/admin/class-amp-post-meta-box.php:437
+msgid "A plugin or theme has disabled AMP support."
+msgstr "Плагин или тема отключили поддержку AMP."
+
+#: includes/admin/class-amp-post-meta-box.php:443
+msgid "Unavailable for an unknown reason."
+msgstr "Недоступно по неизвестной причине."
+
+#: includes/templates/amp-enabled-classic-editor-toggle.php:38
+msgid "Edit Status"
+msgstr "Изменить статус"
+
+#: includes/templates/amp-enabled-classic-editor-toggle.php:37
+msgid "Edit"
+msgstr "Изменить"
+
+#: src/Admin/OptionsMenu.php:163 src/Admin/OptionsMenu.php:173
+#: src/ReaderThemeLoader.php:243 assets/js/amp-block-editor.js:3
+msgid "AMP Settings"
+msgstr "Настройки AMP"
+
+#: includes/admin/class-amp-template-customizer.php:742
+msgid "AMP preview enabled"
+msgstr "Предпросмотр AMP включен"
+
+#: includes/admin/class-amp-template-customizer.php:604
+msgid "Navigate to an AMP compatible page"
+msgstr "Перейдите на AMP-совместимую страницу"
+
+#: includes/admin/class-amp-template-customizer.php:603
+msgid "AMP is not available for the page currently being previewed."
+msgstr "AMP-формат недоступен для просматриваемой страницы."
+
+#: includes/templates/amp-enabled-classic-editor-toggle.php:65
+msgid "OK"
+msgstr "OK"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1844
+#: includes/validation/class-amp-validation-error-taxonomy.php:1728
+msgid "Delete"
+msgstr "Удалить"
+
+#: src/Admin/AnalyticsOptionsSubmenu.php:59
+#: src/Admin/AnalyticsOptionsSubmenu.php:60 assets/js/amp-settings.js:32
+msgid "Analytics"
+msgstr "Аналитика"
+
+#: includes/validation/class-amp-validated-url-post-type.php:1742
+#: includes/validation/class-amp-validated-url-post-type.php:1773
+#: includes/validation/class-amp-validated-url-post-type.php:1795
+msgid "Dismiss this notice."
+msgstr "Закрыть уведомление."
+
+#. translators: %s is sanitizer class
+#: includes/templates/class-amp-content-sanitizer.php:83
+msgid "Sanitizer (%s) class does not exist"
+msgstr "Класс sanitizer (%s) не существует."
+
+#: includes/settings/class-amp-customizer-design-settings.php:172
+msgid "Color Scheme"
+msgstr "Цветовая схема"
+
+#: includes/settings/class-amp-customizer-design-settings.php:146
+msgid "Header Text Color"
+msgstr "Цвет текста заголовка"
+
+#: includes/settings/class-amp-customizer-design-settings.php:295
+msgid "Light"
+msgstr "Светлый"
+
+#: includes/settings/class-amp-customizer-design-settings.php:296
+msgid "Dark"
+msgstr "Темный"
+
+#: templates/footer.php:24
+msgid "Back to top"
+msgstr "Наверх"
+
+#. translators: %s: list of categories.
+#: templates/meta-taxonomy.php:27
+msgid "Categories: %s"
+msgstr "Категории: %s"
+
+#. translators: %s: list of tags.
+#: templates/meta-taxonomy.php:44
+msgid "Tags: %s"
+msgstr "Теги: %s"
+
+#: includes/settings/class-amp-customizer-design-settings.php:160
+msgid "Header Background & Link Color"
+msgstr "Цвет фона заголовка и ссылки"
+
+#: includes/templates/class-amp-post-template.php:343
+msgid "View Comments"
+msgstr "Показать комментарии"
+
+#: includes/settings/class-amp-customizer-design-settings.php:134
+msgid "Design"
+msgstr "Оформление"
+
+#: includes/templates/class-amp-post-template.php:342
+msgid "Leave a Comment"
+msgstr "Добавить комментарий"
+
+#. Plugin Name of the plugin
+#: includes/admin/class-amp-admin-pointers.php:66
+#: includes/admin/class-amp-template-customizer.php:269
+#: includes/admin/functions.php:136 includes/admin/functions.php:137
+#: includes/amp-helper-functions.php:2002
+#: includes/templates/amp-paired-browsing.php:31
+#: includes/validation/class-amp-validation-manager.php:438
+#: src/Admin/OptionsMenu.php:164 src/Admin/SiteHealth.php:156
+#: assets/js/amp-block-validation.js:12 assets/js/amp-onboarding-wizard.js:13
+msgid "AMP"
+msgstr "AMP"
+
+#: back-compat/templates-v0-3/meta-taxonomy.php:8
+#: back-compat/templates-v0-3/meta-taxonomy.php:17
+#: templates/meta-taxonomy.php:21 templates/meta-taxonomy.php:35
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#. translators: %s is key name
+#: includes/templates/class-amp-post-template.php:200
+msgid "Called for non-existent key (\"%s\")."
+msgstr "Вызван несуществующий ключ (\"%s\")."
+
+#. translators: 1: the template file, 2: WP_CONTENT_DIR.
+#: includes/templates/class-amp-post-template.php:473
+msgid "Path validation for template (%1$s) failed. Path cannot traverse and must be located in `%2$s`."
+msgstr "Проверка пути для шаблона (%s) не удалась. Путь не может пересекать и должен быть расположен в `%s`."

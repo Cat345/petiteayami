@@ -1,0 +1,1439 @@
+# Translation of Plugins - Table Rate Shipping Method for WooCommerce by Flexible Shipping - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Table Rate Shipping Method for WooCommerce by Flexible Shipping - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-10-02 11:26:23+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Table Rate Shipping Method for WooCommerce by Flexible Shipping - Stable (latest release)\n"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductFieldValue.php:13
+msgid "Field value"
+msgstr "Feldwert"
+
+#: vendor_prefixed/octolize/wp-onboarding/src/Onboarding/PluginUpgrade/PluginUpgradeOnboardingFactory.php:130
+msgid "I'm not interested"
+msgstr "Ich bin nicht interessiert"
+
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:122
+msgid "Buy bundle →"
+msgstr "Paket kaufen →"
+
+#: src/WPDesk/FS/AdvertMetabox/ProPluginAdvertMetabox.php:50
+#: src/WPDesk/FS/Info/FSPro.php:40
+msgid "Upgrade Now"
+msgstr "Jetzt upgraden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/PluginActionLinks.php:75
+msgid "Disable usage tracking"
+msgstr "Nutzungsverfolgung deaktivieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/PluginActionLinks.php:70
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-notice.php:41
+msgid "Enable usage tracking"
+msgstr "Nutzungsverfolgung aktivieren"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "I have found another plugin"
+msgstr "Ich habe ein anderes Plugin gefunden"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "Other reason"
+msgstr "Anderer Grund"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "Which plugin are you switching to?"
+msgstr "Zu welchem Plugin wechselst du?"
+
+#: vendor_prefixed/octolize/octolize-checkout-block-integration/src/Blocks/StoreEndpoint.php:57
+msgid "Field"
+msgstr "Feld"
+
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Thanks!"
+msgstr "Danke!"
+
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Knowledge base"
+msgstr "Wissensdatenbank"
+
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Thanks for the feedback"
+msgstr "Vielen Dank für das Feedback"
+
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:122
+msgid "Buy plugin →"
+msgstr "Plugin kaufen →"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionLength.php:21
+msgid "Length"
+msgstr "Länge"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionWidth.php:21
+msgid "Width"
+msgstr "Breite"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionHeight.php:21
+msgid "Height"
+msgstr "Höhe"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ShippingClass.php:24
+msgid "Shipping class"
+msgstr "Versandklasse"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductTag.php:26
+msgid "Product tag"
+msgstr "Produkt-Schlagwort"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductCategory.php:26
+msgid "Product category"
+msgstr "Produktkategorie"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Item.php:24
+msgid "Item"
+msgstr "Artikel"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/UserRole.php:24
+msgid "User Role"
+msgstr "Benutzerrolle"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/DimensionalWeight.php:25
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/MaxDimension.php:26
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Product.php:26
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Product.php:27
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductCategory.php:27
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionHeight.php:23
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionLength.php:23
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionWidth.php:23
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductFieldRange.php:17
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductFieldValue.php:15
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductStockQuantity.php:18
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductStockStatus.php:15
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductTag.php:27
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ShippingClass.php:25
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/TotalOverallDimensions.php:27
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Volume.php:25
+#: src/WPDesk/FS/TableRate/Rule/Condition/Weight.php:34
+#: src/WPDesk/FS/TableRate/Rule/Condition/Weight.php:110
+msgid "Product"
+msgstr "Produkt"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/UserRole.php:25
+msgid "User"
+msgstr "Benutzer"
+
+#. Author of the plugin
+#: flexible-shipping.php
+msgid "Octolize"
+msgstr "Octolize"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/Notice.php:46
+msgid "https://octol.io/fs-2-docs"
+msgstr "https://octol.io/fs-2-docs"
+
+#. Author URI of the plugin
+#: flexible-shipping.php
+msgid "https://octol.io/fs-author"
+msgstr "https://octol.io/fs-author"
+
+#. Translators: open and close strong tag.
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:185
+msgid "https://octol.io/onboarding-sc"
+msgstr "https://octol.io/onboarding-sc"
+
+#. Translators: open and close strong tag.
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:191
+msgid "https://octol.io/onboarding-docs"
+msgstr "https://octol.io/onboarding-docs"
+
+#: vendor_prefixed/wpdesk/wp-forms/templates/input-image.php:46
+msgid "Set image"
+msgstr "Bild festlegen"
+
+#: vendor_prefixed/wpdesk/wp-forms/templates/input-image.php:57
+msgid "Remove image"
+msgstr "Bild löschen"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:34
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:123
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/CartLineItem.php:27
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Item.php:25
+msgid "Cart"
+msgstr "Warenkorb"
+
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:82
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:253
+msgctxt "Default Condition Group"
+msgid "General"
+msgstr "Allgemein"
+
+#: src/WPDesk/FS/TableRate/Order/ItemMeta.php:62
+msgid "Description"
+msgstr "Beschreibung"
+
+#: classes/class-flexible-shipping-plugin.php:858
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Assets.php:68
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/WPDesk/FS/Onboarding/TableRate/Onboarding.php:108
+msgid "Step #"
+msgstr "Schritt #"
+
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:68
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:120
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:158
+msgid "Next step"
+msgstr "Nächster Schritt"
+
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:115
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:153
+#: src/WPDesk/FS/Onboarding/TableRate/PopupData.php:198
+msgid "Previous step"
+msgstr "Vorheriger Schritt"
+
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/JSON.php:76
+msgid "(no title)"
+msgstr "(kein Titel)"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:92
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:181
+msgid "min"
+msgstr "mind."
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:100
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:189
+msgid "max"
+msgstr "max."
+
+#. Translators: condition name.
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:144
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:315
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/None.php:60
+msgid "Condition: %1$s;"
+msgstr "Bedingung: %1$s;"
+
+#. Translators: rule number.
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Rule.php:226
+msgid "Rule %1$s:"
+msgstr "Regel %1$s:"
+
+#. Translators: cost per.
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Cost/AbstractAdditionalCost.php:101
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Cost/AbstractAdditionalCost.php:240
+msgid "%1$s per %2$s"
+msgstr "%1$s pro %2$s"
+
+#: classes/class-flexible-shipping-plugin.php:586
+#: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:97
+msgid "Flexible Shipping PRO"
+msgstr "Flexible Shipping PRO"
+
+#: src/WPDesk/FS/TableRate/Rule/Cost/RuleAdditionalCostFieldsFactory.php:79
+#: src/WPDesk/FS/TableRate/Rule/Cost/RuleAdditionalCostFieldsFactory.php:80
+msgid "per"
+msgstr "pro"
+
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/JSON.php:33
+msgid "Uploaded file not exist."
+msgstr "Die hochgeladene Datei existiert nicht."
+
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/JSON.php:39
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/JSON.php:44
+msgid "Sorry, there has been an error. The JSON file is invalid or incorrect file type."
+msgstr "Entschuldigung, es ist ein Fehler aufgetreten. Die JSON-Datei ist ungültig oder vom falschen Dateityp."
+
+#: classes/views/deactivation_thickbox.php:60
+msgid "I don't like the new version of the rules table"
+msgstr "Die neue Version der Regeltabelle gefällt mir nicht"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/BlockSettings.php:107
+msgid "Go to the plugins list &rarr;"
+msgstr "Weiter zur Plugins-Liste &rarr;"
+
+#: vendor_prefixed/wpdesk/wp-forms/templates/product-select.php:22
+msgid "Search for a product&hellip;"
+msgstr "Nach einem Produkt suchen&hellip;"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:265
+msgid "Advanced Options"
+msgstr "Erweiterte Optionen"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:257
+msgid "Cost Calculation"
+msgstr "Kostenrechner"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:191
+msgid "Shipping Integration"
+msgstr "Einbindung des Versands"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Logger/view/display-notice-footer.php:9
+msgid "Copy all data"
+msgstr "Alle Daten kopieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Logger/view/display-notice-content-single-value.php:12
+msgid "Show %1$s"
+msgstr "%1$s anzeigen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/IntegrationSettingsImplementation.php:41
+msgid "Integration: %1$s"
+msgstr "Einbindung: %1$s"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Logger/view/display-notice-content-single-value.php:18
+msgid "Copy %1$s"
+msgstr "%1$s kopieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Logger/view/display-notice-content-single-value.php:15
+msgid "Hide %1$s"
+msgstr "%1$s ausblenden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Logger/ShippingMethodLogger.php:85
+msgid "rules (%1$s)"
+msgstr "Regeln (%1$s)"
+
+#. Translators: add method.
+#. Translators: free shipping.
+#. Translators: matched condition.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:262
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:268
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:279
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:160
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:331
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/None.php:62
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/CheckboxValue.php:23
+msgid "no"
+msgstr "nein"
+
+#. Translators: rule cost.
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/CostsCalculator.php:181
+msgid "Calculated rule cost: %1$s %2$s"
+msgstr "Berechnete Regelkosten: %1$s %2$s"
+
+#. Translators: cost, currency.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:275
+msgid "Calculated shipping cost: %1$s %2$s"
+msgstr "Berechnete Versandkosten: %1$s %2$s"
+
+#. Translators: shipping cost after free shipping.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:284
+msgid "Shipping cost after free shipping applied: %1$s"
+msgstr "Versandkosten nach Anwendung des kostenlosen Versands: %1$s"
+
+#: classes/table-rate/shipping-method.php:567
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:271
+msgid "Shipping cost added."
+msgstr "Versandkosten hinzugefügt."
+
+#. Translators: cart currency.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:194
+msgid "Cart currency: %1$s"
+msgstr "Währung des Warenkorbs: %1$s"
+
+#. Translators: shop currency.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:192
+msgid "Shop currency: %1$s"
+msgstr "Währung des Shops: %1$s"
+
+#. Translators: free shipping.
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:279
+msgid "Free shipping: %1$s"
+msgstr "Kostenloser Versand: %1$s"
+
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/None.php:27
+msgid "Always"
+msgstr "Immer"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-user-feedback/src/WPDesk/Tracker/UserFeedback/UserFeedbackContent.php:31
+msgid "Proceed"
+msgstr "Fortfahren"
+
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Rule.php:156
+msgid "Rule costs:"
+msgstr "Regelkosten:"
+
+#: classes/table-rate/shipping-method.php:361
+msgid "Flexible Shipping: security check error. Shipping method order not saved!"
+msgstr "Flexible Shipping: Fehler bei der Sicherheitsprüfung. Die Reihenfolge der Versandmethoden wurde nicht gespeichert!"
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionLabels.php:57
+msgid "Unable to create temporary file for labels. Check temporary folder configuration on server."
+msgstr "Die Erstellung einer temporären Datei für Etiketten war nicht möglich. Überprüfe die Konfiguration des temporären Ordners auf dem Server."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/views/scripts.php:55
+msgid "Plugin deactivation"
+msgstr "Plugin-Deaktivierung"
+
+#: classes/views/deactivation_thickbox.php:71
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:16
+msgid "I have found a better plugin"
+msgstr "Ich habe ein besseres Plugin gefunden"
+
+#: classes/views/deactivation_thickbox.php:109
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:24
+msgid "Please let us know how we can improve our plugin"
+msgstr "Bitte lass uns wissen, wie wir unser Plugin verbessern können"
+
+#: classes/views/deactivation_thickbox.php:36
+msgid "If you have a moment, please let us know why you are deactivating the plugin (anonymous feedback):"
+msgstr "Wenn du einen Moment Zeit hast, lass uns bitte wissen, warum du das Plugin deaktivierst (anonymes Feedback):"
+
+#: classes/notices/rate-notice-implementation.php:57
+msgid "Awesome, you've been using Flexible Shipping for more than 2 weeks. Could you please do me a BIG favor and give it a 5-star rating on WordPress? ~Octolize Team"
+msgstr "Großartig, du nutzt Flexible Shipping bereits länger als zwei Wochen. Kannst du uns einen GROSSEN Gefallen tun und uns eine 5-Sterne-Bewertung auf WordPress geben? ~ Octolize Team"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Warning"
+msgstr "Warnung"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Notice"
+msgstr "Hinweis"
+
+#. Translators: link.
+#: classes/notices/abstract-rate.php:30
+#: classes/notices/rate-notice-implementation.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-rating-petition/src/RatingPetitionNotice.php:172
+msgid "%1$sNope, maybe later%2$s"
+msgstr "%1$sEher nicht, vielleicht später%2$s"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Critical"
+msgstr "Kritisch"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Alert"
+msgstr "Warnhinweis"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Emergency"
+msgstr "Notfall"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#. Translators: directory.
+#: vendor_prefixed/wpdesk/wp-logs/src/WP/WPCapture.php:36
+msgid "Can not enable WP Desk Debug log! Cannot create file %s!"
+msgstr "Das Debug-Protokoll von WP Desk konnte nicht aktiviert werden! Die Datei %s konnte nicht erstellt werden!"
+
+#. Translators: directory.
+#: vendor_prefixed/wpdesk/wp-logs/src/WP/WPCapture.php:23
+msgid "Can not enable WP Desk Debug log! Cannot create directory %s or this directory is not writeable!"
+msgstr "Das Debug-Protokoll von WP Desk konnte nicht aktiviert werden! Das Verzeichnis %s konnte nicht erstellt werden oder dieses Verzeichnis ist nicht beschreibbar!"
+
+#: src/WPDesk/FS/Newsletter/views/newsletter-form.php:8
+msgid "Email:"
+msgstr "E-Mail-Adresse:"
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Info"
+msgstr "Information"
+
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:215
+msgid "The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. Please update OpenSSL module."
+msgstr "Das Plugin &#8222;%s&#8220; kann ohne das OpenSSL-Modul in der Mindestversion %s nicht ausgeführt werden. Bitte aktualisiere das OpenSSL-Modul."
+
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Debug"
+msgstr "Fehlersuche"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:116
+msgid "Rules Calculation"
+msgstr "Berechnungsregeln"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:65
+msgid "Enable integration with Flexible Shipping Connect"
+msgstr "Aktiviere die Einbindung von Flexible Shipping Connect"
+
+#. Translators: link.
+#: classes/notices/abstract-rate.php:35
+#: classes/notices/rate-notice-implementation.php:25
+#: vendor_prefixed/wpdesk/wp-wpdesk-rating-petition/src/RatingPetitionNotice.php:178
+msgid "%1$sI already did%2$s"
+msgstr "%1$sBereits erledigt%2$s"
+
+#. Translators: link.
+#: classes/notices/abstract-rate.php:25
+#: classes/notices/rate-notice-implementation.php:15
+#: vendor_prefixed/wpdesk/wp-wpdesk-rating-petition/src/RatingPetitionNotice.php:166
+msgid "%1$sOk, you deserved it%2$s"
+msgstr "%1$sOK, ihr verdient es%2$s"
+
+#. Translators: link.
+#: classes/class-flexible-shipping-plugin.php:806
+msgid "How can We make Flexible Shipping better for you? %1$sJust write to us.%2$s"
+msgstr "Wie können wir Flexible Shipping für dich verbessern? %1$sSchreib es uns einfach.%2$s"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:54
+msgid "Integrations"
+msgstr "Integrationen"
+
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Send"
+msgstr "Senden"
+
+#. Translators: rule shipping class and wp_error message.
+#: src/WPDesk/FS/TableRate/ImporterExporter/ShippingClassTrait.php:79
+msgid "Error while creating shipping class: %1$s, %2$s"
+msgstr "Fehler beim Erstellen einer Versandklasse: %1$s, %2$s"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:59
+#: classes/table-rate/views/html-shipping-settings-advanced.php:63
+msgid "FS Connect"
+msgstr "FS Connect"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:20
+msgid "How to use Flexible Shipping?"
+msgstr "Wie verwendet man Flexible Shipping?"
+
+#: classes/table-rate/views/html-custom-services.php:15
+#: vendor_prefixed/octolize/wp-betterdocs-beacon/src/BeaconOptions.php:30
+msgid "Name"
+msgstr "Name"
+
+#: classes/table-rate/views/html-custom-services.php:14
+msgid "Code"
+msgstr "Code"
+
+#: classes/table-rate/logger/class-logger-settings.php:85
+msgid "Debug mode"
+msgstr "Debug-Modus"
+
+#: classes/table-rate/logger/class-logger-settings.php:84
+msgid "Enable Debug Mode"
+msgstr "Debug-Modus aktivieren"
+
+#: classes/table-rate/flexible-shipping-settings.php:107
+msgid "Advanced settings"
+msgstr "Erweiterte Einstellungen"
+
+#. Translators: order id and integration.
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Order/AddShippingMetabox.php:45
+msgid "Shipment for order %1$s, %2$s"
+msgstr "Versand für Bestellung %1$s, %2$s"
+
+#. Translators: URL.
+#: classes/table-rate/logger/class-logger-settings.php:90
+msgid "%1$sDownload debug.log file%2$s"
+msgstr "%1$sDatei debug.log herunterladen%2$s"
+
+#: templates/email/after_order_table.php:15
+#: templates/myaccount/after_order_table.php:18
+msgid "Track shipment: "
+msgstr "Sendung verfolgen:"
+
+#: classes/table-rate/views/html-custom-services.php:37
+msgid "Drag and drop the services to control their display order. Confirm by clicking Save changes button below."
+msgstr "Die Dienste können per Drag-and-drop bewegt werden, um deren dargestellte Anordnung festzulegen. Durch Klicken auf den Button „Änderungen speichern“ bestätigt du die neue Anordnung."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:81
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:73
+msgid "Anonymized and non-sensitive store usage information"
+msgstr "Anonymisierte und nicht vertrauliche Nutzungsinformationen des Shops"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-notice.php:22
+msgid "We need your help to improve <strong>WP Desk plugins</strong>, so they are more useful for you and the rest of <strong>30,000+ users</strong>. By collecting data on how you use our plugins, you will help us a lot. We will not collect any sensitive data, so you can feel safe."
+msgstr "Wir benötigen deine Hilfe, um die <strong>WP-Desk-Plugins</strong> zu verbessern, so dass sie noch nützlicher für dich und den Rest der <strong>30,000+ Benutzer</strong> sind. Indem wir Daten darüber sammeln, wie du unsere Plugins verwendest, hilfst du uns sehr. Wir werden keine sensiblen Daten sammeln, da kannst du dir sicher sein."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:59
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:51
+msgid "WP version, PHP info"
+msgstr "WP-Version, PHP-Info"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:45
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:211
+msgid "General Settings"
+msgstr "Allgemeine Einstellungen"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:42
+msgid "More resources"
+msgstr "Weitere Ressourcen"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:49
+msgid "Shipping Insurance"
+msgstr "Transportversicherung"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:48
+msgid "Weight Based Shipping"
+msgstr "Gewichtsbasierter Versand"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:47
+msgid "Currency Support"
+msgstr "Währungsunterstützung"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:46
+msgid "Adding a shipping method"
+msgstr "Eine Versandmethode hinzufügen"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:36
+msgid "Quick Video Overview"
+msgstr "Schnelle Videoübersicht"
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:33
+msgid "You can start the configuration by clicking the Flexible Shipping link in the Shipping methods table."
+msgstr "Du kannst die Konfiguration starten, indem du den Flexible-Shipping-Link in der Versandmethoden-Tabelle anklickst."
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:26
+msgid "To add first Flexible Shipping method go to %sShipping zones%s and add Flexible Shipping to a shipping zone."
+msgstr "Um deine erste Flexible-Shipping-Methode hinzuzufügen, gehe zu den %sVersandzonen%s und füge Flexible Shipping als Versandzone hinzu."
+
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:212
+msgid "The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. Please update WooCommerce."
+msgstr "Das Plugin &#8222;%s&#8220; kann nicht mit WooCommerce-Versionen älter als %s ausgeführt werden. Bitte aktualisiere WooCommerce."
+
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:209
+msgid "The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please update WordPress."
+msgstr "Das Plugin &#8222;%s&#8220; kann nicht mit WordPress-Versionen älter als %s ausgeführt werden. Bitte aktualisiere WordPress."
+
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:409
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:429
+msgid "The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin."
+msgstr "Das Plugin &#8222;%s&#8220; funktioniert leider nicht, wenn %s nicht aktiv ist. Bitte installiere und aktiviere das Plugin %s."
+
+#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:206
+msgid "The &#8220;%s&#8221; plugin cannot run on PHP versions older than %s. Please contact your host and ask them to upgrade."
+msgstr "Das Plugin &#8222;%s&#8220; kann nicht mit PHP-Versionen älter als %s ausgeführt werden. Bitte kontaktiere deinen Hoster und bitte ihn darum, ein Upgrade durchzuführen."
+
+#: classes/table-rate/views/html-shipping-settings-advanced.php:50
+msgid "Conditional Cash on Delivery"
+msgstr "An eine Bedingung geknüpfte Lieferung per Nachnahme"
+
+#: src/WPDesk/FS/Shipment/AdminNotices.php:53
+msgid "Bulk labels - processed orders: %d. No labels for processed orders."
+msgstr "Massenetiketten - verarbeitete Bestellungen: %d. Keine Etiketten für verarbeitete Bestellungen."
+
+#. Translators: link.
+#: src/WPDesk/FS/TableRate/ContextualInfo/Creator.php:389
+msgid "%1$sAdd integration%2$s"
+msgstr "%1$sEinbindung hinzufügen%2$s"
+
+#. Translators: link.
+#: src/WPDesk/FS/TableRate/ContextualInfo/Creator.php:381
+msgid "%1$sAdd integrations%2$s"
+msgstr "%1$sEinbindungen hinzufügen%2$s"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Order/views/html-order-add_shipping-metabox.php:18
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Order/AddShippingMetabox.php:85
+msgid "Add shipping"
+msgstr "Versand hinzufügen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Order/AddShippingMetabox.php:83
+msgid "Select integration"
+msgstr "Einbindung auswählen"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/OptInNotice/views/html-notice.php:22
+msgid "Allow"
+msgstr "Erlauben"
+
+#: classes/views/deactivation_thickbox.php:90
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:73
+msgid "I no longer need the plugin"
+msgstr "Ich benötige das Plugin nicht länger"
+
+#: classes/views/deactivation_thickbox.php:82
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:18
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:63
+msgid "I only needed the plugin for a short period"
+msgstr "Ich benötigte das Plugin nur für eine kurze Zeit"
+
+#: classes/views/deactivation_thickbox.php:74
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:16
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:53
+msgid "What's the plugin's name?"
+msgstr "Wie lautet der Name des Plugins?"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-user-feedback/src/WPDesk/Tracker/UserFeedback/views/thickbox.php:103
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:40
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:32
+msgid "Skip"
+msgstr "Überspringen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:35
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:27
+msgid "Allow & Continue &rarr;"
+msgstr "Erlauben &amp; fortsetzen &rarr;"
+
+#. Translators: username.
+#: src/WPDesk/FS/Tracker/TrackerNotices.php:42
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:23
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:15
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-notice.php:19
+msgid "Hey %s,"
+msgstr "Hallo %s,"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:60
+msgid "Shipment data"
+msgstr "Versanddaten"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:56
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:48
+msgid "Your Site Overview"
+msgstr "Überblick über deine Seite"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:47
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:39
+msgid "What permissions are being granted?"
+msgstr "Welche Zugriffe wurden erlaubt?"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:78
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:70
+msgid "Your Store Overview"
+msgstr "Überblick über deinen Shop"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:91
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:83
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-notice.php:27
+msgid "Find out more &raquo;"
+msgstr "Mehr Informationen &raquo;"
+
+#: classes/views/deactivation_thickbox.php:106
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:24
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:93
+msgid "Other"
+msgstr "Sonstiges"
+
+#: classes/views/deactivation_thickbox.php:44
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:12
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:28
+msgid "The plugin suddenly stopped working"
+msgstr "Das Plugin hörte plötzlich auf zu funktionieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:48
+msgid "I found a better plugin"
+msgstr "Ich habe ein besseres Plugin gefunden"
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionSend.php:49
+msgid "Shipment created."
+msgstr "Versand erstellt."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:100
+msgid "Date"
+msgstr "Datum"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:102
+msgid "Number"
+msgstr "Nummer"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:159
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:183
+msgid "Invalid nonce!"
+msgstr "Momentan ungültig!"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:79
+msgid "Order"
+msgstr "Bestellung"
+
+#: templates/email/after_order_table.php:12
+#: templates/myaccount/after_order_table.php:15
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:15
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:74
+msgid "Shipment"
+msgstr "Versand"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/column-actions.php:11
+msgid "Download"
+msgstr "Download"
+
+#: classes/views/deactivation_thickbox.php:116
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/column-actions.php:16
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/views/thickbox.php:102
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-user-feedback/src/WPDesk/Tracker/UserFeedback/views/thickbox.php:98
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:107
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:15
+msgid "Unknown error!"
+msgstr "Unbekannter Fehler!"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:24
+msgid "No shipment id!"
+msgstr "Keine Versand-ID!"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:27
+msgid "No data!"
+msgstr "Keine Daten!"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:18
+msgid "Nonce verification error! Invalid request."
+msgstr "Momentaner Verifizierungsfehler! Ungültige Abfrage."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:44
+msgid "Saved"
+msgstr "Gespeichert"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgctxt "Shipment status"
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgid "Failed <span class=\"count\">(%s)</span>"
+msgid_plural "Failed <span class=\"count\">(%s)</span>"
+msgstr[0] "Fehlgeschlagene(r) <span class=\"count\">(%s)</span>"
+msgstr[1] "Fehlgeschlagene <span class=\"count\">(%s)</span>"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Add new Shipment"
+msgstr "Neuen Versand hinzufügen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Edit Shipment"
+msgstr "Versand bearbeiten"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Save Shipment"
+msgstr "Versand speichern"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Shipment not found"
+msgstr "Versand nicht gefunden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Shipment not found in trash"
+msgstr "Versand im Papierkorb nicht gefunden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:19
+msgid " If you have a moment, please let us know why you are deactivating plugin (anonymous feedback):"
+msgstr "Wenn du einen Moment Zeit hast, lass uns bitte wissen, warum du das Plugin deaktivierst (anonymes Feedback):"
+
+#: classes/views/deactivation_thickbox.php:52
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:14
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:38
+msgid "The plugin broke my site"
+msgstr "Das Plugin legte meine Website lahm"
+
+#: classes/views/deactivation_thickbox.php:98
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/DefaultReasonsFactory.php:22
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:83
+msgid "It's a temporary deactivation. I'm just debugging an issue."
+msgstr "Es handelt sich um eine vorübergehende Deaktivierung. Ich arbeite nur am Beheben eines Fehlers."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-opt-out-notice.php:11
+msgid "You successfully opted out of collecting usage data by WP Desk. If you change your mind, you can always opt in later in the plugin's quick links."
+msgstr "Du hast erfolgreich angegeben, dass du keine Nutzungsdaten mit WP Desk teilen möchtest. Wenn du deine Meinung ändern solltest, kannst du jederzeit über den Quicklink im Plugin zustimmen."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgctxt "Shipment status"
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgctxt "Shipment status"
+msgid "Manifest created"
+msgstr "Frachtliste erstellt"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgctxt "Shipment status"
+msgid "Created"
+msgstr "Erstellt"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgctxt "Shipment status"
+msgid "New"
+msgstr "Neu"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/filter-form.php:11
+msgid "All manifests"
+msgstr "Alle Frachtlisten"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Shipping Manifests."
+msgstr "Frachtlisten."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Shipping Manifests not found in trash"
+msgstr "Frachtlisten nicht im Papierkorb gefunden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Shipping Manifests not found"
+msgstr "Frachtlisten nicht gefunden"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Search Shipping Manifests"
+msgstr "Frachtlisten suchen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:103
+msgid "Shipments count"
+msgstr "Versandzähler"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Edit Shipping Manifest"
+msgstr "Frachtliste bearbeiten"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Add new Shipping Manifests"
+msgstr "Neue Frachtlisten hinzufügen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Add new Shipping Manifest"
+msgstr "Neue Frachtliste hinzufügen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "View Shipping Manifests"
+msgstr "Frachtlisten anzeigen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Shipping Manifest"
+msgstr "Frachtliste"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:60
+msgid "Shipping Manifests"
+msgstr "Frachtlisten"
+
+#: src/WPDesk/FS/Shipment/BulkAction.php:77
+msgid "Create shipping manifest"
+msgstr "Frachtliste erstellen"
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:166
+msgid "Manifest created"
+msgstr "Frachtliste erstellt"
+
+#: src/WPDesk/FS/Shipment/AdminNotices.php:78
+msgid "Bulk shipping manifest - processed orders: %d"
+msgstr "Sammelfrachtliste - Bestellungen verarbeitet: %d"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:67
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:59
+msgid "Plugin Usage"
+msgstr "Plugin-Nutzung"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/PSR/WPDesk/Tracker/views/tracker-connect.php:26
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:18
+msgid "Please help us improve our plugins! If you opt-in, we will collect some non-sensitive data and usage information anonymously. If you skip this, that's okay! All plugins will work just fine."
+msgstr "Bitte hilf uns, unsere Plugins zu verbessern! Wenn du zustimmst, sammeln wir einige nicht-sensible Daten und Nutzungsinformationen. Wenn du stattdessen überspringst, ist das okay! Alle Plugins werden dennoch ganz normal funktionieren."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgid "Created <span class=\"count\">(%s)</span>"
+msgid_plural "Created <span class=\"count\">(%s)</span>"
+msgstr[0] "Erstellt <span class=\"count\">(%s)</span>"
+msgstr[1] "Erstellt <span class=\"count\">(%s)</span>"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgid "Confirmed <span class=\"count\">(%s)</span>"
+msgid_plural "Confirmed <span class=\"count\">(%s)</span>"
+msgstr[0] "Bestätigt <span class=\"count\">(%s)</span>"
+msgstr[1] "Bestätigt <span class=\"count\">(%s)</span>"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:37
+msgid "New <span class=\"count\">(%s)</span>"
+msgid_plural "New <span class=\"count\">(%s)</span>"
+msgstr[0] "Neu <span class=\"count\">(%s)</span>"
+msgstr[1] "Neu <span class=\"count\">(%s)</span>"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:54
+msgid "Save Shipping Manifest"
+msgstr "Frachtliste speichern"
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionManifest.php:105
+msgid "No manifests created."
+msgstr "Keine Liste erstellt."
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionManifest.php:94
+msgid "Manifest creation error: %s (%s)."
+msgstr "Fehler beim Erstellen der Liste: %s (%s)."
+
+#. Translators: manifests count and integration.
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionManifest.php:83
+msgid "Created manifest: %s (%s). If download not start automatically click %shere%s."
+msgstr "Liste erstellt: %s (%s). Wenn der Download nicht automatisch startet, %shier%s klicken."
+
+#: src/WPDesk/FS/Shipment/BulkAction.php:73
+msgid "Send shipment"
+msgstr "Lieferung versenden"
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:163
+msgid "New shipment"
+msgstr "Neuer Versand"
+
+#: src/WPDesk/FS/Shipment/ModifyStatuses.php:33
+msgid "Manifest"
+msgstr "Liste"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Shipments."
+msgstr "Sendungen."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "Search Shipments"
+msgstr "Sendungen suchen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+msgid "View Shipments"
+msgstr "Sendungen betrachten"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/CustomPostType.php:36
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:66
+msgid "Shipments"
+msgstr "Sendungen"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:98
+msgid "Kindly tell us the reason so we can improve"
+msgstr "Nenne uns freundlicherweise den Grund, sodass wir uns stetig verbessern können."
+
+#: classes/views/deactivation_thickbox.php:117
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/views/thickbox.php:92
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:110
+msgid "Skip &amp; Deactivate"
+msgstr "Überspringen und deaktivieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/views/thickbox.php:99
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/class-wpdesk-tracker.php:164
+msgid "Submit &amp; Deactivate"
+msgstr "Absenden und deaktivieren"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-connect.php:62
+msgid "Current settings and usage information of WP Desk plugins"
+msgstr "Aktuelle Einstellungen und Nutzungsinformation der WP-Desk-Plugins"
+
+#. Translators: plugin name.
+#: classes/views/deactivation_thickbox.php:25
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker-deactivation/src/WPDesk/Tracker/Deactivation/views/thickbox.php:23
+#: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:11
+msgid "You are deactivating %s plugin."
+msgstr "Du deaktivierst das Plugin %s."
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:100
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:162
+#: vendor_prefixed/wpdesk/wp-logs/src/deprecated/wpdesk-logger.php:59
+msgid "Error"
+msgstr "Fehler"
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:66
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:73
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ShippingCost.php:19
+msgid "Shipping"
+msgstr "Versand"
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionSend.php:62
+msgid "No action performed."
+msgstr "Keine Aktion durchgeführt."
+
+#: src/WPDesk/FS/Shipment/BulkAction.php:74
+msgid "Get labels"
+msgstr "Etiketten erstellen"
+
+#: src/WPDesk/FS/Shipment/ModifyStatuses.php:30
+msgid "New"
+msgstr "Neu"
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:164
+#: src/WPDesk/FS/Shipment/ModifyStatuses.php:31
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:47
+msgid "Created"
+msgstr "Erstellt"
+
+#: src/WPDesk/FS/Shipment/ModifyOrderTable.php:165
+#: src/WPDesk/FS/Shipment/ModifyStatuses.php:32
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#: src/WPDesk/FS/Shipment/ModifyStatuses.php:34
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#: src/WPDesk/FS/Shipment/views/html-orders-filter-form.php:23
+msgid "Shipment status"
+msgstr "Versandstatus"
+
+#: src/WPDesk/FS/Shipment/views/html-orders-filter-form.php:12
+#: src/WPDesk/FS/Shipment/views/html-orders-filter-form.php:22
+msgid "All shippings"
+msgstr "Alle Versände"
+
+#: src/WPDesk/FS/Shipment/views/html-column-shipping-shipping.php:25
+#: src/WPDesk/FS/Shipment/views/html-column-shipping-shipping.php:26
+msgid "Track shipment for: "
+msgstr "Sendungsverfolgung für:"
+
+#: src/WPDesk/FS/Shipment/AdminNotices.php:44
+msgid "Bulk send shipment - processed orders: %d"
+msgstr "Sammelversand - Bestellungen verarbeitet: %d"
+
+#: src/WPDesk/FS/Shipment/views/html-column-shipping-shipping.php:19
+#: src/WPDesk/FS/Shipment/views/html-column-shipping-shipping.php:20
+msgid "Get label for: "
+msgstr "Etikett erhalten für:"
+
+#: src/WPDesk/FS/Shipment/BulkAction/HandleActionLabels.php:55
+msgid "Unable to create temporary zip archive for labels. Check temporary folder configuration on server."
+msgstr "Erstellung des temporären ZIP-Archivs der Etiketten fehlgeschlagen. Prüfe die Konfiguration des temporären Ordners auf dem Server."
+
+#: src/WPDesk/FS/Shipment/AdminNotices.php:64
+msgid "Bulk labels - processed orders: %d. If download not start automatically click %shere%s."
+msgstr "Sammeletiketten – Bestellungen verarbeitet: %d. Wenn der Download nicht automatisch startet, %shier%s klicken."
+
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:100
+msgid "Sorry, there has been an error. The CSV is invalid or incorrect file type."
+msgstr "Tut uns leid, aber es gab einen Fehler. Die CSV-Datei ist ungültig oder ein ungültiger Dateityp."
+
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/AbstractImporter.php:75
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/AbstractImporter.php:77
+msgid "import"
+msgstr "importieren"
+
+#: src/WPDesk/FS/AdvertMetabox/ProPluginAdvertMetabox.php:40
+#: src/WPDesk/FS/Info/views/fs-pro.php:9
+msgid "Shipping Classes support"
+msgstr "Unterstützung für Versandklassen"
+
+#: src/WPDesk/FS/AdvertMetabox/ProPluginAdvertMetabox.php:38
+#: src/WPDesk/FS/Info/FSPro.php:18
+msgid "Get Flexible Shipping PRO!"
+msgstr "Kaufe Flexible Shipping PRO!"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:179
+msgid "Please select shipment methods to remove"
+msgstr "Bitte wähle die zu entfernende Versandmethode aus"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:212
+msgid "Select file to import"
+msgstr "Datei für den Import auswählen"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:110
+#: classes/table-rate/views/html-shipping-method-settings.php:113
+msgid "Import"
+msgstr "Import"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:105
+msgid "Cancel import"
+msgstr "Import abbrechen"
+
+#. Translators: row number.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:236
+msgid "Invalid value for Based On in row number %d."
+msgstr "Ungültiger Wert für Basiert auf in Zeile %d."
+
+#. Translators: row number.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:145
+msgid "Invalid value for Calculation Method in row number %d."
+msgstr "Ungültiger Wert für Berechnungsmethode in Zeile %d. "
+
+#. Translators: column name, value and row number.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:178
+msgid "%1$s value %2$s is not valid number. Row number %3$d."
+msgstr "%1$s Wert %2$s ist keine gültige Nummer. Zeile %3$d."
+
+#. Translators: maximum cost value and row number.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:128
+msgid "Maximum Cost value %1$s is not valid number. Row number %2$d."
+msgstr "Wert %1$s für die maximalen Kosten ist keine gültige Nummer. Zeile %2$d. "
+
+#. Translators: free shipping value and row number.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:117
+msgid "Free Shipping value %1$s is not valid number. Row number %2$d."
+msgstr "Wert %1$s für den kostenlosen Versand ist keine gültige Nummer. Zeile %2$d."
+
+#. Translators: imported method title and method title.
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/CSV.php:326
+#: src/WPDesk/FS/TableRate/ImporterExporter/Importer/JSON.php:54
+msgid "Shipping method %1$s imported as %2$s."
+msgstr "Versandmethode %1$s als %2$s importiert."
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:39
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:368
+msgid "Free"
+msgstr "Kostenlos"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:91
+msgid "Free Shipping Label"
+msgstr "Beschriftung bei kostenlosem Versand"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:20
+msgid "Select all"
+msgstr "Alle auswählen"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:98
+msgid "Remove selected"
+msgstr "Ausgewählte entfernen"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:70
+msgid "Method Description"
+msgstr "Beschreibung der Versandmethode"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:72
+msgid "This controls method description which the user sees during checkout."
+msgstr "Hier legt man die Beschreibung fest, die Benutzer während des Bezahlvorgangs sehen. "
+
+#. Plugin URI of the plugin
+#: flexible-shipping.php
+msgid "https://wordpress.org/plugins/flexible-shipping/"
+msgstr "https://wordpress.org/plugins/flexible-shipping/"
+
+#. Description of the plugin
+#: flexible-shipping.php
+msgid "Create additional shipment methods in WooCommerce and enable pricing based on cart weight or total."
+msgstr "Erstelle in WooCommerce zusätzliche Versandmethoden mit Preisen basierend auf dem Gewicht oder der Bestellsumme im Warenkorb. "
+
+#: classes/class-flexible-shipping-plugin.php:889
+#: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:188
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: src/WPDesk/FS/Plugin/PluginLinks.php:26
+#: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:181
+msgid "Support"
+msgstr "Support"
+
+#: classes/table-rate/settings/flexible-shipping.php:23
+#: classes/table-rate/shipping-method.php:88
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:54
+msgid "Enable/Disable"
+msgstr "Aktivieren/deaktivieren"
+
+#: classes/table-rate/settings/flexible-shipping.php:36
+#: src/WPDesk/FS/TableRate/ShippingMethod/SingleMethodSettings.php:56
+msgid "Tax Status"
+msgstr "Steuerstatus"
+
+#: classes/table-rate/settings/flexible-shipping.php:41
+#: src/WPDesk/FS/TableRate/ShippingMethod/SingleMethodSettings.php:60
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/MethodSettingsImplementation.php:279
+msgid "Taxable"
+msgstr "Besteuerbar"
+
+#: classes/table-rate/settings/flexible-shipping.php:42
+#: src/WPDesk/FS/TableRate/ShippingMethod/SingleMethodSettings.php:61
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/MethodSettingsImplementation.php:279
+msgctxt "Tax status"
+msgid "None"
+msgstr "Keine"
+
+#: classes/table-rate/settings/flexible-shipping.php:29
+msgid "Shipping title"
+msgstr "Versandname"
+
+#: classes/table-rate/settings/flexible-shipping.php:25
+msgid "Enable Flexible Shipping"
+msgstr "Flexible Shipping aktivieren"
+
+#: classes/table-rate/settings/flexible-shipping.php:46
+#: classes/table-rate/settings/flexible-shipping.php:51
+#: src/WPDesk/FS/Info/WooCommerceABC.php:41
+msgid "Shipping Methods"
+msgstr "Versandmethoden"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:187
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/SpecialAction/None.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/BasedOnOptions.php:20
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/IntegrationSettingsImplementation.php:40
+msgid "None"
+msgstr "Keine"
+
+#: classes/table-rate/shipping-method.php:90
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:57
+msgid "Enable this shipment method"
+msgstr "Diese Versandmethode aktivieren"
+
+#. Plugin Name of the plugin
+#: flexible-shipping.php
+#: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:48
+#: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:51
+#: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:54
+#: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:57
+#: classes/table-rate/settings/flexible-shipping.php:16
+#: classes/table-rate/settings/flexible-shipping.php:32
+#: classes/table-rate/shipping-method.php:97
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:168
+#: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateAction.php:76
+#: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateScript.php:67
+#: src/WPDesk/FS/TableRate/ShippingMethodSingle.php:63
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:94
+msgid "Flexible Shipping"
+msgstr "Flexible Shipping"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:17
+#: src/WPDesk/FS/Shipment/views/html-orders-filter-form.php:13
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:196
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:101
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/filter-form.php:14
+msgid "Integration"
+msgstr "Einbindung"
+
+#: classes/table-rate/shipping-method.php:96
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:63
+msgid "This controls the title which the user sees during checkout."
+msgstr "Hier legt man den Namen fest, den Benutzer während des Bezahlvorgangs sehen."
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:61
+msgid "Method Title"
+msgstr "Name der Versandmethode"
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/CalculationMethodOptions.php:20
+msgid "Sum"
+msgstr "Summe"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:15
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:134
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:16
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:141
+msgid "Default"
+msgstr "Standard"
+
+#: src/WPDesk/FS/Info/WooCommerceABCPL.php:45
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:220
+msgid "Free Shipping"
+msgstr "Kostenloser Versand"
+
+#: src/WPDesk/FS/Plugin/PluginLinks.php:25
+#: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:184
+msgid "Docs"
+msgstr "Dokumentation"
+
+#: classes/table-rate/shipping-method.php:429
+msgid "New Shipping Method"
+msgstr "Neue Versandmethode"
+
+#: classes/table-rate/shipping-method.php:432
+msgid "Edit Shipping Method"
+msgstr "Versandmethode bearbeiten"
+
+#: classes/table-rate/shipping-method.php:442
+#: classes/table-rate/shipping-method.php:485
+msgid "Shipping method %s added."
+msgstr "Versandmethode %s hinzugefügt."
+
+#: classes/table-rate/shipping-method.php:468
+msgid "Shipping method %s deleted."
+msgstr "Versandmethode %s gelöscht."
+
+#: classes/table-rate/shipping-method.php:471
+msgid "Shipping method not found."
+msgstr "Versandmethode nicht gefunden."
+
+#: classes/table-rate/shipping-method.php:94
+msgid "Shipping Title"
+msgstr "Versandname"
+
+#: classes/table-rate/shipping-method.php:497
+msgid "Shipping method %s updated."
+msgstr "Versandmethode %s aktualisiert."
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Weight.php:32
+#: src/WPDesk/FS/TableRate/Rule/Condition/Weight.php:108
+#: src/WPDesk/FS/TableRate/Rule/PreconfiguredScenarios/PreconfiguredScenariosFactory.php:36
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/BasedOnOptions.php:20
+msgid "Weight"
+msgstr "Gewicht"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:13
+msgid "Title"
+msgstr "Bezeichnung"
+
+#: classes/table-rate/views/html-custom-services.php:17
+#: classes/table-rate/views/html-shipping-method-settings.php:14
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:32
+#: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:121
+#: src/WPDesk/FS/TableRate/Rule/PreconfiguredScenarios/PreconfiguredScenariosFactory.php:55
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/BasedOnOptions.php:20
+msgid "Price"
+msgstr "Preis"
+
+#: src/WPDesk/FS/TableRate/Rule/Cost/RuleCostFieldsFactory.php:52
+msgid "Enter shipment cost for this rule."
+msgstr "Trage die Versandkosten für diese Regel ein."
+
+#: classes/table-rate/views/html-shipping-method-settings.php:66
+msgid "Show for all users"
+msgstr "Allen Benutzern anzeigen"
+
+#: classes/table-rate/views/html-shipping-method-scripts.php:25
+#: classes/table-rate/views/html-shipping-method-settings.php:131
+#: src/WPDesk/FS/Info/WooCommerceABC.php:33
+#: src/WPDesk/FS/Info/WooCommerceABCPL.php:37
+msgid "Shipping Zones"
+msgstr "Versandzonen"
+
+#. Translators: add method.
+#. Translators: free shipping.
+#. Translators: matched condition.
+#: classes/table-rate/views/html-shipping-method-settings.php:55
+#: classes/table-rate/views/html-shipping-method-settings.php:63
+#: classes/table-rate/views/html-shipping-method-settings.php:72
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:262
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:268
+#: src/WPDesk/FS/TableRate/ShippingMethod/RateCalculator.php:279
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:160
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/AbstractCondition.php:331
+#: vendor_prefixed/octolize/flexible-shipping-rules/src/TableRate/Rule/Condition/None.php:62
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/CheckboxValue.php:23
+msgid "yes"
+msgstr "ja"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:144
+msgid "Check the box to set this option as the default selected choice on the cart page."
+msgstr "Wähle das Kästchen aus, um diese Option als Standardauswahl im Warenkorb festzulegen."
+
+#: classes/table-rate/views/html-shipping-method-settings.php:91
+msgid "Drag and drop the above shipment methods to control their display order. Confirm by clicking Save changes button below."
+msgstr "Wähle und verschiebe die oben genannten Versandmethoden, um die Anzeigereihenfolge festzulegen. Bestätige die Anpasung durch Klicken auf Änderungen speichern."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:104
+msgid "Actions"
+msgstr "Aktionen"
+
+#: classes/table-rate/shipping-method.php:194
+msgid "Add New"
+msgstr "Neu hinzufügen"
+
+#: classes/table-rate/views/html-shipping-method-settings.php:63
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:137
+msgid "Show only for logged in users"
+msgstr "Nur für angemeldete Benutzer anzeigen"
+
+#: classes/table-rate/settings/flexible-shipping.php:31
+msgid "Visible only to admin in WooCommerce settings."
+msgstr "Nur für Administratoren in den WooCommerce-Einstellungen sichtbar."
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:118
+msgid "Select how rules will be calculated. If you choose \"sum\" the rules order is important."
+msgstr "Wähle wie die Regeln berechnet werden. Wenn man „Summe“ wählt, ist die Reihenfolge der Regeln wichtig."
+
+#: classes/notices/admin-notices.php:104
+msgid "Flexible Shipping requires at least version 1.2 of eNadawca plugin."
+msgstr "Flexible Shipping benötigt mindestens Version 1.2 des Plugins eNadawca."
+
+#: classes/notices/admin-notices.php:89
+msgid "Flexible Shipping requires at least version 2.7 of Active Payments plugin."
+msgstr "Flexible Shipping benötigt mindestens Version 2.7 des Plugins Active Payments."
+
+#: src/WPDesk/FS/TableRate/Rule/Cost/RuleCostFieldsFactory.php:50
+msgid "Cost per order"
+msgstr "Kosten pro Bestellung"
+
+#. Translators: link.
+#: classes/table-rate/settings/flexible-shipping.php:19
+msgid "See how to %1$sconfigure Flexible Shipping%2$s."
+msgstr "Erfahre hier, wie man %1$sFlexible Shipping konfiguriert%2$s."
+
+#: classes/notices/admin-notices.php:119
+msgid "Flexible Shipping requires at least version 1.1 of Orlen Paczka plugin."
+msgstr "Flexible Shipping benötigt mindestens Version 1.1 des Plugins Orlen Paczka."
+
+#. Translators: redirect URL.
+#: inc/functions.php:77
+msgid "Redirecting. If page not redirects click %1$s here %2$s."
+msgstr "Leite weiter. Wenn die Seite nicht weiterleitet, %1$s hier %2$s klicken."

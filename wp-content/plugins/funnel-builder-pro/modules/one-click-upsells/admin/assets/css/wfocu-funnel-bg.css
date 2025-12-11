@@ -1,0 +1,8 @@
+/* funnel bg css only */
+#adminmenumain, .notice, #wpadminbar, .wrap h1.wp-heading-inline, .wrap a.page-title-action, div#wpbody-content > .error, div#wpbody-content > .updated, #wpbody-content > #dolly {
+    display: none !important
+}
+#wpcontent, #wpfooter {margin:0 !important;padding:0 !important}
+html.wp-toolbar {padding-top:0px !important}
+#wpbody {padding-top:70px !important}
+#wpbody-content{padding-bottom:0!important}

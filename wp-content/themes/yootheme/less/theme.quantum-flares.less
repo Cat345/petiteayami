@@ -1,0 +1,114 @@
+/*
+
+Name: Quantum Flares
+Background: Black
+Color: White
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/default.jpg
+
+Style: black-blue
+Name: Black Blue
+Background: Black
+Color: Blue
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/black-blue.jpg
+
+Style: black-red
+Name: Black Red
+Background: Black
+Color: Red
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/black-red.jpg
+
+Style: dark-green
+Name: Dark Green
+Background: Dark
+Color: Green
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/dark-green.jpg
+
+Style: dark-orange
+Name: Dark Orange
+Background: Dark
+Color: Orange
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/dark-orange.jpg
+
+Style: light-black
+Name: Light Black
+Background: Light
+Color: Black
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/quantum-flares/light-black.jpg
+
+*/
+
+// Platform
+@import "platform.less";
+
+// UIkit Core
+@import "../vendor/assets/uikit/src/less/uikit.less";
+
+// UIkit Theme
+@import "../vendor/assets/uikit-themes/master/_import.less";
+@import "../vendor/assets/uikit-themes/master-quantum-flares/_import.less";
+
+// Theme
+@import "theme.less";
+
+
+// Variables
+// ========================================================================
+
+//
+// Page Container
+//
+
+@theme-page-container-color-mode:                           light;
+
+//
+// Mask
+//
+
+@internal-theme-mask-default-border-image:                  "../vendor/assets/uikit-themes/master-quantum-flares/images/mask-image.svg";
+@internal-theme-mask-default-border-image-slice:            95;
+
+@internal-theme-mask-default-image:                         "../vendor/assets/uikit-themes/master-quantum-flares/images/mask-image.svg";
+@internal-theme-mask-default-image-repeat:                  repeat;
+
+//
+// Box Decoration
+//
+
+@theme-box-decoration-z-index:                              1;
+
+@theme-box-decoration-default-transform-horizontal:         0;
+@theme-box-decoration-default-transform-vertical:           0;
+@theme-box-decoration-default-background:                   transparent;
+@theme-box-decoration-default-border-width:                 20px;
+@theme-box-decoration-default-backdrop-filter:              blur(3px);
+
+@theme-box-decoration-primary-transform-horizontal:         0;
+@theme-box-decoration-primary-transform-vertical:           0;
+@theme-box-decoration-primary-background:                   transparent;
+@theme-box-decoration-primary-border-width:                 14px;
+@theme-box-decoration-primary-border:                       @global-primary-background;
+@theme-box-decoration-primary-blend-mode:                   difference;
+
+@theme-box-decoration-secondary-transform-horizontal:       0;
+@theme-box-decoration-secondary-transform-vertical:         0;
+@theme-box-decoration-secondary-background:                 transparent;
+@theme-box-decoration-secondary-border-width:               14px;
+@theme-box-decoration-secondary-border:                     @global-secondary-background;
+@theme-box-decoration-secondary-blend-mode:                 overlay;
+
+@theme-transition-border-blend-mode:                        difference;
+@theme-transition-border-hover-border-width:                14px;
+
+
+// Style
+// ========================================================================
+
+@import (optional) "../vendor/assets/uikit-themes/master-quantum-flares/styles/@{internal-style}.less";
+
+@internal-style: ~'';

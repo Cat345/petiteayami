@@ -1,0 +1,118 @@
+*** UpStroke PowerPack ***
+= 1.11.0 (2025-06-23) =
+* Added: Compatibility with WooCommerce 9.8.0.
+* Improved: Upsells: Compatibility with WooCommerce Payments for streamlined payment processing and better functionality. (#7513)
+* Fixed: Upsells: PHP Error during PayPal IPN with WooCommerce subscription v7.5.0. (#7570)
+
+= 1.10.0 (2025-02-04) =
+* Added: Compatibility with WooCommerce 9.0.0.
+* Fixed: Upsells - PHP Error during offer when offer contains subscriptions & no subscription supported gateway exists. (#6900)
+
+
+= 1.9.5 (2024-07-16) =
+* Added: Support for WPv 6.6.0.
+* Fixed: Upsell subscription renewals were not working for paypal payments in new order + guest + upsell subscription scenarios with v2.8.1 of WooCommerce Paypal payments.
+
+
+= 1.9.4 (2024-03-04) =
+* Added: Compatibility with WooCommerce 8.7.0.
+
+= 1.9.3 (2024-01-11) =
+* Added: Support for upsell module 3.9.0.
+* Fixed: Rule for all things subscription was not working correctly.
+* Fixed: Dynamic shipping was not working for the variations with no default attributes. (#5038)
+* Fixed: Subscriptions were having total zero when WooCommerce PayPal Payments v2.3.1 was active. (#5135)
+
+= 1.9.2 (2023-03-01) =
+* Added: WooCommerce HPOS feature compatibility. (#90)
+
+= 1.9.1 (2023-03-01) =
+* Fixed: Subscriptions created by upsells are only having single quantity. (#87)
+
+= 1.9.0 (2023-09-01)
+* Improved: Plugin headers improved as per rebranding. (#68)
+* Fixed: Notice improved for upsell timeline to show correct message. (#66)
+
+= 1.8.0 (2022-02-01)
+* Improved: Handle dynamic shipping taxes for the offers when tax is exempted in order. (#66)
+* Fixed: Subscription product compatibility for the guest users were not working fine for the PayPal Payments. (#70)
+* Added: Support for the cancel and upgrade behaviour modification. (#68)
+* Fixed: Subscription compatibility with WooCommerce PayPal Payments. (#66)
+
+
+= 1.7.13 (2022-02-01)
+* Fixed: Compatibility updated with 'WooCommerce Subscription' plugin, an error with latest version 4.0.0. (#60)
+* Fixed: PHP 8.1 compatibility fixes. (#62)
+
+= 1.7.12 (2021-12-27)
+* Added: Shortcodes for "Product Signup Fee","Product Recurring Total String" & "All Products Subscription Plan List".
+
+= 1.7.11 (2021-10-29)
+* Improved: Google fonts loading improved.
+
+= 1.7.10 (2021-10-08)
+* Fixed: Subscription Trial length override feature was not working fine.
+* Fixed: Subscription sync renewals end time was not setting up correct.
+
+= 1.7.9 (2021-09-28)
+* Fixed: All plans were showing on offer pages when product added was all product subscription.
+
+= 1.7.8 (2021-09-21)
+* Added :Compatibility with WC paypal payments gateway for subscription.
+
+= 1.7.7 (2021-09-21)
+* Fixed: Compatibility with WooCommerce All Product Subscriptions was not working.
+
+= 1.7.6 (2021-09-17)
+* Fixed: Compatibility with WC payments gateway creating PHP error during upsell subscriptions.
+
+= 1.7.5 (2021-09-16)
+* Added: Compatibility with WooCommerce All Product Subscriptions.
+
+= 1.7.4 (2021-08-31)
+* Fixed: Subscription compatibility with few gateways was not working as expected.
+
+= 1.7.3 (2021-07-06)
+* Improved: Better loading pattern for the gateway integration classes to support future integration.
+
+= 1.7.2 (2021-06-02)
+* Added: Compatibility with WC 5.3.0 and WP 5.7.2
+* Fixed: Issue with paypal payment for subscription when bundle product is in upsells.
+
+= 1.7.1 (2021-04-14)
+* Fixed: PHP error during subscription upsell purchases on orders with paypal express checkout.
+
+= 1.7.0 (2021-03-15)
+* Added: Compatibility with WP 5.7 and WC 5.1
+* Added: Compatibility with WooFunnels Funnel Builder PRO.
+* Added: Feature to override free trial settings at offer level for the subscription products.
+* Fixed: Sync subscription settings was not working on offers.
+
+= 1.6.0 (2020-11-20)
+* Fixed: Shipping prices rules not working in UpStroke
+* Added: Compatibility with WooCommerce Multi-Currency Premium Plugin in calculating dynamic shipping.
+* Updated: Tested up to tags WP 5.5.4 and WC 4.8.0
+
+= 1.5.0 (2020-07-29)
+* Fixed: Issue of discarding configured variation image with the image configured at product level.
+* Fixed: Issue of customer ID not getting saved in subscription by upsells in authorize.net CIM & braintree CC and PayPal.
+* Fixed: Issue of regular price shortcode output showing blank on variation switch when 0% discount.
+
+= 1.4.0 (2020-06-17)
+* Fixed: Issue with WC Germanized plugin when new user notification created during subscription upsell.
+
+= 1.3.0 (2020-03-21)
+* Added: New field to control fonts in customizer templates. 
+* Added: Ability to filter funnel reports by the date ranges. 
+* Fixed: Issue with subscription prices while discount applied on recurring cycle in some specific tax settings. 
+
+= 1.2 (2020-01-23)
+* Fixed: Issue in calculating dynamic shipping
+* Fixed: Issue with free trial subscription in upsell offer
+* Fixed: Updating stats on dashboard UpStoke grid on accepting offers.
+
+= 1.1.0 (2019-12-02) =
+* Fixed: Issue of escaping html results in removing some html from the customizer templates for multi-product module.
+
+= 1.0.0 (2019-11-20) =
+* Public release

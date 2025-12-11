@@ -1,0 +1,10 @@
+{
+    "name": "layout",
+    "title": "Layout",
+    "container": true,
+    "updates": "./updates.php",
+    "templates": {
+        "render": "./templates/template.php",
+        "content": "./templates/content.php"
+    }
+}

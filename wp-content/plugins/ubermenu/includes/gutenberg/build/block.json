@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "ubermenu/ubermenu-block",
+	"version": "2.0",
+	"title": "UberMenu",
+	"category": "design",
+	"icon": "menu",
+	"description": "Display an UberMenu Mega Menu.",
+	"supports": {
+		"html": false,
+		"align": true,
+		"alignWide": true
+	},
+	"textdomain": "ubermenu",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css"
+	
+}

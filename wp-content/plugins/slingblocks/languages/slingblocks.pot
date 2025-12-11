@@ -1,0 +1,2397 @@
+# Copyright (C) 2025 FunnelKit (formerly WooFunnels)
+# This file is distributed under the same license as the SlingBlocks – Gutenberg Blocks by FunnelKit (Formerly WooFunnels) plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: SlingBlocks – Gutenberg Blocks by FunnelKit (Formerly WooFunnels) 1.7.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/slingblocks\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-18T07:16:45+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: slingblocks\n"
+
+#. Plugin Name of the plugin
+#: slingblocks.php
+msgid "SlingBlocks – Gutenberg Blocks by FunnelKit (Formerly WooFunnels)"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: slingblocks.php
+msgid "https://funnelkit.com/"
+msgstr ""
+
+#. Description of the plugin
+#: slingblocks.php
+msgid "A minimalist Gutenberg Block Plugin that extends Gutenberg to provide page building capabilities."
+msgstr ""
+
+#. Author of the plugin
+#: slingblocks.php
+msgid "FunnelKit (formerly WooFunnels)"
+msgstr ""
+
+#. Author URI of the plugin
+#: slingblocks.php
+msgid "https://funnelkit.com"
+msgstr ""
+
+#: includes/class-render-blocks.php:617
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/attributes.js:6
+#: src/blocks/button/index.js:13
+#: src/blocks/button/index.js:18
+#: src/blocks/button/inspector-control/style.js:133
+#: src/blocks/button/inspector-control/style.js:149
+msgid "Button"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:62
+#: src/blocks/button/inspector-control/general.js:46
+#: src/blocks/countdown/inspector-control/general.js:253
+msgid "Layout"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:101
+msgid "Items close when another opens"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:109
+msgid "Start with all panes collapsed"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:119
+#: src/blocks/accordion/inspector-controls/general.js:121
+msgid "Initial Open Accordion"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:142
+msgid "Accordion Item"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:152
+msgid "Item Title Trigger Icon"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:167
+#: src/blocks/advance-button/inspector-control/general.js:84
+#: src/blocks/advance-heading/inspector-controls/general.js:70
+#: src/blocks/button/inspector-control/general.js:183
+#: src/blocks/countdown/inspector-control/general.js:434
+#: src/blocks/icon-list/inspector-control/general.js:103
+#: src/blocks/icon/inspector-control/general.js:164
+#: src/blocks/pane/edit.js:60
+#: src/blocks/progress-bar/inspector-control/general.js:92
+#: src/blocks/space-divider/inspector-control/general.js:64
+msgid "Visiblity"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:171
+#: src/blocks/advance-button/inspector-control/general.js:88
+#: src/blocks/advance-heading/inspector-controls/general.js:74
+#: src/blocks/button/inspector-control/general.js:187
+#: src/blocks/columns/inspector-controls/general.js:191
+#: src/blocks/countdown/inspector-control/general.js:438
+#: src/blocks/icon-list/inspector-control/general.js:107
+#: src/blocks/icon/inspector-control/general.js:168
+#: src/blocks/pane/edit.js:64
+#: src/blocks/progress-bar/inspector-control/general.js:96
+#: src/blocks/space-divider/inspector-control/general.js:68
+msgid "Hide on Desktop"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:176
+#: src/blocks/advance-button/inspector-control/general.js:93
+#: src/blocks/advance-heading/inspector-controls/general.js:79
+#: src/blocks/button/inspector-control/general.js:192
+#: src/blocks/columns/inspector-controls/general.js:196
+#: src/blocks/countdown/inspector-control/general.js:443
+#: src/blocks/icon-list/inspector-control/general.js:112
+#: src/blocks/icon/inspector-control/general.js:173
+#: src/blocks/pane/edit.js:69
+#: src/blocks/progress-bar/inspector-control/general.js:101
+#: src/blocks/space-divider/inspector-control/general.js:73
+msgid "Hide on Tablet"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/general.js:181
+#: src/blocks/advance-button/inspector-control/general.js:98
+#: src/blocks/advance-heading/inspector-controls/general.js:84
+#: src/blocks/button/inspector-control/general.js:197
+#: src/blocks/columns/inspector-controls/general.js:201
+#: src/blocks/countdown/inspector-control/general.js:448
+#: src/blocks/icon-list/inspector-control/general.js:117
+#: src/blocks/icon/inspector-control/general.js:178
+#: src/blocks/pane/edit.js:74
+#: src/blocks/progress-bar/inspector-control/general.js:106
+#: src/blocks/space-divider/inspector-control/general.js:78
+msgid "Hide on Mobile"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:49
+msgid "Active"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:165
+#: src/blocks/advance-heading/inspector-controls/style.js:69
+#: src/blocks/button/inspector-control/style.js:177
+#: src/blocks/countdown/inspector-control/style.js:220
+#: src/blocks/icon-list/inspector-control/style.js:67
+#: src/blocks/progress-bar/inspector-control/style.js:194
+msgid "Typography"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:168
+#: src/blocks/accordion/inspector-controls/style.js:371
+#: src/blocks/accordion/inspector-controls/style.js:389
+#: src/blocks/accordion/inspector-controls/style.js:516
+msgid "Item Title"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:329
+#: src/blocks/button/inspector-control/general.js:108
+#: src/blocks/countdown/inspector-control/style.js:426
+#: src/blocks/icon/inspector-control/style.js:61
+#: src/blocks/icon/inspector-control/style.js:64
+#: src/blocks/progress-bar/inspector-control/general.js:59
+#: src/blocks/space-divider/inspector-control/style.js:60
+#: src/common/block-spacing.js:49
+msgid "Spacing"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:333
+#: src/blocks/accordion/inspector-controls/style.js:499
+#: src/blocks/accordion/inspector-controls/style.js:507
+#: src/blocks/accordion/inspector-controls/style.js:547
+msgid "Items"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:335
+msgid "Space Between Items"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:354
+#: src/blocks/accordion/inspector-controls/style.js:477
+msgid "Item Content"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/accordion/inspector-controls/style.js:359
+#: src/common/block-spacing.js:37
+#: src/components/dimensional-control/index.js:194
+msgid "Padding"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:377
+msgid "z-index"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/accordion/inspector-controls/style.js:387
+#: src/blocks/advance-heading/inspector-controls/style.js:133
+#: src/blocks/button/inspector-control/style.js:349
+#: src/blocks/countdown/inspector-control/style.js:503
+#: src/blocks/countdown/inspector-control/style.js:574
+#: src/blocks/countdown/inspector-control/style.js:621
+#: src/blocks/countdown/inspector-control/style.js:666
+#: src/blocks/countdown/inspector-control/style.js:711
+#: src/blocks/countdown/inspector-control/style.js:756
+#: src/blocks/icon-list/inspector-control/style.js:169
+#: src/blocks/icon/inspector-control/style.js:104
+#: src/blocks/progress-bar/inspector-control/style.js:295
+#: src/blocks/progress-bar/inspector-control/style.js:331
+#: src/blocks/space-divider/edit.js:33
+#: src/blocks/space-divider/inspector-control/style.js:84
+#: src/blocks/space-divider/inspector-control/style.js:89
+#: src/components/background/index.js:175
+#: src/components/background/index.js:185
+#: src/components/block-toolbar/index.js:68
+#: src/components/text/index.js:52
+#: src/components/typography/index.js:60
+msgid "Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:399
+#: src/blocks/advance-heading/inspector-controls/style.js:144
+#: src/blocks/button/edit.js:116
+#: src/blocks/button/inspector-control/style.js:358
+msgid "Text Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:407
+#: src/blocks/advance-heading/inspector-controls/style.js:202
+msgid "Text Color Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:417
+msgid "Text Color Active"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:441
+#: src/blocks/col/inspector-controls/style.js:150
+#: src/blocks/columns/inspector-controls/style.js:507
+#: src/blocks/countdown/inspector-control/style.js:183
+#: src/blocks/icon/inspector-control/style.js:131
+#: src/blocks/progress-bar/inspector-control/style.js:156
+msgid "Hover "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:458
+msgid "Active "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:496
+#: src/blocks/space-divider/inspector-control/style.js:108
+#: src/common/block-sizing.js:106
+msgid "Sizing"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:504
+#: src/blocks/advance-button/inspector-control/style.js:120
+#: src/blocks/advance-heading/inspector-controls/style.js:284
+#: src/blocks/button/inspector-control/style.js:584
+#: src/blocks/col/inspector-controls/style.js:192
+#: src/blocks/columns/inspector-controls/style.js:796
+#: src/blocks/countdown/inspector-control/style.js:886
+#: src/blocks/icon/inspector-control/style.js:184
+#: src/blocks/progress-bar/inspector-control/style.js:406
+msgid "Border"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/inspector-controls/style.js:544
+#: src/blocks/advance-button/inspector-control/style.js:138
+#: src/blocks/advance-heading/inspector-controls/style.js:294
+#: src/blocks/button/inspector-control/style.js:613
+#: src/blocks/col/inspector-controls/style.js:213
+#: src/blocks/col/inspector-controls/style.js:217
+#: src/blocks/columns/inspector-controls/style.js:817
+#: src/blocks/countdown/inspector-control/style.js:936
+#: src/blocks/icon/inspector-control/style.js:213
+#: src/blocks/progress-bar/inspector-control/style.js:429
+msgid "Box Shadow"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:35
+msgid "Layout 1"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:40
+msgid "Layout 2"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:45
+msgid "Layout 3"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:50
+msgid "Layout 4"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:89
+#: src/blocks/accordion/index.js:28
+#: src/blocks/accordion/index.js:32
+msgid "Accordion"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:122
+msgid "Add Accordion"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:130
+msgid "Select Accordion Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/edit.js:142
+msgid "Skip"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/index.js:29
+msgid "Select Accordion and then add data."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/index.js:31
+#: src/blocks/advance-button/index.js:18
+#: src/blocks/advance-heading/index.js:26
+#: src/blocks/button/index.js:16
+#: src/blocks/col/index.js:24
+#: src/blocks/columns/index.js:27
+#: src/blocks/countdown/index.js:27
+#: src/blocks/icon-list/index.js:22
+#: src/blocks/icon/index.js:18
+#: src/blocks/progress-bar/index.js:27
+#: src/blocks/space-divider/index.js:27
+msgid "Woofunnels"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/accordion/index.js:33
+msgid "ThankYou"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/general.js:59
+msgid "Layouts"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/general.js:63
+msgid "Stack Vertically"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/general.js:70
+msgid "Stack vertically work with multiple buttons."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/general.js:75
+msgid "Fill Horizontal Space"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/style.js:65
+msgid "Space Between Buttons"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/inspector-control/style.js:99
+#: src/blocks/col/inspector-controls/style.js:125
+#: src/blocks/columns/edit.js:292
+#: src/blocks/columns/inspector-controls/style.js:462
+#: src/blocks/countdown/inspector-control/style.js:798
+#: src/blocks/icon-list/inspector-control/style.js:228
+#: src/components/block-toolbar/index.js:117
+msgid "Background"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/edit.js:85
+#: src/blocks/button/edit.js:78
+#: src/components/button/index.js:82
+msgid "Add Button"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/index.js:15
+#: src/blocks/advance-button/index.js:20
+msgid "Buttons"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/index.js:16
+msgid "Create an advance button with responsive styling."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-button/index.js:19
+#: src/blocks/button/index.js:17
+msgid "Advance"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/block-control.js:71
+msgid "Heading Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/block-control.js:88
+msgid "Headling"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/block-control.js:157
+#: src/blocks/advance-heading/edit.js:61
+msgid "Paragraph"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/block-control.js:157
+#: src/blocks/advance-heading/inspector-controls/general.js:25
+msgid "Heading"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/inspector-controls/general.js:28
+msgid "HTML TAG"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/inspector-controls/style.js:126
+#: src/blocks/col/inspector-controls/style.js:185
+#: src/blocks/columns/inspector-controls/style.js:455
+msgid "Z Index"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/inspector-controls/style.js:172
+msgid "Link Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/inspector-controls/style.js:236
+msgid "Link Color Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:31
+msgid "Heading 1"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:36
+msgid "Heading 2"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:41
+msgid "Heading 3"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:46
+msgid "Heading 4"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:51
+msgid "Heading 5"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:56
+msgid "Heading 6"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/edit.js:86
+#: src/blocks/pane/edit.js:86
+msgid "Enter Heading"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/index.js:23
+#: src/blocks/advance-heading/index.js:28
+#: src/blocks/button/inspector-control/general.js:70
+#: src/blocks/countdown/inspector-control/general.js:375
+#: src/blocks/progress-bar/inspector-control/general.js:81
+#: src/blocks/progress-bar/inspector-control/style.js:242
+#: src/blocks/progress-bar/inspector-control/style.js:324
+msgid "Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/index.js:24
+msgid "Create a fully responsive heading or paragraph."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/advance-heading/index.js:27
+msgid "Advance Heading"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:48
+msgid "Button Type"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/button/inspector-control/general.js:58
+#: src/blocks/space-divider/inspector-control/general.js:30
+#: src/components/border/index.js:109
+#: src/components/text/index.js:59
+msgid "Solid"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:66
+msgid "Outline"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:74
+#: src/blocks/button/inspector-control/style.js:220
+msgid "Button Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:79
+msgid "Add Button Text..."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:84
+msgid "Enable Secondary Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:91
+msgid "Add Button Secondary Text..."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:96
+msgid "Button Secondary Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/button/inspector-control/general.js:127
+#: src/blocks/button/inspector-control/general.js:129
+#: src/blocks/button/inspector-control/style.js:473
+#: src/blocks/icon-list/inspector-control/general.js:91
+#: src/blocks/icon-list/inspector-control/general.js:93
+#: src/blocks/icon-list/inspector-control/style.js:173
+#: src/blocks/icon-list/inspector-control/style.js:250
+#: src/blocks/icon/index.js:15
+#: src/blocks/icon/index.js:19
+#: src/blocks/icon/inspector-control/general.js:101
+#: src/blocks/icon/inspector-control/style.js:62
+#: src/blocks/icon/inspector-control/style.js:137
+#: src/components/icon-control/index.js:93
+msgid "Icon"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/general.js:140
+#: src/blocks/countdown/inspector-control/style.js:846
+msgid "Position"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/button/inspector-control/general.js:159
+#: src/blocks/countdown/inspector-control/style.js:36
+#: src/blocks/countdown/inspector-control/style.js:861
+#: src/blocks/progress-bar/inspector-control/style.js:36
+#: src/blocks/space-divider/inspector-control/style.js:31
+#: src/common/block-sizing.js:68
+#: src/components/border/index.js:43
+#: src/components/dimensional-control/index.js:203
+#: src/utils/index.js:202
+msgid "Left"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/button/inspector-control/general.js:176
+#: src/blocks/countdown/inspector-control/style.js:46
+#: src/blocks/progress-bar/inspector-control/style.js:46
+#: src/blocks/space-divider/inspector-control/style.js:41
+#: src/common/block-sizing.js:70
+#: src/components/border/index.js:49
+#: src/components/dimensional-control/index.js:201
+#: src/utils/index.js:212
+msgid "Right"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/style.js:262
+msgid "Secondary Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/style.js:407
+msgid "Secondary Text Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/style.js:483
+#: src/blocks/button/inspector-control/style.js:515
+#: src/blocks/button/inspector-control/style.js:542
+#: src/blocks/countdown/inspector-control/style.js:823
+#: src/blocks/countdown/inspector-control/style.js:843
+#: src/blocks/icon/edit.js:127
+#: src/blocks/icon/inspector-control/style.js:139
+#: src/components/block-toolbar/index.js:167
+msgid "Size"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/inspector-control/style.js:501
+#: src/blocks/button/inspector-control/style.js:531
+#: src/blocks/button/inspector-control/style.js:558
+#: src/blocks/space-divider/inspector-control/style.js:65
+msgid "Space"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/edit.js:83
+msgid "Button Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/edit.js:119
+msgid "Button Link"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/index.js:14
+msgid "Button."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/button/index.js:19
+msgid "link"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/inspector-controls/style.js:78
+#: src/blocks/countdown/inspector-control/style.js:469
+#: src/components/text/index.js:226
+msgid "Alignment"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/col/inspector-controls/style.js:88
+#: src/blocks/columns/inspector-controls/style.js:317
+#: src/blocks/columns/inspector-controls/style.js:347
+#: src/components/advanced-toolbar-control/index.js:30
+#: src/components/align-buttons-control/index.js:16
+msgid "Align Left"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/col/inspector-controls/style.js:93
+#: src/blocks/columns/inspector-controls/style.js:322
+#: src/blocks/columns/inspector-controls/style.js:352
+#: src/components/advanced-toolbar-control/index.js:35
+#: src/components/advanced-toolbar-control/index.js:53
+#: src/components/advanced-toolbar-control/index.js:76
+#: src/components/align-buttons-control/index.js:21
+msgid "Align Center"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/col/inspector-controls/style.js:98
+#: src/blocks/columns/inspector-controls/style.js:327
+#: src/blocks/columns/inspector-controls/style.js:357
+#: src/components/advanced-toolbar-control/index.js:40
+#: src/components/align-buttons-control/index.js:26
+msgid "Align Right"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/inspector-controls/style.js:105
+#: src/blocks/columns/inspector-controls/style.js:364
+msgid "Vertical Alignment"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/edit.js:74
+msgid "Add/Duplicate Inner Container"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/edit.js:82
+msgid "Add New"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/edit.js:86
+msgid "Duplicate"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/edit.js:103
+#: src/blocks/columns/edit.js:297
+msgid "Link"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/index.js:22
+#: src/blocks/col/index.js:26
+msgid "Inner Container"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/col/index.js:25
+msgid "Inner Column"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:16
+msgid "100"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:24
+msgid "50/50"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:32
+msgid "30/70"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:40
+msgid "70/30"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:48
+msgid "33/33/33"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:56
+msgid "25/50/25"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:64
+msgid "25/25/25/25"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:72
+msgid "Grid 2x2"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:80
+msgid "Grid 2x3"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:88
+msgid "Row 3"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:96
+msgid "Grid 2X1"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:104
+msgid "Grid 1X2"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:112
+msgid "Grid 2X5"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/layouts.js:120
+msgid "Grid 2X4"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:29
+#: src/blocks/columns/inspector-controls/general.js:125
+msgid "Columns"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/general.js:131
+msgid "Number"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/general.js:150
+msgid "Container HTML tag"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/general.js:187
+msgid "Visibility"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/general.js:40
+#: src/blocks/columns/inspector-controls/style.js:46
+msgid "Column "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/general.js:40
+#: src/blocks/columns/inspector-controls/style.js:46
+msgid " Width (in %)"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:289
+msgid "Flex Wrap"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:332
+msgid "Space Between"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:389
+#: src/blocks/columns/inspector-controls/style.js:400
+#: src/blocks/columns/inspector-controls/style.js:411
+msgid "Reverse Row/Column"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:433
+msgid "Column Gutter"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:446
+msgid "*Space between columns"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:571
+msgid "Select Video"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:580
+msgid "HTML5 Video File URL"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:605
+msgid "Mute Video"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:631
+msgid "Loop Video"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:657
+msgid "Show Play Pause Buttons?"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:689
+msgid "Background Overlay"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:697
+msgid "Overlay Opacity"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:720
+#: src/blocks/columns/inspector-controls/style.js:766
+msgid "Overlay "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/inspector-controls/style.js:742
+msgid "Overlay Opacity Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/edit.js:551
+msgid "Select a variation to start with."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/edit.js:553
+msgid "Column Layout"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/edit.js:279
+msgid "Add Inner Container"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:24
+#: src/blocks/columns/index.js:32
+#: src/blocks/countdown/inspector-control/style.js:466
+#: src/blocks/countdown/inspector-control/style.js:913
+#: src/blocks/countdown/inspector-control/style.js:997
+msgid "Container"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:25
+msgid "Create a block with flexible column styling."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:28
+msgid "Columns Layout"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:30
+msgid "Section"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/columns/index.js:31
+msgid "Divide"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:63
+msgid "Evergreen"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/countdown/inspector-control/general.js:68
+#: src/components/button/index.js:13
+#: src/components/image/index.js:100
+msgid "Fixed"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:75
+#: src/blocks/icon/inspector-control/style.js:92
+msgid "Block"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:79
+msgid "Inline"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/countdown/inspector-control/general.js:84
+#: src/components/border/index.js:105
+#: src/utils/index.js:224
+#: src/utils/index.js:246
+msgid "None"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:85
+#: src/blocks/countdown/inspector-control/general.js:409
+msgid "Message"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:86
+msgid "Redirect"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:92
+msgid "Redirect to next step"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/index.js:24
+#: src/blocks/countdown/index.js:28
+#: src/blocks/countdown/inspector-control/general.js:99
+#: src/blocks/countdown/inspector-control/style.js:427
+#: src/blocks/countdown/inspector-control/style.js:505
+#: src/blocks/countdown/inspector-control/style.js:891
+#: src/blocks/countdown/inspector-control/style.js:941
+msgid "Countdown"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:127
+#: src/blocks/countdown/inspector-control/general.js:128
+msgid "Start Date"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:128
+msgid "Now"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:135
+#: src/blocks/countdown/inspector-control/general.js:136
+msgid "End Date"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:136
+msgid "Overtime"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:145
+msgid "Countdown will show on"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:148
+msgid "Show Reverse Countdown"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:153
+#: src/blocks/countdown/inspector-control/style.js:707
+msgid "Reverse Countdown Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:163
+msgid "Length of Countdown Timer"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:167
+msgid "Days"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:187
+msgid "Hours"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:208
+msgid "Minutes"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:229
+msgid "Seconds"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:279
+msgid "Display Separator"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:287
+msgid "Separator Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:290
+msgid "Choose Separator Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/countdown/inspector-control/general.js:292
+#: src/blocks/space-divider/inspector-control/general.js:34
+#: src/components/border/index.js:113
+#: src/components/text/index.js:63
+#: src/components/text/index.js:71
+msgid "Dotted"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:293
+msgid "Line"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:303
+#: src/blocks/countdown/inspector-control/style.js:221
+#: src/blocks/countdown/inspector-control/style.js:524
+msgid "Digits"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:307
+msgid "Display Days"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:312
+msgid "Display Hours"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:317
+msgid "Display Minutes"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:322
+msgid "Display Seconds"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:332
+msgid "Custom Label for Days"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:333
+#: src/blocks/countdown/inspector-control/general.js:342
+#: src/blocks/countdown/inspector-control/general.js:352
+#: src/blocks/countdown/inspector-control/general.js:362
+msgid "Leave blank to hide"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:338
+msgid "Enter days label"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:341
+msgid "Custom Label for Hours"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:347
+msgid "Enter hour label"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:351
+msgid "Custom Label for Minutes"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:357
+msgid "Enter minutes label"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:361
+msgid "Custom Label for Seconds"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:367
+msgid "Enter seconds label"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:379
+#: src/blocks/countdown/inspector-control/style.js:302
+#: src/blocks/countdown/inspector-control/style.js:617
+msgid "Pre Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:387
+#: src/blocks/countdown/inspector-control/style.js:342
+#: src/blocks/countdown/inspector-control/style.js:662
+msgid "Post Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:396
+msgid "Expiry Actions"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:400
+msgid "Expiry Type"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:414
+msgid "Enter Expiry Message"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:421
+msgid "Redirect URL"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/general.js:427
+msgid "https://..."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/countdown/inspector-control/style.js:41
+#: src/blocks/progress-bar/inspector-control/style.js:41
+#: src/blocks/space-divider/inspector-control/style.js:36
+#: src/common/block-sizing.js:69
+#: src/utils/index.js:207
+msgid "Center"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:261
+#: src/blocks/countdown/inspector-control/style.js:569
+msgid "Labels"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:383
+msgid "Reverse Coundtdown Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:438
+msgid "Space Number and label"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:451
+msgid "Space Between Boxes"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:528
+msgid "Digit Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:548
+msgid "Digit Color Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:595
+#: src/blocks/countdown/inspector-control/style.js:641
+#: src/blocks/countdown/inspector-control/style.js:686
+#: src/blocks/countdown/inspector-control/style.js:731
+#: src/blocks/countdown/inspector-control/style.js:776
+#: src/blocks/progress-bar/inspector-control/style.js:352
+msgid "Color Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/inspector-control/style.js:752
+#: src/blocks/countdown/inspector-control/style.js:821
+msgid "Separator"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/countdown/inspector-control/style.js:848
+#: src/components/border/index.js:31
+#: src/components/dimensional-control/index.js:200
+msgid "Top"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/edit.js:194
+msgid "Label Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/index.js:25
+msgid "Create customizable Countdown."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/countdown/index.js:29
+msgid "Timmer"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/index.js:24
+#: src/blocks/icon-list/inspector-control/general.js:53
+#: src/blocks/icon-list/inspector-control/style.js:205
+msgid "List"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/general.js:55
+msgid "Number of Items"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/general.js:78
+msgid "Number of Columns"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/general.js:96
+msgid "You can click on each icon in the Icon List block to change them individually."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:125
+msgid "List Spacing"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:151
+msgid "Spacing Between Icon and Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:178
+#: src/blocks/icon/edit.js:168
+msgid "Icon Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:209
+msgid "List Text Color: "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:259
+msgid "Icon Size"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:270
+#: src/blocks/icon/edit.js:147
+#: src/blocks/icon/inspector-control/style.js:157
+msgid "Rotate"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:289
+msgid "Icon Alignment"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:291
+#: src/common/block-sizing.js:67
+msgid "Default"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:292
+msgid "top"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/inspector-control/style.js:293
+msgid "Middle"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/icon-list/inspector-control/style.js:294
+#: src/components/border/index.js:37
+#: src/components/dimensional-control/index.js:202
+msgid "Bottom"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/edit.js:231
+msgid "Add text..."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/index.js:19
+msgid "Icon List\""
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/index.js:20
+msgid "Create list with icons."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon-list/index.js:23
+msgid "Icon List"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:60
+msgid "Number of Icons"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:86
+msgid "Icon Design"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:89
+msgid "Plain"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:90
+msgid "Shaped"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:98
+msgid "Icon "
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:116
+msgid "Icon Link"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:124
+msgid "Open Link in New Tag"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/general.js:131
+msgid "Add Nofollow"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/style.js:80
+msgid "Spacing between icons"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/inspector-control/style.js:95
+msgid "Block Spacing"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/edit.js:112
+msgid "Change Icon"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/index.js:16
+msgid "Pick an icon or upload your own SVG icon to decorate your content."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/icon/index.js:20
+msgid "Upload Icon"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/pane/index.js:26
+msgid "Item"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/pane/index.js:27
+msgid "Accordion Inner Content"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/index.js:24
+#: src/blocks/progress-bar/index.js:28
+#: src/blocks/progress-bar/inspector-control/general.js:36
+#: src/blocks/progress-bar/inspector-control/style.js:374
+msgid "Progress Bar"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:40
+msgid "Percentage"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:43
+msgid "Enable Title"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:49
+#: src/blocks/progress-bar/inspector-control/style.js:199
+#: src/blocks/progress-bar/inspector-control/style.js:300
+#: src/components/link/index.js:29
+msgid "Title"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:54
+msgid "Enter your title"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:74
+msgid "Show Animated Strips"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/general.js:86
+msgid "Enter Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/inspector-control/style.js:304
+msgid "Title Text"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/edit.js:32
+msgid "Fill Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/index.js:25
+msgid "Create customizable progress bar."
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/progress-bar/index.js:29
+msgid "Progress"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/inspector-control/general.js:25
+msgid "Divider Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/space-divider/inspector-control/general.js:38
+#: src/components/border/index.js:133
+#: src/components/text/index.js:79
+msgid "Dashed"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/blocks/space-divider/inspector-control/general.js:42
+#: src/components/border/index.js:117
+#: src/components/text/index.js:67
+msgid "Double"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/inspector-control/general.js:46
+#: src/components/border/index.js:121
+msgid "Inset"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/inspector-control/general.js:50
+#: src/components/border/index.js:125
+msgid "Outset"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/inspector-control/general.js:54
+#: src/components/border/index.js:129
+msgid "Ridge"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/edit.js:36
+#: src/blocks/space-divider/inspector-control/style.js:112
+#: src/common/block-sizing.js:38
+msgid "Width"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/edit.js:55
+#: src/blocks/space-divider/inspector-control/style.js:131
+#: src/common/block-sizing.js:79
+msgid "Height"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/edit.js:34
+msgid "Width/Height"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/index.js:24
+#: src/blocks/space-divider/index.js:28
+msgid "Space Divider"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/index.js:25
+msgid "Add customizable space divider"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/blocks/space-divider/index.js:29
+msgid "Divider"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/common/block-sizing.js:50
+msgid "Max Width"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/common/block-sizing.js:64
+msgid "Block Alignment"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/common/block-sizing.js:73
+msgid "*Block alignment only work with width and max-width"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/common/block-sizing.js:91
+msgid "Min Height"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/common/block-spacing.js:25
+msgid "Margin"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:30
+msgid "Vivid cyan blue to vivid purple"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:36
+msgid "Light green cyan to vivid green cyan"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:42
+msgid "Luminous vivid amber to luminous vivid orange"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:51
+msgid "Luminous vivid orange to vivid red"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:57
+msgid "Very light gray to cyan bluish gray"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:63
+msgid "Cool to warm spectrum"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:69
+msgid "Blush light purple"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:75
+msgid "Blush bordeaux"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:81
+msgid "Luminous dusk"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:87
+msgid "Pale ocean"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:93
+msgid "Electric grass"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:99
+msgid "Midnight"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:147
+msgid " Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:166
+msgid " Gradient"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/background/index.js:204
+msgid " Image"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/block-toolbar/index.js:30
+#: src/components/block-toolbar/index.js:38
+msgid "Typography Settings"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/block-toolbar/index.js:252
+msgid "Copy/Paste Styles"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/block-toolbar/index.js:260
+msgid "Copy Inner Container Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/block-toolbar/index.js:264
+msgid "Paste Inner Container Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:96
+msgid "Border Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: dist/slingblocks-editor.js:7
+#: src/components/border/index.js:101
+#: src/components/font/index.js:155
+msgid "Not Set"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:149
+msgid "Border Width"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:163
+msgid "Border Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:192
+msgid "All"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:226
+msgid "Border Radius"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:232
+msgid "T Left"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:233
+msgid "T Right"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:234
+msgid "B Left"
+msgstr ""
+
+#: dist/slingblocks-editor.js:1
+#: src/components/border/index.js:235
+msgid "B Right"
+msgstr ""
+
+#. translators: %s: color hex code e.g: "#f00".
+#: dist/slingblocks-editor.js:3
+#: dist/slingblocks-editor.js:7
+#: src/components/color/index.js:52
+#: src/components/color/index.js:61
+msgid "Color code: %s"
+msgstr ""
+
+#. translators: %s: The name of the color e.g: "vivid red".
+#: dist/slingblocks-editor.js:5
+#: src/components/color/index.js:59
+msgid "Color: %s"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/color/index.js:103
+msgid "Custom color picker"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/color/index.js:105
+msgid "Custom color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/color/index.js:114
+#: src/components/icon-search-popover/index.js:262
+msgid "Clear"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/font/index.js:75
+msgid "Font Family"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/font/index.js:88
+msgid "Select a font family"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/font/index.js:131
+msgid "Font Size"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/font/index.js:151
+msgid "Weight"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:49
+msgid "Cover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:54
+msgid "Contain"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/button/index.js:12
+#: src/components/image/index.js:59
+#: src/components/image/index.js:87
+msgid "Auto"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:67
+msgid "No Repeat"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:72
+msgid "Repeat"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:77
+msgid "Repeat X"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:82
+msgid "Repeat Y"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:95
+msgid "Scroll"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:142
+msgid "Background Image Size"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:167
+msgid "Background Image Repeat"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/image/index.js:197
+msgid "Background Image Attachment"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:85
+msgid "Search"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:91
+msgid "Upload"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:97
+msgid "Paste"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:185
+#: src/components/icons/index.js:73
+msgid "Upload SVG"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:194
+msgid "Paste SVG icon HTML code here."
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:196
+msgid "Paste Icon SVG Html"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:206
+msgid "Type to search icon"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/icon-search-popover/index.js:246
+msgid "No matches found."
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/dimensional-control/index.js:172
+#: src/components/icon-control/index.js:85
+msgid "Reset"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/advanced-toolbar-control/index.js:48
+#: src/components/advanced-toolbar-control/index.js:71
+msgid "Align Top"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/advanced-toolbar-control/index.js:58
+#: src/components/advanced-toolbar-control/index.js:81
+msgid "Align Bottom"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/advanced-toolbar-control/index.js:63
+msgid "Stretch"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/align-buttons-control/index.js:31
+msgid "Justified"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/align-buttons-control/index.js:52
+msgid "Align"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/dimensional-control/index.js:134
+#: src/components/dimensional-control/index.js:144
+#: src/components/dimensional-control/index.js:154
+#: src/components/dimensional-control/index.js:164
+msgid "%s Top"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/media/index.js:28
+msgid "Select or upload image"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/media/index.js:30
+msgid "Select"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/media/index.js:69
+msgid "Remove image"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/media/index.js:80
+msgid "Add an image"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:37
+msgid "X"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:42
+msgid "Y"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:47
+#: src/components/typography/index.js:50
+msgid "Blur"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:75
+msgid "Wavy"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:83
+#: src/utils/index.js:364
+msgid "Inherit"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:104
+msgid "Show Advanced Typography"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:110
+msgid "Transform"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:127
+msgid "Text Decoration Line"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:149
+msgid "Text Decoration Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:167
+msgid "Text Decoration Color"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/text/index.js:197
+msgid "Text Shadow"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:38
+msgid "H Offset"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:44
+msgid "V Offest"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:55
+msgid "Spread"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:66
+msgid "Enable Box Shadow Inset"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:246
+msgid "Reset "
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:286
+msgid "Letter Spacing"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/typography/index.js:352
+msgid "Line Height"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/url-input-popover/index.js:20
+msgid "Open in New Tab"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/url-input-popover/index.js:24
+msgid "Nofollow Link"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/url-input-popover/index.js:95
+msgid "Search or type url"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/components/url-input-popover/index.js:112
+msgid "Unlink"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/inspector/blocks-inspector.js:38
+msgid "General"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/inspector/blocks-inspector.js:49
+msgid "Style"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:138
+msgid "Black"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:143
+msgid "Cyan bluish gray"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:148
+msgid "White"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:153
+msgid "Pale pink"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:158
+msgid "Vivid red"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:163
+msgid "Luminous vivid orange"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:168
+msgid "Luminous vivid amber"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:173
+msgid "Light green cyan"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:178
+msgid "Vivid green cyan"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:183
+msgid "Pale cyan blue"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:188
+msgid "Vivid cyan blue"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:193
+msgid "Vivid purple"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:217
+msgid "Justify"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:229
+msgid "Line Through"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:234
+msgid "Underline"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:239
+msgid "Overline"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:250
+msgid "Capitalize"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:254
+msgid "Uppercase"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:258
+msgid "Lowercase"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:274
+msgid "Standard Fonts"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:355
+msgid "Google Fonts"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:366
+msgid "Thin 100"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:369
+msgid "Extra-Light 200"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:371
+msgid "Light 300"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:372
+msgid "Regular"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:375
+msgid "Medium 500"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:379
+msgid "Semi-Bold 600"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:381
+msgid "Bold 700"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:384
+msgid "Extra-Bold 800"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:388
+msgid "Ultra-Bold 900"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:473
+msgid "Normal"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/index.js:477
+msgid "Hover"
+msgstr ""
+
+#: dist/slingblocks-editor.js:7
+#: src/utils/block-css.js:62
+msgid "Custom CSS"
+msgstr ""
+
+#. translators: The %s is for selector code
+#: dist/slingblocks-editor.js:10
+#: src/plugins/config.js:77
+msgid "Default Font Family"
+msgstr ""
+
+#: src/components/block-id/index.js:11
+msgid "Add ID"
+msgstr ""
+
+#: src/components/button/index.js:9
+msgid "Button Size"
+msgstr ""
+
+#: src/components/button/index.js:14
+msgid "Full WIdth"
+msgstr ""
+
+#: src/components/button/index.js:92
+msgid "Choose Screen"
+msgstr ""
+
+#: src/components/icons/index.js:49
+msgid "Set Icon"
+msgstr ""
+
+#: src/components/icons/index.js:60
+msgid "Search Icons"
+msgstr ""
+
+#: src/components/icons/index.js:76
+msgid "Clear Icon"
+msgstr ""
+
+#: src/components/link/index.js:14
+#: src/components/link/index.js:95
+msgid "URL"
+msgstr ""
+
+#: src/components/link/index.js:26
+#: src/components/link/index.js:105
+msgid "Enter URL"
+msgstr ""
+
+#: src/components/link/index.js:41
+msgid "Enter Title"
+msgstr ""
+
+#: src/components/link/index.js:44
+#: src/components/link/index.js:108
+msgid "Link Target"
+msgstr ""
+
+#: src/components/link/index.js:49
+#: src/components/link/index.js:113
+msgid "Same Window"
+msgstr ""
+
+#: src/components/link/index.js:53
+#: src/components/link/index.js:117
+msgid "New Window"
+msgstr ""
+
+#: src/components/link/index.js:64
+#: src/components/link/index.js:126
+msgid "Set Link to no Follow"
+msgstr ""
+
+#: src/components/link/index.js:73
+#: src/components/link/index.js:131
+msgid "Set link attribute Sponsored?"
+msgstr ""
+
+#: src/components/link/index.js:157
+msgid "Open in new tab"
+msgstr ""
+
+#: src/components/link/index.js:176
+msgid "Apply"
+msgstr ""
+
+#: src/components/text/index.js:237
+msgid "Align Text Left"
+msgstr ""
+
+#: src/components/text/index.js:249
+msgid "Align Text Center"
+msgstr ""
+
+#: src/components/text/index.js:261
+msgid "Align Text Right"
+msgstr ""

@@ -1,0 +1,69 @@
+<div class="uk-section uk-section-default uk-flex uk-flex-middle" uk-height-viewport>
+    <div class="uk-width-1-1">
+        <div class="uk-container uk-text-center">
+            <a id="js-lightbox-slidenav" class="uk-button uk-button-default" href>Open Slidenav</a>
+            <a id="js-lightbox-thumbnav" class="uk-button uk-button-default" href>Open Thumbnav</a>
+            <a id="js-lightbox-dotnav" class="uk-button uk-button-default" href>Open Dotnav</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .uk-lightbox .uk-lightbox-items > * > img,
+    .uk-lightbox .uk-lightbox-thumbnav > * > * > img { background-image: repeating-linear-gradient(-45deg, #f0f0f0, #f0f0f0 25px, #fcfcfc 25px, #fcfcfc 50px); }
+</style>
+
+<script>
+    (function () {
+        const source = (width, height) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"></svg>`;
+        const items = [
+            {
+                source: source(900, 600),
+                thumb: source(900, 600),
+                title: '900x600',
+                type: 'image',
+                caption: 'Lorem ipsum dolor sit amet',
+                attrs: {class: 'uk-inverse-dark'},
+            },
+            {
+                source: source(1800, 1200),
+                thumb: source(1800, 1200),
+                title: '700x500',
+                type: 'image',
+                caption: 'Lorem ipsum dolor sit amet',
+                attrs: {class: 'uk-inverse-dark'},
+            },
+            {
+                source: source(1000, 2000),
+                thumb: source(1000, 2000),
+                title: '700x500',
+                type: 'image',
+                caption: 'Lorem ipsum dolor sit amet',
+                attrs: {class: 'uk-inverse-dark'},
+            },
+            {
+                source: source(2000, 500),
+                thumb: source(2000, 500),
+                title: '700x500',
+                type: 'image',
+                caption: 'Lorem ipsum dolor sit amet',
+                attrs: {class: 'uk-inverse-dark'},
+            },
+        ];
+
+        UIkit.util.on('#js-lightbox-slidenav', 'click', function (e) {
+            e.preventDefault();
+            UIkit.lightboxPanel({ items, counter: true }).show();
+        });
+
+        UIkit.util.on('#js-lightbox-thumbnav', 'click', function (e) {
+            e.preventDefault();
+            UIkit.lightboxPanel({ items, slidenav: false, nav: 'thumbnav', counter: true }).show();
+        });
+
+        UIkit.util.on('#js-lightbox-dotnav', 'click', function (e) {
+            e.preventDefault();
+            UIkit.lightboxPanel({ items, slidenav: false, nav: 'dotnav', counter: true }).show();
+        });
+    })();
+</script>
