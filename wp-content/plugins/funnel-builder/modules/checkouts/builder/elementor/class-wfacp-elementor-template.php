@@ -72,7 +72,32 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			/*--------------------------------Primary Color Handling -------------------------------------------*/
 			add_action( 'wfacp_internal_css', [ $this, 'primary_colors' ], 10 );
 
+			$this->delete_elementor_cache();
+		}
 
+		/**
+		 * Delete Elementor cache
+		 *
+		 * @return void
+		 */
+		private function delete_elementor_cache() {
+			try {
+				$checkout_id = WFACP_Common::get_id();
+				$checkout_id = absint( $checkout_id );
+
+				if ( $checkout_id > 0 && class_exists( '\Elementor\Core\Base\Document' ) ) {
+					$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
+					if ( ! empty( $cache_meta_key ) ) {
+						delete_post_meta( $checkout_id, $cache_meta_key );
+					}
+				}
+			} catch ( \Throwable $e ) {
+				// Log error silently to avoid breaking the checkout process.
+				// Using \Throwable catches both Exception and Error (PHP 7.0+).
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'WFACP Elementor cache deletion error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
+			}
 		}
 
 		public function add_fragment_coupon_sidebar( $fragments ) {

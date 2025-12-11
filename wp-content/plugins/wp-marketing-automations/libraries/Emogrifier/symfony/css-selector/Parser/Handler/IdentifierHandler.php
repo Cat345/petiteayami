@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Handler;
+namespace BWFAN\Symfony\Component\CssSelector\Parser\Handler;
 
-use Symfony\Component\CssSelector\Parser\Reader;
-use Symfony\Component\CssSelector\Parser\Token;
-use Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerEscaping;
-use Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerPatterns;
-use Symfony\Component\CssSelector\Parser\TokenStream;
+use BWFAN\Symfony\Component\CssSelector\Parser\Reader;
+use BWFAN\Symfony\Component\CssSelector\Parser\Token;
+use BWFAN\Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerEscaping;
+use BWFAN\Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerPatterns;
+use BWFAN\Symfony\Component\CssSelector\Parser\TokenStream;
 
 /**
  * CSS selector comment handler.

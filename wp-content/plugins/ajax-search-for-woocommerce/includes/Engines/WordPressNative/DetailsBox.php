@@ -48,7 +48,7 @@ class DetailsBox {
                     $suggestionValue = sanitize_text_field( $item['value'] );
                 }
                 $objectID = sanitize_text_field( $item['objectID'] );
-                $parts = explode( '__', $objectID );
+                $parts = explode( '__', $objectID ?? '' );
                 $type = ( !empty( $parts[0] ) ? sanitize_key( $parts[0] ) : '' );
                 if ( $type === 'taxonomy' ) {
                     $termID = ( !empty( $parts[1] ) ? absint( $parts[1] ) : 0 );

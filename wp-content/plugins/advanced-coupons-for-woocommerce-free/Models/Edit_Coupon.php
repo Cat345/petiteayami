@@ -1524,7 +1524,7 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
 
         $args = array(
             'taxonomy'   => 'product_cat',
-            'hide_empty' => 'false',
+            'hide_empty' => false,
             'exclude'    => $exclude_ids,
             'search'     => $search,
         );

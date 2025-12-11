@@ -50,6 +50,9 @@ add_action( 'wp_footer', function () { ?>
 			}
 
 			$(document).ready(function () {
+				var $btn = $('.w-search-open');
+				var originalEvents = [];
+
 				$('.w-search.layout_modern .w-search-close').on('click', function () {
 					var instance = dgwtWcasImprezaGetActiveInstance();
 
@@ -60,21 +63,36 @@ add_action( 'wp_footer', function () { ?>
 					}
 				});
 
-				$('.w-search-open').on('click', function (e) {
-					if ($(window).width() < 900) {
-						e.preventDefault();
+				function dgwtWcasImprezaUpdateHandlers() {
+					const isMobile = $(window).width() < 900;
 
-						var $mobileHandler = $(e.target).closest('.w-search').find('.js-dgwt-wcas-enable-mobile-form');
+					if (isMobile && !$btn.data('mobileHandlerOverride')) {
+						originalEvents = $._data($btn[0], 'events')?.click?.slice() || [];
+						$btn.off('click');
 
-						if ($mobileHandler.length) {
-							$mobileHandler[0].click();
-						}
+						$btn.on('click', function (e) {
+							e.preventDefault();
 
-						setTimeout(function () {
-							$('.w-search').removeClass('active');
-						}, 500);
+							var $mobileHandler = $(e.target).closest('.w-search').find('.js-dgwt-wcas-enable-mobile-form');
+							if ($mobileHandler.length) {
+								$mobileHandler[0].click();
+							}
+
+							setTimeout(function () {
+								$('.w-search').removeClass('active');
+							}, 500);
+						});
+
+						$btn.data('mobileHandlerOverride', true);
+					} else if (!isMobile && $btn.data('mobileHandlerOverride')) {
+						$btn.off('click');
+						originalEvents.forEach(evt => $btn.on('click', evt.handler));
+						$btn.removeData('mobileHandlerOverride');
 					}
-				});
+				}
+
+				dgwtWcasImprezaUpdateHandlers();
+				$(window).on('resize', dgwtWcasImprezaUpdateHandlers);
 			});
 		})(jQuery);
 	</script>

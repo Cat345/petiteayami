@@ -237,10 +237,23 @@ if ( ! class_exists( 'WFCO_Common' ) ) {
 		}
 
 		public static function slugify_classname( $class_name ) {
-			$new_class_name = sanitize_title( $class_name );
+			$new_class_name = self::custom_sanitize_title( $class_name );
 			$new_class_name = str_replace( '_', '-', $new_class_name );
 
 			return $new_class_name;
+		}
+
+		/**
+		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
+		 * 
+		 * @param string $title The title to sanitize
+		 * @return string The sanitized title
+		 */
+		private static function custom_sanitize_title( $title ) {
+			$title = remove_accents( $title );
+			$title = sanitize_title_with_dashes( $title );
+			
+			return $title;
 		}
 
 		/**

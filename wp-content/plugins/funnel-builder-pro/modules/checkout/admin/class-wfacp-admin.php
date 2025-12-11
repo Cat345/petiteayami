@@ -862,7 +862,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				return;
 			}
 			try {
-				$wfacp_id = apply_filters( 'wfacp_show_advanced_field_order', wfacp_get_order_meta( $order, '_wfacp_post_id' ) );;
+				$wfacp_id = apply_filters( 'wfacp_show_advanced_field_order', wfacp_get_order_meta( $order, '_wfacp_post_id' ) );
 				if ( empty( $wfacp_id ) ) {
 					return;
 				}
@@ -1056,7 +1056,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$saved = false;
 
 
-			$wfacp_id = $order->get_meta( '_wfacp_post_id' );
+            $wfacp_id = apply_filters( 'wfacp_show_advanced_field_order', $order->get_meta( '_wfacp_post_id' ));
+
 			if ( empty( $wfacp_id ) ) {
 				return;
 			}

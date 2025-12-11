@@ -92,6 +92,15 @@ export function save_bogo_deals() {
     return;
   }
 
+  // validate discount by type for same products deal type.
+  if (deals_type === 'same-products' && conditions_type === 'specific-products') {
+    vex.dialog.alert(acfw_edit_coupon.discount_type_value_error_msg);
+
+    // Add save error flag class in #acfw_bogo_deals
+    $(module_block).addClass('save-error');
+    return;
+  }
+
   const notice_settings = {
     message: $notice_options.find("textarea[name='acfw_bogo_notice_message_text']").val(),
     button_text: $notice_options.find("input[name='acfw_bogo_notice_button_text']").val(),
@@ -164,6 +173,9 @@ function get_data(rows: NodeList, type: string): any {
   switch (type) {
     case 'any-products':
       data = $(rows).closest('.any-products-form').data('anyproducts');
+      break;
+    case 'same-products':
+      data = $(rows).closest('.same-products-form').data('sameproducts');
       break;
 
     case 'combination-products':
@@ -344,5 +356,27 @@ export function update_any_products_apply_data(e: JQuery.Event) {
   };
 
   $block.data('anyproducts', data);
+  if (e.type === 'change') toggle_editing_mode(true);
+}
+
+/**
+ * Update same products apply data when an input in the block's value is changed.
+ *
+ * @since 4.0.5
+ */
+export function update_same_products_apply_data(e: JQuery.Event) {
+  // @ts-ignore
+  const $block = $(this).closest('.same-products-apply-form');
+  const quantity: number = parseInt($block.find('input.condition-quantity').val());
+  const discountType: string = $block.find('select.discount_type').val().toString();
+  const discountValue: string = $block.find('input.discount_value').val().toString();
+
+  const data = {
+    quantity: quantity && !isNaN(quantity) ? quantity : 0,
+    discount_type: discountType ?? '',
+    discount_value: discountValue ?? '',
+  };
+
+  $block.data('sameproducts', data);
   if (e.type === 'change') toggle_editing_mode(true);
 }

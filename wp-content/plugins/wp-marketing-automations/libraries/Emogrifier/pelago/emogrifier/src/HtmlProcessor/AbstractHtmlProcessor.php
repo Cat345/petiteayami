@@ -2,7 +2,7 @@
 //phpcs:disable
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace BWFAN\Pelago\Emogrifier\HtmlProcessor;
 
 /**
  * Base class for HTML processor that e.g., can remove, add or modify nodes or attributes.

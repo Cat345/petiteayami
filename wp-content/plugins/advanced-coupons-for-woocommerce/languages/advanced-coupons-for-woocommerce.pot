@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.4\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-29T06:48:57+00:00\n"
+"POT-Creation-Date: 2025-10-31T05:52:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: advanced-coupons-for-woocommerce\n"
@@ -82,7 +82,7 @@ msgstr ""
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:428
+#: Models/Auto_Apply.php:434
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -140,7 +140,7 @@ msgstr ""
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:423
+#: Models/Auto_Apply.php:429
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -218,12 +218,12 @@ msgstr ""
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
 
-#: Models/Auto_Apply.php:438
+#: Models/Auto_Apply.php:444
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr ""
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:448
+#: Models/Auto_Apply.php:454
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
@@ -289,6 +289,10 @@ msgstr ""
 
 #: Models/BOGO/Migration.php:400
 msgid "View Progress"
+msgstr ""
+
+#: Models/BOGO/Types/Same_Products.php:433
+msgid "Same Products"
 msgstr ""
 
 #: Models/Bootstrap.php:380
@@ -1842,15 +1846,15 @@ msgstr ""
 msgid "Select membership plans"
 msgstr ""
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:234
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:244
 msgid "Allow store credits for subscription renewals"
 msgstr ""
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:236
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:246
 msgid "Enable this option to allow customers to use store credits for automatic subscription renewals."
 msgstr ""
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:493
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:503
 msgid "Custom discounts for subscription products are not supported for this feature."
 msgstr ""
 

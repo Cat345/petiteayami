@@ -233,32 +233,75 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 		}
 
 		/**
-		 * @return bool|mixed|true
+		 * Get token for Mollie payment processing with retry mechanism for mandate validation
+		 * 
+		 * This method checks for valid customer mandates with up to 3 retry attempts.
+		 * It handles cases where mandates become available shortly after initial check.
+		 * 
+		 * @param WC_Order $order WooCommerce order object
+		 * @return bool|mixed Returns true if valid mandate found, false otherwise
 		 */
 		public function get_token( $order ) {
-			if ( is_user_logged_in() ) {
-				$user        = wp_get_current_user();
-				$customer_id = $user->mollie_customer_id;
-			}
-			if ( empty( $customer_id ) ) {
-				$customer_id = $order->get_meta( '_mollie_customer_id', true );
-			}
-			$validMandate = false;
 			try {
-				$mandates = WFOCU_Mollie_Helper_Compat::get_api_client( WFOCU_Mollie_Helper::instance()->container, $this->test_mode )->customers->get( $customer_id )->mandates();
-				foreach ( $mandates as $mandate ) {
-					if ( 'valid' === $mandate->status ) {
-						$validMandate = true;
-						break;
-					}
+				// Get customer ID from logged-in user or order meta
+				if ( is_user_logged_in() ) {
+					$user        = wp_get_current_user();
+					$customer_id = $user->mollie_customer_id;
 				}
-			} catch ( Mollie\Api\Exceptions\ApiException $e ) {
-				WFOCU_Core()->log->log( "Mollie exception for $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") for customer id and valid mandate {$validMandate}: $customer_id: " . print_r( $e->getMessage(), true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			}
-			WFOCU_Core()->log->log( "Get Token for: $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . "), Customer id: $customer_id, Valid Mandate: $validMandate" );
-			$this->token = $validMandate;
+				if ( empty( $customer_id ) ) {
+					$customer_id = $order->get_meta( '_mollie_customer_id', true );
+				}
+				
+				// Initialize retry mechanism variables
+				$validMandate = false;  // Flag to track if valid mandate is found
+				$max_retries  = 3;      // Maximum number of retry attempts
+				$retry_count  = 0;      // Current retry attempt counter
+				
+				// Retry loop: continue until valid mandate found or max retries reached
+				while ( ! $validMandate && $retry_count < $max_retries ) {
+					try {
+						// Fetch customer mandates from Mollie API
+						$mandates = WFOCU_Mollie_Helper_Compat::get_api_client( WFOCU_Mollie_Helper::instance()->container, $this->test_mode )->customers->get( $customer_id )->mandates();
+						
+						// Check each mandate for valid status
+						foreach ( $mandates as $mandate ) {
+							if ( 'valid' === $mandate->status ) {
+								$validMandate = true;  // Found a valid mandate
+								break;                  // Exit loop once valid mandate is found
+							}
+						}
+						
+						// If no valid mandate found and we haven't reached max retries, wait and retry
+						if ( ! $validMandate && $retry_count < $max_retries - 1 ) {
+							WFOCU_Core()->log->log( "No valid mandate found for customer $customer_id, retrying in 1 second. Attempt " . ( $retry_count + 1 ) . " of $max_retries" );
+							sleep( 1 );  // Wait 1 second before next attempt
+						}
+						
+					} catch ( Mollie\Api\Exceptions\ApiException $e ) {
+						// Log Mollie API exceptions
+						WFOCU_Core()->log->log( "Mollie exception for $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") for customer id and valid mandate {$validMandate}: $customer_id: " . print_r( $e->getMessage(), true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						
+						// If API exception occurs and we haven't reached max retries, wait and retry
+						if ( $retry_count < $max_retries - 1 ) {
+							WFOCU_Core()->log->log( "Retrying after Mollie API exception. Attempt " . ( $retry_count + 1 ) . " of $max_retries" );
+							sleep( 1 );  // Wait 1 second before next attempt
+						}
+					}
+					
+					$retry_count++;  // Increment retry counter for next iteration
+				}
+				
+				// Log final result with attempt count for debugging
+				WFOCU_Core()->log->log( "Get Token for: $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . "), Customer id: $customer_id, Valid Mandate: $validMandate, Attempts: $retry_count" );
+				$this->token = $validMandate;  // Store result in instance variable
 
-			return $this->token;
+				return $this->token;  // Return the final result
+				
+			} catch ( \Throwable $e ) {
+				// Catch any unexpected errors and log them
+				WFOCU_Core()->log->log( "Error in get_token method for $this->key: " . print_r( $e->getMessage(), true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				return false;  // Return false on any unexpected error
+			}
 		}
 
 		/**
@@ -405,12 +448,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 					}
 					$this->item_key = $item_key;
 				}
+				$description = sprintf(
+					'Upsell Offer ID: %s, Order ID: %s',
+					$get_offer_id,
+					$order_id
+				);
+
 				$data = [
 					'amount'      => [
 						'currency' => get_woocommerce_currency(),
 						'value'    => $this->format_currency_value( $total_price ),
 					],
-					'description' => 'Upsell/Downsell Payment',
+					'description' => $description,
 					'redirectUrl' => add_query_arg( array( 'wfocu-si' => WFOCU_Core()->data->get_transient_key() ), WC()->api_request_url( 'wfocu_mollie_ideal_payments' ) ),
 					'webhookUrl'  => $webhook_url,
 					'method'      => str_replace('mollie_wc_gateway_', '', $this->key),
@@ -522,7 +571,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				}
 
 			} catch ( Mollie\Api\Exceptions\ApiException $e ) {
-				throw new WFOCU_Payment_Gateway_Exception( sprintf( __( "The customer (%s) could not be used or found in $this->key. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), $customer_id ), 101, $this->get_key() );
+				throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%s) could not be used or found in %s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 
 			WFOCU_Core()->log->log( "Mollie $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") Offer payment Request data:" . print_r( $data, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -532,12 +581,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				if ( $validMandate ) {
 					$payment = WFOCU_Mollie_Helper_Compat::get_api_client( WFOCU_Mollie_Helper::instance()->container, $this->test_mode )->payments->create( $data );
 				} else {
-					throw new WFOCU_Payment_Gateway_Exception( sprintf( __( "The customer (%s) does not have a valid mandate in $this->key. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), $customer_id ), 101, $this->get_key() );
+					throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%s) does not have a valid mandate in %s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				}
 			} catch ( Mollie\Api\Exceptions\ApiException $e ) {
-				throw new WFOCU_Payment_Gateway_Exception( $e->getMessage(), 101, $this->get_key() );
+				throw new WFOCU_Payment_Gateway_Exception( esc_html( $e->getMessage() ), 101, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			} catch ( Exception $e ) {
-				throw new WFOCU_Payment_Gateway_Exception( $e->getMessage(), 101, $this->get_key() );
+				throw new WFOCU_Payment_Gateway_Exception( esc_html( $e->getMessage() ), 101, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 
 			return $payment;
@@ -1343,7 +1392,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 			$response = wp_remote_request( $url, $arguments );
 
 			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message() );
+				throw new Exception( esc_html( $response->get_error_message() ) );
 			}
 
 			$body = wp_remote_retrieve_body( $response );

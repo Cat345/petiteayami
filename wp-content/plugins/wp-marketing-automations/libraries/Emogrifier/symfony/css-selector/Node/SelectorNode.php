@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Node;
+namespace BWFAN\Symfony\Component\CssSelector\Node;
 
 /**
  * Represents a "<selector>(::|:)<pseudoElement>" node.

@@ -158,6 +158,7 @@ return array(
     'FSVendor\\Octolize\\Onboarding\\PluginUpgrade\\PluginUpgradeWatcher' => $baseDir . '/vendor_prefixed/octolize/wp-onboarding/src/Onboarding/PluginUpgrade/PluginUpgradeWatcher.php',
     'FSVendor\\Octolize\\ShippingExtensions\\AdminPage' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/AdminPage.php',
     'FSVendor\\Octolize\\ShippingExtensions\\Assets' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Assets.php',
+    'FSVendor\\Octolize\\ShippingExtensions\\BlackFriday2025Promo' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/BlackFriday2025Promo.php',
     'FSVendor\\Octolize\\ShippingExtensions\\Page' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Page.php',
     'FSVendor\\Octolize\\ShippingExtensions\\PageViewTracker' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PageViewTracker.php',
     'FSVendor\\Octolize\\ShippingExtensions\\PluginLinks' => $baseDir . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PluginLinks.php',

@@ -7,43 +7,43 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-05T11:12:15+00:00\n"
+"POT-Creation-Date: 2025-01-03T12:36:46+05:30\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: woofunnels\n"
 
-#: as-data-store/class-woofunnels-as-ds.php:161
+#: as-data-store/class-woofunnels-as-ds.php:160
 msgid "Every minute"
+msgstr ""
+
+#: as-data-store/class-woofunnels-as-ds.php:378
+#: as-data-store/class-woofunnels-as-ds.php:425
+#: as-data-store/class-woofunnels-as-ds.php:473
+#: as-data-store/class-woofunnels-as-ds.php:555
+#: as-data-store/class-woofunnels-as-ds.php:592
+#: as-data-store/class-woofunnels-as-ds.php:623
+msgid "Method is called before plugins_loaded hook."
 msgstr ""
 
 #: as-data-store/class-woofunnels-as-ds.php:383
 #: as-data-store/class-woofunnels-as-ds.php:430
-#: as-data-store/class-woofunnels-as-ds.php:478
-#: as-data-store/class-woofunnels-as-ds.php:561
-#: as-data-store/class-woofunnels-as-ds.php:598
-#: as-data-store/class-woofunnels-as-ds.php:629
-msgid "Method is called before plugins_loaded hook."
+msgid "Action Scheduler class not found."
 msgstr ""
 
 #: as-data-store/class-woofunnels-as-ds.php:388
 #: as-data-store/class-woofunnels-as-ds.php:435
-msgid "Action Scheduler class not found."
-msgstr ""
-
-#: as-data-store/class-woofunnels-as-ds.php:393
-#: as-data-store/class-woofunnels-as-ds.php:440
-#: as-data-store/class-woofunnels-as-ds.php:483
-#: as-data-store/class-woofunnels-as-ds.php:518
-#: as-data-store/class-woofunnels-as-ds.php:566
-#: as-data-store/class-woofunnels-as-ds.php:634
+#: as-data-store/class-woofunnels-as-ds.php:478
+#: as-data-store/class-woofunnels-as-ds.php:513
+#: as-data-store/class-woofunnels-as-ds.php:560
+#: as-data-store/class-woofunnels-as-ds.php:628
 msgid "Hook is a required entity."
 msgstr ""
 
-#: as-data-store/class-woofunnels-as-ds.php:499
+#: as-data-store/class-woofunnels-as-ds.php:494
 msgid "No actions found for data: "
 msgstr ""
 
-#: as-data-store/class-woofunnels-as-ds.php:603
+#: as-data-store/class-woofunnels-as-ds.php:597
 msgid "Action ID is required."
 msgstr ""
 
@@ -67,95 +67,83 @@ msgstr ""
 msgid "FunnelKit Automations license is expired, kindly renew and activate it first."
 msgstr ""
 
-#: connector/class-wfco-admin.php:147
+#: connector/class-wfco-admin.php:146
 msgid "Text Copied"
 msgstr ""
 
-#: connector/class-wfco-admin.php:149
+#: connector/class-wfco-admin.php:147
 msgid "Sync Connector"
 msgstr ""
 
-#: connector/class-wfco-admin.php:151
+#: connector/class-wfco-admin.php:148
 msgid "All the data of this Connector will be Synced."
 msgstr ""
 
-#: connector/class-wfco-admin.php:153
-#: connector/class-wfco-admin.php:177
+#: connector/class-wfco-admin.php:149
+#: connector/class-wfco-admin.php:161
 msgid "Please Wait..."
 msgstr ""
 
-#: connector/class-wfco-admin.php:155
+#: connector/class-wfco-admin.php:150
 msgid "Sync in progress..."
 msgstr ""
 
-#: connector/class-wfco-admin.php:157
+#: connector/class-wfco-admin.php:151
 msgid "Connector Synced"
 msgstr ""
 
-#: connector/class-wfco-admin.php:159
+#: connector/class-wfco-admin.php:152
 msgid "We have detected change in the connector during syncing. Please re-save the Automations."
 msgstr ""
 
-#: connector/class-wfco-admin.php:161
+#: connector/class-wfco-admin.php:153
 msgid "Oops"
 msgstr ""
 
-#: connector/class-wfco-admin.php:163
-#: connector/class-wfco-admin.php:165
-#: connector/class-wfco-admin.php:167
+#: connector/class-wfco-admin.php:154
+#: connector/class-wfco-admin.php:155
+#: connector/class-wfco-admin.php:156
 msgid "There was some error. Please try again later."
 msgstr ""
 
-#: connector/class-wfco-admin.php:169
+#: connector/class-wfco-admin.php:157
 msgid "Connector Updated"
 msgstr ""
 
-#: connector/class-wfco-admin.php:171
+#: connector/class-wfco-admin.php:158
 msgid "We have detected change in the connector during updating. Please re-save the Automations."
 msgstr ""
 
-#: connector/class-wfco-admin.php:173
+#: connector/class-wfco-admin.php:159
 msgid "Disconnecting Connector?"
 msgstr ""
 
-#: connector/class-wfco-admin.php:175
+#: connector/class-wfco-admin.php:160
 msgid "All the action, tasks, logs of this connector will be deleted."
 msgstr ""
 
-#: connector/class-wfco-admin.php:179
+#: connector/class-wfco-admin.php:162
 msgid "Disconnecting the connector ..."
 msgstr ""
 
-#: connector/class-wfco-admin.php:181
+#: connector/class-wfco-admin.php:163
 msgid "Connector Disconnected"
 msgstr ""
 
-#: connector/class-wfco-admin.php:183
+#: connector/class-wfco-admin.php:164
 msgid "Update"
 msgstr ""
 
-#: connector/class-wfco-admin.php:185
+#: connector/class-wfco-admin.php:165
 msgid "Saving in progress..."
 msgstr ""
 
-#: connector/class-wfco-admin.php:187
+#: connector/class-wfco-admin.php:166
 msgid "Updating..."
 msgstr ""
 
-#: connector/class-wfco-admin.php:189
+#: connector/class-wfco-admin.php:167
 msgid "Connecting..."
-msgstr ""
-
-#: connector/class-wfco-admin.php:191
-msgid "Connector Installed Successfully"
-msgstr ""
-
-#: connector/class-wfco-admin.php:193
-msgid "Connected Successfully"
-msgstr ""
-
-#: connector/class-wfco-call.php:25
-msgid "Api Error: No response from API"
 msgstr ""
 
 #: connector/class-wfco-call.php:95
@@ -178,100 +166,91 @@ msgstr ""
 msgid "Connector settings missing"
 msgstr ""
 
-#: connector/class-wfco-connector.php:197
-msgid "Connector forgot to override the method - get_api_data."
-msgstr ""
-
-#: contact/class-woofunnels-db-updater.php:206
-#: contact/class-woofunnels-db-updater.php:222
-#: contact/class-woofunnels-db-updater.php:238
-#: contact/class-woofunnels-db-updater.php:1147
+#: contact/class-woofunnels-db-updater.php:199
+#: contact/class-woofunnels-db-updater.php:215
+#: contact/class-woofunnels-db-updater.php:231
+#: contact/class-woofunnels-db-updater.php:1123
 #: includes/class-woofunnels-admin-notifications.php:44
 #: includes/class-woofunnels-process.php:62
 #: includes/class-woofunnels-process.php:156
 msgid "Action failed. Please refresh the page and retry."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:210
-#: contact/class-woofunnels-db-updater.php:226
-#: contact/class-woofunnels-db-updater.php:242
-#: contact/class-woofunnels-db-updater.php:1151
+#: contact/class-woofunnels-db-updater.php:203
+#: contact/class-woofunnels-db-updater.php:219
+#: contact/class-woofunnels-db-updater.php:235
+#: contact/class-woofunnels-db-updater.php:1127
 msgid "You don&#8217;t have permission to do this."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:285
+#: contact/class-woofunnels-db-updater.php:278
 msgid "Indexing of orders has started"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:286
+#: contact/class-woofunnels-db-updater.php:279
 msgid "It may take sometime to finish the process. We will update this notice once the process completes."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:298
+#: contact/class-woofunnels-db-updater.php:291
 msgid "Success"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:299
+#: contact/class-woofunnels-db-updater.php:292
 msgid "Order indexing completed successfully."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:303
-#: contact/class-woofunnels-db-updater.php:322
+#: contact/class-woofunnels-db-updater.php:296
+#: contact/class-woofunnels-db-updater.php:315
 #: includes/class-woofunnels-process.php:113
-#: views/woofunnels-notifications.php:56
 msgid "Dismiss"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:316
+#: contact/class-woofunnels-db-updater.php:309
 msgid "FunnelKit Notice"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:317
+#: contact/class-woofunnels-db-updater.php:310
 msgid "Unable to complete indexing of orders. Please <a target=\"_blank\" href=\"%s\">contact support</a> to get the issue resolved."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:321
+#: contact/class-woofunnels-db-updater.php:314
 msgid "Contact Support"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:816
-msgid "This store has <strong>%s orders</strong> to index."
-msgstr ""
-
-#: contact/class-woofunnels-db-updater.php:823
+#: contact/class-woofunnels-db-updater.php:805
 msgid "Index Past Orders"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:826
+#: contact/class-woofunnels-db-updater.php:808
 msgid "Unable to complete indexing of orders."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:827
+#: contact/class-woofunnels-db-updater.php:809
 msgid "Please"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:828
+#: contact/class-woofunnels-db-updater.php:810
 msgid "contact support"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:828
+#: contact/class-woofunnels-db-updater.php:810
 msgid " to get the issue resolved."
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:831
+#: contact/class-woofunnels-db-updater.php:813
 msgid "Learn more about this process"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:835
+#: contact/class-woofunnels-db-updater.php:817
 msgid "Running"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:837
+#: contact/class-woofunnels-db-updater.php:819
 msgid "Completed"
 msgstr ""
 
-#: contact/class-woofunnels-db-updater.php:840
-#: contact/class-woofunnels-db-updater.php:845
+#: contact/class-woofunnels-db-updater.php:822
+#: contact/class-woofunnels-db-updater.php:827
 msgid "Start"
 msgstr ""
 
@@ -294,8 +273,8 @@ msgstr ""
 
 #: helpers/settings.php:40
 #: helpers/settings.php:41
-#: includes/class-bwf-admin-general-settings.php:85
-#: includes/class-bwf-admin-general-settings.php:337
+#: includes/class-bwf-admin-general-settings.php:81
+#: includes/class-bwf-admin-general-settings.php:330
 msgid "Permalinks"
 msgstr ""
 
@@ -304,606 +283,606 @@ msgstr ""
 msgid "Google Maps"
 msgstr ""
 
-#: helpers/settings.php:56
-msgid "Enter the Google Maps API key for Google Address AutoComplete on Checkout. <a href=\"https://funnelkit.com/google-address-autocomplete-for-woocommerce/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Settings+Google+Map+Api+Key\" target=\"_blank\">Learn More</a>"
+#: helpers/settings.php:55
+msgid "Enter the Google Maps API key for Google Address AutoComplete on Checkout. <a href=\"https://funnelkit.com/google-address-autocomplete-for-woocommerce/?utm_source=WordPress&utm_campaign=Lite+Plugin&utm_medium=Settings+Google+Map+Api+Key\" target=\"_blank\">Learn More</a>"
 msgstr ""
 
+#: helpers/settings.php:62
 #: helpers/settings.php:63
-#: helpers/settings.php:64
-#: includes/class-bwf-admin-general-settings.php:89
-#: includes/class-bwf-admin-general-settings.php:333
+#: includes/class-bwf-admin-general-settings.php:85
+#: includes/class-bwf-admin-general-settings.php:326
 msgid "Facebook Pixel"
 msgstr ""
 
-#: helpers/settings.php:69
-msgid "Pixel ID & Access Token"
-msgstr ""
-
-#: helpers/settings.php:71
-msgid "294123501257422"
-msgstr ""
-
-#: helpers/settings.php:72
-msgid "Log into your Facebook ads account to find your Pixel ID."
-msgstr ""
-
-#: helpers/settings.php:72
-msgid "Learn More"
-msgstr ""
-
-#: helpers/settings.php:78
-msgid "Enter Access Token"
-msgstr ""
-
-#: helpers/settings.php:79
-msgid "Send events directly from server to Facebook through the Conversion API. An access token is required to use the server-side API."
-msgstr ""
-
-#: helpers/settings.php:79
-msgid "Generate Access Token"
-msgstr ""
-
-#: helpers/settings.php:91
-msgid "Use test_event_code to verify server-side events. <strong>Uncheck this option after testing</strong>."
-msgstr ""
-
-#: helpers/settings.php:96
-msgid "Test server events via test_event_code"
-msgstr ""
-
-#: helpers/settings.php:107
-msgid "<a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/facebook-conversion-api/#step-1-select-your-pixel-id-and-go-to-%E2%80%9Ctest-events%E2%80%9D\">Learn how to get test_event_code</a>"
-msgstr ""
-
-#: helpers/settings.php:108
-msgid "Paste your test_event_code here"
-msgstr ""
-
-#: helpers/settings.php:118
-msgid "Use this option to log API request & response. <strong>Uncheck this option after testing</strong>.  <a target=\"_blank\" href=\""
-msgstr ""
-
-#: helpers/settings.php:121
-msgid "Enable Purchase Event Logs"
-msgstr ""
-
-#: helpers/settings.php:130
-#: helpers/settings.php:434
-#: helpers/settings.php:664
-#: helpers/settings.php:920
-#: helpers/settings.php:1152
-#: helpers/settings.php:1297
-msgid "Site Wide Events"
-msgstr ""
-
-#: helpers/settings.php:135
-#: helpers/settings.php:158
-#: helpers/settings.php:169
-#: helpers/settings.php:219
-#: helpers/settings.php:246
-#: helpers/settings.php:439
-#: helpers/settings.php:464
-#: helpers/settings.php:475
-#: helpers/settings.php:526
-#: helpers/settings.php:552
-#: helpers/settings.php:669
-#: helpers/settings.php:699
-#: helpers/settings.php:710
-#: helpers/settings.php:776
-#: helpers/settings.php:799
-#: helpers/settings.php:925
-#: helpers/settings.php:949
-#: helpers/settings.php:961
-#: helpers/settings.php:1013
-#: helpers/settings.php:1035
-#: helpers/settings.php:1157
-#: helpers/settings.php:1180
-#: helpers/settings.php:1191
-#: helpers/settings.php:1223
-#: helpers/settings.php:1245
-#: helpers/settings.php:1302
-#: helpers/settings.php:1319
-#: helpers/settings.php:1330
-#: helpers/settings.php:1363
-msgid "Enable PageView Event"
-msgstr ""
-
-#: helpers/settings.php:137
-#: helpers/settings.php:441
-#: helpers/settings.php:671
-#: helpers/settings.php:927
-#: helpers/settings.php:1159
-#: helpers/settings.php:1304
-msgid "Use this option to fire PageView event on all site pages"
-msgstr ""
-
-#: helpers/settings.php:142
-#: helpers/settings.php:198
-#: helpers/settings.php:231
-#: helpers/settings.php:447
-#: helpers/settings.php:504
-#: helpers/settings.php:532
-#: helpers/settings.php:676
-#: helpers/settings.php:746
-#: helpers/settings.php:991
-#: helpers/settings.php:1207
-#: helpers/settings.php:1309
-#: helpers/settings.php:1348
-msgid "Enable AddtoCart Event"
-msgstr ""
-
-#: helpers/settings.php:144
-#: helpers/settings.php:449
-#: helpers/settings.php:678
-#: helpers/settings.php:940
-#: helpers/settings.php:1166
-#: helpers/settings.php:1311
-msgid "Use this option to fire AddtoCart event when customer add items to the cart"
-msgstr ""
-
-#: helpers/settings.php:148
-#: helpers/settings.php:1170
-msgid "Enable ViewContent Event"
-msgstr ""
-
-#: helpers/settings.php:150
-#: helpers/settings.php:1172
-msgid "Use this option to fire ViewContent event on product pages"
-msgstr ""
-
-#: helpers/settings.php:154
-#: helpers/settings.php:461
-#: helpers/settings.php:695
-#: helpers/settings.php:945
-#: helpers/settings.php:1176
-#: helpers/settings.php:1315
-msgid "Sales Page Events"
-msgstr ""
-
-#: helpers/settings.php:165
-#: helpers/settings.php:472
-#: helpers/settings.php:706
-#: helpers/settings.php:957
-#: helpers/settings.php:1187
-#: helpers/settings.php:1326
-msgid "Optin Page Events"
-msgstr ""
-
-#: helpers/settings.php:180
-#: helpers/settings.php:486
-#: helpers/settings.php:721
-#: helpers/settings.php:973
-msgid "Enable Lead Event"
-msgstr ""
-
-#: helpers/settings.php:190
-#: helpers/settings.php:496
-#: helpers/settings.php:738
-#: helpers/settings.php:983
-#: helpers/settings.php:1199
-#: helpers/settings.php:1340
-msgid "Order Bump Events"
-msgstr ""
-
-#: helpers/settings.php:199
-msgid "Fire \"AddToCart\" event when user accepts the order bump"
-msgstr ""
-
-#: helpers/settings.php:205
-#: helpers/settings.php:511
-#: helpers/settings.php:760
-#: helpers/settings.php:998
-msgid "Enable Order Bump Conversion Event"
-msgstr ""
-
-#: helpers/settings.php:206
-#: helpers/settings.php:512
-#: helpers/settings.php:761
-#: helpers/settings.php:999
-msgid "Fire \"Woofunnels_Bump\" custom event when user accepts the order bump"
-msgstr ""
-
-#: helpers/settings.php:213
-#: helpers/settings.php:520
-#: helpers/settings.php:769
-#: helpers/settings.php:1006
-#: helpers/settings.php:1216
-#: helpers/settings.php:1356
-msgid "Checkout Events"
-msgstr ""
-
-#: helpers/settings.php:225
-#: helpers/settings.php:1026
-#: helpers/settings.php:1236
-#: helpers/settings.php:1375
-msgid "Enable InitiateCheckout Event"
-msgstr ""
-
-#: helpers/settings.php:237
-#: helpers/settings.php:542
-msgid "Enable AddPaymentInfo Event"
-msgstr ""
-
-#: helpers/settings.php:243
-#: helpers/settings.php:549
-#: helpers/settings.php:796
-#: helpers/settings.php:1032
-#: helpers/settings.php:1242
-#: helpers/settings.php:1381
-msgid "Purchase Events"
-msgstr ""
-
-#: helpers/settings.php:255
-msgid "Note: FunnelKit will send total order value and store currency based on order. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/conversion-tracking#add-value\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:258
-#: helpers/settings.php:563
-#: helpers/settings.php:1046
-#: helpers/settings.php:1256
-#: helpers/settings.php:1384
-msgid "Enable Purchase Event"
-msgstr ""
-
-#: helpers/settings.php:269
-msgid "Use the GeneralEvent for your Custom Audiences and Custom Conversions."
-msgstr ""
-
-#: helpers/settings.php:272
-msgid "Enable General Event"
-msgstr ""
-
-#: helpers/settings.php:282
-msgid "General Event Name"
-msgstr ""
-
-#: helpers/settings.php:283
-msgid "Customize the name of general event."
-msgstr ""
-
-#: helpers/settings.php:293
-#: helpers/settings.php:571
-#: helpers/settings.php:825
-#: helpers/settings.php:1054
-msgid "Track Steps"
-msgstr ""
-
-#: helpers/settings.php:298
-#: helpers/settings.php:576
-#: helpers/settings.php:830
-#: helpers/settings.php:1059
-msgid "Enable Custom Funnel Step Event"
-msgstr ""
-
-#: helpers/settings.php:299
-#: helpers/settings.php:577
-#: helpers/settings.php:831
-msgid "Fire \"Woofunnels_Sales\", \"Woofunnels_Checkout\", \"Woofunnels_Upsell\", \"Woofunnels_Downsell\", \"Woofunnels_Thankyou\", \"Woofunnels_Optin\" & \"Woofunnels_OptinConfirmation\" respectively when user visits the page."
-msgstr ""
-
-#: helpers/settings.php:309
-#: helpers/settings.php:585
-#: helpers/settings.php:840
-#: helpers/settings.php:1069
-#: helpers/settings.php:1265
-#: helpers/settings.php:1392
-msgid "Advanced"
-msgstr ""
-
-#: helpers/settings.php:316
-msgid "Note: Your Product catalog must be synced with Facebook. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/get-started/dynamic-ads\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:320
-msgid "Enable Content Settings for Dynamic Ads"
-msgstr ""
-
-#: helpers/settings.php:328
-#: helpers/settings.php:591
-#: helpers/settings.php:846
-#: helpers/settings.php:1075
-#: helpers/settings.php:1271
-#: helpers/settings.php:1398
-msgid "Enable this to send parent product ID for variable products"
-msgstr ""
-
-#: helpers/settings.php:329
-#: helpers/settings.php:592
-#: helpers/settings.php:847
-#: helpers/settings.php:1076
-#: helpers/settings.php:1272
-#: helpers/settings.php:1399
-msgid "Turn this option ON when your Product Catalog doesn't include the variants for variable products."
-msgstr ""
-
-#: helpers/settings.php:343
-#: helpers/settings.php:602
-#: helpers/settings.php:857
-#: helpers/settings.php:1086
-msgid "Select content id parameter"
-msgstr ""
-
-#: helpers/settings.php:344
-#: helpers/settings.php:603
-#: helpers/settings.php:858
-#: helpers/settings.php:1087
-msgid "Product ID"
-msgstr ""
-
-#: helpers/settings.php:345
-#: helpers/settings.php:604
-#: helpers/settings.php:859
-#: helpers/settings.php:1088
-msgid "Product SKU"
-msgstr ""
-
-#: helpers/settings.php:359
-#: helpers/settings.php:614
-#: helpers/settings.php:869
-#: helpers/settings.php:1098
-msgid "Content ID Prefix"
-msgstr ""
-
-#: helpers/settings.php:360
-#: helpers/settings.php:615
-#: helpers/settings.php:870
-#: helpers/settings.php:1099
-msgid "Add prefix to the content_id parameter (optional)"
-msgstr ""
-
-#: helpers/settings.php:371
-msgid "Content id suffix"
-msgstr ""
-
-#: helpers/settings.php:372
-#: helpers/settings.php:623
-#: helpers/settings.php:878
-#: helpers/settings.php:1107
-msgid "Add suffix to the content_id parameter (optional)"
-msgstr ""
-
-#: helpers/settings.php:383
-#: helpers/settings.php:630
-#: helpers/settings.php:885
-#: helpers/settings.php:1114
-msgid "Check above boxes to exclude shipping/taxes from the total."
-msgstr ""
-
-#: helpers/settings.php:386
-#: helpers/settings.php:633
-#: helpers/settings.php:888
-#: helpers/settings.php:1117
-msgid "Exclude Shipping from Total"
-msgstr ""
-
-#: helpers/settings.php:390
-#: helpers/settings.php:637
-#: helpers/settings.php:892
-#: helpers/settings.php:1121
-msgid "Exclude Taxes from Total"
-msgstr ""
-
-#: helpers/settings.php:405
-msgid "Note: FunnelKit will send customer's email, name, phone, address fields whichever available in the order. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/conversion-tracking#advanced_match\">Learn More"
-msgstr ""
-
-#: helpers/settings.php:408
-msgid "Enable Advanced Matching With the Pixel"
-msgstr ""
-
-#: helpers/settings.php:419
-#: helpers/settings.php:420
-#: includes/class-bwf-admin-general-settings.php:93
-#: includes/class-bwf-admin-general-settings.php:334
-msgid "Google Analytics"
-msgstr ""
-
-#: helpers/settings.php:426
-msgid "Analytics ID"
-msgstr ""
-
-#: helpers/settings.php:427
-msgid "G-9F3K2TGHH4"
-msgstr ""
-
-#: helpers/settings.php:428
-msgid "Log into your Google Analytics account to find your Analytics ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/how-to/set-up-google-analytics-4-property/\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:453
-#: helpers/settings.php:689
-msgid "Enable ViewItem Event"
-msgstr ""
-
-#: helpers/settings.php:455
-#: helpers/settings.php:691
-msgid "Use this option to fire ViewItem event on product pages"
-msgstr ""
-
-#: helpers/settings.php:505
-#: helpers/settings.php:747
-#: helpers/settings.php:992
-msgid "This event will fire when user accepts the order bump"
-msgstr ""
-
-#: helpers/settings.php:537
-msgid "Enable BeginCheckout Event"
-msgstr ""
-
-#: helpers/settings.php:622
-#: helpers/settings.php:877
-#: helpers/settings.php:1106
-msgid "Content ID Suffix"
-msgstr ""
-
-#: helpers/settings.php:650
-#: helpers/settings.php:651
-#: includes/class-bwf-admin-general-settings.php:100
-#: includes/class-bwf-admin-general-settings.php:335
-msgid "Google Ads"
-msgstr ""
-
-#: helpers/settings.php:657
-msgid "Conversion ID"
-msgstr ""
-
-#: helpers/settings.php:658
-msgid "AW-837491263"
-msgstr ""
-
-#: helpers/settings.php:659
-msgid "Log into your Google Ads account to find your Conversion ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/google-ads/#step-1-go-to-your-google-ads-account\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:685
-#: helpers/settings.php:731
-#: helpers/settings.php:755
-#: helpers/settings.php:791
-#: helpers/settings.php:820
-msgid "Enter Conversion Label (Optional)"
-msgstr ""
-
-#: helpers/settings.php:783
-#: helpers/settings.php:938
-#: helpers/settings.php:1020
-#: helpers/settings.php:1164
-#: helpers/settings.php:1230
-#: helpers/settings.php:1370
-msgid "Enable AddToCart Event"
-msgstr ""
-
-#: helpers/settings.php:810
-msgid "Enable Conversion Event"
-msgstr ""
-
-#: helpers/settings.php:819
-msgid "Conversion Label"
-msgstr ""
-
-#: helpers/settings.php:905
-#: helpers/settings.php:906
-#: includes/class-bwf-admin-general-settings.php:106
-#: includes/class-bwf-admin-general-settings.php:336
-msgid "Pinterest"
-msgstr ""
-
-#: helpers/settings.php:912
-msgid "Tag ID"
-msgstr ""
-
-#: helpers/settings.php:913
-msgid "2614535298742"
-msgstr ""
-
-#: helpers/settings.php:914
-msgid "Log into your Pinterest Ads Manager Account and find Pixel ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/pinterest/\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:932
-msgid "Enable PageVisit Event"
-msgstr ""
-
-#: helpers/settings.php:934
-msgid "Use this option to fire PageVisit event on product pages"
-msgstr ""
-
-#: helpers/settings.php:1060
-msgid "Fire \"Woofunnels_Sales\", \"Woofunnels_Checkout\", \"Woofunnels_Upsell\", \"Woofunnels_Downsell\", \"Woofunnels_Thankyou\", \"Woofunnels_Optin\", \"Woofunnels_OptinConfirmation\" respectively when user visits the page."
-msgstr ""
-
-#: helpers/settings.php:1135
-#: helpers/settings.php:1136
-#: includes/class-bwf-admin-general-settings.php:113
-msgid "TikTok"
-msgstr ""
-
-#: helpers/settings.php:1142
-msgid "TikTok ID"
-msgstr ""
-
-#: helpers/settings.php:1143
-msgid "D4L9N62FLPENAMTU4HG9"
-msgstr ""
-
-#: helpers/settings.php:1144
-msgid "Log into your Tiktok Business Account and find TikTok ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/tiktok/\">Learn More</a>"
-msgstr ""
-
-#: helpers/settings.php:1208
-#: helpers/settings.php:1349
-msgid "Fire this event when user accepts the order bump"
-msgstr ""
-
-#: helpers/settings.php:1280
-#: helpers/settings.php:1281
-#: includes/class-bwf-admin-general-settings.php:119
-#: includes/class-bwf-admin-general-settings.php:339
-msgid "Snapchat"
-msgstr ""
-
-#: helpers/settings.php:1287
+#: helpers/settings.php:68
+#: helpers/settings.php:1293
 msgid "Pixel ID"
 msgstr ""
 
-#: helpers/settings.php:1288
+#: helpers/settings.php:70
+msgid "294123501257422"
+msgstr ""
+
+#: helpers/settings.php:71
+msgid "Log into your Facebook ads account to find your Pixel ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/how-to/configure-facebook-conversion-api/#step-4-go-to-settings\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:78
+msgid "Send events directly from server to Facebook through the Conversion API. An access token is required to use the server-side API. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/facebook-conversion-api/\">Generate Access Token</a>"
+msgstr ""
+
+#: helpers/settings.php:81
+msgid "Enable Conversion API"
+msgstr ""
+
+#: helpers/settings.php:91
+msgid "EAAJkZC3UfZBwBAJm8ZAqFmZAjOZA4eZBZAfdZAkZCZA3hCZAjBZCpZA5ZAjVZBmZA0ZBZAaZAfLZA2eZA5ZBZBZCZA4ZAuVZB4ZAfPZAejZAjMeZAjHZCZAfLZAkZAjZAZCZA1ZAjBZA3ZCZAeZAf9ZAkZAgZDZD"
+msgstr ""
+
+#: helpers/settings.php:102
+msgid "Use test_event_code to verify server-side events. <strong>Uncheck this option after testing</strong>."
+msgstr ""
+
+#: helpers/settings.php:107
+msgid "Test server events via test_event_code"
+msgstr ""
+
+#: helpers/settings.php:122
+msgid "<a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/facebook-conversion-api/#step-1-select-your-pixel-id-and-go-to-%E2%80%9Ctest-events%E2%80%9D\">Learn how to get test_event_code</a>"
+msgstr ""
+
+#: helpers/settings.php:123
+msgid "Paste your test_event_code here"
+msgstr ""
+
+#: helpers/settings.php:133
+msgid "Use this option to log API request & response. <strong>Uncheck this option after testing</strong>.  <a target=\"_blank\" href=\""
+msgstr ""
+
+#: helpers/settings.php:136
+msgid "Enable Purchase Event Logs"
+msgstr ""
+
+#: helpers/settings.php:149
+#: helpers/settings.php:453
+#: helpers/settings.php:693
+#: helpers/settings.php:916
+#: helpers/settings.php:1148
+#: helpers/settings.php:1303
+msgid "Site Wide Events"
+msgstr ""
+
+#: helpers/settings.php:154
+#: helpers/settings.php:177
+#: helpers/settings.php:188
+#: helpers/settings.php:238
+#: helpers/settings.php:265
+#: helpers/settings.php:458
+#: helpers/settings.php:483
+#: helpers/settings.php:494
+#: helpers/settings.php:545
+#: helpers/settings.php:571
+#: helpers/settings.php:698
+#: helpers/settings.php:721
+#: helpers/settings.php:732
+#: helpers/settings.php:784
+#: helpers/settings.php:800
+#: helpers/settings.php:921
+#: helpers/settings.php:945
+#: helpers/settings.php:957
+#: helpers/settings.php:1009
+#: helpers/settings.php:1031
+#: helpers/settings.php:1153
+#: helpers/settings.php:1176
+#: helpers/settings.php:1187
+#: helpers/settings.php:1219
+#: helpers/settings.php:1241
+#: helpers/settings.php:1308
+#: helpers/settings.php:1325
+#: helpers/settings.php:1336
+#: helpers/settings.php:1369
+msgid "Enable PageView Event"
+msgstr ""
+
+#: helpers/settings.php:156
+#: helpers/settings.php:460
+#: helpers/settings.php:700
+#: helpers/settings.php:923
+#: helpers/settings.php:1155
+#: helpers/settings.php:1310
+msgid "Use this option to fire PageView event on all site pages"
+msgstr ""
+
+#: helpers/settings.php:161
+#: helpers/settings.php:217
+#: helpers/settings.php:250
+#: helpers/settings.php:466
+#: helpers/settings.php:523
+#: helpers/settings.php:551
+#: helpers/settings.php:705
+#: helpers/settings.php:761
+#: helpers/settings.php:987
+#: helpers/settings.php:1203
+#: helpers/settings.php:1315
+#: helpers/settings.php:1354
+msgid "Enable AddtoCart Event"
+msgstr ""
+
+#: helpers/settings.php:163
+#: helpers/settings.php:468
+#: helpers/settings.php:707
+#: helpers/settings.php:936
+#: helpers/settings.php:1162
+#: helpers/settings.php:1317
+msgid "Use this option to fire AddtoCart event when customer add items to the cart"
+msgstr ""
+
+#: helpers/settings.php:167
+#: helpers/settings.php:1166
+msgid "Enable ViewContent Event"
+msgstr ""
+
+#: helpers/settings.php:169
+#: helpers/settings.php:1168
+msgid "Use this option to fire ViewContent event on product pages"
+msgstr ""
+
+#: helpers/settings.php:173
+#: helpers/settings.php:480
+#: helpers/settings.php:717
+#: helpers/settings.php:941
+#: helpers/settings.php:1172
+#: helpers/settings.php:1321
+msgid "Sales Page Events"
+msgstr ""
+
+#: helpers/settings.php:184
+#: helpers/settings.php:491
+#: helpers/settings.php:728
+#: helpers/settings.php:953
+#: helpers/settings.php:1183
+#: helpers/settings.php:1332
+msgid "Optin Page Events"
+msgstr ""
+
+#: helpers/settings.php:199
+#: helpers/settings.php:505
+#: helpers/settings.php:743
+#: helpers/settings.php:969
+msgid "Enable Lead Event"
+msgstr ""
+
+#: helpers/settings.php:209
+#: helpers/settings.php:515
+#: helpers/settings.php:753
+#: helpers/settings.php:979
+#: helpers/settings.php:1195
+#: helpers/settings.php:1346
+msgid "Order Bump Events"
+msgstr ""
+
+#: helpers/settings.php:218
+msgid "Fire \"AddToCart\" event when user accepts the order bump"
+msgstr ""
+
+#: helpers/settings.php:224
+#: helpers/settings.php:530
+#: helpers/settings.php:768
+#: helpers/settings.php:994
+msgid "Enable Order Bump Conversion Event"
+msgstr ""
+
+#: helpers/settings.php:225
+#: helpers/settings.php:531
+#: helpers/settings.php:769
+#: helpers/settings.php:995
+msgid "Fire \"Woofunnels_Bump\" custom event when user accepts the order bump"
+msgstr ""
+
+#: helpers/settings.php:232
+#: helpers/settings.php:539
+#: helpers/settings.php:777
+#: helpers/settings.php:1002
+#: helpers/settings.php:1212
+#: helpers/settings.php:1362
+msgid "Checkout Events"
+msgstr ""
+
+#: helpers/settings.php:244
+#: helpers/settings.php:1022
+#: helpers/settings.php:1232
+#: helpers/settings.php:1381
+msgid "Enable InitiateCheckout Event"
+msgstr ""
+
+#: helpers/settings.php:256
+#: helpers/settings.php:561
+msgid "Enable AddPaymentInfo Event"
+msgstr ""
+
+#: helpers/settings.php:262
+#: helpers/settings.php:568
+#: helpers/settings.php:797
+#: helpers/settings.php:1028
+#: helpers/settings.php:1238
+#: helpers/settings.php:1387
+msgid "Purchase Events"
+msgstr ""
+
+#: helpers/settings.php:274
+msgid "Note: FunnelKit will send total order value and store currency based on order. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/conversion-tracking#add-value\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:277
+#: helpers/settings.php:582
+#: helpers/settings.php:1042
+#: helpers/settings.php:1390
+msgid "Enable Purchase Event"
+msgstr ""
+
+#: helpers/settings.php:288
+msgid "Use the GeneralEvent for your Custom Audiences and Custom Conversions."
+msgstr ""
+
+#: helpers/settings.php:291
+msgid "Enable General Event"
+msgstr ""
+
+#: helpers/settings.php:301
+msgid "General Event Name"
+msgstr ""
+
+#: helpers/settings.php:302
+msgid "Customize the name of general event."
+msgstr ""
+
+#: helpers/settings.php:312
+#: helpers/settings.php:590
+#: helpers/settings.php:821
+#: helpers/settings.php:1050
+msgid "Track Steps"
+msgstr ""
+
+#: helpers/settings.php:317
+#: helpers/settings.php:595
+#: helpers/settings.php:826
+#: helpers/settings.php:1055
+msgid "Enable Custom Funnel Step Event"
+msgstr ""
+
+#: helpers/settings.php:318
+#: helpers/settings.php:596
+#: helpers/settings.php:827
+msgid "Fire \"Woofunnels_Sales\", \"Woofunnels_Checkout\", \"Woofunnels_Upsell\", \"Woofunnels_Downsell\", \"Woofunnels_Thankyou\", \"Woofunnels_Optin\" & \"Woofunnels_OptinConfirmation\" respectively when user visits the page."
+msgstr ""
+
+#: helpers/settings.php:328
+#: helpers/settings.php:604
+#: helpers/settings.php:836
+#: helpers/settings.php:1065
+#: helpers/settings.php:1271
+#: helpers/settings.php:1398
+msgid "Advanced"
+msgstr ""
+
+#: helpers/settings.php:335
+msgid "Note: Your Product catalog must be synced with Facebook. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/get-started/dynamic-ads\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:339
+msgid "Enable Content Settings for Dynamic Ads"
+msgstr ""
+
+#: helpers/settings.php:347
+#: helpers/settings.php:610
+#: helpers/settings.php:842
+#: helpers/settings.php:1071
+#: helpers/settings.php:1277
+#: helpers/settings.php:1404
+msgid "Enable this to send parent product ID for variable products"
+msgstr ""
+
+#: helpers/settings.php:348
+#: helpers/settings.php:611
+#: helpers/settings.php:843
+#: helpers/settings.php:1072
+#: helpers/settings.php:1278
+#: helpers/settings.php:1405
+msgid "Turn this option ON when your Product Catalog doesn't include the variants for variable products."
+msgstr ""
+
+#: helpers/settings.php:362
+#: helpers/settings.php:621
+#: helpers/settings.php:853
+#: helpers/settings.php:1082
+msgid "Select content id parameter"
+msgstr ""
+
+#: helpers/settings.php:363
+#: helpers/settings.php:622
+#: helpers/settings.php:854
+#: helpers/settings.php:1083
+msgid "Product ID"
+msgstr ""
+
+#: helpers/settings.php:364
+#: helpers/settings.php:623
+#: helpers/settings.php:855
+#: helpers/settings.php:1084
+msgid "Product SKU"
+msgstr ""
+
+#: helpers/settings.php:378
+#: helpers/settings.php:633
+#: helpers/settings.php:865
+#: helpers/settings.php:1094
+msgid "Content ID Prefix"
+msgstr ""
+
+#: helpers/settings.php:379
+#: helpers/settings.php:634
+#: helpers/settings.php:866
+#: helpers/settings.php:1095
+msgid "Add prefix to the content_id parameter (optional)"
+msgstr ""
+
+#: helpers/settings.php:390
+msgid "Content id suffix"
+msgstr ""
+
+#: helpers/settings.php:391
+#: helpers/settings.php:642
+#: helpers/settings.php:874
+#: helpers/settings.php:1103
+msgid "Add suffix to the content_id parameter (optional)"
+msgstr ""
+
+#: helpers/settings.php:402
+#: helpers/settings.php:649
+#: helpers/settings.php:881
+#: helpers/settings.php:1110
+msgid "Check above boxes to exclude shipping/taxes from the total."
+msgstr ""
+
+#: helpers/settings.php:405
+#: helpers/settings.php:652
+#: helpers/settings.php:884
+#: helpers/settings.php:1113
+msgid "Exclude Shipping from Total"
+msgstr ""
+
+#: helpers/settings.php:409
+#: helpers/settings.php:656
+#: helpers/settings.php:888
+#: helpers/settings.php:1117
+msgid "Exclude Taxes from Total"
+msgstr ""
+
+#: helpers/settings.php:424
+msgid "Note: FunnelKit will send customer's email, name, phone, address fields whichever available in the order. <a target=\"_blank\" href=\"https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/conversion-tracking#advanced_match\">Learn More"
+msgstr ""
+
+#: helpers/settings.php:427
+msgid "Enable Advanced Matching With the Pixel"
+msgstr ""
+
+#: helpers/settings.php:438
+#: helpers/settings.php:439
+#: includes/class-bwf-admin-general-settings.php:89
+#: includes/class-bwf-admin-general-settings.php:327
+msgid "Google Analytics"
+msgstr ""
+
+#: helpers/settings.php:445
+msgid "Analytics ID"
+msgstr ""
+
+#: helpers/settings.php:446
+msgid "G-9F3K2TGHH4"
+msgstr ""
+
+#: helpers/settings.php:447
+msgid "Log into your Google Analytics account to find your Analytics ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/how-to/set-up-google-analytics-4-property/\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:472
+#: helpers/settings.php:711
+msgid "Enable ViewItem Event"
+msgstr ""
+
+#: helpers/settings.php:474
+#: helpers/settings.php:713
+msgid "Use this option to fire ViewItem event on product pages"
+msgstr ""
+
+#: helpers/settings.php:524
+#: helpers/settings.php:762
+#: helpers/settings.php:988
+msgid "This event will fire when user accepts the order bump"
+msgstr ""
+
+#: helpers/settings.php:556
+msgid "Enable BeginCheckout Event"
+msgstr ""
+
+#: helpers/settings.php:641
+#: helpers/settings.php:873
+#: helpers/settings.php:1102
+msgid "Content ID Suffix"
+msgstr ""
+
+#: helpers/settings.php:669
+#: helpers/settings.php:670
+#: includes/class-bwf-admin-general-settings.php:96
+#: includes/class-bwf-admin-general-settings.php:328
+msgid "Google Ads"
+msgstr ""
+
+#: helpers/settings.php:676
+msgid "Conversion ID"
+msgstr ""
+
+#: helpers/settings.php:677
+msgid "AW-837491263"
+msgstr ""
+
+#: helpers/settings.php:678
+msgid "Log into your Google Ads account to find your Conversion ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/google-ads/#step-1-go-to-your-google-ads-account\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:684
+msgid "Conversion Label"
+msgstr ""
+
+#: helpers/settings.php:685
+msgid "LkP4CIKm59UBEP7n3t4C"
+msgstr ""
+
+#: helpers/settings.php:686
+msgid "Log into your Google Ads account to find your conversion label. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/google-ads/#step-4-set-up-the-conversion-for-your-google-ads-account\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:791
+#: helpers/settings.php:934
+#: helpers/settings.php:1016
+#: helpers/settings.php:1160
+#: helpers/settings.php:1226
+#: helpers/settings.php:1376
+msgid "Enable AddToCart Event"
+msgstr ""
+
+#: helpers/settings.php:811
+msgid "Enable Conversion Event"
+msgstr ""
+
+#: helpers/settings.php:901
+#: helpers/settings.php:902
+#: includes/class-bwf-admin-general-settings.php:102
+#: includes/class-bwf-admin-general-settings.php:329
+msgid "Pinterest"
+msgstr ""
+
+#: helpers/settings.php:908
+msgid "Tag ID"
+msgstr ""
+
+#: helpers/settings.php:909
+msgid "2614535298742"
+msgstr ""
+
+#: helpers/settings.php:910
+msgid "Log into your Pinterest Ads Manager Account and find Pixel ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/pinterest/\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:928
+msgid "Enable PageVisit Event"
+msgstr ""
+
+#: helpers/settings.php:930
+msgid "Use this option to fire PageVisit event on product pages"
+msgstr ""
+
+#: helpers/settings.php:1056
+msgid "Fire \"Woofunnels_Sales\", \"Woofunnels_Checkout\", \"Woofunnels_Upsell\", \"Woofunnels_Downsell\", \"Woofunnels_Thankyou\", \"Woofunnels_Optin\", \"Woofunnels_OptinConfirmation\" respectively when user visits the page."
+msgstr ""
+
+#: helpers/settings.php:1131
+#: helpers/settings.php:1132
+#: includes/class-bwf-admin-general-settings.php:109
+msgid "TikTok"
+msgstr ""
+
+#: helpers/settings.php:1138
+msgid "TikTok ID"
+msgstr ""
+
+#: helpers/settings.php:1139
+msgid "D4L9N62FLPENAMTU4HG9"
+msgstr ""
+
+#: helpers/settings.php:1140
+msgid "Log into your Tiktok Business Account and find TikTok ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/tiktok/\">Learn More</a>"
+msgstr ""
+
+#: helpers/settings.php:1204
+#: helpers/settings.php:1355
+msgid "Fire this event when user accepts the order bump"
+msgstr ""
+
+#: helpers/settings.php:1252
+msgid "Enable PlaceOrder Event"
+msgstr ""
+
+#: helpers/settings.php:1263
+msgid "Enable CompletePayment Event"
+msgstr ""
+
+#: helpers/settings.php:1286
+#: helpers/settings.php:1287
+#: includes/class-bwf-admin-general-settings.php:115
+#: includes/class-bwf-admin-general-settings.php:332
+msgid "Snapchat"
+msgstr ""
+
+#: helpers/settings.php:1294
 msgid "7fc81b23-8e1c-4fde-b2bf-e3f67a19d2fa"
 msgstr ""
 
-#: helpers/settings.php:1289
+#: helpers/settings.php:1295
 msgid "Log into your Snapchat Business Account and find Pixel ID. <a target=\"_blank\" href=\"https://funnelkit.com/docs/funnel-builder/global-settings/snapchat/\">Learn More</a>"
 msgstr ""
 
-#: helpers/settings.php:1406
-#: helpers/settings.php:1407
+#: helpers/settings.php:1412
+#: helpers/settings.php:1413
 msgid "First Party Tracking"
 msgstr ""
 
-#: helpers/settings.php:1413
-#: includes/class-bwf-ecomm-tracking-common.php:878
+#: helpers/settings.php:1419
+#: includes/class-bwf-ecomm-tracking-common.php:842
 msgid "Conversion Tracking"
 msgstr ""
 
-#: helpers/settings.php:1419
+#: helpers/settings.php:1425
 msgid "In the lite version, you manage UTM tracking with third-party tools. In the Pro version, we store UTM information and provide real-time analytics."
 msgstr ""
 
-#: helpers/settings.php:1428
+#: helpers/settings.php:1434
 msgid "Theme CSS and JavaScript"
 msgstr ""
 
-#: helpers/settings.php:1429
+#: helpers/settings.php:1435
 msgid "Enabling this setting will apply theme CSS and JavaScript for FunnelKit canvas and FunnelKit Boxed made template"
 msgstr ""
 
-#: helpers/settings.php:1435
+#: helpers/settings.php:1441
 msgid "Enable theme CSS and JavaScript"
 msgstr ""
 
-#: helpers/settings.php:1440
+#: helpers/settings.php:1446
 msgid "Checkout"
 msgstr ""
 
-#: helpers/settings.php:1444
+#: helpers/settings.php:1450
 msgid "Sales"
 msgstr ""
 
-#: helpers/settings.php:1448
+#: helpers/settings.php:1454
 msgid "One Click Upsell Offer"
 msgstr ""
 
-#: helpers/settings.php:1453
+#: helpers/settings.php:1459
 msgid "Thank you"
 msgstr ""
 
-#: helpers/settings.php:1458
+#: helpers/settings.php:1464
 msgid "Optin"
 msgstr ""
 
-#: helpers/settings.php:1462
+#: helpers/settings.php:1468
 msgid "Optin Confirmation"
 msgstr ""
 
-#: helpers/settings.php:1466
+#: helpers/settings.php:1472
 msgid "Select All Steps"
 msgstr ""
 
@@ -7072,97 +7051,93 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:73
+#: includes/class-bwf-admin-general-settings.php:69
 msgid "Settings"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:137
+#: includes/class-bwf-admin-general-settings.php:133
 msgid "Save Changes"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:327
+#: includes/class-bwf-admin-general-settings.php:320
 msgid "Changes saved"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:328
+#: includes/class-bwf-admin-general-settings.php:321
 msgid "Leave empty to remove slug completely from url"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:338
+#: includes/class-bwf-admin-general-settings.php:331
 msgid "Tiktok"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:378
-#: includes/class-bwf-admin-general-settings.php:400
+#: includes/class-bwf-admin-general-settings.php:371
+#: includes/class-bwf-admin-general-settings.php:393
 msgid "Error: The permalink \"%s\" is reserved by Native WooCommerce Checkout Page. Try another permalink."
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:379
-#: includes/class-bwf-admin-general-settings.php:401
+#: includes/class-bwf-admin-general-settings.php:372
+#: includes/class-bwf-admin-general-settings.php:394
 msgid "Error: The current Permalinks settings does not allow blank values. Switch Permalink settings to 'Post name'. <a href=\"%s\">Click Here To Change</a>"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:454
+#: includes/class-bwf-admin-general-settings.php:447
 msgid "Settings Updated"
 msgstr ""
 
-#: includes/class-bwf-admin-general-settings.php:516
-msgid "%1$s &lsaquo; %2$s &#8212; WordPress"
-msgstr ""
-
-#: includes/class-bwf-ecomm-tracking-common.php:993
+#: includes/class-bwf-ecomm-tracking-common.php:957
 msgid "Funnel"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:998
+#: includes/class-bwf-ecomm-tracking-common.php:962
 msgid "First Interaction"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1004
+#: includes/class-bwf-ecomm-tracking-common.php:968
 msgid "Conversion Time"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1010
+#: includes/class-bwf-ecomm-tracking-common.php:974
 msgid "UTM Source"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1016
+#: includes/class-bwf-ecomm-tracking-common.php:980
 msgid "UTM Medium"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1022
+#: includes/class-bwf-ecomm-tracking-common.php:986
 msgid "UTM Campaign"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1028
+#: includes/class-bwf-ecomm-tracking-common.php:992
 msgid "UTM Term"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1034
+#: includes/class-bwf-ecomm-tracking-common.php:998
 msgid "UTM Content"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1040
+#: includes/class-bwf-ecomm-tracking-common.php:1004
 msgid "Referrer"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1046
+#: includes/class-bwf-ecomm-tracking-common.php:1010
 msgid "Click ID"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1047
+#: includes/class-bwf-ecomm-tracking-common.php:1011
 msgid "Yes"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1047
+#: includes/class-bwf-ecomm-tracking-common.php:1011
 msgid "No"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1052
+#: includes/class-bwf-ecomm-tracking-common.php:1016
 msgid "Device"
 msgstr ""
 
-#: includes/class-bwf-ecomm-tracking-common.php:1058
+#: includes/class-bwf-ecomm-tracking-common.php:1022
 msgid "Browser"
 msgstr ""
 
@@ -7171,50 +7146,50 @@ msgstr ""
 msgid "Cheating huh?"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:574
+#: includes/class-woofunnels-dashboard-loader.php:573
 msgid "To enable this update please activate your FunnelKit license by visiting the Dashboard Page."
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:595
-#: includes/class-woofunnels-dashboard-loader.php:618
-#: includes/class-woofunnels-dashboard-loader.php:639
-#: includes/class-woofunnels-dashboard-loader.php:660
+#: includes/class-woofunnels-dashboard-loader.php:594
+#: includes/class-woofunnels-dashboard-loader.php:617
+#: includes/class-woofunnels-dashboard-loader.php:638
+#: includes/class-woofunnels-dashboard-loader.php:659
 msgid "Tools"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:671
+#: includes/class-woofunnels-dashboard-loader.php:670
 msgid "All Plugins transients cleared."
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:688
+#: includes/class-woofunnels-dashboard-loader.php:687
 msgid "WooFunnels transients"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:689
+#: includes/class-woofunnels-dashboard-loader.php:688
 msgid "This tool will clear all the WooFunnels plugins transients cache."
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:692
+#: includes/class-woofunnels-dashboard-loader.php:691
 msgid "Clear transients"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:700
+#: includes/class-woofunnels-dashboard-loader.php:699
 msgid "Turn Off"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:703
+#: includes/class-woofunnels-dashboard-loader.php:702
 msgid "Turn On"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:708
+#: includes/class-woofunnels-dashboard-loader.php:707
 msgid "Usage Tracking"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:709
+#: includes/class-woofunnels-dashboard-loader.php:708
 msgid "This action controls Usage Tracking"
 msgstr ""
 
-#: includes/class-woofunnels-dashboard-loader.php:725
+#: includes/class-woofunnels-dashboard-loader.php:724
 msgid "Logs"
 msgstr ""
 
@@ -7334,14 +7309,6 @@ msgstr ""
 msgid "Please share the reason"
 msgstr ""
 
-#: includes/class-woofunnels-funnel-builder-commons.php:75
-msgid "FunnelKit: %s"
-msgstr ""
-
-#: includes/class-woofunnels-optin-manager.php:346
-msgid "Weekly BWF"
-msgstr ""
-
 #: includes/class-woofunnels-updater-licenses-table.php:54
 msgid "No plugins available for activation."
 msgstr ""
@@ -7368,14 +7335,6 @@ msgstr ""
 msgid "Expire"
 msgstr ""
 
-#: includes/class-woofunnels-updater-licenses-table.php:185
-msgid "N/A"
-msgstr ""
-
-#: includes/class-woofunnels-updater-licenses-table.php:187
-msgid "Lifetime"
-msgstr ""
-
 #: includes/class-woofunnels-updater-licenses-table.php:229
 msgid "Plugin"
 msgstr ""
@@ -7390,8 +7349,4 @@ msgstr ""
 
 #: includes/class-woofunnels-updater-licenses-table.php:232
 msgid "Renews On"
-msgstr ""
-
-#: libraries/wp-background-process.php:462
-msgid "Every %d Minutes"
 msgstr ""

@@ -406,8 +406,8 @@ if ( ! class_exists( 'WFOCU_Rules' ) ) {
 				return;
 			}
 			if ( $funnel_id > 0 ) {
-				global $wfocu_is_rules_saved; //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
-				$wfocu_is_rules_saved = get_post_meta( $funnel_id, '_wfocu_is_rules_saved', true ); //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
+				global $wfocu_is_rules_saved;
+				$wfocu_is_rules_saved = get_post_meta( $funnel_id, '_wfocu_is_rules_saved', true );
 			}
 			include_once( $this->rule_views_path() . '/rules-head.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once( $this->rule_views_path() . '/rules-product.php' );  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable

@@ -51,7 +51,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			/**
 			 * Tell the class that this request is for showing preview
 			 */
-			if ( 'loaded' === filter_input( INPUT_GET, 'wfocu_customize', FILTER_UNSAFE_RAW ) || ( isset( $_POST['action'] ) && $_POST['action'] === 'customize_save' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( 'loaded' === filter_input( INPUT_GET, 'wfocu_customize', FILTER_UNSAFE_RAW ) || ( isset( $_POST['action'] ) && $_POST['action'] === 'customize_save' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				add_action( 'init', array( $this, 'if_is_preview' ), 1 );
 			}
 			/**
@@ -118,11 +118,14 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_decide_funnel_on_fragments( $fragments = array() ) {
+
+
+
 			$arr = array();
-			if ( ! isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( ! isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				return $fragments;
 			}
-			wp_parse_str( $_POST['post_data'], $arr );    // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			wp_parse_str( $_POST['post_data'], $arr );    // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 			WFOCU_Core()->data->setup_posted( $arr );
 			WFOCU_Core()->data->setup_funnel();
@@ -131,20 +134,20 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		}
 
 		/**
-		 * @hooked into `woocommerce_removed_coupon` || `woocommerce_applied_coupon`
+		 * @hooked `woocommerce_applied_coupon`
 		 */
 		public function maybe_decide_funnel() {
 
 			/**
 			 * Bail out here in case of auto apply coupon
 			 */
-			if ( did_action( 'wfacp_after_checkout_page_found' ) ) {
+			if ( did_action( 'wfacp_after_checkout_page_found' )   ) {
 				return;
 			}
 
 			$arr = array();
-			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				wp_parse_str( $_POST['post_data'], $arr );    // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				wp_parse_str( $_POST['post_data'], $arr );    // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 				WFOCU_Core()->data->setup_posted( $arr );
 			}
@@ -690,7 +693,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 					'post_type'   => 'shop_order',
 					'post_status' => 'any',
 					'meta_key'    => '_wfocu_funnel_key', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'  => wc_clean( $_GET['wfocu-key'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'meta_value'  => bwf_clean( $_GET['wfocu-key'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 					'fields'      => 'ids',
 				) );
 
@@ -1031,7 +1034,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		}
 
 		public function if_is_preview() {
-			if ( 'loaded' === filter_input( INPUT_GET, 'wfocu_customize', FILTER_UNSAFE_RAW ) || ( isset( $_POST['action'] ) && $_POST['action'] === 'customize_save' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( 'loaded' === filter_input( INPUT_GET, 'wfocu_customize', FILTER_UNSAFE_RAW ) || ( isset( $_POST['action'] ) && $_POST['action'] === 'customize_save' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				$this->is_preview = true;
 			}
 			return apply_filters( 'wfocu_is_template_preview', $this->is_preview );
@@ -1090,6 +1093,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			do_action( 'footer_before_print_scripts' );
 			do_action( 'wfocu_footer_before_print_scripts' );
+			wp_dequeue_script( 'wc-cart-fragments' );
 			WFOCU_Core()->assets->print_scripts();
 			do_action( 'footer_after_print_scripts' );
 			do_action( 'wfocu_footer_after_print_scripts' );
@@ -1295,7 +1299,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			WFOCU_Core()->log->log( 'Order #' . $order_id . ': Order received page viewed successfully' );
 
 			if ( isset( $_GET['_wfocu_process'] ) && 'no' === $_GET['_wfocu_process'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Error confirmation logged during upsell process--' . print_r( isset( $_GET['ec'] ) ? wc_clean( $_GET['ec'] ) : '', true ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Error confirmation logged during upsell process--' . print_r( isset( $_GET['ec'] ) ? bwf_clean( $_GET['ec'] ) : '', true ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.PHP.DevelopmentFunctions.error_log_print_r , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 			}
 		}
@@ -1340,7 +1344,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				$order            = wc_get_order( $get_parent_order );
 				$payment_method   = $order->get_payment_method();
 				if ( empty( $payment_method ) || in_array( $payment_method, [ 'stripe', 'stripe_cc', 'stripe_applepay', 'stripe_googlepay', 'cpsw_stripe' ], true ) ) {
-					$order->add_order_note( __( sprintf( 'Upsell offer failed which would have been recoverable if <a href="%s">FunnelKit Stripe</a> was active and used.', self::funnelkit_stripe_link() ) ), 'woocommerce-upstroke-one-click-upsell' );
+					$order->add_order_note( __( sprintf( 'Upsell offer failed which would have been recoverable if <a href="%s">FunnelKit Stripe</a> was active and used.', self::funnelkit_stripe_link() ) ), 'woocommerce-upstroke-one-click-upsell' ); //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					$order->save();
 				}
 
@@ -1393,11 +1397,11 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			}
 
 			// Define the base reason structure
-			$reason_base    = __( '<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(' . esc_url( $svg_icon ) . ') no-repeat left !important;">
+			$reason_base    = '<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(' . esc_url( $svg_icon ) . ') no-repeat left !important;">
         <strong style="font-size:13px;">%s</strong>
         </div><strong>%s</strong>: %s
         <div style="margin:8px 0px;">%s</div>
-        <div><a href="%s">%s</a></div>', 'woofunnels-upstroke-one-click-upsell' );
+        <div><a href="%s">%s</a></div>';
 			$upsell_skipped = __( 'Upsell Skipped', 'woofunnels-upstroke-one-click-upsell' );
 
 			// Define the reasons for skipping upsells
@@ -1450,7 +1454,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 
 		public static function funnelkit_stripe_link() {
-			return '#';
+			return 'https://wordpress.org/plugins/funnelkit-stripe-woo-payment-gateway/';
 		}
 
 

@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 $leave_a_review_text = ! empty( $attr['button_label'] ) ? $attr['button_label'] : __( 'Leave a review', 'wp-marketing-automations' );
-$leave_a_review_text = apply_filters( 'bwfan_email_review_button_text', $leave_a_review_text, $product, $order );
-$leave_a_review_text = wp_strip_all_tags( $leave_a_review_text );
 $reviewable_products = [];
 if ( is_array( $products ) ) {
 	/** Filter products to include only those with reviews allowed */
@@ -84,7 +82,7 @@ $order            = $this->order instanceof WC_Order ? $this->order : null;
                         <!--[if mso]>
 						<i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:30pt" hidden>&nbsp;</i>
 						<![endif]-->
-                        <span style="mso-text-raise:15pt;"><?php echo esc_html( $leave_a_review_text ); ?></span>
+                        <span style="mso-text-raise:15pt;"><?php echo apply_filters( 'bwfan_email_review_button_text', esc_html( wp_strip_all_tags( $leave_a_review_text ) ), $product, $order ); ?></span>
                         <!--[if mso]>
 						<i style="letter-spacing: 25px;mso-font-width:-100%" hidden>&nbsp;</i>
 						<![endif]-->

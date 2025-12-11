@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Shortcut;
+namespace BWFAN\Symfony\Component\CssSelector\Parser\Shortcut;
 
-use Symfony\Component\CssSelector\Node\ElementNode;
-use Symfony\Component\CssSelector\Node\HashNode;
-use Symfony\Component\CssSelector\Node\SelectorNode;
-use Symfony\Component\CssSelector\Parser\ParserInterface;
+use BWFAN\Symfony\Component\CssSelector\Node\ElementNode;
+use BWFAN\Symfony\Component\CssSelector\Node\HashNode;
+use BWFAN\Symfony\Component\CssSelector\Node\SelectorNode;
+use BWFAN\Symfony\Component\CssSelector\Parser\ParserInterface;
 
 /**
  * CSS selector hash parser shortcut.

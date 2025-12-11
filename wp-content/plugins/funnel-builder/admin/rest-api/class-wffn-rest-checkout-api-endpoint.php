@@ -2202,7 +2202,7 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 					$resp['msg']     = __( 'Products loaded', 'funnel-builder' );
 
 					$tabs_data                        = array();
-					$tabs_data['add_to_cart_setting'] = ! empty( $switcher_settings['add_to_cart_setting'] ) ? bwf_clean( $switcher_settings['add_to_cart_setting'] ) : '2';
+					$tabs_data['add_to_cart_setting'] = ! empty( $switcher_settings['add_to_cart_setting'] ) ? bwf_clean( $switcher_settings['add_to_cart_setting'] ) : '1';
 
 					$tabs = [
 						'fields'      => [
@@ -2213,17 +2213,19 @@ if ( ! class_exists( 'WFFN_REST_CHECKOUT_API_EndPoint' ) ) {
 								'values' => [
 									0 => [
 										'value' => '2',
-										'label' => __( 'Restrict buyer to select only one of the above products (e.g. when selling similar products with different pricing plans or quantity)', 'funnel-builder' ),
+										'label' => __( 'Allow only one product selection at checkout (e.g. when selling similar products with different pricing plans or quantity)', 'funnel-builder' ),
+										'is_pro' => true,
 									],
 									1 => [
 										'value'  => '3',
-										'label'  => __( 'Allow buyer to select any of the above product(s) (e.g. when selling multiple products)', 'funnel-builder' ),
+										'label'  => __( 'Allow multiple product selections at checkout (e.g. when selling multiple products)', 'funnel-builder' ),
 										'is_pro' => true,
+
 									],
 									2 => [
 										'value'  => '1',
-										'label'  => __( 'Force sell all of the above product(s) (e.g. when selling a fixed price bundle)', 'funnel-builder' ),
-										'is_pro' => true,
+										'label'  => __( 'All products listed will be sold together at checkout (e.g. when selling a fixed price bundle)', 'funnel-builder' ),
+
 									],
 								],
 							],

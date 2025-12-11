@@ -1,12 +1,13 @@
 <?php
-
 /**
  * Order delivery date pro tyche
-*  class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite
+ *  class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite
  */
 if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_lite' ) ) {
-	#[AllowDynamicProperties] 
- class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite {
+	#[AllowDynamicProperties]
+	class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite {
+
+
 		public function __construct() {
 			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_action' ] );
 			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
@@ -14,10 +15,17 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_lite' ) ) {
 			add_filter( 'wfacp_html_fields_oddt', '__return_false' );
 			add_action( 'process_wfacp_html', [ $this, 'call_birthday_addon_hook' ], 10, 3 );
 			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-
 			/* prevent third party fields and wrapper*/
-
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
+			// Hook into WFACP's action for handling fields to be shown on next step
+		}
+
+		public function remove_action() {
+			
+			// The plugin defines ORDDD_LITE_SHOPPING_CART_HOOK constant dynamically based on user settings
+			// Use the plugin's own constant to determine which hook to remove (DRY principle)
+			$hook_to_remove = defined('ORDDD_LITE_SHOPPING_CART_HOOK') ? ORDDD_LITE_SHOPPING_CART_HOOK : 'woocommerce_after_checkout_billing_form';
+			WFACP_Common::remove_actions($hook_to_remove, 'Orddd_Lite_Process', 'orddd_lite_my_custom_checkout_field');
 		}
 
 		public function add_field( $fields ) {
@@ -68,9 +76,7 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_lite' ) ) {
 
 			return $args;
 		}
+
 	}
-
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_Order_Delivery_Date_Tyche_lite(), 'oddtl' );
-
-
 }

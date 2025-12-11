@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\Property;
+namespace BWFAN\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\Comment\Commentable;
+use BWFAN\Sabberworm\CSS\Renderable;
 
 interface AtRule extends Renderable, Commentable
 {

@@ -65,6 +65,13 @@ add_action( 'wp_footer', function () {
 			margin-top: -10px;
 			margin-left: -10px;
 		}
+		@media screen and (max-width: 1024px) {
+			html.dgwt-wcas-overlay-mobile-on .mobile-nav,
+			html.dgwt-wcas-overlay-mobile-on .website-wrapper,
+			html.dgwt-wcas-overlay-mobile-on .wd-close-side {
+				display: none !important;
+			}
+		}
 	</style>
 	<?php
 } );

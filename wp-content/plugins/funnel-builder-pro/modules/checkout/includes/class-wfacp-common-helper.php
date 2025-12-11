@@ -2619,7 +2619,6 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				'field_type'           => 'advanced',
 				'class'                => [ 'wfacp_order_summary' ],
 				'id'                   => 'order_summary',
-				'allow_delete'         => 'false',
 				'label'                => __( 'Order Summary', 'woofunnels-aero-checkout' ),
 				'wfacp_advanced_field' => 'yes',
 			];
@@ -3375,31 +3374,40 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		}
 
 
-		/**
-		 * display Value instead of of slug For Radio,Checkbox,Multiselect field at thankyou and email
-		 *
-		 * @param $meta_value
-		 * @param $fields
-		 *
-		 * @return string
-		 */
-		public static function map_meta_value_for_custom_fields( $meta_value, $field ) {
-			if ( ! isset( $field['options'] ) || empty( $field['options'] ) ) {
-				return $meta_value;
-			}
-			$options = $field['options'];
-			if ( is_array( $meta_value ) ) {
-				$meta_value = array_map( function ( $item ) use ( $options ) {
-					return isset( $options[ $item ] ) ? $options[ $item ] : $item;
-				}, $meta_value );
-				$meta_value = implode( ', ', $meta_value );
-			} else {
-				$meta_value = isset( $options[ $meta_value ] ) ? $options[ $meta_value ] : $meta_value;
-			}
-
+	/**
+	 * display Value instead of of slug For Radio,Checkbox,Multiselect field at thankyou and email
+	 *
+	 * @param mixed $meta_value The meta value to map
+	 * @param array $field The field configuration array
+	 *
+	 * @return string The mapped value
+	 */
+	public static function map_meta_value_for_custom_fields( $meta_value, $field ) {
+		// Early return if no options available
+		if ( ! isset( $field['options'] ) || empty( $field['options'] ) ) {
 			return $meta_value;
-
 		}
+
+		$options = $field['options'];
+		
+		// Convert comma-separated string to array for select2/multiselect fields
+		if ( in_array( $field['type'], [ 'select2', 'multiselect' ], true ) && is_string( $meta_value ) ) {
+			$meta_value = explode( ',', $meta_value );
+		}
+
+		// Handle array values
+		if ( is_array( $meta_value ) ) {
+			$mapped_values = array_map( function( $item ) use ( $options ) {
+				$trimmed_item = trim( $item );
+				return isset( $options[ $trimmed_item ] ) ? $options[ $trimmed_item ] : $trimmed_item;
+			}, $meta_value );
+			
+			return implode( ', ', $mapped_values );
+		}
+
+		// Handle single value
+		return isset( $options[ $meta_value ] ) ? $options[ $meta_value ] : $meta_value;
+	}
 
 		public static function update_aero_custom_fields( $order, $posted_data, $force_save = false ) {
 			$wfacp_id = 0;

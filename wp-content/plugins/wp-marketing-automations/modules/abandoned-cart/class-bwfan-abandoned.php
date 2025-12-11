@@ -687,12 +687,17 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	public function get_checkout_data( $data ) {
+		if ( ! is_array( $data ) || ! isset( $data['checkout_data'] ) ) {
+			return array();
+		}
 		$checkout_data = $data['checkout_data'];
-		if ( ! empty( $checkout_data ) ) {
-			$checkout_data = json_decode( $checkout_data, true );
+		if ( empty( $checkout_data ) ) {
+			return array();
 		}
 
-		return $checkout_data;
+		$checkout_data = json_decode( $checkout_data, true );
+
+		return is_array( $checkout_data ) ? $checkout_data : array();
 	}
 
 	public function set_session_for_recovered_cart() {
@@ -884,6 +889,9 @@ class BWFAN_Abandoned_Cart {
 	}
 
 	public function woocommerce_add_to_cart( $cart_item_key ) {
+		if ( empty( $cart_item_key ) ) {
+			return;
+		}
 		$cookie_key    = BWFAN_Common::get_cookie( 'bwfan_visitor' );
 		$cookie_uid    = BWFAN_Common::get_cookie( '_fk_contact_uid' );
 		$is_cookie_set = ! empty( $cookie_key ) ? $cookie_key : $cookie_uid;
@@ -891,7 +899,10 @@ class BWFAN_Abandoned_Cart {
 		if ( empty( $is_cookie_set ) ) {
 			return;
 		}
-
+		/** heck if the cart item key exists in cart contents before accessing it */
+		if ( ! isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
+			return;
+		}
 		/** Set item key and price in wc session because maybe woocommerce_add_to_cart can trigger multiple time */
 		$item       = WC()->cart->cart_contents[ $cart_item_key ];
 		$line_total = isset( $item['line_total'] ) ? floatval( $item['line_total'] ) : 0;

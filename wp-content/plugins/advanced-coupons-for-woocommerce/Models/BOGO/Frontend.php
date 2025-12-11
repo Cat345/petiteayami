@@ -244,12 +244,22 @@ class Frontend extends Base_Model implements Model_Interface {
                 $product_id   = apply_filters( 'acfw_filter_cart_item_product_id', $cart_item['product_id'] ); // filter for WPML support.
                 $variation_id = apply_filters( 'acfw_filter_cart_item_product_id', $cart_item['variation_id'] ); // filter for WPML support.
 
-                $intersect = array_intersect( array( $product_id, $variation_id ), $entry['ids'] );
+                // Convert to integers to ensure type consistency.
+                $product_id_int   = (int) $product_id;
+                $variation_id_int = (int) $variation_id;
+                $entry_ids_int    = array_map( 'intval', $entry['ids'] );
+
+                $intersect = array_intersect( array( $product_id_int, $variation_id_int ), $entry_ids_int );
                 return ! empty( $intersect ) ? current( $intersect ) : false;
 
             case 'product-categories':
                 $product_id = apply_filters( 'acfw_filter_cart_item_product_id', $cart_item['product_id'] ); // filter for WPML support.
-                return in_array( $product_id, $entry['ids'], true ) ? $product_id : false;
+
+                // Convert to integers to ensure type consistency.
+                $product_id_int = (int) $product_id;
+                $entry_ids_int  = array_map( 'intval', $entry['ids'] );
+
+                return in_array( $product_id_int, $entry_ids_int, true ) ? $product_id_int : false;
 
             case 'any-products':
                 $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
@@ -310,7 +320,7 @@ class Frontend extends Base_Model implements Model_Interface {
         $cart_contents = \ACFWF()->Helper_Functions->sort_cart_items_by_price( \WC()->cart->get_cart(), 'asc' );
 
         // remove main implementation hook to prevent infinite loop.
-        remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), 11 );
+        remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
 
         foreach ( $bogo_deal->deals as $deal ) {
 
@@ -369,7 +379,7 @@ class Frontend extends Base_Model implements Model_Interface {
         }
 
         // re-add implementation hook.
-        add_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), 11 );
+        add_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
     }
 
 

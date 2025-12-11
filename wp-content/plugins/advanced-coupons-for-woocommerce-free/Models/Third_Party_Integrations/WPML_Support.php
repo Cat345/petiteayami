@@ -791,6 +791,8 @@ class WPML_Support implements Model_Interface {
         $this->register_translatable_strings_for_coupons();
         $this->register_translatable_setting_strings();
 
+        add_filter( 'acfw_bogo_implementation_priority', array( $this, 'filter_bogo_implementation_priority' ) );
+
         add_filter( 'acfw_string_meta', array( $this, 'apply_translation_coupon_field' ), 10, 3 );
         add_filter( 'acfw_string_option', array( $this, 'apply_translation_setting_strings' ), 10, 2 );
 
@@ -816,8 +818,6 @@ class WPML_Support implements Model_Interface {
      * @inherit ACFWF\Interfaces\Model_Interface
      */
     public function run() {
-        add_filter( 'acfw_bogo_implementation_priority', array( $this, 'filter_bogo_implementation_priority' ) );
-
         // priority is set to 110 so it runs after the WPML strings translation is loaded.
         add_action( 'wpml_loaded', array( $this, 'wpml_loaded' ), 110 );
         add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_wpml_styles_scripts_agc_admin' ), 999 );

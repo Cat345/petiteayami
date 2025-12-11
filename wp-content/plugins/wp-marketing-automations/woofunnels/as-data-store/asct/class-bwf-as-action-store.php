@@ -41,7 +41,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 
 			$data = $this->get_action_data( $action_id );
 
-			if ( empty( $data ) ) {
+			if ( empty( $data ) || ! ( $data instanceof StdClass ) ) {
 				return $this->get_null_action();
 			}
 
@@ -54,7 +54,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			$data = $this->get_action_data( $action_id );
 
 			/** If hook not present, return null action */
-			if ( empty( $data->hook ) ) {
+			if ( empty( $data->hook ) || ! ( $data instanceof StdClass ) ) {
 				return $this->get_null_action();
 			}
 
@@ -102,7 +102,7 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 			$data = $this->get_action_data( $action_id );
 
 			/** Checking if recurring action */
-			if ( false === $this->action_is_recurring( $data ) ) {
+			if ( ! ( $data instanceof StdClass ) || false === $this->action_is_recurring( $data ) ) {
 				return;
 			}
 
@@ -633,21 +633,24 @@ if ( ! class_exists( 'BWF_AS_Action_Store' ) ) {
 		protected function log_failure_data( $action_id ) {
 			$data = $this->get_action_data( $action_id );
 
-			$log_arr = array(
-				'action_id'      => $action_id,
-				'creation_date'  => $data->c_date,
-				'execution_time' => $data->e_time,
-				'hook'           => $data->hook,
-				'arguments'      => $data->args,
-				'group'          => $data->group_slug,
-				'recurring'      => $data->recurring_interval,
-				'error'          => error_get_last(),
-			);
+			if ( $data instanceof StdClass ) {
+				$log_arr = array(
+					'action_id'      => $action_id,
+					'creation_date'  => $data->c_date,
+					'execution_time' => $data->e_time,
+					'hook'           => $data->hook,
+					'arguments'      => $data->args,
+					'group'          => $data->group_slug,
+					'recurring'      => $data->recurring_interval,
+					'error'          => error_get_last(),
+				);
 
-			/** updating logs force */
-			add_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
-			BWF_Logger::get_instance()->log( print_r( $log_arr, true ), 'woofunnel-failed-actions' );
-			remove_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
+				/** updating logs force */
+				add_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
+				BWF_Logger::get_instance()->log( print_r( $log_arr, true ), 'woofunnel-failed-actions' );
+				remove_filter( 'bwf_logs_allowed', array( $this, 'overriding_bwf_logging' ), 99999, 2 );
+			}
+
 		}
 
 		/**

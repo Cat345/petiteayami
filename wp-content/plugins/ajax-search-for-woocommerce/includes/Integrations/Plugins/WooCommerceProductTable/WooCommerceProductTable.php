@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommerceProductTable;
 
 use \DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,15 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://barn2.co.uk/wordpress-plugins/woocommerce-product-table/
  * Author: Barn2 Plugins
  */
-class WooCommerceProductTable {
-	public function init() {
-		if ( ! defined( '\Barn2\Plugin\WC_Product_Table\PLUGIN_VERSION' ) ) {
-			return;
-		}
-		if ( version_compare( \Barn2\Plugin\WC_Product_Table\PLUGIN_VERSION, '2.6.2' ) < 0 ) {
-			return;
-		}
+class WooCommerceProductTable extends AbstractPluginIntegration {
+	protected const LABEL         = 'WooCommerce Product Table';
+	protected const VERSION_CONST = '\Barn2\Plugin\WC_Product_Table\PLUGIN_VERSION';
+	protected const MIN_VERSION   = '2.6.2';
 
+	public function init(): void {
 		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
 	}
 

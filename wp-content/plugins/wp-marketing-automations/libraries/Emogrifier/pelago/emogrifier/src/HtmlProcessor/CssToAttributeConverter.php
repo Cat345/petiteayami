@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace BWFAN\Pelago\Emogrifier\HtmlProcessor;
 
 /**
  * This HtmlProcessor can convert style HTML attributes to the corresponding other visual HTML attributes,

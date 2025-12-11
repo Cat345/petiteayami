@@ -198,7 +198,8 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 					'fb'   => array(
 						'enable'    => BWF_Admin_General_Settings::get_instance()->get_option( 'is_fb_lead_op' ),
 						'fb_pixels' => $this->is_fb_pixel(),
-						'event_ID'  => "Lead" . "_" . time()
+						'event_ID'  => "Lead" . "_" . time(),
+						'currency'  => ( function_exists( 'get_woocommerce_currency' ) ) ? get_woocommerce_currency() : 'USD'
 					),
 					'ga'   => array(
 						'enable' => BWF_Admin_General_Settings::get_instance()->get_option( 'is_ga_lead_op' ),

@@ -730,10 +730,23 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		 *
 		 */
 		public static function slugify_classname( $class_name ) {
-			$classname = sanitize_title( $class_name );
+			$classname = self::custom_sanitize_title( $class_name );
 			$classname = str_replace( '_', '-', $classname );
 
 			return $classname;
+		}
+
+		/**
+		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
+		 * 
+		 * @param string $title The title to sanitize
+		 * @return string The sanitized title
+		 */
+		private static function custom_sanitize_title( $title ) {
+			$title = remove_accents( $title );
+			$title = sanitize_title_with_dashes( $title );
+			
+			return $title;
 		}
 
 		/**

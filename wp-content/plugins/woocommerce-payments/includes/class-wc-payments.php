@@ -290,6 +290,13 @@ class WC_Payments {
 	private static $incentives_service;
 
 	/**
+	 * Instance of WC_Payments_PM_Promotions_Service, created in init function.
+	 *
+	 * @var WC_Payments_PM_Promotions_Service
+	 */
+	private static $pm_promotions_service;
+
+	/**
 	 * Instance of WC_Payments_Express_Checkout_Button_Helper, created in init function.
 	 *
 	 * @var WC_Payments_Express_Checkout_Button_Helper
@@ -415,6 +422,8 @@ class WC_Payments {
 		include_once __DIR__ . '/core/server/request/class-list-charge-refunds.php';
 		include_once __DIR__ . '/core/server/request/class-get-request.php';
 		include_once __DIR__ . '/core/server/request/class-request-utils.php';
+		include_once __DIR__ . '/core/server/request/class-get-pm-promotions.php';
+		include_once __DIR__ . '/core/server/request/class-activate-pm-promotion.php';
 
 		include_once __DIR__ . '/woopay/services/class-checkout-service.php';
 
@@ -520,6 +529,7 @@ class WC_Payments {
 		include_once __DIR__ . '/core/service/class-wc-payments-customer-service-api.php';
 		include_once __DIR__ . '/class-duplicate-payment-prevention-service.php';
 		include_once __DIR__ . '/class-wc-payments-incentives-service.php';
+		include_once __DIR__ . '/class-wc-payments-pm-promotions-service.php';
 		include_once __DIR__ . '/class-compatibility-service.php';
 		include_once __DIR__ . '/compat/multi-currency/wc-payments-multi-currency.php';
 		include_once __DIR__ . '/compat/multi-currency/class-wc-payments-currency-manager.php';
@@ -562,16 +572,19 @@ class WC_Payments {
 		self::$woopay_util                          = new WooPay_Utilities();
 		self::$woopay_tracker                       = new WooPay_Tracker( self::get_wc_payments_http() );
 		self::$incentives_service                   = new WC_Payments_Incentives_Service( self::$database_cache );
+		self::$pm_promotions_service                = new WC_Payments_PM_Promotions_Service( null, self::$account );
 		self::$duplicate_payment_prevention_service = new Duplicate_Payment_Prevention_Service();
 		self::$duplicates_detection_service         = new Duplicates_Detection_Service();
 
 		( new WooPay_Scheduler( self::$api_client ) )->init();
 
 		// Initialise hooks.
+		self::$action_scheduler_service->init_hooks();
 		self::$account->init_hooks();
 		self::$fraud_service->init_hooks();
 		self::$onboarding_service->init_hooks();
 		self::$incentives_service->init_hooks();
+		self::$pm_promotions_service->init_hooks();
 		self::$compatibility_service->init_hooks();
 		self::$customer_service->init_hooks();
 		self::$token_service->init_hooks();
@@ -745,6 +758,7 @@ class WC_Payments {
 				self::$onboarding_service,
 				self::$order_service,
 				self::$incentives_service,
+				self::$pm_promotions_service,
 				self::$fraud_service,
 				self::$database_cache
 			);
@@ -904,7 +918,7 @@ class WC_Payments {
 
 		include_once __DIR__ . '/class-wc-payments-address-provider.php';
 
-		$providers[] = new WC_Payments_Address_Provider( self::$api_client );
+		$providers[] = new WC_Payments_Address_Provider( self::$api_client, self::$account, self::$database_cache );
 
 		return $providers;
 	}
@@ -1137,7 +1151,7 @@ class WC_Payments {
 		$accounts_controller->register_routes();
 
 		include_once WCPAY_ABSPATH . 'includes/admin/class-wc-rest-payments-settings-controller.php';
-		$settings_controller = new WC_REST_Payments_Settings_Controller( self::$api_client, self::get_gateway(), self::$account );
+		$settings_controller = new WC_REST_Payments_Settings_Controller( self::$api_client, self::get_gateway(), self::$account, self::$pm_promotions_service );
 		$settings_controller->register_routes();
 
 		include_once WCPAY_ABSPATH . 'includes/admin/class-wc-rest-payments-settings-option-controller.php';
@@ -1155,6 +1169,10 @@ class WC_Payments {
 		include_once WCPAY_ABSPATH . 'includes/admin/class-wc-rest-payments-capital-controller.php';
 		$capital_controller = new WC_REST_Payments_Capital_Controller( self::$api_client );
 		$capital_controller->register_routes();
+
+		include_once WCPAY_ABSPATH . 'includes/admin/class-wc-rest-payments-pm-promotions-controller.php';
+		$promotions_controller = new WC_REST_Payments_PM_Promotions_Controller( self::$api_client, self::$pm_promotions_service );
+		$promotions_controller->register_routes();
 
 		include_once WCPAY_ABSPATH . 'includes/admin/class-wc-rest-payments-onboarding-controller.php';
 		$onboarding_controller = new WC_REST_Payments_Onboarding_Controller( self::$api_client, self::$onboarding_service );
@@ -1355,7 +1373,7 @@ class WC_Payments {
 	/**
 	 * Sets the card gateway instance.
 	 *
-	 * @param WC_Payment_Gateway_WCPay $gateway The card gateway instance..
+	 * @param WC_Payment_Gateway_WCPay $gateway The card gateway instance.
 	 */
 	public static function set_gateway( $gateway ) {
 		self::$card_gateway = $gateway;
@@ -2130,8 +2148,10 @@ class WC_Payments {
 	 * Update the Stripe Billing deprecation note.
 	 */
 	public static function maybe_update_stripe_billing_deprecation_note() {
-		// If Stripe Billing is not enabled or WooCommerce Subscriptions is active, do not update the note.
-		if ( ! WC_Payments_Features::is_stripe_billing_enabled() || class_exists( 'WC_Subscriptions' ) ) {
+		// If bundled subscriptions are not enabled or WooCommerce Subscriptions is active, do not update the note.
+		$has_bundled_subs = WC_Payments_Features::is_wcpay_subscriptions_enabled() || WC_Payments_Features::is_stripe_billing_enabled();
+
+		if ( ! $has_bundled_subs || class_exists( 'WC_Subscriptions' ) ) {
 			return;
 		}
 

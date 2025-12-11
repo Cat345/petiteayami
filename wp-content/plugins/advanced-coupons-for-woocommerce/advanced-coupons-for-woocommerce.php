@@ -3,14 +3,14 @@
  * Plugin Name: Advanced Coupons for WooCommerce Premium
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Premium Add-on) adds even more advanced features to WooCommerce coupons so store owners can market their stores better.
- * Version: 4.0.4.1
+ * Version: 4.0.5.1
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Update URI: advancedcouponsplugin.com
  * Requires at least: 5.8
  * Tested up to: 6.8
  * WC requires at least: 4.0
- * WC tested up to: 10.0
+ * WC tested up to: 10.3
  *
  * Text Domain: advanced-coupons-for-woocommerce
  * Domain Path: /languages/
@@ -395,19 +395,21 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
         \ACFWP\Models\WC_Blocks::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\Allowed_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\Store_Credits::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        \ACFWP\Models\BOGO\Types\Same_Products::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
-        $bogo_admin             = BOGO_Admin::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
-        $usage_limits           = Usage_Limits::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
-        $admin_notices          = Notices::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
-        $slmw_license           = License::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
-        $slmw_update            = Update::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
-        $virtual_coupon_queries = Virtual_Coupon_Queries::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $bogo_admin              = BOGO_Admin::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $usage_limits            = Usage_Limits::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $admin_notices           = Notices::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $slmw_license            = License::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $slmw_update             = Update::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $virtual_coupon_queries  = Virtual_Coupon_Queries::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $feature_custom_taxonomy = \ACFWP\Models\Feature_Custom_Taxonomy::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Virtual_Coupon_Admin::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Virtual_Coupon_Frontend::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Payment_Methods_Restrict::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         API_Virtual_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
-        $activatables   = array( $bogo_admin, $usage_limits, $admin_notices, $virtual_coupon_queries, $slmw_license );
+        $activatables   = array( $bogo_admin, $usage_limits, $admin_notices, $virtual_coupon_queries, $slmw_license, $feature_custom_taxonomy );
         $initiables     = array(
             $bogo_admin,
             $usage_limits,

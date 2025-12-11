@@ -338,6 +338,10 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 				'show_offer_price' => $settings['secondaryContentEnable'],
 				'reg_label'        => $settings['content'],
 				'offer_label'      => $settings['secondaryContent'],
+				'show_signup_fee'  => isset( $settings['show_signup_fee'] ) ? $settings['show_signup_fee'] : false,
+				'signup_label'     => isset( $settings['signup_label'] ) ? $settings['signup_label'] : '',
+				'show_rec_price'   => isset( $settings['show_rec_price'] ) ? $settings['show_rec_price'] : false,
+				'recurring_label'  => isset( $settings['recurring_label'] ) ? $settings['recurring_label'] : '',
 			);
 
 			ob_start();

@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Checkout
  * Plugin URI: https://funnelkit.com
  * Description: FunnelKit Checkout lets you build highly optimized checkout page. Choose from list of growing templates to create dedicated order pages or swap your native checkout with conversion friendly checkout template.
- * Version: 3.12.1
+ * Version: 3.13.3
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -12,9 +12,9 @@
  * Domain Path: /languages/
  *
  * Requires at least: 4.9.0
- * Tested up to: 6.8.2
+ * Tested up to: 6.8.3
  * WC requires at least: 3.6.0
- * WC tested up to: 9.9.5
+ * WC tested up to: 10.3.0
  * WooFunnels: true
  *
  * FunnelKit Checkout is free software.
@@ -110,8 +110,8 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function definition() {
 
-			define( 'WFACP_VERSION', '3.12.1' );
-			define( 'WFACP_BWF_VERSION', '1.10.12.67' );
+			define( 'WFACP_VERSION', '3.13.3' );
+			define( 'WFACP_BWF_VERSION', '1.10.12.69' );
 
 			define( 'WFACP_MIN_WP_VERSION', '4.9' );
 			define( 'WFACP_MIN_WC_VERSION', '3.3' );

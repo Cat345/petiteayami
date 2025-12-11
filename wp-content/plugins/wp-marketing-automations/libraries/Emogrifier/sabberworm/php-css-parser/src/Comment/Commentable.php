@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabberworm\CSS\Comment;
+namespace BWFAN\Sabberworm\CSS\Comment;
 
 interface Commentable
 {

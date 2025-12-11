@@ -253,6 +253,15 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 				}
 				if ( ! wp_next_scheduled( 'fk_fb_every_day' ) ) {
 					wp_schedule_event( self::get_midnight_store_time(), 'daily', 'fk_fb_every_day' );
+				} else {
+					
+					$scheduled_time = wp_next_scheduled( 'fk_fb_every_day' );
+					$midnight_time = self::get_midnight_store_time();
+					
+					if ( $scheduled_time && abs( $scheduled_time - $midnight_time ) > 3600 ) {
+						do_action( 'fk_fb_every_day' );
+						wp_clear_scheduled_hook( 'fk_fb_every_day' );
+					}
 				}
 				$legacy_schedules = array(
 					'wfocu_schedule_mails_for_bacs_and_cheque',
@@ -260,7 +269,6 @@ if ( ! class_exists( 'WooFunnels_OptIn_Manager' ) ) {
 					'wfocu_schedule_normalize_order_statuses',
 					'wfocu_schedule_thankyou_action',
 					'wfocu_remove_orphaned_transients',
-					'wffn_performance_notification',
 					'wffn_remove_orphaned_transients',
 					'bwf_maybe_track_usage_scheduled',
 					'woofunnels_license_check',

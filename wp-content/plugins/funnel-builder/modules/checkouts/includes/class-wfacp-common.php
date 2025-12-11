@@ -83,7 +83,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					'type'      => 'input',
 					'inputType' => 'text',
 					'label'     => __( 'Checkout Page', 'funnel-builder' ),
-					'hint'      => __( '', 'funnel-builder' ),
+					'hint'      => '',
 				);
 
 				return $fields;
@@ -100,6 +100,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			add_action( 'init', [ __CLASS__, 'setup_fields_billing' ], 20 );
 			add_action( 'wfacp_template_load', [ __CLASS__, 'include_third_party_field' ] );
 			add_filter( 'wfacp_import_checkout_settings', [ __CLASS__, 'add_third_party_fields_to_checkout_form' ], 10, 3 );
+
+            /**
+             * Add Company Field under the billing and shipping address when it's hidden
+             */
+            add_filter( 'wfacp_default_billing_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
+            add_filter( 'wfacp_default_shipping_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
 		}
 
 		public static function add_global_settings_fields( $fields ) {
@@ -115,37 +121,37 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			 * Detect heartbeat call from our customizer page
 			 * Remove some unwanted warnings and error
 			 */
-			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'heartbeat' && isset( $_REQUEST['data'] ) ) {
-				if ( isset( $_REQUEST['data']['wfacp_customize'] ) ) {
+			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'heartbeat' && isset( $_REQUEST['data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for heartbeat detection
+				if ( isset( $_REQUEST['data']['wfacp_customize'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for heartbeat detection
 					add_filter( 'customize_loaded_components', array( __CLASS__, 'remove_menu_support' ), 99 );
 				}
 			}
 
 
-			if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) ) {
+			if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for admin page detection
 				$section             = filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW );
 				self::$wfacp_section = is_null( $section ) ? 'design' : $section;
 			}
 
-			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for ID parameter detection
 				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
 				if ( is_null( $wfacp_id ) ) {
 					$wfacp_id = filter_input( INPUT_POST, 'wfacp_id', FILTER_UNSAFE_RAW );
 				}
 				self::set_id( absint( $wfacp_id ) );
-			} else if ( isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) {
+			} else if ( isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor action detection
 				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
-			} else if ( isset( $_REQUEST['elementor-preview'] ) ) {
+			} else if ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor preview detection
 				$post_id = filter_input( INPUT_GET, 'elementor-preview', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
-			} else if ( isset( $_REQUEST['post'] ) ) {
+			} else if ( isset( $_REQUEST['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for post parameter detection
 				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
@@ -189,7 +195,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * Setup checkout page when get_refreshed_fragments ajax called
 		 */
 		public static function wc_ajax_get_refreshed_fragments() {
-			if ( isset( $_REQUEST['wfacp_id'] ) && 0 < absint( $_REQUEST['wfacp_id'] ) ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) && 0 < absint( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for AJAX parameter detection
 				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
 				$wfacp_id = absint( $wfacp_id );
 				self::initTemplateLoader( $wfacp_id );
@@ -240,7 +246,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * Setup checkout page when before_checkout_process hooks executed
 		 */
 		public static function woocommerce_before_checkout_process() {
-			if ( isset( $_REQUEST['_wfacp_post_id'] ) ) {
+			if ( isset( $_REQUEST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for checkout process parameter detection
 				$post_id  = filter_input( INPUT_POST, '_wfacp_post_id', FILTER_UNSAFE_RAW );
 				$wfacp_id = absint( $post_id );
 				self::initTemplateLoader( $wfacp_id );
@@ -387,6 +393,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			return ( $variation_attributes );
 		}
 
+		//phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- Complex dynamic query with table names, IN clauses, and dynamic JOIN/WHERE that cannot be parameterized
 		public static function search_products( $term, $include_variations = false ) {
 			global $wpdb;
 			$like_term     = '%' . $wpdb->esc_like( $term ) . '%';
@@ -933,7 +940,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			if ( ! is_array( $settings ) ) {
 				return [
-					'add_to_cart_setting' => '2',
+					'add_to_cart_setting' => '1',
 				];
 			}
 
@@ -1067,6 +1074,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'google_ua_initiate_checkout_event'          => 'false',
 				'google_ua_initiate_checkout_event_position' => 'load',
 				'google_ua_add_payment_info_event'           => 'false',
+				'google_ads_is_page_view'                     => 'false',
+				'google_ads_add_to_cart_event'                => 'false',
+				'google_ads_add_to_cart_event_position'       => 'load',
+				'google_ads_initiate_checkout_event'          => 'false',
+				'google_ads_initiate_checkout_event_position' => 'load',
 				'auto_fill_url_autoresponder'                => 'select_email_provider',
 				'smart_button_position'                      => $buttons_positions[0],
 				'enable_google_autocomplete'                 => 'false',
@@ -1391,27 +1403,28 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 
-			if ( 'hidden' !== get_option( 'woocommerce_checkout_phone_field', 'required' ) ) {
+
+				// Always include billing phone field in FunnelKit Checkout, bypassing WooCommerce hidden setting
 				$address_fields['billing_phone'] = array(
 					'label'        => __( 'Phone', 'woocommerce' ),
-					'type'         => 'tel',
-					'class'        => array( 'form-row-wide' ),
-					'validate'     => array( 'phone' ),
-					'placeholder'  => '',
-					'autocomplete' => 'tel',
-					'priority'     => 100,
+						'type'         => 'tel',
+						'class'        => array( 'form-row-wide' ),
+						'validate'     => array( 'phone' ),
+						'placeholder'  => '',
+						'autocomplete' => 'tel',
+						'priority'     => 100,
 				);
 				//added 3.4.1
 				$address_fields['shipping_phone'] = array(
 					'label'        => WFACP_Common::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ),
-					'type'         => 'tel',
-					'class'        => array( 'form-row-wide' ),
-					'validate'     => array( 'phone' ),
-					'placeholder'  => '',
-					'autocomplete' => 'tel',
-					'priority'     => 100,
+						'type'         => 'tel',
+						'class'        => array( 'form-row-wide' ),
+						'validate'     => array( 'phone' ),
+						'placeholder'  => '',
+						'autocomplete' => 'tel',
+						'priority'     => 100,
 				);
-			}
+
 			if ( 'billing_' === $type ) {
 				$address_fields['billing_email'] = array(
 					'label'        => __( 'Email', 'woocommerce' ),
@@ -1863,9 +1876,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( false === $args['selected'] && $args['attribute'] && $args['product'] instanceof WC_Product ) {
 				$selected_key = 'attribute_' . sanitize_title( $args['attribute'] );
 
-				$selected_data = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
-
-				$args['selected'] = ! is_null( $selected_data ) ? wc_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
+		$selected_data = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
+		
+		$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
 			}
 
 			$options               = $args['options'];
@@ -1907,8 +1920,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			$html .= '</select>';
-
-			echo apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_html', $html, $args ); // WPCS: XSS ok.
+			
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Filtered HTML output for variation dropdown
+			echo apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_html', $html, $args );
 		}
 
 		public static function wfacp_order_custom_field( $atts ) {
@@ -1925,8 +1939,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			$order_id = absint( $atts['order_id'] );
-			if ( 0 === $order_id && isset( $_REQUEST['order_id'] ) && absint( $_REQUEST['order_id'] ) > 0 ) {
-				$order_id = absint( $_REQUEST['order_id'] );
+			if ( 0 === $order_id && isset( $_REQUEST['order_id'] ) && absint( $_REQUEST['order_id'] ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order ID parameter detection for shortcode display
+				$order_id = absint( $_REQUEST['order_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order ID parameter detection for shortcode display
 			}
 
 			$order_id = apply_filters( 'wfacp_custom_field_order_id', $order_id );
@@ -2001,9 +2015,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 
-		public static function get_fragments( $wfacp_id ) {
+	public static function get_fragments( $wfacp_id ) {
 
-			if ( isset( $_REQUEST['post_data'] ) ) {
+			if ( isset( $_REQUEST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX fragment request parameter detection
 				$post_data = [];
 				$temp_data = filter_input( INPUT_POST, 'post_data', FILTER_UNSAFE_RAW );
 				parse_str( $temp_data, $post_data );
@@ -2012,9 +2026,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$exchange_keys       = urldecode( $post_data['wfacp_exchange_keys'] );
 					self::$exchange_keys = json_decode( $exchange_keys, true );
 				}
-			}
+		}
 
-			do_action( 'wfacp_get_fragments', $wfacp_id, $_REQUEST );
+			do_action( 'wfacp_get_fragments', $wfacp_id, $_REQUEST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX fragment request parameter passing
 
 			// Get order review fragment
 			ob_start();
@@ -2026,10 +2040,10 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			) );
 		}
 
-		public static function wfob_order_bump_fragments() {
+	public static function wfob_order_bump_fragments() {
 
-			if ( isset( $_REQUEST['wfacp_id'] ) ) {
-				$wfacp_id = absint( $_REQUEST['wfacp_id'] );
+			if ( isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX order bump fragment parameter detection
+				$wfacp_id = absint( $_REQUEST['wfacp_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX order bump fragment parameter detection
 				self::initializeTemplate( $wfacp_id );
 			}
 		}
@@ -2051,57 +2065,62 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 *
 		 * @return string formatted price
 		 */
-		public static function get_product_subtotal( $product, $cart_item, $row = false, $strike_through = false ) {
-			if ( $product->is_taxable() ) {
+        public static function get_product_subtotal( $product, $cart_item, $row = false, $strike_through = false ) {
+            if ( $product->is_taxable() ) {
 
-				if ( WC()->cart->display_prices_including_tax() ) {
-					$row_price        = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
-					$product_subtotal = wc_price( $row_price );
-					if ( ! wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
-						$product_subtotal .= ' <small class="tax_label">' . WC()->countries->inc_tax_or_vat() . '</small>';
-					}
-				} else {
-					$row_price        = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
-					$product_subtotal = wc_price( $row_price );
-					if ( wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
-						$product_subtotal .= ' <small class="tax_label">' . WC()->countries->ex_tax_or_vat() . '</small>';
-					}
-				}
-			} else {
-				$row_price        = $cart_item['line_subtotal'];
-				$product_subtotal = wc_price( $row_price );
-			}
+                if ( WC()->cart->display_prices_including_tax() ) {
+                    $row_price        = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
+                    $product_subtotal = wc_price( $row_price );
+                    if ( ! wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
+                        $product_subtotal .= ' <small class="tax_label">' . WC()->countries->inc_tax_or_vat() . '</small>';
+                    }
+                } else {
+                    $row_price        = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
+                    $product_subtotal = wc_price( $row_price );
+                    if ( wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
+                        $product_subtotal .= ' <small class="tax_label">' . WC()->countries->ex_tax_or_vat() . '</small>';
+                    }
+                }
+            } else {
+                $row_price        = $cart_item['line_subtotal'];
+                $product_subtotal = wc_price( $row_price );
+            }
 
-			if ( $strike_through == true ) {
-				$quantity              = $cart_item['quantity'];
-				$product_regular_price = $product->get_regular_price();
-				$product_regular_price *= $quantity;
-				$subtotal              = $row_price;
+            if ( $strike_through == true ) {
+                $quantity = isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
+                $product_regular_price = $product->get_regular_price();
 
-				if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
-					if ( $subtotal > $product_regular_price ) {
+                if ( empty( $product_regular_price ) ) {
+                    $product_regular_price = 0;
+                }
 
-						$product_subtotal = wc_price( $subtotal );
-					} else {
 
-						$product_subtotal = wc_format_sale_price( $product_regular_price, $subtotal );
-					}
-				} else {
+                $product_regular_price *= $quantity;
+                $subtotal              = $row_price;
 
-					$product_subtotal = wc_price( $subtotal );
-				}
+                if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
+                    if ( $subtotal > $product_regular_price ) {
 
-				return $product_subtotal;
+                        $product_subtotal = wc_price( $subtotal );
+                    } else {
 
-			}
+                        $product_subtotal = wc_format_sale_price( $product_regular_price, $subtotal );
+                    }
+                } else {
 
-			if ( true == $row ) {
-				return $row_price;
-			}
+                    $product_subtotal = wc_price( $subtotal );
+                }
 
-			return apply_filters( 'woocommerce_cart_product_subtotal', $product_subtotal, $product, $cart_item['quantity'], WC()->cart );
+                return $product_subtotal;
 
-		}
+            }
+            if ( true == $row ) {
+                return $row_price;
+            }
+
+            return apply_filters( 'woocommerce_cart_product_subtotal', $product_subtotal, $product, $cart_item['quantity'], WC()->cart );
+
+        }
 
 		public static function remove_menu_support( $component ) {
 
@@ -2292,12 +2311,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( is_string( $coupon ) ) {
 				$coupon = new WC_Coupon( $coupon );
 			}
-			$label = $coupon->get_code();
-			if ( $echo ) {
-				echo $label; // WPCS: XSS ok.
-			} else {
-				return $label;
-			}
+		$label = $coupon->get_code();
+		if ( $echo ) {
+			echo esc_html( $label );
+		} else {
+			return $label;
+		}
 		}
 
 		public static function get_default_global_page_builder() {
@@ -2678,7 +2697,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( 'yes' == $atts['with_html'] ) {
 				$cart_total = WC()->cart->get_total();
 			} else {
-				$cart_total = strip_tags( WC()->cart->get_total() );
+				$cart_total = wp_strip_all_tags( WC()->cart->get_total() );
 			}
 
 
@@ -2781,7 +2800,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-				$params['external_id'] = bwf_clean( $_COOKIE['wffn_flt'] );
+				$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) );
 			}
 			$params = apply_filters( 'wfacp_advanced_matching_data', $params );
 
@@ -3233,6 +3252,90 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			return $notice_html;
 
+		}
+
+        public static function re_add_hidden_address_fields($fields) {
+
+            // Validate input parameter
+            if ( !is_array($fields) ) {
+                return $fields;
+            }
+
+            if(!isset($fields['company'])){
+
+                $keys = array_keys($fields);
+
+                $fields['company'] = array(
+                    'label'        => __( 'Company name', 'woocommerce' ),
+                    'type'         => 'text',
+                    'class'        => array( 'form-row-wide' ),
+                    'autocomplete' => 'organization',
+                    'priority'     => 30,
+                    'required'     => false,
+                );
+
+                $position = array_search('last_name', $keys);
+                 $fields = self::re_add_hidden_fields('company', $fields, $position);
+            }
+
+            if(!isset($fields['address_2'])){
+                $keys = array_keys($fields);
+                $address_2_label = __( 'Apartment, suite, unit, etc.', 'woocommerce' );
+                $address_2_placeholder = $address_2_label;
+
+                if (  class_exists( 'Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && 'optional' === Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::get_address_2_field_visibility() ) {
+                    $address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' );
+                }
+
+
+                $fields['address_2'] = array(
+                    'label'        => $address_2_label,
+                    'label_class'  => array( 'screen-reader-text' ),
+                    'placeholder'  => esc_attr( $address_2_placeholder ),
+                    'class'        => array( 'form-row-wide', 'address-field' ),
+                    'autocomplete' => 'address-line2',
+                    'priority'     => 60,
+                    'required'     => false,
+                );
+
+                $position = array_search('address_1', $keys);
+                $fields = self::re_add_hidden_fields('address_2', $fields, $position);
+            }
+
+
+            return $fields;
+        }
+
+		public static function re_add_hidden_fields($key, $fields, $position) {
+
+			// Validate input parameters
+			if ( !is_array($fields) || !is_string($key) || !isset($fields[$key]) ) {
+				return $fields;
+			}
+
+			// If position key exists, insert field after it
+			if ( $position !== false && is_numeric($position) ) {
+				try {
+					$position = (int) $position + 1;
+					$field_value = $fields[$key];
+					unset($fields[$key]); // Remove the field from its current position
+
+					// Ensure position is within valid range
+					$position = max(0, min($position, count($fields)));
+
+					$fields = array_slice($fields, 0, $position, true) +
+							  array($key => $field_value) +
+							  array_slice($fields, $position, null, true);
+				} catch ( Exception $e ) {
+					// Log error if logging is available
+					if ( class_exists( 'BWF_logger' ) ) {
+						BWF_logger::get_instance()->log( 'Error repositioning field ' . $key . ': ' . $e->getMessage() );
+					}
+				}
+			}
+			// If position doesn't exist, field is already at the end, no action needed
+
+			return $fields;
 		}
 
 	}

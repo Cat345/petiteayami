@@ -13,6 +13,13 @@ RewriteCond %{QUERY_STRING} action=async_litespeed
 RewriteRule .* - [E=noabort:1]
 ### marker ASYNC end ###
 
+### marker WEBP start ###
+RewriteCond %{HTTP_ACCEPT} image/webp [OR]
+RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
+RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
+RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
+### marker WEBP end ###
+
 ### marker DROPQS start ###
 CacheKeyModify -qs:fbclid
 CacheKeyModify -qs:gclid
@@ -25,6 +32,44 @@ CacheKeyModify -qs:_ga
 # END LSCACHE
 # BEGIN NON_LSCACHE
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+### marker BROWSER CACHE start ###
+<IfModule mod_expires.c>
+ExpiresActive on
+ExpiresByType application/pdf A604800
+ExpiresByType image/x-icon A604800
+ExpiresByType image/vnd.microsoft.icon A604800
+ExpiresByType image/svg+xml A604800
+
+ExpiresByType image/jpg A604800
+ExpiresByType image/jpeg A604800
+ExpiresByType image/png A604800
+ExpiresByType image/gif A604800
+ExpiresByType image/webp A604800
+ExpiresByType image/avif A604800
+
+ExpiresByType video/ogg A604800
+ExpiresByType audio/ogg A604800
+ExpiresByType video/mp4 A604800
+ExpiresByType video/webm A604800
+
+ExpiresByType text/css A604800
+ExpiresByType text/javascript A604800
+ExpiresByType application/javascript A604800
+ExpiresByType application/x-javascript A604800
+
+ExpiresByType application/x-font-ttf A604800
+ExpiresByType application/x-font-woff A604800
+ExpiresByType application/font-woff A604800
+ExpiresByType application/font-woff2 A604800
+ExpiresByType application/vnd.ms-fontobject A604800
+ExpiresByType font/ttf A604800
+ExpiresByType font/otf A604800
+ExpiresByType font/woff A604800
+ExpiresByType font/woff2 A604800
+
+</IfModule>
+### marker BROWSER CACHE end ###
+
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END NON_LSCACHE
 # ЭКСТРЕННАЯ БЛОКИРОВКА БОТОВ

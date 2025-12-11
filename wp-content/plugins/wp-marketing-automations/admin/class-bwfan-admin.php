@@ -5,7 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class BWFAN_Admin
+ * Bwfan Admin
+ *
+ * @since 1.0.0
  */
 #[AllowDynamicProperties]
 class BWFAN_Admin {
@@ -21,6 +23,11 @@ class BWFAN_Admin {
 	public $dashboard_page;
 	public $wizard_url = '';
 
+	/**
+	 *   Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		$this->admin_path = BWFAN_PLUGIN_DIR . '/admin';
 		$this->admin_url  = BWFAN_PLUGIN_URL . '/admin';
@@ -152,11 +159,21 @@ class BWFAN_Admin {
 		return array_merge( $temp, $toolbar2 );
 	}
 
+	/**
+	 * Include Admin Pages
+	 *
+	 * @since 1.0.0
+	 */
 	public function include_admin_pages() {
 		include_once $this->admin_path . '/class-bwfcrm-base-react-page.php';
 		include_once $this->admin_path . '/view/class-bwfcrm-dashboard.php';
 	}
 
+	/**
+	 * Init Admin Pages
+	 *
+	 * @since 1.0.0
+	 */
 	public function init_admin_pages() {
 		$this->dashboard_page = BWFCRM_Dashboard::get_instance();
 	}
@@ -232,6 +249,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Maybe Show Sandbox Mode Notice
+	 *
+	 * @since 1.0.0
+	 */
 	public function maybe_show_sandbox_mode_notice() {
 		if ( false === BWFAN_Common::is_sandbox_mode_active() ) {
 			return;
@@ -247,17 +269,33 @@ class BWFAN_Admin {
 		<?php
 	}
 
+	/**
+	 * Get Admin Url
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_admin_url() {
 		return plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin';
 	}
 
+	/**
+	 * Register Admin Menu
+	 *
+	 * @since 1.0.0
+	 */
 	public function register_admin_menu() {
-		$capability = $this->menu_cap();
+		$capability = self::menu_cap();
 
 		$menu_data = BWFAN_Common::get_user_menu_access();
 
+		$notification = false === bwfan_is_autonami_pro_active() ? BWFAN_Common::sale_notification_menu() : [];
+
 		/** Check if Autonami is in sandbox mode */
 		$title = 'FunnelKit Automations';
+
+		if ( ! empty( $notification ) ) {
+			$title .= ' <span style="background-color:#d63638;color:#fff;border-radius:10px;margin-left:2px;font-size:10px;padding:3px 6px;">1</span>';
+		}
 		if ( true === BWFAN_Common::is_sandbox_mode_active() ) {
 			$title .= ' <span style="background-color:#ca4a1f;border-radius:10px;margin-left:0;font-size:10px;padding:3px 6px;">' . __( 'Sandbox', 'wp-marketing-automations' ) . '</span>';
 		}
@@ -354,29 +392,14 @@ class BWFAN_Admin {
 			add_submenu_page( 'autonami', '', '<a href="' . $link . '" style="background-color:#1DA867; color:white;" target="_blank"><strong>' . __( 'Upgrade to Pro', 'wp-marketing-automations' ) . '</strong></a>', $capability, '', function () {
 			}, 60 );
 
-			$time = strtotime( gmdate( 'c' ) );
-			if ( $time >= 1732510800 && $time < 1733547600 ) {
-				$utm_campaign = 'CM' . date( 'Y' );
-				$title        = __( 'Cyber Monday', 'wp-marketing-automations' );
-				if ( $time < 1733115600 ) {
-					$utm_campaign = 'BF' . date( 'Y' );
-					$title        = __( 'Black Friday', 'wp-marketing-automations' );
-				}
-				$title .= " 🔥";
-				$link  = add_query_arg( [
+			if ( ! empty( $notification ) && ! empty( $notification['campaign'] ) && ! empty( $notification['title'] ) ) {
+				$campaign = $notification['campaign'];
+				$title    = $notification['title'] . " 🔥";
+				$link     = add_query_arg( [
 					'utm_source'   => 'WordPress',
 					'utm_medium'   => 'Admin+Menu+FKA',
-					'utm_campaign' => $utm_campaign
+					'utm_campaign' => $campaign
 				], $url );
-				add_submenu_page( 'autonami', '', '<a href="' . $link . '"  target="_blank">' . $title . '</a>', $capability, 'upgrade_pro', function () {
-				}, 61 );
-			} elseif ( $time >= 1733720400 && $time < 1733806800 ) {
-				$link  = add_query_arg( [
-					'utm_source'   => 'WordPress',
-					'utm_medium'   => 'Admin+Menu+FKA',
-					'utm_campaign' => 'GM' . date( 'Y' )
-				], $url );
-				$title = __( 'Green Monday', 'wp-marketing-automations' ) . " 🔥";
 				add_submenu_page( 'autonami', '', '<a href="' . $link . '"  target="_blank">' . $title . '</a>', $capability, 'upgrade_pro', function () {
 				}, 61 );
 			}
@@ -407,7 +430,7 @@ class BWFAN_Admin {
 	 *
 	 * @return mixed|void
 	 */
-	public function menu_cap() {
+	public static function menu_cap() {
 		$capability    = 'manage_options';
 		$modified_caps = BWFAN_Common::access_capabilities();
 		if ( in_array( 'manage_woocommerce', $modified_caps, true ) ) {
@@ -417,6 +440,11 @@ class BWFAN_Admin {
 		return apply_filters( 'bwfan_menu_access_caps', $capability, $modified_caps );
 	}
 
+	/**
+	 * Admin Enqueue Assets
+	 *
+	 * @since 1.0.0
+	 */
 	public function admin_enqueue_assets() {
 		global $post;
 
@@ -702,6 +730,11 @@ class BWFAN_Admin {
 		do_action( 'bwfan_automation_v1_loaded' );
 	}
 
+	/**
+	 * Get Events Js Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_events_js_data() {
 		return $this->events_js_data;
 	}
@@ -738,6 +771,11 @@ class BWFAN_Admin {
 		$this->events_js_data[ $event_slug ][ $key ] = wp_json_encode( $saved_value );
 	}
 
+	/**
+	 * Get Select2Ajax Js Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_select2ajax_js_data() {
 		return $this->select2ajax_js_data;
 	}
@@ -755,6 +793,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Get Actions Js Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_actions_js_data() {
 		return $this->actions_js_data;
 	}
@@ -786,6 +829,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Autonami Page
+	 *
+	 * @since 1.0.0
+	 */
 	public function autonami_page() {
 		//phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_GET['page'] ) && 'autonami' !== sanitize_text_field( $_GET['page'] ) ) {
@@ -801,6 +849,11 @@ class BWFAN_Admin {
 		//phpcs:enable WordPress.Security.NonceVerification
 	}
 
+	/**
+	 * Js Variables
+	 *
+	 * @since 1.0.0
+	 */
 	public function js_variables() {
 		$time_texts = array(
 			'singular' => array(
@@ -897,6 +950,11 @@ class BWFAN_Admin {
 		<?php
 	}
 
+	/**
+	 * Admin Footer Text
+	 *
+	 * @since 1.0.0
+	 */
 	public function admin_footer_text( $footer_text ) {
 		if ( false === BWFAN_Common::is_load_admin_assets( 'all' ) ) {
 			return $footer_text;
@@ -915,6 +973,11 @@ class BWFAN_Admin {
 		return sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>.', 'wp-marketing-automations' ), '270+', esc_url( $link ) );
 	}
 
+	/**
+	 * Admin Footer Version
+	 *
+	 * @since 1.0.0
+	 */
 	public function admin_footer_version( $footer_version ) {
 		if ( false === BWFAN_Common::is_load_admin_assets( 'all' ) ) {
 			return $footer_version;
@@ -928,6 +991,11 @@ class BWFAN_Admin {
 		return sprintf( __( 'Version %1$s', 'wp-marketing-automations' ), BWFAN_VERSION );
 	}
 
+	/**
+	 * Get Automation Section
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_automation_section() {
 		if ( isset( $_GET['section'] ) && ! empty( sanitize_text_field( $_GET['section'] ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( $_GET['page'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
 			return sanitize_text_field( $_GET['section'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
@@ -936,6 +1004,11 @@ class BWFAN_Admin {
 		return 'automation';
 	}
 
+	/**
+	 * Maybe Set Automation Id
+	 *
+	 * @since 1.0.0
+	 */
 	public function maybe_set_automation_id() {
 		if ( $this->is_autonami_page() && isset( $_GET['edit'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
 			BWFAN_Core()->automations->set_automation_id( sanitize_text_field( $_GET['edit'] ) ); // WordPress.CSRF.NonceVerification.NoNonceVerification
@@ -945,6 +1018,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Is Autonami Page
+	 *
+	 * @since 1.0.0
+	 */
 	public function is_autonami_page() {
 		$page = filter_input( INPUT_GET, 'page' ); // WordPress.CSRF.NonceVerification.NoNonceVerification
 		if ( is_null( $page ) ) {
@@ -954,6 +1032,11 @@ class BWFAN_Admin {
 		return ( 'autonami-automations' === $page || false !== strpos( $page, 'autonami' ) );
 	}
 
+	/**
+	 * Change Autonami Menu Icon
+	 *
+	 * @since 1.0.0
+	 */
 	public function change_autonami_menu_icon() {
 		?>
         <style>
@@ -1011,6 +1094,11 @@ class BWFAN_Admin {
 		return $links;
 	}
 
+	/**
+	 * Tooltip
+	 *
+	 * @since 1.0.0
+	 */
 	public function tooltip( $text ) {
 		?>
         <span class="bwfan-help"><i class="icon"></i><div class="helpText"><?php echo esc_html( $text ); ?></div></span>
@@ -1026,6 +1114,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Maybe Set As Ct Worker
+	 *
+	 * @since 1.0.0
+	 */
 	public function maybe_set_as_ct_worker() {
 		if ( BWFAN_Common::is_automation_v1_active() && ! BWFAN_Common::bwf_has_action_scheduled( 'bwfan_run_queue' ) ) {
 			bwf_schedule_recurring_action( time(), MINUTE_IN_SECONDS, 'bwfan_run_queue' );
@@ -1050,6 +1143,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Schedule Abandoned Cart Cron
+	 *
+	 * @since 1.0.0
+	 */
 	public function schedule_abandoned_cart_cron() {
 		/** If no WC, return */
 		if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1078,6 +1176,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Maybe Handle Optin Choice
+	 *
+	 * @since 1.0.0
+	 */
 	public function maybe_handle_optin_choice() {
 		if ( isset( $_GET['bwfan-optin-choice'] ) && isset( $_GET['_bwfan_optin_nonce'] ) ) {
 			if ( ! wp_verify_nonce( $_GET['_bwfan_optin_nonce'], 'bwfan_optin_nonce' ) ) {
@@ -1102,6 +1205,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Allow Optin
+	 *
+	 * @since 1.0.0
+	 */
 	public function allow_optin() {
 		update_option( 'bwfan_is_opted', 'yes', true );
 
@@ -1112,10 +1220,20 @@ class BWFAN_Admin {
 		WooFunnels_API::post_tracking_data( $data );
 	}
 
+	/**
+	 * Block Optin
+	 *
+	 * @since 1.0.0
+	 */
 	public function block_optin() {
 		update_option( 'bwfan_is_opted', 'no', true );
 	}
 
+	/**
+	 * Maybe Redirect To Automation
+	 *
+	 * @since 1.0.0
+	 */
 	public function maybe_redirect_to_automation() {
 		$page = filter_input( INPUT_GET, 'page' );
 		$id   = filter_input( INPUT_GET, 'edit' );
@@ -1126,6 +1244,11 @@ class BWFAN_Admin {
 		exit;
 	}
 
+	/**
+	 * Get Automation Id
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_automation_id() {
 		if ( isset( $_GET['edit'] ) && ! empty( sanitize_text_field( $_GET['edit'] ) ) && isset( $_GET['page'] ) && 'autonami-automations' === sanitize_text_field( $_GET['page'] ) ) { // WordPress.CSRF.NonceVerification.NoNonceVerification
 			return sanitize_text_field( $_GET['edit'] ); // WordPress.CSRF.NonceVerification.NoNonceVerification
@@ -1308,6 +1431,11 @@ class BWFAN_Admin {
 		return;
 	}
 
+	/**
+	 * Automation Modify Actions Groups
+	 *
+	 * @since 1.0.0
+	 */
 	public function automation_modify_actions_groups( $arr ) {
 		/** Adding custom WP send email */
 		if ( ! isset( $arr['messaging'] ) ) {
@@ -1352,6 +1480,11 @@ class BWFAN_Admin {
 		return $arr;
 	}
 
+	/**
+	 * Automation Modify Integrations
+	 *
+	 * @since 1.0.0
+	 */
 	public function automation_modify_integrations( $arr ) {
 		/** Adding WP ADV integration actions */
 		if ( isset( $arr['wp_adv'] ) ) {
@@ -1381,6 +1514,11 @@ class BWFAN_Admin {
 		return $arr;
 	}
 
+	/**
+	 * Copy Integration Action Arr
+	 *
+	 * @since 1.0.0
+	 */
 	public function copy_integration_action_arr( $arr, $key, $old_base, $new_base ) {
 		if ( ! isset( $arr[ $new_base ] ) ) {
 			$arr[ $new_base ] = array();
@@ -1393,8 +1531,13 @@ class BWFAN_Admin {
 		return $arr;
 	}
 
+	/**
+	 * Bwfan Add Contact Profile Link
+	 *
+	 * @since 1.0.0
+	 */
 	function bwfan_add_contact_profile_link( $user ) {
-		if ( ! current_user_can( $this->menu_cap() ) ) {
+		if ( ! current_user_can( self::menu_cap() ) ) {
 			return;
 		}
 		if ( $user && $user instanceof WP_User ) {
@@ -1538,6 +1681,11 @@ class BWFAN_Admin {
 		}
 	}
 
+	/**
+	 * Bwf Order Meta Box Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function bwf_order_meta_box_data( $post, $data ) {
 		$args = $data['args'];
 		if ( ! isset( $args['cid'] ) || empty( $args['cid'] ) ) {

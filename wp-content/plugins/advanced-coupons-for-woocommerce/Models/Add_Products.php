@@ -161,7 +161,7 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
             }
 
             // temporarily disable BOGO deals implementation to prevent conflict.
-            remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), 11 );
+            remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
 
             // make sure that AJAX fetches the correct cart data before adding products to cart.
             \WC()->cart->calculate_totals();
@@ -243,7 +243,7 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
         );
 
         // temporarily disable BOGO deals implementation to prevent conflict.
-        remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), 11 );
+        remove_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
 
         // prevent calculating cart totals while doing add to cart.
         remove_action( 'woocommerce_add_to_cart', array( \WC()->cart, 'calculate_totals' ), 20, 0 );
@@ -258,7 +258,7 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
         \WC()->cart->calculate_totals();
 
         // re-enable BOGO deals implementation after processing.
-        add_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), 11 );
+        add_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
     }
 
     /**

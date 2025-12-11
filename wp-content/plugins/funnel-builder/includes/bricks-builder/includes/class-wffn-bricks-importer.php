@@ -5,7 +5,7 @@ namespace FunnelKit;
 use WFFN_Import_Export;
 use WFFN_Template_Importer;
 if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
-	class WFFN_Bricks_Importer implements WFFN_Import_Export {
+	class WFFN_Bricks_Importer implements \WFFN_Import_Export {
 		public function __construct() {
 			add_action( 'woofunnels_module_template_removed', array( $this, 'delete_bricks_data' ) );
 		}

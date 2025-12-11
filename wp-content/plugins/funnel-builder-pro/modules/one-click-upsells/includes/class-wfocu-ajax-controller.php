@@ -1265,7 +1265,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					$response_ajax = array(
 						'success' => 'true',
 					);
-
+					WFOCU_Core()->log->log( ' Dynamic Shipping calculated is '.  print_r( $get_shipping, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 					$response_ajax['data'] = wp_parse_args( $get_shipping, array(
 						'free_shipping' => array(),
 						'shipping'      => array(),

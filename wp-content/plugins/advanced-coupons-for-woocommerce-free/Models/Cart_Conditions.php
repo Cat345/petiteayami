@@ -541,7 +541,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initializab
         $button = $btn_text && $btn_url ? sprintf( '<a class="button" href="%s">%s</a>', esc_url( $btn_url ), $btn_text ) : '';
 
         // Because the response message in the WooCommerce block is stripped, it needs to be modified.
-        if ( $this->_helper_functions->is_current_request_using_wpjson_wc_api() ) {
+        if ( $this->_helper_functions->is_current_request_using_wpjson_wc_api() || version_compare( WC()->version, '9.4.0', '>=' ) ) {
             return htmlentities2( sprintf( '%s %s', $message, $button ) );
         }
 

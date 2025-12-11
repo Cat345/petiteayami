@@ -159,6 +159,7 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
         if ( $is_apply_coupon ) {
             $cart_total  = \WC()->cart->get_subtotal();
             $cart_total += wc_prices_include_tax() ? \WC()->cart->get_subtotal_tax() : 0;
+            $cart_total  = apply_filters( 'acfw_store_credits_get_cart_total', $cart_total );
         } else {
             $cart_total = $this->get_cart_total_before_store_credit_discounts();
         }

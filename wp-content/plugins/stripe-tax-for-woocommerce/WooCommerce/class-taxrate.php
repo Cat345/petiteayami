@@ -27,7 +27,7 @@ class TaxRate extends ArrayObject {
 	 * @param string $city Rate cisty.
 	 * @param string $postal_code Rate postal / zip code.
 	 */
-	public function __construct( $id, string $country, ?string $state, float $rate, string $name, int $priority, string $city, string $postal_code ) {
+	public function __construct( $id, string $country, ?string $state, float $rate, string $name, $priority, string $city, string $postal_code ) {
 		parent::__construct(
 			array(
 				'id'          => $id,

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS;
+namespace BWFAN\Sabberworm\CSS;
 
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\Parsing\OutputException;
+use BWFAN\Sabberworm\CSS\Comment\Commentable;
+use BWFAN\Sabberworm\CSS\Parsing\OutputException;
 
 class OutputFormatter
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\Comment;
+namespace BWFAN\Sabberworm\CSS\Comment;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Renderable;
 
 class Comment implements Renderable
 {

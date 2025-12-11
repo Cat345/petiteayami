@@ -1,22 +1,22 @@
 <?php
 //phpcs:disable
-namespace Sabberworm\CSS\RuleSet;
+namespace BWFAN\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\CSSList\CSSList;
-use Sabberworm\CSS\CSSList\KeyFrame;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\OutputException;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Property\KeyframeSelector;
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\Rule\Rule;
-use Sabberworm\CSS\Value\Color;
-use Sabberworm\CSS\Value\RuleValueList;
-use Sabberworm\CSS\Value\Size;
-use Sabberworm\CSS\Value\URL;
-use Sabberworm\CSS\Value\Value;
+use BWFAN\Sabberworm\CSS\CSSList\CSSList;
+use BWFAN\Sabberworm\CSS\CSSList\KeyFrame;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\OutputException;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use BWFAN\Sabberworm\CSS\Property\KeyframeSelector;
+use BWFAN\Sabberworm\CSS\Property\Selector;
+use BWFAN\Sabberworm\CSS\Rule\Rule;
+use BWFAN\Sabberworm\CSS\Value\Color;
+use BWFAN\Sabberworm\CSS\Value\RuleValueList;
+use BWFAN\Sabberworm\CSS\Value\Size;
+use BWFAN\Sabberworm\CSS\Value\URL;
+use BWFAN\Sabberworm\CSS\Value\Value;
 
 /**
  * This class represents a `RuleSet` constrained by a `Selector`.

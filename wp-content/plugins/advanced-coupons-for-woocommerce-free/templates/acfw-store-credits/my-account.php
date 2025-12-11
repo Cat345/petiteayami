@@ -15,26 +15,40 @@
  * @version 4.2.1
  */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
 }
 
-do_action('acfw_store_credits_my_account_before', $user_balance);?>
+do_action( 'acfw_store_credits_my_account_before', $user_balance );?>
 
 <div id="acfw-store-credits-my-account">
 
-    <p><?php echo esc_html__('Store credit can be used to purchase items on this store.', 'advanced-coupons-for-woocommerce-free');?></p>
-
-    <p><?php echo str_replace('{user_balance}', '<strong>' . wc_price($user_balance) . '</strong>', esc_html__('You currently have a store credit balance of {user_balance}.', 'advanced-coupons-for-woocommerce-free')); ?></p>
+    <p><?php echo esc_html__( 'Store credit can be used to purchase items on this store.', 'advanced-coupons-for-woocommerce-free' ); ?></p>
 
     <p>
-        <a class="button alt" href="<?php echo get_permalink(wc_get_page_id('shop')); ?>">
-            <?php echo esc_html__('Continue Shopping →', 'advanced-coupons-for-woocommerce-free');?>
+        <?php echo str_replace( '{user_balance}', '<strong>' . wc_price( $user_balance ) . '</strong>', esc_html__( 'You currently have a store credit balance of {user_balance}.', 'advanced-coupons-for-woocommerce-free' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+        <?php if ( $expire_date ) : ?>
+            <br>
+            <span style="font-size: 13px;"><em>
+                <?php
+                echo esc_html(
+                    // translators: %s: expire date.
+                    sprintf( __( 'Store credits are valid until %s. Use or earn more store credits to extend validity.', 'advanced-coupons-for-woocommerce-free' ), $expire_date )
+                );
+                    ?>
+                    </em>
+            </span>
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <a class="button alt" href="<?php echo get_permalink( wc_get_page_id( 'shop' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+            <?php echo esc_html__( 'Continue Shopping →', 'advanced-coupons-for-woocommerce-free' ); ?>
         </a>
     </p>
 
-    <?php do_action('acfw_store_credits_my_account', $user_balance);?>
+    <?php do_action( 'acfw_store_credits_my_account', $user_balance ); ?>
 
 </div>
 
-<?php do_action('acfw_store_credits_my_account_after', $user_balance);?>
+<?php do_action( 'acfw_store_credits_my_account_after', $user_balance ); ?>

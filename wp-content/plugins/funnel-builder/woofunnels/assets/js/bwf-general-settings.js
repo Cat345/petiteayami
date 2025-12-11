@@ -670,6 +670,15 @@
                         }
                     },
                     {
+                        type: "checkbox",
+                        inputType: "text",
+                        model: "google_ads_initiate_checkout_event",
+                        inputName: 'google_ads_initiate_checkout_event',
+                        visible: function (modal) {
+                            return '1' === bwfAdminGen.if_gad_checkout_enabled;
+                        }
+                    },
+                    {
                         type: "checklist",
                         listBox: true,
                         styleClasses: "wfocu_gsettings_sec_chlist",

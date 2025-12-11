@@ -97,34 +97,42 @@ if ( ! class_exists( 'BWFABT_DB_Tables' ) ) {
 		public function ab_experiments() {
 			$collate = '';
 			global $wpdb;
-			if ( $wpdb->has_cap( 'collation' ) ) {
-				$collate = $wpdb->get_charset_collate();
+			try {
+				if ( $wpdb->has_cap( 'collation' ) ) {
+					$collate = $wpdb->get_charset_collate();
+				}
+				$values_table = "CREATE TABLE `" . $wpdb->prefix . "bwf_ab_experiments` (
+					`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+					`title` text NOT NULL,
+					`status` enum('1','2','3','4') NOT NULL DEFAULT '1',
+					`desc` text NOT NULL,
+					`type` varchar(20) NOT NULL DEFAULT '',
+					`date_added` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+					  `date_started` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+					  `last_reset_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+					  `date_completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+					`goal` LONGTEXT NULL DEFAULT NULL,
+					`control` bigint(20) unsigned NOT NULL,
+					`variants` LONGTEXT NULL DEFAULT NULL,
+					`activity` LONGTEXT NULL DEFAULT NULL,
+					PRIMARY KEY (`id`),
+					KEY `id` (`id`)				
+					) " . $collate . ";";
+	
+				dbDelta( $values_table );
+	
+				$tables = get_option( '_bwfabt_created_tables', array() );
+	
+				// Only proceed if we have a valid array, otherwise skip the update
+				if ( is_array( $tables ) ) {
+					array_push( $tables, $wpdb->prefix . 'bwf_ab_experiments' );
+					$tables = array_unique( $tables );
+					update_option( '_bwfabt_created_tables', $tables );
+				}
+			} catch (Exception|Error $e) {
+				
 			}
-			$values_table = "CREATE TABLE `" . $wpdb->prefix . "bwf_ab_experiments` (
-				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-				`title` text NOT NULL,
-				`status` enum('1','2','3','4') NOT NULL DEFAULT '1',
-				`desc` text NOT NULL,
-				`type` varchar(20) NOT NULL DEFAULT '',
-				`date_added` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-  	            `date_started` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-  	            `last_reset_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-  	            `date_completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-                `goal` LONGTEXT NULL DEFAULT NULL,
-                `control` bigint(20) unsigned NOT NULL,
-                `variants` LONGTEXT NULL DEFAULT NULL,
-                `activity` LONGTEXT NULL DEFAULT NULL,
-				PRIMARY KEY (`id`),
-				KEY `id` (`id`)				
-                ) " . $collate . ";";
-
-			dbDelta( $values_table );
-
-			$tables = get_option( '_bwfabt_created_tables', array() );
-
-			array_push( $tables, $wpdb->prefix . 'bwf_ab_experiments' );
-			$tables = array_unique( $tables );
-			update_option( '_bwfabt_created_tables', $tables );
 		}
+			
 	}
 }

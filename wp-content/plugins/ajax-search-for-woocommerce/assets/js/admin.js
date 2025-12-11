@@ -456,7 +456,10 @@
                         if (typeof res != 'undefined' && typeof res.data != 'undefined') {
                             _this.initSelectize(res.data);
                         }
-                    }
+                    },
+                    error: function () {
+                        $('.dgwt-wcas-selectize').removeClass('loading').parent().find('.dgwt_wcas_settings-description-field').html(dgwt_wcas.adminLabels.custom_fields_loading_error).css({'color': '#f04124'});
+                    },
                 });
             }
 
@@ -470,8 +473,14 @@
                 $inputs.each(function () {
 
                     var $input = $(this);
+                    var disabledBeforeInit = $(this).data('disabled-before-init');
                     var optionsRaw = $input.data('options');
                     var options = loadedOptions;
+
+                    if (disabledBeforeInit) {
+                        $input.removeAttr('disabled');
+                        $input.removeClass('loading');
+                    }
 
                     if (optionsRaw.length > 0) {
                         optionsRaw = decodeURI(optionsRaw).replace(/"/g, '\\"');
@@ -1474,7 +1483,7 @@
                     types = ['brand', 'cat', 'tag', 'product'].concat(typeof dgwt_wcas.postTypes === 'undefined' ? ['post', 'page'] : dgwt_wcas.postTypes);
 
                 if (value.length > 0 && value != '0') {
-                    limit = Math.abs(value);
+                    limit = Math.min(Math.abs(value), 15);
                 }
 
                 if ($duplicated.length > 0) {

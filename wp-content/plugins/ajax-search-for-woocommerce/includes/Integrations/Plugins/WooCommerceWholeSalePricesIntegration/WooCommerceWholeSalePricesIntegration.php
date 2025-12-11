@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommerceWholeSalePricesIntegration;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 use DgoraWcas\Multilingual;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
@@ -14,14 +15,14 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wholesalesuiteplugin.com
  * Author: Rymera Web Co
  */
-class WooCommerceWholeSalePricesIntegration {
-    public function init() {
-        if ( !class_exists( 'WooCommerceWholeSalePricesPremium' ) ) {
-            return;
-        }
-        if ( version_compare( \WooCommerceWholeSalePricesPremium::VERSION, '1.24.4' ) < 0 ) {
-            return;
-        }
+class WooCommerceWholeSalePricesIntegration extends AbstractPluginIntegration {
+    protected const LABEL = 'WooCommerce Wholesale Prices';
+
+    protected const MIN_VERSION = '1.24.4';
+
+    protected const VERSION_CONST = 'WooCommerceWholeSalePricesPremium::VERSION';
+
+    public function init() : void {
         add_filter( 'dgwt/wcas/search_query/args', array($this, 'filterSearchQueryArgs') );
         add_filter( 'dgwt/wcas/search/product_cat/args', array($this, 'filterProductCatArgs') );
         add_filter( 'dgwt/wcas/troubleshooting/renamed_plugins', array($this, 'getFolderRenameInfo') );

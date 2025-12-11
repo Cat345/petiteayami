@@ -28,6 +28,7 @@ if ( ! class_exists( 'WFOCU_Plugin_Compatibilities' ) ) {
 				'class-wfocu-wc-compatibility.php'                             => true,
 				'class-wfocu-wffn-compatibility.php'                           => class_exists( 'WFFN_Core' ),
 				'class-wfocu-compatibility-with-wc-germanized.php'             => defined( 'WC_GERMANIZED_PLUGIN_FILE' ),
+				'class-wfocu-plugin-integration-eu-vat.php'                    => class_exists( 'Alg_WC_EU_VAT' ),
 				'class-wfocu-compatibility-with-breakdance.php'                => defined( 'BREAKDANCE_WOO_DIR' ),
 				'class-wfocu-compatibility-with-pys.php'                       => class_exists( 'PixelYourSite\EventsManager' ),
 			];

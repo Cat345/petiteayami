@@ -1,27 +1,27 @@
 <?php
 //phpcs:disable
-namespace Sabberworm\CSS\CSSList;
+namespace BWFAN\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Property\AtRule;
-use Sabberworm\CSS\Property\Charset;
-use Sabberworm\CSS\Property\CSSNamespace;
-use Sabberworm\CSS\Property\Import;
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\Renderable;
-use Sabberworm\CSS\RuleSet\AtRuleSet;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet;
-use Sabberworm\CSS\Settings;
-use Sabberworm\CSS\Value\CSSString;
-use Sabberworm\CSS\Value\URL;
-use Sabberworm\CSS\Value\Value;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\Comment\Commentable;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\SourceException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use BWFAN\Sabberworm\CSS\Property\AtRule;
+use BWFAN\Sabberworm\CSS\Property\Charset;
+use BWFAN\Sabberworm\CSS\Property\CSSNamespace;
+use BWFAN\Sabberworm\CSS\Property\Import;
+use BWFAN\Sabberworm\CSS\Property\Selector;
+use BWFAN\Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\RuleSet\AtRuleSet;
+use BWFAN\Sabberworm\CSS\RuleSet\DeclarationBlock;
+use BWFAN\Sabberworm\CSS\RuleSet\RuleSet;
+use BWFAN\Sabberworm\CSS\Settings;
+use BWFAN\Sabberworm\CSS\Value\CSSString;
+use BWFAN\Sabberworm\CSS\Value\URL;
+use BWFAN\Sabberworm\CSS\Value\Value;
 
 /**
  * This is the most generic container available. It can contain `DeclarationBlock`s (rule sets with a selector),

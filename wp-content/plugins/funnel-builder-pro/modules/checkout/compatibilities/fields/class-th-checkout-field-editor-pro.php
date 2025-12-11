@@ -129,7 +129,7 @@ if ( ! class_exists( 'WFACP_TH_Checkout_Field_Editor_pro_ThemeHigh' ) ) {
 
 				    $this->wc_checkout_fields[ $key ][ $field_key ]                   = (array) $field_value->property_set;
 					$this->wc_checkout_fields[ $key ][ $field_key ]['wfacp_th_field'] = true;
-
+                    $this->wc_checkout_fields[ $key ][ $field_key ]['wfacp_th_key'] = $field_key;
 
 				}
 
@@ -239,6 +239,7 @@ if ( ! class_exists( 'WFACP_TH_Checkout_Field_Editor_pro_ThemeHigh' ) ) {
 				}
 
 
+
 				if ( isset( $this->th_checkout_fields[ $key ] ) ) {
 					$field = $this->th_checkout_fields[ $key ];
 
@@ -303,13 +304,23 @@ if ( ! class_exists( 'WFACP_TH_Checkout_Field_Editor_pro_ThemeHigh' ) ) {
 			}
 
 
-			if ( ! in_array( $key, $this->register_checkout_fields ) && (isset($this->wc_checkout_fields[ $field_key ])  && is_array( $this->wc_checkout_fields[ $field_key ] ) ) &&  ( isset($this->wc_checkout_fields[ $field_key ]) && ! array_key_exists( $key, $this->wc_checkout_fields[ $field_key ] )) ) {
-				return [];
-			}
+            $different_key=false;
+            if(isset($field['name']) && $field['name']!=$key){
+                $different_key=true;
+            }
 
-			if ( is_array( $this->thewcfe_listed_fields ) && count( $this->thewcfe_listed_fields ) > 0 && ! array_key_exists( $key, $this->thewcfe_listed_fields ) ) {
-				return [];
-			};
+
+            if(false === $different_key){
+
+                if ( ! in_array( $key, $this->register_checkout_fields ) && (isset($this->wc_checkout_fields[ $field_key ])  && is_array( $this->wc_checkout_fields[ $field_key ] ) ) &&  ( isset($this->wc_checkout_fields[ $field_key ]) ) ) {
+                    return [];
+                }
+
+                if ( is_array( $this->thewcfe_listed_fields ) && count( $this->thewcfe_listed_fields ) > 0 && ! array_key_exists( $key, $this->thewcfe_listed_fields ) ) {
+                    return [];
+                };
+            }
+
 
 			if ( $field['type'] == 'file' && isset( $field['label_class'] ) && is_array( $field['label_class'] ) ) {
 				$unset_key = array_search( "wfacp-form-control-label", $field['label_class'] );
@@ -333,6 +344,7 @@ if ( ! class_exists( 'WFACP_TH_Checkout_Field_Editor_pro_ThemeHigh' ) ) {
 
 
 			}
+
 
 			return $field;
 		}

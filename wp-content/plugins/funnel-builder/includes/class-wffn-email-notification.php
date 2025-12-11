@@ -202,20 +202,9 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * @return bool True if the email was sent, false otherwise.
 		 */
 		public static function mail_sent( $frequency ) {
-			
 			$timezone = wp_timezone();
-			$today = new DateTime( 'now', $timezone );
-			/** Case: weekly. Not Monday */
-			if ( 'weekly' === $frequency && 1 !== intval( $today->format( 'N' ) ) ) {
-				/** 1 means Monday */
-				return true;
-			}
-
-
-			/** Case: monthly. Not 1st */
-			if ( 'monthly' === $frequency && 1 !== intval( $today->format( 'd' ) ) ) {
-				return true;
-			}
+			$today    = new DateTime( 'now', $timezone );
+			
 			self::$executed_last = get_option( 'wffn_email_notification_updated', array(
 				'weekly'  => '',
 				'monthly' => '',
@@ -285,7 +274,9 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 					'weekly'  => '',
 					'monthly' => '',
 				) );
-				self::$executed_last[ $frequency ] = date( 'c' ); // @codingStandardsIgnoreLine
+				// Store current time in site timezone
+				$now = new DateTime( 'now', wp_timezone() );
+				self::$executed_last[ $frequency ] = $now->format( 'c' );
 				update_option( 'wffn_email_notification_updated', self::$executed_last );
 			}
 
@@ -339,12 +330,12 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			$date_string = self::get_date_string( $dates, $frequency );
 			switch ( strtolower( $frequency ) ) {
 				case 'weekly':
-					return sprintf( __( '%s - Weekly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );
+					return sprintf( __( '%s - Weekly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 				case 'monthly':
-					return sprintf( __( '%s - Monthly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );
+					return sprintf( __( '%s - Monthly Report for %s', 'FunnelKit' ), get_bloginfo( 'name' ), $date_string );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 
 				default:
-					return __( 'Report', 'FunnelKit' );
+					return __( 'Report', 'FunnelKit' );//phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText
 			}
 		}
 
@@ -357,7 +348,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 */
 		public static function get_date_string( $dates = array(), $frequency = 'weekly' ) {
 			if ( 'daily' === $frequency && isset( $dates['from_date'] ) ) {
-				return sprintf( __( '%1$s', 'Funnelkit' ), self::format_date( $dates['from_date'] ) );
+				return sprintf( __( '%1$s', 'Funnelkit' ), self::format_date( $dates['from_date'] ) );//phpcs:ignore WordPress.WP.I18n.NoEmptyStrings
 			}
 
 			if ( isset( $dates['from_date'] ) && isset( $dates['to_date'] ) ) {
@@ -462,13 +453,44 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			if ( empty( self::$global_settings['bwf_enable_notification'] ) ) {
 				return;
 			}
-			
+			$timezone = wp_timezone();
+			$today    = new DateTime( 'now', $timezone );
+			$frequencies = self::get_frequencies();
+
+			/** Filter out the frequencies if an email was already sent */
+			$frequencies = array_filter( $frequencies, function ( $frequency ) use ( $today ) {
+				/** Case: weekly. Not Monday */
+				if ( 'weekly' === $frequency && 1 === intval( $today->format( 'N' ) ) ) {
+					/** 1 means Monday */
+					return true;
+				}
+
+				/** Case: monthly. Not 1st */
+				if ( 'monthly' === $frequency && 1 === intval( $today->format( 'd' ) ) ) {
+					return true;
+				}
+
+				return false;
+			} );
+			if ( empty( $frequencies ) ) {
+				return;
+			}
 
 			$notification_time = self::$global_settings['bwf_notification_time'];
 			$desired_timestamp = self::create_timestamp_from_array( $notification_time );
 
+			WFFN_Core()->logger->log( 'Scheduling notification - Current time: ' . current_time( 'Y-m-d H:i:s' ) . ' (' . current_time( 'timestamp' ) . ')', 'notification-debug', true );
+			WFFN_Core()->logger->log( 'Scheduling notification - Desired time: ' . current_time( 'Y-m-d H:i:s', true, $desired_timestamp ) . ' (' . $desired_timestamp . ')', 'notification-debug', true );
+			WFFN_Core()->logger->log( 'Scheduling notification - Time difference: ' . ( $desired_timestamp - current_time( 'timestamp' ) ) . ' seconds', 'notification-debug', true );
+
 			if ( wp_next_scheduled( 'wffn_performance_notification' ) === false ) {
-				return wp_schedule_single_event( $desired_timestamp, 'wffn_performance_notification' );
+				$result = wp_schedule_single_event( $desired_timestamp, 'wffn_performance_notification' );
+				if(function_exists('bwf_schedule_single_action')) {
+					$desired_timestamp = $desired_timestamp + ( 30 * MINUTE_IN_SECONDS );
+					bwf_schedule_single_action( $desired_timestamp, 'wffn_performance_notification' );
+				}
+				WFFN_Core()->logger->log( 'Scheduling result: ' . ( $result ? 'SUCCESS' : 'FAILED' ), 'notification-debug', true );
+				return $result;
 			}
 
 			return false;

@@ -258,7 +258,11 @@
                     });
                 }
 
-                var data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent({}) : {};
+                var data = {
+                    'value': '0.00',
+                    'currency': wffnfunnelVars.op_lead_tracking.fb.currency || 'USD'
+                };
+                data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
                 fbq('track', 'Lead', data, {'eventID': wffnfunnelVars.op_lead_tracking.fb.event_ID});
             }
 

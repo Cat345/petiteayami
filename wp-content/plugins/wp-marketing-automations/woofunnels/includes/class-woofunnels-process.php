@@ -310,7 +310,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 		 */
 		public function maybe_set_options_auto_loading_false() {
 
-			$should_run_query = get_option( '_bwf_upgrade_1_9_13', 'no' );
+			$should_run_query = get_option( '_bwf_upgrade_1_9_14', 'no' );
 
 			if ( 'yes' === $should_run_query ) {
 				return;
@@ -322,7 +322,7 @@ if ( ! class_exists( 'WooFunnels_Process' ) ) {
 			 */
 			$query = $wpdb->prepare( "UPDATE `" . $wpdb->prefix . "options` SET `autoload` = %s WHERE (`option_name` LIKE '%wfocu_c_%' OR `option_name` LIKE '%wfacp_c_%') AND `autoload` LIKE 'yes' AND `option_name` NOT LIKE 'wfacp_css_migrated'", 'no' );
 			$wpdb->query( $query );  //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			update_option( '_bwf_upgrade_1_9_13', 'yes' );
+			update_option( '_bwf_upgrade_1_9_14', 'yes' );
 		}
 
 		public function maybe_swap_order_to_make_it_correct() {

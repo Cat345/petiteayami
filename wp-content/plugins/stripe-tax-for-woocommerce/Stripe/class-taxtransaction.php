@@ -214,12 +214,15 @@ abstract class TaxTransaction {
 
 		if ( $api_tax_transaction->reversal ) {
 			$original_api_tax_transaction_id = $api_tax_transaction->reversal->original_transaction;
-			$original_transaction            = static::$transactions[ $order_id ][ $original_api_tax_transaction_id ];
 
-			$original_transaction->reversals = array_merge(
-				array( $api_tax_transaction->id => $transaction ),
-				$original_transaction->reversals
-			);
+			if ( isset( static::$transactions[ $order_id ][ $original_api_tax_transaction_id ] ) ) {
+				$original_transaction = static::$transactions[ $order_id ][ $original_api_tax_transaction_id ];
+
+				$original_transaction->reversals = array_merge(
+					array( $api_tax_transaction->id => $transaction ),
+					$original_transaction->reversals
+				);
+			}
 		}
 	}
 

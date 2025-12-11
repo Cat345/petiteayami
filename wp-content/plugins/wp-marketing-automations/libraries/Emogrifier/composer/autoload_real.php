@@ -8,13 +8,13 @@ class ComposerAutoloaderInit0df01a0d06af458d4ba3028d061d5119
 
     public static function loadClassLoader($class)
     {
-        if ('Composer\Autoload\ClassLoader' === $class) {
+        if ('BWFAN\Composer\Autoload\ClassLoader' === $class) {
             require __DIR__ . '/ClassLoader.php';
         }
     }
 
     /**
-     * @return \Composer\Autoload\ClassLoader
+     * @return \BWFAN\Composer\Autoload\ClassLoader
      */
     public static function getLoader()
     {
@@ -22,14 +22,14 @@ class ComposerAutoloaderInit0df01a0d06af458d4ba3028d061d5119
             return self::$loader;
         }
 
-        require __DIR__ . '/platform_check.php';
+        // Platform check removed for optimization
 
         spl_autoload_register(array('ComposerAutoloaderInit0df01a0d06af458d4ba3028d061d5119', 'loadClassLoader'), true, true);
-        self::$loader = $loader = new \Composer\Autoload\ClassLoader(\dirname(__DIR__));
+        self::$loader = $loader = new \BWFAN\Composer\Autoload\ClassLoader(\dirname(__DIR__));
         spl_autoload_unregister(array('ComposerAutoloaderInit0df01a0d06af458d4ba3028d061d5119', 'loadClassLoader'));
 
         require __DIR__ . '/autoload_static.php';
-        call_user_func(\Composer\Autoload\ComposerStaticInit0df01a0d06af458d4ba3028d061d5119::getInitializer($loader));
+        call_user_func(\BWFAN\Composer\Autoload\ComposerStaticInit0df01a0d06af458d4ba3028d061d5119::getInitializer($loader));
 
         $loader->register(true);
 

@@ -4,14 +4,14 @@
  * Plugin Name: FiboSearch - AJAX Search for WooCommerce
  * Plugin URI: https://fibosearch.com?utm_source=wp-admin&utm_medium=referral&utm_campaign=author_uri&utm_gen=utmdc
  * Description: The most popular WooCommerce product search. Gives your users a well-designed advanced AJAX search bar with live search suggestions.
- * Version: 1.31.0
+ * Version: 1.32.0
  * Author: FiboSearch Team
  * Author URI: https://fibosearch.com?utm_source=wp-admin&utm_medium=referral&utm_campaign=author_uri&utm_gen=utmdc
  * Text Domain: ajax-search-for-woocommerce
  * Domain Path: /languages
  * Requires Plugins: woocommerce
  * WC requires at least: 5.5
- * WC tested up to: 9.9
+ * WC tested up to: 10.3
  *
  */
 // Exit if accessed directly
@@ -379,6 +379,17 @@ if ( !class_exists( 'DGWT_WC_Ajax_Search' ) && !function_exists( 'dgoraAsfwFs' )
                 $this->search = new \DgoraWcas\Search();
             }
             return $this->search->searchPosts( $phrase, $args );
+        }
+
+        public function getInfo( $type = '' ) {
+            switch ( $type ) {
+                case 'search_endpoint':
+                    return \DgoraWcas\Helpers::getEndpointUrl( 'search' );
+                case 'current_language':
+                    return ( \DgoraWcas\Multilingual::isMultilingual() ? \DgoraWcas\Multilingual::getCurrentLanguage() : '' );
+                default:
+                    return '';
+            }
         }
 
     }

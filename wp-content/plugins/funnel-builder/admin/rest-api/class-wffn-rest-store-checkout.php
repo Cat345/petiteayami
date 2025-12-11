@@ -878,9 +878,12 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 									'type' => 'wc_order_bump'
 								];
 								$bump_object                            = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
-								$bump_data                              = $bump_object->populate_substeps_data_properties( array( $substep ) );
-								$bump_data[0]['type']                   = 'wc_order_bump';
-								$prepare_data['steps_list'][ $substep ] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( $bump_data[0] );
+								if ( $bump_object ) {
+									$bump_data                              = $bump_object->populate_substeps_data_properties(array($substep));
+									$bump_data[0]['type']                   = 'wc_order_bump';
+									$prepare_data['steps_list'][$substep] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step($bump_data[0]);
+								}
+								
 							}
 
 

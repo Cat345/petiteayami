@@ -43,13 +43,16 @@ if ( method_exists( $template, 'enable_order_field_collapsed_by_default' ) ) {
 
 // Only add wfacp_display_none if no responsive collapsed classes are active
 $display_class = method_exists( $template, 'should_hide_order_summary_by_default' ) && $template->should_hide_order_summary_by_default() ? '' : 'wfacp_display_none';
+$css='width: 16px;height: 16px;position: absolute;left: 0;top: 50%;margin-top: -8px;';
+if(is_rtl()){
+    $css='width: 16px;height: 16px;position: absolute;right: 0;top: 50%;margin-top: -8px;';
+}
 
 ?>
 <div class="wfacp_anim wfacp_order_summary_container wfacp_mb_mini_cart_wrap ">
     <div class="wfacp_mb_cart_accordian clearfix" attr-collaps="<?php echo $cart_collapse_title; ?>" attr-expend="<?php echo $cart_expanded_title; ?>">
-        <div class="wfacp_show_icon_wrap <?php echo $class_added; ?>">
-            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                 width="446.853px" height="446.853px" viewBox="0 0 446.853 446.853" style="enable-background:new 0 0 446.853 446.853;"
+        <div class="wfacp_show_icon_wrap <?php echo $class_added; ?>" style="background: none;">
+            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 446.853 446.853" style="<?php echo $css; ?>"
                  xml:space="preserve">
 <g>
     <path d="M444.274,93.36c-2.558-3.666-6.674-5.932-11.145-6.123L155.942,75.289c-7.953-0.348-14.599,5.792-14.939,13.708

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\CSSList;
+namespace BWFAN\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Property\AtRule;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Property\AtRule;
 
 /**
  * A `BlockList` constructed by an unknown at-rule. `@media` rules are rendered into `AtRuleBlockList` objects.

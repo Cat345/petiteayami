@@ -9,7 +9,8 @@ function dgoraAsfwFs() {
     global $dgoraAsfwFs;
     if ( !isset( $dgoraAsfwFs ) ) {
         // Include Freemius SDK.
-        require_once dirname( __FILE__ ) . '/lib/start.php';
+        // Freemius SDK could be loaded via Composer autoload, but we disabled that with tools/fix-freemius.php.
+        require_once dirname( dirname( __FILE__ ) ) . '/vendor/freemius/wordpress-sdk/start.php';
         // Activate multisite network integration.
         if ( !defined( 'WP_FS__PRODUCT_700_MULTISITE' ) ) {
             define( 'WP_FS__PRODUCT_700_MULTISITE', true );
@@ -49,49 +50,9 @@ dgoraAsfwFs()->add_filter( 'plugin_icon', function () {
 } );
 if ( !dgoraAsfwFs()->is_premium() ) {
     dgoraAsfwFs()->add_action( 'after_uninstall', function () {
-        global $wpdb;
-        /* ------------
-         * WIPE OPTIONS
-         * ------------ */
-        $options = array(
-            'dgwt_wcas_schedule_single',
-            'dgwt_wcas_settings_show_advanced',
-            'dgwt_wcas_images_regenerated',
-            'dgwt_wcas_settings_version',
-            'dgwt_wcas_activation_date',
-            'dgwt_wcas_dismiss_review_notice',
-            'dgwt_wcas_stats_db_version',
-            'widget_dgwt_wcas_ajax_search'
-        );
-        foreach ( $options as $option ) {
-            delete_option( $option );
+        if ( !class_exists( '\\DgoraWcas\\Uninstall' ) ) {
+            require_once __DIR__ . '/../includes/Uninstall.php';
         }
-        /* ---------------
-         * WIPE TRANSIENTS
-         * --------------- */
-        $transients = array('dgwt_wcas_troubleshooting_async_results');
-        foreach ( $transients as $transient ) {
-            delete_transient( $transient );
-        }
-        if ( is_multisite() ) {
-            foreach ( get_sites() as $site ) {
-                if ( is_numeric( $site->blog_id ) && $site->blog_id > 1 ) {
-                    $table = $wpdb->prefix . $site->blog_id . '_' . 'options';
-                    foreach ( $options as $option ) {
-                        $wpdb->delete( $table, array(
-                            'option_name' => $option,
-                        ) );
-                    }
-                    foreach ( $transients as $transient ) {
-                        $wpdb->delete( $table, array(
-                            'option_name' => '_transient_' . $transient,
-                        ) );
-                        $wpdb->delete( $table, array(
-                            'option_name' => '_transient_timeout_' . $transient,
-                        ) );
-                    }
-                }
-            }
-        }
+        \DgoraWcas\Uninstall::afterUninstall();
     } );
 }

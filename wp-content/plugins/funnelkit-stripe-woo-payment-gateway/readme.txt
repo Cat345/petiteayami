@@ -1,10 +1,10 @@
 === FunnelKit Payment Gateway for Stripe WooCommerce ===
 Contributors: amans2k, xlplugins, teamwoofunnels
 Tags: stripe, apple pay, google pay, WooCommerce Stripe
-Requires at least: 5.4.0
-Tested up to: 6.8.3
+Requires at least: 5.4
+Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 1.14.0
+Stable tag: 1.14.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -258,6 +258,13 @@ Yes, visit our complete documentation on [Stripe Payment Gateway for WooCommerce
 
 
 == Change log ==
+
+= 1.14.0.2 =
+* Fixed: UPE Payment element was not showing up correctly for the different language than default language for translatepress & Weglot plugin. (#1027)
+
+= 1.14.0.1 =
+* Fixed: iDEAL and EPS gateways not functioning properly when enabled without other payment gateways. (#1019)
+* Improved: Enhanced handling of idempotency key errors when processing payments with saved payment methods. (#1022)
 
 = 1.14.0 =
 * Fixed: [Important] Issue with script loading because of dependency updated with WooCommerce v10.3.0. (#984)

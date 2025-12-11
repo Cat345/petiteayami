@@ -197,6 +197,36 @@ class Store_Credits extends Base_Model implements Model_Interface {
         $store_credit_entry->save();
     }
 
+    /**
+     * Set the maximum store credit points redeemable amount.
+     *
+     * @since 4.0.5
+     * @access public
+     *
+     * @param array $sc_data Store credit session data.
+     * @return array Filtered store credit session data.
+     */
+    public function set_maximum_store_credit_points_redeem( $sc_data ) {
+        if ( ! $sc_data ) {
+            return $sc_data;
+        }
+
+        $store_credit_apply_type_option = get_option( \ACFWF()->Plugin_Constants::STORE_CREDIT_APPLY_TYPE, 'coupon' );
+
+        // should recalculate the cart total if store credit apply type is coupon.
+        // Always use current cart data, not session data for accuracy.
+        if ( 'coupon' === $store_credit_apply_type_option ) {
+            $cart_total  = \WC()->cart->get_subtotal();
+            $cart_total += wc_prices_include_tax() ? \WC()->cart->get_subtotal_tax() : 0;
+
+            // Set the maximum store credit amount to the minimum of the user's entered amount and the max redeemable based on percentage limit.
+            // This ensures we don't override the user's balance or entered amount while still applying the percentage limit.
+            $sc_data['amount'] = min( $sc_data['amount'], $this->calculate_max_points_redeemable( $cart_total ) );
+        }
+
+        return $sc_data;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -215,5 +245,6 @@ class Store_Credits extends Base_Model implements Model_Interface {
         add_filter( 'acfw_get_store_credit_decrease_action_types', array( $this, 'store_credit_decrease_action_types' ), 10, 1 );
         add_action( 'woocommerce_order_refunded', array( $this, 'revoke_cashback_store_credits' ), 10, 2 );
         add_filter( 'acfw_is_valid_store_credits_redeem_amount', array( $this, 'validate_maximum_store_credit_points_redeem' ), 10, 3 );
+        add_filter( 'acfw_before_apply_store_credit_discount', array( $this, 'set_maximum_store_credit_points_redeem' ), 10, 1 );
     }
 }

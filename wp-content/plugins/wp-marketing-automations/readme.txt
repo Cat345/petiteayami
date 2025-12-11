@@ -2,9 +2,9 @@
 Contributors: xlplugins, amans2k
 Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing automation
 Requires at least: 5.0
-Tested up to: 6.8.2
+Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 3.6.4
+Stable tag: 3.6.4.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -415,6 +415,27 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 
 
 == Change log ==
+
+= 3.6.4.3 (Nov 27, 2025) =
+* Compatible upto WordPress 6.9
+* Improved: Allowed FunnelKit rest endpoints to work with custom authentication methods by adding extra checks.
+
+= 3.6.4.2 (Nov 03, 2025) =
+* Improved: Optimized the Send Test Email API call by adding extra checks, including user role validation in addition to nonce verification. (#4302)
+* Improved: Admin email is now excluded from notification recipients if other recipients are configured. (#4213)
+* Improved: Enhanced handling of RTL (right-to-left) text direction in the email content editor to align with the site’s language settings. (#4249)
+* Fixed: Improved data validation and variable handling in the abandoned cart module and review templates. (#4170)
+* Fixed: Resolved an undefined method error for locale_get_display_language in GTranslate compatibility, which occurred when the PHP Intl extension was missing. (#4187)
+* Fixed: Updated the Emogrifier library to avoid conflicts with other plugins. (#4264)
+
+= 3.6.4.1 (Oct 24, 2025) =
+* Added: Null checks in `get_all_events_rules` to prevent errors when dependencies are not available. (#4277)
+* Fixed: Added checks for class and method existence in user registration to enhance robustness. (#4280)
+* Fixed: Ensure rule classes are loaded if not found during rule matching to prevent errors. (#4267)
+* Fixed: Rendering issue in 'text with button' component by updating styles and validation logic. (#4239)
+* Fixed: Ensure connector classes load correctly when legacy automation action instances are not found. (#4220)
+* Fixed: Improved styling and layout consistency for Repeater Field and Google Sheet integration in the admin frontend. (#4189)
+* Fixed: Ensure merge tags are loaded correctly when sending test SMS. (#4184)
 
 = 3.6.4 (Jul 21, 2025) =
 * Added: Compatibility with CleanTalk Security & Malware Scan plugin to ensure proper REST API handling. (#4131)

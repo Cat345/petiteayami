@@ -454,9 +454,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 				foreach ( $bump_ids as $bump_id ) {
 					$bump_sql = $wpdb->prepare( 
 						"SELECT %d as 'object_id', 
-						COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN 1 END) AS `converted`, 
+						COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE %s) THEN 1 END) AS `converted`, 
 						COUNT(CASE WHEN (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN 1 END) as views, 
-						SUM(CASE WHEN (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN conv.bump_total ELSE 0 END) as 'revenue' 
+						SUM(CASE WHEN (conv.bump_accepted LIKE %s) THEN conv.bump_total ELSE 0 END) as 'revenue' 
 						FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . " AS conv 
 						WHERE conv.type = 2", 
 						$bump_id,
@@ -464,8 +464,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 						'%' . $wpdb->esc_like( $bump_id ) . '%',
 						'%' . $wpdb->esc_like( $bump_id ) . '%',
 						'%' . $wpdb->esc_like( $bump_id ) . '%',
-						'%' . $wpdb->esc_like( $bump_id ) . '%',
-						'%' . $wpdb->esc_like( $bump_id ) . '%'
 					);
 
 					$bump_result = $wpdb->get_results( $bump_sql, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -902,13 +900,11 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Canvas' ) ) {
 			
 			$get_query = $wpdb->prepare( 
 				"SELECT 
-				COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN 1 END) AS `converted`, 
+				COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE %s) THEN 1 END) AS `converted`, 
 				COUNT(CASE WHEN (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN 1 END) as viewed, 
-				SUM(CASE WHEN (conv.bump_accepted LIKE %s OR conv.bump_rejected LIKE %s) THEN conv.bump_total ELSE 0 END) as 'revenue' 
+				SUM(CASE WHEN (conv.bump_accepted LIKE %s) THEN conv.bump_total ELSE 0 END) as 'revenue' 
 				FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . " AS conv 
 				WHERE conv.type = 2", 
-				'%' . $wpdb->esc_like( $step_id ) . '%',
-				'%' . $wpdb->esc_like( $step_id ) . '%',
 				'%' . $wpdb->esc_like( $step_id ) . '%',
 				'%' . $wpdb->esc_like( $step_id ) . '%',
 				'%' . $wpdb->esc_like( $step_id ) . '%',

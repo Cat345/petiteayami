@@ -1115,6 +1115,16 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 						if ( round( $sale_price_raw, 2 ) === round( $regular_price_raw, 2 ) ) {
 							$regular_price = false;
 						}
+						$product_type = $product->data->get_type();
+						$is_subscription = in_array($product_type, ['subscription', 'subscription_variation', 'variable-subscription']);
+						$signup_fee = '';
+						$recurring_total = '';
+						
+						if ($is_subscription) {
+							$signup_fee = WFOCU_Common::maybe_parse_merge_tags('{{product_signup_fee key="' . $product_key . '" signup_label=" " }}');
+							$recurring_total = WFOCU_Common::maybe_parse_merge_tags('{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label=" " }}');
+						}
+						
 						self::$product_options[ $key ] = [
 							'value'               => $key,
 							'label'               => $product->data->get_name(),
@@ -1124,6 +1134,10 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 							'is_variation'        => $product->data->is_type( 'variable' ) ? true : false,
 							'offer_price'         => $sale_price,
 							'regular_price'       => $regular_price,
+							'type'        		  => $product_type,
+							'is_subscription'     => $is_subscription,
+							'signup_fee'          => $signup_fee,
+							'recurring_total'     => $recurring_total,
 						];
 					}
 				}

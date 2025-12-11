@@ -506,24 +506,31 @@ if ( ! class_exists( 'WFACP_Class_Register_Third_Party_Fields' ) ) {
 
 		}
 
-		public function update_posted_data_vice_versa_keys( $keys ) {
-			$missingKeys = [];
-			if ( is_array( $_POST ) && count( $_POST ) > 0 ) {
-				foreach ( $_POST as $i => $default_checkout_field ) {
-					if ( false == strpos( $i, 'billing' ) && false == strpos( $i, 'shipping' ) ) {
-						continue;
-					}
-					$missingKeys[] = $i;
-				}
-			}
-			if ( is_array( $missingKeys ) && count( $missingKeys ) > 0 ) {
-				foreach ( $missingKeys as $i => $v ) {
-					$keys[ $v ] = $v;
-				}
-			}
 
-			return $keys;
-		}
+        public function update_posted_data_vice_versa_keys( $keys ) {
+            $missingKeys = [];
+
+
+            $relevantKeys = array_filter( array_keys( $_POST ), function ( $key ) {
+                return strpos( $key, 'billing_' ) === 0 || strpos( $key, 'shipping_' ) === 0;
+            } );
+
+
+            $excludedKeys = WFACP_Common::get_aero_registered_checkout_fields();
+            foreach ( $relevantKeys as $key ) {
+                if ( ! array_key_exists( $key, $keys ) && ! in_array( $key, $excludedKeys ) ) {
+                    $missingKeys[] = $key;
+                }
+            }
+
+            if ( is_array( $missingKeys ) && count( $missingKeys ) > 0 ) {
+                foreach ( $missingKeys as $i => $v ) {
+                    $keys[ $v ] = $v;
+                }
+            }
+      
+            return $keys;
+        }
 
 	}
 }

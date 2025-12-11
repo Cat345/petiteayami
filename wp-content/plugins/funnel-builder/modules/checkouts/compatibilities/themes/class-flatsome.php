@@ -58,20 +58,79 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Flatsome' ) ) {
 			}
 
 			echo "<style>";
-			echo $bodyClass . '.wfacp_form #payment select {-webkit-appearance: menulist;-moz-appearance: menulist;}';
-			echo $bodyClass . ' ul.woocommerce-error li .container {padding: 0;}';
-			echo $bodyClass . ' #payment div.payment_box p {position: relative;font-weight: normal;}';
-			echo $bodyClass . ' .woocommerce-error .medium-text-center {text-align: left !important;}';
-			echo $bodyClass . ' .wfacp-coupon-page .message-container.container.medium-text-center { text-align: left !important;}';
-			echo $bodyClass . ' .wfacp_notice_dismise_link.demo_store a:before {display: none;}';
-			echo $bodyClass . ' .wfacp_main_form .woocommerce-error {color: #ff0000 !important;}';
-			echo $bodyClass . ' .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio] {  margin: 0 10px 0 0 !important;}';
-			echo $bodyClass . ' .wfacp-row.wfacp_coupon_field_box.wfacp_coupon_collapsed{ margin-top: 10px;}';
-			echo $bodyClass . ' .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box { margin-top: 10px;}';
-			echo $bodyClass . ' button.button.button-primary:after{   display: none;}';
-			echo $bodyClass . ' button.button.button-primary:before{   display: none;}';
+			echo $bodyClass . '.wfacp_form #payment select {-webkit-appearance: menulist;-moz-appearance: menulist;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' ul.woocommerce-error li .container {padding: 0;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' #payment div.payment_box p {position: relative;font-weight: normal;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .woocommerce-error .medium-text-center {text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp-coupon-page .message-container.container.medium-text-center { text-align: left !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp_notice_dismise_link.demo_store a:before {display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp_main_form .woocommerce-error {color: #ff0000 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio] {  margin: 0 10px 0 0 !important;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp-row.wfacp_coupon_field_box.wfacp_coupon_collapsed{ margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box { margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' button.button.button-primary:after{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $bodyClass . ' button.button.button-primary:before{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo "</style>";
 
+            if ( !function_exists('flatsome_scripts') ) {
+                return;
+            }
+
+			?>
+			<script>
+                window.addEventListener('load', function () {
+
+
+                    (function ($) {
+
+                        var checkoutAjaxFlag = false;
+
+                        // Before AJAX handler - set flag
+                        var ajaxBeforeHandler = function(event, jqxhr, settings) {
+                            try {
+                                if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
+                                    checkoutAjaxFlag = true;
+                                }
+                            } catch (error) {
+                                console.error('Error in ajaxBeforeHandler:', error);
+                            }
+                        };
+
+                    // After AJAX handler
+                        var ajaxHandler = function (event, jqxhr, settings) {
+                            try {
+                                // Condition 1: Flag set -> add class and return (ALWAYS)
+                                if (checkoutAjaxFlag === true) {
+                                    $("#wfacp_checkout_form").addClass("processing");
+
+                                }
+
+								if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
+                                    if(jqxhr.responseJSON){
+                                    	if (jqxhr.responseJSON.result === 'failure') {
+                                       	$("#wfacp_checkout_form").removeClass("processing");
+                                       	checkoutAjaxFlag = false;
+                                    	} else if (jqxhr.responseJSON.result === 'success') {
+                                       	$("#wfacp_checkout_form").addClass("processing");
+                                       	checkoutAjaxFlag = false;
+                                   	}
+                               		}
+                                }
+
+
+                            } catch (error) {
+                                console.error('Error in ajaxHandler:', error);
+                            }
+                        };
+
+                        $(document).ajaxSend(ajaxBeforeHandler);
+                        $(document).ajaxComplete(ajaxHandler);
+
+                    })(jQuery);
+                });
+			</script>
+
+<?php
 		}
 	}
 

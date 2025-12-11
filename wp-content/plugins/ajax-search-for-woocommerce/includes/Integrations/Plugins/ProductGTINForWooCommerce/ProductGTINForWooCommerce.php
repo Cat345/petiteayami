@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\ProductGTINForWooCommerce;
 
 // Exit if accessed directly
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -12,22 +13,26 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wordpress.org/plugins/product-gtin-ean-upc-isbn-for-woocommerce/
  * Author: Emanuela Castorina
  */
-class ProductGTINForWooCommerce {
+class ProductGTINForWooCommerce extends AbstractPluginIntegration {
+    protected const LABEL = 'Product GTIN for WooCommerce';
+
+    protected const VERSION_CONST = 'WPM_PRODUCT_GTIN_WC_VERSION';
+
+    protected const MIN_VERSION = '1.1';
+
+    public static function isActive() : bool {
+        if ( parent::isActive() === false ) {
+            return false;
+        }
+        return function_exists( 'wpm_product_gtin_wc' );
+    }
+
     /**
      * @var string EAN field key
      */
     private $eanField = '_wpm_gtin_code';
 
-    public function init() {
-        if ( !defined( 'WPM_PRODUCT_GTIN_WC_VERSION' ) ) {
-            return;
-        }
-        if ( version_compare( WPM_PRODUCT_GTIN_WC_VERSION, '1.1' ) < 0 ) {
-            return;
-        }
-        if ( !function_exists( 'wpm_product_gtin_wc' ) ) {
-            return;
-        }
+    public function init() : void {
         // Disable plugin hook on WP_Query.
         if ( !is_admin() ) {
             if ( isset( wpm_product_gtin_wc()->frontend ) && get_option( 'wpm_pgw_search_by_code', 'no' ) === 'yes' ) {

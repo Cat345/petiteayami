@@ -115,8 +115,8 @@ if ( ! class_exists( 'WC_Gateway_WFOCU_Test' ) ) {
 		 * @return array
 		 */
 		public function process_payment( $order_id ) {
-
-			$order = wc_get_order( $order_id );
+				
+				$order = wc_get_order( $order_id );
 
 			$order->payment_complete();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabberworm\CSS\Parsing;
+namespace BWFAN\Sabberworm\CSS\Parsing;
 
 class Anchor
 {

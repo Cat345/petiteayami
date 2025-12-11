@@ -153,22 +153,23 @@ class SettingsAPI {
             foreach ( $field as $option ) {
                 $type = ( isset( $option['type'] ) ? $option['type'] : 'text' );
                 $args = array(
-                    'id'                => $option['name'],
-                    'label_for'         => $args['label_for'] = "{$this->name}[{$option['name']}]",
-                    'desc'              => ( isset( $option['desc'] ) ? $option['desc'] : '' ),
-                    'name'              => $option['label'],
-                    'size'              => ( isset( $option['size'] ) ? $option['size'] : null ),
-                    'options'           => ( isset( $option['options'] ) ? $option['options'] : '' ),
-                    'std'               => ( isset( $option['default'] ) ? $option['default'] : '' ),
-                    'class'             => ( isset( $option['class'] ) ? $option['class'] : '' ),
-                    'sanitize_callback' => ( isset( $option['sanitize_callback'] ) ? $option['sanitize_callback'] : '' ),
-                    'number_min'        => ( isset( $option['number_min'] ) ? (int) $option['number_min'] : null ),
-                    'number_max'        => ( isset( $option['number_max'] ) ? (int) $option['number_max'] : null ),
-                    'type'              => $type,
-                    'move_dest'         => ( isset( $option['move_dest'] ) ? $option['move_dest'] : '' ),
-                    'input_data'        => ( isset( $option['input_data'] ) ? $option['input_data'] : '' ),
-                    'disabled'          => ( isset( $option['disabled'] ) ? $option['disabled'] : false ),
-                    'textarea_rows'     => ( isset( $option['textarea_rows'] ) ? $option['textarea_rows'] : 5 ),
+                    'id'                   => $option['name'],
+                    'label_for'            => $args['label_for'] = "{$this->name}[{$option['name']}]",
+                    'desc'                 => ( isset( $option['desc'] ) ? $option['desc'] : '' ),
+                    'name'                 => $option['label'],
+                    'size'                 => ( isset( $option['size'] ) ? $option['size'] : null ),
+                    'options'              => ( isset( $option['options'] ) ? $option['options'] : '' ),
+                    'std'                  => ( isset( $option['default'] ) ? $option['default'] : '' ),
+                    'class'                => ( isset( $option['class'] ) ? $option['class'] : '' ),
+                    'sanitize_callback'    => ( isset( $option['sanitize_callback'] ) ? $option['sanitize_callback'] : '' ),
+                    'number_min'           => ( isset( $option['number_min'] ) ? (int) $option['number_min'] : null ),
+                    'number_max'           => ( isset( $option['number_max'] ) ? (int) $option['number_max'] : null ),
+                    'type'                 => $type,
+                    'move_dest'            => ( isset( $option['move_dest'] ) ? $option['move_dest'] : '' ),
+                    'input_data'           => ( isset( $option['input_data'] ) ? $option['input_data'] : '' ),
+                    'disabled'             => ( isset( $option['disabled'] ) ? $option['disabled'] : false ),
+                    'textarea_rows'        => ( isset( $option['textarea_rows'] ) ? $option['textarea_rows'] : 5 ),
+                    'disabled_before_init' => ( isset( $option['disabled_before_init'] ) ? $option['disabled_before_init'] : false ),
                 );
                 add_settings_field(
                     "{$this->name}[" . $option['name'] . ']',
@@ -383,12 +384,14 @@ class SettingsAPI {
             $args['std'],
             $args
         );
+        $disabled = ( !empty( $args['disabled'] ) ? 'disabled="disabled"' : '' );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : 'regular' );
         $html = sprintf(
-            '<select class="%1$s" name="%2$s[%3$s]" id="%2$s[%3$s]">',
+            '<select class="%1$s" name="%2$s[%3$s]" id="%2$s[%3$s]" %4$s>',
             $size,
             $this->name,
-            $args['id']
+            $args['id'],
+            $disabled
         );
         foreach ( $args['options'] as $key => $label ) {
             $html .= sprintf(
@@ -417,13 +420,22 @@ class SettingsAPI {
         );
         $options = ( !empty( $args['options'] ) && is_array( $args['options'] ) ? $args['options'] : array() );
         $nonce = wp_create_nonce( 'dgwt_wcas_get_custom_fields' );
+        $disabled = disabled( ($args['disabled_before_init'] ?? false) || ($args['disabled'] ?? false), true, false );
+        $disabledBeforeInit = ( empty( $args['disabled_before_init'] ) ? '' : 'data-disabled-before-init="1"' );
+        $class = 'dgwt-wcas-selectize';
+        if ( !empty( $disabledBeforeInit ) ) {
+            $class .= ' loading';
+        }
         $html = sprintf(
-            '<input type="select-multiple" data-options="%4$s" class="dgwt-wcas-selectize" autocomplete="off" id="%1$s[%2$s]" name="%1$s[%2$s]" value="%3$s" data-security="%5$s"/>',
+            '<input type="select-multiple" data-options="%4$s" class="%5$s" autocomplete="off" id="%1$s[%2$s]" name="%1$s[%2$s]" value="%3$s" data-security="%6$s" %7$s %8$s/>',
             $this->name,
             $args['id'],
             $value,
             http_build_query( $options ),
-            $nonce
+            $class,
+            $nonce,
+            $disabled,
+            $disabledBeforeInit
         );
         $html .= $this->get_field_description( $args );
         echo $html;

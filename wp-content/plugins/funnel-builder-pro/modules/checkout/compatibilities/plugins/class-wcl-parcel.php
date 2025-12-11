@@ -236,12 +236,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				if ( ! $this->is_enabled() ) {
 					return $sections;
 				}
-				$page_version = WFACP_Common::get_checkout_page_version();
 
-				if ( version_compare( $page_version, '2.1.3', '>' ) ) {
-
-					return $sections;
-				}
 
 
 				if ( isset( $sections['fields']['wfacp_end_divider_billing'] ) ) {
@@ -380,13 +375,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				if ( ! $this->is_enabled() ) {
 					return $sections;
 				}
-				$page_version = WFACP_Common::get_checkout_page_version();
-
-				if ( version_compare( $page_version, '2.1.3', '>' ) ) {
-
-					return $sections;
-				}
-
+			
 
 				$templateSlug = wfacp_template()->get_template_slug();
 

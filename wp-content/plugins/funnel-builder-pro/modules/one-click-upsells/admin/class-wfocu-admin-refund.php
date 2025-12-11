@@ -116,7 +116,7 @@ if ( ! class_exists( 'WFOCU_Admin_Refund' ) ) {
 
 			$order = wc_get_order( $this->order_id );
 
-			$funnel_id = $order->get_meta( '_wfocu_funnel_id', true ); //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
+			$funnel_id = $order->get_meta( '_wfocu_funnel_id', true );
 
 			include plugin_dir_path( WFOCU_PLUGIN_FILE ) . '/admin/view/html-offer-refund.php';
 		}

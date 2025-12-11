@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector;
+namespace BWFAN\Symfony\Component\CssSelector;
 
-use Symfony\Component\CssSelector\Parser\Shortcut\ClassParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\ElementParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\EmptyStringParser;
-use Symfony\Component\CssSelector\Parser\Shortcut\HashParser;
-use Symfony\Component\CssSelector\XPath\Extension\HtmlExtension;
-use Symfony\Component\CssSelector\XPath\Translator;
+use BWFAN\Symfony\Component\CssSelector\Parser\Shortcut\ClassParser;
+use BWFAN\Symfony\Component\CssSelector\Parser\Shortcut\ElementParser;
+use BWFAN\Symfony\Component\CssSelector\Parser\Shortcut\EmptyStringParser;
+use BWFAN\Symfony\Component\CssSelector\Parser\Shortcut\HashParser;
+use BWFAN\Symfony\Component\CssSelector\XPath\Extension\HtmlExtension;
+use BWFAN\Symfony\Component\CssSelector\XPath\Translator;
 
 /**
  * CssSelectorConverter is the main entry point of the component and can convert CSS

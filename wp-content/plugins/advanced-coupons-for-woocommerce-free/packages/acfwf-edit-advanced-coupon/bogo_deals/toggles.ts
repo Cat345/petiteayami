@@ -2,6 +2,7 @@ import combination_products_template from './templates/combination_products';
 import product_categories_template from './templates/product_categories';
 import specific_products_template from './templates/specific_products';
 import any_products_template from './templates/any_products';
+import same_products_template from './templates/same_products';
 
 declare var jQuery: any;
 declare var acfw_edit_coupon: any;
@@ -62,6 +63,11 @@ export function toggle_block_data_type(e: JQuery.Event) {
 
     case 'any-products':
       markup = any_products_template(block_data ?? {}, isDeal);
+      isPremium = true;
+      break;
+
+    case 'same-products':
+      markup = same_products_template(block_data ?? {}, isDeal);
       isPremium = true;
       break;
 

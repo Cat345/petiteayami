@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommerceProductsFilter;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,14 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wordpress.org/plugins/woocommerce-products-filter/
  * Author: realmag777
  */
-class WooCommerceProductsFilter {
-	public function init() {
-		if ( ! defined( 'WOOF_VERSION' ) ) {
-			return;
-		}
-		if ( version_compare( WOOF_VERSION, '1.2.3' ) < 0 ) {
-			return;
-		}
+class WooCommerceProductsFilter extends AbstractPluginIntegration {
+	protected const LABEL         = 'WOOF – Products Filter for WooCommerce';
+	protected const VERSION_CONST = 'WOOF_VERSION';
+	protected const MIN_VERSION   = '1.2.3';
+
+	public function init():void {
+		// Only on search page
 		if ( ! $this->is_search() ) {
 			return;
 		}

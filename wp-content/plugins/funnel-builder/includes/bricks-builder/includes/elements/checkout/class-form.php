@@ -655,13 +655,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 			$this->set_current_group( 'styleCheckoutForm' );
 
 			$global_setting_options = array(
-				'.wfacp_main_wrapper',
-				'#wfacp-e-form *:not(i)',
-				'.wfacp_qv-main *',
+				'body.wfacp_main_wrapper',
+				'body #wfacp-e-form *:not(i)',
+				'body .wfacp_qv-main *',
 				'#wfacp-e-form .wfacp_section_heading.wfacp_section_title',
 				'#wfacp-e-form .wfacp_main_form .wfacp_whats_included h3',
-				' #wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description a',
-				' #wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description',
+				'#wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description a',
+				'#wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description',
 				'#wfacp-e-form .wfacp_main_form .wfacp-section h4',
 				'#wfacp-e-form .wfacp_main_form p.wfacp-form-control-wrapper label.wfacp-form-control-label',
 				'#wfacp-e-form .wfacp_main_form input[type="text"]',
@@ -728,7 +728,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span',
 				'#wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total small',
 				'#wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span.amount',
-				'#wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span.amount bdi',
+				'#wfacp-e-form .wfacp_main_form .shop_table tbody .cart_item .product-total .amount bdi',
 				'#wfacp-e-form .wfacp_main_form table.shop_table tbody .product-name .product-quantity',
 				'#wfacp-e-form .wfacp_main_form table.shop_table tbody td.product-total',
 				'#wfacp-e-form .wfacp_main_form table tbody dl',
@@ -811,8 +811,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount)',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th',
-				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th span',
-				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span',
+				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th span',
+				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td span',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td small',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td bdi',
 				'#wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td a',
@@ -862,7 +862,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th span',
 				'#wfacp-e-form  table.shop_table tfoot tr.order-total th small',
-				'#wfacp-e-form  table.shop_table tfoot tr.order-total th a',
+				'#wfacp-e-form  table.shop_table tfoot tr.order-total th a'
 			);
 
 			$this->add_font_family( 'wfacp_font_family', $global_setting_options, __( 'Family' ) );
@@ -1687,23 +1687,22 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 			$this->add_heading( __( 'Non-selected Items' ) );
 
-			$product_switcher_typo_optional = array(
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes  *',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_quantity_selector input',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details span',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details *',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button',
-
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span *',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span bdi',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec ins span',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec ins span bdi',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec del',
-				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec del *',
-			);
+			$product_switcher_typo_optional = [
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes  *',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_quantity_selector input',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details span',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details *',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span *',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span bdi',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec ins span',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec ins span bdi',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec del',
+				'#wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec del *',
+			];
 
 			$this->add_typography( $field_key . '_optional_item_typography', $product_switcher_typo_optional, array(), array(), '', array( 'color', 'text-align' ) );
 
@@ -1921,24 +1920,27 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Form' ) ) {
 
 
 			$cart_item_color = [
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item  .product-quantity',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total > span bdi',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total > span bdi span',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins > span.amount',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins bdi',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins span',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > span bdi',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > span bdi span',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins > span.amount',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins bdi',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins span',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total small',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dl',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dd',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dt',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-name-area p',
-				'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody tr td:not(.product-total) span:not(.wfacp-pro-count)',
+
+				'#wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name',
+				'#wfacp-e-form  table.shop_table tbody .cart_item  .product-quantity',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total > span bdi',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total > span bdi span',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins > span.amount',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins bdi',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total > ins span',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > span bdi',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > span bdi span',
+                '#wfacp-e-form .wfacp_main_form  .wfacp_order_summary_item_total table.shop_table tbody .wfacp_order_summary_item_total > span.amount bdi ',
+                '#wfacp-e-form .wfacp_main_form .shop_table tbody .cart_item .product-total .amount bdi ',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins > span.amount',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins bdi',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .wfacp_order_summary_item_total > ins span',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-total small',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dl',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dd',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-name-area dt',
+				'#wfacp-e-form  table.shop_table tbody .cart_item .product-name-area p',
+				'#wfacp-e-form  table.shop_table tbody tr td:not(.product-total) span:not(.wfacp-pro-count)',
 			];
 
 

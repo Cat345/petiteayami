@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath;
+namespace BWFAN\Symfony\Component\CssSelector\XPath;
 
-use Symfony\Component\CssSelector\Node\SelectorNode;
+use BWFAN\Symfony\Component\CssSelector\Node\SelectorNode;
 
 /**
  * XPath expression translator interface.

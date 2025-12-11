@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\Property;
+namespace BWFAN\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\OutputFormat;
 
 /**
  * `CSSNamespace` represents an `@namespace` rule.

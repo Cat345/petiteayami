@@ -121,6 +121,7 @@ class Allowed_Coupons extends Base_Model implements Model_Interface {
      * Allow coupon codes for individual use.
      *
      * @since 3.6.0
+     * @since 4.0.5 Enhanced to support case-insensitive coupon code comparison
      * @access public
      *
      * @param array      $value Allowed coupon codes list.
@@ -129,12 +130,26 @@ class Allowed_Coupons extends Base_Model implements Model_Interface {
      * @return array Filtered allowed coupon codes list.
      */
     public function allow_coupon_codes_for_individual_use( $value, $coupon, $applied_coupons ) {
-        $allowed_coupon_ids  = $this->get_individual_use_coupon_allowed_coupons( $coupon );
-        $allowed_coupons     = array_map( 'wc_get_coupon_code_by_id', $allowed_coupon_ids );
-        $intersected_coupons = array_intersect( $applied_coupons, $allowed_coupons );
+        $allowed_coupon_ids = $this->get_individual_use_coupon_allowed_coupons( $coupon );
+        $allowed_coupons    = array_map( 'wc_get_coupon_code_by_id', $allowed_coupon_ids );
 
-        if ( ! empty( $intersected_coupons ) ) {
-            $value = array_merge( $value, $intersected_coupons );
+        // Normalize allowed and applied coupon codes for case-insensitive comparison,
+        // but return the original applied coupon codes for compatibility.
+        $allowed_normalized = array_map( 'wc_format_coupon_code', $allowed_coupons );
+        $applied_map        = array();
+        foreach ( (array) $applied_coupons as $applied_code ) {
+            $applied_map[ \wc_format_coupon_code( $applied_code ) ] = $applied_code;
+        }
+
+        $to_keep = array();
+        foreach ( $allowed_normalized as $normalized_code ) {
+            if ( isset( $applied_map[ $normalized_code ] ) ) {
+                $to_keep[] = $applied_map[ $normalized_code ];
+            }
+        }
+
+        if ( ! empty( $to_keep ) ) {
+            $value = array_values( array_unique( array_merge( (array) $value, $to_keep ) ) );
         }
 
         return $value;

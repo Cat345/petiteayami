@@ -1,6 +1,6 @@
 <?php
 //phpcs:disable
-namespace Sabberworm\CSS;
+namespace BWFAN\Sabberworm\CSS;
 
 /**
  * Class OutputFormat

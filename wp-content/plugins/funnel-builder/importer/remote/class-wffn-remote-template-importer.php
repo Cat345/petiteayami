@@ -58,6 +58,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				"template" => $template_slug,
 				"builder"  => $builder,
 				"version"  => 4,
+				"builder_version" => WFFN_Common::get_builder_version( $builder ),
 				"locale" => get_locale()
 			);
 
@@ -146,16 +147,16 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 						$directory = $builder . '/' . $type . '/' . $template;
 
 						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR );  //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+							mkdir( WFFN_TEMPLATE_UPLOAD_DIR );  //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 						}
 
 						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 						}
 
 
 						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ) ) {
-							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir
+							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 						}
 						$template_path = WFFN_TEMPLATE_UPLOAD_DIR . $directory . '.json';
 						file_put_contents( $template_path, $response[ $type ] ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents

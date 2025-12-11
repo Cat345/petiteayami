@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Exception;
+namespace BWFAN\Symfony\Component\CssSelector\Exception;
 
 /**
  * Interface for exceptions.

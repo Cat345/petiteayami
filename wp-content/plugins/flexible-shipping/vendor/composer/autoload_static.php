@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit2967f98637f639fef9aff2b1bf250071
+class ComposerStaticInit40309b3e5b73b12be19bbafaccb8ba01
 {
     public static $prefixLengthsPsr4 = array (
         'W' => 
@@ -173,6 +173,7 @@ class ComposerStaticInit2967f98637f639fef9aff2b1bf250071
         'FSVendor\\Octolize\\Onboarding\\PluginUpgrade\\PluginUpgradeWatcher' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-onboarding/src/Onboarding/PluginUpgrade/PluginUpgradeWatcher.php',
         'FSVendor\\Octolize\\ShippingExtensions\\AdminPage' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/AdminPage.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Assets' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Assets.php',
+        'FSVendor\\Octolize\\ShippingExtensions\\BlackFriday2025Promo' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/BlackFriday2025Promo.php',
         'FSVendor\\Octolize\\ShippingExtensions\\Page' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Page.php',
         'FSVendor\\Octolize\\ShippingExtensions\\PageViewTracker' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PageViewTracker.php',
         'FSVendor\\Octolize\\ShippingExtensions\\PluginLinks' => __DIR__ . '/../..' . '/vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/PluginLinks.php',
@@ -696,9 +697,9 @@ class ComposerStaticInit2967f98637f639fef9aff2b1bf250071
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit2967f98637f639fef9aff2b1bf250071::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit2967f98637f639fef9aff2b1bf250071::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit2967f98637f639fef9aff2b1bf250071::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit40309b3e5b73b12be19bbafaccb8ba01::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit40309b3e5b73b12be19bbafaccb8ba01::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit40309b3e5b73b12be19bbafaccb8ba01::$classMap;
 
         }, null, ClassLoader::class);
     }

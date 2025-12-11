@@ -6,6 +6,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommercePrivateStore;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -16,14 +17,14 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://barn2.co.uk/wordpress-plugins/woocommerce-private-store/
  * Author: Barn2 Plugins
  */
-class WooCommercePrivateStore {
-    public function init() {
-        if ( !defined( '\\Barn2\\Plugin\\WC_Private_Store\\PLUGIN_VERSION' ) ) {
-            return;
-        }
-        if ( version_compare( \Barn2\Plugin\WC_Private_Store\PLUGIN_VERSION, '1.6.3' ) < 0 ) {
-            return;
-        }
+class WooCommercePrivateStore extends AbstractPluginIntegration {
+    protected const LABEL = 'WooCommerce Private Store';
+
+    protected const VERSION_CONST = '\\Barn2\\Plugin\\WC_Private_Store\\PLUGIN_VERSION';
+
+    protected const MIN_VERSION = '1.6.3';
+
+    public function init() : void {
         if ( !dgoraAsfwFs()->is_premium() ) {
             add_filter(
                 'http_request_args',

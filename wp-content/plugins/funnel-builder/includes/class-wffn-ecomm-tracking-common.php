@@ -50,34 +50,61 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- Pinterest Pixel Base Code -->
                 <script type="text/javascript">
                     function wffnPintTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
 
-                        if (1 === wffn_shouldRender) {
-                            !function (e) {
-                                if (!window.pintrk) {
-                                    window.pintrk = function () {
-                                        window.pintrk.queue.push(
-                                            Array.prototype.slice.call(arguments))
-                                    };
-                                    var
-                                        n = window.pintrk;
-                                    n.queue = [], n.version = "3.0";
-                                    var
-                                        t = document.createElement("script");
-                                    t.async = !0, t.src = e;
-                                    var
-                                        r = document.getElementsByTagName("script")[0];
-                                    r.parentNode.insertBefore(t, r)
+                            if (1 === wffn_shouldRender) {
+                                // Enhanced Pinterest tracking with error handling
+                                (function (e) {
+                                    try {
+                                        if (!window.pintrk) {
+                                            window.pintrk = function () {
+                                                try {
+                                                    if (window.pintrk.queue) {
+                                                        window.pintrk.queue.push(Array.prototype.slice.call(arguments));
+                                                    }
+                                                } catch (error) {
+                                                    console.log('Pinterest tracking error:', error);
+                                                }
+                                            };
+                                            
+                                            var n = window.pintrk;
+                                            n.queue = [];
+                                            n.version = "3.0";
+                                            
+                                            var t = document.createElement("script");
+                                            t.async = true;
+                                            t.src = e;
+                                            t.onerror = function() {
+                                                console.log('Failed to load Pinterest tracking script');
+                                            };
+                                            
+                                            var r = document.getElementsByTagName("script")[0];
+                                            if (r && r.parentNode) {
+                                                r.parentNode.insertBefore(t, r);
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.log('Pinterest initialization error:', error);
+                                    }
+                                })("https://s.pinimg.com/ct/core.js");
+
+								<?php foreach ( $get_each_pixel_id as $id ) { ?>
+                                try {
+                                    if (typeof pintrk === 'function') {
+                                        pintrk('load', '<?php echo esc_attr( $id ) ?>');
+										<?php if ( $this->should_render_view( 'pint' ) ) { ?>
+                                        pintrk('page');
+										<?php } ?>
+                                    }
+                                } catch (error) {
+                                    console.log('Pinterest pixel tracking error for ID <?php echo esc_attr( $id ) ?>:', error);
                                 }
-                            }("https://s.pinimg.com/ct/core.js");
-
-							<?php foreach ( $get_each_pixel_id as $id ) { ?>
-                            pintrk('load', '<?php echo esc_js( $id ) ?>');
-							<?php if ( $this->should_render_view( 'pint' ) ) { ?>
-                            pintrk('page');
-							<?php } ?>
-							<?php } ?>
+								<?php } ?>
+                            }
+                        } catch (error) {
+                            console.log('Pinterest tracking function error:', error);
                         }
                     }
                 </script>
@@ -91,11 +118,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- End Pinterest Pixel Base Code -->
                 <script type="text/javascript">
                     function wffnPintTrackingBaseIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-							<?php $this->maybe_track_custom_steps_event_pint(); ?>
-							<?php $this->maybe_print_pint_ecomm(); ?>
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                try {
+									<?php $this->maybe_track_custom_steps_event_pint(); ?>
+									<?php $this->maybe_print_pint_ecomm(); ?>
+                                } catch (error) {
+                                    console.log('Pinterest base tracking error:', error);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Pinterest base tracking function error:', error);
                         }
                     }
                 </script>
@@ -111,47 +146,86 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <script type="text/javascript">
 					<?php $this->prepare_wffnevents(); ?>
                     function wffnFbTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-                            !function (f, b, e, v, n, t, s) {
-                                if (f.fbq) return;
-                                n = f.fbq = function () {
-                                    n.callMethod ?
-                                        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-                                };
-                                if (!f._fbq) f._fbq = n;
-                                n.push = n;
-                                n.loaded = !0;
-                                n.version = '2.0';
-                                n.queue = [];
-                                t = b.createElement(e);
-                                t.async = !0;
-                                t.src = v;
-                                s = b.getElementsByTagName(e)[0];
-                                s.parentNode.insertBefore(t, s)
-                            }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-							<?php
-
-							$get_all_fb_pixel = $this->is_fb_pixel();
-							$get_each_pixel_id = explode( ',', $get_all_fb_pixel );
-							if ( is_array( $get_each_pixel_id ) && count( $get_each_pixel_id ) > 0 ) {
-							foreach ( $get_each_pixel_id as $pixel_id ) {
-							?>
-							<?php if ( true === $this->is_fb_advanced_tracking_on() && count( $fb_advanced_pixel_data ) > 0 ) { ?>
-                            fbq('init', '<?php echo esc_js( trim( $pixel_id ) ); ?>', <?php echo wp_json_encode( $fb_advanced_pixel_data ); ?>);
-							<?php } else { ?>
-                            fbq('init', '<?php echo esc_js( trim( $pixel_id ) ); ?>');
-							<?php } ?>
-							<?php
-							}
-							?>
-							<?php $this->render_fb_view(); ?>
-							<?php $this->maybe_track_custom_steps_event( 'fb' ); ?>
-							<?php $this->maybe_print_fb_script(); ?>
-							<?php
-							}
-							?>
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                // Enhanced Facebook tracking with error handling
+                                (function (f, b, e, v, n, t, s) {
+                                    try {
+                                        if (f.fbq) return;
+                                        
+                                        n = f.fbq = function () {
+                                            try {
+                                                if (n.callMethod) {
+                                                    n.callMethod.apply(n, arguments);
+                                                } else {
+                                                    if (n.queue) {
+                                                        n.queue.push(arguments);
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.log('Facebook pixel tracking error:', error);
+                                            }
+                                        };
+                                        
+                                        if (!f._fbq) f._fbq = n;
+                                        n.push = n;
+                                        n.loaded = true;
+                                        n.version = '2.0';
+                                        n.queue = [];
+                                        
+                                        t = b.createElement(e);
+                                        t.async = true;
+                                        t.src = v;
+                                        t.onerror = function() {
+                                            console.log('Failed to load Facebook tracking script');
+                                        };
+                                        
+                                        s = b.getElementsByTagName(e)[0];
+                                        if (s && s.parentNode) {
+                                            s.parentNode.insertBefore(t, s);
+                                        }
+                                    } catch (error) {
+                                        console.log('Facebook initialization error:', error);
+                                    }
+                                })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+								
+								<?php
+								$get_all_fb_pixel = $this->is_fb_pixel();
+								$get_each_pixel_id = explode( ',', $get_all_fb_pixel );
+								if ( is_array( $get_each_pixel_id ) && count( $get_each_pixel_id ) > 0 ) {
+								foreach ( $get_each_pixel_id as $pixel_id ) {
+								?>
+								try {
+									<?php if ( true === $this->is_fb_advanced_tracking_on() && count( $fb_advanced_pixel_data ) > 0 ) { ?>
+									if (typeof fbq === 'function') {
+										fbq('init', '<?php echo esc_attr( trim( $pixel_id ) ); ?>', <?php echo wp_json_encode( $fb_advanced_pixel_data ); ?>);
+									}
+									<?php } else { ?>
+									if (typeof fbq === 'function') {
+										fbq('init', '<?php echo esc_attr( trim( $pixel_id ) ); ?>');
+									}
+									<?php } ?>
+								} catch (error) {
+									console.error('Facebook pixel init error for ID <?php echo esc_attr( trim( $pixel_id ) ); ?>:', error);
+								}
+								<?php
+								}
+								?>
+								try {
+									<?php $this->render_fb_view(); ?>
+									<?php $this->maybe_track_custom_steps_event( 'fb' ); ?>
+									<?php $this->maybe_print_fb_script(); ?>
+								} catch (error) {
+									console.error('Facebook tracking events error:', error);
+								}
+								<?php
+								}
+								?>
+                            }
+                        } catch (error) {
+                            console.log('Facebook tracking function error:', error);
                         }
                     }
 
@@ -239,48 +313,85 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			return false;
 		}
 
-		/**
-		 * maybe render script to fire fb pixel view event
-		 */
-		public function render_fb_view() {
-			if ( $this->should_render_view( 'fb' ) ) {
-				?>
-                if(typeof wffn_ev_custom_fb_event_id === 'undefined'){
-                var wffn_ev_custom_fb_event_id = Math.random().toString(36).substring(2, 15);
+	/**
+	 * maybe render script to fire fb pixel view event
+	 */
+	public function render_fb_view() {
+		if ( $this->should_render_view( 'fb' ) ) {
+			?>
+                try {
+                    if (typeof fbq === 'function') {
+						console.trace();
+                        var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent({}) : {};
+                        fbq('track', 'PageView', trafficParams, {'eventID': 'PageView_'+wffn_ev_view_fb_event_id});
+                    }
+                } catch (error) {
+                    console.log('Facebook PageView tracking error:', error);
                 }
-                var wffn_ev_view_fb_event_id = Math.random().toString(36).substring(2, 15);
-                fbq('track', 'PageView',(typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent({} ):{},{'eventID': 'PageView_'+wffn_ev_view_fb_event_id});
-				<?php
+			<?php
 
-			}
 		}
+	}
 
-		public function prepare_wffnevents() {
-			if ( $this->should_render_view( 'fb' ) ) {
-				?>
-                if(typeof wffn_ev_custom_fb_event_id === 'undefined'){
+	public function prepare_wffnevents() {
+		$has_events = false;
+		
+		// Initialize global variables only once
+		?>
+        try {
+            if(typeof wffn_ev_custom_fb_event_id === 'undefined'){
                 var wffn_ev_custom_fb_event_id = Math.random().toString(36).substring(2, 15);
-                }
-                var wffnEvents = [];
+            }
+            if(typeof wffn_ev_view_fb_event_id === 'undefined'){
                 var wffn_ev_view_fb_event_id = Math.random().toString(36).substring(2, 15);
+            }
+            if(typeof wffnEvents === 'undefined'){
+                var wffnEvents = [];
+            }
+        } catch (error) {
+            console.log('WFFN global variables initialization error:', error);
+        }
+		<?php
+		
+		if ( $this->should_render_view( 'fb' ) ) {
+			$has_events = true;
+			?>
+            try {
                 wffnEvents.push({event: 'PageView', 'event_id': 'PageView_'+wffn_ev_view_fb_event_id});
-				<?php
-
-			}
-
-			if ( $this->should_render() && $this->is_enable_custom_event() ) {
-				?>
-                if(typeof wffn_ev_custom_fb_event_id === 'undefined'){
-                var wffn_ev_custom_fb_event_id = Math.random().toString(36).substring(2, 15);
-                }
-                if(typeof wffnEvents === 'undefined'){
-                var wffnEvents = [];
-                }
-                wffnEvents.push({event: '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', 'event_id': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id});
-				<?php
-
-			}
+            } catch (error) {
+                console.log('WFFN PageView event preparation error:', error);
+            }
+			<?php
 		}
+
+		if ( $this->should_render() && $this->is_enable_custom_event() ) {
+			$has_events = true;
+			?>
+            try {
+                wffnEvents.push({event: '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', 'event_id': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id});
+            } catch (error) {
+                console.log('WFFN custom event preparation error:', error);
+            }
+			<?php
+		}
+		
+		// Dispatch custom event only once at the end if we have events
+		if ( $has_events ) {
+			?>
+            // Dispatch custom event to notify that wffnEvents is ready
+            try {
+                if (typeof document !== 'undefined' && !window.wffnEventsReadyDispatched) {
+                    window.wffnEventsReadyDispatched = true;
+                    document.dispatchEvent(new CustomEvent('wffnEventsReady', {
+                        detail: { events: wffnEvents, source: 'wffn_events' }
+                    }));
+                }
+            } catch (error) {
+                console.log('WFFN events dispatch error:', error);
+            }
+			<?php
+		}
+	}
 
 		public function is_fb_pixel() {
 
@@ -334,20 +445,28 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- Google Analytics Script Added By WooFunnels-->
                 <script type="text/javascript">
                     function wffnGaTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-                            <?php if ( false === $this->gtag_rendered ) {
-                                $this->load_gtag( $get_tracking_code[0] );
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                try {
+                                    <?php if ( false === $this->gtag_rendered ) {
+                                        $this->load_gtag( $get_tracking_code[0] );
 
+                                    }
+                                    foreach ( $get_tracking_code as $k => $code ) {
+                                        echo "if (typeof gtag === 'function') { gtag('config', '" . esc_attr( trim( $code ) ) . "'); }";
+                                        $label = false;
+                                        esc_js( $this->render_gtag_custom_event( $k, $code, $label, 'ga' ) );
+                                        $this->maybe_print_gtag_script( $k, $code, $label, $this->do_track_ga_purchase() ); //phpcs:ignore
+                                    }
+                                    ?>
+                                } catch (error) {
+                                    console.log('Google Analytics tracking error:', error);
+                                }
                             }
-                            foreach ( $get_tracking_code as $k => $code ) {
-                                echo "gtag('config', '" . esc_js( trim( $code ) ) . "');";
-                                $label = false;
-                                esc_js( $this->render_gtag_custom_event( $k, $code, $label, 'ga' ) );
-                                $this->maybe_print_gtag_script( $k, $code, $label, $this->do_track_ga_purchase() ); //phpcs:ignore
-                            }
-                            ?>
+                        } catch (error) {
+                            console.log('Google Analytics tracking function error:', error);
                         }
                     }
                 </script>
@@ -385,31 +504,61 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		public function render_gtag_custom_event( $code, $label, $mode ) {
 			if ( ( ( $mode === 'ga' && $this->is_enable_custom_event_ga() ) || ( $mode === 'gad' && $this->is_enable_custom_event_gad() ) ) ) {
 				?>
-                gtag('event','<?php echo esc_attr( $this->get_custom_event_name() ); ?>',{send_to: '<?php echo esc_attr( $code ); ?>'});
+                try {
+                    if (typeof gtag === 'function') {
+                        gtag('event','<?php echo esc_attr( $this->get_custom_event_name() ); ?>',{send_to: '<?php echo esc_attr( $code ); ?>'});
+                    }
+                } catch (error) {
+                    console.log('Google Analytics custom event error:', error);
+                }
 				<?php
 			}
 		}
 
 
-		public function load_gtag( $id ) {
-			?>
-            (function (window, document, src) {
-            var a = document.createElement('script'),
-            m = document.getElementsByTagName('script')[0];
-            a.defer = 1;
-            a.src = src;
-            m.parentNode.insertBefore(a, m);
-            })(window, document, '//www.googletagmanager.com/gtag/js?id=<?php echo esc_js( trim( $id ) ); ?>');
+	public function load_gtag( $id ) {
+		?>
+        (function (window, document, src) {
+            try {
+                var a = document.createElement('script');
+                var m = document.getElementsByTagName('script')[0];
+                
+                if (!m || !m.parentNode) {
+                    console.log('Google Analytics: Unable to find script insertion point');
+                    return;
+                }
+                
+                a.defer = 1;
+                a.src = src;
+                a.onerror = function() {
+                    console.log('Failed to load Google Analytics script');
+                };
+                
+                m.parentNode.insertBefore(a, m);
+            } catch (error) {
+                console.log('Google Analytics script loading error:', error);
+            }
+        })(window, document, '//www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( trim( $id ) ); ?>');
 
+        try {
             window.dataLayer = window.dataLayer || [];
             window.gtag = window.gtag || function gtag() {
-            dataLayer.push(arguments);
+                try {
+                    if (window.dataLayer) {
+                        window.dataLayer.push(arguments);
+                    }
+                } catch (error) {
+                    console.log('Google Analytics gtag error:', error);
+                }
             };
 
             gtag('js', new Date());
-			<?php
-			$this->gtag_rendered = true;
-		}
+        } catch (error) {
+            console.log('Google Analytics initialization error:', error);
+        }
+		<?php
+		$this->gtag_rendered = true;
+	}
 
 		/**
 		 * render google ads analytics core script to load framework
@@ -428,30 +577,38 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- Google Ads Script Added By WooFunnels -->
                 <script type="text/javascript">
                     function wffnGadTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-							<?php
-							if ( false === $this->gtag_rendered ) {
-								$this->load_gtag( $get_tracking_code[0] );
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                try {
+									<?php
+									if ( false === $this->gtag_rendered ) {
+										$this->load_gtag( $get_tracking_code[0] );
 
-							}
+									}
 
-							foreach ( $get_tracking_code as $k => $code ) {
-								echo "gtag('config', '" . esc_js( trim( $code ) ) . "');";
-								if ( $this->should_render_view( 'gad' ) ) {
-									echo "gtag('event', 'page_view', {send_to: '" . esc_js( trim( $code ) ) . "'});";
-								}
-								$label = false;
-								if ( $this->do_track_gad_purchase() && false !== $this->gad_purchase_label() ) {
-									$gad_labels = explode( ",", $this->gad_purchase_label() );
-									$label      = isset( $gad_labels[ $k ] ) ? $gad_labels[ $k ] : $gad_labels[0];
-								}
-								esc_js( $this->render_gtag_custom_event( $k, $code, $label, 'gad' ) );
-								$this->maybe_print_gtag_script( $k . 'gad', $code, $label, $this->do_track_gad_purchase(), true );
-							}
+									foreach ( $get_tracking_code as $k => $code ) {
+										echo "if (typeof gtag === 'function') { gtag('config', '" . esc_attr( trim( $code ) ) . "'); }";
+										if ( $this->should_render_view( 'gad' ) ) {
+											echo "if (typeof gtag === 'function') { gtag('event', 'page_view', {send_to: '" . esc_attr( trim( $code ) ) . "'}); }";
+										}
+										$label = false;
+										if ( $this->do_track_gad_purchase() && false !== $this->gad_purchase_label() ) {
+											$gad_labels = explode( ",", $this->gad_purchase_label() );
+											$label      = isset( $gad_labels[ $k ] ) ? $gad_labels[ $k ] : $gad_labels[0];
+										}
+										esc_js( $this->render_gtag_custom_event( $k, $code, $label, 'gad' ) );
+										$this->maybe_print_gtag_script( $k . 'gad', $code, $label, $this->do_track_gad_purchase(), true );
+									}
 
-							?>
+									?>
+                                } catch (error) {
+                                    console.log('Google Ads tracking error:', error);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Google Ads tracking function error:', error);
                         }
                     }
                 </script>
@@ -478,59 +635,105 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- snapchat Pixel Base Code -->
                 <script type="text/javascript">
                     function wffnSnapchatTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-                            (function (win, doc, sdk_url) {
-                                if (win.snaptr) {
-                                    return;
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                // Enhanced Snapchat tracking with error handling
+                                (function (win, doc, sdk_url) {
+                                    try {
+                                        if (win.snaptr) {
+                                            return;
+                                        }
+
+                                        var tr = win.snaptr = function () {
+                                            try {
+                                                if (tr.handleRequest) {
+                                                    tr.handleRequest.apply(tr, arguments);
+                                                } else {
+                                                    if (tr.queue) {
+                                                        tr.queue.push(arguments);
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.log('Snapchat tracking error:', error);
+                                            }
+                                        };
+                                        
+                                        tr.queue = [];
+                                        var s = 'script';
+                                        var new_script_section = doc.createElement(s);
+                                        new_script_section.async = true;
+                                        new_script_section.src = sdk_url;
+                                        new_script_section.onerror = function() {
+                                            console.log('Failed to load Snapchat tracking script');
+                                        };
+                                        
+                                        var insert_pos = doc.getElementsByTagName(s)[0];
+                                        if (insert_pos && insert_pos.parentNode) {
+                                            insert_pos.parentNode.insertBefore(new_script_section, insert_pos);
+                                        }
+                                    } catch (error) {
+                                        console.log('Snapchat initialization error:', error);
+                                    }
+                                })(window, document, 'https://sc-static.net/scevent.min.js');
+
+								<?php foreach ( $get_each_pixel_id as $id ) {
+
+								$email = $this->get_user_email();
+								if ( ! empty( $email ) ) {
+								?>
+                                try {
+                                    if (typeof snaptr === 'function') {
+                                        snaptr('init', '<?php echo esc_attr( $id ); ?>', {
+                                            integration: 'woocommerce',
+                                            user_email: '<?php echo esc_attr( $email ); ?>'
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.log('Snapchat pixel init error for ID <?php echo esc_attr( $id ); ?>:', error);
                                 }
-
-                                var tr = win.snaptr = function () {
-                                    tr.handleRequest ? tr.handleRequest.apply(tr, arguments) : tr.queue.push(arguments);
-                                };
-                                tr.queue = [];
-                                var s = 'script';
-                                var new_script_section = doc.createElement(s);
-                                new_script_section.async = !0;
-                                new_script_section.src = sdk_url;
-                                var insert_pos = doc.getElementsByTagName(s)[0];
-                                insert_pos.parentNode.insertBefore(new_script_section, insert_pos);
-                            })(window, document, 'https://sc-static.net/scevent.min.js');
-
-							<?php foreach ( $get_each_pixel_id as $id ) {
-
-							$email = $this->get_user_email();
-							if ( ! empty( $email ) ) {
-							?>
-
-                            snaptr('init', '<?php echo esc_js( $id ); ?>', {
-                                integration: 'woocommerce',
-                                user_email: '<?php echo esc_attr( $email ); ?>'
-                            });
-							<?php
-							} else {
-							?>
-
-                            snaptr('init', '<?php echo esc_js( $id ); ?>', {
-                                integration: 'woocommerce'
-                            });
-							<?php
-							}
-							} ?>
+								<?php
+								} else {
+								?>
+                                try {
+                                    if (typeof snaptr === 'function') {
+                                        snaptr('init', '<?php echo esc_attr( $id ); ?>', {
+                                            integration: 'woocommerce'
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.log('Snapchat pixel init error for ID <?php echo esc_attr( $id ); ?>:', error);
+                                }
+								<?php
+								}
+								} ?>
+                            }
+                        } catch (error) {
+                            console.log('Snapchat tracking function error:', error);
                         }
                     }
 
                 </script>
                 <script type="text/javascript">
                     function wffnSnapchatTrackingBaseIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-							<?php if ( $this->should_render_view( 'snapchat' ) ) { ?>
-                            snaptr('track', 'PAGE_VIEW');
-							<?php } ?>
-							<?php esc_js( $this->maybe_print_snapchat_ecomm() ); ?> //phpcs:ignore
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                try {
+									<?php if ( $this->should_render_view( 'snapchat' ) ) { ?>
+                                    if (typeof snaptr === 'function') {
+                                        snaptr('track', 'PAGE_VIEW');
+                                    }
+									<?php } ?>
+									<?php esc_js( $this->maybe_print_snapchat_ecomm() ); ?> //phpcs:ignore
+                                } catch (error) {
+                                    console.log('Snapchat base tracking error:', error);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Snapchat base tracking function error:', error);
                         }
                     }
                 </script>
@@ -573,47 +776,97 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                 <!-- Tiktok Pixel Base Code -->
                 <script type="text/javascript">
                     function wffnTiktokTrackingIn() {
-                        var wffn_shouldRender = 1;
-						<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                        if (1 === wffn_shouldRender) {
-
-                            !function (w, d, t) {
-                                w.TiktokAnalyticsObject = t;
-                                var ttq = w[t] = w[t] || [];
-                                ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
-                                ttq.setAndDefer = function (t, e) {
-                                    t[e] = function () {
-                                        t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+                        try {
+                            var wffn_shouldRender = 1;
+							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                            if (1 === wffn_shouldRender) {
+                                // Enhanced TikTok tracking with error handling
+                                (function (w, d, t) {
+                                    try {
+                                        w.TiktokAnalyticsObject = t;
+                                        var ttq = w[t] = w[t] || [];
+                                        ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
+                                        
+                                        ttq.setAndDefer = function (t, e) {
+                                            t[e] = function () {
+                                                try {
+                                                    t.push([e].concat(Array.prototype.slice.call(arguments, 0)));
+                                                } catch (error) {
+                                                    console.log('TikTok tracking method error:', error);
+                                                }
+                                            }
+                                        };
+                                        
+                                        for (var i = 0; i < ttq.methods.length; i++) {
+                                            ttq.setAndDefer(ttq, ttq.methods[i]);
+                                        }
+                                        
+                                        ttq.instance = function (t) {
+                                            try {
+                                                for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) {
+                                                    ttq.setAndDefer(e, ttq.methods[n]);
+                                                }
+                                                return e;
+                                            } catch (error) {
+                                                console.log('TikTok instance error:', error);
+                                                return [];
+                                            }
+                                        };
+                                        
+                                        ttq.load = function (e, n) {
+                                            try {
+                                                var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
+                                                ttq._i = ttq._i || {};
+                                                ttq._i[e] = [];
+                                                ttq._i[e]._u = i;
+                                                ttq._t = ttq._t || {};
+                                                ttq._t[e] = +new Date;
+                                                ttq._o = ttq._o || {};
+                                                ttq._o[e] = n || {};
+                                                
+                                                var o = document.createElement("script");
+                                                o.type = "text/javascript";
+                                                o.async = true;
+                                                o.src = i + "?sdkid=" + e + "&lib=" + t;
+                                                o.onerror = function() {
+                                                    console.log('Failed to load TikTok tracking script');
+                                                };
+                                                
+                                                var a = document.getElementsByTagName("script")[0];
+                                                if (a && a.parentNode) {
+                                                    a.parentNode.insertBefore(o, a);
+                                                }
+                                            } catch (error) {
+                                                console.log('TikTok load error:', error);
+                                            }
+                                        };
+                                    } catch (error) {
+                                        console.log('TikTok initialization error:', error);
                                     }
-                                };
-                                for (var i = 0; i < ttq.methods.length; i++)
-                                    ttq.setAndDefer(ttq, ttq.methods[i]);
-                                ttq.instance = function (t) {
-                                    for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
-                                    return e
-                                };
-                                ttq.load = function (e, n) {
-                                    var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
-                                    ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = i, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {};
-                                    var o = document.createElement("script");
-                                    o.type = "text/javascript", o.async = !0, o.src = i + "?sdkid=" + e + "&lib=" + t;
-                                    var a = document.getElementsByTagName("script")[0];
-                                    a.parentNode.insertBefore(o, a)
-                                };
+                                })(window, document, 'ttq');
 
-
-                            }(window, document, 'ttq');
-
-							<?php foreach ( $get_each_pixel_id as $id ) { ?>
-
-                            ttq.load('<?php echo esc_js( $id ) ?>');
-							<?php if ( count( $advanced_pixel_data ) > 0 ) { ?>
-                            ttq.instance('<?php echo esc_js( $id ); ?>').identify(<?php echo wp_json_encode( $advanced_pixel_data ); ?>);
-							<?php } ?>
-							<?php if ( $this->should_render_view( 'tiktok' ) ) { ?>
-                            ttq.page();
-							<?php } ?>
-							<?php } ?>
+								<?php foreach ( $get_each_pixel_id as $id ) { ?>
+                                try {
+                                    if (typeof ttq === 'object' && ttq.load) {
+                                        ttq.load('<?php echo esc_attr( $id ) ?>');
+										<?php if ( count( $advanced_pixel_data ) > 0 ) { ?>
+                                        if (ttq.instance) {
+                                            ttq.instance('<?php echo esc_attr( $id ); ?>').identify(<?php echo wp_json_encode( $advanced_pixel_data ); ?>);
+                                        }
+										<?php } ?>
+										<?php if ( $this->should_render_view( 'tiktok' ) ) { ?>
+                                        if (ttq.page) {
+                                            ttq.page();
+                                        }
+										<?php } ?>
+                                    }
+                                } catch (error) {
+                                    console.log('TikTok pixel tracking error for ID <?php echo esc_attr( $id ) ?>:', error);
+                                }
+								<?php } ?>
+                            }
+                        } catch (error) {
+                            console.log('TikTok tracking function error:', error);
                         }
                     }
 
@@ -623,14 +876,22 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
                     <!-- END Tiktok Pixel Base Code -->
                     <script type="text/javascript">
                         function wffnTiktokTrackingBaseIn() {
-                            var wffn_shouldRender = 1;
-							<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
-                            if (1 === wffn_shouldRender) {
-                                setTimeout(function () {
-									<?php foreach ( $get_each_pixel_id as $id ) {
-									 $this->maybe_print_tiktok_ecomm( $id, $this->do_track_tiktok() );
-								} ?>
-                                }, 1200);
+                            try {
+                                var wffn_shouldRender = 1;
+								<?php do_action( 'wffn_allow_tracking_inline_js' ); ?>
+                                if (1 === wffn_shouldRender) {
+                                    setTimeout(function () {
+                                        try {
+											<?php foreach ( $get_each_pixel_id as $id ) {
+											 $this->maybe_print_tiktok_ecomm( $id, $this->do_track_tiktok() );
+										} ?>
+                                        } catch (error) {
+                                            console.log('TikTok base tracking timeout error:', error);
+                                        }
+                                    }, 1200);
+                                }
+                            } catch (error) {
+                                console.log('TikTok base tracking function error:', error);
                             }
                         }
                     </script>
@@ -914,7 +1175,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 					$instance->set_event_source_url( $this->getRequestUri( $is_ajax ) );
 					$instance->set_event_id( $event_id );
 					$instance->set_user_data( $this->get_user_data( $type ) );
-					$instance->set_event_data( 'Purchase', $this->get_purchase_params() );
+					$instance->set_event_data( 'Purchase', $this->get_generic_event_params_for_conv_api() );
 					break;
 				case 'trackCustom':
 					$instance->set_event_id( $event_id );
@@ -1012,14 +1273,14 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 			$user_data                      = WFFN_Common::pixel_advanced_matching_data();
 			$user_data['client_ip_address'] = wffn_get_ip_address();
 			$user_data['client_user_agent'] = wffn_get_user_agent();
-			if ( isset( $_COOKIE['_fbp'] ) && ! empty( $_COOKIE['_fbp'] ) ) {
-				$user_data['_fbp'] = wffn_clean( $_COOKIE['_fbp'] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-			}
-			if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) {
-				$user_data['_fbc'] = wffn_clean( $_COOKIE['_fbc'] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-			} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
-				$user_data['_fbc'] = 'fb.1.' . strtotime( wffn_clean( $_COOKIE['wffn_flt'] ) ) . '.' . wffn_clean( $_COOKIE['wffn_fbclid'] );
-			}
+		if ( isset( $_COOKIE['_fbp'] ) && ! empty( $_COOKIE['_fbp'] ) ) {
+			$user_data['_fbp'] = wffn_clean( wp_unslash( $_COOKIE['_fbp'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+		}
+		if ( isset( $_COOKIE['_fbc'] ) && ! empty( $_COOKIE['_fbc'] ) ) {
+			$user_data['_fbc'] = wffn_clean( wp_unslash( $_COOKIE['_fbc'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+		} elseif ( isset( $_COOKIE['wffn_fbclid'] ) && isset( $_COOKIE['wffn_flt'] ) && ! empty( $_COOKIE['wffn_fbclid'] ) ) {
+			$user_data['_fbc'] = 'fb.1.' . strtotime( wffn_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ) ) . '.' . wffn_clean( wp_unslash( $_COOKIE['wffn_fbclid'] ) );
+		}
 
 			return $user_data;
 		}
@@ -1030,23 +1291,36 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 		}
 
 
-		public function maybe_track_custom_steps_event() {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
+	public function maybe_track_custom_steps_event() {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 
-			if ( $this->should_render() && $this->is_enable_custom_event() ) {
-				?>
-                var wffn_ev_custom_fb_event_id = Math.random().toString(36).substring(2, 15);
-                fbq('trackCustom', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>):<?php echo $this->get_custom_event_params(); ?>,{'eventID': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id}); <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<?php
+		if ( $this->should_render() && $this->is_enable_custom_event() ) {
+			?>
+                try {
+                    if (typeof fbq === 'function') {
+                        var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        fbq('trackCustom', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', trafficParams, {'eventID': '<?php echo esc_attr( $this->get_custom_event_name() ); ?>_'+wffn_ev_custom_fb_event_id});
+                    }
+                } catch (error) {
+                    console.log('Facebook custom event tracking error:', error);
+                }
+			<?php
 
-			}
 		}
+	}
 
 		public function maybe_track_custom_steps_event_pint() {//phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 
 			if ( $this->should_render() && $this->is_enable_custom_event_pint() ) {
 
 				?>
-                pintrk('track', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>):<?php echo $this->get_custom_event_params(); ?>);  <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                try {
+                    if (typeof pintrk === 'function') {
+                        var trafficParams = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(<?php echo $this->get_custom_event_params(); ?>) : <?php echo $this->get_custom_event_params(); ?>; <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        pintrk('track', '<?php echo esc_attr( $this->get_custom_event_name() ); ?>', trafficParams);
+                    }
+                } catch (error) {
+                    console.log('Pinterest custom event tracking error:', error);
+                }
 				<?php
 
 			}
@@ -1113,45 +1387,113 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Common' ) ) {
 
 		}
 
-		public function fire_tracking() {
-			if ( $this->should_render() ) {
-				?>
-                <script type="text/javascript">
-                    document.addEventListener('DOMContentLoaded', function () {
-                        if (typeof wffnFbTrackingIn === 'function') {
-                            wffnFbTrackingIn();
+	public function fire_tracking() {
+		if ( $this->should_render() ) {
+			?>
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    
+                    // WFFN Error logging utility
+                    function wffnLogError(error, context) {
+                        try {
+                            console.log('WFFN Tracking Error [' + context + ']:', error);
+                        } catch (e) {
+                            // Fallback if console is not available
                         }
-                        if (typeof wffnGaTrackingIn === 'function') {
-                            wffnGaTrackingIn();
+                    }
+                    
+                    // WFFN Safe function execution wrapper
+                    function wffnSafeExecute(fn, context) {
+                        try {
+                            if (typeof fn === 'function') {
+                                fn();
+                            }
+                        } catch (error) {
+                            wffnLogError(error, context);
                         }
-                        if (typeof wffnGadTrackingIn === 'function') {
-                            wffnGadTrackingIn();
+                    }
+                    
+                    // WFFN Optimized tracking functions array for better performance
+                    var wffnTrackingFunctions = [
+                        { fn: 'wffnFbTrackingIn', name: 'Facebook' },
+                        { fn: 'wffnGaTrackingIn', name: 'Google Analytics' },
+                        { fn: 'wffnGadTrackingIn', name: 'Google Ads' },
+                        { fn: 'wffnPintTrackingIn', name: 'Pinterest' },
+                        { fn: 'wffnPintTrackingBaseIn', name: 'Pinterest Base' },
+                        { fn: 'wffnTiktokTrackingIn', name: 'TikTok' },
+                        { fn: 'wffnTiktokTrackingBaseIn', name: 'TikTok Base' },
+                        { fn: 'wffnSnapchatTrackingIn', name: 'Snapchat' },
+                        { fn: 'wffnSnapchatTrackingBaseIn', name: 'Snapchat Base' }
+                    ];
+                    
+                    // WFFN Execute all tracking functions safely
+                    function wffnExecuteTrackingFunctions() {
+                        wffnTrackingFunctions.forEach(function(tracker) {
+                            wffnSafeExecute(window[tracker.fn], tracker.name);
+                        });
+                    }
+                    
+                    // WFFN DOM ready handler with error protection
+                    function wffnInitTracking() {
+                        try {
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', function(){
+														if(typeof window.cmplz_enable_category !== 'function') {
+															wffnExecuteTrackingFunctions();
+														}
+								});
+                            } else {
+                                wffnExecuteTrackingFunctions();
+                            }
+                        } catch (error) {
+                            wffnLogError(error, 'DOM Ready Handler');
                         }
-                        if (typeof wffnPintTrackingIn === 'function') {
-                            wffnPintTrackingIn();
-                        }
-                        if (typeof wffnPintTrackingBaseIn === 'function') {
-                            wffnPintTrackingBaseIn();
-                        }
-                        if (typeof wffnTiktokTrackingIn === 'function') {
-                            wffnTiktokTrackingIn();
-                        }
-                        if (typeof wffnTiktokTrackingBaseIn === 'function') {
-                            wffnTiktokTrackingBaseIn();
-                        }
-                        if (typeof wffnSnapchatTrackingIn === 'function') {
-                            wffnSnapchatTrackingIn();
-                        }
-                        if (typeof wffnSnapchatTrackingBaseIn === 'function') {
-                            wffnSnapchatTrackingBaseIn();
-                        }
-                    });
+                    }
+                    
+                    // WFFN Initialize tracking - Default execution (open, not wrapped in jQuery)
 
-                </script>
-				<?php
-			}
-
+						wffnInitTracking();
+					
+                    
+                    // WFFN Consent management with enhanced error handling (jQuery only for Complianz compatibility)
+                    try {
+                        if (typeof $ !== 'undefined' && $.fn && $.fn.on) {
+                            $(document).on("cmplz_enable_category", function(event) {
+                                try {
+                                    // Defensive checks for consent data
+                                    if (!event || !event.originalEvent || !event.originalEvent.detail) {
+                                        wffnLogError('Invalid consent event data', 'Consent Handler');
+                                        return;
+                                    }
+                                    
+                                    var consentData = event.originalEvent;
+                                    var category = consentData.detail.category;
+                                    
+                                    // Validate required data
+                                    if (!category) {
+                                        wffnLogError('Missing category in consent data', 'Consent Handler');
+                                        return;
+                                    }
+                                    
+                                    if (category === 'marketing') {
+                                        wffnExecuteTrackingFunctions();
+                                    }
+                                } catch (error) {
+                                    wffnLogError(error, 'Consent Category Handler');
+                                }
+                            });
+                        } 
+                    } catch (error) {
+                        wffnLogError(error, 'Consent Management Setup');
+                    }
+                    
+                })();
+            </script>
+			<?php
 		}
+
+	}
 
 	}
 }

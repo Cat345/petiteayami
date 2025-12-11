@@ -36,14 +36,15 @@ class ThemesCompatibility {
 			$isChildTheme    = $template !== $stylesheet;
 			$this->themeSlug = sanitize_title( $theme->Name );
 
-			if ( $isChildTheme ) {
-				$this->themeSlug = strtolower( $template );
-			}
-
 			$this->theme           = $theme;
 			$this->themeName       = $theme->name;
 			$this->themeVersion    = $theme->offsetGet('Version');
 			$this->parentThemeName = ! empty( $theme->parent_theme ) ? $theme->parent_theme : '';
+
+			if ( $isChildTheme ) {
+				$this->themeSlug    = strtolower( $template );
+				$this->themeVersion = $theme->parent()->get( 'Version' );
+			}
 		}
 
 		$this->themeSlug = apply_filters( 'dgwt/wcas/integrations/themes/current_theme_slug', $this->themeSlug );
@@ -367,6 +368,14 @@ class ThemesCompatibility {
 				'args' => array(
 					'alwaysEnabled'  => true,
 					'minimumVersion' => '1.11.1',
+				),
+			),
+			'bacola'           => array(
+				'slug' => 'bacola',
+				'name' => 'Bacola',
+				'args' => array(
+					'minimumVersion' => '1.5.1.6',
+					'forceMobileOverlayBreakpoint' => 768,
 				),
 			),
 			'betheme'          => array(

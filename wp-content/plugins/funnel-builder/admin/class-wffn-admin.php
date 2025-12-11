@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class to initiate admin functionalists
@@ -9,10 +9,10 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Admin {
 
-		private static $ins = null;
-		private $funnel = null;
-		public $fk_memory_limit = 256 * 1024 * 1024;
-		private $step_against_fid = array();
+		private static $ins             = null;
+		private $funnel                 = null;
+		public $fk_memory_limit         = 256 * 1024 * 1024;
+		private $step_against_fid       = array();
 		private $step_count_against_fid = array();
 
 		/**
@@ -28,11 +28,14 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			/** Admin enqueue scripts*/
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
-			 	add_action( 'admin_enqueue_scripts', array( $this, 'js_variables' ), 0 );
+				add_action( 'admin_enqueue_scripts', array( $this, 'js_variables' ), 0 );
 			}
 			if ( $this->is_wffn_flex_page() ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumb_nodes' ), 5 );
 			}
+
+			/** Add update count badge to FunnelKit menu - runs after core menu modifications */
+			add_action( 'admin_head', array( $this, 'add_menu_update_badge' ), 9999 );
 			/**
 			 * DB updates and table installation
 			 */
@@ -43,18 +46,16 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			}
 			add_action( 'admin_init', array( $this, 'maybe_update_database_update' ), 995 );
 
-
 			add_action( 'admin_init', array( $this, 'reset_wizard' ) );
 			if ( $this->is_wffn_flex_page() && ( ! isset( $_GET['path'] ) || '/user-setup' !== $_GET['path'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 				add_action( 'admin_init', array( $this, 'maybe_force_redirect_to_wizard' ) );
 			}
 			add_action( 'admin_head', array( $this, 'hide_from_menu' ) );
 
-
 			add_filter( 'get_pages', array( $this, 'add_landing_in_home_pages' ), 10, 2 );
 			add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 1 );
 			global $wffn_notices;
-			if ( is_array( $wffn_notices ) || !empty( $wffn_notices ) ) {
+			if ( is_array( $wffn_notices ) || ! empty( $wffn_notices ) ) {
 				add_action( 'admin_notices', array( $this, 'maybe_show_notices' ) );
 			}
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
@@ -64,87 +65,102 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			/** Initiate Background updater if action scheduler is not available for template importing */
 			add_action( 'init', array( $this, 'wffn_maybe_init_background_updater' ), 110 );
-			add_filter( 'bwf_general_settings_link', function () {
-				return admin_url( 'admin.php?page=bwf&path=/funnels' );
-			}, 100000 );
+			add_filter(
+				'bwf_general_settings_link',
+				function () {
+					return admin_url( 'admin.php?page=bwf&path=/funnels' );
+				},
+				100000
+			);
 			add_filter( 'woofunnels_show_reset_tracking', '__return_true', 999 );
 			add_action( 'admin_head', array( $this, 'menu_highlight' ), 99999 );
-			add_action( 'pre_get_posts', [ $this, 'load_page_to_home_page' ], 9999 );
+			add_action( 'pre_get_posts', array( $this, 'load_page_to_home_page' ), 9999 );
 			add_filter( 'bwf_settings_config_general', array( $this, 'settings_config' ) );
 
 			add_filter( 'bwf_experiment_ref_link', array( $this, 'maybe_modify_link' ), 10, 2 );
 
 			add_action( 'before_delete_post', array( $this, 'delete_funnel_step_permanently' ), 10, 2 );
 			add_filter( 'wffn_rest_get_funnel_steps', array( $this, 'maybe_delete_funnel_step' ), 10, 2 );
-            add_action( 'admin_bar_menu', array( $this, 'add_menu_in_admin_bar' ), 99 );
+			add_action( 'admin_bar_menu', array( $this, 'add_menu_in_admin_bar' ), 99 );
 
 			add_action( 'wffn_rest_plugin_activate_response', array( $this, 'maybe_add_auth_link_stripe' ), 10, 2 );
 
-			add_filter( 'woofunnels_global_settings', [ $this, 'add_global_setting_tabs' ], 5 );
+			add_filter( 'woofunnels_global_settings', array( $this, 'add_global_setting_tabs' ), 5 );
 
 			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_settings_fields_array' ), 110 );
 
 			add_action( 'wp_ajax_wffn_blocks_incompatible_switch_to_classic', array( $this, 'blocks_incompatible_switch_to_classic_cart_checkout' ) );
 			add_action( 'wp_ajax_wffn_dismiss_notice', array( $this, 'ajax_dismiss_admin_notice' ) );
-			add_filter( 'bwf_general_settings_default_config', function ( $config ) {
-				if ( isset( $config['allow_theme_css'] ) ) {
+			add_filter(
+				'bwf_general_settings_default_config',
+				function ( $config ) {
+					if ( isset( $config['allow_theme_css'] ) ) {
 
-					/**
-					 * Allow default theme script if user use any snippet
-					 */
-					$allowed_themes = apply_filters( 'wffn_allowed_themes', [ 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ] );
+						/**
+						 * Allow default theme script if user use any snippet
+						 */
+						$allowed_themes = apply_filters( 'wffn_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ) );
 
-					if ( function_exists( 'WFFN_Core' ) && ( ( is_array( $allowed_themes ) && in_array( get_template(), $allowed_themes, true ) ) || WFFN_Core()->page_builders->is_divi_theme_enabled() ) ) {
-						$config['allow_theme_css'] = array(
-							'wfacp_checkout',
-							'wffn_ty',
-							'wffn_landing',
-							'wffn_optin',
-							'wffn_oty',
-							'wfocu_offer'
-						);
+						if ( function_exists( 'WFFN_Core' ) && ( ( is_array( $allowed_themes ) && in_array( get_template(), $allowed_themes, true ) ) || WFFN_Core()->page_builders->is_divi_theme_enabled() ) ) {
+							$config['allow_theme_css'] = array(
+								'wfacp_checkout',
+								'wffn_ty',
+								'wffn_landing',
+								'wffn_optin',
+								'wffn_oty',
+								'wfocu_offer',
+							);
 
+						}
 					}
 
-				}
-
-				return $config;
-			}, 10, 2 );
+					return $config;
+				},
+				10,
+				2
+			);
 
 			if ( isset( $_GET['wfacp_id'] ) && isset( $_GET['new_ui'] ) && 'wffn' === $_GET['new_ui'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				add_action( 'init', array( $this, 'redirect_checkout_edit_link_on_new_ui' ) );
 			}
 			if ( defined( 'FKCART_PLUGIN_FILE' ) ) {
-				add_filter( 'fkcart_app_header_menu', function ( $menu ) {
-					if ( isset( $menu['analytics'] ) ) {
-						return $menu;
+				add_filter(
+					'fkcart_app_header_menu',
+					function ( $menu ) {
+						if ( isset( $menu['analytics'] ) ) {
+							return $menu;
+						}
+
+						$keys   = array_keys( $menu );
+						$values = array_values( $menu );
+
+						$indexToInsert = array_search( 'templates', $keys, true );
+
+						array_splice( $keys, $indexToInsert, 0, 'analytics' );
+						array_splice(
+							$values,
+							$indexToInsert,
+							0,
+							array(
+								'analytics' => array(
+									'name' => 'Analytics',
+									'link' => admin_url( 'admin.php?page=bwf&path=/analytics' ),
+								),
+							)
+						);
+
+						$resultArray = array_combine( $keys, $values );
+						if ( isset( $menu['settings'] ) ) {
+							unset( $resultArray['settings'] );
+						}
+
+						return $resultArray;
 					}
-
-					$keys   = array_keys( $menu );
-					$values = array_values( $menu );
-
-					$indexToInsert = array_search( 'templates', $keys, true );
-
-					array_splice( $keys, $indexToInsert, 0, 'analytics' );
-					array_splice( $values, $indexToInsert, 0, [
-						'analytics' => [
-							'name' => 'Analytics',
-							'link' => admin_url( 'admin.php?page=bwf&path=/analytics' ),
-						]
-					] );
-
-
-					$resultArray = array_combine( $keys, $values );
-					if ( isset( $menu['settings'] ) ) {
-						unset( $resultArray['settings'] );
-					}
-
-					return $resultArray;
-				} );
+				);
 			}
 
-			add_action( 'after_plugin_row', [ $this, 'maybe_add_notice' ], 10 );
-			add_action( 'plugin_action_links', [ $this, 'plugin_action_link' ], 10, 2 );
+			add_action( 'after_plugin_row', array( $this, 'maybe_add_notice' ), 10 );
+			add_action( 'plugin_action_links', array( $this, 'plugin_action_link' ), 10, 2 );
 			add_action( 'current_screen', array( $this, 'conditional_includes' ), 1 );
 
 			add_action( 'fk_optimize_conversion_table_analytics', array( $this, 'optimize_conversion_table_analytics' ) );
@@ -154,14 +170,62 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			/** Email notification callback */
 			add_action( 'fk_fb_every_day', array( $this, 'maybe_setup_notification_schedule' ) );
 			add_action( 'wffn_performance_notification', array( $this, 'run_notifications' ) );
+			add_action( 'bwfan_run_midnight_cron', array( $this, 'maybe_setup_notification_schedule' ) );
 			if ( isset( $_GET['wffn_email_preview'] ) && current_user_can( 'administrator' ) ) { // @codingStandardsIgnoreLine
 				add_action( 'admin_init', array( $this, 'test_notification_admin' ) );
 			}
 			add_action( 'bwf_global_save_settings_funnelkit_notifications', array( $this, 'save_settings_for_email_notification' ), 10, 1 );
-
-
+			add_filter( 'use_block_editor_for_post', array( $this, 'maybe_enable_gutenberg_for_funnel_steps' ), PHP_INT_MAX, 2 );
 		}
 
+		/**
+		 * Enable Gutenberg editor for funnel steps that have Gutenberg design selected
+		 *
+		 * @param bool    $use_block_editor Whether to use block editor
+		 * @param WP_Post $post            The post object
+		 * @return bool
+		 */
+		public function maybe_enable_gutenberg_for_funnel_steps( $use_block_editor, $post ) {
+			try {
+				// Define step types and their corresponding meta keys
+				$step_meta_keys = array(
+					'wffn_landing'   => '_wflp_selected_design',
+					'wffn_optin'     => '_wfop_selected_design',
+					'wffn_oty'       => '_wfoty_selected_design',
+					'wfacp_checkout' => '_wfacp_selected_design',
+					'wffn_ty'        => '_wftp_selected_design',
+					'wfocu_offer'    => '_wfocu_setting',
+				);
+
+				// Check if the post type is one of our funnel steps
+				if ( isset( $step_meta_keys[ $post->post_type ] ) ) {
+					// Get the post meta using the corresponding meta key
+					$selected_design = get_post_meta( $post->ID, $step_meta_keys[ $post->post_type ], true );
+
+					// Handle different meta structures for different step types
+					if ( 'wfocu_offer' === $post->post_type ) {
+						// Upsell offers use template_group property for design type (object structure)
+						if ( ! empty( $selected_design ) && isset( $selected_design->template_group ) && 'gutenberg' === $selected_design->template_group ) {
+							return true; // Enable Gutenberg
+						}
+					} else {
+						// Other step types use selected_type property (array structure)
+						if ( ! empty( $selected_design ) && isset( $selected_design['selected_type'] ) && 'gutenberg' === $selected_design['selected_type'] ) {
+							return true; // Enable Gutenberg
+						}
+					}
+				}
+
+				return $use_block_editor; // Default editor (Classic Editor) for all other cases
+			} catch ( \Throwable $e ) {
+				// Log error and return default behavior
+				BWF_logger::get_instance()->log( 'Error in use_block_editor_for_post filter: ' . $e->getMessage(), 'wffn_admin' );
+				return $use_block_editor;
+			}
+
+			// Ensure we always return a value (fallback)
+			return $use_block_editor;
+		}
 
 		/**
 		 * @return WFFN_Admin|null
@@ -178,9 +242,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 * Checks WooCommerce fatal error logs for memory limit issues from the previous day.
 		 * If found, updates the `fk_memory_limit` option if the memory size is below the configured limit.
 		 * Reads the log file using WP Filesystem and searches for memory-related error patterns.
-		 *
 		 */
-
 		public function check_memory_limit_errors() {
 			global $wp_filesystem;
 			try {
@@ -223,7 +285,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				if ( $memory_size && $memory_size < $this->fk_memory_limit ) {
 					update_option( 'fk_memory_limit', $memory_size, 'no' );
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				return;
 			}
 		}
@@ -234,68 +296,76 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				'slug'     => 'funnelkit_first_party_tracking',
 				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
 				'priority' => 6,
-				'pro_tab'  => true
+				'pro_tab'  => true,
 			);
 
 			array_push( $menu, $f_tracking );
-			array_push( $menu, array(
-				'title'    => __( 'Pixel Tracking', 'funnel-builder' ),
-				'slug'     => 'funnelkit_pixel_tracking',
-				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
-				'priority' => 7,
-			) );
-			array_push( $menu, array(
-				'title'    => __( 'Advanced', 'funnel-builder' ),
-				'slug'     => 'funnelkit_advanced',
-				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
-				'priority' => 70,
-			) );
-			array_push( $menu, array(
-				'title'    => __( 'Notifications', 'funnel-builder' ),
-				'slug'     => 'funnelkit_notifications',
-				'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
-				'priority' => 70,
-			) );
+			array_push(
+				$menu,
+				array(
+					'title'    => __( 'Pixel Tracking', 'funnel-builder' ),
+					'slug'     => 'funnelkit_pixel_tracking',
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'priority' => 7,
+				)
+			);
+			array_push(
+				$menu,
+				array(
+					'title'    => __( 'Advanced', 'funnel-builder' ),
+					'slug'     => 'funnelkit_advanced',
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'priority' => 70,
+				)
+			);
+			array_push(
+				$menu,
+				array(
+					'title'    => __( 'Notifications', 'funnel-builder' ),
+					'slug'     => 'funnelkit_notifications',
+					'link'     => apply_filters( 'bwf_general_settings_link', 'javascript:void(0)' ),
+					'priority' => 70,
+				)
+			);
 
 			return $menu;
-
 		}
 
 		public function add_settings_fields_array( $settings ) {
 
 			$temp_settings         = $settings['woofunnels_general_settings'];
-			$pixel_tracking        = [];
-			$first_party_tracking  = [];
-			$funnelkit_advanced    = [];
-			$notification_settings = [
+			$pixel_tracking        = array();
+			$first_party_tracking  = array();
+			$funnelkit_advanced    = array();
+			$notification_settings = array(
 				'title'   => 'Email Performance Summary',
 				'heading' => 'Email Performance Summary',
 				'slug'    => 'email_performance_summary',
-				'fields'  => [
-					[
+				'fields'  => array(
+					array(
 						'key'          => 'bwf_enable_notification',
 						'label'        => __( 'Enable Email Performance Summary', 'funnel-builder' ),
 						'styleClasses' => 'wffn-tools-toggle bwf-tooglecontrol-advance',
 						'type'         => 'toggle',
-					],
-					[
+					),
+					array(
 						'key'         => 'bwf_notification_frequency',
 						'label'       => __( 'Frequency', 'funnel-builder' ),
 						'type'        => 'checkbox_grid',
 						'class'       => '',
 						'placeholder' => '',
 						'required'    => false,
-						'options'     => [
+						'options'     => array(
 							'weekly'  => __( 'Weekly', 'funnel-builder' ),
 							'monthly' => __( 'Monthly', 'funnel-builder' ),
-						],
+						),
 						'hint'        => __( 'Emails will be skipped if there are no metrics to show', 'funnel-builder' ),
-						'toggler'     => [
+						'toggler'     => array(
 							'key'   => 'bwf_enable_notification',
 							'value' => true,
-						],
-					],
-					[
+						),
+					),
+					array(
 						'key'                 => 'bwf_notification_user_selector',
 						'label'               => __( 'Users', 'funnel-builder' ),
 						'type'                => 'search',
@@ -303,94 +373,96 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						'allowFreeTextSearch' => false,
 						'required'            => false,
 						'wrap_before'         => '',
-						'toggler'             => [
+						'toggler'             => array(
 							'key'   => 'bwf_enable_notification',
 							'value' => true,
-						],
-					],
-					[
+						),
+					),
+					array(
 						'key'      => 'bwf_external_user',
 						'label'    => __( 'Other Recipient', 'funnel-builder' ),
 						'type'     => 'addrecipient',
 						'class'    => '',
 						'required' => false,
-						'toggler'  => [
+						'toggler'  => array(
 							'key'   => 'bwf_enable_notification',
 							'value' => true,
-						],
-					],
+						),
+					),
 
-					[
+					array(
 						'key'     => 'bwf_notification_time',
 						'type'    => 'timeselector',
 						'label'   => __( 'Send Time', 'funnel-builder' ),
-						'toggler' => [
+						'toggler' => array(
 							'key'   => 'bwf_enable_notification',
 							'value' => true,
-						],
-					],
-					[
+						),
+					),
+					array(
 						'key'     => 'send_test_mail',
 						'type'    => 'testmail',
 						'label'   => '',
 						'class'   => 'bwf-position-test-mail-bottom',
-						'toggler' => [
+						'toggler' => array(
 							'key'   => 'bwf_enable_notification',
 							'value' => true,
-						],
-					]
-				]
-			];
+						),
+					),
+				),
+			);
 
-			$values = [];
+			$values = array();
 			foreach ( $notification_settings['fields'] as &$field ) {
 
 				$values[ $field['key'] ] = BWF_Admin_General_Settings::get_instance()->get_option( $field['key'] );
 			}
 			$notification_settings['values'] = $values;
 
+			$filter_setting = array_filter(
+				$temp_settings,
+				function ( $v, $k ) use ( &$pixel_tracking, &$first_party_tracking, &$funnelkit_advanced ) {
+					if ( in_array( $k, array( 'general', 'permalinks', 'fk_stripe_gateway', 'funnelkit_google_maps' ), true ) ) {
+						return true;
+					}
+					if ( 'funnelkit_advanced' === $k ) {
+						$funnelkit_advanced[ $k ] = $v;
+					} elseif ( 'utm_parameter' === $k ) {
+						$first_party_tracking[ $k ] = $v;
+					} else {
+						$pixel_tracking[ $k ] = $v;
+					}
 
-			$filter_setting = array_filter( $temp_settings, function ( $v, $k ) use ( &$pixel_tracking, &$first_party_tracking, &$funnelkit_advanced ) {
-				if ( in_array( $k, [ 'general', 'permalinks', 'fk_stripe_gateway', 'funnelkit_google_maps' ], true ) ) {
-					return true;
-				}
-				if ( 'funnelkit_advanced' === $k ) {
-					$funnelkit_advanced[ $k ] = $v;
-				} else if ( 'utm_parameter' === $k ) {
-					$first_party_tracking[ $k ] = $v;
-				} else {
-					$pixel_tracking[ $k ] = $v;
-				}
-
-				return false;
-			}, ARRAY_FILTER_USE_BOTH );
+					return false;
+				},
+				ARRAY_FILTER_USE_BOTH
+			);
 
 			if ( defined( 'WFFN_PRO_VERSION' ) ) {
-				$settings['funnelkit_first_party_tracking'] = [
-					[
-						'tabs' => $first_party_tracking
-					],
-				];
+				$settings['funnelkit_first_party_tracking'] = array(
+					array(
+						'tabs' => $first_party_tracking,
+					),
+				);
 			}
 
-			$settings['funnelkit_pixel_tracking'] = [
-				[
-					'tabs' => $pixel_tracking
-				],
-			];
-			$settings['funnelkit_notifications']  = [
-				[
-					'tabs' => [
-						'funnelkit_notifications' => $notification_settings
-					]
-				],
-			];
-			$settings['funnelkit_advanced']       = [
-				[
-					'tabs' => $funnelkit_advanced
-				],
-			];
-
+			$settings['funnelkit_pixel_tracking'] = array(
+				array(
+					'tabs' => $pixel_tracking,
+				),
+			);
+			$settings['funnelkit_notifications']  = array(
+				array(
+					'tabs' => array(
+						'funnelkit_notifications' => $notification_settings,
+					),
+				),
+			);
+			$settings['funnelkit_advanced']       = array(
+				array(
+					'tabs' => $funnelkit_advanced,
+				),
+			);
 
 			$permalinks = $filter_setting['permalinks'];
 
@@ -404,27 +476,27 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					if ( false !== $wfacp_key ) {
 						$wfocu_field = $permalinks['fields'][ $wfocu_key ];
 						unset( $permalinks['fields'][ $wfocu_key ] );
-						array_splice( $permalinks['fields'], $wfacp_key + 1, 0, [ $wfocu_field ] );
+						array_splice( $permalinks['fields'], $wfacp_key + 1, 0, array( $wfocu_field ) );
 
 					}
 				}
 			}
 
-			$settings['woofunnels_general_settings'] = [
-				[
+			$settings['woofunnels_general_settings'] = array(
+				array(
 					'heading' => __( 'License', 'funnel-builder' ),
-					'tabs'    => [ 'general' => $temp_settings['general'] ],
-				],
-				[
+					'tabs'    => array( 'general' => $temp_settings['general'] ),
+				),
+				array(
 					'heading' => __( 'Permalinks', 'funnel-builder' ),
-					'tabs'    => [ 'permalinks' => $permalinks ]
-				],
+					'tabs'    => array( 'permalinks' => $permalinks ),
+				),
 
-				[
+				array(
 					'heading' => __( 'Google Maps', 'funnel-builder' ),
-					'tabs'    => [ 'funnelkit_google_maps' => $temp_settings['funnelkit_google_maps'] ]
-				],
-			];
+					'tabs'    => array( 'funnelkit_google_maps' => $temp_settings['funnelkit_google_maps'] ),
+				),
+			);
 
 			return $settings;
 		}
@@ -432,11 +504,200 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function add_automations_menu() {
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
 			if ( $user ) {
-				add_submenu_page( 'woofunnels', __( 'Automations', 'funnel-builder' ), __( 'Automations', 'funnel-builder' ) . '<span style="padding-left: 2px;color: #f18200; vertical-align: super; font-size: 9px;"> NEW!</span>', $user, 'bwf&path=/automations', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
+				add_submenu_page(
+					'woofunnels',
+					__( 'Automations', 'funnel-builder' ),
+					__( 'Automations', 'funnel-builder' ) . '<span style="padding-left: 2px;color: #f18200; vertical-align: super; font-size: 9px;"> NEW!</span>',
+					$user,
+					'bwf&path=/automations',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
 			}
+		}
+
+		/**
+		 * Add update count badge to FunnelKit main menu
+		 * Hooks into admin_head at priority 9999 to run AFTER core woofunnels menu modifications
+		 * Core's correct_sub_menu_order() runs at admin_head priority 999
+		 * This approach avoids modifying core woofunnels files
+		 *
+		 * @hooked admin_head - 9999
+		 * @return void
+		 */
+		public function add_menu_update_badge() {
+			global $menu;
+
+			// Get the updates count HTML badge
+			$updates_count_html = $this->get_updates_count_html();
+
+			// If no badge to show, return early
+			if ( empty( $updates_count_html ) ) {
+				return;
+			}
+
+			// Find and update the FunnelKit menu item
+			foreach ( $menu as $key => &$menu_item ) {
+				// Check if this is the FunnelKit menu (woofunnels page)
+				if ( isset( $menu_item[5] ) && $menu_item[5] === 'toplevel_page_woofunnels' ) {
+					// Add the badge to the menu title (index 0)
+					$menu_item[0] = $menu_item[0] . $updates_count_html;
+					break;
+				}
+			}
+		}
+
+		/**
+		 * Get the number of updates available for FunnelKit
+		 * Returns 1 when BF or promotional campaigns are active
+		 *
+		 * @return int Number of updates available
+		 */
+		public function get_updates_count() {
+			// Check if any promotional campaign is active
+			if ( $this->is_promotional_campaign_active() ) {
+				return 1;
+			}
+
+			// No active campaigns
+			return 0;
+		}
+
+		/**
+		 * Check if any promotional campaign is active and NOT dismissed
+		 * Follows the complete user flow: Sticky Banner → Transient Cooldown → Admin Notification
+		 *
+		 * Badge shows if:
+		 * - Campaign is active AND
+		 * - Transient cooldown is NOT active AND
+		 * - Either sticky banner OR admin notification is NOT dismissed
+		 *
+		 * User Journey:
+		 * 1. Sticky shows (not dismissed) → Badge shows
+		 * 2. User dismisses sticky → Transient active (5 min) → Badge hidden
+		 * 3. Transient expires → Notification shows → Badge shows
+		 * 4. User dismisses notification → Badge hidden permanently
+		 *
+		 * Total 7 campaigns grouped into 3 menu items:
+		 * - BF menu: Pre-BF, BF, Small Business Saturday, BF Extended
+		 * - CM menu: CM, Extended CM
+		 * - Green Monday menu: GM
+		 *
+		 * @return bool True if campaign active and not fully dismissed, false otherwise
+		 */
+		public function is_promotional_campaign_active() {
+			// Only show for non-PRO users
+			if ( defined( 'WFFN_PRO_VERSION' ) ) {
+				return false;
+			}
+
+			$year            = gmdate( 'Y' );
+			$current_user_id = get_current_user_id();
+			$notifications   = WFFN_Core()->admin_notifications;
+
+			// Check if transient cooldown is active (5-minute period) - if yes, don't show badge
+			$transient = get_transient( 'wffn_sticky_banner_dismissed_' . $current_user_id );
+			if ( false !== $transient ) {
+				return false;
+			}
+
+			// BF group campaigns (4 campaigns)
+			if ( $notifications->show_pre_bfcm_header_notification() ) {
+				$notification_key = 'promo_bf_pre_' . $year;
+				$sticky_key       = 'sticky_pre_bfcm_' . $year;
+				// Show badge if sticky is active (not dismissed) OR if notification is active (not dismissed)
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			if ( $notifications->show_bf_header_notification() ) {
+				$notification_key = 'promo_bf_' . $year;
+				$sticky_key       = 'sticky_bfcm_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			if ( $notifications->show_small_business_saturday_header_notification() ) {
+				$notification_key = 'promo_bf_sbs_' . $year;
+				$sticky_key       = 'sticky_sbs_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			if ( $notifications->show_bfext_header_notification() ) {
+				$notification_key = 'promo_bf_bfext_' . $year;
+				$sticky_key       = 'sticky_bfext_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			// CM group campaigns (2 campaigns)
+			if ( $notifications->show_cm_header_notification() ) {
+				$notification_key = 'promo_bf_cm_' . $year;
+				$sticky_key       = 'sticky_cm_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			if ( $notifications->show_cmext_header_notification() ) {
+				$notification_key = 'promo_bf_cmext_' . $year;
+				$sticky_key       = 'sticky_cmext_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			// Green Monday campaign (1 campaign)
+			if ( $notifications->show_green_monday_header_notification() ) {
+				$notification_key = 'promo_bf_gm_' . $year;
+				$sticky_key       = 'sticky_gm_' . $year;
+
+				if ( ! $notifications->is_user_dismissed( $current_user_id, $sticky_key )
+				|| ! $notifications->is_user_dismissed( $current_user_id, $notification_key ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Return the updates count markup for FunnelKit menus
+		 *
+		 * @return string Updates count markup, empty string if no updates available
+		 */
+		public function get_updates_count_html() {
+			$count = $this->get_updates_count();
+
+			if ( $count <= 0 ) {
+				return '';
+			}
+
+			$count_html = sprintf(
+				' <span class="update-plugins count-%d"><span class="update-count">%d</span></span>',
+				$count,
+				number_format_i18n( $count )
+			);
+
+			return $count_html;
 		}
 
 		public function register_admin_menu() {
@@ -448,37 +709,69 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
 			if ( $user ) {
 
+				add_submenu_page(
+					'woofunnels',
+					__( 'Dashboard', 'funnel-builder' ),
+					__( 'Dashboard', 'funnel-builder' ),
+					$user,
+					'bwf',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
 
-				add_submenu_page( 'woofunnels', __( 'Dashboard', 'funnel-builder' ), __( 'Dashboard', 'funnel-builder' ), $user, 'bwf', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
+				add_submenu_page(
+					'woofunnels',
+					__( 'Funnels', 'funnel-builder' ),
+					__( 'Funnels', 'funnel-builder' ),
+					$user,
+					'bwf&path=/funnels',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
 
-				add_submenu_page( 'woofunnels', __( 'Funnels', 'funnel-builder' ), __( 'Funnels', 'funnel-builder' ), $user, 'bwf&path=/funnels', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
+				add_submenu_page(
+					'woofunnels',
+					__( 'Templates', 'funnel-builder' ),
+					__( 'Templates', 'funnel-builder' ),
+					$user,
+					'bwf&path=/templates',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
+				add_submenu_page(
+					'woofunnels',
+					__( 'Analytics', 'funnel-builder' ),
+					__( 'Analytics', 'funnel-builder' ),
+					$user,
+					'bwf&path=/analytics',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
 
-				add_submenu_page( 'woofunnels', __( 'Templates', 'funnel-builder' ), __( 'Templates', 'funnel-builder' ), $user, 'bwf&path=/templates', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
-				add_submenu_page( 'woofunnels', __( 'Analytics', 'funnel-builder' ), __( 'Analytics', 'funnel-builder' ), $user, 'bwf&path=/analytics', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
-
-				add_submenu_page( 'woofunnels', __( 'Store Checkout', 'funnel-builder' ), __( 'Store Checkout', 'funnel-builder' ), $user, 'bwf&path=/store-checkout', array(
-					$this,
-					'bwf_funnel_pages',
-				) );
+				add_submenu_page(
+					'woofunnels',
+					__( 'Store Checkout', 'funnel-builder' ),
+					__( 'Store Checkout', 'funnel-builder' ),
+					$user,
+					'bwf&path=/store-checkout',
+					array(
+						$this,
+						'bwf_funnel_pages',
+					)
+				);
 			}
-
 		}
 
 		public function is_basic_exists() {
 			return defined( 'WFFN_BASIC_FILE' );
-
 		}
 
 		public function bwf_funnel_pages() {
@@ -489,14 +782,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			<?php
 
 			wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
-
-
 		}
 
 
 		public function admin_enqueue_assets( $hook_suffix ) {
 			wp_enqueue_style( 'bwf-admin-font', $this->get_admin_url() . '/assets/css/bwf-admin-font.css', array(), WFFN_VERSION_DEV );
-
 
 			if ( strpos( $hook_suffix, 'woofunnels_page' ) > - 1 || strpos( $hook_suffix, 'page_woofunnels' ) > - 1 ) {
 				wp_enqueue_style( 'bwf-admin-header', $this->get_admin_url() . '/assets/css/admin-global-header.css', array(), WFFN_VERSION_DEV );
@@ -504,14 +794,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			if ( $this->is_wffn_flex_page( 'all' ) ) {
 				if ( WFFN_Role_Capability::get_instance()->user_access( 'funnel', 'write' ) ) {
-					add_filter( 'user_can_richedit', '__return_true' );
+					add_filter( 'user_can_richedit', '__return_true', 999 );
 				}
 
 				wp_enqueue_style( 'wffn-flex-admin', $this->get_admin_url() . '/assets/css/admin.css', array(), WFFN_VERSION_DEV );
 
-
 				if ( WFFN_Core()->admin->is_wffn_flex_page() ) {
-					$this->load_react_app( 'main-1754392255' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
+					$this->load_react_app( 'main-20251209133743' ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 					if ( isset( $_GET['page'] ) && $_GET['page'] === 'bwf' && method_exists( 'BWF_Admin_General_Settings', 'get_localized_bwf_data' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wp_localize_script( 'wffn-contact-admin', 'bwfAdminGen', BWF_Admin_General_Settings::get_instance()->get_localized_bwf_data() );
 
@@ -520,11 +809,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 					}
 
-					add_filter( 'wffn_noconflict_scripts', function ( $scripts = array() ) {
-						return array_merge( $scripts, array( 'wffn-contact-admin' ) );
-					} );
+					add_filter(
+						'wffn_noconflict_scripts',
+						function ( $scripts = array() ) {
+							return array_merge( $scripts, array( 'wffn-contact-admin' ) );
+						}
+					);
 				}
-
 
 				do_action( 'wffn_admin_assets', $this );
 			}
@@ -533,46 +824,78 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function get_local_app_path() {
 			return '/admin/views/contact/dist/';
 		}
-		
+
 		public function get_editor_priority_theme_name() {
-			$current_theme = strtolower(get_template());
-			$theme_map = array(
-				'flatsome' => 'Flatsome',
-				'avada' => 'Avada'
-			);
-			
-			$block_editor_priority_theme = isset( $theme_map[ $current_theme ] ) 
-				? $theme_map[ $current_theme ] 
-				: '';
-			
-			return $block_editor_priority_theme;
+			try {
+				$current_theme = strtolower( get_template() );
+
+				// Theme priority mapping
+				$theme_map = array(
+					'flatsome' => 'Flatsome',
+					'avada'    => 'Avada',
+					'x'        => 'X',
+				);
+
+				// Check for theme priority first
+				if ( isset( $theme_map[ $current_theme ] ) ) {
+					return $theme_map[ $current_theme ];
+				}
+
+				// Plugin priority mapping (page builders)
+				$plugin_map = array(
+					'breakdance/plugin.php'               => 'Breakdance',
+					'thrive-visual-editor/thrive-visual-editor.php' => 'Thrive',
+					'bb-plugin/fl-builder.php'            => 'Beaver Builder',
+					'js_composer/js_composer.php'         => 'Visual Composer',
+					'visualcomposer/visualcomposer.php'   => 'Visual Composer',
+					'themify-builder/themify-builder.php' => 'Themify Builder',
+					'brizy/brizy.php'                     => 'Brizy',
+					'zionbuilder/zionbuilder.php'         => 'Zion',
+					'seedprod/seedprod.php'               => 'SeedProd',
+				);
+
+				// Check for plugin priority
+				foreach ( $plugin_map as $plugin_basename => $plugin_name ) {
+					if ( wffn_is_plugin_active( $plugin_basename ) ) {
+						return $plugin_name;
+					}
+				}
+
+				return '';
+			} catch ( \Throwable $e ) {
+				// Log error and return empty string
+				BWF_logger::get_instance()->log( 'Error in get_editor_priority_theme_name: ' . $e->getMessage(), 'wffn_admin' );
+				return '';
+			}
 		}
+
+
 
 		public function load_react_app( $app_name = 'main' ) {
 			$app_name          = str_replace( '-{{{APP_VERSION}}}', '', $app_name ); //phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation
 			$min               = 60 * get_option( 'gmt_offset' );
-			$sign              = $min < 0 ? "-" : "+";
+			$sign              = $min < 0 ? '-' : '+';
 			$absmin            = abs( $min );
-			$tz                = sprintf( "%s%02d:%02d", $sign, $absmin / 60, $absmin % 60 );
+			$tz                = sprintf( '%s%02d:%02d', $sign, $absmin / 60, $absmin % 60 );
 			$contact_page_data = array(
-				'is_wc_active'        => false,
-				'date_format'         => get_option( 'date_format', 'F j, Y' ),
-				'time_format'         => get_option( 'time_format', 'g:i a' ),
-				'lev'                 => $this->get_license_config(),
-				'app_path'            => WFFN_Core()->get_plugin_url() . '/admin/views/contact/dist/',
-				'timezone'            => $tz,
-				'flag_img'            => WFFN_Core()->get_plugin_url() . '/admin/assets/img/phone/flags.png',
-				'updated_pro_version' => defined( 'WFFN_PRO_VERSION' ) && version_compare( WFFN_PRO_VERSION, '3.0.0 beta', '>=' ),
-				'get_pro_link'        => WFFN_Core()->admin->get_pro_link(),
-				'wc_add_product_url'  => admin_url( 'post-new.php?post_type=product' ),
-				'admin_url'           => admin_url(),
-				'multilingual'        => $this->is_language_support_enabled(),
-				'multilingual_name'   => WFFN_Plugin_Compatibilities::get_language_compatible_plugin(),
-				'block_editor_priority_theme'   => $this->get_editor_priority_theme_name(),
+				'is_wc_active'                => false,
+				'date_format'                 => get_option( 'date_format', 'F j, Y' ),
+				'time_format'                 => get_option( 'time_format', 'g:i a' ),
+				'lev'                         => $this->get_license_config(),
+				'app_path'                    => WFFN_Core()->get_plugin_url() . '/admin/views/contact/dist/',
+				'timezone'                    => $tz,
+				'flag_img'                    => WFFN_Core()->get_plugin_url() . '/admin/assets/img/phone/flags.png',
+				'updated_pro_version'         => defined( 'WFFN_PRO_VERSION' ) && version_compare( WFFN_PRO_VERSION, '3.0.0 beta', '>=' ),
+				'get_pro_link'                => WFFN_Core()->admin->get_pro_link(),
+				'wc_add_product_url'          => admin_url( 'post-new.php?post_type=product' ),
+				'admin_url'                   => admin_url(),
+				'multilingual'                => $this->is_language_support_enabled(),
+				'multilingual_name'           => WFFN_Plugin_Compatibilities::get_language_compatible_plugin(),
+				'block_editor_priority_theme' => $this->get_editor_priority_theme_name(),
 			);
 			if ( class_exists( 'WooCommerce' ) ) {
 				$currency                          = get_woocommerce_currency();
-				$contact_page_data['currency']     = [
+				$contact_page_data['currency']     = array(
 					'code'              => $currency,
 					'precision'         => wc_get_price_decimals(),
 					'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $currency ) ),
@@ -580,7 +903,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					'decimalSeparator'  => wc_get_price_decimal_separator(),
 					'thousandSeparator' => wc_get_price_thousand_separator(),
 					'priceFormat'       => html_entity_decode( get_woocommerce_price_format() ),
-				];
+				);
 				$contact_page_data['is_wc_active'] = true;
 			}
 
@@ -589,7 +912,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				wp_dequeue_style( 'woocommerce_admin_styles' );
 				wp_dequeue_style( 'wc-components' );
 			}
-
 
 			$assets_path = 1 === WFFN_REACT_ENVIRONMENT ? WFFN_PLUGIN_DIR . $this->get_local_app_path() . "$app_name.asset.php" : $frontend_dir . "/$app_name.asset.php";
 			$assets      = file_exists( $assets_path ) ? include $assets_path : array(
@@ -623,9 +945,12 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$deps        = ( isset( $assets['dependencies'] ) ? array_merge( $assets['dependencies'], array( 'jquery' ) ) : array( 'jquery' ) );
 			$version     = $assets['version'];
 
-			$script_deps = array_filter( $deps, function ( $dep ) {
-				return false === strpos( $dep, 'css' );
-			} );
+			$script_deps = array_filter(
+				$deps,
+				function ( $dep ) {
+					return false === strpos( $dep, 'css' );
+				}
+			);
 			if ( 'settings' === $app_name ) {
 				$script_deps = array_merge( $script_deps, array( 'wp-color-picker' ) );
 			}
@@ -638,7 +963,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$contact_page_data['localize_texts'] = apply_filters( 'wffn_localized_text_admin', array() );
 
 			wp_enqueue_style( 'wp-components' );
-			wp_enqueue_style( 'wffn_material_icons', 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined' );
+			wp_enqueue_style( 'wffn_material_icons', 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined' );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			wp_enqueue_style( 'wffn-contact-admin', $frontend_dir . "$app_name.css", array(), $version );
 			wp_register_script( 'wffn-contact-admin', $frontend_dir . "$app_name.js", $script_deps, $version, true );
 			wp_localize_script( 'wffn-contact-admin', 'wffn_contacts_data', $contact_page_data );
@@ -671,7 +996,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return true;
 			}
 
-
 			if ( isset( $_GET['page'] ) && 'bwf' === $_GET['page'] && 'all' === $page ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return true;
 			}
@@ -687,7 +1011,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$substeps_data['substep'] = true;
 
 				$upsell_exist = function_exists( 'WFOCU_Core' );
-
 
 				$data = array(
 					'steps_data' => $steps_data,
@@ -706,11 +1029,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					),
 				);
 
+				$data['settings_texts'] = apply_filters( 'wffn_funnel_settings', array() );
 
-				$data['settings_texts'] = apply_filters( 'wffn_funnel_settings', [] );
-
-
-				$data['i18n'] = [
+				$data['i18n'] = array(
 					'plugin_activate' => __( 'Activating plugin...', 'funnel-builder' ),
 					'plugin_install'  => __( 'Installing plugin...', 'funnel-builder' ),
 					'preparingsteps'  => __( 'Preparing steps...', 'funnel-builder' ),
@@ -719,12 +1040,12 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					'custom_import'   => __( 'Setting up your funnel...', 'funnel-builder' ),
 					'ribbons'         => array(
 						'lite' => __( 'Lite', 'funnel-builder' ),
-						'pro'  => __( 'PRO', 'funnel-builder' )
+						'pro'  => __( 'PRO', 'funnel-builder' ),
 					),
 					'test'            => __( 'Test', 'funnel-builder' ),
-				];
+				);
 				if ( wffn_is_wc_active() && false === $upsell_exist ) {
-					$data['wc_upsells'] = [
+					$data['wc_upsells'] = array(
 						'type'      => 'wc_upsells',
 						'group'     => WFFN_Steps::STEP_GROUP_WC,
 						'title'     => __( 'One Click Upsells', 'funnel-builder' ),
@@ -732,7 +1053,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						'dashicons' => 'dashicons-tag',
 						'icon'      => 'tags',
 						'pro'       => true,
-					];
+					);
 				}
 
 				$data['welcome_note_dismiss'] = get_user_meta( get_current_user_id(), '_wffn_welcome_note_dismissed', true );//phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_get_user_meta
@@ -742,28 +1063,29 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$data['current_logged_user'] = get_current_user_id();
 				$data['is_rtl']              = is_rtl();
 
-
 				$data['is_ab_experiment']         = class_exists( 'BWFABT_Core' ) ? 1 : 0;
 				$data['is_ab_experiment_support'] = ( class_exists( 'BWFABT_Core' ) && version_compare( BWFABT_VERSION, '1.3.5', '>' ) ) ? 1 : 0;
 				$data['wizard_status']            = $this->is_wizard_available();
 
-				$data['automation_plugin_status']      = WFFN_Common::get_plugin_status( 'wp-marketing-automations/wp-marketing-automations.php' );
-				$data['fkcart_img_url']                = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/fkcart-img.png' );
-				$data['fkcart_plugin_status']          = WFFN_Common::get_plugin_status( 'cart-for-woocommerce/plugin.php' );
-				$data['fkcart_show_analytics']         = ( defined( 'FKCART_DB_VERSION' ) && version_compare( FKCART_DB_VERSION, '1.7.2', '>=' ) ) ? 'yes' : 'no';
-				$data['ob_arrow_blink_img_url']        = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/arrow-blink.gif' );
-				$data['pro_modal_img_path']            = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/pro_modal/' );
-				$data['admin_img_path']                = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/' );
-				$bwf_notifications                     = get_user_meta( get_current_user_id(), '_bwf_notifications_close', true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_get_user_meta
-				$bwf_notifications                     = is_array( $bwf_notifications ) ? array_values( $bwf_notifications ) : $bwf_notifications;
-				$data['user_preferences']              = array( 'notices_close' => $bwf_notifications );
-				$data['user_has_notifications']        = WFFN_Core()->admin_notifications->user_has_notifications( get_current_user_id() );
-				$data['pro_link']                      = $this->get_pro_link();
-				$data['upgrade_button_text']           = __( 'Upgrade to PRO Now', 'funnel-builder' );
-				$data['site_options']                  = get_option( 'fb_site_options', [] );
-				$data['nonce_contact_export_download'] = wp_create_nonce( 'bwf_contact_export_download' );
-				$data['user_display_name']             = get_user_by( 'id', get_current_user_id() )->display_name;
-				$data['user_email']                    = get_user_by( 'id', get_current_user_id() )->user_email;
+				$data['automation_plugin_status']           = WFFN_Common::get_plugin_status( 'wp-marketing-automations/wp-marketing-automations.php' );
+				$data['fkcart_img_url']                     = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/fkcart-img.png' );
+				$data['fkcart_plugin_status']               = WFFN_Common::get_plugin_status( 'cart-for-woocommerce/plugin.php' );
+				$data['fkcart_show_analytics']              = ( defined( 'FKCART_DB_VERSION' ) && version_compare( FKCART_DB_VERSION, '1.7.2', '>=' ) ) ? 'yes' : 'no';
+				$data['ob_arrow_blink_img_url']             = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/arrow-blink.gif' );
+				$data['pro_modal_img_path']                 = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/pro_modal/' );
+				$data['admin_img_path']                     = esc_url( plugin_dir_url( WFFN_PLUGIN_FILE ) . 'admin/assets/img/' );
+				$bwf_notifications                          = get_user_meta( get_current_user_id(), '_bwf_notifications_close', true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_get_user_meta
+				$bwf_notifications                          = is_array( $bwf_notifications ) ? array_values( $bwf_notifications ) : $bwf_notifications;
+				$data['user_preferences']                   = array( 'notices_close' => $bwf_notifications );
+				$data['user_has_notifications']             = WFFN_Core()->admin_notifications->user_has_notifications( get_current_user_id() );
+				$data['pro_link']                           = $this->get_pro_link();
+				$data['upgrade_button_text']                = __( 'Upgrade to PRO Now', 'funnel-builder' );
+				$data['site_options']                       = get_option( 'fb_site_options', array() );
+				$data['nonce_contact_export_download']      = wp_create_nonce( 'bwf_contact_export_download' );
+				$data['user_display_name']                  = get_user_by( 'id', get_current_user_id() )->display_name;
+				$data['user_email']                         = get_user_by( 'id', get_current_user_id() )->user_email;
+				$data['bfcm_promo_sticky_banner']           = WFFN_Core()->admin_notifications->get_sticky_banner();
+				$data['bfcm_promo_sticky_secondary_banner'] = WFFN_Core()->admin_notifications->get_sticky_secondary_banner();
 
 				$data['pro_version_number']     = defined( 'WFFN_PRO_VERSION' ) ? WFFN_PRO_VERSION : '0.0.0';
 				$data['cart_analytics_version'] = '3.11.0';
@@ -776,12 +1098,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				?>
 				<script>window.wffn = <?php echo wp_json_encode( apply_filters( 'wffn_localize_admin', $data ) ); ?>;</script>
 				<script>
-					<?php echo '
+					<?php
+					echo '
 						(function() {
 							setTimeout(() => {
 							const scriptElement = document.getElementById("wffn-contact-admin-js");
 							if (scriptElement) {
-							     
+
 								scriptElement.onerror = function() {
 									if (typeof window.wffn_loaded === "undefined") {
 										console.warn("Main JS not loaded, retrying with version parameter...");
@@ -798,7 +1121,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 							}
 							}, 3000)
 						})();
-					' ?>
+					'
+					?>
 				</script>
 				<?php
 			}
@@ -806,6 +1130,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		/**
 		 * Get the already setup funnel object
+		 *
 		 * @return WFFN_Funnel
 		 */
 		public function get_funnel( $funnel_id = 0 ) {
@@ -835,11 +1160,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public static function get_template_filter() {
 
-			$options = [
+			$options = array(
 				'all'   => __( 'All', 'funnel-builder' ),
 				'sales' => __( 'Sales', 'funnel-builder' ),
 				'optin' => __( 'Optin', 'funnel-builder' ),
-			];
+			);
 
 			return $options;
 		}
@@ -847,7 +1172,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public function get_license_status() {
 			$license_key = WFFN_Core()->remote_importer->get_license_key( true );
-
 
 			if ( empty( $license_key ) ) {
 				return false;
@@ -897,7 +1221,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						$single_link = WFFN_Common::get_funnel_edit_link( $funnel->get_id() );
 					}
 				}
-
 			}
 
 			/**
@@ -905,15 +1228,15 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			 */
 			if ( ! empty( $funnel ) && null === filter_input( INPUT_GET, 'bwf_exp_ref', FILTER_UNSAFE_RAW ) ) { //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 
-				BWF_Admin_Breadcrumbs::register_node( array(
-					'text' => WFFN_Core()->admin->maybe_empty_title( $funnel->get_title() ),
-					'link' => $single_link,
-				) );
+				BWF_Admin_Breadcrumbs::register_node(
+					array(
+						'text' => WFFN_Core()->admin->maybe_empty_title( $funnel->get_title() ),
+						'link' => $single_link,
+					)
+				);
 				BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel->get_id() );
 
 			}
-
-
 		}
 
 
@@ -933,15 +1256,15 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			if ( isset( $args['s'] ) ) {
 				$search_str = wffn_clean( $args['s'] );
 			} else {
-				$search_str = isset( $_REQUEST['s'] ) ? wffn_clean( $_REQUEST['s'] ) : '';  // phpcs:ignore WordPress.Security.NonceVerification
+				$search_str = isset( $_REQUEST['s'] ) ? wffn_clean( $_REQUEST['s'] ) : '';  // phpcs:ignore WordPress.Security.NonceVerification , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			}
 			$need_draft_count = $args['need_draft_count'] ?? false;
 			if ( isset( $args['status'] ) ) {
 				$status = wffn_clean( $args['status'] );
 			} else {
-				$status = isset( $_REQUEST['status'] ) ? wffn_clean( $_REQUEST['status'] ) : '';  // phpcs:ignore WordPress.Security.NonceVerification
+				$status = isset( $_REQUEST['status'] ) ? wffn_clean( $_REQUEST['status'] ) : '';  // phpcs:ignore WordPress.Security.NonceVerification , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			}
-			$args['meta'] = isset( $args['meta'] ) ? $args['meta'] : [];
+			$args['meta'] = isset( $args['meta'] ) ? $args['meta'] : array();
 			$limit        = isset( $args['limit'] ) ? absint( $args['limit'] ) : $this->posts_per_page();
 
 			$sql_query = ' FROM {table_name}';
@@ -973,7 +1296,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			 * Sort list with meta key.
 			 */
 			if ( ! empty( $args['order_by_meta'] ) ) {
-				$sql_query .= " LEFT JOIN {table_name_meta} as order_by_meta 
+				$sql_query .= " LEFT JOIN {table_name_meta} as order_by_meta
                 ON ( {table_name}.id = order_by_meta.bwf_funnel_id AND order_by_meta.meta_key = '" . esc_sql( $args['order_by_meta']['key'] ) . "' )";
 			}
 			if ( ! empty( $args['categories'] ) && is_array( $args['categories'] ) ) {
@@ -989,19 +1312,19 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				foreach ( $args['categories'] as $category ) {
 					$clean_category   = wffn_clean( $category );
-					$cat_conditions[] = $wpdb->prepare( "(cat_meta.meta_value LIKE %s)", "%$clean_category%" );
+					$cat_conditions[] = $wpdb->prepare( '(cat_meta.meta_value LIKE %s)', "%$clean_category%" );
 				}
 
 				$sql_query .= ' AND (' . implode( ' OR ', $cat_conditions ) . ')';
 			}
 
 			if ( ! empty( $status ) && 'all' !== $status ) {
-				$status    = ( 'live' === $status ) ? 1 : 0;
+				$status     = ( 'live' === $status ) ? 1 : 0;
 				$sql_query .= ' AND `status` = ' . "'$status'";
 			}
 
 			if ( ! empty( $search_str ) ) {
-				$sql_query .= $wpdb->prepare( " AND ( `title` LIKE %s OR `desc` LIKE %s )", "%" . $search_str . "%", "%" . $search_str . "%" );
+				$sql_query .= $wpdb->prepare( ' AND ( `title` LIKE %s OR `desc` LIKE %s )', '%' . $search_str . '%', '%' . $search_str . '%' );
 			}
 			if ( ! empty( $args['meta'] ) ) {
 				if ( $args['meta']['compare'] === 'NOT_EXISTS' ) {
@@ -1016,20 +1339,19 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				}
 			}
 
-
 			if ( ! empty( $args['order_by_meta'] ) ) {
-				$sql_query .= " ORDER BY 
-                    CASE WHEN order_by_meta.meta_value IS NULL THEN 1 ELSE 0 END, 
-                    order_by_meta.meta_value " . esc_sql( $args['order_by_meta']['order'] );
+				$sql_query .= ' ORDER BY
+                    CASE WHEN order_by_meta.meta_value IS NULL THEN 1 ELSE 0 END,
+                    order_by_meta.meta_value ' . esc_sql( $args['order_by_meta']['order'] );
 			} else {
-				$sql_query .= " ORDER BY {table_name}.id DESC";
+				$sql_query .= ' ORDER BY {table_name}.id DESC';
 			}
 
 			if ( false === $is_total_query_required ) {
 				$sql_query .= ' LIMIT ' . esc_sql( $args['offset'] ) . ', ' . $limit;
 			} else {
 				$found_funnels = WFFN_Core()->get_dB()->get_results( 'SELECT count({table_name}.id) as count ' . $sql_query );
-				$sql_query     .= ' LIMIT ' . 0 . ', ' . $limit;
+				$sql_query    .= ' LIMIT ' . 0 . ', ' . $limit;
 			}
 			$funnel_ids = WFFN_Core()->get_dB()->get_results( 'SELECT {table_name}.id as funnel_id ' . $sql_query );
 			$items      = array();
@@ -1050,7 +1372,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				foreach ( $funnel_ids as $funnel_id ) {
 					$funnel = new WFFN_Funnel( $funnel_id['funnel_id'] );
 					$steps  = $funnel->get_steps();
-					$view   = ( is_array( $steps ) && count( $steps ) > 0 ) ? get_permalink( $steps[0]['id'] ) : "";
+					$view   = ( is_array( $steps ) && count( $steps ) > 0 ) ? get_permalink( $steps[0]['id'] ) : '';
 					if ( false !== $need_draft_count || isset( $args['need_steps_data'] ) ) {
 						$this->parse_funnels_step_ids( $funnel );
 					}
@@ -1063,7 +1385,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						'steps'       => ( is_array( $this->step_count_against_fid ) && count( $this->step_count_against_fid ) > 0 ) ? count( array_keys( $this->step_count_against_fid, absint( $funnel->get_id() ), true ) ) : 0,
 						//phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 						'view_link'   => $view,
-						'categories'  => ( defined( 'WFFN_PRO_VERSION' ) ) ? $funnel->get_category() : []
+						'categories'  => ( defined( 'WFFN_PRO_VERSION' ) ) ? $funnel->get_category() : array(),
 					);
 					if ( isset( $args['need_steps_data'] ) ) {
 						$item['steps_data'] = $steps;
@@ -1082,15 +1404,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				}
 				if ( false !== $need_draft_count ) {
 					$draft_counts = $this->get_draft_steps();
-					$items        = array_map( function ( $item ) use ( $draft_counts ) {
-						$item['draft_count'] = $draft_counts[ $item['id'] ] ?? 0;
+					$items        = array_map(
+						function ( $item ) use ( $draft_counts ) {
+							$item['draft_count'] = $draft_counts[ $item['id'] ] ?? 0;
 
-						return $item;
-					}, $items );
+							return $item;
+						},
+						$items
+					);
 
 				}
 				$found_posts['items'] = $items;
-
 
 				return apply_filters( 'wffn_funnels_lists', $found_posts );
 			}
@@ -1106,9 +1430,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$funnel_id = $funnel->get_id();
 			foreach ( $steps as $step ) {
 
-
-				$step_id                                            = $step['id'];
-				$this->step_against_fid[ $step_id ]                 = $funnel_id;
+				$step_id                            = $step['id'];
+				$this->step_against_fid[ $step_id ] = $funnel_id;
 				$this->step_count_against_fid[ absint( $step_id ) ] = absint( $funnel_id );
 
 				/**
@@ -1128,7 +1451,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 							if ( 0 !== $count ) {
 								$this->step_count_against_fid[ absint( $offer_id ) ] = absint( $funnel_id );
 							}
-							$count ++;
+							++$count;
 						}
 					}
 				}
@@ -1137,21 +1460,21 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		private function get_draft_steps() {
 			if ( empty( $this->step_against_fid ) ) {
-				return [];
+				return array();
 			}
 
 			$step_ids = array_keys( $this->step_against_fid );
 
 			global $wpdb;
-			$results     = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}posts WHERE 1=1 AND post_status != %s and id IN (" . implode( ',', $step_ids ) . ")", 'publish' ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$draft_count = [];
+			$results     = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}posts WHERE 1=1 AND post_status != %s and id IN (" . implode( ',', $step_ids ) . ')', 'publish' ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$draft_count = array();
 			foreach ( $results as $result ) {
 				$step_id   = $result['ID'];
 				$funnel_id = $this->step_against_fid[ $step_id ];
 				if ( ! isset( $draft_count[ $funnel_id ] ) ) {
 					$draft_count[ $funnel_id ] = 1;
 				} else {
-					$draft_count[ $funnel_id ] ++;
+					++$draft_count[ $funnel_id ];
 				}
 			}
 
@@ -1192,19 +1515,21 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			}
 
 			if ( is_array( $args ) && isset( $args['name'] ) && ( 'page_on_front' === $args['name'] || '_customize-dropdown-pages-page_on_front' === $args['name'] ) ) {
-				$landing_pages = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$landing_pages = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'post_type'   => WFFN_Core()->landing_pages->get_post_type_slug(),
 					'numberposts' => 100,
-					'post_status' => 'publish'
-				) );
+					'post_status' => 'publish',
+					)
+				);
 
-
-				$optin_pages = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$optin_pages = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'post_type'   => WFOPP_Core()->optin_pages->get_post_type_slug(),
 					'numberposts' => 100,
-					'post_status' => 'publish'
-				) );
-
+					'post_status' => 'publish',
+					)
+				);
 
 				$pages = array_merge( $pages, $landing_pages, $optin_pages );
 			}
@@ -1224,7 +1549,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			// Check to make sure we're on a WooFunnels admin page.
 			if ( isset( $current_screen->id ) && apply_filters( 'bwf_funnels_funnels_display_admin_footer_text', in_array( $current_screen->id, $wffn_pages, true ), $current_screen->id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				// Change the footer text.
-				$footer_text = sprintf( __( 'Over %s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%s" target="_blank"><b>Contact FunnelKit Support</b></a>', 'funnel-builder' ), WFFN_REVIEW_RATING_COUNT . '+', 'https://funnelkit.com/support/?utm_source=WordPress&utm_medium=Support+Footer&utm_campaign=FB+Lite+Plugin' );
+				$footer_text = sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>', 'funnel-builder' ), WFFN_REVIEW_RATING_COUNT . '+', 'https://funnelkit.com/support/?utm_source=WordPress&utm_medium=Support+Footer&utm_campaign=FB+Lite+Plugin' );
 
 			}
 
@@ -1243,7 +1568,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				remove_all_actions( 'admin_notices' );
 				remove_all_actions( 'all_admin_notices' );
-
 		}
 
 		/**
@@ -1258,23 +1582,29 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$links['deactivate'] .= '<i class="woofunnels-slug" data-slug="' . WFFN_PLUGIN_BASENAME . '"></i>';
 			}
 			if ( ! defined( 'WFFN_PRO_VERSION' ) ) {
-				$link  = add_query_arg( [
-					'utm_source'   => 'WordPress',
-					'utm_medium'   => 'All+Plugins',
-					'utm_campaign' => 'FB+Lite+Plugin',
-					'utm_content'  => WFFN_VERSION
-				], $this->get_pro_link() );
-				$links = array_merge( [
-					'pro_upgrade' => '<a href="' . $link . '" target="_blank" style="color: #1da867 !important;font-weight:600">' . __( 'Upgrade to Pro', 'funnel-builder' ) . '</a>'
-				], $links );
+				$link  = add_query_arg(
+					array(
+						'utm_source'   => 'WordPress',
+						'utm_medium'   => 'All+Plugins',
+						'utm_campaign' => 'FB+Lite+Plugin',
+						'utm_content'  => WFFN_VERSION,
+					),
+					$this->get_pro_link()
+				);
+				$links = array_merge(
+					array(
+						'pro_upgrade' => '<a href="' . $link . '" target="_blank" style="color: #1da867 !important;font-weight:600">' . __( 'Upgrade to Pro', 'funnel-builder' ) . '</a>',
+					),
+					$links
+				);
 			}
-
 
 			return $links;
 		}
 
 		/**
 		 * Initiate WFFN_Background_Importer class if ActionScheduler class doesn't exist
+		 *
 		 * @see woofunnels_maybe_update_customer_database()
 		 */
 		public function wffn_maybe_init_background_updater() {
@@ -1282,8 +1612,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				$this->wffn_updater = new WFFN_Background_Importer();
 			}
-
-
 		}
 
 		/**
@@ -1301,7 +1629,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			if ( $funnel_id > 0 ) { // WPCS: input var ok, CSRF ok.
 
-				$task = 'wffn_maybe_import_funnel_in_background';  //Scanning order table and updating customer tables
+				$task = 'wffn_maybe_import_funnel_in_background';  // Scanning order table and updating customer tables
 				$this->wffn_updater->push_to_queue( $task );
 				BWF_Logger::get_instance()->log( '**************START Importing************', 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				$this->wffn_updater->save()->dispatch();
@@ -1327,77 +1655,77 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 * @return array
 		 */
 		public function get_all_active_page_builders() {
-			$page_builders = [ 'gutenberg', 'elementor', 'divi', 'oxy', 'bricks' ];
+			$page_builders = array( 'gutenberg', 'elementor', 'divi', 'oxy', 'bricks' );
 
 			return $page_builders;
 		}
 
 		/**
 		 * Detect available page builders and set default settings
-		 * 
+		 *
 		 * This method checks for the following page builders in order of priority:
 		 * - Elementor (elementor/elementor.php)
 		 * - Divi (divi-builder/divi-builder.php or Divi theme)
 		 * - Oxygen (oxygen/functions.php)
 		 * - Bricks (Bricks theme)
-		 * 
+		 *
 		 * Only works if current default builder is 'elementor' or blank.
-		 * 
+		 *
 		 * @return string|null The detected page builder slug or null if none found
 		 */
-		public function detect_and_set_default_page_builder() {
+		public function detect_and_set_default_page_builder( $force = false ) {
 			try {
 				$general_settings = BWF_Admin_General_Settings::get_instance();
-				$current_default = $general_settings->get_option( 'default_selected_builder' );
-				
+				$current_default  = $general_settings->get_option( 'default_selected_builder' );
+
 				// Only proceed if current default is 'elementor' or blank
-				if ( ! empty( $current_default ) && $current_default !== 'elementor' ) {
+				if ( ! $force && ! empty( $current_default ) && $current_default !== 'elementor' ) {
 					return null;
 				}
-				
+
 				$detected_builder = null;
-				$page_builders = [
-					'elementor' => [
-						'plugin_file' => 'elementor/elementor.php',
-						'check_function' => function() {
+				$page_builders    = array(
+					'elementor' => array(
+						'plugin_file'    => 'elementor/elementor.php',
+						'check_function' => function () {
 							return class_exists( '\Elementor\Plugin' );
-						}
-					],
-					'divi' => [
-						'plugin_file' => 'divi-builder/divi-builder.php',
-						'check_function' => function() {
+						},
+					),
+					'divi'      => array(
+						'plugin_file'    => 'divi-builder/divi-builder.php',
+						'check_function' => function () {
 							return WFFN_Core()->page_builders->is_divi_theme_enabled();
-						}
-					],
-					'oxy' => [
-						'plugin_file' => 'oxygen/functions.php',
-						'check_function' => function() {
+						},
+					),
+					'oxy'       => array(
+						'plugin_file'    => 'oxygen/functions.php',
+						'check_function' => function () {
 							return class_exists( 'OxygenElement' );
-						}
-					],
-					'bricks' => [
-						'plugin_file' => '',
-						'check_function' => function() {
+						},
+					),
+					'bricks'    => array(
+						'plugin_file'    => '',
+						'check_function' => function () {
 							return WFFN_Core()->page_builders->is_bricks_theme_enabled();
-						}
-					]
-				];
+						},
+					),
+				);
 
 				// Check each page builder
 				foreach ( $page_builders as $builder_slug => $builder_config ) {
 					$is_available = false;
-					
+
 					// Check if plugin file exists and is active
 					if ( ! empty( $builder_config['plugin_file'] ) ) {
 						$plugin_status = WFFN_Common::get_plugin_status( $builder_config['plugin_file'] );
-						$is_available = ( 'activated' === $plugin_status );
+						$is_available  = ( 'activated' === $plugin_status );
 					}
-					
+
 					// If no plugin file or plugin not active, check using custom function
 					if ( ! $is_available && isset( $builder_config['check_function'] ) ) {
 						$is_available = $builder_config['check_function']();
 					}
-					
+
 					if ( $is_available ) {
 						$detected_builder = $builder_slug;
 						break;
@@ -1410,11 +1738,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					if ( empty( $current_default ) || $current_default !== $detected_builder ) {
 						// Update using the proper settings method
 						$general_settings->update_global_settings_fields( array( 'default_selected_builder' => $detected_builder ) );
-						
+
 						// Log the detection for debugging
-						BWF_Logger::get_instance()->log( 
-							sprintf( 'Page builder detected and set as default: %s', $detected_builder ), 
-							'wffn_page_builder_detection' 
+						BWF_Logger::get_instance()->log(
+							sprintf( 'Page builder detected and set as default: %s', $detected_builder ),
+							'wffn_page_builder_detection'
 						);
 					}
 				} else {
@@ -1422,20 +1750,20 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					if ( ! empty( $current_default ) ) {
 						// Update using the proper settings method
 						$general_settings->update_global_settings_fields( array( 'default_selected_builder' => '' ) );
-						
+
 						// Log the reset for debugging
-						BWF_Logger::get_instance()->log( 
-							'No page builder detected, default set to blank', 
-							'wffn_page_builder_detection' 
+						BWF_Logger::get_instance()->log(
+							'No page builder detected, default set to blank',
+							'wffn_page_builder_detection'
 						);
 					}
 				}
 
 				return $detected_builder;
 			} catch ( \Throwable $e ) {
-				BWF_Logger::get_instance()->log( 
-					sprintf( 'Error detecting page builder: %s', $e->getMessage() ), 
-					'wffn_page_builder_detection' 
+				BWF_Logger::get_instance()->log(
+					sprintf( 'Error detecting page builder: %s', $e->getMessage() ),
+					'wffn_page_builder_detection'
 				);
 				return null;
 			}
@@ -1443,26 +1771,25 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		/**
 		 * Get the currently detected/default page builder
-		 * 
+		 *
 		 * @return string The page builder slug or empty string if none set
 		 */
 		public function get_detected_page_builder() {
 			try {
 				$general_settings = BWF_Admin_General_Settings::get_instance();
-				$default_builder = $general_settings->get_option( 'default_selected_builder' );
-				
+				$default_builder  = $general_settings->get_option( 'default_selected_builder' );
+
 				// If no default is set, try to detect one
-				if ( empty( $default_builder ) ) {
-					$detected_builder = $this->detect_and_set_default_page_builder();
-					$default_builder = ( $detected_builder !== null ) ? $detected_builder : '';
-				}
-				
+
+				$detected_builder = $this->detect_and_set_default_page_builder( true );
+				$default_builder  = ( $detected_builder !== null ) ? $detected_builder : '';
+
 				// Ensure we always return a string
 				return ( is_string( $default_builder ) ) ? $default_builder : '';
 			} catch ( \Throwable $e ) {
-				BWF_Logger::get_instance()->log( 
-					sprintf( 'Error getting detected page builder: %s', $e->getMessage() ), 
-					'wffn_page_builder_detection' 
+				BWF_Logger::get_instance()->log(
+					sprintf( 'Error getting detected page builder: %s', $e->getMessage() ),
+					'wffn_page_builder_detection'
 				);
 				return '';
 			}
@@ -1481,7 +1808,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$get_ref = filter_input( INPUT_GET, 'funnel_id' );
 			if ( ! empty( $get_ref ) && absint( $get_ref ) === WFFN_Common::get_store_checkout_id() ) {
 				$submenu_file = 'admin.php?page=bwf&path=/store-checkout'; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-			} else if ( $get_ref ) {
+			} elseif ( $get_ref ) {
 				$submenu_file = 'admin.php?page=bwf&path=/funnels'; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			}
 		}
@@ -1498,7 +1825,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 				if ( empty( $post_type ) && ! empty( $page_id ) ) {
 					$t_post = get_post( $page_id );
-					if ( in_array( $t_post->post_type, [ WFFN_Core()->landing_pages->get_post_type_slug(), WFOPP_Core()->optin_pages->get_post_type_slug() ], true ) ) {
+					if ( in_array( $t_post->post_type, array( WFFN_Core()->landing_pages->get_post_type_slug(), WFOPP_Core()->optin_pages->get_post_type_slug() ), true ) ) {
 						$query->set( 'post_type', get_post_type( $page_id ) );
 					}
 				}
@@ -1506,12 +1833,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 		public function check_db_version() {
-			
+
 				include_once plugin_dir_path( WFFN_PLUGIN_FILE ) . 'admin/db/class-wffn-db-tables.php';
 				$tables = WFFN_DB_Tables::get_instance();
 				$tables->define_tables();
 				$tables->add_if_needed();
-				
 		}
 
 		/**
@@ -1524,17 +1850,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			try {
 				$task_list = array(
-					'3.3.1'  => array( 'wffn_handle_store_checkout_config' ),
-					'3.3.3'  => array( 'wffn_alter_conversion_table' ),
-					'3.3.4'  => array( 'wffn_add_utm_columns_in_conversion_table' ),
-					'3.3.5'  => array( 'wffn_update_migrate_data_for_currency_switcher' ),
-					'3.3.6'  => array( 'wffn_alter_conversion_table_add_source' ),
-					'3.3.7'  => array( 'wffn_update_email_default_settings' ),
-					'3.3.8'  => array( 'wffn_set_default_value_in_autoload_option' ),
-					'3.3.9'  => array( 'wffn_cleanup_data_for_conversion' ),
-					'3.4.0'  => array( 'wffn_detect_and_set_default_page_builder' ),
-					'4.0.0'  => array( 'wffn_add_order_number_column_in_conversion_table' ),
-					
+					'3.3.1' => array( 'wffn_handle_store_checkout_config' ),
+					'3.3.3' => array( 'wffn_alter_conversion_table' ),
+					'3.3.4' => array( 'wffn_add_utm_columns_in_conversion_table' ),
+					'3.3.5' => array( 'wffn_update_migrate_data_for_currency_switcher' ),
+					'3.3.6' => array( 'wffn_alter_conversion_table_add_source' ),
+					'3.3.7' => array( 'wffn_update_email_default_settings' ),
+					'3.3.8' => array( 'wffn_set_default_value_in_autoload_option' ),
+					'3.3.9' => array( 'wffn_cleanup_data_for_conversion' ),
+					'3.4.0' => array( 'wffn_detect_and_set_default_page_builder' ),
+					'4.0.0' => array( 'wffn_add_order_number_column_in_conversion_table' ),
+
 				);
 
 				$task_list_for_new_install = array(
@@ -1543,7 +1869,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					'wffn_detect_and_set_default_page_builder',
 				);
 				$current_db_version        = get_option( '_wffn_db_version', '0.0.0' );
-
 
 				/**
 				 * 1. Fresh customer with no DB data. -
@@ -1582,7 +1907,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					return;
 				}
 
-
 				if ( ! empty( $task_list ) ) {
 					foreach ( $task_list as $version => $tasks ) {
 						if ( version_compare( $current_db_version, $version, '<' ) ) {
@@ -1605,15 +1929,14 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					$this->clear_endpoints_from_cache();
 
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				BWF_Logger::get_instance()->log( $e->getMessage(), 'wffn-db-update-exception', 'buildwoofunnels', true );
 			}
-
 		}
 
 		public function settings_config( $config ) {
 			$License    = WooFunnels_licenses::get_instance();
-			$fields     = [];
+			$fields     = array();
 			$has_fb_pro = false;
 			if ( is_object( $License ) && is_array( $License->plugins_list ) && count( $License->plugins_list ) ) {
 				foreach ( $License->plugins_list as $license ) {
@@ -1624,7 +1947,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						continue;
 					}
 
-					$license_data = [];
+					$license_data = array();
 					if ( isset( $license['_data'] ) && isset( $license['_data']['data_extra'] ) ) {
 						$license_data = $license['_data']['data_extra'];
 						if ( isset( $license_data['api_key'] ) ) {
@@ -1641,7 +1964,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						'license'                 => ! empty( $license_data ) ? $license_data : false,
 						'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === wffn_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
 						'activated'               => ( isset( $license['_data']['activated'] ) && true === wffn_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-						'expired'                 => ( isset( $license['_data']['expired'] ) && true === wffn_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0
+						'expired'                 => ( isset( $license['_data']['expired'] ) && true === wffn_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 					);
 					if ( $license['plugin'] === 'FunnelKit Funnel Builder Pro' || $license['plugin'] === 'FunnelKit Funnel Builder Basic' ) {
 						$has_fb_pro = true;
@@ -1657,52 +1980,47 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					'type'         => 'label',
 					'key'          => 'label_no_license',
 					'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
-					'styleClasses' => [ 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ],
+					'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
 				);
 				array_unshift( $fields, $field_no_license );
 				$field_no_license = array(
 					'key'          => 'no_license',
 					'type'         => 'upgrade_pro',
 					'label'        => __( '<strong>You are currently using FunnelKit Lite, which does not require a license.</strong><br/> To access more features, consider upgrading to FunnelKit PRO now.', 'funnel-builder' ),
-					'styleClasses' => [ 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ],
+					'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ),
 					'hint'         => '',
 				);
 				array_unshift( $fields, $field_no_license );
 
-			} else {
+			} elseif ( is_multisite() ) {
 
-				if ( is_multisite() ) {
 					/**
 					 * Check if sitewide installed, if yes then get the plugin info from primary site
 					 */
 					$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
-					if ( is_array( $active_plugins ) && ( in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) && ! is_main_site() ) {
-						$fields           = [];
-						$field_no_license = array(
-							'type'         => 'label',
-							'key'          => 'label_no_license',
-							'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
-							'styleClasses' => [ 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ],
-						);
-						array_unshift( $fields, $field_no_license );
-						$main_site_id        = 1; // Main site ID in Multisite
-						$main_site_admin_url = get_site_url( $main_site_id, 'wp-admin/admin.php?page=bwf&path=/settings' );
-						$field_no_license    = array(
-							'key'          => 'no_license',
-							'type'         => 'multisite_notice',
-							'linkButton'   => esc_url( $main_site_admin_url ),
-							'label'        => __( 'You have activated FunnelKit on a multisite network, So the licenses will be managed on the main site and not on the sub sites. ', 'funnel-builder' ),
-							'styleClasses' => [ 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ],
-							'hint'         => '',
-						);
-						array_unshift( $fields, $field_no_license );
-					}
-
-
+				if ( is_array( $active_plugins ) && ( in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) && ! is_main_site() ) {
+					$fields           = array();
+					$field_no_license = array(
+						'type'         => 'label',
+						'key'          => 'label_no_license',
+						'label'        => __( 'FunnelKit Funnel Builder Pro', 'funnel-builder' ),
+						'styleClasses' => array( 'wfacp_setting_track_and_events_start', 'bwf_wrap_custom_html_tracking_general' ),
+					);
+					array_unshift( $fields, $field_no_license );
+					$main_site_id        = 1; // Main site ID in Multisite
+					$main_site_admin_url = get_site_url( $main_site_id, 'wp-admin/admin.php?page=bwf&path=/settings' );
+					$field_no_license    = array(
+						'key'          => 'no_license',
+						'type'         => 'multisite_notice',
+						'linkButton'   => esc_url( $main_site_admin_url ),
+						'label'        => __( 'You have activated FunnelKit on a multisite network, So the licenses will be managed on the main site and not on the sub sites. ', 'funnel-builder' ),
+						'styleClasses' => array( 'wfacp_checkbox_wrap', 'wfacp_setting_track_and_events_end' ),
+						'hint'         => '',
+					);
+					array_unshift( $fields, $field_no_license );
 				}
 			}
-
 
 			return array_merge( $fields, $config );
 		}
@@ -1715,7 +2033,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 * @return string
 		 */
 		function maybe_modify_link( $link, $experiment ) {
-
 
 			$get_control_id = $experiment->get_control();
 
@@ -1742,12 +2059,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				$meta = wp_list_pluck( $all_meta, 'meta_key' );
 			}
 
-			$template = [
+			$template = array(
 				'selected'        => 'wp_editor_1',
 				'selected_type'   => 'wp_editor',
-				'template_active' => 'yes'
-			];
-
+				'template_active' => 'yes',
+			);
 
 			$selected_template = apply_filters( 'wffn_set_selected_template_on_duplicate', array(), $post_id, $meta );
 
@@ -1793,34 +2109,37 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function setup_js_for_localization( $app_name, $frontend_dir, $script_deps, $version ) {
 			/** enqueue other js file from the dist folder */
 			$path = WFFN_PLUGIN_DIR . $this->get_local_app_path();
-			foreach ( glob( $path . "*.js" ) as $dist_file ) {
+			foreach ( glob( $path . '*.js' ) as $dist_file ) {
 				$file_info = pathinfo( $dist_file );
 
 				if ( $app_name === $file_info['filename'] ) {
 					continue;
 				}
-				wp_register_script( "wffn_admin_" . $file_info['filename'], $frontend_dir . "" . $file_info['basename'], $script_deps, $version, true );
-				wp_set_script_translations( "wffn_admin_" . $file_info['filename'], 'funnel-builder' );
+				wp_register_script( 'wffn_admin_' . $file_info['filename'], $frontend_dir . '' . $file_info['basename'], $script_deps, $version, true );
+				wp_set_script_translations( 'wffn_admin_' . $file_info['filename'], 'funnel-builder' );
 			}
-			add_action( 'admin_print_footer_scripts', function () {
+			add_action(
+				'admin_print_footer_scripts',
+				function () {
 
-				if ( 0 === WFFN_REACT_ENVIRONMENT ) {
-					return;
-				}
-				$path = WFFN_PLUGIN_DIR . $this->get_local_app_path();
-				global $wp_scripts;
-				foreach ( glob( $path . "*.js" ) as $dist_file ) {
-
-					$file_info = pathinfo( $dist_file );
-
-					$translations = $wp_scripts->print_translations( "wffn_admin_" . $file_info['filename'], false );
-					if ( $translations ) {
-						$translations = sprintf( "<script%s id='%s-js-translations'>\n%s\n</script>\n", '', esc_attr( "wffn_admin_" . $file_info['filename'] ), $translations );
+					if ( 0 === WFFN_REACT_ENVIRONMENT ) {
+						return;
 					}
-					echo $translations; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				}
+					$path = WFFN_PLUGIN_DIR . $this->get_local_app_path();
+					global $wp_scripts;
+					foreach ( glob( $path . '*.js' ) as $dist_file ) {
 
-			}, 99999 );
+						$file_info = pathinfo( $dist_file );
+
+						$translations = $wp_scripts->print_translations( 'wffn_admin_' . $file_info['filename'], false );
+						if ( $translations ) {
+							$translations = sprintf( "<script%s id='%s-js-translations'>\n%s\n</script>\n", '', esc_attr( 'wffn_admin_' . $file_info['filename'] ), $translations );
+						}
+						echo $translations; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					}
+				},
+				99999
+			);
 		}
 
 		/**
@@ -1838,13 +2157,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return;
 			}
 
-			if ( ! in_array( $post->post_type, array(
-				'wfacp_checkout',
-				'wffn_landing',
-				'wffn_ty',
-				'wffn_optin',
-				'wffn_oty',
-			), true ) ) {
+			if ( ! in_array(
+				$post->post_type,
+				array(
+					'wfacp_checkout',
+					'wffn_landing',
+					'wffn_ty',
+					'wffn_optin',
+					'wffn_oty',
+				),
+				true
+			) ) {
 				return;
 			}
 
@@ -1859,7 +2182,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			if ( $funnel instanceof WFFN_Funnel ) {
 				$funnel->delete_step( $get_funnel_id, $post_id );
 			}
-
 		}
 
 		/**
@@ -1893,11 +2215,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						$funnel->delete_step( $funnel->get_id(), $step['id'] );
 					}
 				}
-
 			}
 
 			return $steps;
-
 		}
 
 		/**
@@ -1914,52 +2234,72 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return;
 			}
 			global $post;
-			$wp_admin_bar->add_node( [
-				'id'    => 'wffn_funnel',
-				'title' => 'FunnelKit',
-				'href'  => admin_url( 'admin.php?page=bwf&path=/funnels' ),
-			] );
+			$wp_admin_bar->add_node(
+				array(
+					'id'    => 'wffn_funnel',
+					'title' => 'FunnelKit',
+					'href'  => admin_url( 'admin.php?page=bwf&path=/funnels' ),
+				)
+			);
 			$admin_sub_nodes = array(
-				[
+				array(
 					'id'     => 'fk_funnel',
 					'parent' => 'wffn_funnel',
 					'title'  => __( 'Funnels', 'funnel-builder' ),
 					'href'   => admin_url( 'admin.php?page=bwf&path=/funnels' ),
-				],
-				[
+				),
+				array(
 					'id'     => 'fk_funnel_store_checkout',
 					'parent' => 'wffn_funnel',
 					'title'  => __( 'Store Checkout', 'funnel-builder' ),
 					'href'   => admin_url( 'admin.php?page=bwf&path=/store-checkout' ),
-				],
-				[
+				),
+				array(
 					'id'     => 'fk_funnel_analytics',
 					'parent' => 'wffn_funnel',
 					'title'  => __( 'Analytics', 'funnel-builder' ),
 					'href'   => admin_url( 'admin.php?page=bwf&path=/analytics' ),
-				],
-				[
+				),
+				array(
 					'id'     => 'fk_funnel_templates',
 					'parent' => 'wffn_funnel',
 					'title'  => __( 'Templates', 'funnel-builder' ),
 					'href'   => admin_url( 'admin.php?page=bwf&path=/templates' ),
-				],
-				[
+				),
+				array(
 					'id'     => 'fk_funnel_settings',
 					'parent' => 'wffn_funnel',
 					'title'  => __( 'Settings', 'funnel-builder' ),
 					'href'   => admin_url( 'admin.php?page=bwf&path=/settings' ),
-				],
+				),
 
 			);
 
 			$wffn_steps = array(
-				'wffn_landing'   => array( 'slug' => 'funnel-landing', 'title' => __( 'Edit Sales', 'funnel-builder' ) ),
-				'wfacp_checkout' => array( 'slug' => 'funnel-checkout', 'title' => __( 'Edit Checkout', 'funnel-builder' ) ),
-				'wfocu_offer'    => array( 'slug' => 'funnel-offer', 'title' => __( 'Edit Offer', 'funnel-builder' ) ),
-				'wffn_ty'        => array( 'slug' => 'funnel-thankyou', 'title' => __( 'Edit Thank You', 'funnel-builder' ) ),
-				'wffn_optin'     => array( 'slug' => 'funnel-optin', 'title' => __( 'Edit Optin', 'funnel-builder' ) ),
-				'wffn_oty'       => array( 'slug' => 'funnel-optin-confirmation', 'title' => __( 'Edit Optin Confirmation', 'funnel-builder' ) )
+				'wffn_landing'   => array(
+					'slug'  => 'funnel-landing',
+					'title' => __( 'Edit Sales', 'funnel-builder' ),
+				),
+				'wfacp_checkout' => array(
+					'slug'  => 'funnel-checkout',
+					'title' => __( 'Edit Checkout', 'funnel-builder' ),
+				),
+				'wfocu_offer'    => array(
+					'slug'  => 'funnel-offer',
+					'title' => __( 'Edit Offer', 'funnel-builder' ),
+				),
+				'wffn_ty'        => array(
+					'slug'  => 'funnel-thankyou',
+					'title' => __( 'Edit Thank You', 'funnel-builder' ),
+				),
+				'wffn_optin'     => array(
+					'slug'  => 'funnel-optin',
+					'title' => __( 'Edit Optin', 'funnel-builder' ),
+				),
+				'wffn_oty'       => array(
+					'slug'  => 'funnel-optin-confirmation',
+					'title' => __( 'Edit Optin Confirmation', 'funnel-builder' ),
+				),
 			);
 			if ( ! is_null( $post ) && ! empty( $post->post_type ) && isset( $wffn_steps[ $post->post_type ] ) ) {
 				$step = $wffn_steps[ $post->post_type ];
@@ -1971,47 +2311,58 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					$funnel_id = get_post_meta( $post->ID, '_bwf_in_funnel', true );
 				}
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) !== 0 ) {
-					$funnel_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-						'page' => 'bwf',
-						'path' => "/funnels/" . $funnel_id . "/steps",
-					], admin_url( 'admin.php' ) ) );
+					$funnel_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page' => 'bwf',
+								'path' => '/funnels/' . $funnel_id . '/steps',
+							),
+							admin_url( 'admin.php' )
+						)
+					);
 
-					$step_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-						'page'      => 'bwf',
-						'path'      => "/" . $step['slug'] . "/" . $post->ID . "/design",
-						'funnel_id' => $funnel_id,
-					], admin_url( 'admin.php' ) ) );
-
+					$step_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'      => 'bwf',
+								'path'      => '/' . $step['slug'] . '/' . $post->ID . '/design',
+								'funnel_id' => $funnel_id,
+							),
+							admin_url( 'admin.php' )
+						)
+					);
 
 					/**
 					 * Add submenu for the frontend if its our step
 					 */
-					$wp_admin_bar->add_menu( [
-						'id'     => 'wffn_edit_funnel',
-						'parent' => 'wffn_funnel',
-						'title'  => __( 'Edit Funnel', 'funnel-builder' ),
-						'href'   => $funnel_link,
-					] );
+					$wp_admin_bar->add_menu(
+						array(
+							'id'     => 'wffn_edit_funnel',
+							'parent' => 'wffn_funnel',
+							'title'  => __( 'Edit Funnel', 'funnel-builder' ),
+							'href'   => $funnel_link,
+						)
+					);
 
-					$wp_admin_bar->add_menu( [
-						'id'     => 'wffn_edit_step',
-						'parent' => 'wffn_funnel',
-						'title'  => $step['title'],
-						'href'   => $step_link,
-					] );
+					$wp_admin_bar->add_menu(
+						array(
+							'id'     => 'wffn_edit_step',
+							'parent' => 'wffn_funnel',
+							'title'  => $step['title'],
+							'href'   => $step_link,
+						)
+					);
 					?>
 					<style type="text/css">
-                        ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_edit_step {
-                            margin-bottom: 5px;
-                            padding-bottom: 5px;
-                            border-bottom: 1px dashed #65686b;
-                        }
+						ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_edit_step {
+							margin-bottom: 5px;
+							padding-bottom: 5px;
+							border-bottom: 1px dashed #65686b;
+						}
 					</style>
 					<?php
 				}
-
 			}
-
 
 			/**
 			 * Add all sub nodes which are static
@@ -2024,23 +2375,28 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			 * Possibly add sub nodes for different pro states
 			 */
 			if ( ! defined( 'WFFN_PRO_VERSION' ) ) {
-				$link = add_query_arg( [
-					'utm_source'   => 'WordPress',
-					'utm_medium'   => 'Toolbar+Menu',
-					'utm_campaign' => 'FB+Lite+Plugin',
-				], WFFN_Core()->admin->get_pro_link() );
-				$wp_admin_bar->add_menu( [
-					'id'     => 'wffn_funnel-additional_lite',
-					'parent' => 'wffn_funnel',
-					'title'  => __( 'Upgrade to Pro', 'funnel-builder' ),
-					'href'   => $link,
-				] );
+				$link = add_query_arg(
+					array(
+						'utm_source'   => 'WordPress',
+						'utm_medium'   => 'Toolbar+Menu',
+						'utm_campaign' => 'FB+Lite+Plugin',
+					),
+					WFFN_Core()->admin->get_pro_link()
+				);
+				$wp_admin_bar->add_menu(
+					array(
+						'id'     => 'wffn_funnel-additional_lite',
+						'parent' => 'wffn_funnel',
+						'title'  => __( 'Upgrade to Pro', 'funnel-builder' ),
+						'href'   => $link,
+					)
+				);
 				?>
 				<style type="text/css">
-                    ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel-additional_lite a.ab-item {
-                        color: white;
-                        background-color: #1DA867;
-                    }
+					ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel-additional_lite a.ab-item {
+						color: white;
+						background-color: #1DA867;
+					}
 				</style>
 				<?php
 			} else {
@@ -2058,32 +2414,34 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					 * the expiry should always be less than on current utc
 					 */
 					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$link = add_query_arg( [
-							'utm_source'   => 'WordPress',
-							'utm_medium'   => 'Toolbar+Menu',
-							'utm_campaign' => 'FB+Lite+Plugin',
-						], 'https://funnelkit.com/my-account/' );
+						$link = add_query_arg(
+							array(
+								'utm_source'   => 'WordPress',
+								'utm_medium'   => 'Toolbar+Menu',
+								'utm_campaign' => 'FB+Lite+Plugin',
+							),
+							'https://funnelkit.com/my-account/'
+						);
 
-						$wp_admin_bar->add_menu( [
-							'id'     => 'wffn_funnel-license',
-							'parent' => 'wffn_funnel',
-							'title'  => __( 'License Expired', 'funnel-builder' ),
-							'href'   => $link,
-						] );
+						$wp_admin_bar->add_menu(
+							array(
+								'id'     => 'wffn_funnel-license',
+								'parent' => 'wffn_funnel',
+								'title'  => __( 'License Expired', 'funnel-builder' ),
+								'href'   => $link,
+							)
+						);
 					}
-
 				}
 				?>
 				<style type="text/css">
-                    ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel-license a.ab-item {
-                        color: white;
-                        background-color: #e15334;
-                    }
+					ul#wp-admin-bar-wffn_funnel-default li#wp-admin-bar-wffn_funnel-license a.ab-item {
+						color: white;
+						background-color: #e15334;
+					}
 				</style>
 				<?php
 			}
-
-
 		}
 
 		/**
@@ -2108,7 +2466,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		/**
 		 * Filter CB to alter response data to pass connect link to the REST cll
 		 *
-		 * @param array $response
+		 * @param array  $response
 		 * @param string $basename
 		 *
 		 * @return mixed
@@ -2126,7 +2484,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			$License = WooFunnels_licenses::get_instance();
 
-			$data = [];
+			$data = array();
 			if ( is_object( $License ) && is_array( $License->plugins_list ) && count( $License->plugins_list ) ) {
 				foreach ( $License->plugins_list as $license ) {
 					/**
@@ -2136,7 +2494,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						continue;
 					}
 
-					$license_data = [];
+					$license_data = array();
 					if ( isset( $license['_data'] ) && isset( $license['_data']['data_extra'] ) ) {
 						$license_data = $license['_data']['data_extra'];
 						if ( isset( $license_data['api_key'] ) ) {
@@ -2153,9 +2511,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 							'license'                 => ! empty( $license_data ) ? $license_data : false,
 							'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
 							'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0
+							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 						);
-
 
 					}
 				}
@@ -2177,9 +2534,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) );
 			}
 
-
 			return $expiry;
-
 		}
 
 
@@ -2202,23 +2557,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 							'license'                 => ! empty( $license_data ) ? $license_data : false,
 							'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
 							'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0
+							'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 						);
 					}
-
-
 				}
-
-
 			}
 
-			return [];
-
+			return array();
 		}
 
 		public function is_license_active_for_checkout() {
 			$hashes = $this->get_license_hashes();
-
 
 			if ( $this->is_basic_exists() ) {
 				$license_basic = $this->license_data( $hashes['basic'] );
@@ -2267,13 +2616,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return true;
 			}
 
-
 			return false;
 		}
 
 		public function get_license_expiry_for_checkout() {
 			$hashes = $this->get_license_hashes();
-
 
 			if ( $this->is_basic_exists() ) {
 				$licenses = $this->license_data( $hashes['basic'] );
@@ -2314,7 +2661,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return $licenses['license']['expires'];
 			}
 
-
 			return false;
 		}
 
@@ -2353,7 +2699,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return true;
 			}
 
-
 			return false;
 		}
 
@@ -2385,7 +2730,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				return $licenses['license']['expires'];
 			}
 
-
 			return '';
 		}
 
@@ -2403,7 +2747,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function blocks_incompatible_switch_to_classic_cart_checkout( $is_rest = false ) {
 
 			if ( ! class_exists( '\Automattic\WooCommerce\Blocks\BlockTypes\ClassicShortcode' ) || // Make sure WC version is at least 8.3. This class is added at version 8.3.
-			     ! current_user_can( 'manage_options' ) || ( empty( $is_rest ) && false === check_ajax_referer( 'wffn_blocks_incompatible_switch_to_classic', 'nonce', false ) ) ) {
+				! current_user_can( 'manage_options' ) || ( empty( $is_rest ) && false === check_ajax_referer( 'wffn_blocks_incompatible_switch_to_classic', 'nonce', false ) ) ) {
 				return;
 			}
 
@@ -2411,21 +2755,25 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			$wc_checkout_page = get_post( wc_get_page_id( 'checkout' ) );
 
 			if ( has_block( 'woocommerce/checkout', $wc_checkout_page ) ) {
-				wp_update_post( array(
-					'ID'           => $wc_checkout_page->ID,
-					'post_content' => '<!-- wp:woocommerce/classic-shortcode {"shortcode":"checkout"} /-->',
-				) );
+				wp_update_post(
+					array(
+						'ID'           => $wc_checkout_page->ID,
+						'post_content' => '<!-- wp:woocommerce/classic-shortcode {"shortcode":"checkout"} /-->',
+					)
+				);
 			}
 
 			if ( has_block( 'woocommerce/cart', $wc_cart_page ) ) {
-				wp_update_post( array(
-					'ID'           => $wc_cart_page->ID,
-					'post_content' => '<!-- wp:woocommerce/classic-shortcode {"shortcode":"cart"} /-->',
-				) );
+				wp_update_post(
+					array(
+						'ID'           => $wc_cart_page->ID,
+						'post_content' => '<!-- wp:woocommerce/classic-shortcode {"shortcode":"cart"} /-->',
+					)
+				);
 			}
 
 			$userdata   = get_user_meta( get_current_user_id(), '_bwf_notifications_close', true );
-			$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? [] : $userdata;
+			$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? array() : $userdata;
 			$userdata[] = 'wc_block_incompat';
 			update_user_meta( get_current_user_id(), '_bwf_notifications_close', array_values( array_unique( $userdata ) ) ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta
 
@@ -2450,16 +2798,21 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function ajax_dismiss_admin_notice() {
 			$notice_key = isset( $_REQUEST['nkey'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nkey'] ) ) : '';
 
-			if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( 'manage_options' ) && $notice_key && isset( $_REQUEST['nonce'] ) && false !== check_ajax_referer( 'wp_wffn_dismiss_notice', 'nonce', false )
+			if (
+				defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( 'manage_options' ) && $notice_key && isset( $_REQUEST['nonce'] ) && false !== check_ajax_referer( 'wp_wffn_dismiss_notice', 'nonce', false )
 
 			) {
 
 				$userdata   = get_user_meta( get_current_user_id(), '_bwf_notifications_close', true );
-				$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? [] : $userdata;
+				$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? array() : $userdata;
 				$userdata[] = $notice_key;
 
 				update_user_meta( get_current_user_id(), '_bwf_notifications_close', array_values( array_unique( $userdata ) ) ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta
-
+				// If primary sticky banner is dismissed, set 5-minute transient to hide admin notifications
+				// Secondary sticky banner does NOT trigger this transient - it will always show until dismissed
+				if ( strpos( $notice_key, 'sticky_' ) === 0 && strpos( $notice_key, 'secondary_sticky_' ) !== 0 ) {
+					set_transient( 'wffn_sticky_banner_dismissed_' . get_current_user_id(), $notice_key, 5 * MINUTE_IN_SECONDS );
+				}
 			}
 			$redirect = isset( $_REQUEST['redirect'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect'] ) ) : null;
 
@@ -2467,14 +2820,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 			wp_safe_redirect( $redirect_url ?? admin_url( 'admin.php?page=bwf&path=/funnels' ) );
 			exit;
-
 		}
 
 		public function get_pro_activation_date() {
 			if ( ! defined( 'WFFN_PRO_VERSION' ) ) {
 				return '';
 			}
-			$pro_activation_date = get_option( 'fk_fb_active_date', [] );
+			$pro_activation_date = get_option( 'fk_fb_active_date', array() );
 			if ( empty( $pro_activation_date ) || ! isset( $pro_activation_date['pro'] ) ) {
 				$date = new DateTime( 'now' );
 				$date->modify( '-10 days' );
@@ -2489,7 +2841,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		public function get_lite_activation_date() {
 
-			$pro_activation_date = get_option( 'fk_fb_active_date', [] );
+			$pro_activation_date = get_option( 'fk_fb_active_date', array() );
 			if ( empty( $pro_activation_date ) || ! isset( $pro_activation_date['lite'] ) ) {
 				$date                        = new DateTime( 'now' );
 				$pro_activation_date['lite'] = $date->getTimestamp();
@@ -2511,38 +2863,37 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 */
 		public function get_license_config( $expiry_only = false, $get_ad = true ) {
 
-
 			if ( $expiry_only ) {
-				return [
+				return array(
 					'f'  => array(
-						'ed' => $this->get_license_expiry()
+						'ed' => $this->get_license_expiry(),
 					),
-					'gp' => [ 2, 2 ]
-				];
+					'gp' => array( 2, 2 ),
+				);
 			} else {
-				$license_config = [
+				$license_config = array(
 					'f'  => array(
 						'e'  => defined( 'WFFN_PRO_VERSION' ),
-						'la' => $this->is_license_active(),  //false on not exist
-						//true when activated
-						//false when manually deactivated
+						'la' => $this->is_license_active(),  // false on not exist
+						// true when activated
+						// false when manually deactivated
 						// on expiry it could be both true and false, not recommended checking this value
 						'ed' => $this->get_license_expiry(),
 						'ib' => $this->is_basic_exists(),
 					),
 					'ck' => array(
-						'e'  => wfacp_pro_dependency(), //should cover aero, basic and pro addon
+						'e'  => wfacp_pro_dependency(), // should cover aero, basic and pro addon
 						'la' => $this->is_license_active_for_checkout(),
-						'ed' => $this->get_license_expiry_for_checkout()
+						'ed' => $this->get_license_expiry_for_checkout(),
 
 					),
 					'ul' => array(
-						'e'  => function_exists( 'WFOCU_Core' ), //should cover upstroke & pro addon
+						'e'  => function_exists( 'WFOCU_Core' ), // should cover upstroke & pro addon
 						'la' => $this->is_license_active_for_upsell(),
-						'ed' => $this->get_license_expiry_for_upsell()
+						'ed' => $this->get_license_expiry_for_upsell(),
 					),
-					'gp' => [ 2, 2 ]
-				];
+					'gp' => array( 2, 2 ),
+				);
 				if ( $get_ad === true ) {
 					$license_config['f']['adl'] = $this->get_lite_activation_date();
 					$license_config['f']['ad']  = $this->get_pro_activation_date();
@@ -2557,10 +2908,11 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 		/**
 		 * redirect checkout edit link on react screen when click on edit link from wc order screen
+		 *
 		 * @return void
 		 */
 		public function redirect_checkout_edit_link_on_new_ui() {
-			$funnel_id = get_post_meta( $_GET['wfacp_id'], '_bwf_in_funnel', true ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$funnel_id = get_post_meta( $_GET['wfacp_id'], '_bwf_in_funnel', true ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 				// @codingStandardsIgnoreStart
 				$edit_link = add_query_arg( [
@@ -2576,15 +2928,13 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		}
 
 		public function maybe_force_redirect_to_wizard() {
-			
+
 			if ( false === $this->is_wizard_available( true ) ) {
 				return;
 			}
 
 			wp_redirect( WFFN_Core()->admin->wizard_url() );
 			exit;
-
-
 		}
 
 
@@ -2598,8 +2948,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 */
 		public function is_wizard_available( $force = false ) {
 			try {
-				$first_version = get_option('wffn_first_v', '0.0.0');
-				if ($force !== false && false === version_compare($first_version, WFFN_VERSION, '=')) {
+				$first_version = get_option( 'wffn_first_v', '0.0.0' );
+				if ( $force !== false && false === version_compare( $first_version, WFFN_VERSION, '=' ) ) {
 
 					/**
 					 * bail out if old users versions
@@ -2607,23 +2957,22 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					return false;
 				}
 
-				if (WFFN_Core()->admin_notifications->is_user_dismissed(get_current_user_id(), 'onboarding_wizard')) {
+				if ( WFFN_Core()->admin_notifications->is_user_dismissed( get_current_user_id(), 'onboarding_wizard' ) ) {
 					/**
 					 * This flag tells us that the wizard notice has already been dismissed
 					 */
 					return false;
 				}
 
-				$status = get_option('_wffn_onboarding_completed', false);
-				if (false !== $status) {
+				$status = get_option( '_wffn_onboarding_completed', false );
+				if ( false !== $status ) {
 					/**
 					 * bail out if wizard started/skipped/completed
 					 */
 					return false;
 				}
 
-
-				if ($force !== false && WFFN_Core()->admin_notifications->is_user_dismissed(get_current_user_id(), 'wizard_open')) {
+				if ( $force !== false && WFFN_Core()->admin_notifications->is_user_dismissed( get_current_user_id(), 'wizard_open' ) ) {
 					/**
 					 * This flag tells us that the wizard first step is already opened
 					 * We are using this to make sure we never redirect multiple times.
@@ -2631,28 +2980,26 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					return false;
 				}
 
-				if (false !== get_option('_bwfan_onboarding_completed', false) && 'activated' === WFFN_Common::get_plugin_status('funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php')) {
+				if ( false !== get_option( '_bwfan_onboarding_completed', false ) && 'activated' === WFFN_Common::get_plugin_status( 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php' ) ) {
 					/**
 					 * This checks if user has completed wizard from automations plugin & we have stripe plugin activated
 					 */
 					return false;
 				}
 
-
 				return true;
-			} catch (Exception | Error $e) {
+			} catch ( Exception | Error $e ) {
 				return false;
 			}
-
 		}
 
 
 		/**
 		 * Check if update is available for the plugin lite Or PRO versions
+		 *
 		 * @return false|mixed version number if update available, false if not available
 		 */
 		public function is_update_available() {
-
 
 			$plugins = get_site_transient( 'update_plugins' );
 			if ( isset( $plugins->response ) && is_array( $plugins->response ) && isset( $plugins->response[ WFFN_PLUGIN_BASENAME ] ) ) {
@@ -2663,8 +3010,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			}
 
 			return false;
-
-
 		}
 
 		/**
@@ -2700,7 +3045,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 					$expiry = new DateTime( $a['f']['ed'] );
 
-					$diff_in_days = $expiry->diff( $current )->format( "%a" );
+					$diff_in_days = $expiry->diff( $current )->format( '%a' );
 
 					if ( ( $expiry->getTimestamp() < $current->getTimestamp() && absint( $diff_in_days ) <= 7 ) ) {
 						$render_css = true;
@@ -2726,7 +3071,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 									<p>
 										<?php
-										echo sprintf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> We\'ve extended its features until %s, after which they\'ll be limited. <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%s">I have My License Key</a>', 'funnel-builder' ) ), esc_html( $time ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
+										printf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> We\'ve extended its features until %1$s, after which they\'ll be limited. <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%2$s">I have My License Key</a>', 'funnel-builder' ) ), esc_html( $time ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
 										?>
 									</p>
 
@@ -2735,7 +3080,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 							</td>
 						</tr>
 
-					<?php } /**
+						<?php
+					} /**
 					 * the expiry should always be less than on current utc
 					 */ elseif ( $expiry->getTimestamp() < $current->getTimestamp() ) {
 						$render_css = true;
@@ -2751,58 +3097,58 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 									<p>
 										<?php
-										echo sprintf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> Please renew your license to continue using premium features without interruption. <a href="https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%s">I have My License Key</a>', 'funnel-builder' ) ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
+										printf( wp_kses_post( __( '<strong>Your FunnelKit Pro license has expired!</strong> Please renew your license to continue using premium features without interruption. <a href="https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice">Renew Now</a> or <a href="%s">I have My License Key</a>', 'funnel-builder' ) ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/woofunnels_general_settings' ) ) );
 										?>
 									</p>
 								</div>
 							</td>
 						</tr>
 						<?php
-					}
-
-
+}
 				}
 
-				if ( $render_css ) { ?>
+				if ( $render_css ) {
+					?>
 					<style>
-                        tr[data-slug="funnelkit-funnel-builder-pro"] th,
-                        tr[data-slug="funnelkit-funnel-builder-pro"] td {
-                            box-shadow: none !important;
-                        }
+						tr[data-slug="funnelkit-funnel-builder-pro"] th,
+						tr[data-slug="funnelkit-funnel-builder-pro"] td {
+							box-shadow: none !important;
+						}
 
-                        .fb_license_notice .update-message {
-                            position: relative;
-                        }
+						.fb_license_notice .update-message {
+							position: relative;
+						}
 
-                        .fb_license_notice .update-message svg {
-                            position: absolute;
-                            left: 12px;
-                            top: 5px;
-                            width: 20px;
-                        }
+						.fb_license_notice .update-message svg {
+							position: absolute;
+							left: 12px;
+							top: 5px;
+							width: 20px;
+						}
 
-                        .fb_license_notice .update-message p {
-                            padding-left: 14px !important;
-                        }
+						.fb_license_notice .update-message p {
+							padding-left: 14px !important;
+						}
 
-                        .fb_license_notice.fbk_renew .update-message svg {
-                            top: 4px;
-                            width: 16px;
-                        }
+						.fb_license_notice.fbk_renew .update-message svg {
+							top: 4px;
+							width: 16px;
+						}
 
-                        .fb_license_notice .update-message.notice-error p::before {
-                            content: "";
-                        }
+						.fb_license_notice .update-message.notice-error p::before {
+							content: "";
+						}
 					</style>
-				<?php }
+					<?php
+				}
 			}
 		}
 
 		public function plugin_action_link( $actions, $plugin_file ) {
-			$new_action = [];
+			$new_action = array();
 
 			if ( ! is_array( $actions ) ) {
-				$actions = [];
+				$actions = array();
 			}
 			if ( defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && $plugin_file === WFFN_PRO_PLUGIN_BASENAME ) {
 
@@ -2815,7 +3161,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				if ( ! empty( $a['f']['ed'] ) ) {
 
 					$expiry = new DateTime( $a['f']['ed'] );
-
 
 					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
 						$link                          = esc_url( 'https://funnelkit.com/my-account/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Plugin+Inline+Notice' );
@@ -2831,17 +3176,18 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 </svg>
 <a href="' . $link . '" class="wffn_renew_license" style="color: #d63638;padding-left: 20px;">' . __( 'Renew Expired License', 'funnel-builder' ) . '</a>';
 					}
+				}
+				?>
 
-
-				} ?>
-
-			<?php }
+				<?php
+			}
 
 			return array_merge( $new_action, $actions );
 		}
 
 		/**
 		 * Clear wffn endpoints form cache plugins
+		 *
 		 * @return void
 		 */
 		public function clear_endpoints_from_cache() {
@@ -2849,7 +3195,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			if ( class_exists( 'BWF_JSON_Cache' ) && method_exists( 'BWF_JSON_Cache', 'run_json_endpoints_cache_handling' ) ) {
 				BWF_JSON_Cache::run_json_endpoints_cache_handling();
 			}
-
 		}
 
 		public function conditional_includes() {
@@ -2863,18 +3208,17 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 			switch ( $screen->id ) {
 				case 'dashboard':
 				case 'dashboard-network':
-
 					include_once __DIR__ . '/class-wffn-admin-dashboard-widget.php';
 
 					break;
 
 			}
-
 		}
 
 		/**
 		 * Function run on schedule for clean up data
 		 * duplicate entry and remove subscription form conversion
+		 *
 		 * @return void
 		 */
 		public function optimize_conversion_table_analytics() {
@@ -2924,8 +3268,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 
 						if ( ! empty( $duplicate_row ) && is_array( $duplicate_row ) ) {
 							$is_clear_schedule = false;
-							$delete_query      = "DELETE FROM {$conv_table} WHERE id IN ( SELECT id FROM ( 
-                                        SELECT id FROM {$conv_table} WHERE source IN ( 
+							$delete_query      = "DELETE FROM {$conv_table} WHERE id IN ( SELECT id FROM (
+                                        SELECT id FROM {$conv_table} WHERE source IN (
                                         SELECT source FROM {$conv_table} WHERE type = 2 AND source != 0
                                         GROUP BY source HAVING COUNT(*) > 1 ) AND id NOT IN (
                                         SELECT MAX(id) FROM {$conv_table} GROUP BY source ) LIMIT 100 ) AS subquery )";
@@ -2940,7 +3284,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					}
 
 					$is_clear_schedule = false;
-					$delete_query      = "DELETE FROM {$conv_table} WHERE type = %d AND source IN (" . implode( ',', array_map( 'intval', $get_ids ) ) . ")";
+					$delete_query      = "DELETE FROM {$conv_table} WHERE type = %d AND source IN (" . implode( ',', array_map( 'intval', $get_ids ) ) . ')';
 					$wpdb->query( $wpdb->prepare( $delete_query, 2 ) );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 					if ( ! empty( $wpdb->last_error ) ) {
@@ -2948,8 +3292,8 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 						WFFN_Core()->logger->log( 'Conversion tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );
 					}
 
-					$update_query = "UPDATE {$conv_table} AS conv LEFT JOIN {$aero_table} AS stats ON conv.source = stats.order_id SET conv.checkout_total = stats.total_revenue 
-                                              WHERE 1=1 AND conv.funnel_id != 0 
+					$update_query = "UPDATE {$conv_table} AS conv LEFT JOIN {$aero_table} AS stats ON conv.source = stats.order_id SET conv.checkout_total = stats.total_revenue
+                                              WHERE 1=1 AND conv.funnel_id != 0
                                                 AND conv.checkout_total = 0
                                                 AND stats.total_revenue != 0
                                                 AND conv.type = %d
@@ -2989,7 +3333,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				if ( is_array( $get_aero_ids ) && count( $get_aero_ids ) > 0 ) {
 					$is_clear_schedule = false;
 					$wpdb->query( "DELETE FROM {$aero_table} WHERE order_id IN (" . implode( ',', $get_aero_ids ) . " )" );//phpcs:ignore
-					if ( ! empty ( $wpdb->last_error ) ) {
+					if ( ! empty( $wpdb->last_error ) ) {
 						$is_clear_schedule = true;
 						WFFN_Core()->logger->log( 'Conversion aero tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );
 					}
@@ -2998,9 +3342,9 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				/**
 				 * Remove duplicate entry
 				 */
-				$duplicate_query = "SELECT order_id as ID FROM {$aero_table} 
-                	WHERE order_id IN ( SELECT order_id  FROM {$aero_table} 
-    					GROUP BY order_id 
+				$duplicate_query = "SELECT order_id as ID FROM {$aero_table}
+                	WHERE order_id IN ( SELECT order_id  FROM {$aero_table}
+    					GROUP BY order_id
     					HAVING COUNT(order_id) > %d
 					)
 					ORDER BY order_id, ID LIMIT 0, %d";
@@ -3024,7 +3368,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
                         ) AS subquery
                     )";
 					$wpdb->query( $wpdb->prepare( $delete_query, 1, $limit ) );//phpcs:ignore
-					if ( ! empty ( $wpdb->last_error ) ) {
+					if ( ! empty( $wpdb->last_error ) ) {
 						$is_clear_schedule = true;
 						WFFN_Core()->logger->log( 'Conversion duplicate tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );
 					}
@@ -3052,7 +3396,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 					if ( is_array( $get_bump_ids ) && count( $get_bump_ids ) > 0 ) {
 						$is_clear_schedule = false;
 						$wpdb->query( "DELETE FROM {$bump_table} WHERE oid IN (" . implode( ',', $get_bump_ids ) . " )" );//phpcs:ignore
-						if ( ! empty ( $wpdb->last_error ) ) {
+						if ( ! empty( $wpdb->last_error ) ) {
 							$is_clear_schedule = true;
 							WFFN_Core()->logger->log( 'Conversion bump tracking cleanup last error: ' . $wpdb->last_error, 'wffn_ay', true );
 						}
@@ -3063,20 +3407,18 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 				if ( $is_clear_schedule ) {
 					wp_schedule_single_event( time(), 'fk_remove_optimize_conversion_table_schedule' );
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				// Schedule a single action to delete the recurring action
 				wp_schedule_single_event( time(), 'fk_remove_optimize_conversion_table_schedule' );
 				WFFN_Core()->logger->log( 'Exception occurred in : ' . __FUNCTION__ . $e->getMessage(), 'wffn_ay', true );
 
 			}
-
 		}
 
 		public function remove_optimize_conversion_table_schedule() {
 			// Clear the scheduled action
 			wp_clear_scheduled_hook( 'fk_optimize_conversion_table_analytics' );
 			WFFN_Core()->logger->log( 'Recurring action "fk_optimize_conversion_table_analytics" cleared : ' . __FUNCTION__, 'wffn_ay', true );
-
 		}
 
 		/**
@@ -3103,7 +3445,7 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 * @return void
 		 */
 		public function test_notification_admin() {
-			
+
 			WFFN_Email_Notification::test_notification_admin();
 		}
 
@@ -3112,7 +3454,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		 **/
 		public function save_settings_for_email_notification( $settings ) {
 			WFFN_Email_Notification::save_settings( $settings );
-
 		}
 
 
@@ -3124,7 +3465,6 @@ if ( ! class_exists( 'WFFN_Admin' ) ) {
 		public function is_language_support_enabled() {
 			return '' !== WFFN_Plugin_Compatibilities::get_language_compatible_plugin();
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) ) {

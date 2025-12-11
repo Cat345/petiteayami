@@ -212,12 +212,14 @@ class My_Account implements Model_Interface, Initializable_Interface {
     public function display_store_credits_my_account_markup() {
         $user_balance = apply_filters( 'acfw_filter_amount', \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() ) );
         $svg_icon     = $this->_constants->IMAGES_ROOT_URL . 'store-credits-icon.svg';
+        $expire_date  = \ACFWF()->Store_Credits_Calculate->get_expire_date_for_user_store_credits( get_current_user_id() );
 
         $this->_helper_functions->load_template(
             'acfw-store-credits/my-account.php',
             array(
                 'user_balance' => $user_balance,
                 'svg_icon'     => $svg_icon,
+                'expire_date'  => $expire_date,
             )
         );
 

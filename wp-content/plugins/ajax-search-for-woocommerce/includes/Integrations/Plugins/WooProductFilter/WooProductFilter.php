@@ -3,27 +3,32 @@
 namespace DgoraWcas\Integrations\Plugins\WooProductFilter;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 /**
- * Integration with WooCommerce Product Filter by WooBeWoo
+ * Integration with Product Filter by WBW
  *
  * Plugin URL: https://wordpress.org/plugins/woo-product-filter/
- * Author: WooBeWoo
+ * Author: WBW
  */
-class WooProductFilter {
-    public function init() {
-        if ( !defined( 'WPF_VERSION' ) ) {
-            return;
-        }
-        if ( version_compare( WPF_VERSION, '1.2.8' ) < 0 ) {
-            return;
-        }
+class WooProductFilter extends AbstractPluginIntegration {
+    protected const LABEL = 'Product Filter by WBW';
+
+    protected const VERSION_CONST = 'WPF_VERSION';
+
+    protected const MIN_VERSION = '1.2.8';
+
+    private $post_ids = array();
+
+    public function init() : void {
         // TODO This filter must be added by the plugin author
         add_filter( 'wpf_getFilteredPriceSql', array($this, 'filter_price_sql') );
         add_action( 'pre_get_posts', array($this, 'pre_get_posts') );
+        add_action( 'wp_ajax_filtersFrontend', array($this, 'set_search_post_ids_from_ajax'), 5 );
+        add_action( 'wp_ajax_nopriv_filtersFrontend', array($this, 'set_search_post_ids_from_ajax'), 5 );
     }
 
     /**
@@ -42,27 +47,11 @@ class WooProductFilter {
         return $sql;
     }
 
-    /**
-     * Narrow the list of products in the AJAX search to those returned by our search engine
-     *
-     * Filtered custom WP_Query used by this plugin: wp-content/plugins/woo-product-filter/modules/woofilters/controller.php~152
-     *
-     * @param \WP_Query $query
-     */
-    public function pre_get_posts( $query ) {
-        if ( !defined( 'DOING_AJAX' ) ) {
-            return;
-        }
-        if ( !isset( $_POST['action'] ) || isset( $_POST['action'] ) && $_POST['action'] !== 'filtersFrontend' ) {
-            return;
-        }
+    public function set_search_post_ids_from_ajax() {
         if ( !isset( $_POST['mod'] ) || isset( $_POST['mod'] ) && $_POST['mod'] !== 'woofilters' ) {
             return;
         }
         if ( !isset( $_POST['currenturl'] ) ) {
-            return;
-        }
-        if ( $query->get( 'wpf_query' ) !== 1 ) {
             return;
         }
         $orderby = 'relevance';
@@ -86,15 +75,33 @@ class WooProductFilter {
         if ( $orderby === 'price' ) {
             $order = 'asc';
         }
-        $post_ids = array();
         if ( !dgoraAsfwFs()->is_premium() ) {
-            $post_ids = Helpers::searchProducts( $url_query_args['s'] );
+            $this->post_ids = Helpers::searchProducts( $url_query_args['s'] );
         }
-        if ( $post_ids ) {
+    }
+
+    /**
+     * Narrow the list of products in the AJAX search to those returned by our search engine
+     *
+     * Filtered custom WP_Query used by this plugin: wp-content/plugins/woo-product-filter/modules/woofilters/controller.php~152
+     *
+     * @param \WP_Query $query
+     */
+    public function pre_get_posts( $query ) {
+        if ( !defined( 'DOING_AJAX' ) ) {
+            return;
+        }
+        if ( !isset( $_POST['action'] ) || isset( $_POST['action'] ) && $_POST['action'] !== 'filtersFrontend' ) {
+            return;
+        }
+        if ( $query->get( 'wpf_query' ) !== 1 ) {
+            return;
+        }
+        if ( $this->post_ids ) {
             if ( version_compare( WPF_VERSION, '1.4.8', '>=' ) ) {
                 $query->set( 's', '' );
             }
-            $query->set( 'post__in', $post_ids );
+            $query->set( 'post__in', $this->post_ids );
             $query->set( 'orderby', 'post__in' );
         }
     }

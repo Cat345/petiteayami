@@ -1247,7 +1247,10 @@ body .wfacp_product_restore_wrap, body .wfacp_woocommerce_form_coupon .wfacp-cou
 body .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tbody td span {
     display: inline;
 }
-
+body .woocommerce-Price-bidi {
+    direction: inherit;
+    unicode-bidi: inherit;
+}
 @media (min-width: 768px)and (max-width: 1024px) {
     #wfacp-e-form .wfacp-terms-footer span.woocommerce-terms-and-conditions-checkbox-text {
         text-align: right;

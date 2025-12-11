@@ -1,16 +1,16 @@
 <?php
 
-namespace Sabberworm\CSS\Rule;
+namespace BWFAN\Sabberworm\CSS\Rule;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Renderable;
-use Sabberworm\CSS\Value\RuleValueList;
-use Sabberworm\CSS\Value\Value;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\Comment\Commentable;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use BWFAN\Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\Value\RuleValueList;
+use BWFAN\Sabberworm\CSS\Value\Value;
 
 /**
  * `Rule`s just have a string key (the rule) and a 'Value'.

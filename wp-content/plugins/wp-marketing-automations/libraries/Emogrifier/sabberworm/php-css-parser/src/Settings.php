@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabberworm\CSS;
+namespace BWFAN\Sabberworm\CSS;
 
 /**
  * Parser settings class.

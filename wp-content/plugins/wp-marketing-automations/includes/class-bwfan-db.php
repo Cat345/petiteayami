@@ -303,6 +303,7 @@ class BWFAN_DB {
 			'3.4.4'    => '3_4_4',
 			'3.5.0'    => '3_5_0',
 			'3.5.1'    => '3_5_1',
+			'3.5.2'    => '3_5_2',
 		);
 		$db_version = get_option( 'bwfan_db', '2.0' );
 
@@ -1711,6 +1712,59 @@ class BWFAN_DB {
 					if ( ! empty( $wpdb->last_error ) ) {
 						$db_errors[] = 'bwf_wc_customers modify total_order_count column - ' . $wpdb->last_error;
 					}
+				}
+			}
+		}
+
+		/** Log if any mysql errors */
+		if ( ! empty( $db_errors ) ) {
+			BWFAN_Common::log_test_data( array_merge( [ __FUNCTION__ ], $db_errors ), 'db-creation-errors' );
+		}
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
+	/**
+	 * Set indexes on columns
+	 *
+	 * @param $version_key
+	 *
+	 * @return void
+	 */
+	public function db_update_3_5_2( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		global $wpdb;
+		$db_errors = [];
+
+		// Check if tables exist first
+		$engagement_table  = $wpdb->prefix . 'bwfan_engagement_tracking';
+		$conversions_table = $wpdb->prefix . 'bwfan_conversions';
+
+		/** Add tid index to engagement tracking table if not exists */
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$engagement_table'" ) === $engagement_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$tid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $engagement_table WHERE Key_name = 'tid'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			if ( ! $tid_index_exists ) {
+				$wpdb->query( "ALTER TABLE $engagement_table ADD INDEX `tid` (`tid`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				if ( ! empty( $wpdb->last_error ) ) {
+					$db_errors[] = 'bwfan_engagement_tracking add index `tid` - ' . $wpdb->last_error;
+				}
+			}
+		}
+
+		/** Add trackid index to conversions table if not exists */
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$conversions_table'" ) === $conversions_table ) { //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$trackid_index_exists = $wpdb->get_var( "SHOW INDEX FROM $conversions_table WHERE Key_name = 'trackid'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			if ( ! $trackid_index_exists ) {
+				$wpdb->query( "ALTER TABLE $conversions_table ADD INDEX `trackid` (`trackid`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				if ( ! empty( $wpdb->last_error ) ) {
+					$db_errors[] = 'bwfan_conversions add index `trackid` - ' . $wpdb->last_error;
 				}
 			}
 		}

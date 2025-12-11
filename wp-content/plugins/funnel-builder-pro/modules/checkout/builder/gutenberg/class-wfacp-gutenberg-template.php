@@ -7,6 +7,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public $stepsData = [];
 		private $block_data = [];
 
+		private $mini_widget_printed = false;
 		protected function __construct() {
 
 			parent::__construct();
@@ -179,6 +180,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			$default_attr = WFACP_GutenBerg::mini_cart_default_attrs();
 			$settings     = wp_parse_args( $attributes, $default_attr );
 			WFACP_Gutenberg::set_locals( 'wfacp_form_summary', $unique_id );
+			WFACP_Gutenberg::set_locals( 'wfacp_mini_cart_widgets', $unique_id );
 
 			$this->set_mini_cart_data( $settings );
 			WFACP_Common::set_session( $unique_id, $settings );
@@ -330,7 +332,6 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public function get_ajax_exchange_keys() {
 			$keys = WFACP_Common::$exchange_keys;
 			if ( ! empty( is_array( $keys ) ) && isset( $keys['gutenberg'] ) ) {
-				//WFACP_Common::pr($keys);
 				if ( isset( $keys['gutenberg']['wfacp_form'] ) ) {
 					$form_id         = $keys['gutenberg']['wfacp_form'];
 					$this->form_data = WFACP_Common::get_session( $form_id );
@@ -338,6 +339,9 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				if ( isset( $keys['gutenberg']['wfacp_form_summary'] ) ) {
 					$mini_cart_form_id    = $keys['gutenberg']['wfacp_form_summary'];
 					$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
+				}
+				if ( isset( $keys['gutenberg']['wfacp_mini_cart_widgets'] ) ) {
+					$this->mini_widget_printed = true;
 				}
 			}
 		}
@@ -490,17 +494,48 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public function add_mini_cart_fragments( $fragments ) {
 			$min_cart_key = 'wfacp_mini_cart_widgets';;
 			$min_cart_widgets = WFACP_Common::get_session( $min_cart_key );
+
 			if ( ! empty( $min_cart_widgets ) ) {
 				$min_cart_widgets = array_unique( $min_cart_widgets );
 
 				foreach ( $min_cart_widgets as $widget_id ) {
 					$fragments = $this->get_mini_cart_fragments( $fragments, $widget_id );
 				}
+			}else{
+
+				$this->mini_cart_data =array(
+					'mini_cart_heading'         => __( 'Order Summary', 'woofunnels-aero-checkout' ),
+					'enable_product_image'      => true,
+					'enable_quantity_box'       => true,
+					'enable_delete_item'        => true,
+					'enable_coupon'             => true,
+					'enable_coupon_collapsible' => 'off',
+				);
+				if($this->mini_widget_printed){
+					$fragments = $this->_get_mini_cart_fragments( $fragments, 'wfacp_elementor_mini_cart_widget' );
+				}
 			}
 
 			return $fragments;
 		}
+/**
+ * fallback function for getting mini cart fragments
+ *
+ * @param [type] $fragments
+ * @param [type] $widget_id
+ * @return void
+ */
+		public function _get_mini_cart_fragments( $fragments, $widget_id ) {
+			ob_start();
+			include WFACP_Core()->dir( 'public/global/mini-cart/mini-cart-items.php' );
+			$fragments[ '.wfacp_elementor_mini_cart_widget' ] = ob_get_clean();
 
+			ob_start();
+			include WFACP_Core()->dir( 'public/global/mini-cart/mini-cart-review-totals.php' );
+			$fragments[ '.gutenberg.wfacp_mini_cart_reviews' ] = ob_get_clean();
+
+			return $fragments;
+		}
 
 		/*
 		 * Hide product switcher if client use product switcher as widget
@@ -1481,7 +1516,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
 			$field_key = 'enable_order_field_collapsed';
-			
+
 			if ( $device === 'tablet' ) {
 				$field_key .= '_tablet';
 			} elseif ( $device === 'mobile' ) {
@@ -1491,7 +1526,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			if ( isset( $this->form_data[ $field_key ] ) && true === $this->form_data[ $field_key ] ) {
 				return true;
 			}
-			
+
 			return false;
 		}
 

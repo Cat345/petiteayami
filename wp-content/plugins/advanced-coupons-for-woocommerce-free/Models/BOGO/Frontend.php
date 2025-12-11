@@ -380,17 +380,27 @@ class Frontend extends Base_Model implements Model_Interface {
      * @access public
      */
     public function reset_bogo_deals_prices() {
-        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
+        $cart_keys = array_keys( \WC()->cart->get_cart_contents() );
 
+        // Remove _price_display entries for items that are no longer in cart.
+        foreach ( $this->_price_display as $key => $data ) {
+            if ( ! in_array( $key, $cart_keys, true ) ) {
+                unset( $this->_price_display[ $key ] );
+            }
+        }
+
+        // Reset prices for items that don't have BOGO discounts.
+        foreach ( \WC()->cart->get_cart_contents() as $cart_item ) {
             $key = $cart_item['key'];
 
+            // Skip items that have BOGO discounts.
             if ( isset( $this->_price_display[ $key ] ) ) {
                 continue;
             }
 
+            // Reset price to original for items without BOGO discounts.
             $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
             $cart_item['data']->set_price( apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item ) );
-            $this->_price_display = array();
         }
     }
 

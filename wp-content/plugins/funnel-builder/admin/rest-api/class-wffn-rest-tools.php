@@ -415,7 +415,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 
 
 				$resp['status'] = true;
-				$resp['msg']    = __( sprintf( 'Usage tracking successfully %s.', true === $tracking ? 'enabled' : 'disabled' ), 'funnel-builder' );
+				$resp['msg']    = sprintf( __( 'Usage tracking successfully %s.', 'funnel-builder' ), true === $tracking ? 'enabled' : 'disabled' );
 
 				return rest_ensure_response( $resp );
 			}
@@ -507,7 +507,8 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 				'_wfopp_db_version'  => [ 'class' => 'WFOPP_DB_Tables', 'method' => 'add_if_needed' ],
 				'wfob_db_ver_3_0'    => [ 'class' => 'WFOB_Reporting', 'method' => 'create_table' ],
 				'wfacp_db_ver_2_1'   => [ 'class' => 'WFACP_Reporting', 'method' => 'create_table' ],
-				'_bwf_db_table_list' => [ 'class' => 'WooFunnels_Create_DB_Tables', 'method' => 'create' ]
+				'_bwf_db_table_list' => [ 'class' => 'WooFunnels_Create_DB_Tables', 'method' => 'create' ],
+				'fkcart_db_version'  => [ 'class' => 'FKCart\\Includes\\DB', 'method' => 'create_db', 'static' => true ]
 			];
 
 			if ( isset( $option_key_map[ $version_key ] ) ) {
@@ -539,13 +540,36 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 		 */
 		public function get_filtered_tables( array $tables ): array {
 			$is_funnel_pro_active = WFFN_Common::wffn_is_funnel_pro_active();
+			$is_fkcart_active = $this->is_fkcart_active();
 
-			return array_filter( $tables, function ( $table_list, $version_key ) use ( $is_funnel_pro_active ) {
+			return array_filter( $tables, function ( $table_list, $version_key ) use ( $is_funnel_pro_active, $is_fkcart_active ) {
 				if ( $is_funnel_pro_active ) {
 					return true;
 				}
+				
+				// Include cart-for-woocommerce tables if the plugin is active
+				if ( 'fkcart_db_version' === $version_key ) {
+					return $is_fkcart_active;
+				}
+				
 				return ! in_array( $version_key, [ '_wfocu_db_version', 'wfob_db_ver_3_0', 'wfacp_db_ver_2_1' ] , true );
 			}, ARRAY_FILTER_USE_BOTH );
+		}
+
+		/**
+		 * Checks if FunnelKit Cart for WooCommerce plugin is active.
+		 *
+		 * @return bool True if the plugin is active, false otherwise
+		 * @since 1.0.0
+		 */
+		private function is_fkcart_active() {
+			// Check if the plugin class exists
+			if ( class_exists( 'FKCart\\Plugin' ) ) {
+				return true;
+			}
+			
+			// Check if the plugin file is active
+			return in_array( 'cart-for-woocommerce/plugin.php', (array) apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 		}
 
 		/**
@@ -565,6 +589,7 @@ if ( ! class_exists( 'WFFN_REST_Tools' ) ) {
 				'wfob_db_ver_3_0'    => [ 'wfob_stats' ],
 				'wfacp_db_ver_2_1'   => [ 'wfacp_stats' ],
 				'_bwf_db_table_list' => [ 'bwf_contact', 'bwf_contact_meta', 'bwf_wc_customers', 'wfco_report_views', 'bwf_conversion_tracking' ],
+				'fkcart_db_version'  => [ 'fk_cart', 'fk_cart_products' ],
 			];
 		}
 	}

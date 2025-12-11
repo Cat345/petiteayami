@@ -49,12 +49,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Digits_by_UnitedOver' ) ) {
 		public function add_js() {
 			?>
 			<style>
-                body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .digcon {
+                body #wfacp-e-form #wfacp-sec-wrapper  .digcon {
 					position: relative;
 					display: block;
 				}
 
-                body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .digcon .dig_wc_logincountrycodecontainer {
+                body #wfacp-e-form #wfacp-sec-wrapper  .digcon .dig_wc_logincountrycodecontainer {
 					position: absolute;
 					top: 0;
 					bottom: 0;
@@ -64,7 +64,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Digits_by_UnitedOver' ) ) {
 					z-index: 999;
 				}
 
-                body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .digcon .dig_wc_logincountrycodecontainer .countrycode {
+                body #wfacp-e-form #wfacp-sec-wrapper .digcon .dig_wc_logincountrycodecontainer .countrycode {
 					z-index: 1;
 					display: flex;
 					align-items: center;
@@ -79,7 +79,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Digits_by_UnitedOver' ) ) {
 					border: none;
 				}
 
-                body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .digcon .dig_wc_logincountrycodecontainer:after {
+                body #wfacp-e-form #wfacp-sec-wrapper .digcon .dig_wc_logincountrycodecontainer:after {
 					content: '';
 					display: block;
 					width: 1px;
@@ -91,13 +91,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Digits_by_UnitedOver' ) ) {
 					margin-top: -9px;
 				}
 
-                body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .dig-cc-search .countrycode_search {
+                body #wfacp-e-form #wfacp-sec-wrapper .dig-cc-search .countrycode_search {
                     line-height: 1.5 !important;
                     padding: 0 12px 0 36px !important;
                     margin: 0 !important;
                     height: 48px;
                     min-height: 48px;
                     box-shadow: none !important;
+                }
+                body #wfacp-e-form .digits-form_tab_container .lost_password.wfacp-text-align-right {
+                    text-align: left;
                 }
 			</style>
 
@@ -144,20 +147,22 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Digits_by_UnitedOver' ) ) {
 								if ( typeof flag_w !== "undefined" && '' != flag_w ) {
 									flag_w = parseInt( flag_w ) + 12;
 
+                                    let username_element=$( '#wfacp_checkout_form .digcon #username' );
+
 									// Adjust label positioning if not using top layout
 									if ( $( '.wfacp-top' ).length == 0 ) {
 										if ( true === wfacp_frontend.is_rtl || "1" === wfacp_frontend.is_rtl ) {
-											$( '.digcon #username' ).parents( '.wfacp-form-control-wrapper' ).find( '.wfacp-form-control-label' ).css( 'right', flag_w + 8 );
+                                            username_element.parents( '.wfacp-form-control-wrapper' ).find( '.wfacp-form-control-label' ).css( 'right', flag_w + 8 );
 										} else {
-											$( '.digcon #username' ).parents( '.wfacp-form-control-wrapper' ).find( '.wfacp-form-control-label' ).css( 'left', flag_w + 8 );
+                                            username_element.parents( '.wfacp-form-control-wrapper' ).find( '.wfacp-form-control-label' ).css( 'left', flag_w + 8 );
 										}
 									}
 
 									// Adjust input field padding
 									if ( true === wfacp_frontend.is_rtl || "1" === wfacp_frontend.is_rtl ) {
-										$( '.digcon #username' ).css( 'cssText', 'padding-right: ' + flag_w + 'px !important' );
+                                        username_element.css( 'cssText', 'padding-right: ' + flag_w + 'px !important' );
 									} else {
-										$( '.digcon #username' ).css( 'cssText', 'padding-left: ' + flag_w + 'px !important' );
+                                        username_element.css( 'cssText', 'padding-left: ' + flag_w + 'px !important' );
 									}
 								}
 							}

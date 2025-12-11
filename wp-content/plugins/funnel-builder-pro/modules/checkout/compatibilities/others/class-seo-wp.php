@@ -34,7 +34,7 @@ if ( ! class_exists( 'WFACP_Checkout_Seo_WP' ) ) {
 		 */
 		public function remove_actions() {
 			if ( WFACP_Core()->public->is_checkout_override() ) {
-				WFACP_Common::remove_actions( 'wp_head', 'Yoast\WP\SEO\In   tegrations\Front_End_Integration', 'call_wpseo_head' );
+				WFACP_Common::remove_actions( 'wp_head', 'Yoast\WP\SEO\Integrations\Front_End_Integration', 'call_wpseo_head' );
 				add_action( 'wp_head', function () {
 					\do_action( 'wpseo_head' );
 				}, 15 );

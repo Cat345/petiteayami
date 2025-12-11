@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\HideCategoriesProductsWooCommerce;
 
 // Exit if accessed directly
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -12,11 +13,14 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wordpress.org/plugins/hide-categories-products-woocommerce/
  * Author: N.O.U.S. Open Useful and Simple
  */
-class HideCategoriesProductsWooCommerce {
-    public function init() {
-        if ( !function_exists( 'Hide_Categories_Products_WC' ) ) {
-            return;
-        }
+class HideCategoriesProductsWooCommerce extends AbstractPluginIntegration {
+    protected const LABEL = 'Hide Categories and Products for WooCommerce';
+
+    public static function isActive() : bool {
+        return function_exists( 'Hide_Categories_Products_WC' );
+    }
+
+    public function init() : void {
         add_filter( 'dgwt/wcas/search_query/args', array($this, 'excludeHiddenProducts') );
     }
 

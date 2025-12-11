@@ -31,7 +31,54 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 		}
 
 		public function css() {
-			echo "<style>div#contact_details > h3{display:none}div#contact_details {clear: both;}</style>";
+			?>
+
+			<style>
+				div#contact_details > h3 { display: none; }
+				div#contact_details { clear: both; }
+
+			body #wfacp-sec-wrapper .woopay-save-new-user-container {
+				margin: 16px 0 0;
+				padding: 0 7px;
+			}
+
+			body #wfacp-sec-wrapper #payment .woopay-save-new-user-container input[type="checkbox"] {
+				position: relative;
+				left: auto;
+				right: auto;
+				top: auto;
+				bottom: auto;
+				margin: 0 8px 0 0 !important;
+			}
+
+			body #wfacp-sec-wrapper .woopay-save-new-user-container .save-details-header label {
+				text-indent: unset;
+			}
+
+			body #wfacp-sec-wrapper .woopay-save-new-user-container .save-details-form.form-row {
+				overflow-y: hidden;
+			}
+
+			body #wfacp-sec-wrapper .woopay-save-new-user-container input[type="text"],
+			body #wfacp-sec-wrapper .woopay-save-new-user-container .phone-input {
+				padding-top: 12px !important;
+				padding-bottom: 12px !important;
+				margin: 0;
+			}
+
+			body #wfacp-sec-wrapper #payment .woopay-save-new-user-container label,
+			body #wfacp-sec-wrapper #payment .woopay-save-new-user-container label span {
+				margin: 0;
+				line-height: 1.5;
+				display: inline-block;
+			}
+			body .iti__country-list li:empty,
+			body .wfacp_main_form.woocommerce #wfacp_checkout_form .iti__country-list li:empty {
+				display: none;
+			}
+
+			</style>
+<?php
 		}
 
 		public function add_aero_basic_classes( $field, $key ) {
@@ -94,8 +141,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 		 */
 		public function action() {
 			add_action( 'woocommerce_checkout_fields', [ $this, 'checkout_fields' ], 9 );
+			add_action( 'wfacp_before_form', [ $this, 'add_wcpay_hidden_div' ], 99 );
+		}
 
-
+		/**
+		 * Add hidden div for WooCommerce Payments compatibility
+		 */
+		public function add_wcpay_hidden_div() {
+			echo '<div id="wcpay-hidden-div" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
+    <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
+        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" style="transition: none;">
+        <label id="wcpay-hidden-valid-active-label"></label>
+    </p>
+    <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
+        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="">
+        <label id="wcpay-hidden-invalid-input"></label>
+    </p>
+</div>';
 		}
 
 		public function checkout_fields( $fields ) {

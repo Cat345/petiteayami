@@ -163,9 +163,14 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'wc_cloudpayments_gateway',
 				'frontit_spreedly',
 				'wc_ryftpay',
+				'fkwcsq_square',
+				'fkwcsq_google_pay',
+				'fkwcsq_apple_pay',
 				'fkwcs_stripe_multibanco',
 				'fkwcs_stripe_pix',
-				'fkwcs_stripe_cashapp'
+				'fkwcs_stripe_cashapp',
+				'fkwcppcp_paypal',
+				'airwallex_card'
 			);
 
 			$gateways = apply_filters( 'wfocu_wc_get_supported_gateways', array(

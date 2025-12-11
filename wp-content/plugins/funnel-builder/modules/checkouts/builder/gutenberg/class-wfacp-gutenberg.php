@@ -1,4 +1,5 @@
 <?php
+
 if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 	class WFACP_GutenBerg {
 		private static $ins = null;
@@ -61,32 +62,38 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$this->load_require_files();
 		}
 
-		public function is_edit_page( $status ) {
-			if ( is_admin() && isset( $_GET['action'] ) && isset( $_GET['post'] ) && 'edit' === $_GET['action'] && $_GET['post'] > 0 ) {
-				$post = get_post( $_GET['post'] );
-				if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
-					$status = true;
-				}
+	public function is_edit_page( $status ) {
+		if ( is_admin() && isset( $_GET['action'] ) && isset( $_GET['post'] ) && 'edit' === $_GET['action'] && $_GET['post'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
+			$post = get_post( absint( $_GET['post'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
+			if ( ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) {
+				$status = true;
 			}
-
-			return $status;
 		}
+
+		return $status;
+	}
 
 		public function get_form_html() {
 
+			check_admin_referer( 'wfacp_get_gutenberg_checkout_from_data' );
+
+			if (!WFFN_Role_Capability::get_instance()->user_access('funnel', 'write')) {
+				wp_die(esc_html__('You are not authorized to access this page.', 'funnel-builder'));
+			}
 			add_filter( 'wfacp_is_theme_builder', '__return_true' );
+
 			add_filter( 'woocommerce_payment_gateways', [ 'WFACP_Common', 'unset_gateways' ], 1000 );
 			if ( isset( $_REQUEST['wfacp_id'] ) ) {
-				$post_id = $_REQUEST['wfacp_id'];
-				$post    = get_post( $post_id );
-				if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
+				$post_id = sanitize_text_field( wp_unslash($_REQUEST['wfacp_id'] ));
+				$post    = get_post( absint( $post_id ) );
+				if ( ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) {
 					WFACP_Common::wc_ajax_get_refreshed_fragments();
 				} else {
 					return;
 				}
 			}
 
-			$json = file_get_contents( 'php://input' );
+			$json = file_get_contents( 'php://input' ); // phpcs:ignore
 			if ( '' !== $json ) {
 				$json = json_decode( $json, true );
 			} else {
@@ -102,7 +109,10 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			/**
 			 * @var $template WFACP_GutenBerg_template;
 			 */
-			$template->set_active_step_on_cookie();
+			if ( method_exists( $template, 'set_active_step_on_cookie' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+				$template->set_active_step_on_cookie();
+			}
 
 			include $template->wfacp_get_form();
 
@@ -230,20 +240,20 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		 * @param array $categories category list.
 		 * @param WP_Post $post post object.
 		 */
-		public function add_block_categories( $categories ) {
+	public function add_block_categories( $categories ) {
 
-			if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ) ) ) {
-				return $categories;
-			} else {
-				return array_merge( array(
-					array(
-						'slug'  => 'woofunnels',
-						'title' => esc_html__( 'FunnelKit', 'funnel-builder' ),
-					),
-				), $categories );
-			}
-
+		if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ), true ) ) {
+			return $categories;
 		}
+
+		return array_merge( array(
+			array(
+				'slug'  => 'woofunnels',
+				'title' => esc_html__( 'FunnelKit', 'funnel-builder' ),
+			),
+		), $categories );
+
+	}
 
 
 		public function load_require_files() {
@@ -254,6 +264,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			require_once __DIR__ . '/includes/functions.php';
 			require_once __DIR__ . '/includes/class-bwf-blocks-css.php';
 			require_once __DIR__ . '/includes/class-bwf-blocks-frontend-css.php';
+			// Load render blocks class if needed
 			// require_once __DIR__ . '/includes/class-render-blocks.php';
 		}
 
@@ -267,6 +278,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			if ( ( $post instanceof WP_Post ) && WFACP_Common::get_post_type_slug() === $post->post_type && 'post.php' === $pagenow && isset( $_GET['post'] ) && intval( $_GET['post'] ) > 0 ) { //phpcs:ignore
 
 				$app_name     = 'wfacp-block-editor';
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 				$frontend_dir = defined( 'BWF_AERO_REACT_ENVIRONMENT' ) ? BWF_AERO_REACT_ENVIRONMENT : WFACP_PLUGIN_URL . '/builder/gutenberg/dist';
 				$assets_path  = $frontend_dir . "/$app_name.asset.php";
 				$assets       = file_exists( $assets_path ) ? include $assets_path : array(
@@ -311,16 +323,16 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 				if ( isset( $page_settings['enable_phone_flag'] ) && wc_string_to_bool( $page_settings['enable_phone_flag'] ) ) {
 					wp_enqueue_style( 'wfacp-intl-css', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/css/intlTelInput.css', false, WFACP_VERSION_DEV );
-					wp_enqueue_script( 'wfacp-intlTelInput-js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/intlTelInput.min.js', [], WFACP_VERSION_DEV );
+					wp_enqueue_script( 'wfacp-intlTelInput-js', plugin_dir_url( WFACP_PLUGIN_FILE ) . 'assets/js/intlTelInput.min.js', [], WFACP_VERSION_DEV ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Script needs to load in header for phone flag functionality
 				}
 
 				$template = wfacp_template();
 				$template->localize_locals();
 
 				// Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-				wp_register_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', null, null, true );
+				wp_register_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', null, null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External FontAwesome kit doesn't have version parameter
 				wp_enqueue_script( 'wfacp-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', [], true );
+				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', [], true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Web font script needs to load in header for proper font loading
 
 
 				$section_data    = self::register_section_fields();
@@ -353,6 +365,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 					'enable_checkout_policy' => ! ! wc_privacy_policy_page_id(),
 					'icon_list'              => $this->checkout_botton_icon_list(),
 					'wfacp_section_notice'   => WFACP_Common::get_notice_html_in_editor( 'gutenberg' ),
+					'nonce'                  => wp_create_nonce( 'wfacp_get_gutenberg_checkout_from_data' ),
 				) );
 
 
@@ -429,7 +442,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				$button_key          = 'wfacp_payment_button_' . $i . '_text';
 				$button_icon_status  = 'enable_icon_with_place_order_' . $i;
 				$button_icon_key     = 'icons_with_place_order_list_' . $i;
-				if ( $i == $step_count ) {
+				if ( $i === $step_count ) {
 					$button_key          = 'wfacp_payment_place_order_text';
 					$button_default_text = WFACP_Common::translation_string_to_check( __( 'PLACE ORDER NOW', 'funnel-builder' ) );
 				}
@@ -441,7 +454,6 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				$attributes[ $button_icon_key ]    = '\e901';
 
 				if ( $i > 1 ) {
-					$backCount                                           = $i - 1;
 					$attributes[ 'payment_button_back_' . $i . '_text' ] = sprintf( '« Return to Step %s ', $i - 1 );
 					$attributes['return_to_cart_text']                   = __( '« Return to Cart', 'funnel-builder' );
 				}
@@ -496,7 +508,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$attributes = [];
 
 			$template = wfacp_template();
-			if ( null == $template ) {
+			if ( null === $template ) {
 				return $data;
 			}
 
@@ -504,8 +516,8 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 			$do_not_show_fields = WFACP_Common::get_html_excluded_field();
 			$exclude_fields     = [];
-			foreach ( $steps as $step_key => $fieldsets ) {
-				foreach ( $fieldsets as $section_key => $section_data ) {
+		foreach ( $steps as $fieldsets ) {
+			foreach ( $fieldsets as $section_data ) {
 					if ( empty( $section_data['fields'] ) ) {
 						continue;
 					}
@@ -523,13 +535,13 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 						}
 					}
 
-					if ( $html_field_count == $count ) {
+					if ( $html_field_count === $count ) {
 						continue;
 					}
 
 					if ( is_array( $section_data['fields'] ) && count( $section_data['fields'] ) > 0 ) {
-						foreach ( $section_data['fields'] as $fkey => $fval ) {
-							if ( isset( $fval['id'] ) && in_array( $fval['id'], $do_not_show_fields ) ) {
+					foreach ( $section_data['fields'] as $fval ) {
+						if ( isset( $fval['id'] ) && in_array( $fval['id'], $do_not_show_fields, true ) ) {
 								$exclude_fields[]                 = $fval['id'];
 								self::$html_fields[ $fval['id'] ] = true;
 								continue;
@@ -537,7 +549,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 						}
 					}
 
-					if ( count( $exclude_fields ) == count( $section_data['fields'] ) ) {
+					if ( count( $exclude_fields ) === count( $section_data['fields'] ) ) {
 						continue;
 					}
 
@@ -574,14 +586,14 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$do_not_show_fields = WFACP_Common::get_html_excluded_field();
 
 
-			//$this->add_heading( __( 'Field Width', 'woofunnel-aero-checkout' ) );
+			// Add field width heading if needed
 
 
 			self::$section_fields[] = $temp_fields;
 			foreach ( $temp_fields as $loop_key => $field ) {
 
-				if ( in_array( $loop_key, [ 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ], true ) ) {
-					$address_key_group      = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+			if ( in_array( $loop_key, [ 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ], true ) ) {
+				$address_key_group      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
 					$field_data['fields'][] = [ 'heading' => $address_key_group ];
 				}
 
@@ -598,14 +610,14 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 					$field_default_cls = $default_cls['class'];
 				}
 
-				if ( in_array( $field_key, $do_not_show_fields ) ) {
+				if ( in_array( $field_key, $do_not_show_fields, true ) ) {
 					self::$html_fields[ $field_key ] = true;
 					continue;
 				}
 
 
 				$skipKey = [ 'billing_same_as_shipping', 'shipping_same_as_billing' ];
-				if ( in_array( $field_key, $skipKey ) ) {
+				if ( in_array( $field_key, $skipKey, true ) ) {
 					continue;
 				}
 
@@ -656,10 +668,10 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			];
 
 			$sections = self::$section_fields;
-			foreach ( $sections as $keys => $val ) {
-				foreach ( $val as $loop_key => $field ) {
-					if ( in_array( $loop_key, [ 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ], true ) ) {
-						$address_key_group                      = ( $loop_key == 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
+		foreach ( $sections as $val ) {
+			foreach ( $val as $loop_key => $field ) {
+				if ( in_array( $loop_key, [ 'wfacp_start_divider_billing', 'wfacp_start_divider_shipping' ], true ) ) {
+					$address_key_group                      = ( $loop_key === 'wfacp_start_divider_billing' ) ? __( 'Billing Address', 'woocommerce' ) : __( 'Shipping Address', 'woocommerce' );
 						$section_data['section'][0]['fields'][] = [ 'heading' => $address_key_group ];
 					}
 
@@ -669,14 +681,14 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 					$field_key = $field['id'];
 
-					if ( in_array( $field_key, $do_not_show_fields ) ) {
+					if ( in_array( $field_key, $do_not_show_fields, true ) ) {
 						self::$html_fields[ $field_key ] = true;
 						continue;
 					}
 
 
 					$skipKey = [ 'billing_same_as_shipping', 'shipping_same_as_billing' ];
-					if ( in_array( $field_key, $skipKey ) ) {
+					if ( in_array( $field_key, $skipKey, true ) ) {
 						continue;
 					}
 					$section_data['attributes'][ 'wfacp_' . $template_slug . '_' . $field_key . '_field_class' ] = '';
@@ -700,7 +712,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		public function enqueue_block_front_assets() {
 			global $post;
 
-			if ( ! ( $post instanceof WP_Post ) || WFACP_Common::get_post_type_slug() !== $post->post_type ) {
+			if ( ! ( $post instanceof WP_Post ) || ( WFACP_Common::get_post_type_slug() !== $post->post_type &&  0 == did_action( 'wfacp_after_checkout_page_found' )) ) {
 				return false;
 			}
 
@@ -708,6 +720,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			add_filter( 'wfacp_css_js_removal_paths', [ $this, 'remove_js_css_from_editor' ] );
 
 			// Enqueue our plugin Css.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 			$wfacp_assets_dir = defined( 'BWF_AERO_REACT_ENVIRONMENT' ) ? BWF_AERO_REACT_ENVIRONMENT : plugin_dir_url( __FILE__ ) . '/dist';
 
 			$stylesheet_file = '/wfacp-block-front.css';
@@ -740,13 +753,13 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			if(false===strpos($content,'funnelkit-gutenberg')){
 				return $content;
 			}
-			
-			global $post;
+
+			global $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Temporarily overriding global $post for checkout page content
 			if ( ! is_null( $this->post ) ) {
-				$post    = $this->post;
+				$post    = $this->post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Temporarily overriding global $post for checkout page content
 				$content = $post->post_content;
 			} else {
-				$post    = get_post( $this->wfacp_id );
+				$post    = get_post( $this->wfacp_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Temporarily overriding global $post for checkout page content
 				$content = $post->post_content;
 			}
 
@@ -768,7 +781,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 
 		public function bwf_blocks_admin_body_class( $classes ) {
 			$screen = get_current_screen();
-			if ( 'post' == $screen->base && WFACP_Common::get_post_type_slug() === $screen->post_type ) {
+			if ( 'post' === $screen->base && WFACP_Common::get_post_type_slug() === $screen->post_type ) {
 				global $post;
 				$template_file = get_post_meta( $post->ID, '_wp_page_template', true );
 				if ( 'wfacp-canvas.php' === $template_file ) {
@@ -803,20 +816,20 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		}
 
 		public function only_add_to_cart_product() {
-			if ( isset( $_GET['gutenberg_iframe_preview'] ) ) {
+			if ( isset( $_GET['gutenberg_iframe_preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checking for preview parameter
 				exit;
 			}
 		}
 
 		public function remove_js_css_from_editor( $paths ) {
-			if ( false !== array_search( "/block-library/", $paths ) ) {
-				unset( $paths[ array_search( "/block-library/", $paths ) ] );
+			if ( false !== array_search( "/block-library/", $paths, true ) ) {
+				unset( $paths[ array_search( "/block-library/", $paths, true ) ] );
 			}
-			if ( false !== array_search( "/woocommerce-blocks/", $paths ) ) {
-				unset( $paths[ array_search( "/woocommerce-blocks/", $paths ) ] );
+			if ( false !== array_search( "/woocommerce-blocks/", $paths, true ) ) {
+				unset( $paths[ array_search( "/woocommerce-blocks/", $paths, true ) ] );
 			}
-			if ( false !== array_search( "/woo-gutenberg-products-block/", $paths ) ) {
-				unset( $paths[ array_search( "/woo-gutenberg-products-block/", $paths ) ] );
+			if ( false !== array_search( "/woo-gutenberg-products-block/", $paths, true ) ) {
+				unset( $paths[ array_search( "/woo-gutenberg-products-block/", $paths, true ) ] );
 			}
 
 			return $paths;
@@ -834,7 +847,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 				return $field;
 			}
 
-			if ( 'wfacp-modern-label' != $data['wfacp_label_position'] || ! isset( $field['placeholder'] ) ) {
+			if ( 'wfacp-modern-label' !== $data['wfacp_label_position'] || ! isset( $field['placeholder'] ) ) {
 				return $field;
 			}
 
@@ -842,7 +855,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		}
 
 		public function migrate_label( $post_ID, $post, $update ) {
-			if ( false == $update ) {
+			if ( false === $update ) {
 				return;
 			}
 
@@ -864,7 +877,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 		public function load_front_template( $template_file ) {
 			add_filter( 'wfacp_block_editor_compatibility', '__return_true' );
 			$template = WFACP_Common::get_page_design( WFACP_Common::get_id() );
-			if ( $template['selected_type'] == 'gutenberg' ) {
+			if ( $template['selected_type'] === 'gutenberg' ) {
 				$template_file = __DIR__ . '/template/template.php';
 			}
 

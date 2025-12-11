@@ -45,6 +45,10 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 				$options['add_to_cart'] = $data;
 			}
 
+			$data = $this->get_items_data();
+			$this->checkout_data = $data;
+			$options['checkout'] = $data;
+
 			return $options;
 		}
 
@@ -55,7 +59,7 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 			$product_id = $this->get_cart_item_id( $cart_item );
 			$content_id = $this->get_product_content_id( $product_id );
 			$name       = $product->get_title();
-			if ( $cart_item['variation_id'] ) {
+			if ( isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ) {
 				$variation = wc_get_product( $cart_item['variation_id'] );
 				if ( $variation->get_type() === 'variation' ) {
 					$variation_name = implode( "/", $variation->get_variation_attributes() );
@@ -70,9 +74,9 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 			}
 
 
-			$price = $cart_item['line_subtotal'];
+			$price = isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0;
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
-				$price += $cart_item['line_subtotal_tax'];
+				$price += isset( $cart_item['line_subtotal_tax'] ) ? $cart_item['line_subtotal_tax'] : 0;
 			}
 			$sub_total  = $this->number_format( $price );
 			$event_data = [
@@ -135,6 +139,23 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 
 		public function is_global_add_to_cart_enabled() {
 			return wc_string_to_bool( $this->admin_general_settings->get_option( 'is_gad_add_to_cart_global' ) );
+		}
+
+		public function is_checkout_enabled() {
+			return wc_string_to_bool( $this->admin_general_settings->get_option( 'google_ads_initiate_checkout_event' ) );
+		}
+
+		public function get_checkout_data() {
+			$options = $this->get_options();
+			if ( ! isset( $options['id'] ) || empty( $options['id'] ) ) {
+				return $this->checkout_data;
+			}
+			$data = $this->get_items_data();
+			if ( wc_string_to_bool( $options['settings']['checkout'] ) ) {
+				$this->checkout_data = $data;
+			}
+
+			return $this->checkout_data;
 		}
 	}
 }

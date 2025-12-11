@@ -85,7 +85,7 @@ class Plugin_Constants {
             // Configuration Constants.
             'TOKEN'                                      => 'acfwp',
             'INSTALLED_VERSION'                          => 'acfwp_installed_version',
-            'VERSION'                                    => '4.0.4.1',
+            'VERSION'                                    => '4.0.5.1',
             'TEXT_DOMAIN'                                => 'advanced-coupons-for-woocommerce',
             'THEME_TEMPLATE_PATH'                        => 'advanced-coupons-for-woocommerce',
             'META_PREFIX'                                => '_acfw_',

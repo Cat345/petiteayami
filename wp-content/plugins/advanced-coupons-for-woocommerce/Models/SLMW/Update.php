@@ -462,7 +462,12 @@ class Update implements Model_Interface, Initiable_Interface, Deactivatable_Inte
      */
     public function validate_current_and_update_data_versions( $update_plugins ) {
         // only run code when update plugins data is available and ACFWP plugin is on the response list.
-        if ( is_object( $update_plugins ) && $update_plugins->response && isset( $update_plugins->response[ $this->_constants->PLUGIN_BASENAME ] ) ) {
+        if (
+            is_object( $update_plugins ) &&
+            property_exists( $update_plugins, 'response' ) &&
+            $update_plugins->response &&
+            isset( $update_plugins->response[ $this->_constants->PLUGIN_BASENAME ] )
+        ) {
 
             // get the ACFWP data.
             $acfwp_data = $update_plugins->response[ $this->_constants->PLUGIN_BASENAME ];

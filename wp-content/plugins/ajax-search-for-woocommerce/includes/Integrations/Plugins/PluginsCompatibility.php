@@ -20,14 +20,9 @@ class PluginsCompatibility {
 		$this->loadCompatibilities();
 	}
 
-	/**
-	 * Load class with compatibilities logic for current theme
-	 *
-	 * @return void
-	 */
-	private function loadCompatibilities() {
-
-		$directories = glob( DGWT_WCAS_DIR . 'includes/Integrations/Plugins/*', GLOB_ONLYDIR );
+	public function getIntegrationClasses() : array {
+		$integrationClasses = [];
+		$directories        = glob( DGWT_WCAS_DIR . 'includes/Integrations/Plugins/*', GLOB_ONLYDIR );
 
 		$directories = apply_filters('dgwt/wcas/plugins_compatibility/directories', $directories);
 
@@ -40,11 +35,29 @@ class PluginsCompatibility {
 				$class = '\\DgoraWcas\\Integrations\\Plugins\\' . $name . "\\" . $name;
 
 				if ( file_exists( $file ) && class_exists( $class ) ) {
-					$tmp = new $class;
-					$tmp->init();
+					$integrationClasses[] = $class;
 				}
 			}
 		}
 
+		return $integrationClasses;
+	}
+
+	/**
+	 * Load class with compatibilities logic for current theme
+	 *
+	 * @return void
+	 */
+	private function loadCompatibilities() {
+		$integrations = $this->getIntegrationClasses();
+
+		/* @var AbstractPluginIntegration $integration */
+		foreach ( $integrations as $integration ) {
+			$integration::registerTroubleshootingHooks();
+			if ( $integration::isActive() ) {
+				$tmp = new $integration;
+				$tmp->init();
+			}
+		}
 	}
 }

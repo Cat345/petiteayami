@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Exception;
+namespace BWFAN\Symfony\Component\CssSelector\Exception;
 
-use Symfony\Component\CssSelector\Parser\Token;
+use BWFAN\Symfony\Component\CssSelector\Parser\Token;
 
 /**
  * ParseException is thrown when a CSS selector syntax is not valid.

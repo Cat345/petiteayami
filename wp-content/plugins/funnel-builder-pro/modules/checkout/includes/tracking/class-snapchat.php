@@ -76,7 +76,7 @@ if ( ! class_exists( 'WFACP_Analytics_SnapChat' ) ) {
 			$item_id    = $this->get_cart_item_id( $cart_item );
 			$item_id    = $this->get_product_content_id( $item_id );
 			$categories = '';
-			if ( $cart_item['variation_id'] ) {
+			if ( isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ) {
 				$variation = wc_get_product( $cart_item['variation_id'] );
 				if ( $variation->get_type() === 'variation' ) {
 					$categories = implode( ',', $this->get_object_terms( 'product_cat', $variation->get_parent_id() ) );
@@ -88,9 +88,9 @@ if ( ! class_exists( 'WFACP_Analytics_SnapChat' ) ) {
 			}
 
 
-			$sub_total = $cart_item['line_subtotal'];
+			$sub_total = isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0;
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
-				$sub_total += $cart_item['line_subtotal_tax'];
+				$sub_total += isset( $cart_item['line_subtotal_tax'] ) ? $cart_item['line_subtotal_tax'] : 0;
 			}
 			$product_plugin = 'FunnelKit Checkout';
 			if ( isset( $cart_item['_wfob_product'] ) ) {

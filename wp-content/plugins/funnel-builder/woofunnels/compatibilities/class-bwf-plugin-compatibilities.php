@@ -18,6 +18,7 @@ if ( ! class_exists( 'BWF_Plugin_Compatibilities' ) ) {
 				'class-bwf-compatibility-with-wpml-multicurrency.php'        => class_exists( 'woocommerce_wpml' ),
 				'class-bwf-compatibility-with-yaycurrency.php'               => class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ),
 				'class-bwf-compatibility-with-wc-price-based-on-country.php' => class_exists( 'WC_Product_Price_Based_Country' ),
+				'class-bwf-compatibility-with-woocommerce-payments.php'      => function_exists( 'WC_Payments_Multi_Currency' ),
 			];
 			self::add_files( $compat );
 		}

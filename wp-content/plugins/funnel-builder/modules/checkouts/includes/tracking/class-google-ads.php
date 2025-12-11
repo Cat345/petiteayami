@@ -45,6 +45,10 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 				$options['add_to_cart'] = $data;
 			}
 
+			$data = $this->get_items_data();
+			$this->checkout_data = $data;
+			$options['checkout'] = $data;
+
 			return $options;
 		}
 
@@ -135,6 +139,23 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 
 		public function is_global_add_to_cart_enabled() {
 			return wc_string_to_bool( $this->admin_general_settings->get_option( 'is_gad_add_to_cart_global' ) );
+		}
+
+		public function is_checkout_enabled() {
+			return wc_string_to_bool( $this->admin_general_settings->get_option( 'google_ads_initiate_checkout_event' ) );
+		}
+
+		public function get_checkout_data() {
+			$options = $this->get_options();
+			if ( ! isset( $options['id'] ) || empty( $options['id'] ) ) {
+				return $this->checkout_data;
+			}
+			$data = $this->get_items_data();
+			if ( wc_string_to_bool( $options['settings']['checkout'] ) ) {
+				$this->checkout_data = $data;
+			}
+
+			return $this->checkout_data;
 		}
 	}
 }

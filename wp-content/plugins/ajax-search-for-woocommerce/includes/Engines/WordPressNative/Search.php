@@ -272,6 +272,24 @@ class Search {
                         die;
                     }
                 }
+                if ( $context === 'product-ids-ff' ) {
+                    $output['total'] = count( $orderedProducts );
+                    $output['results'] = wp_list_pluck( $orderedProducts, 'ID' );
+                    $output['engine'] = 'free';
+                    $output['time'] = number_format(
+                        microtime( true ) - $start,
+                        2,
+                        '.',
+                        ''
+                    ) . ' sec';
+                    $result = apply_filters( 'dgwt/wcas/page_search_results/output/product_ids_only', $output );
+                    if ( $return ) {
+                        return $result;
+                    } else {
+                        echo json_encode( $result );
+                        die;
+                    }
+                }
                 $productsSlots = ( $this->flexibleLimits ? $this->totalLimit : $this->groups['product']['limit'] );
                 $fields = [];
                 if ( DGWT_WCAS()->settings->getOption( 'show_product_image' ) === 'on' ) {
@@ -311,6 +329,20 @@ class Search {
                 );
             }
         } else {
+            if ( $context === 'product-ids-ff' ) {
+                $output = array(
+                    'total'   => 0,
+                    'results' => array(),
+                    'engine'  => 'free',
+                );
+                $result = apply_filters( 'dgwt/wcas/search_results/output/product_ids_only', $output );
+                if ( $return ) {
+                    return $result;
+                } else {
+                    echo json_encode( $result );
+                    die;
+                }
+            }
             if ( $context === 'product-ids' ) {
                 $emptyResult = new \stdClass();
                 $emptyResult->ID = 0;
@@ -711,6 +743,10 @@ class Search {
         }
         $query->set( 'dgwt_wcas', $query->query_vars['s'] );
         $phrase = $query->query_vars['s'];
+        // If phrase is URL encoded, decode it.
+        if ( preg_match( '/%[0-9A-Fa-f]{2}/', $phrase ) ) {
+            $phrase = urldecode( $phrase );
+        }
         // Break early if keyword contains blacklisted phrase.
         if ( Helpers::phraseContainsBlacklistedTerm( $phrase ) ) {
             header( 'X-Robots-Tag: noindex' );

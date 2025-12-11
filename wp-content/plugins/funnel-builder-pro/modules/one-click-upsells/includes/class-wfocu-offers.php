@@ -1023,7 +1023,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 			foreach ( $keys_to_filter as $value ) {
 
-				foreach ( $fields as $k => $config ) {  //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
+				foreach ( $fields as $k => $config ) {
 					if ( isset( $fields->{$k}->{$value} ) ) {
 						unset( $fields->{$k}->{$value} );
 					}

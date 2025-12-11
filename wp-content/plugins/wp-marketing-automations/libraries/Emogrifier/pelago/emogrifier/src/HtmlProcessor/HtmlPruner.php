@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\HtmlProcessor;
+namespace BWFAN\Pelago\Emogrifier\HtmlProcessor;
 
-use Pelago\Emogrifier\CssInliner;
-use Pelago\Emogrifier\Utilities\ArrayIntersector;
+use BWFAN\Pelago\Emogrifier\CssInliner;
+use BWFAN\Pelago\Emogrifier\Utilities\ArrayIntersector;
 
 /**
  * This class can remove things from HTML.

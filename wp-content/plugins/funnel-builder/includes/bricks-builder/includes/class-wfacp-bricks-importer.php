@@ -3,12 +3,11 @@
 namespace FunnelKit;
 
 use WFACP_Common;
-use WFACP_Import_Export;
 use WFACP_Template_Importer;
 use Exception;
-if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) ) {
+if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) && interface_exists( '\WFACP_Import_Export' ) ) {
 	#[\AllowDynamicProperties]
-	class WFACP_Bricks_Importer implements WFACP_Import_Export {
+	class WFACP_Bricks_Importer implements \WFACP_Import_Export {
 		private $is_multi = 'no';
 		private $slug = '';
 		public $delete_page_meta = true;
@@ -52,7 +51,7 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) ) {
 			}
 
 			/**
-			 * Translation of Elementor Templates
+			 * Translation of Elementor Templates 
 			 */
 			if ( isset( $data['data'] ) ) {
 
@@ -65,7 +64,7 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) ) {
 					foreach ( $translation_list as $key => $value ) {
 						if ( false !== strpos( $data['data'], $key ) ) {
 
-							$data['data'] = str_replace( $key, $value, $data['data'] );
+							$data['data'] = str_replace( $key, $value, $data['data'] ); 
 						}
 					}
 
@@ -76,7 +75,7 @@ if ( ! class_exists( '\FunnelKit\WFACP_Bricks_Importer' ) ) {
 						return ! ( $key === $val );
 					}, ARRAY_FILTER_USE_BOTH );
 
-
+  
 					foreach ( $translation_list as $key => $value ) {
 						if ( false !== strpos( $data['data'], $key ) ) {
 							$data['data'] = str_replace( $key, $value, $data['data'] );

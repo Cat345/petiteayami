@@ -464,10 +464,11 @@ class BWFAN_Load_Integrations {
 				'label'      => __( 'Messaging', 'wp-marketing-automations' ),
 				'subgroup'   => [
 					'wp',
-					'slack',
+					'whatsapp',
 					'twilio',
 					'bulkgate',
 					'wabot',
+					'slack',
 				],
 				'priority'   => 25,
 			],

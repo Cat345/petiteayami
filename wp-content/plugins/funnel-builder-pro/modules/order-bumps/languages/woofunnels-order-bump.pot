@@ -9,9 +9,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-07T10:58:48+00:00\n"
+"POT-Creation-Date: 2025-10-24T14:12:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-order-bump\n"
 
 #. Plugin Name of the plugin
@@ -44,30 +44,30 @@ msgstr ""
 msgid "OrderBump"
 msgstr ""
 
-#: admin/class-wfob-admin.php:211
+#: admin/class-wfob-admin.php:213
 #: rules/views/rules-basic.php:33
 msgid "or"
 msgstr ""
 
-#: admin/class-wfob-admin.php:213
+#: admin/class-wfob-admin.php:215
 msgid "Open this page when these conditions are matched"
 msgstr ""
 
-#: admin/class-wfob-admin.php:214
-#: includes/class-wfob-common.php:768
-#: includes/class-wfob-common.php:784
+#: admin/class-wfob-admin.php:216
+#: includes/class-wfob-common.php:781
+#: includes/class-wfob-common.php:797
 msgid "Remove"
 msgstr ""
 
-#: admin/class-wfob-admin.php:511
+#: admin/class-wfob-admin.php:513
 msgid "(no title)"
 msgstr ""
 
-#: admin/class-wfob-admin.php:517
+#: admin/class-wfob-admin.php:519
 msgid "Thanks for creating with FunnelKit. Need Help?"
 msgstr ""
 
-#: admin/class-wfob-admin.php:517
+#: admin/class-wfob-admin.php:519
 msgid "Contact Support."
 msgstr ""
 
@@ -83,7 +83,7 @@ msgstr ""
 #: admin/includes/class-wfob-post-table.php:207
 #: admin/view/global-settings.php:7
 #: admin/view/global-settings.php:15
-#: includes/class-wfob-common.php:687
+#: includes/class-wfob-common.php:700
 msgid "Settings"
 msgstr ""
 
@@ -93,13 +93,13 @@ msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:183
 #: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:48
-#: includes/class-wfob-common.php:677
+#: includes/class-wfob-common.php:690
 #: rules/inputs/cart-product-select.php:29
 msgid "Products"
 msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:191
-#: includes/class-wfob-common.php:682
+#: includes/class-wfob-common.php:695
 msgid "Design"
 msgstr ""
 
@@ -124,8 +124,8 @@ msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:285
 #: admin/view/section-settings.php:20
-#: includes/class-wfob-common.php:2614
-#: includes/class-wfob-common.php:2615
+#: includes/class-wfob-common.php:2627
+#: includes/class-wfob-common.php:2628
 msgid "Priority"
 msgstr ""
 
@@ -138,13 +138,13 @@ msgid "All"
 msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:352
-#: includes/class-wfob-common.php:772
-#: includes/class-wfob-common.php:857
+#: includes/class-wfob-common.php:785
+#: includes/class-wfob-common.php:870
 msgid "Active"
 msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:353
-#: includes/class-wfob-common.php:773
+#: includes/class-wfob-common.php:786
 msgid "Inactive"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgid "Close modal panel"
 msgstr ""
 
 #: admin/includes/class-wfob-post-table.php:442
-#: includes/class-wfob-common.php:478
+#: includes/class-wfob-common.php:491
 msgid "Edit"
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 
 #: admin/view/bump-admin.php:18
 #: admin/view/bump-admin.php:39
-#: includes/class-wfob-common.php:494
+#: includes/class-wfob-common.php:507
 msgid "Export"
 msgstr ""
 
@@ -199,21 +199,21 @@ msgstr ""
 #: admin/view/design/skin-modal.php:71
 #: admin/view/global/model.php:13
 #: admin/view/products/models.php:26
-#: includes/class-wfob-common.php:763
-#: includes/class-wfob-common.php:781
+#: includes/class-wfob-common.php:776
+#: includes/class-wfob-common.php:794
 msgid "Cancel"
 msgstr ""
 
 #: admin/view/global-settings.php:25
-#: includes/class-wfob-common.php:798
-#: includes/class-wfob-common.php:2566
-#: includes/class-wfob-common.php:2567
+#: includes/class-wfob-common.php:811
+#: includes/class-wfob-common.php:2579
+#: includes/class-wfob-common.php:2580
 msgid "Custom CSS"
 msgstr ""
 
 #: admin/view/global-settings.php:28
-#: includes/class-wfob-common.php:2581
-#: includes/class-wfob-common.php:2582
+#: includes/class-wfob-common.php:2594
+#: includes/class-wfob-common.php:2595
 msgid "Advance"
 msgstr ""
 
@@ -268,7 +268,7 @@ msgid "Action"
 msgstr ""
 
 #: admin/view/products/table.php:32
-#: includes/class-wfob-common.php:811
+#: includes/class-wfob-common.php:824
 msgid "Price"
 msgstr ""
 
@@ -309,7 +309,7 @@ msgid "Save"
 msgstr ""
 
 #: admin/view/section-design.php:64
-#: includes/class-wfob-common.php:786
+#: includes/class-wfob-common.php:799
 msgid "Choose Skin"
 msgstr ""
 
@@ -355,12 +355,14 @@ msgstr ""
 #. translators: %1$s: Min required woocommerce version
 #: bin/sample.php:298
 #: woofunnels-order-bump.php:298
+#, php-format
 msgid "<strong> Attention: </strong>OrderBump requires WooCommerce version %1$s or greater. Kindly update the WooCommerce plugin."
 msgstr ""
 
 #. translators: %1$s: Min required woocommerce version
 #: bin/sample.php:311
 #: woofunnels-order-bump.php:311
+#, php-format
 msgid "<strong> Attention: </strong>OrderBump requires WordPress version %1$s or greater. Kindly update the WordPress."
 msgstr ""
 
@@ -415,31 +417,31 @@ msgstr ""
 msgid "Others"
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:475
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:478
 msgid "Has Rules"
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:483
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:486
 msgid "No Products"
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:568
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:571
 msgid "Order Bump Skipped"
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:571
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:574
 msgid "<div style=\"display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url("
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:577
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:580
 msgid "Order Bump License Has Expired"
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:577
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:580
 msgid "Please renew your license to continue using premium features without interruption."
 msgstr ""
 
-#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:577
+#: compatibilities/funnel-builder/class-wffn-substep-wc-order_bump.php:580
 msgid "Go to Contact Support"
 msgstr ""
 
@@ -505,7 +507,7 @@ msgstr ""
 
 #: includes/class-wfob-ajax-controller.php:299
 #: includes/class-wfob-ajax-controller.php:432
-#: includes/class-wfob-common.php:757
+#: includes/class-wfob-common.php:770
 msgid "Changes saved"
 msgstr ""
 
@@ -534,96 +536,97 @@ msgstr ""
 msgid "Add New Bump"
 msgstr ""
 
-#: includes/class-wfob-common.php:487
+#: includes/class-wfob-common.php:500
 msgid "Duplicate"
 msgstr ""
 
-#: includes/class-wfob-common.php:501
-#: includes/class-wfob-common.php:785
+#: includes/class-wfob-common.php:514
+#: includes/class-wfob-common.php:798
 msgid "Delete"
 msgstr ""
 
-#: includes/class-wfob-common.php:639
+#: includes/class-wfob-common.php:652
 msgid "Disabled"
 msgstr ""
 
-#: includes/class-wfob-common.php:644
+#: includes/class-wfob-common.php:657
+#, php-format
 msgid "Disabled <span class=\"count\">(%s)</span>"
 msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-wfob-common.php:758
+#: includes/class-wfob-common.php:771
 msgid "Skin Imported"
 msgstr ""
 
-#: includes/class-wfob-common.php:760
+#: includes/class-wfob-common.php:773
 msgid "Changes have been made!"
 msgstr ""
 
-#: includes/class-wfob-common.php:761
+#: includes/class-wfob-common.php:774
 msgid "You need to save changes before generating preview."
 msgstr ""
 
-#: includes/class-wfob-common.php:766
+#: includes/class-wfob-common.php:779
 msgid "Want to remove this product from checkout?"
 msgstr ""
 
-#: includes/class-wfob-common.php:767
+#: includes/class-wfob-common.php:780
 msgid "You are about to remove this product. This action cannot be undone. Cancel to stop, Delete to proceed."
 msgstr ""
 
-#: includes/class-wfob-common.php:770
+#: includes/class-wfob-common.php:783
 msgid "Remove Product"
 msgstr ""
 
-#: includes/class-wfob-common.php:775
+#: includes/class-wfob-common.php:788
 msgid "Page Title"
 msgstr ""
 
-#: includes/class-wfob-common.php:776
+#: includes/class-wfob-common.php:789
 msgid "Checkout Url"
 msgstr ""
 
-#: includes/class-wfob-common.php:777
+#: includes/class-wfob-common.php:790
 msgid "Edit OrderBump"
 msgstr ""
 
-#: includes/class-wfob-common.php:778
+#: includes/class-wfob-common.php:791
 msgid "New OrderBump"
 msgstr ""
 
-#: includes/class-wfob-common.php:780
+#: includes/class-wfob-common.php:793
 msgid "Ok"
 msgstr ""
 
-#: includes/class-wfob-common.php:782
+#: includes/class-wfob-common.php:795
 msgid "Are you sure, you want to delete this permanently? This can`t be undone"
 msgstr ""
 
-#: includes/class-wfob-common.php:783
+#: includes/class-wfob-common.php:796
 msgid "Data Saving..."
 msgstr ""
 
-#: includes/class-wfob-common.php:799
-#: includes/class-wfob-common.php:2573
+#: includes/class-wfob-common.php:812
+#: includes/class-wfob-common.php:2586
 msgid "Custom CSS Tweaks"
 msgstr ""
 
-#: includes/class-wfob-common.php:800
+#: includes/class-wfob-common.php:813
 msgid "Custom Position"
 msgstr ""
 
-#: includes/class-wfob-common.php:804
+#: includes/class-wfob-common.php:817
 msgid "Heading Bar"
 msgstr ""
 
-#: includes/class-wfob-common.php:805
+#: includes/class-wfob-common.php:818
 msgid "Choose Layout"
 msgstr ""
 
-#: includes/class-wfob-common.php:806
-#: includes/class-wfob-common.php:845
+#: includes/class-wfob-common.php:819
+#: includes/class-wfob-common.php:858
 #: includes/reports/class-wfob-bumps.php:225
 #: includes/skins-classes/bump-skins/layout_3.php:32
 #: includes/skins-classes/bump-skins/layout_7.php:38
@@ -633,18 +636,18 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: includes/class-wfob-common.php:807
+#: includes/class-wfob-common.php:820
 msgid "Title Border"
 msgstr ""
 
-#: includes/class-wfob-common.php:808
-#: includes/class-wfob-common.php:846
+#: includes/class-wfob-common.php:821
+#: includes/class-wfob-common.php:859
 #: includes/skins-classes/bump-skins/layout_3.php:40
 msgid "Sub Title"
 msgstr ""
 
-#: includes/class-wfob-common.php:809
-#: includes/class-wfob-common.php:849
+#: includes/class-wfob-common.php:822
+#: includes/class-wfob-common.php:862
 #: includes/skins-classes/bump-skins/layout_3.php:57
 #: includes/skins-classes/bump-skins/layout_7.php:46
 #: includes/skins-classes/bump-skins/layout_9.php:43
@@ -654,70 +657,70 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: includes/class-wfob-common.php:810
-#: includes/class-wfob-common.php:851
+#: includes/class-wfob-common.php:823
+#: includes/class-wfob-common.php:864
 #: includes/skins-classes/bump-skins/layout_3.php:48
 msgid "Short Description"
 msgstr ""
 
-#: includes/class-wfob-common.php:812
+#: includes/class-wfob-common.php:825
 msgid "Box"
 msgstr ""
 
-#: includes/class-wfob-common.php:813
+#: includes/class-wfob-common.php:826
 msgid "Arrow"
 msgstr ""
 
-#: includes/class-wfob-common.php:814
+#: includes/class-wfob-common.php:827
 msgid "Regular Price Color"
 msgstr ""
 
-#: includes/class-wfob-common.php:815
+#: includes/class-wfob-common.php:828
 #: includes/skins-classes/bump.php:2760
 msgid "Enable Price"
 msgstr ""
 
-#: includes/class-wfob-common.php:816
+#: includes/class-wfob-common.php:829
 msgid "Display Price Above Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:817
+#: includes/class-wfob-common.php:830
 msgid "Sale Price Color"
 msgstr ""
 
-#: includes/class-wfob-common.php:818
-#: includes/class-wfob-common.php:829
+#: includes/class-wfob-common.php:831
+#: includes/class-wfob-common.php:842
 msgid "Font Size (px)"
 msgstr ""
 
-#: includes/class-wfob-common.php:819
+#: includes/class-wfob-common.php:832
 #: includes/skins-classes/bump.php:2704
 msgid "Text Color"
 msgstr ""
 
-#: includes/class-wfob-common.php:820
+#: includes/class-wfob-common.php:833
 msgid "Variation Link"
 msgstr ""
 
-#: includes/class-wfob-common.php:821
+#: includes/class-wfob-common.php:834
 msgid "Variation Link Hover"
 msgstr ""
 
-#: includes/class-wfob-common.php:822
-#: includes/class-wfob-common.php:848
+#: includes/class-wfob-common.php:835
+#: includes/class-wfob-common.php:861
 #: includes/skins-classes/bump.php:226
 msgid "Product Image"
 msgstr ""
 
-#: includes/class-wfob-common.php:823
+#: includes/class-wfob-common.php:836
 msgid "Border"
 msgstr ""
 
-#: includes/class-wfob-common.php:824
+#: includes/class-wfob-common.php:837
 msgid "Padding (px)"
 msgstr ""
 
-#: includes/class-wfob-common.php:825
+#: includes/class-wfob-common.php:838
 #: includes/skins-classes/bump.php:2395
 #: includes/skins-classes/bump.php:3068
 #: includes/skins-classes/bump.php:3141
@@ -725,13 +728,13 @@ msgstr ""
 msgid "Background"
 msgstr ""
 
-#: includes/class-wfob-common.php:826
+#: includes/class-wfob-common.php:839
 #: includes/skins-classes/bump.php:2406
 msgid "Background Hover"
 msgstr ""
 
-#: includes/class-wfob-common.php:827
-#: includes/class-wfob-common.php:828
+#: includes/class-wfob-common.php:840
+#: includes/class-wfob-common.php:841
 #: includes/skins-classes/bump.php:2418
 #: includes/skins-classes/bump.php:2810
 #: includes/skins-classes/bump.php:2869
@@ -740,21 +743,21 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: includes/class-wfob-common.php:830
-#: includes/class-wfob-common.php:831
+#: includes/class-wfob-common.php:843
+#: includes/class-wfob-common.php:844
 msgid "Text Hover"
 msgstr ""
 
-#: includes/class-wfob-common.php:832
+#: includes/class-wfob-common.php:845
 msgid "Error"
 msgstr ""
 
-#: includes/class-wfob-common.php:833
-#: includes/class-wfob-common.php:844
+#: includes/class-wfob-common.php:846
+#: includes/class-wfob-common.php:857
 msgid "Width (px)"
 msgstr ""
 
-#: includes/class-wfob-common.php:834
+#: includes/class-wfob-common.php:847
 #: includes/skins-classes/bump.php:3168
 #: includes/skins-classes/bump.php:3216
 #: includes/skins-classes/bump.php:3253
@@ -764,46 +767,46 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: includes/class-wfob-common.php:835
+#: includes/class-wfob-common.php:848
 msgid "Style"
 msgstr ""
 
-#: includes/class-wfob-common.php:836
+#: includes/class-wfob-common.php:849
 msgid "Max Width (px)"
 msgstr ""
 
-#: includes/class-wfob-common.php:837
+#: includes/class-wfob-common.php:850
 msgid "Leave blank for full width"
 msgstr ""
 
-#: includes/class-wfob-common.php:838
+#: includes/class-wfob-common.php:851
 #: includes/skins-classes/bump.php:2556
 msgid "Arrow Animation"
 msgstr ""
 
-#: includes/class-wfob-common.php:839
+#: includes/class-wfob-common.php:852
 #: includes/skins-classes/bump.php:824
 msgid "Buttons"
 msgstr ""
 
-#: includes/class-wfob-common.php:840
+#: includes/class-wfob-common.php:853
 msgid "Add To Cart Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:841
+#: includes/class-wfob-common.php:854
 #: includes/skins-classes/bump.php:3483
 msgid "Added To Cart Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:842
+#: includes/class-wfob-common.php:855
 msgid "Removed From Cart Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:843
+#: includes/class-wfob-common.php:856
 msgid "more"
 msgstr ""
 
-#: includes/class-wfob-common.php:847
+#: includes/class-wfob-common.php:860
 #: includes/skins-classes/bump-skins/layout_3.php:34
 #: includes/skins-classes/bump-skins/layout_7.php:40
 #: includes/skins-classes/bump-skins/layout_9.php:36
@@ -812,7 +815,7 @@ msgstr ""
 msgid "Use merge tag {{product_name}} to show product name dynamically."
 msgstr ""
 
-#: includes/class-wfob-common.php:850
+#: includes/class-wfob-common.php:863
 #: includes/skins-classes/bump-skins/layout_3.php:60
 #: includes/skins-classes/bump-skins/layout_7.php:33
 #: includes/skins-classes/bump-skins/layout_9.php:46
@@ -821,16 +824,16 @@ msgstr ""
 msgid "Use merge tag {{quantity_incrementer}} to show the quantity changer."
 msgstr ""
 
-#: includes/class-wfob-common.php:852
+#: includes/class-wfob-common.php:865
 #: includes/skins-classes/bump-skins/layout_3.php:124
 msgid "Read More Text"
 msgstr ""
 
-#: includes/class-wfob-common.php:853
+#: includes/class-wfob-common.php:866
 msgid "Use merge tag {{more}} to make Description collapsible"
 msgstr ""
 
-#: includes/class-wfob-common.php:854
+#: includes/class-wfob-common.php:867
 #: includes/skins-classes/bump-skins/layout_3.php:97
 #: includes/skins-classes/bump-skins/layout_7.php:75
 #: includes/skins-classes/bump-skins/layout_9.php:103
@@ -839,7 +842,7 @@ msgstr ""
 msgid "Add Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:855
+#: includes/class-wfob-common.php:868
 #: includes/skins-classes/bump-skins/layout_3.php:106
 #: includes/skins-classes/bump-skins/layout_7.php:84
 #: includes/skins-classes/bump-skins/layout_9.php:112
@@ -848,149 +851,149 @@ msgstr ""
 msgid "Added Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:856
+#: includes/class-wfob-common.php:869
 #: includes/skins-classes/bump-skins/layout_3.php:115
 msgid "Remove Button"
 msgstr ""
 
-#: includes/class-wfob-common.php:858
+#: includes/class-wfob-common.php:871
 msgid "InActive"
 msgstr ""
 
-#: includes/class-wfob-common.php:861
+#: includes/class-wfob-common.php:874
 msgid "Are you sure want to change skin?"
 msgstr ""
 
-#: includes/class-wfob-common.php:862
+#: includes/class-wfob-common.php:875
 msgid "The current style settings would be changed as per new skin."
 msgstr ""
 
-#: includes/class-wfob-common.php:863
+#: includes/class-wfob-common.php:876
 msgid "Confirm"
 msgstr ""
 
-#: includes/class-wfob-common.php:869
+#: includes/class-wfob-common.php:882
 msgid "Solid"
 msgstr ""
 
-#: includes/class-wfob-common.php:873
+#: includes/class-wfob-common.php:886
 msgid "Dotted"
 msgstr ""
 
-#: includes/class-wfob-common.php:877
+#: includes/class-wfob-common.php:890
 msgid "Dashed"
 msgstr ""
 
-#: includes/class-wfob-common.php:883
+#: includes/class-wfob-common.php:896
 msgid "No"
 msgstr ""
 
-#: includes/class-wfob-common.php:887
+#: includes/class-wfob-common.php:900
 msgid "Yes"
 msgstr ""
 
-#: includes/class-wfob-common.php:893
+#: includes/class-wfob-common.php:906
 msgid "Layout 1"
 msgstr ""
 
-#: includes/class-wfob-common.php:897
+#: includes/class-wfob-common.php:910
 msgid "Layout 2"
 msgstr ""
 
-#: includes/class-wfob-common.php:910
+#: includes/class-wfob-common.php:923
 msgid "Above The Order Summary"
 msgstr ""
 
-#: includes/class-wfob-common.php:916
+#: includes/class-wfob-common.php:929
 msgid "Below The Order Summary"
 msgstr ""
 
-#: includes/class-wfob-common.php:922
+#: includes/class-wfob-common.php:935
 msgid "Above The Payment Gateways"
 msgstr ""
 
-#: includes/class-wfob-common.php:928
+#: includes/class-wfob-common.php:941
 msgid "Below The Payment Gateways"
 msgstr ""
 
-#: includes/class-wfob-common.php:934
+#: includes/class-wfob-common.php:947
 msgid "Inside Mini Cart"
 msgstr ""
 
-#: includes/class-wfob-common.php:940
+#: includes/class-wfob-common.php:953
 msgid "Above Checkout Form"
 msgstr ""
 
-#: includes/class-wfob-common.php:946
+#: includes/class-wfob-common.php:959
 msgid "Above Mini Cart"
 msgstr ""
 
-#: includes/class-wfob-common.php:952
+#: includes/class-wfob-common.php:965
 msgid "Below Mini Cart"
 msgstr ""
 
-#: includes/class-wfob-common.php:1228
-#: includes/class-wfob-common.php:1234
-#: includes/class-wfob-common.php:1240
-#: includes/class-wfob-common.php:1246
-#: includes/class-wfob-common.php:1251
-#: includes/class-wfob-common.php:1257
+#: includes/class-wfob-common.php:1241
+#: includes/class-wfob-common.php:1247
+#: includes/class-wfob-common.php:1253
+#: includes/class-wfob-common.php:1259
+#: includes/class-wfob-common.php:1264
+#: includes/class-wfob-common.php:1270
 msgid "Left"
 msgstr ""
 
-#: includes/class-wfob-common.php:1229
-#: includes/class-wfob-common.php:1235
-#: includes/class-wfob-common.php:1241
-#: includes/class-wfob-common.php:1247
-#: includes/class-wfob-common.php:1252
-#: includes/class-wfob-common.php:1258
+#: includes/class-wfob-common.php:1242
+#: includes/class-wfob-common.php:1248
+#: includes/class-wfob-common.php:1254
+#: includes/class-wfob-common.php:1260
+#: includes/class-wfob-common.php:1265
+#: includes/class-wfob-common.php:1271
 msgid "Right"
 msgstr ""
 
-#: includes/class-wfob-common.php:1230
-#: includes/class-wfob-common.php:1236
-#: includes/class-wfob-common.php:1242
-#: includes/class-wfob-common.php:1248
-#: includes/class-wfob-common.php:1253
-#: includes/class-wfob-common.php:1259
+#: includes/class-wfob-common.php:1243
+#: includes/class-wfob-common.php:1249
+#: includes/class-wfob-common.php:1255
+#: includes/class-wfob-common.php:1261
+#: includes/class-wfob-common.php:1266
+#: includes/class-wfob-common.php:1272
 msgid "Top"
 msgstr ""
 
-#: includes/class-wfob-common.php:1983
+#: includes/class-wfob-common.php:1996
 msgid "Copy"
 msgstr ""
 
-#: includes/class-wfob-common.php:2574
-#: includes/class-wfob-common.php:2590
+#: includes/class-wfob-common.php:2587
+#: includes/class-wfob-common.php:2603
 msgid "Type here..."
 msgstr ""
 
-#: includes/class-wfob-common.php:2589
+#: includes/class-wfob-common.php:2602
 msgid "Number of Bumps to be shown"
 msgstr ""
 
-#: includes/class-wfob-common.php:2591
+#: includes/class-wfob-common.php:2604
 msgid "Enter the limit of OrderBumps to be display on the checkout page"
 msgstr ""
 
-#: includes/class-wfob-common.php:2621
+#: includes/class-wfob-common.php:2634
 msgid "Set Priority"
 msgstr ""
 
-#: includes/class-wfob-common.php:2622
+#: includes/class-wfob-common.php:2635
 msgid "There may be a chance that OrderBump can be set up in a way that two OrderBump can trigger. In such cases, Prioirty is used to determine which OrderBump will display. Priority Number 1 is considered highest."
 msgstr ""
 
-#: includes/class-wfob-common.php:2629
-#: includes/class-wfob-common.php:2630
+#: includes/class-wfob-common.php:2642
+#: includes/class-wfob-common.php:2643
 msgid "Position"
 msgstr ""
 
-#: includes/class-wfob-common.php:2638
+#: includes/class-wfob-common.php:2651
 msgid "Display Position"
 msgstr ""
 
-#: includes/class-wfob-common.php:2639
+#: includes/class-wfob-common.php:2652
 msgid "You can reposition the OrderBump using these option"
 msgstr ""
 
@@ -1152,6 +1155,7 @@ msgid "Conversion Rate"
 msgstr ""
 
 #: includes/reports/class-wfob-by-date.php:147
+#, php-format
 msgid "%s Gross revenue in this period"
 msgstr ""
 
@@ -1160,6 +1164,7 @@ msgid "Additional revenue generated by order bump in this period."
 msgstr ""
 
 #: includes/reports/class-wfob-by-date.php:154
+#, php-format
 msgid "%s Total Orders"
 msgstr ""
 
@@ -1168,6 +1173,7 @@ msgid "Total orders with bump offers."
 msgstr ""
 
 #: includes/reports/class-wfob-by-date.php:161
+#, php-format
 msgid "%s Total bumps accepted in this period."
 msgstr ""
 
@@ -1176,6 +1182,7 @@ msgid "Total bumps accepted."
 msgstr ""
 
 #: includes/reports/class-wfob-by-date.php:168
+#, php-format
 msgid "%s Total bumps rejected in this period."
 msgstr ""
 
@@ -1184,6 +1191,7 @@ msgid "Total bumps rejected."
 msgstr ""
 
 #: includes/reports/class-wfob-by-date.php:176
+#, php-format
 msgid "%s Conversion rates in this period"
 msgstr ""
 

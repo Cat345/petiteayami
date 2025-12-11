@@ -197,21 +197,31 @@ class WC_Subscriptions extends Base_Model implements Model_Interface {
     }
 
     /**
-     * This function ensures that the store credit coupon remains applied when WooCommerce Subscriptions attempts to remove coupons.
+     * This function ensures that the store credit coupon and regular coupons remain applied when WooCommerce Subscriptions attempts to remove coupons.
      *
-     * @since 4.6.4
+     * @since 4.0.5
      * @access public
      *
      * @param bool      $bypass Whether to bypass the coupon removal.
      * @param WC_Coupon $coupon The coupon object being checked.
      *
-     * @return bool True if the store credit coupon should not be removed, otherwise false.
+     * @return bool True if the coupon should not be removed, otherwise false.
      */
     public function bypass_store_credit_coupon_removal( $bypass, $coupon ) {
 
+        // Allow store credit coupons for renewal.
         if ( 'yes' === get_option( self::ALLOW_STORE_CREDITS_FOR_RENEWAL, 'no' ) &&
             $coupon->get_code() === \ACFWF()->Store_Credits_Checkout->get_store_credit_coupon_code() ) {
 
+            return true;
+        }
+
+        // Allow regular WooCommerce coupon types to remain applied when subscription products are in cart.
+        // This fixes the issue where multiple coupons cannot be applied when subscription products are in cart.
+        $coupon_type          = $coupon->get_discount_type();
+        $regular_coupon_types = array( 'fixed_cart', 'percent', 'fixed_product', 'percent_product' );
+
+        if ( in_array( $coupon_type, $regular_coupon_types, true ) ) {
             return true;
         }
 

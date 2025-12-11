@@ -6,7 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
-    'Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),
-    'Pelago\\Emogrifier\\' => array($vendorDir . '/pelago/emogrifier/src'),
+    'BWFAN\\Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
+    'BWFAN\\Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),
+    'BWFAN\\Pelago\\Emogrifier\\' => array($vendorDir . '/pelago/emogrifier/src'),
 );

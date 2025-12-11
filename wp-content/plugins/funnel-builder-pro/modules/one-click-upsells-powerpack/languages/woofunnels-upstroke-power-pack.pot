@@ -9,9 +9,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-07T10:58:44+00:00\n"
+"POT-Creation-Date: 2025-10-24T14:12:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-upstroke-power-pack\n"
 
 #. Plugin Name of the plugin
@@ -1953,6 +1953,7 @@ msgstr ""
 
 #. translators: %s: help tip html
 #: addons/reports/reports/class-wfocu-upsells-by-customer.php:153
+#, php-format
 msgid "Total Upsells %s"
 msgstr ""
 
@@ -1963,6 +1964,7 @@ msgstr ""
 
 #. translators: %s: help tip html
 #: addons/reports/reports/class-wfocu-upsells-by-customer.php:155
+#, php-format
 msgid "Funnels Triggers %s"
 msgstr ""
 
@@ -1975,6 +1977,7 @@ msgstr ""
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-customer.php:157
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:248
+#, php-format
 msgid "Offers Accepted %s"
 msgstr ""
 
@@ -1987,6 +1990,7 @@ msgstr ""
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-customer.php:159
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:250
+#, php-format
 msgid "Offers Rejected %s"
 msgstr ""
 
@@ -1997,6 +2001,7 @@ msgstr ""
 
 #. translators: %s: help tip html
 #: addons/reports/reports/class-wfocu-upsells-by-customer.php:161
+#, php-format
 msgid "Offers Expired  %s"
 msgstr ""
 
@@ -2007,16 +2012,19 @@ msgstr ""
 
 #. translators: %s: average gross daily upsells
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:39
+#, php-format
 msgid "%s average gross daily upsells"
 msgstr ""
 
 #. translators: %s: average gross monthly upsells
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:43
+#, php-format
 msgid "%s average gross monthly upsells"
 msgstr ""
 
 #. translators: %s: average gross monthly upsells
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:49
+#, php-format
 msgid "%s Gross Upsells in this period"
 msgstr ""
 
@@ -2030,6 +2038,7 @@ msgstr ""
 
 #. translators: %s: average gross triggered
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:64
+#, php-format
 msgid "%s Total number of times funnels are triggered in this period"
 msgstr ""
 
@@ -2039,6 +2048,7 @@ msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:72
+#, php-format
 msgid "%s Total Offers Accepted in this period"
 msgstr ""
 
@@ -2048,6 +2058,7 @@ msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:80
+#, php-format
 msgid "%s Total Offers Rejected in this period"
 msgstr ""
 
@@ -2057,6 +2068,7 @@ msgstr ""
 
 #. translators: %s: Overall conversion Rate
 #: addons/reports/reports/class-wfocu-upsells-by-date.php:88
+#, php-format
 msgid "%s Overall conversion rate"
 msgstr ""
 
@@ -2094,11 +2106,13 @@ msgid "No funnels found."
 msgstr ""
 
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:176
+#, php-format
 msgid "Funnel ID: %s*"
 msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:246
+#, php-format
 msgid "Offers Viewed %s"
 msgstr ""
 
@@ -2122,6 +2136,7 @@ msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:252
+#, php-format
 msgid "Offers Pending  %s"
 msgstr ""
 
@@ -2134,6 +2149,7 @@ msgstr ""
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:254
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:195
+#, php-format
 msgid "Conversion Rate %s"
 msgstr ""
 
@@ -2146,6 +2162,7 @@ msgstr ""
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:256
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:197
+#, php-format
 msgid "Total Upsells  %s"
 msgstr ""
 
@@ -2157,6 +2174,7 @@ msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-funnel.php:258
+#, php-format
 msgid "Offer Details  %s"
 msgstr ""
 
@@ -2188,26 +2206,31 @@ msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:138
+#, php-format
 msgid "Offer ID: %s*"
 msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:187
+#, php-format
 msgid "Offer Viewed %s"
 msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:189
+#, php-format
 msgid "Offer Accepted %s"
 msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:191
+#, php-format
 msgid "Offer Rejected %s"
 msgstr ""
 
 #. translators: %s: average gross accepted
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:193
+#, php-format
 msgid "Offer Pending  %s"
 msgstr ""
 
@@ -2217,6 +2240,7 @@ msgstr ""
 
 #. translators: %s: Funnels name
 #: addons/reports/reports/class-wfocu-upsells-by-offer.php:269
+#, php-format
 msgid "Funnel Name: %s"
 msgstr ""
 
@@ -2226,21 +2250,25 @@ msgstr ""
 
 #. translators: %s: total upsells
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:96
+#, php-format
 msgid "%s Upsells for all the items from this funnel."
 msgstr ""
 
 #. translators: %s: total items accepted as offer
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:98
+#, php-format
 msgid "%s offer accepted for the products from this funnel"
 msgstr ""
 
 #. translators: %s: total upsells
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:101
+#, php-format
 msgid "%s Upsells for the selected items"
 msgstr ""
 
 #. translators: %s: total items accepted as offer
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:103
+#, php-format
 msgid "%s offer accepted for the selected product"
 msgstr ""
 
@@ -2250,11 +2278,13 @@ msgstr ""
 
 #. translators: 1: total upsells 2: days
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:384
+#, php-format
 msgid "Upsells %1$s worth in the last %2$d days"
 msgstr ""
 
 #. translators: 1: total items sold 2: days
 #: addons/reports/reports/class-wfocu-upsells-by-product.php:388
+#, php-format
 msgid "Accepted %1$d product as offer in the last %2$d days"
 msgid_plural "Accepted %1$d products as offers in the last %2$d days"
 msgstr[0] ""
@@ -2290,6 +2320,7 @@ msgstr ""
 
 #. translators: %1$s: Min required upstroke version
 #: addons/subscriptions/class-woofunnels-upstroke-subscriptions.php:55
+#, php-format
 msgid "UpStroke Subscriptions requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin."
 msgstr ""
 
@@ -2353,11 +2384,13 @@ msgstr ""
 
 #. translators: %1$s: Plugin name %2$s Plugin name
 #: woofunnels-upstroke-power-pack.php:120
+#, php-format
 msgid "Old version of \"UpStroke: %1$s\" is installed and active. Please deactivate it to run updated \"Upstroke PowerPack - %2$s\" module"
 msgstr ""
 
 #. translators: %1$s: Min required upstroke version
 #: woofunnels-upstroke-power-pack.php:142
+#, php-format
 msgid "UpStroke PowerPack requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin."
 msgstr ""
 

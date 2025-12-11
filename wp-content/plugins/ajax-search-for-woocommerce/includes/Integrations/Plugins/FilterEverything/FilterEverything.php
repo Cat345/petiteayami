@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\FilterEverything;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,13 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wordpress.org/plugins/filter-everything/
  * Author: Stepasyuk
  */
-class FilterEverything {
-	public function init() {
+class FilterEverything extends AbstractPluginIntegration {
+	protected const LABEL = 'Filter Everything';
 
-		if ( ! class_exists( 'FlrtFilter' ) ) {
-			return;
-		}
+	public static function isActive(): bool {
+		return class_exists( 'FlrtFilter' );
+	}
 
+	public function init(): void {
 		add_filter( 'dgwt/wcas/helpers/is_search_query', array( $this, 'allow_to_process_search_query' ), 10, 2 );
 	}
 

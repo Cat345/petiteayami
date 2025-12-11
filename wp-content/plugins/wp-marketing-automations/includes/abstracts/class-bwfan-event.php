@@ -555,6 +555,13 @@ abstract class BWFAN_Event {
 
 		$action_instance = BWFAN_Core()->integration->get_action( $action_data['action_slug'] );
 
+		/** If action not found then load connector classes */
+		if ( empty( $action_instance ) ) {
+			WFCO_Load_Connectors::load_connectors_direct();
+			BWFAN_Load_Connectors::get_instance()->run_connectors();
+			$action_instance = BWFAN_Core()->integration->get_action( $action_data['action_slug'] );
+		}
+
 		if ( ! $action_instance instanceof BWFAN_Action ) {
 			return false;
 		}

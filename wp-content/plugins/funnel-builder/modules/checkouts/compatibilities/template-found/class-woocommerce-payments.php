@@ -94,8 +94,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 		 */
 		public function action() {
 			add_action( 'woocommerce_checkout_fields', [ $this, 'checkout_fields' ], 9 );
+			add_action( 'wfacp_before_form', [ $this, 'add_wcpay_hidden_div' ], 99 );
+		}
 
-
+		/**
+		 * Add hidden div for WooCommerce Payments compatibility
+		 */
+		public function add_wcpay_hidden_div() {
+			echo '<div id="wcpay-hidden-div" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
+    <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
+        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" style="transition: none;">
+        <label id="wcpay-hidden-valid-active-label"></label>
+    </p>
+    <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
+        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="">
+        <label id="wcpay-hidden-invalid-input"></label>
+    </p>
+</div>';
 		}
 
 		public function checkout_fields( $fields ) {

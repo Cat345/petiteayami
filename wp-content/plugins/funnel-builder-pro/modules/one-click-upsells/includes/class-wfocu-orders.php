@@ -313,8 +313,8 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			WFOCU_Core()->log->log( 'Order # ' . $order_id . ': ' . $get_status . ' -> ' . $midway_status . '->' . $order_status );
 		}
 
-		public function maybe_handle_cron_normalize_stasuses() {
-
+			public function maybe_handle_cron_normalize_stasuses() {
+		try {
 			WFOCU_Common::$start_time = time();
 
 			$get_orders = WFOCU_Common::wc_get_orders( array(
@@ -337,6 +337,14 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					$order             = $get_orders[ $i ];
 					$get_schedule_meta = $order->get_meta( '_wfocu_schedule_status', true );
 
+					// Check if $get_schedule_meta is an array before using array_values
+					if ( ! is_array( $get_schedule_meta ) ) {
+						WFOCU_Core()->log->log( 'Skipping order processing for order #' . $order->get_id() . ' due to invalid schedule meta format. Expected array, got: ' . gettype( $get_schedule_meta ) . '. Please check order meta for expected array format.' );
+						unset( $get_orders[ $i ] );
+						$i ++;
+						continue;
+					}
+
 					list( $status, $source_status, $time ) = array_values( $get_schedule_meta );
 
 					/**
@@ -350,7 +358,10 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					$i ++;
 				} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
 			}
+		} catch ( \Throwable $e ) {
+			WFOCU_Core()->log->log( 'Error in maybe_handle_cron_normalize_stasuses: ' . $e->getMessage() );
 		}
+	}
 
 		public function maybe_execute_thankyou_hook() {
 			WFOCU_Common::$start_time = time();
@@ -1363,7 +1374,9 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 				$have_pending_payment_complete_action = $get_order->get_meta( '_wfocu_payment_complete_on_hold', true );
 				if ( 'yes' === $have_pending_payment_complete_action ) {
-					do_action( 'woocommerce_payment_complete', WFOCU_WC_Compatibility::get_order_id( $get_order ) );
+					$order_id = WFOCU_WC_Compatibility::get_order_id( $get_order );
+					$transaction_id = $get_order->get_transaction_id();
+					do_action( 'woocommerce_payment_complete', $order_id, $transaction_id );
 				}
 			}
 

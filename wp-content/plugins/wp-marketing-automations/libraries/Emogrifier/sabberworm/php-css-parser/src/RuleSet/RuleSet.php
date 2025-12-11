@@ -1,15 +1,15 @@
 <?php
 
-namespace Sabberworm\CSS\RuleSet;
+namespace BWFAN\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\Comment\Commentable;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Renderable;
-use Sabberworm\CSS\Rule\Rule;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\Comment\Commentable;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use BWFAN\Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\Rule\Rule;
 
 /**
  * This class is a container for individual 'Rule's.

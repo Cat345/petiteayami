@@ -1,14 +1,14 @@
 <?php
 
-namespace Sabberworm\CSS\CSSList;
+namespace BWFAN\Sabberworm\CSS\CSSList;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet;
-use Sabberworm\CSS\Value\Value;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\SourceException;
+use BWFAN\Sabberworm\CSS\Property\Selector;
+use BWFAN\Sabberworm\CSS\RuleSet\DeclarationBlock;
+use BWFAN\Sabberworm\CSS\RuleSet\RuleSet;
+use BWFAN\Sabberworm\CSS\Value\Value;
 
 /**
  * This class represents the root of a parsed CSS file. It contains all top-level CSS contents: mostly declaration

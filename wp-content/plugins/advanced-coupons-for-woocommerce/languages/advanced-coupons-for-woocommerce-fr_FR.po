@@ -263,12 +263,12 @@ msgid "Auto Apply Coupon"
 msgstr "Auto application du code promo"
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:448
+#: Models/Auto_Apply.php:454
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "Le cache d’auto application des codes promo a été reconstruit avec succès. %s code promo(s) validé(s)."
 
-#: Models/Auto_Apply.php:438
+#: Models/Auto_Apply.php:444
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr "Le cache d’auto application des codes promo a été effacé avec succès."
 
@@ -423,7 +423,7 @@ msgstr "Personnalisé"
 msgid "Custom Cart Item Meta"
 msgstr "Une metadonnée particulière du panier est"
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:493
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:503
 msgid "Custom discounts for subscription products are not supported for this feature."
 msgstr "Les réductions pour les produits à abonnement ne sont pas supportés par cette fonctionnalité."
 
@@ -684,7 +684,7 @@ msgstr "Info"
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:423
+#: Models/Auto_Apply.php:429
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -1659,7 +1659,7 @@ msgstr "Vous utilisez actuellement la version Premium de Advanced Coupons for Wo
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:428
+#: Models/Auto_Apply.php:434
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -2475,11 +2475,11 @@ msgstr ""
 msgid "CONTAINS"
 msgstr ""
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:234
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:244
 msgid "Allow store credits for subscription renewals"
 msgstr ""
 
-#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:236
+#: Models/Third_Party_Integrations/WC/WC_Subscriptions.php:246
 msgid "Enable this option to allow customers to use store credits for automatic subscription renewals."
 msgstr ""
 
@@ -2517,4 +2517,8 @@ msgstr ""
 
 #: views/coupons/view-disallowed-emails-field.php:23
 msgid "List of disallowed billing email addresses. Separate multiple email addresses with commas. Wildcards like *@gmail.com are supported."
+msgstr ""
+
+#: Models/BOGO/Types/Same_Products.php:433
+msgid "Same Products"
 msgstr ""

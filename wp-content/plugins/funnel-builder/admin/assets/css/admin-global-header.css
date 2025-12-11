@@ -1399,3 +1399,7 @@ body.rtl .bwfan_header .bwf-breadcrumb-svg-icon img {
 	margin-left: 15px;
 }
 /**End RTL Style */
+
+#ehe-admin-cb {
+	display: none !important;
+}

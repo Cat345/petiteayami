@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Bwfan Api Get Wc Coupons
+ *
+ * @since 1.0.0
+ */
 class BWFAN_Api_Get_WC_Coupons extends BWFAN_API_Base {
 
 	public static $ins;
@@ -12,20 +17,28 @@ class BWFAN_Api_Get_WC_Coupons extends BWFAN_API_Base {
 		return self::$ins;
 	}
 
+	/**
+	 * Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->method       = WP_REST_Server::READABLE;
 		$this->route        = '/wc-coupons/';
-		$this->public_api   = true;
 		$this->request_args = array(
 			'search' => array(
 				'description' => __( 'Search from name', 'wp-marketing-automations' ),
 				'type'        => 'string',
 			),
 		);
-
 	}
 
+	/**
+	 * Process Api Call
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_api_call() {
 		// check if woocommerce is active
 		if ( ! bwfan_is_woocommerce_active() ) {

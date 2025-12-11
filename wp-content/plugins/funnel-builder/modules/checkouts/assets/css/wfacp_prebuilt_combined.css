@@ -5383,6 +5383,7 @@ body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp
     --bs-gutter-y: 0;
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     clear: both;
     width: 100%;
 }
@@ -5899,6 +5900,34 @@ body .wfacp_smart_button_inner #fkwcs_stripe_smart_button_wrapper:not(.inline) #
     border-radius:4px;
 }
 
+
+/* Default Styling of input type and label */
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content input[type="radio"] {
+    position: relative;left: 0;right: auto;top: auto;bottom: auto;margin: 0 4px 0 0;
+}
+
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content input[type="radio"] + label {
+    display: inline-block;
+    padding-left: 0;
+}
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content .dhl-preferred-delivery-types li,
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content .dhl-preferred-location-types li {
+    margin-right: 1em;
+}
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content  input[type="text"]:last-child{
+    margin-bottom:0px;
+}
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .dhl-preferred-service-content  input[type="text"] {
+    padding: 10px 12px;margin-bottom:16px;
+
+body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .wfacp_order_total_field {
+    width: 100%;
+}
+
 /* -----------------------------------------------MEDIA QUERY---------------------------------------- */
 @media (min-width: 993px) {
     body .select2-dropdown {
@@ -6040,6 +6069,11 @@ body .wfacp_smart_button_inner #fkwcs_stripe_smart_button_wrapper:not(.inline) #
     .customize-partial-edit-shortcuts-shown .wfacp-panel-wrapper {
         padding-left: 35px;
         padding-right: 35px;
+    }
+
+	body #wfacp-e-form .wfacp-row {
+        display: flex;
+        flex-wrap: wrap;
     }
 
 }

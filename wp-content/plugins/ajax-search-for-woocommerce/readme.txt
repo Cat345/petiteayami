@@ -2,9 +2,9 @@
 Contributors: damian-gora, matczar
 Tags: woocommerce search, ajax search, search by sku, product search, woocommerce
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.31.0
+Stable tag: 1.32.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,32 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 9. Sample settings page (Search Analytics tab)
 
 == Changelog ==
+
+= 1.32.0, November 17, 2025 =
+* ADDED: Integration with the [Bacola theme](https://fibosearch.com/documentation/themes-integrations/bacola-theme/).
+* ADDED: Debugger view for active plugin integrations
+* ADDED: Helper function for retrieving plugin information
+* ADDED: Option to make the search endpoint return only product IDs
+* ADDED: Greek language files
+* FIXED: Mobile search bar display issue in the **WoodMart theme**
+* FIXED: Compatibility issue in the **Bricks theme**. The **“Enable AJAX add to cart”** option now works properly with the FiboSearch details panel
+* FIXED: Search replacement issue on the **Flatsome theme** 404 page
+* FIXED: Support for diacritic and accent characters in search and scoring calculation
+* FIXED: Infinite loop on mobile devices caused by an **Impreza theme** event conflict
+* FIXED: Improved CSS styles for the details panel in the **Bricks theme**
+* FIXED: Limited the number of suggestions in preview settings to a maximum of 15 items
+* FIXED: Removed unnecessary banners from the settings page
+* FIXED: Replaced preloader with the correct search bar or icon in Elementor editor preview
+* FIXED: HTML semantic issue in category suggestions caused by an unescaped `>` character in titles
+* FIXED: Deprecated PHP `8.3` and `8.4` warnings
+* FIXED: Protection against external CSS styles (e.g., targeting the `.woocommerce` class) overriding the details panel width
+* TWEAK: Added a prefix to the Freemius placeholder class to prevent potential conflicts
+* TWEAK: Moved Freemius SDK to the vendor directory
+* TWEAK: Cleaned up code style
+* TWEAK: Passed additional data to filters to improve customization of search results display
+* REFACTOR: Moved indexer logs to a separate database table
+* UPDATED: Updating the `.pot` file
+* UPDATED: Freemius SDK
 
 = 1.31.0, July 16, 2025 =
 * ADDED: Info about **Elementor widget**
@@ -313,56 +339,5 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 * TESTS: Fix assertion in “Analytics/Critical searches without result”
 * REFACTOR: Change order if set settings defaults. Now the defaults are set after calling the `dgwt/wcas/settings` filter
 * SECURITY: Added escaping for a “Search input placeholder” option
-
-= 1.23.0, April 05, 2023 =
-* ADDED: Integration with the “Blocksy” theme
-* ADDED: Integration with the “Qwery” theme
-* ADDED: Integration with the “StoreBiz” theme
-* ADDED: Allows the `Shop manager` role to manage the plugin settings by adding a constant to the `wp.config.php` file
-* ADDED: Allows creating HTML templates instead of displaying simple “No results” message
-* IMPROVED: Blocks calculating score if the phrase contains a single character
-* FIXED: More accurate calculation of the order of products in search results. The extra score for an exact match of a sequence of words
-* FIXED: Storefront theme - not working focus event while using a mobile overlay for iPhone devices
-* FIXED: Mobile overlay on iPhone devices - didn't hide search results on a scroll event or after clicking the “done” button
-* FIXED: iPhone devices - annoying auto zoom in search input on focus
-* FIXED: Search icon mode and search history - a search bar was needlessly concealed on clicking the “Clear” button
-* FIXED: Freemius SDK - added submenu slug
-* FIXED: Flatsome theme - detecting incompatible settings and disappearing search form on hover
-* FIXED: Layout option - hidden triangle icon when a layout is “icon” and style is “Pirx”
-* FIXED: Unnecessary AJAX query on the settings page
-* TWEAK: Replacing empty href tag with `#` in Storefront integration because of SEO
-* TWEAK: Trivial CSS changes
-* UPDATED: Freemius SDK to v2.5.6
-* REFACTOR: Forcing mobile overlay breakpoint and in layout breakpoint in theme integrations
-* REFACTOR: Variables names in the method `Helpers::calcScore()`
-
-= 1.22.3, January 30, 2023 =
-* FIXED: Some prices were not aligned properly
-
-= 1.22.0, January 30, 2023 =
-* ADDED: New feature - Search history. The current search history is presented when the user clicked/taped on the search bar, but hasn't yet typed the query.
-* ADDED: FiboSearch Analytics - New widget in WordPress Dashboard with critical searches without result
-* ADDED: Integration with Essentials theme
-* ADDED: Make UI_FIXER object as global object
-* ADDED: Ability to search for vendors by description and city
-* ADDED: Ability to exclude critical phrases in the Analytics module
-* ADDED: Custom JavaScript events during the search process
-* ADDED: Ability to export search analytics data as CSV files
-* FIXED: Integration with Flatsome theme - focus event didn't work with a search bar
-* FIXED: Integration with WooCommerce Product Filter by WooBeWoo - “Undefined array key 'query'” notice
-* FIXED: Integration with Jet Smart Menu - repair duplicated search bars IDs
-* FIXED: Integration with Astra theme - support for version 4.0.0
-* FIXED: Integration with Astra theme - cannot change the number of products on the cart page
-* FIXED: Integration with XStore theme - support for search icon in mobile panel
-* FIXED: Compatibility with PHP 8.1
-* FIXED: RWD for FiboSearch Settings views including Analytics views
-* FIXED: Search bar CSS, especially when Pirx style and Voice Search work together
-* FIXED: A user with permission to edit plugin settings cannot see search analytics
-* CHANGE: Updated French translation
-* CHANGE: Hide the Voice Search icon when a user starts typing
-* CHANGE: Updated Freemius SDK to v2.5.3
-* CHANGE: Remove information that Analytics is a beta feature
-* CHANGE: Remove information that Darkened Background is a beta feature
-* CHANGE: Set "Pirx" as a default search bar style
 
 [See changelog for all versions](https://fibosearch.com/changelog/).

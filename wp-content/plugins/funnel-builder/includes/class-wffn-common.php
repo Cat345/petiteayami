@@ -537,7 +537,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 
 			$divi = WFFN_Common::check_builder_status( 'divi' );
-			if ( true === $divi['found'] && isset( $_REQUEST['et_load_builder_modules'] ) && '1' === $_REQUEST['et_load_builder_modules'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( true === $divi['found'] && isset( $_REQUEST['et_load_builder_modules'] ) && '1' === $_REQUEST['et_load_builder_modules'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				return true;
 			}
 
@@ -1131,7 +1131,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			}
 
 			if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-				$params['external_id'] = bwf_clean( $_COOKIE['wffn_flt'] );
+				$params['external_id'] = bwf_clean( $_COOKIE['wffn_flt'] );//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			}
 			$params = apply_filters( 'wffn_advanced_matching_data', $params );
 
@@ -1426,6 +1426,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			if ( 1 !== intval( $date->format( 'N' ) ) ) {
 				$date->modify( 'last Monday' );
 			}
@@ -1455,6 +1456,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date          = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			$current_month = $date->format( 'n' );
 			$start_month   = ( $current_month <= 6 ) ? 1 : 7;
 			$date->setDate( $date->format( 'Y' ), $start_month, 1 );
@@ -1481,6 +1483,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date         = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			$current_year = $date->format( 'Y' );
 			$date->setDate( $current_year, 1, 1 );
 			$date->setTime( 0, 0, 0 );
@@ -1507,6 +1510,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			if ( 1 !== intval( $date->format( 'N' ) ) ) {
 				$date->modify( 'last Monday' );
 			}
@@ -1541,6 +1545,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			$date->modify( 'last Month' );
 			$date->setDate( $date->format( 'Y' ), $date->format( 'm' ), 1 );
 			$date->setTime( 0, 0, 0 );
@@ -1572,6 +1577,7 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			$dates = [];
 
 			$date = new DateTime( current_time( 'mysql', true ) );
+			$date->setTimezone( wp_timezone() );
 			$date->modify( '-1 day' );
 			$date->setTime( 0, 0, 0 );
 
@@ -1598,9 +1604,13 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 		public static function get_store_time( $hours = 0, $mins = 0, $sec = 0 ) {
 			$timezone = new DateTimeZone( wp_timezone_string() );
 			$date     = new DateTime();
+
 			$date->setTimezone( $timezone );
 			$date->setTime( $hours, $mins, $sec );
 
+			if ( current_time( 'timestamp', 1 ) > $date->getTimestamp() ) {
+				$date->modify( '+1 days' );
+			}
 			return $date->getTimestamp();
 		}
 		/**
@@ -1659,6 +1669,34 @@ if ( ! class_exists( 'WFFN_Common' ) ) {
 			} else {
 				return admin_url( "post.php?post={$order_id}&action=edit" );
 			}
+		}
+
+		/**
+		 * Returns the current version of the specified builder plugin.
+		 *
+		 * For all builder plugins that support templates, this method returns the current version of the builder plugin.
+		 *
+		 * @param string $builder The builder plugin identifier (e.g., 'elementor', 'divi', 'oxy').
+		 * @return string The version of the builder plugin, or an empty string if not found.
+		 */
+		public static function get_builder_version($builder) {
+			try {
+				if ( $builder === 'elementor' ) {
+					return ELEMENTOR_VERSION;
+				}
+
+				if ( $builder === 'divi' ) {
+					return ET_BUILDER_PRODUCT_VERSION;
+				}
+
+				if ( $builder === 'oxy' ) {
+					return CT_VERSION;
+				}
+			} catch (Throwable $e) {
+				// Silently fail to prevent breaking main functionality
+			}
+
+			return '';
 		}
 
 	}

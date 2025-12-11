@@ -11,7 +11,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 	class Rewards {
 		private static $instance = null;
 		private $meta_data = [];
-		public $active_free_shipping = false;
 
 		private function __construct() {
 			$data = Data::get_db_settings();
@@ -147,7 +146,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				return;
 			}
 
-
 			$cart_count = WC()->cart->get_cart_contents_count();
 			$free_items = array_filter( WC()->cart->get_cart_contents(), function ( $cart_item ) {
 				return isset( $cart_item['_fkcart_free_gift'] );
@@ -155,26 +153,14 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 
 			$data = Data::get_db_settings();
 
-
-			$enabled_rewards = false;
-			if ( isset( $data['reward'] ) && count( $data['reward'] ) > 0 ) {
-				foreach ( $data['reward'] as $reward_key => $reward_value ) {
-					if ( isset( $reward_value['type'] ) && $reward_value['type'] == 'freegift' ) {
-						$enabled_rewards = true;
-					}
-
-				}
-
-			}
+			$enabled_rewards = ! empty( $data['reward'] ) && in_array( 'freegift', array_column( $data['reward'], 'type' ), true );
 			if ( false === $enabled_rewards && is_array( $free_items ) && count( $free_items ) > 0 ) {
 				foreach ( $free_items as $cart_item_key => $cart_item_v ) {
-
 					if ( empty( $cart_item_key ) ) {
 						continue;
 					}
 
 					WC()->cart->remove_cart_item( $cart_item_key );
-
 				}
 			}
 
@@ -194,8 +180,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		 */
 		public function update_reward() {
 			$rewards = self::get_rewards();
-
-			// Early return if no rewards or cart not available
 			if ( empty( $rewards ) || is_null( WC()->cart ) ) {
 				return;
 			}
@@ -208,7 +192,9 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			// Save previous notices and prevent recursion
 			$previous_notices = wc_get_notices();
 			remove_action( 'woocommerce_calculate_totals', [ $this, 'update_reward' ], 99 );
-
+			if(function_exists( '\WFOCU_Core' )) {
+				remove_action( 'woocommerce_applied_coupon', [ \WFOCU_Core()->public, 'maybe_decide_funnel' ], 99);
+			}
 			// Extract reward data
 			$coupon_remove   = $rewards['coupons']['remove'] ?? [];
 			$coupon_add      = $rewards['coupons']['add'] ?? [];
@@ -245,11 +231,19 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		 * @return void
 		 */
 		private function process_coupons( $coupon_remove, $coupon_add, $removed_coupons ) {
+			// Get current applied coupons from session
+			$applied_coupons = WC()->session->get( '_fkcart_applied_coupons', [] );
+
 			// Remove coupons if needed
 			if ( ! empty( $coupon_remove ) ) {
 				foreach ( $coupon_remove as $rm_coupon_code ) {
 					if ( WC()->cart->has_discount( $rm_coupon_code ) ) {
 						WC()->cart->remove_coupon( $rm_coupon_code );
+						// Remove coupon from a session variable if exists
+						$coupon_key = array_search( strtolower( $rm_coupon_code ), $applied_coupons, true );
+						if ( false !== $coupon_key ) {
+							unset( $applied_coupons[ $coupon_key ] );
+						}
 					}
 				}
 			}
@@ -262,8 +256,15 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 					}
 					WC()->cart->add_discount( $add_coupon_code );
 					$this->update_discount_views( $add_coupon_code );
+					// Add coupon to a session variable if not exists
+					if ( ! in_array( strtolower( $add_coupon_code ), $applied_coupons, true ) ) {
+						$applied_coupons[] = strtolower( $add_coupon_code );
+					}
 				}
 			}
+
+			// Update applied coupons in session
+			WC()->session->set( '_fkcart_applied_coupons', array_values( $applied_coupons ) );
 		}
 
 		/**
@@ -475,12 +476,11 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			if ( Plugin::valid_l() === false ) {
 				return;
 			}
-			$rewards = [];
+
 			$rewards = Data::get_value( 'reward' );
 			if ( empty( $rewards ) ) {
 				return;
 			}
-
 
 			$wc_coupons_enable  = wc_coupons_enabled();
 			$wc_shipping_enable = wc_shipping_enabled();
@@ -492,10 +492,8 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 
 			$rewards_new = $rewards;
 
-
 			foreach ( $rewards as $r => $reward ) {
 				if ( 'freeshipping' === $reward['type'] ) {
-
 					if ( false == $raw_data && ( ! $wc_shipping_enable || empty( $shipping_data ) || ! isset( $shipping_data['method_id'] ) ) ) {
 						unset( $rewards_new[ $r ] );
 						continue;
@@ -545,7 +543,8 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			}
 			$max_amount = ( is_array( $max_amount ) || empty( $max_amount ) || intval( $max_amount ) < 1 ) ? 1 : $max_amount;
 
-			$subtotal      = self::get_cart_total();
+			$subtotal = self::get_cart_total();
+
 			$title         = '';
 			$free_shipping = false;
 
@@ -648,6 +647,36 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		}
 
 		/**
+		 * Check if rewards has free shipping enabled or not
+		 *
+		 * @return bool
+		 */
+		public static function is_free_shipping_reward_available() {
+			$wc_shipping_enable = function_exists( 'wc_shipping_enabled' ) && wc_shipping_enabled();
+			if ( ! $wc_shipping_enable ) {
+				return false;
+			}
+
+			if ( false === Data::is_rewards_enabled() ) {
+				return false;
+			}
+
+			/** Validate */
+			if ( Plugin::valid_l() === false ) {
+				return false;
+			}
+
+			$rewards = Data::get_value( 'reward' );
+			if ( empty( $rewards ) ) {
+				return false;
+			}
+
+			$reward_types = array_column( $rewards, 'type' );
+
+			return in_array( 'freeshipping', $reward_types, true );
+		}
+
+		/**
 		 * Get current shipping method of user with current zone
 		 *
 		 * @return false|array
@@ -657,7 +686,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				return false;
 			}
 			include_once __DIR__ . '/geolocation.php';
-
 
 			$geolocation = Geolocation::geolocate_ip( Geolocation::get_ip_address(), true );
 			if ( empty( $geolocation['country'] ) ) {
@@ -673,7 +701,7 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			if ( isset( self::getInstance()->meta_data[ $zone_cache_key ] ) ) {
 				return self::getInstance()->meta_data[ $zone_cache_key ];
 			}
-			$matched_zone_key = wp_cache_get( $zone_cache_key, 'shipping_zones' );
+			$matched_zone_key = wp_cache_get( $zone_cache_key, 'fkcart_shipping_zones' );
 
 			if ( false === $matched_zone_key ) {
 				global $wpdb;
@@ -686,7 +714,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				$conditions[] = $wpdb->prepare( "OR ( location_type = 'state' AND location_code = %s )", $country . ':' . $state );
 				// OR condition for Continents
 				$conditions[] = $wpdb->prepare( "OR ( location_type = 'continent' AND location_code = %s )", $continent );
-
 				// OR condition for Other location Type
 				$conditions[] = "OR ( location_type IS NULL ) )";
 
@@ -695,22 +722,33 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				if ( $get_zipcode_locations ) {
 					$zone_ids_with_postcode_rules = array_map( 'absint', wp_list_pluck( $get_zipcode_locations, 'zone_id' ) );
 					$matches                      = wc_postcode_location_matcher( $postcode, $get_zipcode_locations, 'zone_id', 'location_code', $country );
-					$do_not_match                 = array_unique( array_diff( $zone_ids_with_postcode_rules, array_keys( $matches ) ) );
+
+					$do_not_match = array_unique( array_diff( $zone_ids_with_postcode_rules, array_keys( $matches ) ) );
 					if ( ! empty( $do_not_match ) ) {
 						$conditions[] = "AND zones.zone_id NOT IN (" . implode( ',', $do_not_match ) . ")";
 					}
 				}
-				// Get matching zones
-				$matched_zone_key = $wpdb->get_var( "SELECT zones.zone_id FROM {$wpdb->prefix}woocommerce_shipping_zones as zones
-				INNER JOIN {$wpdb->prefix}woocommerce_shipping_zone_locations as locations ON zones.zone_id = locations.zone_id inner join  {$wpdb->prefix}woocommerce_shipping_zone_methods as methods on zones.zone_id=methods.zone_id AND methods.is_enabled=1 AND location_type != 'postcode'
-				WHERE " . implode( ' ', $conditions ) . "
-				ORDER BY zone_order ASC LIMIT 1" );
-				wp_cache_set( $zone_cache_key, $matched_zone_key, 'shipping_zones' );
-			}
 
-			$shipping_methods                = new  \WC_Shipping_Zone( in_array( $matched_zone_key, [ 0, false, null ] ) ? 0 : $matched_zone_key );
+				// Get matching zones (LEFT JOIN locations, INNER JOIN methods)
+				$matched_zone_key = $wpdb->get_var( "SELECT zones.zone_id
+			FROM {$wpdb->prefix}woocommerce_shipping_zones as zones
+			LEFT OUTER JOIN {$wpdb->prefix}woocommerce_shipping_zone_locations as locations
+			       ON zones.zone_id = locations.zone_id
+			      AND location_type != 'postcode'
+			INNER JOIN {$wpdb->prefix}woocommerce_shipping_zone_methods as methods
+			       ON zones.zone_id = methods.zone_id
+			      AND methods.is_enabled = 1
+			WHERE " . implode( ' ', $conditions ) . "
+			ORDER BY zone_order ASC, zones.zone_id ASC
+			LIMIT 1
+		" );
+
+				wp_cache_set( $zone_cache_key, $matched_zone_key, 'fkcart_shipping_zones' );
+			}
+			$shipping_methods                = new \WC_Shipping_Zone( in_array( $matched_zone_key, [ 0, false, null ] ) ? 0 : $matched_zone_key );
 			$shipping_methods                = $shipping_methods->get_shipping_methods( true );
 			$free_shipping_supported_methods = fkcart_free_shipping_method();
+
 			foreach ( $shipping_methods as $i => $shipping_method ) {
 				if ( ! is_numeric( $i ) || 'yes' !== $shipping_method->enabled ) {
 					continue;
@@ -722,13 +760,15 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 						] ) ) ) {
 					continue;
 				}
-				$free_shipping = Compatibility::get_free_shipping( $shipping_method );;
-				if ( false !== $free_shipping && $free_shipping['min_amount'] > - 1 ) {// return if min amount > -1 otherwise check other available free shipping methods
+				$free_shipping = Compatibility::get_free_shipping( $shipping_method );
+				if ( false !== $free_shipping && $free_shipping['min_amount'] > - 1 ) {
+					// return if min amount > -1 otherwise check other available free shipping methods
 					self::getInstance()->meta_data[ $zone_cache_key ] = $free_shipping;
 
 					return self::getInstance()->meta_data[ $zone_cache_key ];
 				}
 			}
+
 			self::getInstance()->meta_data[ $zone_cache_key ] = false;
 
 			return false;
@@ -796,6 +836,61 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 				return;
 			}
 			WC()->session->__unset( '_fkcart_removed_coupons' );
+			WC()->session->__unset( '_fkcart_applied_coupons' );
+		}
+
+		/**
+		 * Get applied coupons from session
+		 *
+		 * @return array Array of applied coupon codes
+		 */
+		public static function get_applied_coupons_from_session() {
+			if ( is_null( WC()->session ) ) {
+				return [];
+			}
+
+			return WC()->session->get( '_fkcart_applied_coupons', [] );
+		}
+
+		/**
+		 * Calculate total discounted value from session-applied coupons
+		 *
+		 * @return float Total discounted value from matching coupons
+		 */
+		public static function get_session_coupons_discount_total() {
+			if ( is_null( WC()->cart ) || is_null( WC()->session ) ) {
+				return 0.0;
+			}
+
+			$session_coupons = self::get_applied_coupons_from_session();
+			if ( empty( $session_coupons ) ) {
+				return 0.0;
+			}
+
+			$applied_coupons = WC()->cart->get_applied_coupons();
+			if ( empty( $applied_coupons ) ) {
+				return 0.0;
+			}
+
+			$total_discount  = 0.0;
+			$applied_coupons = array_map( 'strtolower', $applied_coupons );
+
+			// Iterate over session coupons and check if they're applied in cart
+			try {
+				foreach ( $session_coupons as $session_coupon_code ) {
+					if ( in_array( $session_coupon_code, $applied_coupons, true ) ) {
+						// Calculate discount for this coupon
+						$coupon_discount = WC()->cart->get_coupon_discount_amount( $session_coupon_code );
+						$total_discount  += $coupon_discount;
+					}
+				}
+			} catch ( \Throwable $e ) {
+				if ( class_exists( '\WFFN_logger' ) ) {
+					\WFFN_logger::get_instance()->log( 'Error occurred while fetching session coupon value: ' . $e->getMessage(), 'wffn', true );
+				}
+			}
+
+			return $total_discount;
 		}
 
 		/**
@@ -808,7 +903,7 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 			$front            = Front::get_instance();
 
 			if ( 'total' === $calculation_mode && method_exists( $front, 'get_total_row' ) ) {
-				$total = $front->get_total_row( true );
+				$total = $front->get_total_row( true ) + self::get_session_coupons_discount_total();
 			} else {
 				$total = $front->get_subtotal_row( true );
 			}
@@ -991,8 +1086,6 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		 */
 
 		public function may_be_checkout_field_update() {
-
-
 			if ( ! $this->is_free_shipping_enabled_with_no_geolocation() ) {
 				return;
 			}
@@ -1005,69 +1098,20 @@ if ( ! class_exists( '\FKCart\Pro\Rewards' ) ) {
 		}
 
 		public function is_free_shipping_enabled_with_no_geolocation() {
-
-
-			/**
-			 * Free shipping eligibility should only be checked for non-logged-in users.
-			 */
-
+			/** Free shipping eligibility should only be checked for non-logged-in users. */
 			if ( is_user_logged_in() ) {
 				return false;
 			}
 
-			/**
-			 * Retrieve WooCommerce's default customer address setting.
-			 */
-
+			/** Retrieve WooCommerce's default customer address setting. */
 			$this->default_wc_location = get_option( 'woocommerce_default_customer_address' );
 
-
-			/**
-			 * If default location is set and not 'base', free shipping is not applicable.
-			 */
+			/** If default location is set and not 'base', free shipping is not applicable. */
 			if ( $this->default_wc_location !== '' && $this->default_wc_location !== 'base' && $this->default_wc_location !== 'geolocation' ) {
 				return false;
 			}
 
-			$rewards = array(); // Initialize with empty array
-			/**
-			 * Get available rewards data.
-			 */
-			if ( class_exists( '\FKCart\Pro\Rewards' ) ) {
-				$rewards = \FKCart\Pro\Rewards::get_rewards( true );
-			}
-
-
-			/**
-			 * Check if rewards data exists and is a valid array.
-			 */
-			if ( ! isset( $rewards['rewards'] ) || ! is_array( $rewards['rewards'] ) || count( $rewards['rewards'] ) == 0 ) {
-				return false;
-			}
-
-			/**
-			 * Loop through rewards to check if free shipping is available.
-			 */
-
-
-			foreach ( $rewards['rewards'] as $reward_key => $reward_value ) {
-
-				if ( $reward_value['type'] == 'freeshipping' ) {
-					$this->active_free_shipping   = [];
-					$this->active_free_shipping[] = $reward_value['type'];
-					break;
-				}
-			}
-
-
-			/**
-			 * If no free shipping rewards are found, return false.
-			 */
-			if ( $this->active_free_shipping == false ) {
-				return false;
-			}
-
-			return true;
+			return self::is_free_shipping_reward_available();
 		}
 
 		/**

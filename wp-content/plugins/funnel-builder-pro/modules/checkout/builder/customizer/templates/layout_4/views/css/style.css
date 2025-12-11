@@ -3395,6 +3395,10 @@ body #wfacp-sec-wrapper #account_password_field label.wfacp-form-control-label {
     right: 50px;
 }
 
+body #wfacp-sec-wrapper .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box .wfacp_coupon_btn_wrap label {
+    display: none;
+}
+
 @media (pointer: coarse) {
     html {
         -webkit-overflow-scrolling: touch;

@@ -412,6 +412,33 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
     }
 
     /**
+     * Add dummy affiliate discount field in general tab for AffiliateWP cross-sell.
+     *
+     * @since 4.7.0
+     * @access public
+     *
+     * @param int $coupon_id Coupon ID.
+     */
+    public function upsell_affiliate_discount_field( $coupon_id ) {
+        // Only show if AffiliateWP is not installed and activated.
+        if ( $this->_helper_functions->is_plugin_active( 'affiliate-wp/affiliate-wp.php' ) ) {
+            return;
+        }
+
+        woocommerce_wp_text_input(
+            array(
+                'id'          => 'acfw_affiliate_discount',
+                'label'       => __( 'Affiliate discount?', 'advanced-coupons-for-woocommerce-free' ),
+                'description' => __( 'If you would like to connect this discount to and affiliate, enter the name of the affiliate it belongs to', 'advanced-coupons-for-woocommerce-free' ),
+                'desc_tip'    => true,
+                'value'       => '',
+                'type'        => 'text',
+                'placeholder' => __( 'Enter affiliate name', 'advanced-coupons-for-woocommerce-free' ),
+            )
+        );
+    }
+
+    /**
      * Add product attributes upsell field in usage restrictions tab.
      *
      * @since 4.6.4
@@ -722,6 +749,10 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
             'product-categories'   => __( 'Product Categories (Premium)', 'advanced-coupons-for-woocommerce-free' ),
             'any-products'         => __( 'Any Products (Premium)', 'advanced-coupons-for-woocommerce-free' ),
         );
+
+        if ( $is_apply ) {
+            $options['same-products'] = __( 'Same Products (Premium)', 'advanced-coupons-for-woocommerce-free' );
+        }
 
         return $options;
     }
@@ -1535,6 +1566,41 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
         return $data;
     }
 
+    /**
+     * Add affiliate discount localized data separately for AffiliateWP cross-sell.
+     *
+     * @since 4.7.0
+     * @access public
+     *
+     * @param array $data Localized data.
+     * @return array Filtered localized data.
+     */
+    public function add_affiliate_discount_localized_data( $data ) {
+        $affiliate_content  = sprintf(
+            '<img src="%1$s" alt="%2$s" />',
+            $this->_constants->IMAGES_ROOT_URL . '/acfw-logo.png',
+            __( 'Advanced Coupons', 'advanced-coupons-for-woocommerce-free' )
+        );
+        $affiliate_content .= sprintf( '<h3>%s</h3>', __( 'Affiliate Coupon', 'advanced-coupons-for-woocommerce-free' ) );
+        $affiliate_content .= sprintf(
+            '<p>%s</p>',
+            __( 'Link your coupons to affiliates in AffiliateWP and track which affiliates are driving sales through coupon usage.', 'advanced-coupons-for-woocommerce-free' )
+        );
+        $affiliate_content .= sprintf(
+            '<p>%s</p>',
+            __( 'AffiliateWP integrates seamlessly with Advanced Coupons to help you manage your affiliate marketing program.', 'advanced-coupons-for-woocommerce-free' )
+        );
+        $affiliate_content .= sprintf(
+            '<p><a href="%s" target="_blank">%s</a></p>',
+            'https://affiliatewp.com/?utm_source=advanced_coupons&utm_medium=plugin&utm_campaign=affiliate_coupon_feature&utm_content=modal_cta',
+            __( 'Learn More About AffiliateWP →', 'advanced-coupons-for-woocommerce-free' )
+        );
+
+        $data['affiliate_discount_upsell'] = wp_kses_post( $affiliate_content );
+
+        return $data;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Plugin action link.
@@ -2221,6 +2287,12 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
         if ( ! $this->_helper_functions->is_plugin_active( Plugin_Constants::GIFT_CARDS_PLUGIN ) ) {
             add_filter( 'acfw_admin_app_pages', array( $this, 'register_advanced_gift_cards_menu' ) );
             add_filter( 'acfwf_admin_app_localized', array( $this, 'register_advanced_gift_cards_upsell_localized_data' ) );
+        }
+
+        // only run when affiliate wp plugin is not active.
+        if ( ! $this->_helper_functions->is_plugin_active( 'affiliate-wp/affiliate-wp.php' ) ) {
+            add_action( 'woocommerce_coupon_options', array( $this, 'upsell_affiliate_discount_field' ), 11 );
+            add_filter( 'acfw_edit_advanced_coupon_localize', array( $this, 'add_affiliate_discount_localized_data' ) );
         }
 
         add_filter( 'acfwf_admin_app_localized', array( $this, 'append_uncanny_automator_upsell_data' ) );

@@ -1225,6 +1225,7 @@ body button.button.wfacp-coupon-btn:disabled[disabled] {
     display: block;
     clear: both;
     position: relative;
+	width: 100%;
 
 }
 
@@ -1239,6 +1240,8 @@ body button.button.wfacp-coupon-btn:disabled[disabled] {
     border-radius: 4px;
     color: #565e66;
     background-color: transparent;
+    padding: 0;
+    border: none;
 }
 
 #wfacp-e-form .wfacp-section .woocommerce-checkout-payment {
@@ -3263,6 +3266,10 @@ body #wfacp-e-form .wfacp_main_form #payment .place-order,
 body #wfacp-e-form .wfacp_main_form .wfacp-section .woocommerce-checkout-payment ul {
     background: transparent;
 }
+body #wfacp-e-form .wfacp_main_form .wfacp-section .woocommerce-checkout-payment {
+    margin-bottom: 0;padding:0;
+}
+
 
 body #wfacp-e-form p.wfacp-form-control-wrapper p {
     margin-bottom: 0;

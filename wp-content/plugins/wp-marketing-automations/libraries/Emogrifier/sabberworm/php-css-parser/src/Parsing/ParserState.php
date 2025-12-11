@@ -1,9 +1,9 @@
 <?php
 //phpcs:disable
-namespace Sabberworm\CSS\Parsing;
+namespace BWFAN\Sabberworm\CSS\Parsing;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\Settings;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\Settings;
 
 class ParserState
 {

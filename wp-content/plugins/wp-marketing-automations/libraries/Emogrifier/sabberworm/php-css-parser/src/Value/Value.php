@@ -1,12 +1,12 @@
 <?php
 //phpcs:disable
-namespace Sabberworm\CSS\Value;
+namespace BWFAN\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
-use Sabberworm\CSS\Parsing\UnexpectedEOFException;
-use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-use Sabberworm\CSS\Renderable;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\SourceException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedEOFException;
+use BWFAN\Sabberworm\CSS\Parsing\UnexpectedTokenException;
+use BWFAN\Sabberworm\CSS\Renderable;
 
 /**
  * Abstract base class for specific classes of CSS values: `Size`, `Color`, `CSSString` and `URL`, and another

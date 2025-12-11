@@ -578,7 +578,52 @@ return array(
 			'interactivity' => true
 		),
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
-		'style' => 'file:../woocommerce/add-to-cart-with-options-quantity-selector-style.css'
+		'style' => 'file:../woocommerce/add-to-cart-with-options-quantity-selector-style.css',
+		'viewScriptModule' => 'woocommerce/add-to-cart-with-options-quantity-selector'
+	),
+	'add-to-cart-with-options-variation-description' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'woocommerce/add-to-cart-with-options-variation-description',
+		'title' => 'Variation Description (Beta)',
+		'description' => 'Displays the description of the selected variation.',
+		'category' => 'woocommerce',
+		'textdomain' => 'woocommerce',
+		'ancestor' => array(
+			'woocommerce/add-to-cart-with-options'
+		),
+		'supports' => array(
+			'interactivity' => true,
+			'html' => false,
+			'dimensions' => array(
+				'minHeight' => true
+			),
+			'spacing' => array(
+				'padding' => true,
+				'margin' => true
+			),
+			'color' => array(
+				'gradients' => true,
+				'link' => true
+			),
+			'typography' => array(
+				'fontSize' => true,
+				'lineHeight' => true,
+				'__experimentalFontFamily' => true,
+				'__experimentalFontWeight' => true,
+				'__experimentalFontStyle' => true,
+				'__experimentalTextTransform' => true,
+				'__experimentalTextDecoration' => true,
+				'__experimentalLetterSpacing' => true
+			),
+			'__experimentalBorder' => array(
+				'radius' => true,
+				'color' => true,
+				'width' => true,
+				'style' => true
+			)
+		),
+		'viewScriptModule' => 'woocommerce/product-elements'
 	),
 	'add-to-cart-with-options-variation-selector' => array(
 		'name' => 'woocommerce/add-to-cart-with-options-variation-selector',
@@ -705,13 +750,12 @@ return array(
 			'woocommerce/add-to-cart-with-options-variation-selector-attribute'
 		),
 		'attributes' => array(
-			'style' => array(
+			'optionStyle' => array(
 				'type' => 'string',
 				'enum' => array(
 					'pills',
 					'dropdown'
-				),
-				'default' => 'pills'
+				)
 			)
 		),
 		'textdomain' => 'woocommerce',
@@ -995,6 +1039,82 @@ return array(
 		'apiVersion' => 3,
 		'$schema' => 'https://schemas.wp.org/trunk/block.json'
 	),
+	'category-description' => array(
+		'name' => 'woocommerce/category-description',
+		'title' => 'Product Category Description',
+		'description' => 'Displays the current category description.',
+		'category' => 'woocommerce',
+		'apiVersion' => 3,
+		'textdomain' => 'woocommerce',
+		'attributes' => array(
+			'textAlign' => array(
+				'type' => 'string'
+			)
+		),
+		'supports' => array(
+			'align' => false,
+			'color' => array(
+				'background' => true,
+				'text' => true
+			),
+			'html' => false,
+			'spacing' => array(
+				'margin' => true,
+				'padding' => true
+			),
+			'typography' => true
+		),
+		'usesContext' => array(
+			'termId',
+			'termTaxonomy'
+		)
+	),
+	'category-title' => array(
+		'name' => 'woocommerce/category-title',
+		'title' => 'Product Category Title',
+		'description' => 'Displays the current category title and lets permitted users edit it.',
+		'category' => 'woocommerce',
+		'apiVersion' => 3,
+		'textdomain' => 'woocommerce',
+		'attributes' => array(
+			'isLink' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'level' => array(
+				'type' => 'number',
+				'default' => 2
+			),
+			'linkTarget' => array(
+				'type' => 'string',
+				'default' => '_self'
+			),
+			'rel' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'textAlign' => array(
+				'type' => 'string'
+			)
+		),
+		'supports' => array(
+			'align' => false,
+			'color' => array(
+				'background' => true,
+				'text' => true
+			),
+			'html' => false,
+			'spacing' => array(
+				'margin' => true,
+				'padding' => true
+			),
+			'typography' => true
+		),
+		'usesContext' => array(
+			'termId',
+			'termTaxonomy'
+		)
+	),
 	'checkout' => array(
 		'name' => 'woocommerce/checkout',
 		'version' => '1.0.0',
@@ -1152,7 +1272,9 @@ return array(
 			'email' => true
 		),
 		'attributes' => array(
-			
+			'emailType' => array(
+				'type' => 'string'
+			)
 		),
 		'apiVersion' => 3,
 		'$schema' => 'https://schemas.wp.org/trunk/block.json'
@@ -1174,10 +1296,13 @@ return array(
 				'full'
 			),
 			'ariaLabel' => true,
-			'html' => false,
 			'color' => array(
 				'background' => true,
 				'text' => true
+			),
+			'html' => false,
+			'filter' => array(
+				'duotone' => true
 			),
 			'spacing' => array(
 				'padding' => true,
@@ -1190,6 +1315,11 @@ return array(
 				'color' => true,
 				'radius' => true,
 				'width' => true,
+				'__experimentalDefaultControls' => array(
+					'color' => true,
+					'radius' => true,
+					'width' => true
+				),
 				'__experimentalSkipSerialization' => true
 			)
 		),
@@ -1205,10 +1335,6 @@ return array(
 			'dimRatio' => array(
 				'type' => 'number',
 				'default' => 50
-			),
-			'editMode' => array(
-				'type' => 'boolean',
-				'default' => true
 			),
 			'focalPoint' => array(
 				'type' => 'object',
@@ -1258,15 +1384,24 @@ return array(
 			'previewCategory' => array(
 				'type' => 'object',
 				'default' => null
-			),
-			'showDesc' => array(
-				'type' => 'boolean',
-				'default' => true
+			)
+		),
+		'selectors' => array(
+			'filter' => array(
+				'duotone' => '.wp-block-woocommerce-featured-category .wc-block-featured-category__background-image'
 			)
 		),
 		'textdomain' => 'woocommerce',
 		'apiVersion' => 3,
-		'$schema' => 'https://schemas.wp.org/trunk/block.json'
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'usesContext' => array(
+			'termId',
+			'termTaxonomy'
+		),
+		'providesContext' => array(
+			'termId' => 'categoryId',
+			'termTaxonomy' => 'termTaxonomy'
+		)
 	),
 	'featured-product' => array(
 		'name' => 'woocommerce/featured-product',
@@ -1286,6 +1421,9 @@ return array(
 			),
 			'ariaLabel' => true,
 			'html' => false,
+			'filter' => array(
+				'duotone' => true
+			),
 			'color' => array(
 				'background' => true,
 				'text' => true
@@ -1301,6 +1439,11 @@ return array(
 				'color' => true,
 				'radius' => true,
 				'width' => true,
+				'__experimentalDefaultControls' => array(
+					'color' => true,
+					'radius' => true,
+					'width' => true
+				),
 				'__experimentalSkipSerialization' => true
 			),
 			'multiple' => true
@@ -1317,10 +1460,6 @@ return array(
 			'dimRatio' => array(
 				'type' => 'number',
 				'default' => 50
-			),
-			'editMode' => array(
-				'type' => 'boolean',
-				'default' => true
 			),
 			'focalPoint' => array(
 				'type' => 'object',
@@ -1370,14 +1509,11 @@ return array(
 			'previewProduct' => array(
 				'type' => 'object',
 				'default' => null
-			),
-			'showDesc' => array(
-				'type' => 'boolean',
-				'default' => true
-			),
-			'showPrice' => array(
-				'type' => 'boolean',
-				'default' => true
+			)
+		),
+		'selectors' => array(
+			'filter' => array(
+				'duotone' => '.wp-block-woocommerce-featured-product .wc-block-featured-product__background-image'
 			)
 		),
 		'textdomain' => 'woocommerce',
@@ -2624,6 +2760,7 @@ return array(
 			'query',
 			'queryId',
 			'postId',
+			'collection',
 			'woocommerce/isDescendantOfAddToCartWithOptions'
 		),
 		'textdomain' => 'woocommerce',
@@ -2683,6 +2820,7 @@ return array(
 				'padding' => true,
 				'__experimentalSkipSerialization' => true
 			),
+			'email' => true,
 			'__experimentalSelector' => '.wp-block-button.wc-block-components-product-button .wc-block-components-product-button__button'
 		),
 		'ancestor' => array(
@@ -2968,7 +3106,8 @@ return array(
 			'anchor' => true,
 			'html' => false,
 			'__experimentalLayout' => true,
-			'interactivity' => true
+			'interactivity' => true,
+			'email' => true
 		),
 		'editorStyle' => 'file:../woocommerce/product-collection-editor.css',
 		'style' => 'file:../woocommerce/product-collection-style.css'
@@ -3014,7 +3153,8 @@ return array(
 				'__experimentalDefaultControls' => array(
 					'fontSize' => true
 				)
-			)
+			),
+			'email' => true
 		)
 	),
 	'product-description' => array(
@@ -3875,7 +4015,8 @@ return array(
 				'allowOrientation' => true,
 				'allowEditing' => true,
 				'allowJustification' => false
-			)
+			),
+			'email' => true
 		),
 		'textdomain' => 'woocommerce',
 		'usesContext' => array(
@@ -4089,6 +4230,7 @@ return array(
 				'aspectRatio' => true,
 				'__experimentalSkipSerialization' => true
 			),
+			'email' => true,
 			'__experimentalSelector' => '.wc-block-components-product-image'
 		),
 		'ancestor' => array(
@@ -4396,8 +4538,7 @@ return array(
 			'color' => array(
 				'text' => true,
 				'background' => true,
-				'link' => false,
-				'__experimentalSkipSerialization' => true
+				'link' => false
 			),
 			'typography' => array(
 				'fontSize' => true,
@@ -4405,10 +4546,10 @@ return array(
 				'__experimentalFontFamily' => true,
 				'__experimentalFontWeight' => true,
 				'__experimentalFontStyle' => true,
-				'__experimentalSkipSerialization' => true,
 				'__experimentalLetterSpacing' => true
 			),
 			'__experimentalSelector' => '.wp-block-woocommerce-product-price .wc-block-components-product-price',
+			'email' => true,
 			'spacing' => array(
 				'margin' => true,
 				'padding' => true
@@ -4416,10 +4557,13 @@ return array(
 		),
 		'ancestor' => array(
 			'woocommerce/all-products',
+			'woocommerce/featured-product',
 			'woocommerce/single-product',
 			'woocommerce/product-template',
 			'core/post-template'
 		),
+		'viewScriptModule' => 'product-price',
+		'style' => 'file:../product-price.css',
 		'$schema' => 'https://schemas.wp.org/trunk/block.json'
 	),
 	'product-rating' => array(
@@ -4632,9 +4776,6 @@ return array(
 			'typography' => array(
 				'fontSize' => true
 			)
-		),
-		'attributes' => array(
-			
 		),
 		'usesContext' => array(
 			'queryId'
@@ -4954,9 +5095,6 @@ return array(
 		'category' => 'woocommerce',
 		'ancestor' => array(
 			'woocommerce/product-reviews'
-		),
-		'attributes' => array(
-			
 		),
 		'description' => 'Contains the block elements used to display product reviews, like the title, author, date, rating and more.',
 		'textdomain' => 'woocommerce',
@@ -5408,6 +5546,7 @@ return array(
 			'spacing' => array(
 				'margin' => true
 			),
+			'email' => true,
 			'__experimentalSelector' => '.wc-block-components-product-sale-badge'
 		),
 		'ancestor' => array(
@@ -5562,10 +5701,6 @@ return array(
 		'description' => 'Let shoppers know when products are out of stock or on backorder. This block is hidden when products are in stock.',
 		'category' => 'woocommerce-product-elements',
 		'attributes' => array(
-			'isDescendentOfQueryLoop' => array(
-				'type' => 'boolean',
-				'default' => false
-			),
 			'isDescendantOfAllProducts' => array(
 				'type' => 'boolean',
 				'default' => false
@@ -5671,6 +5806,7 @@ return array(
 			'typography' => array(
 				'fontSize' => true,
 				'lineHeight' => true,
+				'textAlign' => true,
 				'__experimentalFontFamily' => true,
 				'__experimentalFontWeight' => true,
 				'__experimentalFontStyle' => true,
@@ -5685,6 +5821,7 @@ return array(
 		),
 		'ancestor' => array(
 			'woocommerce/all-products',
+			'woocommerce/featured-product',
 			'woocommerce/single-product',
 			'woocommerce/product-template',
 			'core/post-template'
@@ -5850,7 +5987,8 @@ return array(
 				'allowInheriting' => false,
 				'allowSizingOnChildren' => false,
 				'allowVerticalAlignment' => false
-			)
+			),
+			'email' => true
 		),
 		'editorStyle' => 'file:../woocommerce/product-template-editor.css',
 		'style' => 'file:../woocommerce/product-template-style.css'
@@ -6421,7 +6559,8 @@ return array(
 			'multiple' => false,
 			'reusable' => false,
 			'inserter' => false,
-			'lock' => false
+			'lock' => false,
+			'email' => true
 		),
 		'attributes' => array(
 			'columns' => array(

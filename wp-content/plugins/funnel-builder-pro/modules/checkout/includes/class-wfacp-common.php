@@ -127,6 +127,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			 * Date of birth Addon
 			 */
 			add_action( 'wfacp_before_loaded', [ __CLASS__, 'remove_addon_dob_fields' ] );
+
+            /**
+             * Add Company Field under the billing and shipping address when it's hidden
+             */
+            add_filter( 'wfacp_default_billing_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
+            add_filter( 'wfacp_default_shipping_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
 		}
 
 
@@ -1274,6 +1280,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'google_ads_add_to_cart_event'               => 'false',
 				'google_ads_to_cart_event_position'          => 'load',
 				'google_ads_add_to_cart_event_position'      => 'load',
+				'google_ads_initiate_checkout_event'         => 'false',
+				'google_ads_initiate_checkout_event_position' => 'load',
 
 				// pinterest
 				'pint_is_page_view'                          => 'false',
@@ -1644,29 +1652,30 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 
-			if ( 'hidden' !== get_option( 'woocommerce_checkout_phone_field', 'required' ) ) {
-				$address_fields['billing_phone'] = array(
-					'label'        => __( 'Phone', 'woocommerce' ),
-					'type'         => 'tel',
-					'class'        => array( 'form-row-wide' ),
-					'validate'     => array( 'phone' ),
-					'placeholder'  => '',
-					'autocomplete' => 'tel',
-					'priority'     => 100,
-					'field_type'   => 'billing',
-				);
-				//added 3.4.1
-				$address_fields['shipping_phone'] = array(
-					'label'        => __( 'Shipping Phone', 'woofunnels-aero-checkout' ),
-					'type'         => 'tel',
-					'class'        => array( 'form-row-wide' ),
-					'validate'     => array( 'phone' ),
-					'placeholder'  => '',
-					'autocomplete' => 'tel',
-					'priority'     => 100,
-					'field_type'   => 'shipping',
-				);
-			}
+		// Always include phone fields in FunnelKit Checkout, bypassing WooCommerce hidden setting
+
+			$address_fields['billing_phone'] = array(
+				'label'        => __( 'Phone', 'woocommerce' ),
+				'type'         => 'tel',
+				'class'        => array( 'form-row-wide' ),
+				'validate'     => array( 'phone' ),
+				'placeholder'  => '',
+				'autocomplete' => 'tel',
+				'priority'     => 100,
+				'field_type'   => 'billing',
+			);
+			//added 3.4.1
+			$address_fields['shipping_phone'] = array(
+				'label'        => __( 'Shipping Phone', 'woofunnels-aero-checkout' ),
+				'type'         => 'tel',
+				'class'        => array( 'form-row-wide' ),
+				'validate'     => array( 'phone' ),
+				'placeholder'  => '',
+				'autocomplete' => 'tel',
+				'priority'     => 100,
+				'field_type'   => 'shipping',
+			);
+
 			if ( 'billing_' === $type ) {
 				$address_fields['billing_email'] = array(
 					'label'        => __( 'Email', 'woocommerce' ),
@@ -2738,10 +2747,16 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( $strike_through == true ) {
-				$quantity              = $cart_item['quantity'];
-				$product_regular_price = $product->get_regular_price();
-				$product_regular_price *= $quantity;
-				$subtotal              = $row_price;
+                $quantity = isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
+                $product_regular_price = $product->get_regular_price();
+
+                if ( empty( $product_regular_price ) ) {
+                    $product_regular_price = 0;
+                }
+
+
+			$product_regular_price = floatval( $product_regular_price ) * $quantity;
+			$subtotal              = $row_price;
 
 				if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
 					if ( $subtotal > $product_regular_price ) {
@@ -2868,20 +2883,20 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			return apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key );
 		}
 
-		public static function get_signup_fee( $price ) {
-			if ( empty( $price ) ) {
-				return $price;
-			}
-			if ( is_string( $price ) ) {
-				$price = strval( $price );
-			}
-			global $wfacp_product_switcher_quantity;
-			if ( ! empty( $price ) && ! is_null( $wfacp_product_switcher_quantity ) && $wfacp_product_switcher_quantity > 0 ) {
-				$price *= $wfacp_product_switcher_quantity;
-			}
-
+	public static function get_signup_fee( $price ) {
+		if ( empty( $price ) ) {
 			return $price;
 		}
+		if ( is_string( $price ) ) {
+			$price = floatval( $price );
+		}
+		global $wfacp_product_switcher_quantity;
+		if ( ! empty( $price ) && ! is_null( $wfacp_product_switcher_quantity ) && $wfacp_product_switcher_quantity > 0 ) {
+			$price = floatval( $price ) * absint( $wfacp_product_switcher_quantity );
+		}
+
+		return $price;
+	}
 
 		/**
 		 * @param $pro \WC_Product_Subscription
@@ -2895,7 +2910,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function subscription_product_string( $pro, $product_data, $cart_item, $cart_item_key ) {
 			$_price     = $pro->get_price();
 			$temp_price = floatval( $_price );
-          
+
 
             if(isset($product_data['quantity'] )){
                 $qty=$product_data['quantity'];
@@ -4216,7 +4231,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				$regular_price = round( $regular_price, 2 );
 				$total = round( $total, 2 );
-					
+
 				// Only proceed if there's actually a saving
 				if ( $regular_price <= $total ) {
 					return;
@@ -4260,6 +4275,88 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 		}
+
+        public static function re_add_hidden_address_fields($fields) {
+
+            // Validate input parameter
+            if ( !is_array($fields) ) {
+                return $fields;
+            }
+
+            if(!isset($fields['company'])){
+
+                $keys = array_keys($fields);
+
+                $fields['company'] = array(
+                    'label'        => __( 'Company name', 'woocommerce' ),
+                    'type'         => 'text',
+                    'class'        => array( 'form-row-wide' ),
+                    'autocomplete' => 'organization',
+                    'priority'     => 30,
+                    'required'     => false,
+                );
+
+                $position = array_search('last_name', $keys);
+                $fields = self::re_add_hidden_fields('company', $fields, $position);
+            }
+
+            if(!isset($fields['address_2'])){
+                $keys = array_keys($fields);
+                $address_2_label = __( 'Apartment, suite, unit, etc.', 'woocommerce' );
+                $address_2_placeholder = $address_2_label;
+
+                if (  class_exists( 'Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && 'optional' === Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::get_address_2_field_visibility() ) {
+                    $address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' );
+                }
+
+
+                $fields['address_2'] = array(
+                    'label'        => $address_2_label,
+                    'label_class'  => array( 'screen-reader-text' ),
+                    'placeholder'  => esc_attr( $address_2_placeholder ),
+                    'class'        => array( 'form-row-wide', 'address-field' ),
+                    'autocomplete' => 'address-line2',
+                    'priority'     => 60,
+                    'required'     => false,
+                );
+
+                $position = array_search('address_1', $keys);
+                $fields = self::re_add_hidden_fields('address_2', $fields, $position);
+            }
+            return $fields;
+        }
+        public static function re_add_hidden_fields($key, $fields, $position) {
+
+            // Validate input parameters
+            if ( !is_array($fields) || !is_string($key) || !isset($fields[$key]) ) {
+                return $fields;
+            }
+
+            // If position key exists, insert field after it
+            if ( $position !== false && is_numeric($position) ) {
+                try {
+                    $position = (int) $position + 1;
+                    $field_value = $fields[$key];
+                    unset($fields[$key]); // Remove the field from its current position
+
+                    // Ensure position is within valid range
+                    $position = max(0, min($position, count($fields)));
+
+                    $fields = array_slice($fields, 0, $position, true) +
+                              array($key => $field_value) +
+                              array_slice($fields, $position, null, true);
+                } catch ( Exception $e ) {
+                    // Log error if logging is available
+                    if ( class_exists( 'BWF_logger' ) ) {
+                        BWF_logger::get_instance()->log( 'Error repositioning field ' . $key . ': ' . $e->getMessage() );
+                    }
+                }
+            }
+            // If position doesn't exist, field is already at the end, no action needed
+
+            return $fields;
+        }
+
 
 	}
 }

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace BWFAN\Symfony\Component\CssSelector\Parser;
 
 /**
  * CSS selector token.

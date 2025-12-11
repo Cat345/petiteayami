@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\RuleSet;
+namespace BWFAN\Sabberworm\CSS\RuleSet;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Property\AtRule;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Property\AtRule;
 
 /**
  * This class represents rule sets for generic at-rules which are not covered by specific classes, i.e., not

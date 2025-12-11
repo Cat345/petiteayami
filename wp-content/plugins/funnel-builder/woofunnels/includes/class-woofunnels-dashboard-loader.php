@@ -8,8 +8,8 @@
  */
 
 
-define( 'BWF_VERSION', '1.10.12.67' );
-define( 'BWF_DB_VERSION', '1.0.5' );
+define( 'BWF_VERSION', '1.10.12.70' );
+define( 'BWF_DB_VERSION', '1.0.6' );
 if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 	#[AllowDynamicProperties]
 	class WooFunnels_Dashboard {
@@ -777,11 +777,24 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		 *
 		 */
 		public static function slugify_classname( $class_name ) {
-			$classname = sanitize_title( $class_name );
+			$classname = self::custom_sanitize_title( $class_name );
 			$classname = str_replace( '_', '-', $classname );
 
 
 			return $classname;
+		}
+
+		/**
+		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
+		 * 
+		 * @param string $title The title to sanitize
+		 * @return string The sanitized title
+		 */
+		private static function custom_sanitize_title( $title ) {
+			$title = remove_accents( $title );
+			$title = sanitize_title_with_dashes( $title );
+			
+			return $title;
 		}
 
 		public static function load_core_classes() {

@@ -51,6 +51,10 @@ export default function upsell_events() {
   initProductAttributeFields();
 }
 
+export function affiliate_discount_upsell_events() {
+  $('#woocommerce-coupon-data').on('click change focus', '#acfw_affiliate_discount', upsell_affiliate_discount);
+}
+
 function initExcludeCouponField() {
   const $excludeField = $('p.acfw_exclude_coupons_field');
 
@@ -63,6 +67,7 @@ function initExcludeCouponField() {
  * @since 1.1
  */
 function upsell_advance_usage_limits() {
+  if (!acfw_edit_coupon.upsell) return;
   const { usage_limits } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -82,6 +87,7 @@ function upsell_exclude_coupons_restriction() {
   if (exludeCouponShown) return;
   exludeCouponShown = true;
 
+  if (!acfw_edit_coupon.upsell) return;
   const { usage_restriction } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -98,6 +104,7 @@ function upsell_exclude_coupons_restriction() {
  * @since 1.1
  */
 function upsell_auto_apply() {
+  if (!acfw_edit_coupon.upsell) return;
   const { auto_apply } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -113,6 +120,7 @@ function upsell_auto_apply() {
  * @since 4.3
  */
 function upsell_virtual_coupons() {
+  if (!acfw_edit_coupon.upsell) return;
   const { virtual_coupons } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -128,6 +136,7 @@ function upsell_virtual_coupons() {
  * @since 4.6.9
  */
 function upsell_defer_apply_url_coupon() {
+  if (!acfw_edit_coupon.upsell) return;
   const { defer_apply_url_coupon } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -135,6 +144,24 @@ function upsell_defer_apply_url_coupon() {
   });
   // @ts-ignore
   $(this).prop('checked', false);
+}
+
+/**
+ * Affiliate discount upsell vex dialog for AffiliateWP integration.
+ *
+ * @since 4.7.0
+ */
+function upsell_affiliate_discount(e: JQuery.ClickEvent) {
+  // Use separate affiliate_discount_upsell data, not the standard upsell data
+  const { affiliate_discount_upsell } = acfw_edit_coupon;
+
+  if (!affiliate_discount_upsell) {
+    return;
+  }
+
+  vex.dialog.alert({
+    unsafeMessage: `<div class="upsell-alert affiliate-discount">${affiliate_discount_upsell}</div>`,
+  });
 }
 
 /**
@@ -198,6 +225,7 @@ function cacheCurrentDiscountType() {
 function displayCashbackUpsellModal() {
   // @ts-ignore
   const type = $(this).val();
+  if (!acfw_edit_coupon.upsell) return;
   const { cashback_coupon } = acfw_edit_coupon.upsell;
 
   if ('acfw_percentage_cashback' === type || 'acfw_fixed_cashback' === type) {
@@ -242,6 +270,7 @@ function upsell_bogo_auto_add_get_products() {
 
   $this.prop('checked', false);
 
+  if (!acfw_edit_coupon.upsell) return;
   const { bogo_auto_add_get_products } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -284,6 +313,7 @@ function upsell_bogo_discount_order() {
 
   $this.val('none');
 
+  if (!acfw_edit_coupon.upsell) return;
   const { bogo_discount_order } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({
@@ -302,6 +332,7 @@ function upsell_day_time_schedules() {
   // @ts-ignore
   const $checkbox = $(this);
 
+  if (!acfw_edit_coupon.upsell) return;
   const { day_time_schedules } = acfw_edit_coupon.upsell;
 
   vex.dialog.alert({

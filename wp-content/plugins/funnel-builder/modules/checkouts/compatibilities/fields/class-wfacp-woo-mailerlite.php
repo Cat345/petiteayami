@@ -16,7 +16,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 
 
 		public function __construct() {
-
 			/*
 			 *  Register Add Custom Fields for Mailer Lite
 			 */
@@ -63,23 +62,32 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 		}
 
 		public function actions() {
+			try {
 
-			if ( ! function_exists( 'woo_ml_get_option' ) ) {
-				return;
+
+				if ( class_exists( 'WooMailerLitePluginController' ) ) {
+					add_action( 'wfacp_woocommerce_review_order_before_submit', [ WooMailerLitePluginController::instance(), 'addMlSubscribeCheckbox' ], PHP_INT_MAX );
+
+					if ( ! function_exists( 'woo_ml_get_option' ) ) {
+						return;
+					}
+					$checkout_position = woo_ml_get_option( 'checkout_position', 'checkout_billing' );
+
+					/* default classes */
+					add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+
+					if ( in_array( $checkout_position, $this->position_show ) ) {
+						$this->display_dragable_field = false;
+
+						return;
+					}
+
+					$this->position = $checkout_position;
+					remove_action( 'woocommerce_' . $checkout_position, 'woo_ml_checkout_label', 20 );
+				}
+			} catch( Exception|Error $e ) {
+
 			}
-			$checkout_position = woo_ml_get_option( 'checkout_position', 'checkout_billing' );
-
-			/* default classes */
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-
-			if ( in_array( $checkout_position, $this->position_show ) ) {
-				$this->display_dragable_field = false;
-
-				return;
-			}
-
-			$this->position = $checkout_position;
-			remove_action( 'woocommerce_' . $checkout_position, 'woo_ml_checkout_label', 20 );
 		}
 
 		public function call_fields_hook( $field, $key, $args ) {
@@ -98,9 +106,9 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			if ( false == $this->display_dragable_field ) {
 				return;
 			}
-
-			woo_ml_checkout_label();
-
+			if (function_exists('woo_ml_checkout_label')) {
+				woo_ml_checkout_label();
+			}
 
 		}
 
@@ -189,9 +197,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				return $filtered_fields;
 
 			} catch ( Exception $e ) {
-				if ( function_exists( 'error_log' ) ) {
-					error_log( 'WFACP_Compatibility_WC_MailerLite detect_extra_fields error: ' . $e->getMessage() );
-				}
 				return $fields; // Return original fields on error
 			}
 		}

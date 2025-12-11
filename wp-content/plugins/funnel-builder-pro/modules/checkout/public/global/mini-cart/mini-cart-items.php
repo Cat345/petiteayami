@@ -26,9 +26,10 @@ if ( $instance->mini_cart_allow_quantity_box() ) {
  */
 $product_data                         = ( ! isset( $product_data ) || is_null( $product_data ) ) ? [] : $product_data;
 $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_string_old_version', false );
+$className = 'wfacp_mini_cart_items_' . $widget_id;
 ?>
 
-<div class="wfacp_elementor_mini_cart_widget" id="wfacp_mini_cart_items_<?php echo $widget_id ?>">
+<div class="wfacp_elementor_mini_cart_widget <?php echo $className; ?>" id="<?php echo $className ?>">
 	<?php
 	do_action( 'wfacp_before_mini_cart_html' );
 	do_action( 'woocommerce_review_order_before_cart_contents' );
@@ -201,6 +202,8 @@ $show_subscription_string_old_version = apply_filters( 'wfacp_show_subscription_
 
                         <td class="product-total">
 							<?php
+
+
 							if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
 								if ( false == $show_subscription_string_old_version ) {
 									$price_show = apply_filters( 'wfacp_subscription_price_display', wc_price( WFACP_Common::get_subscription_cart_item_price( $cart_item ) ), $_product, $cart_item, $cart_item_key );

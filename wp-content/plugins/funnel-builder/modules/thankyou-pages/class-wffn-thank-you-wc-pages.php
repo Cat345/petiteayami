@@ -1033,7 +1033,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 
 			$output = "
-		body.$primary_body_class .wfty_wrap *:not(.wfty_box.wfty_order_details .woocommerce-message a) {
+			body.$primary_body_class .wfty_wrap * {
 			color: {$text_color};
 			font-family: {$text_font_family};
 			font-size: {$text_font_size}px;
@@ -1047,7 +1047,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			font-family: {$text_font_family};
 			font-size: {$text_font_size}px;
 		}
-
+		.wfty_box.wfty_order_details .woocommerce-message a {color: #4169e1;}
 		body.$primary_body_class .woocommerce-order h2.woocommerce-column__title, 
 		body.$primary_body_class .wffn_customer_details_table .woocommerce-customer-details h2.woocommerce-column__title, 
 		body.$primary_body_class .woocommerce-order h2.woocommerce-order-details__title, 

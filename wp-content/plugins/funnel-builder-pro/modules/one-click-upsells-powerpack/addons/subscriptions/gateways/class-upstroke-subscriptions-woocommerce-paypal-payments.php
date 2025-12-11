@@ -113,34 +113,42 @@ if ( ! class_exists( 'UpStroke_Subscriptions_WooCommerce_PayPal_Payments' ) ) {
 		 */
 		public function maybe_save_renewal_payment_token( $token, $customer, $order ) {
 
-			$vault_token = get_user_meta( $customer->get_id(), 'ppcp-vault-token', true );
 
+			try {
+				$vault_token = get_user_meta( $customer->get_id(), 'ppcp-vault-token', true );
+				if ( is_array( $vault_token ) && count( $vault_token ) > 0 ) {
+					return $token;
+				}
+				$subscription = function_exists( 'wcs_get_subscription' ) ? wcs_get_subscription( $order->get_meta( '_subscription_renewal' ) ) : null;
+				if ( $subscription ) {
+					$token_id = WooFunnels_UpStroke_PowerPack::get_order_meta( wc_get_order( $subscription->get_parent_id() ), 'wfocu_ppcp_renewal_payment_token' );
 
-			if ( is_array( $vault_token ) && count( $vault_token ) > 0 ) {
-				return $token;
-			}
+					/**
+					 * Additional check on primary order for token id
+					 */
+					if ( empty( $token_id ) ) {
+						$order = wc_get_order( $subscription->get_parent_id() );
 
-			$subscription = function_exists( 'wcs_get_subscription' ) ? wcs_get_subscription( $order->get_meta( '_subscription_renewal' ) ) : null;
+						if ( !$order instanceof WC_Order ) {
+							return $token;
+						}
+						$primary_id = $order->get_meta( '_wfocu_primary_order', true );
 
-			if ( $subscription ) {
-				$token_id = WooFunnels_UpStroke_PowerPack::get_order_meta( wc_get_order( $subscription->get_parent_id() ), 'wfocu_ppcp_renewal_payment_token' );
+						if ( ! empty( $primary_id ) ) {
+							$token_id = WooFunnels_UpStroke_PowerPack::get_order_meta( wc_get_order( $primary_id ), 'wfocu_ppcp_renewal_payment_token' );
+						}
+					}
 
-				/**
-				 * Additional check on primary order for token id
-				 */
-				if ( empty( $token_id ) ) {
-					$primary_id = wc_get_order( $subscription->get_parent_id() )->get_meta( '_wfocu_primary_order', true );
-
-					if ( ! empty( $primary_id ) ) {
-						$token_id = WooFunnels_UpStroke_PowerPack::get_order_meta( wc_get_order( $primary_id ), 'wfocu_ppcp_renewal_payment_token' );
+					if ( ! empty( $token_id ) ) {
+						$token = new PaymentToken( $token_id, new \stdClass(), 'PAYMENT_METHOD_TOKEN' );
 					}
 				}
 
-				if ( ! empty( $token_id ) ) {
-					$token = new PaymentToken( $token_id, new \stdClass(), 'PAYMENT_METHOD_TOKEN' );
-				}
+				return $token;
+			} catch ( Exception|Error $e ) {
+				WFOCU_Core()->log->log("Error while processing subscription renewal token: " . $e->getMessage() );
+				return $token;
 			}
-
 			return $token;
 		}
 

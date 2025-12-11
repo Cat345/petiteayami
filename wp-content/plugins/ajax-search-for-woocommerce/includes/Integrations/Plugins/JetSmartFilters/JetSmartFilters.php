@@ -3,6 +3,8 @@
 namespace DgoraWcas\Integrations\Plugins\JetSmartFilters;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
+use function function_exists;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -13,14 +15,16 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://crocoblock.com/plugins/jetsmartfilters/
  * Author: Crocoblock
  */
-class JetSmartFilters {
-    public function init() {
-        if ( !function_exists( 'jet_smart_filters' ) ) {
-            return;
-        }
-        if ( version_compare( jet_smart_filters()->get_version(), '1.8.3' ) < 0 ) {
-            return;
-        }
+class JetSmartFilters extends AbstractPluginIntegration {
+    protected const LABEL = 'JetSmartFilters';
+
+    protected const MIN_VERSION = '1.8.3';
+
+    public static function pluginVersion() : string {
+        return ( function_exists( 'jet_smart_filters' ) ? (string) \jet_smart_filters()->get_version() : '' );
+    }
+
+    public function init() : void {
         // Widget: Elementor Pro Archive Products
         add_filter( 'jet-smart-filters/query/final-query', array($this, 'filter_query') );
         add_filter(

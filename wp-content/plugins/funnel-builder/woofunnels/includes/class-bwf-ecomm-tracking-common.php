@@ -724,6 +724,93 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		}
 
 		/**
+		 * Get referrer domain based on known UTM sources
+		 * 
+		 * This method maps common UTM sources to their corresponding referrer domains.
+		 * It helps populate the referrer field when document.referrer is unavailable
+		 * but we have UTM source information from tracking parameters.
+		 *
+		 * @param string $utm_source The UTM source parameter
+		 *
+		 * @return string The corresponding referrer domain or empty string if no match
+		 */
+		public function get_referrer_from_utm_source( $utm_source ) {
+			if ( empty( $utm_source ) ) {
+				return '';
+			}
+
+			$utm_source = strtolower( trim( $utm_source ) );
+
+			// Map of known UTM sources to their referrer domains (only known URLs)
+			$utm_to_referrer_map = array(
+				'google'           => 'google.com',
+				'googleads'        => 'google.com',
+				'gclid'            => 'google.com',
+				'facebook'         => 'facebook.com',
+				'fb'               => 'facebook.com',
+				'fbclid'           => 'facebook.com',
+				'instagram'        => 'instagram.com',
+				'ig'               => 'instagram.com',
+				'twitter'          => 'twitter.com',
+				'tw'               => 'twitter.com',
+				'x'                => 'x.com',
+				'linkedin'         => 'linkedin.com',
+				'li'               => 'linkedin.com',
+				'youtube'          => 'youtube.com',
+				'yt'               => 'youtube.com',
+				'tiktok'           => 'tiktok.com',
+				'pinterest'        => 'pinterest.com',
+				'pin'              => 'pinterest.com',
+				'snapchat'         => 'snapchat.com',
+				'snap'             => 'snapchat.com',
+				'reddit'           => 'reddit.com',
+				'quora'            => 'quora.com',
+				'bing'             => 'bing.com',
+				'yahoo'            => 'yahoo.com',
+				'duckduckgo'       => 'duckduckgo.com',
+				'whatsapp'         => 'whatsapp.com',
+			);
+
+			// Check for exact match first
+			if ( isset( $utm_to_referrer_map[ $utm_source ] ) ) {
+				return $utm_to_referrer_map[ $utm_source ];
+			}
+
+			// Check for partial matches (e.g., "google-ads", "facebook-ads")
+			foreach ( $utm_to_referrer_map as $utm_key => $referrer ) {
+				if ( false !== strpos( $utm_source, $utm_key ) ) {
+					return $referrer;
+				}
+			}
+
+			return '';
+		}
+
+		/**
+		 * Populate referrer from UTM source if referrer is empty
+		 * 
+		 * This method automatically populates the referrer field based on UTM source
+		 * when the original referrer is empty. This helps improve analytics data
+		 * when document.referrer is unavailable but UTM tracking is present.
+		 *
+		 * @param array $args The tracking data array
+		 *
+		 * @return array Modified tracking data array
+		 */
+		public function maybe_populate_referrer_from_utm( $args ) {
+			// Only populate if referrer is empty and we have a UTM source
+			if ( empty( $args['referrer'] ) && ! empty( $args['utm_source'] ) ) {
+				$referrer_from_utm = $this->get_referrer_from_utm_source( $args['utm_source'] );
+				
+				if ( ! empty( $referrer_from_utm ) ) {
+					$args['referrer'] = $referrer_from_utm;
+				}
+			}
+
+			return $args;
+		}
+
+		/**
 		 * Insert tracking data
 		 *
 		 * @param $args
@@ -735,6 +822,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			try {
 				$args = apply_filters( 'bwf_insert_conversion_tracking_data', $args );
+
+				// Populate referrer from UTM source if referrer is empty
+				$args = $this->maybe_populate_referrer_from_utm( $args );
 
 				// Ensure the necessary keys exist
 				if ( isset( $args['checkout_total'], $args['bump_total'], $args['offer_total'], $args['value'] ) ) {

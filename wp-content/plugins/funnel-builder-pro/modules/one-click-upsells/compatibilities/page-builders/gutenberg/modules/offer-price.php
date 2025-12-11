@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFOCU_Guten_Offer_Price' ) ) {
 			if ( isset( $settings['offer_slider_enabled'] ) && wc_string_to_bool( $settings['offer_slider_enabled'] ) ) {
 				?>
                 <style>
-                    body #bwf_block-<?php echo $settings['widget_block_id']?> .wfocu-price-wrapper > span {
+                    body #bwf_block-<?php echo esc_attr($settings['widget_block_id'])?> .wfocu-price-wrapper > span {
                         display: block;
                     }
                 </style>
@@ -78,15 +78,15 @@ if ( ! class_exists( 'WFOCU_Guten_Offer_Price' ) ) {
 					}
 
 					echo $price_output;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$is_subscription = in_array($product->get_type(), ['subscription', 'subscription_variation', 'variable-subscription']);
 
-					if ( isset( $settings['show_signup_fee'] ) && wc_string_to_bool( $settings['show_signup_fee'] ) ) {
+					if ( $is_subscription && isset( $settings['show_signup_fee'] ) && wc_string_to_bool( $settings['show_signup_fee'] ) ) {
 						$signup_label = isset( $settings['signup_label'] ) ? $settings['signup_label'] : '';
-						WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label="' . $signup_label . '"}}' );
+						echo WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label="' . $signup_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
-
-					if ( isset( $settings['show_rec_price'] ) && wc_string_to_bool( $settings['show_rec_price'] ) ) {
+					if ( $is_subscription && isset( $settings['show_rec_price'] ) && wc_string_to_bool( $settings['show_rec_price'] ) ) {
 						$recurring_label = isset( $settings['recurring_label'] ) ? $settings['recurring_label'] : '';
-						WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' );
+						echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} ?>
 
                 </div>

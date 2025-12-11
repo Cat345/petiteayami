@@ -29,6 +29,7 @@ _e( 'Debug page', 'ajax-search-for-woocommerce' );
 ?>
 		<a href="#dgwt_wcas_deb_anatytics" class="nav-tab" id="dgwt_wcas_deb_anatytics-tab">Analytics</a>
 		<a href="#dgwt_wcas_deb_maintenance" class="nav-tab" id="dgwt_wcas_deb_maintenance-tab">Maintenance</a>
+		<a href="#dgwt_wcas_deb_active_integrations" class="nav-tab" id="dgwt_wcas_deb_active_integrations-tab">Integrations</a>
 	</h2>
 
 	<?php 
@@ -49,6 +50,11 @@ include_once DGWT_WCAS_DIR . 'partials/admin/debug/body-analytics.php';
 		<div id="dgwt_wcas_deb_maintenance" class="fibosearch-debug_page-group">
 			<?php 
 include_once DGWT_WCAS_DIR . 'partials/admin/debug/body-maintenance.php';
+?>
+		</div>
+		<div id="dgwt_wcas_deb_active_integrations" class="fibosearch-debug_page-group">
+			<?php 
+include_once DGWT_WCAS_DIR . 'partials/admin/debug/active-integrations.php';
 ?>
 		</div>
 	</div>

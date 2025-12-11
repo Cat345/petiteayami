@@ -15,6 +15,11 @@ add_action( 'wp_loaded', function () {
 	add_shortcode( 'search', array( 'DgoraWcas\\Shortcode', 'addBody' ) );
 } );
 
+add_filter( 'get_search_form', function( $form, $args ) {
+	// Used on 404 page.
+	return do_shortcode( '[fibosearch]' );
+}, 10, 2 );
+
 global $dgwt_wcas_flatsome_search_counter;
 
 $dgwt_wcas_flatsome_search_counter = 0;

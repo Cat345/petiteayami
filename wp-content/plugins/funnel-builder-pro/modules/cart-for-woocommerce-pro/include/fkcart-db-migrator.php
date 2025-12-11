@@ -3,6 +3,8 @@
 if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 	#[AllowDynamicProperties]
 	class FKCART_DB_Migrator extends WooFunnels_Background_Updater {
+		const MAX_SAME_OFFSET_THRESHOLD = 5;
+		
 		public static $_instance = null;
 		protected $prefix = 'bwf_fkcart_1';
 		protected $action = 'migrator';
@@ -28,6 +30,19 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 			if ( $this->is_process_running() ) {
 				return;
 			}
+
+			// Check for stuck process - same offset for 5 consecutive runs
+			$offsets = $this->get_last_offsets();
+			if ( self::MAX_SAME_OFFSET_THRESHOLD === count( $offsets ) ) {
+				$unique = array_unique( $offsets );
+				if ( 1 === count( $unique ) ) {
+					$this->kill_process();
+					WFFN_Core()->logger->log( sprintf( 'FKcart migration offset is stuck from last %d attempts, terminating the process.', self::MAX_SAME_OFFSET_THRESHOLD ), 'fkcart_migration', true );
+					return;
+				}
+			}
+
+			$this->manage_last_offsets();
 			$this->dispatch();
 		}
 
@@ -45,11 +60,31 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 		}
 
 		public function get_last_offsets() {
-			return array();
+			return get_option( '_bwf_fkcart_last_offsets', array() );
 		}
 
+		/**
+		 * Manage last 5 offsets for stuck process detection
+		 */
 		public function manage_last_offsets() {
+			$offsets        = $this->get_last_offsets();
+			$current_offset = get_option( '_bwf_fkcart_offset', 0 );
+			
+			if ( self::MAX_SAME_OFFSET_THRESHOLD === count( $offsets ) ) {
+				$offsets = array_map( function ( $key ) use ( $offsets ) {
+					return isset( $offsets[ $key + 1 ] ) ? $offsets[ $key + 1 ] : 0;
+				}, array_keys( $offsets ) );
 
+				$offsets[ self::MAX_SAME_OFFSET_THRESHOLD - 1 ] = $current_offset;
+			} else {
+				$offsets[ count( $offsets ) ] = $current_offset;
+			}
+
+			$this->update_last_offsets( $offsets );
+		}
+
+		public function update_last_offsets( $offsets ) {
+			update_option( '_bwf_fkcart_last_offsets', $offsets );
 		}
 
 		protected function complete() {
@@ -62,6 +97,7 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 
             update_option( '_bwf_fkcart_offset', 0 );
 			delete_option( 'fkcart_order_maxid' );
+			delete_option( '_bwf_fkcart_last_offsets' );
 		}
 
 		public function get_upgrade_state() {
@@ -89,6 +125,20 @@ if ( ! class_exists( 'FKCART_DB_Migrator' ) ) {
 			$per_page = 100;
 			$offset = absint( get_option( '_bwf_fkcart_offset', 0 ) );
 			$max_id = absint( get_option( 'fkcart_order_maxid', 0 ) );
+			
+			// Check for stuck process - same offset for 5 consecutive runs
+			$offsets = $this->get_last_offsets();
+			if ( self::MAX_SAME_OFFSET_THRESHOLD === count( $offsets ) ) {
+				$unique = array_unique( $offsets );
+				if ( 1 === count( $unique ) ) {
+					$this->kill_process();
+					WFFN_Core()->logger->log( sprintf( 'FKcart migration offset is stuck from last %d attempts, terminating the process.', self::MAX_SAME_OFFSET_THRESHOLD ), 'fkcart_migration', true );
+					return false;
+				}
+			}
+			
+			// Update offset tracking
+			$this->manage_last_offsets();
 			
 			if ( 0 === $max_id ) {
 				return true; 

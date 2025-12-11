@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.12.0
+ * Version: 3.13.1.6
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -11,7 +11,7 @@
  * Text Domain: funnel-builder
  *
  * Requires at least: 5.4.0
- * Tested up to: 6.8.2
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * WooFunnels: true
  *
@@ -154,13 +154,13 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		public function define_plugin_properties() {
 
 
-			define( 'WFFN_VERSION', '3.12.0' );
-			define( 'WFFN_BWF_VERSION', '1.10.12.67' );
+			define( 'WFFN_VERSION', '3.13.1.6' );
+			define( 'WFFN_BWF_VERSION', '1.10.12.70' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );
 			define( 'WFFN_MIN_WP_VERSION', '5.4.0' );
-			define( 'WFFN_DB_VERSION', '3.4.0' );
-			define( 'WFFN_REVIEW_RATING_COUNT', 910 );
+			define( 'WFFN_DB_VERSION', '4.0.0' );
+			define( 'WFFN_REVIEW_RATING_COUNT', 948 );
 			define( 'WFFN_SLUG', 'wffn' );
 			define( 'WFFN_PLUGIN_FILE', __FILE__ );
 			define( 'WFFN_PLUGIN_DIR', __DIR__ );
@@ -180,7 +180,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 * Load classes on plugins_loaded hook
 		 */
 		public function load_hooks() {
-			add_action( 'init', array( $this, 'localization' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 1 );
 
@@ -383,9 +382,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			return self::$_instance;
 		}
 
-		public function localization() {
-			load_plugin_textdomain( 'funnel-builder', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-		}
 
 		/**
 		 * Register classes
@@ -460,10 +456,23 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		}
 
 		public function slugify_classname( $class_name ) {
-			$classname = sanitize_title( $class_name );
+			$classname = $this->custom_sanitize_title( $class_name );
 			$classname = str_replace( '_', '-', $classname );
 
 			return $classname;
+		}
+
+		/**
+		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
+		 *
+		 * @param string $title The title to sanitize
+		 * @return string The sanitized title
+		 */
+		private function custom_sanitize_title( $title ) {
+			$title = remove_accents( $title );
+			$title = sanitize_title_with_dashes( $title );
+
+			return $title;
 		}
 
 		public function init_oxygen() {

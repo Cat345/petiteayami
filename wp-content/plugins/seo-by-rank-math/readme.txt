@@ -2,10 +2,10 @@
 Contributors: rankmath
 Plugin link: https://rankmath.com/?utm_source=LP&utm_campaign=WP
 Tags: seo, WordPress SEO, google search console, schema, redirection, 
-Tested up to: 6.8
+Tested up to: 6.9
 Requires at least: 6.3
 Requires PHP: 7.4
-Stable tag: 1.0.255
+Stable tag: 1.0.259.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -339,11 +339,20 @@ Please drop us an email at support@rankmath.com, and we will be more than happy 
 
 == Changelog ==
 
-= 1.0.255 [Oct 08, 2025] =
-- Added: Option to view and edit SEO Title & Description columns on [Taxonomy Terms lists](https://rankmath.com/kb/titles-and-meta/#bulk-editing-categories) page
-- Fixed: [Keyboard shortcut `//` for opening the Content AI command box](https://rankmath.com/kb/using-content-ai-in-block-editor/#shortcut) was not working
-- Fixed: [Removing the Open Graph Thumbnail from Titles & Meta settings](https://rankmath.com/kb/titles-and-meta/#open-graph-thumbnail) was not working
-- Fixed: PHP warning related to the missing [Phone number type](https://rankmath.com/kb/local-seo/#phone)
-- Fixed: Missing Preview in the [Content AI Prompts library modal](https://rankmath.com/kb/using-content-ai-in-block-editor/#shortcut)
+= 1.0.259 [Dec 03, 2025] =
+- Added: Compatibility with WordPress 6.9
+- Improved: Converted the CMB2 metabox code of [Link Suggestions](https://rankmath.com/kb/pillar-content-internal-linking/#link-suggestions-for-posts) to the core WP metabox
+- Fixed: [Time to Read in Enhanced Slack Sharing](https://rankmath.com/kb/slack-enhanced-sharing/#enhanced-sharing) was not accounting for shortcodes in the content
+- Fixed: [Focus keyword tests](https://rankmath.com/kb/score-100-in-tests/#understanding-the-tests-from-a-keyword-perspective) were failing when a comma or other special characters were used in keywords added in the title, content, or description
+- Fixed: Console error in the [Content AI module](https://rankmath.com/kb/how-to-use-content-ai/) related to `undefined cleanForSlug` on some setups
+- Fixed: Blank page was shown when [Chat with AI](https://rankmath.com/kb/how-to-use-content-ai/#chat-with-ai) returned an error
+- Fixed: Compatibility issue with Colibri Page Builder PRO was causing the Rank Math SEO metabox to not display
+- Fixed: Invalid [Renew Content AI credits date](https://rankmath.com/kb/general-settings/#credits-left) was being shown on some setups
+- Removed: [React Settings UI](https://rankmath.com/kb/react-migration/#what-to-expect) from the modules page
+
+= 1.0.259.1 [Dec 04, 2025] =
+- Fixed: Rank Math SEO metabox not appearing on Product Category pages after the last update
+- Fixed:Compatibility issues with certain plugin and theme shortcodes when the [Slack Enhanced Sharing option](https://rankmath.com/kb/titles-and-meta/#posts-slack-enhanced-sharing) is enabled
+- Fixed: Minor UI issue in the [Schema type field](https://rankmath.com/kb/titles-and-meta/#rich-snippet-type) in WordPress v6.9
 
 Full changelog can be found here - **[Rank Math changelog](https://rankmath.com/changelog/?utm_source=Plugin&utm_medium=Changelog&utm_campaign=WP)**

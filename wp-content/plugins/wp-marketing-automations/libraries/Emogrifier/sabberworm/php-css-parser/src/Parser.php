@@ -1,10 +1,10 @@
 <?php
 
-namespace Sabberworm\CSS;
+namespace BWFAN\Sabberworm\CSS;
 
-use Sabberworm\CSS\CSSList\Document;
-use Sabberworm\CSS\Parsing\ParserState;
-use Sabberworm\CSS\Parsing\SourceException;
+use BWFAN\Sabberworm\CSS\CSSList\Document;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\Parsing\SourceException;
 
 /**
  * This class parses CSS from text into a data structure.

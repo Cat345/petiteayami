@@ -2,20 +2,21 @@
 
 namespace DgoraWcas\Integrations\Plugins\Elementor;
 
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 use Elementor\Elements_Manager;
 use Elementor\Widgets_Manager;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
-class Elementor {
-    public function init() {
-        if ( !defined( 'ELEMENTOR_PRO_VERSION' ) ) {
-            return;
-        }
-        if ( version_compare( ELEMENTOR_PRO_VERSION, '3.6.0' ) < 0 ) {
-            return;
-        }
+class Elementor extends AbstractPluginIntegration {
+    protected const VERSION_CONST = 'ELEMENTOR_PRO_VERSION';
+
+    protected const MIN_VERSION = '3.6.0';
+
+    protected const LABEL = 'Elementor Pro';
+
+    public function init() : void {
         add_action( 'elementor/widgets/register', [$this, 'registerWidgets'], 20 );
         add_action( 'elementor/editor/before_enqueue_scripts', [$this, 'editorEnqueueScripts'] );
     }

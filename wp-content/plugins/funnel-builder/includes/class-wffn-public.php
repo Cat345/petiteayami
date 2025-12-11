@@ -216,21 +216,25 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 			/**
 			 * register cookie script for funnel steps for handle blocking script plugins issues
 			 */ global $post;
+
+			// Use new WooCommerce handle for WC >= 10.3.0, fallback to legacy handle for older versions
+			$cookie_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-js-cookie' : 'js-cookie';
+
 			if ( ! is_null( $post ) && $post instanceof WP_Post ) {
 				if ( in_array( $post->post_type, array( 'wffn_landing', 'wffn_optin', 'wffn_oty', 'wffn_ty' ), true ) ) {
 
-					wp_deregister_script( 'js-cookie' );
-					wp_register_script( 'js-cookie', plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/js.cookie.min.js', array( 'jquery' ), WFFN_VERSION, array(
+					wp_deregister_script( $cookie_handle );
+					wp_register_script( $cookie_handle, plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/js.cookie.min.js', array( 'jquery' ), WFFN_VERSION, array(
 						'is_footer' => false,
 						'strategy'  => 'defer'
 					) );
 				}
 			}
 
-			wp_enqueue_script( 'js-cookie' );
+			wp_enqueue_script( $cookie_handle );
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'wffn-public', plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/public' . $suffix . '.js', [
-				'js-cookie',
+				$cookie_handle,
 				'jquery'
 			], WFFN_VERSION, array( 'is_footer' => true, 'strategy' => 'defer' ) );
 
@@ -247,7 +251,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 
 
 		public function setup_funnel_ajax() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( $_POST['data'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend funnel setup
 			$result   = ( array( 'success' => false ) );
 			if ( ! empty( $get_data ) ) {
 				try {
@@ -269,7 +273,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function frontend_analytics() {
-			$get_data = isset( $_POST['data'] ) ? wffn_clean( $_POST['data'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$get_data = isset( $_POST['data'] ) ? wffn_clean( wp_unslash( $_POST['data'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend analytics
 			$result   = $this->send_frontend_analytics( $get_data );
 			if ( is_array( $result ) ) {
 				$result['funnel_setup'] = false;
@@ -336,7 +340,7 @@ if ( ! class_exists( 'WFFN_Public' ) ) {
 		 * This function allows individual step classes to take care of their specific step viewed
 		 */
 		public function tracking_events() {
-			$get_data = isset( $_POST ) ? wffn_clean( $_POST ) : '';//phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$get_data = isset( $_POST ) ? wffn_clean( wp_unslash( $_POST ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for tracking events
 			$this->send_tracking_events( $get_data );
 		}
 

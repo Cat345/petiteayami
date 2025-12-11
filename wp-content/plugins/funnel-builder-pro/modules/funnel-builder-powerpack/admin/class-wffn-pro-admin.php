@@ -46,18 +46,15 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 				)
 
 			);
-			$is_conversion_api = BWF_Admin_General_Settings::get_instance()->get_option( 'is_fb_purchase_conversion_api' );
-			if ( is_array( $is_conversion_api ) && count( $is_conversion_api ) > 0 && 'yes' === $is_conversion_api[0] ) {
-				array_push( $settings_pro['override_tracking_ids'], array(
-					'text' => __( 'Conversion API Access Token', 'funnel-builder-powerpack' ),
-					'key'  => 'conversion_api_access_token',
-					'type' => 'textarea'
-				) );
-				array_push( $settings_pro['override_tracking_ids'], array(
-					'text' => __( 'Conversion API Test event code', 'funnel-builder-powerpack' ),
-					'key'  => 'conversion_api_test_event_code'
-				) );
-			}
+			array_push( $settings_pro['override_tracking_ids'], array(
+				'text' => __( 'Conversion API Access Token', 'funnel-builder-powerpack' ),
+				'key'  => 'conversion_api_access_token',
+				'type' => 'textarea'
+			) );
+			array_push( $settings_pro['override_tracking_ids'], array(
+				'text' => __( 'Conversion API Test event code', 'funnel-builder-powerpack' ),
+				'key'  => 'conversion_api_test_event_code'
+			) );
 			$settings_pro['override_tracking_ids'][] = array( 'text' => __( 'Google Analytics ID', 'funnel-builder-powerpack' ), 'key' => 'ga_key' );
 			$settings_pro['override_tracking_ids'][] = array( 'text' => __( 'Google Ads Conversion ID', 'funnel-builder-powerpack' ), 'key' => 'gad_key' );
 			$settings_pro['override_tracking_ids'][] = array( 'text' => __( 'Google Ads Conversion Label', 'funnel-builder-powerpack' ), 'key' => 'gad_conversion_label' );

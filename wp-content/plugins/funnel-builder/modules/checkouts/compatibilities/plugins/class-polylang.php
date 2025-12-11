@@ -16,28 +16,38 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Polylang' ) ) {
 		public function add_pll_language() {
 			WFACP_AJAX_Controller::check_nonce();
 			$resp = array( 'status' => false );
+
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				WFACP_AJAX_Controller::send_resp( $resp );
+			}
+
 			global $polylang;
 
 			if ( empty( $polylang ) || ! class_exists( 'PLL_Admin_Sync' ) ) {
 				WFACP_AJAX_Controller::send_resp( $resp );
 			}
 
-			$from_post_id = $_POST['from_post_id'];
+			$from_post_id = isset( $_POST['from_post_id'] ) ? absint( $_POST['from_post_id'] ) : 0;
 
 			$sync = new PLL_Admin_Sync( $polylang );
 
-			if ( 0 === absint( $from_post_id ) || ! isset( $_POST['new_lang'] ) ) {
+			$new_lang = isset( $_POST['new_lang'] ) ? sanitize_text_field( wp_unslash( $_POST['new_lang'] ) ) : '';
+
+			if ( 0 === $from_post_id || empty( $new_lang ) ) {
 				WFACP_AJAX_Controller::send_resp( $resp );
 			}
 			$from_post = get_post( $from_post_id );
+			if ( ! $from_post instanceof WP_Post ) {
+				WFACP_AJAX_Controller::send_resp( $resp );
+			}
 			$arr       = [
-				'post_title' => $from_post->post_title . '_' . $_POST['new_lang'],
+				'post_title' => $from_post->post_title . '_' . $new_lang,
 				'post_type'  => 'wfacp_checkout',
 				'post_name'  => $from_post->post_name,
 			];
 			$post_id   = wp_insert_post( $arr );
 
-			$lang = $polylang->model->get_language( sanitize_key( $_POST['new_lang'] ) );
+			$lang = $polylang->model->get_language( sanitize_key( $new_lang ) );
 
 			$sync->taxonomies->copy( $from_post_id, $post_id, $lang->slug );
 			$sync->post_metas->copy( $from_post_id, $post_id, $lang->slug );

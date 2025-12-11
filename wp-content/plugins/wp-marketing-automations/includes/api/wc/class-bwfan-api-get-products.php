@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Bwfan Api Get Products
+ *
+ * @since 1.0.0
+ */
 class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 
 	public static $ins;
@@ -25,11 +30,15 @@ class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 		return self::$ins;
 	}
 
+	/**
+	 * Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->method       = WP_REST_Server::READABLE;
 		$this->route        = '/bwf-products';
-		$this->public_api   = true;
 		$this->request_args = array(
 			'search' => array(
 				'description' => __( 'Search from name', 'wp-marketing-automations' ),
@@ -38,10 +47,20 @@ class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 		);
 	}
 
+	/**
+	 * Default Args Values
+	 *
+	 * @since 1.0.0
+	 */
 	public function default_args_values() {
 		return array( 'ids' => '', 'search' => '' );
 	}
 
+	/**
+	 * Process Api Call
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_api_call() {
 		// check if woocommerce is active
 		if ( ! bwfan_is_woocommerce_active() ) {
@@ -490,6 +509,11 @@ class BWFAN_Api_Get_Products extends BWFAN_API_Base {
 		return $args;
 	}
 
+	/**
+	 * Get Result Count Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_result_count_data() {
 		return $this->count_data;
 	}

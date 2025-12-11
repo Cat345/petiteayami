@@ -3,6 +3,8 @@
 namespace DgoraWcas\Integrations\Plugins\Brizy;
 
 // Exit if accessed directly
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -13,13 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://brizy.io/
  * Author: Brizy.io
  */
-class Brizy {
+class Brizy extends AbstractPluginIntegration {
+	protected const LABEL         = 'Brizy - Page Builder';
+	protected const VERSION_CONST = 'BRIZY_PRO_VERSION';
 
-	public function init() {
-		if ( ! defined( 'BRIZY_PRO_VERSION' ) ) {
-			return;
-		}
-
+	public function init(): void {
 		add_filter( 'brizy_post_loop_args', array( $this, 'overwriteSearchResults' ), 1000 );
 		add_filter( 'dgwt/wcas/helpers/is_search_query', array( $this, 'markQueryToProcess' ), 10, 2 );
 

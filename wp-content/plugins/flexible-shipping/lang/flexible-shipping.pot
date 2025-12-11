@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Flexible Shipping plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flexible Shipping 6.4.0\n"
+"Project-Id-Version: Flexible Shipping 6.4.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/flexible-shipping\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-08T11:35:17+00:00\n"
+"POT-Creation-Date: 2025-12-03T10:54:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: flexible-shipping\n"
@@ -2476,7 +2476,6 @@ msgid "The &#8220;%1$s&#8221; plugin requires at least %2$s version of %3$s to w
 msgstr ""
 
 #: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:409
-#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:429
 #, php-format
 msgid "The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin."
 msgstr ""

@@ -633,13 +633,6 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				'callback'            => array( __CLASS__, 'capture_order_status_change_event' ),
 				'permission_callback' => array( __CLASS__, 'validate' ),
 			) );
-
-			/** Profile Update Async Call */
-			register_rest_route( 'woofunnel_customer/v1', '/wp_profile_update', array(
-				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'capture_profile_update_event' ),
-				'permission_callback' => array( __CLASS__, 'validate' ),
-			) );
 		}
 
 		/**
@@ -795,7 +788,7 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 				} else {
 					$order_table      = $wpdb->prefix . 'wc_orders';
 					$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-					$query            = $wpdb->prepare( "SELECT COUNT(p.id) FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND 
+					$query            = $wpdb->prepare( "SELECT COUNT(p.id) FROM {$order_table} AS p LEFT JOIN {$order_meta_table} AS pm ON ( p.id = pm.order_id AND pm.meta_key = '_woofunnel_cid') WHERE 1=1 AND pm.order_id IS NULL AND p.billing_email != '' AND
 												p.type = %s  AND p.status IN ({$paid_statuses})
                                 ORDER BY p.date_created_gmt DESC", 'shop_order' );
 
@@ -876,79 +869,90 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 			}
 		}
 
-		/** Do async profile update call */
+		/** Process profile update synchronously and handle contact data changes */
 		public function do_profile_update_async_call( $user_id, $old_user_data = null ) {
-			$data = array( 'user_id' => $user_id );
-			if ( $old_user_data instanceof WP_User && is_email( $old_user_data->user_email ) ) {
-				$data['old_user_email'] = $old_user_data->user_email;
-			}
-
-			/** Get Changed Address Fields */
-			$data['fields'] = array();
-			foreach ( $this->_user_address_meta_updated as $meta_key => $meta_value ) {
-				$crm_key = array_search( $meta_key, $this->contact_wp_user_address_fields, true );
-				if ( empty( $crm_key ) ) {
-					continue;
+			try {
+				$old_user_email = '';
+				if ( $old_user_data instanceof WP_User && is_email( $old_user_data->user_email ) ) {
+					$old_user_email = $old_user_data->user_email;
 				}
 
-				$data['fields'][ $crm_key ] = $meta_value;
+				/** Get Changed Address Fields */
+				$fields = array();
+				foreach ( $this->_user_address_meta_updated as $meta_key => $meta_value ) {
+					$crm_key = array_search( $meta_key, $this->contact_wp_user_address_fields, true );
+					if ( empty( $crm_key ) ) {
+						continue;
+					}
+
+					$fields[ $crm_key ] = $meta_value;
+				}
+
+				$this->process_profile_update_sync( $user_id, $old_user_email, $fields );
+			} catch ( \Throwable $e ) {
+				BWF_logger::get_instance()->log( 'Profile update sync failed: ' . $e->getMessage(), 'woofunnels_profile_update' );
 			}
-			$data['_nonce']       = self::create_nonce( 'bwf_rest_wp_profile_update' );
-			$data['nonce_action'] = 'bwf_rest_wp_profile_update';
-
-			$url  = site_url() . '/?rest_route=/woofunnel_customer/v1/wp_profile_update';
-			$args = bwf_get_remote_rest_args( $data );
-
-			wp_remote_post( $url, $args );
 		}
 
-		/** Update Address fields on WP User update */
-		public function capture_profile_update_event( $request ) {
-			/** Return if version is less than 2.0.2 */
-			if ( defined( 'BWFAN_PRO_VERSION' ) && ! version_compare( BWFAN_PRO_VERSION, '2.0.2', '>' ) ) {
-				return;
-			}
+		/**
+		 * Processes the profile update for a user synchronously.
+		 *
+		 * Updates the contact record with changed address fields and other profile information.
+		 * Applies relevant filters and saves the contact.
+		 *
+		 * @param int    $user_id         The ID of the user being updated.
+		 * @param string $old_user_email  The previous email address of the user.
+		 * @param array  $fields          Array of changed address fields keyed by CRM field name.
+		 */
+		public function process_profile_update_sync( $user_id, $old_user_email = '', $fields = array() ) {
+			try {
+				/** Return if version is less than 2.0.2 */
+				if ( defined( 'BWFAN_PRO_VERSION' ) && ! version_compare( BWFAN_PRO_VERSION, '2.0.2', '>' ) ) {
+					return;
+				}
 
-			$posted_data    = $request->get_body_params();
-			$user_id        = isset( $posted_data['user_id'] ) ? absint( $posted_data['user_id'] ) : 0;
-			$old_user_email = isset( $posted_data['old_user_email'] ) ? $posted_data['old_user_email'] : '';
-			$fields         = isset( $posted_data['fields'] ) && is_array( $posted_data['fields'] ) ? $posted_data['fields'] : array();
+				$contact = $this->maybe_get_contact_on_profile_update( $user_id, $old_user_email );
 
-			$contact = $this->maybe_get_contact_on_profile_update( $user_id, $old_user_email );
+				if ( false === $contact ) {
+					$this->_user_address_meta_updated = array();
 
-			if ( false === $contact ) {
-				$this->_user_address_meta_updated = array();
+					return;
+				}
 
-				return;
-			}
+				if ( ! class_exists( 'WooCommerce' ) || empty( $fields ) ) {
+					$contact->save();
 
-			if ( ! class_exists( 'WooCommerce' ) || empty( $fields ) ) {
+					return;
+				}
+
+				$contact = apply_filters( 'bwf_before_profile_update_contact_sync', $contact, $user_id );
+
+				foreach ( $fields as $crm_key => $meta_value ) {
+					if ( 'state' === $crm_key ) {
+						$contact->set_state( $meta_value );
+						continue;
+					}
+
+					if ( 'country' === $crm_key ) {
+						$contact->set_country( $meta_value );
+						continue;
+					}
+
+					$contact = apply_filters( 'bwf_profile_update_contact_sync_field', $contact, $crm_key, $meta_value, $user_id );
+				}
+
+				$contact = apply_filters( 'bwf_after_profile_update_contact_sync', $contact, $user_id );
+
+				$contact->set_last_modified( current_time( 'mysql', 1 ) );
 				$contact->save();
-
-				return;
+			} catch ( \Throwable $e ) {
+				BWF_logger::get_instance()->log( 'Profile update processing failed: ' . $e->getMessage(), 'woofunnels_profile_update' );
 			}
-
-			$contact = apply_filters( 'bwf_before_profile_update_contact_sync', $contact, $user_id );
-
-			foreach ( $fields as $crm_key => $meta_value ) {
-				if ( 'state' === $crm_key ) {
-					$contact->set_state( $meta_value );
-					continue;
-				}
-
-				if ( 'country' === $crm_key ) {
-					$contact->set_country( $meta_value );
-					continue;
-				}
-
-				$contact = apply_filters( 'bwf_profile_update_contact_sync_field', $contact, $crm_key, $meta_value, $user_id );
-			}
-
-			$contact = apply_filters( 'bwf_after_profile_update_contact_sync', $contact, $user_id );
-
-			$contact->set_last_modified( current_time( 'mysql', 1 ) );
-			$contact->save();
 		}
+
+
+
+
 
 		/** Get the unsaved contact with WPID and Email changes */
 		public function maybe_get_contact_on_profile_update( $user_id, $old_user_email = '' ) {
@@ -1463,3 +1467,4 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		}
 	}
 }
+

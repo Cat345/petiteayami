@@ -303,7 +303,9 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 			}
 			if ( WFOCU_Common::is_load_admin_assets( 'settings' ) ) {
 				$gateways_list = WFOCU_Core()->gateways->get_gateways_list();
-				wp_enqueue_script( 'jquery-tiptip' );
+				// Use new WooCommerce handle for WC >= 10.3.0, fallback to legacy handle for older versions
+				$tiptip_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-jquery-tiptip' : 'jquery-tiptip';
+				wp_enqueue_script( $tiptip_handle );
 
 			}
 			/**

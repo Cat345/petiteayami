@@ -58,14 +58,14 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				return $status;
 			}
 
-			if ( $builder == 'elementor' ) {
+			if ( $builder === 'elementor' ) {
 				if ( ( ! version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ( version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) ) ) {
 					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the wordpress version to import the template.', 'woofunnels-aero-checkout' ), '5.0' );
 
 					return [ 'error' => $message ];
 				}
 			}
-			if ( $builder == 'divi' ) {
+			if ( $builder === 'divi' ) {
 				$response = WFACP_Common::check_builder_status( 'divi' );
 				if ( ! empty( $response['error'] ) ) {
 					$message = $response['error'];
@@ -121,7 +121,7 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			if ( $defined_wffn && $file_exist ) {
 				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
-				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
+				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Cleaning up temporary template file after import
 
 				return [ 'success' => true, 'data' => $content ];
 			}
@@ -134,6 +134,7 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				"license"  => $license,
 				"template" => $template_id,
 				"builder"  => $builder,
+				"builder_version" => WFFN_Common::get_builder_version( $builder ),
 				"version"  => 4,
 				"locale" => get_locale()
 			);
@@ -143,12 +144,12 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			$response = wp_remote_post( $endpoint_url, array(
 				"body"    => $requestBody,
-				"timeout" => 30,
+				"timeout" => 30, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- Template import requires longer timeout for large files
 				'headers' => [
 					'content-type' => 'application/json'
 				]
 			) );
-			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' );
+			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			if ( $response instanceof WP_Error ) {
 				return false;
 			}

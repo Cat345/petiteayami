@@ -541,6 +541,11 @@ return apply_filters( 'bwf_settings_config', array(
 				'key'   => 'google_ua_add_payment_info_event',
 				'label' => __( 'Enable AddPaymentInfo Event', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			),
+			array(
+				'type'  => 'checkbox',
+				'key'   => 'google_ua_add_shipping_info_event',
+				'label' => __( 'Enable AddShippingInfo Event', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			),
 
 
 			array(
@@ -788,7 +793,13 @@ return apply_filters( 'bwf_settings_config', array(
 				'type'        => 'tracking_id_dependent',
 				'tracking_id_key' => 'gad_key',
 				'label'       => '',
-				'placeholder' => __( 'Enter Conversion Label (Optional)', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				'placeholder' => __( 'Enter Conversion Label (Optional)', 'woofunnels' ),
+
+			),
+			array(
+				'key'   => 'google_ads_initiate_checkout_event',
+				'type'  => 'checkbox',
+				'label' => __( 'Enable InitiateCheckout Event', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			),
 			array(
 				'key'    => 'is_gad_pageview_event',

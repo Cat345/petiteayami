@@ -128,7 +128,10 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 		 */
 		public function filter_bumps( $decided_bumps, $posted_data ) {
 			$current_step = [];
-
+			if ( did_action( 'wfacp_checkout_page_found' ) && empty( $posted_data ) ) {
+				$posted_data = ! is_array( $posted_data ) ? [] : $posted_data;
+				$posted_data['_wfacp_post_id'] = WFACP_Common::get_id();
+			}
 			/**
 			 * Check if the respective method exists to go further
 			 */
@@ -138,7 +141,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 				$License->get_plugins_list();
 
 				$state = $this->get_current_app_state();
-				
+
 				if ( in_array( $state, [ 'pro_without_license', 'license_expired' ], true ) ) {
 
 					if ( empty( WC()->session->get( 'license_expired_bump_rejected' ) ) ) {

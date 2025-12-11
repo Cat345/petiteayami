@@ -1,4 +1,11 @@
 === FunnelKit One Click Upsells ===
+== 3.18.0 (22/10/2025) =
+* Fixed: Upsells: Compatibility updated with PayPal payments. (#8033,#8084)
+* Fixed: Upsells: Compatibility updated with mollie plugin to retry fetching customer mandate before opening offer. (#8072)
+* Improved: Upsells: Fixed mollie order description for upsell charge when SEPA disabled to pass offer ID. (#8200)
+* Improved: Upsells: Compatibility updated with EU/UK VAT plugin related to destroyed upsell session. (#8178)
+* Improved: Upsells: Enhanced recurring price and signup fee settings for upsells price widget for block editor. (#8111)
+* Improved: Upsells: Improved Facebook events tracking for variations in offer page to handle few edge cases. (#8210)
 
 == 3.17.0 (04/08/2025) =
 * Improved: Upsells: Enhanced compatibility with Braintree for WooCommerce Payment Gateway. (#7889)
@@ -182,7 +189,7 @@
 
 = 3.5.0 (09/01/2023) =
 * Added: Compatibility with WooCommerce Sequential Order Numbers Pro. (#1454)
-* Added: Added a filter `wfocu_gateways_paypal_support_non_reference_trans` to allow devs to show settings for their PayPal gateway. (#1487) 
+* Added: Added a filter `wfocu_gateways_paypal_support_non_reference_trans` to allow devs to show settings for their PayPal gateway. (#1487)
 * Improved: Compatibility with WooCommerce Amazon Fulfillment updated for v4.0.0. (#1471)
 * Improved: Upsell timeline updated to show appropriate reason when the gateway does not support subscription products. (#1475)
 * Improved: Restrict registering offer page assets to site pages, causing conflicts in some cases. (#1480)

@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommerceAJAXFilters;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,15 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wordpress.org/plugins/woocommerce-ajax-filters/
  * Author: BeRocket
  */
-class WooCommerceAJAXFilters {
-	public function init() {
-		if ( ! defined( 'BeRocket_AJAX_filters_version' ) ) {
-			return;
-		}
-		if ( version_compare( BeRocket_AJAX_filters_version, '1.4.1.8' ) <= 0 ) {
-			return;
-		}
+class WooCommerceAJAXFilters extends AbstractPluginIntegration {
+	protected const LABEL         = 'Advanced AJAX Product Filters';
+	protected const MIN_VERSION   = '1.4.1.8';
+	protected const VERSION_CONST = 'BeRocket_AJAX_filters_version';
 
+	public function init(): void {
 		add_filter( 'berocket_aapf_get_attribute_values_post__in_outside', array( $this, 'filterPostInIds' ), 20 );
 		add_filter( 'dgwt/wcas/helpers/is_search_query', array( $this, 'markQueryToProcess' ), 10, 2 );
 	}

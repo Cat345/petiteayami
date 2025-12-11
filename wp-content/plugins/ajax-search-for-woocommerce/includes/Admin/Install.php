@@ -4,6 +4,7 @@ namespace DgoraWcas\Admin;
 
 use DgoraWcas\Engines\TNTSearchMySQL\Config;
 use DgoraWcas\Engines\TNTSearchMySQL\Indexer\Builder;
+use DgoraWcas\Engines\TNTSearchMySQL\Indexer\Storage;
 use DgoraWcas\Helpers;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {

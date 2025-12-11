@@ -3593,7 +3593,9 @@ body .wfacp_main_form .woocommerce-form-coupon-toggle {
     table-layout: fixed;
 }
 
-body .wfacp-right-panel #coupon_code.wfacp_coupon_failed_error {
+body .wfacp-right-panel #coupon_code.wfacp_coupon_failed_error,
+body .wfacp-right-panel #coupon_code_mini_cart.wfacp_coupon_failed_error
+{
     border-color: #d50000;
 }
 

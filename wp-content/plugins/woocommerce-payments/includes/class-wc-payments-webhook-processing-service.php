@@ -583,8 +583,7 @@ class WC_Payments_Webhook_Processing_Service {
 		$this->order_service->mark_payment_dispute_created( $order, $charge_id, $amount, $reason, $due_by, $status );
 
 		// Clear dispute caches to trigger a fetch of new data.
-		$this->database_cache->delete( DATABASE_CACHE::DISPUTE_STATUS_COUNTS_KEY );
-		$this->database_cache->delete( DATABASE_CACHE::ACTIVE_DISPUTES_KEY );
+		$this->database_cache->delete_dispute_caches();
 	}
 
 	/**
@@ -614,8 +613,7 @@ class WC_Payments_Webhook_Processing_Service {
 		$this->order_service->mark_payment_dispute_closed( $order, $charge_id, $status );
 
 		// Clear dispute caches to trigger a fetch of new data.
-		$this->database_cache->delete( DATABASE_CACHE::DISPUTE_STATUS_COUNTS_KEY );
-		$this->database_cache->delete( DATABASE_CACHE::ACTIVE_DISPUTES_KEY );
+		$this->database_cache->delete_dispute_caches();
 	}
 
 	/**
@@ -670,8 +668,7 @@ class WC_Payments_Webhook_Processing_Service {
 		$order->add_order_note( $note );
 
 		// Clear dispute caches to trigger a fetch of new data.
-		$this->database_cache->delete( DATABASE_CACHE::DISPUTE_STATUS_COUNTS_KEY );
-		$this->database_cache->delete( DATABASE_CACHE::ACTIVE_DISPUTES_KEY );
+		$this->database_cache->delete_dispute_caches();
 	}
 
 	/**
@@ -857,6 +854,14 @@ class WC_Payments_Webhook_Processing_Service {
 		$is_refunded_event = isset( $event_body['type'] ) && 'charge.refunded' === $event_body['type'];
 		$status            = $this->read_webhook_property( $event_object, 'status' );
 		if ( 'succeeded' !== $status || ! $is_refunded_event ) {
+			return;
+		}
+
+		// Check if the charge was actually captured before processing the refund.
+		// Stripe sends charge.refunded webhooks for cancelled authorizations even though no payment was captured.
+		// We should not create WooCommerce refund objects for these cases as they cause negative values in analytics.
+		$captured = $event_object['captured'] ?? false;
+		if ( ! $captured ) {
 			return;
 		}
 

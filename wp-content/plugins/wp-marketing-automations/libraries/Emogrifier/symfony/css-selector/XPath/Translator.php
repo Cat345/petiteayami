@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath;
+namespace BWFAN\Symfony\Component\CssSelector\XPath;
 
-use Symfony\Component\CssSelector\Exception\ExpressionErrorException;
-use Symfony\Component\CssSelector\Node\FunctionNode;
-use Symfony\Component\CssSelector\Node\NodeInterface;
-use Symfony\Component\CssSelector\Node\SelectorNode;
-use Symfony\Component\CssSelector\Parser\Parser;
-use Symfony\Component\CssSelector\Parser\ParserInterface;
+use BWFAN\Symfony\Component\CssSelector\Exception\ExpressionErrorException;
+use BWFAN\Symfony\Component\CssSelector\Node\FunctionNode;
+use BWFAN\Symfony\Component\CssSelector\Node\NodeInterface;
+use BWFAN\Symfony\Component\CssSelector\Node\SelectorNode;
+use BWFAN\Symfony\Component\CssSelector\Parser\Parser;
+use BWFAN\Symfony\Component\CssSelector\Parser\ParserInterface;
 
 /**
  * XPath expression translator interface.

@@ -37,15 +37,15 @@ defined( 'ABSPATH' ) || exit;
                                     </div>
                                     <div class="product_settings_checkout_behavior_setting">
                                         <p>
-                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="2"><?php _e( 'Restrict buyer to select only one of the above products (e.g. when selling similar products with different pricing plans or quantity)', 'woofunnels-aero-checkout' ); ?>
+                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="2"><?php _e( 'Allow only one product selection at checkout (e.g. when selling similar products with different pricing plans or quantity)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                         <p>
-                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="3"><?php _e( 'Allow buyer to select any of the above product(s) (e.g. when selling multiple products)', 'woofunnels-aero-checkout' ); ?>
+                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="3"><?php _e( 'Allow multiple product selections at checkout (e.g. when selling multiple products)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                         <p>
-                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="1"><?php _e( 'Force sell all of the above product(s) (e.g. when selling a fixed price bundle)', 'woofunnels-aero-checkout' ); ?>
+                                            <label><input type="radio" v-model="add_to_cart_setting" name="add_to_cart_setting" value="1"><?php _e( 'All products listed will be sold together at checkout (e.g. when selling a fixed price bundle)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                     </div>

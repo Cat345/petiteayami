@@ -12,7 +12,8 @@ if ( ! class_exists( 'WFACP_Compatibility_Translate_press' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_Translate_press {
 		public function __construct() {
-			add_action( 'wfacp_checkout_page_found', [ $this, 'remove_our_template' ] );
+			add_action( 'wfacp_template_load', [ $this, 'remove_our_template' ] );
+			add_filter( 'wfacp_exclude_place_order_text_update_order_review', '__return_false' );
 		}
 
 

@@ -974,6 +974,17 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 				WFFN_Core()->admin->wffn_maybe_run_templates_importer();
 
 				/**
+				 * Auto-set Gutenberg as default when Gutenberg template is imported
+				 */
+				if ( 'gutenberg' === $builder ) {
+					$get_config = get_option( 'bwf_gen_config', [] );
+					if ( ! isset( $get_config['default_selected_builder'] ) || 'gutenberg' !== $get_config['default_selected_builder'] ) {
+						$get_config['default_selected_builder'] = 'gutenberg';
+						$general_settings = BWF_Admin_General_Settings::get_instance();
+						$general_settings->update_global_settings_fields( $get_config );
+					}
+				}
+				/**
 				 * return success
 				 */
 				$resp['status']    = true;
@@ -1161,9 +1172,11 @@ if ( ! class_exists( 'WFFN_REST_Funnels' ) ) {
 			do_action( 'wffn_rest_before_get_templates' );
 			$general_settings        = BWF_Admin_General_Settings::get_instance();
 			$default_builder         = $general_settings->get_option( 'default_selected_builder' );
-			
+
 			// If no default builder is set, try to detect one
-			if ( empty( $default_builder ) ) {
+			if (
+				empty( $default_builder ) || in_array( $default_builder, array( 'elementor', 'divi', 'oxy', 'bricks' ), true )
+			) {
 				$default_builder = WFFN_Core()->admin->get_detected_page_builder();
 			}
 			

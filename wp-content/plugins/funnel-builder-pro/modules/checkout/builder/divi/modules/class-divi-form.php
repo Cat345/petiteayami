@@ -593,6 +593,7 @@ if ( ! class_exists( 'WFACP_Divi_Form' ) ) {
 
 			$focus_fields_color = [
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus',
+                '%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) input[type="radio"]:focus',
 				'%%order_class%% #wfacp-e-form p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.input-checkbox):focus',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp_coupon_failed .wfacp_coupon_code',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus',

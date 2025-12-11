@@ -161,6 +161,7 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
      *
      * @since 2.0
      * @since 2.4.2 Add individual use condition.
+     * @since 4.0.5 Enhanced individual use coupon validation with case-insensitive comparison.
      * @access public
      */
     public function implement_auto_apply_coupons() {
@@ -211,9 +212,12 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
                  * NOTE:
                  * - we need to place this condition after $checked because we need to do invalid coupon check.
                  * - e.g (Cart Conditions: will not be checked if this condition is applied before $checked)
-                 */
-                if ( $checked && $individual_use_coupon_applied && ! in_array( $coupon_code, $individual_use_allowed_coupons, true ) ) {
-                    $checked = false;
+                */
+                if ( $checked && $individual_use_coupon_applied ) {
+                    $allowed_norm = array_map( 'wc_format_coupon_code', (array) $individual_use_allowed_coupons );
+                    if ( ! in_array( wc_format_coupon_code( $coupon_code ), $allowed_norm, true ) ) {
+                        $checked = false;
+                    }
                 }
 
                 /**
@@ -229,9 +233,11 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
                         'wc_get_coupon_code_by_id',
                         ACFWP()->Allowed_Coupons->get_individual_use_coupon_allowed_coupons( $coupon )
                     );
-                    $diff_coupons    = array_diff( \WC()->cart->get_applied_coupons(), $allowed_coupons );
+                    $allowed_norm    = array_map( 'wc_format_coupon_code', $allowed_coupons );
+                    $applied_norm    = array_map( 'wc_format_coupon_code', (array) \WC()->cart->get_applied_coupons() );
+                    $diff_norm       = array_diff( $applied_norm, $allowed_norm );
 
-                    if ( ! empty( $diff_coupons ) ) {
+                    if ( ! empty( $diff_norm ) ) {
                         $checked = false;
                     }
 

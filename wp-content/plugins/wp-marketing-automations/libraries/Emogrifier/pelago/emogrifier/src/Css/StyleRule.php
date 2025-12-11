@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Css;
+namespace BWFAN\Pelago\Emogrifier\Css;
 
-use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
+use BWFAN\Sabberworm\CSS\Property\Selector;
+use BWFAN\Sabberworm\CSS\RuleSet\DeclarationBlock;
 
 /**
  * This class represents a CSS style rule, including selectors, a declaration block, and an optional containing at-rule.

@@ -44,13 +44,14 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.6.9';
+    const VERSION             = '4.7.0';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
     const PREMIUM_PLUGIN      = 'advanced-coupons-for-woocommerce/advanced-coupons-for-woocommerce.php';
     const LOYALTY_PLUGIN      = 'loyalty-program-for-woocommerce/loyalty-program-for-woocommerce.php';
     const GIFT_CARDS_PLUGIN   = 'advanced-gift-cards-for-woocommerce/advanced-gift-cards-for-woocommerce.php';
+    const AFFILIATE_WP_PLUGIN = 'affiliate-wp/affiliate-wp.php';
     const INSTALLATION_DATE   = 'acfwf_plugin_installation_date';
     const SITE_URL            = 'https://advancedcouponsplugin.com/';
 

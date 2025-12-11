@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\XPath\Extension;
+namespace BWFAN\Symfony\Component\CssSelector\XPath\Extension;
 
-use Symfony\Component\CssSelector\XPath\XPathExpr;
+use BWFAN\Symfony\Component\CssSelector\XPath\XPathExpr;
 
 /**
  * XPath expression translator combination extension.

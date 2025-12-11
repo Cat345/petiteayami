@@ -1,5 +1,32 @@
 *** FunnelKit Funnel Builder Pro ***
-= 3.12.1 (August 08, 2025) = 
+
+= 3.13.3 (October 24, 2025) =
+* Fixed: Upsells: Offer price block for block editor templates is showing unresolved merge tags in case of WooCommerce Subscription plugin is not installed. (#8243)
+
+= 3.13.2 (October 23, 2025) =
+* Improved: Checkout: Compatibility updated with MailerLite plugin. (#8237)
+* Fixed: Checkout: Issue with oxygen templates getting overridden by checkout page if set for boxed or Canvas template. (#8235)
+
+= 3.13.1 (October 23, 2025) =
+* Fixed: PHP deprecated warnings with WooCommerce v10.3.0 resolved for funnel pages. (#8231)
+
+= 3.13.0 (October 22, 2025) =
+* Improved: Cart: Enhanced free shipping display logic for empty locations and postcode ranges. (#8129)
+* Improved: A/B-Experiment: Enhanced traffic distribution logic to work correctly in cached web pages. (#8018)
+* Improved: OrderBumps: Enhanced order Bumps to show instantly on load instead of waiting for order-review request. (#8125)
+* Improved: Upsells: Fixed mollie order description for upsell charge when SEPA disabled to pass offer ID. (#8200)
+* Improved: Upsells: Compatibility updated with EU/UK VAT plugin related to destroyed upsell session. (#8178)
+* Improved: Upsells: Enhanced recurring price and signup fee settings for upsells price widget for block editor. (#8111)
+* Improved: Upsells: Improved Facebook events tracking for variations in offer page to handle few edge cases. (#8210)
+* Improved: Checkout: Improved custom field multi-select option display on thankyou pages and emails. (#8110)
+* Improved: Checkout: Enhanced Google address autocomplete loading efficiency, special handling for NL and US. (#8169, #8131)
+* Fixed: OrderBumps: Analytics display corrected for the case of multiple bumps in a checkout with same rules. (#8041)
+* Fixed: Upsells: Compatibility updated with PayPal payments. (#8033,#8084)
+* Fixed: OrderBumps: Enhanced order bump edit screen compatibility with Markup Markdown plugin. (#8179)
+* Fixed: Upsells: Compatibility updated with mollie plugin to retry fetching customer mandate before opening offer. (#8072)
+* Fixed: Checkout: Enhanced form field validation and messages for the radio buttons. (#8039)
+
+= 3.12.1 (August 08, 2025) =
 * Improved: Checkout: Enhanced compatibility with the "DIGITS: WordPress Mobile Number Signup and Login" plugin by UnitedOver. (#7983)
 * Fixed: Checkout: Resolved an issue with checkout tabs not functioning properly in the Legacy admin UI. (#7992)
 * Fixed: Checkout: Corrected the display of the "You Save" value and percentage when multiple products have discounts applied. (#7993)
@@ -552,7 +579,7 @@ Fixed: Compatibility with Bricks theme updated for the embed forms. (#6489)
 = 2.9.0 (Jan 09, 2023) =
 * Added: Bump: Coupon text match rule added. (#574)
 * Added: One Click Upsells: Compatibility with WooCommerce Sequential Order Numbers Pro. (#1454)
-* Added: One Click Upsells: Added a filter `wfocu_gateways_paypal_support_non_reference_trans` to allow devs to show settings for their PayPal gateway. (#1487) 
+* Added: One Click Upsells: Added a filter `wfocu_gateways_paypal_support_non_reference_trans` to allow devs to show settings for their PayPal gateway. (#1487)
 * Improved: One Click Upsells: Compatibility with WooCommerce Amazon Fulfillment updated for v4.0.0. (#1471)
 * Improved: One Click Upsells: Upsell timeline updated to show appropriate reason when the gateway does not support subscription products. (#1475)
 * Improved: One Click Upsells: Restrict registering offer page assets to site pages, causing conflicts in some cases. (#1480)

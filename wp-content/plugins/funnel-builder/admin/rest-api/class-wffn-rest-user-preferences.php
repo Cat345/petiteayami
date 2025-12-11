@@ -148,20 +148,26 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			return rest_ensure_response( $resp );
 		}
 
-		public function notice_close( WP_REST_Request $request ) {
-			$key     = $request->get_param( 'key' );
-			$user_id = $request->get_param( 'user_id' );
-			if ( ! empty( $key ) ) {
-				$userdata   = get_user_meta( $user_id, '_bwf_notifications_close', true );
-				$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? [] : $userdata;
-				$userdata[] = $key;
-				update_user_meta( $user_id, '_bwf_notifications_close', array_values( array_unique($userdata) ) ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta
+	public function notice_close( WP_REST_Request $request ) {
+		$key     = $request->get_param( 'key' );
+		$user_id = $request->get_param( 'user_id' );
+		if ( ! empty( $key ) ) {
+			$userdata   = get_user_meta( $user_id, '_bwf_notifications_close', true );
+			$userdata   = empty( $userdata ) && ! is_array( $userdata ) ? [] : $userdata;
+			$userdata[] = $key;
+			update_user_meta( $user_id, '_bwf_notifications_close', array_values( array_unique( $userdata ) ) ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta
 
-				return rest_ensure_response( [ 'success' => true ] );
+			// If primary sticky banner is dismissed, set 5-minute transient to hide admin notifications
+			// Secondary sticky banner does NOT trigger this transient - it will always show until dismissed
+			if ( strpos( $key, 'sticky_' ) === 0 && strpos( $key, 'secondary_sticky_' ) !== 0 ) {
+				set_transient( 'wffn_sticky_banner_dismissed_' . $user_id, $key, 5 * MINUTE_IN_SECONDS );
 			}
 
-			return rest_ensure_response( [ 'success' => false ] );
+			return rest_ensure_response( [ 'success' => true ] );
 		}
+
+		return rest_ensure_response( [ 'success' => false ] );
+	}
 
 		/**
 		 * Update Funnel Builder Site options

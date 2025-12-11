@@ -270,7 +270,7 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
             case 'shipping-zone-region':
                 $data = array(
                     'condition' => isset( $condition_field['data']['condition'] ) ? intval( $condition_field['data']['condition'] ) : '',
-                    'value'     => isset( $condition_field['data']['value'] ) ? array_map( 'sanitize_text_field', $condition_field['data']['value'] ) : '',
+                    'value'     => isset( $condition_field['data']['value'] ) && is_array( $condition_field['data']['value'] ) ? array_map( 'sanitize_text_field', $condition_field['data']['value'] ) : array(),
                 );
                 break;
 

@@ -85,9 +85,9 @@ if ( ! class_exists( 'WFACP_Analytics_TikTok' ) ) {
 
 			$item_id = $this->get_product_content_id( $item_id );
 
-			$sub_total = $cart_item['line_subtotal'];
+			$sub_total = isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0;
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
-				$sub_total += $cart_item['line_subtotal_tax'];
+				$sub_total += isset( $cart_item['line_subtotal_tax'] ) ? $cart_item['line_subtotal_tax'] : 0;
 			}
 
 			$sub_total       = $this->number_format( $sub_total );
@@ -95,7 +95,7 @@ if ( ! class_exists( 'WFACP_Analytics_TikTok' ) ) {
 				'content_id'   => $item_id,
 				'content_type' => 'product',
 				'content_name' => $product_obj->get_name(),
-				'quantity'     => $cart_item['quantity'],
+				'quantity'     => isset( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1,
 				'price'        => $product_obj->get_price(),
 				'value'        => $sub_total,
 				'currency'     => get_woocommerce_currency(),

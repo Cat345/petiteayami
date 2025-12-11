@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace BWFAN\Symfony\Component\CssSelector\Parser;
 
-use Symfony\Component\CssSelector\Node\SelectorNode;
+use BWFAN\Symfony\Component\CssSelector\Node\SelectorNode;
 
 /**
  * CSS selector parser interface.

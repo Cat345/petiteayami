@@ -80,7 +80,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 				if ( in_array( '_' . $group, $this->data_groups, true ) && $cookie_value && is_array( $cookie_value ) && count( $cookie_value ) > 0 ) {
 
-					foreach ( $cookie_value as $key => $value ) { //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
+					foreach ( $cookie_value as $key => $value ) {
 
 						if ( ! is_array( $key ) ) {
 
@@ -242,7 +242,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 		public function maybe_load_from_transient() {
 
 			if ( is_array( $this->_data ) && count( $this->_data ) > 0 ) {
-				foreach ( $this->_data as $group => $data ) { //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
+				foreach ( $this->_data as $group => $data ) {
 
 					if ( isset( $this->_data[ $group ] ) && is_array( $this->_data[ $group ] ) && isset( $this->_data[ $group ]['transient_key'] ) ) {
 

@@ -1620,8 +1620,8 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$bump_sql = "SELECT 
 						" . $bump_id . " as 'object_id',
 						" . $bump_id . " as 'id',
-						COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE '%" . $bump_id . "%' OR conv.bump_rejected LIKE '%" . $bump_id . "%') THEN 1 END) AS 'conversions', 
-						SUM(CASE WHEN (conv.bump_accepted LIKE '%" . $bump_id . "%' OR conv.bump_rejected LIKE '%" . $bump_id . "%') THEN conv.bump_total ELSE 0 END) as 'revenue',
+						COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE '%" . $bump_id . "%') THEN 1 END) AS 'conversions', 
+						SUM(CASE WHEN (conv.bump_accepted LIKE '%" . $bump_id . "%') THEN conv.bump_total ELSE 0 END) as 'revenue',
 						COUNT(CASE WHEN (conv.bump_accepted LIKE '%" . $bump_id . "%' OR conv.bump_rejected LIKE '%" . $bump_id . "%') THEN 1 END) as 'views', 
 						'bump' as 'type' 
 						FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . " AS conv 

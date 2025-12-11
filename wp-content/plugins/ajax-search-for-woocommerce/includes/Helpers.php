@@ -673,7 +673,7 @@ class Helpers {
         /* ------------------------------------ *
          * Bonus for comparing individual words *
          * ------------------------------------ */
-        $words = explode( ' ', $phrase );
+        $words = explode( ' ', $phrase ?? '' );
         if ( count( $words ) > 1 ) {
             $args['check_similarity'] = false;
             foreach ( $words as $word ) {
@@ -693,7 +693,8 @@ class Helpers {
      * @return string
      */
     public static function normalizePhrase( string $phrase ) : string {
-        return mb_strtolower( trim( preg_replace( array('/\\s{2,}/', '/[\\t\\n]/'), ' ', $phrase ) ) );
+        $string = trim( preg_replace( array('/\\s{2,}/', '/[\\t\\n]/'), ' ', $phrase ) );
+        return mb_strtolower( remove_accents( self::removeGreekAccents( $string ) ) );
     }
 
     /**
@@ -1363,7 +1364,12 @@ class Helpers {
         if ( !$query->get( 'dgwt_wcas', false ) ) {
             return $posts;
         }
-        $query->set( 's', wp_unslash( $query->get( 'dgwt_wcas', '' ) ) );
+        $phrase = wp_unslash( $query->get( 'dgwt_wcas', '' ) );
+        // If phrase is URL encoded, decode it.
+        if ( preg_match( '/%[0-9A-Fa-f]{2}/', $phrase ) ) {
+            $phrase = urldecode( $phrase );
+        }
+        $query->set( 's', $phrase );
         return $posts;
     }
 
@@ -1627,6 +1633,9 @@ class Helpers {
      * @return int[]
      */
     public static function searchProducts( $phrase ) {
+        if ( doing_action( 'pre_get_posts' ) ) {
+            _doing_it_wrong( __METHOD__, 'You should not call Helpers::searchProducts() during pre_get_posts. Collect post IDs earlier.', '0.1.1' );
+        }
         $postIn = [];
         $results = DGWT_WCAS()->nativeSearch->getSearchResults( $phrase, true, 'product-ids' );
         if ( isset( $results['suggestions'] ) && is_array( $results['suggestions'] ) ) {

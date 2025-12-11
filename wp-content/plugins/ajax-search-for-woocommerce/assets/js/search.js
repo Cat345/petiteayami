@@ -2410,7 +2410,7 @@
                         prepend += that.apply3rdPartyPlaceholder('title_before', suggestion);
                         append += that.apply3rdPartyPlaceholder('title_after', suggestion);
 
-                        title = title.length > 0 ? ' title="' + title + '"' : '';
+                        title = title.length > 0 ? ' title="' + title.replace(/>/g, '&gt;') + '"' : '';
 
                         html += '<a href="' + url + '" class="' + classes + '" data-index="' + i + '">';
 

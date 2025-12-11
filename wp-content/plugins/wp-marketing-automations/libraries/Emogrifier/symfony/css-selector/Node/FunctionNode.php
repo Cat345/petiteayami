@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Node;
+namespace BWFAN\Symfony\Component\CssSelector\Node;
 
-use Symfony\Component\CssSelector\Parser\Token;
+use BWFAN\Symfony\Component\CssSelector\Parser\Token;
 
 /**
  * Represents a "<selector>:<name>(<arguments>)" node.

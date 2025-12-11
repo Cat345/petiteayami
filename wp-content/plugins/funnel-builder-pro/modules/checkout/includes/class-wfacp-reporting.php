@@ -397,6 +397,11 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				$get_counter = isset( $post_data['wfacp_counter'] ) ? $post_data['wfacp_counter'] : 0;
 				if ( absint( $get_counter ) === 0 || absint( $get_counter ) === 1 ) {
 					WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $wfacp_id, 4 );
+					
+					if ( function_exists( 'WFFN_Core' ) ) {
+						WFFN_Core()->logger->log( 'mark_step_converted' . ':: ' . $wfacp_id );
+					}
+
 					$this->update_session_key( $wfacp_id );
 
 					/** update store checkout views  */

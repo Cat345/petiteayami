@@ -713,8 +713,17 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 			if ( $product_ids ) {
 				foreach ( $product_ids as $product_id ) {
-					$product                 = wc_get_product( $product_id );
-					$product_name            = strip_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) ) . "(#" . $product_id . ")";//phpcs:ignore
+					$product = wc_get_product( $product_id );
+					if ( ! $product instanceof WC_Product ) {
+						continue;
+					}
+					$formatted_name = wp_strip_all_tags( BWF_WC_Compatibility::woocommerce_get_formatted_product_name( $product ) );
+					// Ensure product ID is always visible, even when SKU is present
+					if ( ! empty( $product->get_sku() ) && false === strpos( $formatted_name, '(#' . $product_id . ')' ) ) {
+						$product_name = $formatted_name . ' (#' . $product_id . ')';
+					} else {
+						$product_name = $formatted_name;
+					}
 					$products[ $product_id ] = $product_name;
 				}
 			}
@@ -1205,7 +1214,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			if ( 3 === $state ) {
 				$text = __( 'Indexing of orders is underway. This setting will work once the process completes.', 'funnel-builder-powerpack' );
 			} else {
-				$text = __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) . '">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder-powerpack' );
+				$text = sprintf( __( 'This rule needs indexing of past orders. Go to <a target="_blank" href="%s">Tools > Index Orders</a> and click \'Start\' to index orders', 'funnel-builder-powerpack' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings/tools' ) ) );
 			}
 
 			return $text;

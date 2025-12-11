@@ -13,6 +13,7 @@ import { PageActions } from '../../../store/actions/page';
 // Components
 import ResourceLink, { IResourceItem } from './ResourceLink';
 import PluginStatus, { IPluginStatus } from './PluginStatus';
+import CrossPromo from '../CrossPromo';
 
 // Helpers
 import { getPathPrefix } from '../../../helpers/utils';
@@ -76,32 +77,35 @@ const Sidebar = (props: IProps) => {
   };
 
   return (
-    <div className="sidebar-inner">
-      <List
-        className="resources-section sidebar-section"
-        header={<h2>{`${labels.helpful_resources}:`}</h2>}
-        dataSource={resources_links}
-        renderItem={(item: IResourceItem) => (
-          <List.Item key={item.key}>
-            <ResourceLink {...item} onClick={handlePageRedirect} />
-          </List.Item>
-        )}
-      />
-      <List
-        className="plugins-section sidebar-section"
-        header={<h2>{`${labels.license_activation_status}:`}</h2>}
-        loading={loading}
-        dataSource={premiumPlugins}
-        renderItem={(item: IPluginStatus) => (
-          <List.Item key={item.key}>
-            <PluginStatus {...item} itemKey={item.key} />
-          </List.Item>
-        )}
-      />
-      <p className="view-licenses">
-        <a onClick={() => handlePageRedirect('acfw-license')}>{labels.view_licenses}</a>
-      </p>
-    </div>
+    <>
+      <div className="sidebar-inner">
+        <List
+          className="resources-section sidebar-section"
+          header={<h2>{`${labels.helpful_resources}:`}</h2>}
+          dataSource={resources_links}
+          renderItem={(item: IResourceItem) => (
+            <List.Item key={item.key}>
+              <ResourceLink {...item} onClick={handlePageRedirect} />
+            </List.Item>
+          )}
+        />
+        <List
+          className="plugins-section sidebar-section"
+          header={<h2>{`${labels.license_activation_status}:`}</h2>}
+          loading={loading}
+          dataSource={premiumPlugins}
+          renderItem={(item: IPluginStatus) => (
+            <List.Item key={item.key}>
+              <PluginStatus {...item} itemKey={item.key} />
+            </List.Item>
+          )}
+        />
+        <p className="view-licenses">
+          <a onClick={() => handlePageRedirect('acfw-license')}>{labels.view_licenses}</a>
+        </p>
+      </div>
+      <CrossPromo />
+    </>
   );
 };
 

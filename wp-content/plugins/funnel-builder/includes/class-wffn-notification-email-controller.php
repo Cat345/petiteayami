@@ -23,46 +23,112 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 			$this->dates     = $dates;
 		}
 
-		/**
-		 * Retrieves the email sections for the notification email.
-		 *
-		 * @return array The array of email sections.
-		 */
-		public function get_email_sections() {
-			$date_range = $this->frequency === 'daily' ? WFFN_Email_Notification::format_date( $this->dates['from_date'] ) : sprintf( '%s - %s', WFFN_Email_Notification::format_date( $this->dates['from_date'] ), WFFN_Email_Notification::format_date( $this->dates['to_date'] ) );
+	/**
+	 * Get promotional campaign content for email
+	 * Returns campaign-specific subtitle and theme based on active campaigns
+	 * Uses common titles for grouped campaigns from admin_notifications class
+	 *
+	 * Total 7 campaigns grouped into 3 distinct campaigns for email:
+	 * - BF: Pre-BF, BF, Small Business Saturday, BF Extended (all use "BF" title)
+	 * - CM: CM, Extended CM (all use "CM" title)
+	 * - Green Monday: GM (uses "Green Monday" title)
+	 *
+	 * @return array|null Campaign content with subtitle and theme, or null if no campaign active
+	 */
+	private function get_campaign_content() {
+		// Only show for non-PRO users
+		if ( WFFN_Common::wffn_is_funnel_pro_active() ) {
+			return null;
+		}
 
-			$highlight_subtitle    = __( 'Gain insights into customer interactions with your store through these statistics', 'Funnelkit' );
-			$highlight_button_text = __( 'View Detail Report', 'Funnelkit' );
-			$highlight_button_url  = admin_url( 'admin.php?page=bwf' );
-			$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
-			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
-				$highlight_subtitle    = __( 'Unlock more insights.', 'Funnelkit' );
-				$highlight_button_text = __( 'Upgrade To PRO', 'Funnelkit' );
-				$highlight_button_url  = add_query_arg( [
-					'utm_campaign' => 'FB+Lite+Notification',
-					'utm_medium'   => 'Email+Highlight'
-				], $upgrade_link );
+		$campaign_data = null;
+
+		// Check which campaign group is active and fetch common title for that group
+
+		// BF group campaigns (4 campaigns) - All use common "BF" title
+		if ( WFFN_Core()->admin_notifications->show_pre_bfcm_header_notification()
+			|| WFFN_Core()->admin_notifications->show_bf_header_notification()
+			|| WFFN_Core()->admin_notifications->show_small_business_saturday_header_notification()
+			|| WFFN_Core()->admin_notifications->show_bfext_header_notification() ) {
+			// Use promo_bfcm for common "BF" title
+			$campaign_data = WFFN_Core()->admin_notifications->promo_bfcm( false );
+		}
+
+		// CM group campaigns (2 campaigns) - All use common "CM" title
+		elseif ( WFFN_Core()->admin_notifications->show_cm_header_notification()
+			|| WFFN_Core()->admin_notifications->show_cmext_header_notification() ) {
+			// Use promo_cmonly for common "CM" title
+			$campaign_data = WFFN_Core()->admin_notifications->promo_cmonly( false );
+		}
+
+		// Green Monday campaign (1 campaign) - Uses "Green Monday" title
+		elseif ( WFFN_Core()->admin_notifications->show_green_monday_header_notification() ) {
+			$campaign_data = WFFN_Core()->admin_notifications->promo_gm( false );
+		}
+
+		// Return campaign content if available
+		if ( ! empty( $campaign_data ) && isset( $campaign_data['title'] ) ) {
+			return [
+				'subtitle' => $campaign_data['title'],
+				'theme'    => 'dark',
+			];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieves the email sections for the notification email.
+	 *
+	 * @return array The array of email sections.
+	 */
+	public function get_email_sections() {
+		$date_range = $this->frequency === 'daily' ? WFFN_Email_Notification::format_date( $this->dates['from_date'] ) : sprintf( '%s - %s', WFFN_Email_Notification::format_date( $this->dates['from_date'] ), WFFN_Email_Notification::format_date( $this->dates['to_date'] ) );
+
+		$highlight_subtitle    = __( 'Gain insights into customer interactions with your store through these statistics', 'Funnelkit' );
+		$highlight_button_text = __( 'View Detail Report', 'Funnelkit' );
+		$highlight_button_url  = admin_url( 'admin.php?page=bwf' );
+		$highlight_theme       = 'light';
+		$upgrade_link          = 'https://funnelkit.com/exclusive-offer/';
+
+		if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
+			$highlight_subtitle    = __( 'Unlock more insights.', 'Funnelkit' );
+			$highlight_button_text = __( 'Upgrade To PRO', 'Funnelkit' );
+			$highlight_button_url  = add_query_arg( [
+				'utm_source' => 'Wordpress',
+				'utm_medium' => 'Email+Highlight'
+			], $upgrade_link );
+
+			// Check for active promotional campaigns and override content
+			$campaign_content = $this->get_campaign_content();
+			if ( ! is_null( $campaign_content ) ) {
+				$highlight_subtitle = $campaign_content['subtitle'];
+				$highlight_theme    = $campaign_content['theme'];
+				$highlight_button_url = add_query_arg( [
+					'utm_campaign' => 'BFCM'.gmdate('Y')
+				], $highlight_button_url );
 			}
-			$time                      = strtotime( gmdate( 'c' ) );
-			$get_total_orders_response = WFFN_REST_API_Dashboard_EndPoint::get_instance()->get_overview_data( [ 'overall' => true ] );
-			$get_total_orders          = $get_total_orders_response->get_data();
-			$total_revenue             = ! empty( $get_total_orders['data']['revenue'] ) ? floatval( $get_total_orders['data']['revenue'] ) : 0;
-			$email_sections            = [
-				[
-					'type' => 'email_header',
-				],
-				[
-					'type' => 'highlight',
-					'data' => [
-						'date'        => $date_range,
-						'title'       => __( 'Performance Report', 'Funnelkit' ),
-						'subtitle'    => ( ! WFFN_Common::wffn_is_funnel_pro_active() && ( $time >= 1732510800 && $time < 1733547600 ) ) ? __( '💰 Black Friday is HERE - Subscribe Now for Upto 55% Off 💰', 'funnel-builder' ) : $highlight_subtitle,
-						'button_text' => $highlight_button_text,
-						'button_url'  => $highlight_button_url,
-						'theme'       => ( ! WFFN_Common::wffn_is_funnel_pro_active() && ( $time >= 1732510800 && $time < 1733547600 ) ) ? 'dark' : 'light',
+		}
 
-					],
+		$get_total_orders_response = WFFN_REST_API_Dashboard_EndPoint::get_instance()->get_overview_data( [ 'overall' => true ] );
+		$get_total_orders          = $get_total_orders_response->get_data();
+		$total_revenue             = ! empty( $get_total_orders['data']['revenue'] ) ? floatval( $get_total_orders['data']['revenue'] ) : 0;
+		$email_sections            = [
+			[
+				'type' => 'email_header',
+			],
+			[
+				'type' => 'highlight',
+				'data' => [
+					'date'        => $date_range,
+					'title'       => __( 'Performance Report', 'Funnelkit' ),
+					'subtitle'    => $highlight_subtitle,
+					'button_text' => $highlight_button_text,
+					'button_url'  => $highlight_button_url,
+					'theme'       => $highlight_theme,
+
 				],
+			],
 				[
 					'type'     => 'dynamic',
 					'callback' => [ $this, 'get_dynamic_content_1' ],
@@ -96,15 +162,15 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 				];
 			}
 
-			if ( $total_revenue > 10 ) {
-				$cta_content = sprintf( __( "Since installing %s you have captured additional revenue of %s.", 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+		if ( $total_revenue > 10 ) {
+			$cta_content = sprintf( __( "Since installing %1\$s you have captured additional revenue of %2\$s.", 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
-				if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
-					$cta_content = sprintf( __( "Since installing %s you have captured additional revenue of %s. Upgrade to Pro for even more revenue.", 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
+			if ( ! WFFN_Common::wffn_is_funnel_pro_active() ) {
+				$cta_content = sprintf( __( "Since installing %1\$s you have captured additional revenue of %2\$s. Upgrade to Pro for even more revenue.", 'Funnelkit' ), '<strong>' . __( 'FunnelKit', 'Funnelkit' ) . '</strong>', '<strong>' . wc_price( $total_revenue ) . '</strong>' );
 
-					$cta_link = add_query_arg( [
-						'utm_campaign' => 'FB+Lite+Notification',
-						'utm_medium'   => 'Total+Revenue'
+					$cta_link  = add_query_arg( [
+						'utm_source' => 'Wordpress',
+						'utm_medium' => 'Total+Revenue'
 					], $upgrade_link );
 
 					$email_sections[] = [
@@ -142,9 +208,9 @@ if ( ! class_exists( 'WFFN_Notification_Email_Controller' ) ) {
 						),
 					);
 
-					$link = add_query_arg( [
-						'utm_campaign' => 'FB+Lite+Notification',
-						'utm_medium'   => 'Todo'
+					$link  = add_query_arg( [
+						'utm_source' => 'Wordpress',
+						'utm_medium' => 'Todo'
 					], $upgrade_link );
 
 					$email_sections[] = array(

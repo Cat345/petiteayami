@@ -78,6 +78,7 @@ if ( ! class_exists( 'BWFAN_DB_Table_Engagement_Tracking' ) && BWFAN_Common::is_
 			KEY `type` (`type`),
 			KEY `oid` (`oid`),
 			KEY `sid` (`sid`),
+			KEY `tid` (`tid`),
 			KEY `f_open` (`f_open`),
 			KEY `f_click` (`f_click`),
 			KEY `day` (`day`),

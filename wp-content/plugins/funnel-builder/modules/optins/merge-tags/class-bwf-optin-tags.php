@@ -111,14 +111,14 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			return $this->get_default( $attr, 'custom' );
 		}
 
-		public function get_default( $attr, $key ) {
-			if ( isset( $attr['default'] ) ) {
-				return $attr['default'];
-			}
-
-			return '';
-
+	public function get_default( $attr, $key ) {
+		if ( isset( $attr['default'] ) ) {
+			return esc_html( $attr['default'] );
 		}
+
+		return '';
+
+	}
 
 		public function maybe_set_optin( $opid = '' ) {
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Sabberworm\CSS\Value;
+namespace BWFAN\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\OutputFormat;
 
 class CalcRuleValueList extends RuleValueList
 {

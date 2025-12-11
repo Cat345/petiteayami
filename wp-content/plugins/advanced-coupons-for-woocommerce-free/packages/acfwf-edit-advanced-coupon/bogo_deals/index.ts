@@ -11,6 +11,7 @@ import {
   update_combined_objects_list,
   update_any_products_trigger_data,
   update_any_products_apply_data,
+  update_same_products_apply_data,
   save_on_coupon_publish,
 } from './save';
 import {
@@ -59,6 +60,11 @@ export default function bogo_deals_module_events(): void {
     'change acfw_fetch_data',
     '.any-products-apply-form input,.any-products-apply-form select',
     update_any_products_apply_data
+  );
+  $(module_block).on(
+    'change acfw_fetch_data',
+    '.same-products-apply-form input,.same-products-apply-form select',
+    update_same_products_apply_data
   );
   $(module_block).on('change', '.condition-quantity', restrict_quantity_value);
   $(module_block).on('blur', '.wc_input_price', remove_leading_zeros);

@@ -1073,7 +1073,7 @@ button#place_order:focus {
     margin-bottom: 8px
 }
 
-body  .wfacp-form:not(.wfacp-top):not(.wfacp-inside) .wfacp_main_form.woocommerce .wfacp_empty_field:not(.wfacp-anim-wrap) label {
+body .wfacp-form:not(.wfacp-top):not(.wfacp-inside) .wfacp_main_form.woocommerce .wfacp_empty_field:not(.wfacp-anim-wrap):not(.wfacp_woocommerce_form_coupon) label {
     margin-bottom: 8px !important;
 }
 

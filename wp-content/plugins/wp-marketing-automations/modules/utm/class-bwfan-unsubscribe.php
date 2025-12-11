@@ -1080,7 +1080,7 @@ class BWFAN_unsubscribe {
 			return;
 		}
 
-		delete_post_meta( get_the_ID(), delete_post_meta_by_key( Elementor\Core\Base\Document::CACHE_META_KEY ) );
+		delete_post_meta( get_the_ID(), Elementor\Core\Base\Document::CACHE_META_KEY );
 	}
 }
 

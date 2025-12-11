@@ -28,7 +28,7 @@ if ( ! class_exists( 'BWFAN_DB_Table_Conversions' ) && BWFAN_Common::is_pro_3_0(
 		}
 
 		/**
-		 * Get query for create table
+		 * Get a query for create table
 		 *
 		 * @return string
 		 */
@@ -48,6 +48,7 @@ if ( ! class_exists( 'BWFAN_DB_Table_Conversions' ) && BWFAN_Common::is_pro_3_0(
 			PRIMARY KEY (`ID`),
 			KEY `cid` (`cid`),
 			KEY `oid` (`oid`),
+			KEY `trackid` (`trackid`),
 			KEY `otype` (`otype`),
 			KEY `date` (`date`)
 		) $collate;";

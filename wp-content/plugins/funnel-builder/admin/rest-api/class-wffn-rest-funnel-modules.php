@@ -569,7 +569,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$found_coupons = array();
 
 			foreach ( $ids as $id ) {
-				$coupon_title    = sprintf( /* translators: $1: coupon title */ esc_html__( '%1$s', 'woocommerce' ), get_the_title( $id ) );
+				$coupon_title    = esc_html( get_the_title( $id ) );
 				$coupon['id']    = sanitize_title( $coupon_title );
 				$coupon['name']  = $coupon_title;
 				$found_coupons[] = $coupon;
@@ -781,10 +781,14 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$tracking_analysis['google_ua_initiate_checkout_event']          = ! empty( $values['google_ua_initiate_checkout_event'] ) ? bwf_clean( $values['google_ua_initiate_checkout_event'] ) : '';
 			$tracking_analysis['google_ua_initiate_checkout_event_position'] = ! empty( $values['google_ua_initiate_checkout_event_position'] ) ? bwf_clean( $values['google_ua_initiate_checkout_event_position'] ) : '';
 			$tracking_analysis['google_ua_add_payment_info_event']           = ! empty( $values['google_ua_add_payment_info_event'] ) ? bwf_clean( $values['google_ua_add_payment_info_event'] ) : '';
+			$tracking_analysis['google_ua_add_shipping_info_event']          = ! empty( $values['google_ua_add_shipping_info_event'] ) ? bwf_clean( $values['google_ua_add_shipping_info_event'] ) : 'false';
+			$tracking_analysis['google_ua_add_shipping_info_event_position'] = ! empty( $values['google_ua_add_shipping_info_event_position'] ) ? bwf_clean( $values['google_ua_add_shipping_info_event_position'] ) : '';
 
-			$tracking_analysis['google_ads_is_page_view']               = ! empty( $values['google_ads_is_page_view'] ) ? bwf_clean( $values['google_ads_is_page_view'] ) : 'false';
-			$tracking_analysis['google_ads_add_to_cart_event']          = ! empty( $values['google_ads_add_to_cart_event'] ) ? bwf_clean( $values['google_ads_add_to_cart_event'] ) : '';
-			$tracking_analysis['google_ads_add_to_cart_event_position'] = ! empty( $values['google_ads_add_to_cart_event_position'] ) ? bwf_clean( $values['google_ads_add_to_cart_event_position'] ) : '';
+			$tracking_analysis['google_ads_is_page_view']                     = ! empty( $values['google_ads_is_page_view'] ) ? bwf_clean( $values['google_ads_is_page_view'] ) : 'false';
+			$tracking_analysis['google_ads_add_to_cart_event']                = ! empty( $values['google_ads_add_to_cart_event'] ) ? bwf_clean( $values['google_ads_add_to_cart_event'] ) : '';
+			$tracking_analysis['google_ads_add_to_cart_event_position']       = ! empty( $values['google_ads_add_to_cart_event_position'] ) ? bwf_clean( $values['google_ads_add_to_cart_event_position'] ) : '';
+			$tracking_analysis['google_ads_initiate_checkout_event']          = ! empty( $values['google_ads_initiate_checkout_event'] ) ? bwf_clean( $values['google_ads_initiate_checkout_event'] ) : '';
+			$tracking_analysis['google_ads_initiate_checkout_event_position'] = ! empty( $values['google_ads_initiate_checkout_event_position'] ) ? bwf_clean( $values['google_ads_initiate_checkout_event_position'] ) : '';
 
 			$tracking_analysis['pint_is_page_view']               = ! empty( $values['pint_is_page_view'] ) ? bwf_clean( $values['pint_is_page_view'] ) : 'false';
 			$tracking_analysis['pint_initiate_checkout_event']    = ! empty( $values['pint_initiate_checkout_event'] ) ? bwf_clean( $values['pint_initiate_checkout_event'] ) : 'false';
@@ -934,7 +938,10 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				'upsell_failed_recovery' => [
 					'title'   => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
 					'heading' => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
-					'hint'    => __( 'In upsell recovery feature we show credit card fields to customers in case the charge attempt fails. <a href="' . admin_url( 'admin.php?page=bwf&path=/settings/stripe' ) . '" data-link="react">Click here to activate Funnelkit Stripe</a>', 'funnel-builder' ),
+					'hint'    => sprintf( 
+						__( 'In upsell recovery feature we show credit card fields to customers in case the charge attempt fails. %s', 'funnel-builder' ),
+						'<a href="' . admin_url( 'admin.php?page=bwf&path=/settings/stripe' ) . '" data-link="react">' . __( 'Click here to activate Funnelkit Stripe', 'funnel-builder' ) . '</a>'
+					),
 
 					'slug'     => 'upsell_failed_recovery',
 					'fields'   => [
@@ -3277,7 +3284,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							$additional_tabs[] = [
 								'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 								'heading'     => __( 'Personalization Shortcodes', 'funnel-builder' ),
-								'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+								'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
 								'fields'      => $shortcode
 							];
 						} else if ( isset( $design['selected_type'] ) && in_array( $design['selected_type'], [ 'beaver', 'custom', 'custom_page' ], true ) ) {
@@ -3318,7 +3325,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 												$additional_tabs[] = [
 													'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 													'heading'     => __( 'Shortcodes', 'funnel-builder' ),
-													'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+													'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
 													'fields'      => $shortcode
 												];
 											} else {
@@ -3353,7 +3360,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 									'label' => __( 'Form Shortcode', 'funnel-builder' ),
 									'value' => '[wfacp_forms]',
 									'id'    => 'wfacp_forms',
-									'hint'  => __( 'Use this shortcode to embed the checkout form on this page. Switch to ' . $link . '.', 'woofunnels-aero-checkout' )
+									'hint'  => sprintf( __( 'Use this shortcode to embed the checkout form on this page. Switch to %s.', 'woofunnels-aero-checkout' ), $link )
 								],
 							],
 						];

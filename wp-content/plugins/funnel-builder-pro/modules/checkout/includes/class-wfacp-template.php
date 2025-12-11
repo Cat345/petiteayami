@@ -583,8 +583,8 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			}
 
 			$checkout_fields = $this->get_checkout_fields();
-			$advancedFields  = $checkout_fields['advanced'];
-			$min_age         = ! empty( $advancedFields['_bwf_dob']['_bwf_dob'] ) ? $advancedFields['_bwf_dob']['_bwf_dob'] : "";
+			$advancedFields  = isset( $checkout_fields['advanced'] ) ? $checkout_fields['advanced'] : [];
+			$min_age         = ( isset( $advancedFields['_bwf_dob']['_bwf_dob'] ) && ! empty( $advancedFields['_bwf_dob']['_bwf_dob'] ) ) ? $advancedFields['_bwf_dob']['_bwf_dob'] : "";
 
 
 			$data = [
@@ -2668,11 +2668,11 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 		public function get_mini_cart_fragments( $fragments, $widget_id ) {
 			ob_start();
 			include WFACP_Core()->dir( 'public/global/mini-cart/mini-cart-items.php' );
-			$fragments[ '#wfacp_mini_cart_items_' . $widget_id ] = ob_get_clean();
+			$fragments[ '.wfacp_mini_cart_items_' . $widget_id ] = ob_get_clean();
 
 			ob_start();
 			include WFACP_Core()->dir( 'public/global/mini-cart/mini-cart-review-totals.php' );
-			$fragments[ '#wfacp_mini_cart_reviews_' . $widget_id ] = ob_get_clean();
+			$fragments[ '.wfacp_mini_cart_reviews_' . $widget_id ] = ob_get_clean();
 
 			return $fragments;
 		}

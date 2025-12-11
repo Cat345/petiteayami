@@ -79,7 +79,7 @@ if ( ! class_exists( 'BWFABT_Core' ) ) {
 			define( 'BWFABT_PLUGIN_DIR', __DIR__ );
 			define( 'BWFABT_PLUGIN_URL', untrailingslashit( plugin_dir_url( BWFABT_PLUGIN_FILE ) ) );
 			define( 'BWFABT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-			define( 'BWFABT_DB_VERSION', '1.4' );
+			define( 'BWFABT_DB_VERSION', '1.5' );
 
 			( defined( 'BWFABT_IS_DEV' ) && true === BWFABT_IS_DEV ) ? define( 'BWFABT_VERSION_DEV', time() ) : define( 'BWFABT_VERSION_DEV', BWFABT_VERSION );
 		}
@@ -95,71 +95,78 @@ if ( ! class_exists( 'BWFABT_Core' ) ) {
 		 * Loading classes
 		 */
 		public function load_classes() {
-			/**
-			 * Loads the admin
-			 */
-			require __DIR__ . '/includes/class-bwfabt-admin.php';
-			$this->admin = BWFABT_Admin::get_instance();
-			require __DIR__ . '/includes/class-bwfabt-role-capability.php';
-			require __DIR__ . '/includes/class-bwf-admin-breadcrumbs.php';
+			try {
+				/**
+				 * Loads the admin
+				 */
+				require __DIR__ . '/includes/class-bwfabt-admin.php';
+				$this->admin = BWFABT_Admin::get_instance();
+				require __DIR__ . '/includes/class-bwfabt-role-capability.php';
+				require __DIR__ . '/includes/class-bwf-admin-breadcrumbs.php';
 
-			require __DIR__ . '/includes/class-bwfabt-ajax-controller.php';
+				require __DIR__ . '/includes/class-bwfabt-ajax-controller.php';
 
-			require __DIR__ . '/includes/class-bwfabt-data-store.php';
+				require __DIR__ . '/includes/class-bwfabt-data-store.php';
 
-			require __DIR__ . '/includes/class-bwfabt-experiment.php';
-			require __DIR__ . '/includes/class-bwfabt-experiment-table.php';
+				require __DIR__ . '/includes/class-bwfabt-experiment.php';
+				require __DIR__ . '/includes/class-bwfabt-experiment-table.php';
 
-			require __DIR__ . '/includes/class-bwfabt-variant.php';
+				require __DIR__ . '/includes/class-bwfabt-variant.php';
 
-			require __DIR__ . '/includes/class-bwfabt-controller.php';
-			require __DIR__ . '/includes/class-bwfabt-controllers.php';
+				require __DIR__ . '/includes/class-bwfabt-controller.php';
+				require __DIR__ . '/includes/class-bwfabt-controllers.php';
 
-			require __DIR__ . '/includes/class-bwfabt-report.php';
-			require __DIR__ . '/includes/class-bwfabt-reports.php';
-			require __DIR__ . '/includes/class-bwfabt-woofunnels-support.php';
+				require __DIR__ . '/includes/class-bwfabt-report.php';
+				require __DIR__ . '/includes/class-bwfabt-reports.php';
+				require __DIR__ . '/includes/class-bwfabt-woofunnels-support.php';
 
 
-			if ( function_exists( 'wfocu_is_woocommerce_active' ) && wfocu_is_woocommerce_active() ) {
-				require __DIR__ . '/test-modules/upstroke/class-bwfabt-controller-upstroke.php';
-				require __DIR__ . '/test-modules/upstroke/class-bwfabt-report-upstroke.php';
-				require __DIR__ . '/test-modules/offer/class-bwfabt-controller-offer.php';
-				require __DIR__ . '/test-modules/offer/class-bwfabt-report-offer.php';
-			}
-
-			if ( function_exists( 'wfob_is_woocommerce_active' ) && wfob_is_woocommerce_active() ) {
-				require __DIR__ . '/test-modules/order-bumps/class-bwfabt-controller-order-bump.php';
-				require __DIR__ . '/test-modules/order-bumps/class-bwfabt-report-order-bump.php';
-			}
-
-			if ( function_exists( 'WFFN_Core' ) && class_exists( 'WFFN_Core' ) ) {
-				require __DIR__ . '/test-modules/landing/class-bwfabt-controller-landing.php';
-				require __DIR__ . '/test-modules/landing/class-bwfabt-report-landing.php';
-
-				if ( function_exists( 'wffn_is_wc_active' ) && wffn_is_wc_active() ) {
-					require __DIR__ . '/test-modules/thankyou/class-bwfabt-controller-thankyou.php';
-					require __DIR__ . '/test-modules/thankyou/class-bwfabt-report-thankyou.php';
+				if ( function_exists( 'wfocu_is_woocommerce_active' ) && wfocu_is_woocommerce_active() ) {
+					require __DIR__ . '/test-modules/upstroke/class-bwfabt-controller-upstroke.php';
+					require __DIR__ . '/test-modules/upstroke/class-bwfabt-report-upstroke.php';
+					require __DIR__ . '/test-modules/offer/class-bwfabt-controller-offer.php';
+					require __DIR__ . '/test-modules/offer/class-bwfabt-report-offer.php';
 				}
 
-				if ( function_exists( 'WFOPP_Core' ) && class_exists( 'WFOPP_Core' ) ) {
-					require __DIR__ . '/test-modules/optin/class-bwfabt-controller-optin.php';
-					require __DIR__ . '/test-modules/optin/class-bwfabt-report-optin.php';
-					require __DIR__ . '/test-modules/optin-ty/class-bwfabt-controller-optin-ty.php';
-					require __DIR__ . '/test-modules/optin-ty/class-bwfabt-report-optin-ty.php';
+				if ( function_exists( 'wfob_is_woocommerce_active' ) && wfob_is_woocommerce_active() ) {
+					require __DIR__ . '/test-modules/order-bumps/class-bwfabt-controller-order-bump.php';
+					require __DIR__ . '/test-modules/order-bumps/class-bwfabt-report-order-bump.php';
 				}
-				require __DIR__ . '/compatibilities/class-bwfabt-wffn-compatibility.php';
-			}
 
-			if ( function_exists( 'wfacp_is_woocommerce_active' ) && wfacp_is_woocommerce_active() ) {
-				require __DIR__ . '/test-modules/aero-checkout/class-bwfabt-controller-aero-checkout.php';
-				require __DIR__ . '/test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php';
-			}
+				if ( function_exists( 'WFFN_Core' ) && class_exists( 'WFFN_Core' ) ) {
+					require __DIR__ . '/test-modules/landing/class-bwfabt-controller-landing.php';
+					require __DIR__ . '/test-modules/landing/class-bwfabt-report-landing.php';
 
-			//Rest API classes
-			require __DIR__ . '/includes/class-bwfabt-rest-controller.php';
-			require __DIR__ . '/includes/class-bwfabt-rest-variant.php';
-			require __DIR__ . '/includes/class-bwfabt-rest-experiment.php';
-			require __DIR__ . '/includes/class-bwfabt-rest-analytics.php';
+					if ( function_exists( 'wffn_is_wc_active' ) && wffn_is_wc_active() ) {
+						require __DIR__ . '/test-modules/thankyou/class-bwfabt-controller-thankyou.php';
+						require __DIR__ . '/test-modules/thankyou/class-bwfabt-report-thankyou.php';
+					}
+
+					if ( function_exists( 'WFOPP_Core' ) && class_exists( 'WFOPP_Core' ) ) {
+						require __DIR__ . '/test-modules/optin/class-bwfabt-controller-optin.php';
+						require __DIR__ . '/test-modules/optin/class-bwfabt-report-optin.php';
+						require __DIR__ . '/test-modules/optin-ty/class-bwfabt-controller-optin-ty.php';
+						require __DIR__ . '/test-modules/optin-ty/class-bwfabt-report-optin-ty.php';
+					}
+					require __DIR__ . '/compatibilities/class-bwfabt-wffn-compatibility.php';
+				}
+
+				if ( function_exists( 'wfacp_is_woocommerce_active' ) && wfacp_is_woocommerce_active() ) {
+					require __DIR__ . '/test-modules/aero-checkout/class-bwfabt-controller-aero-checkout.php';
+					require __DIR__ . '/test-modules/aero-checkout/class-bwfabt-report-aero-checkout.php';
+				}
+
+				//Rest API classes
+				require __DIR__ . '/includes/class-bwfabt-rest-controller.php';
+				require __DIR__ . '/includes/class-bwfabt-rest-variant.php';
+				require __DIR__ . '/includes/class-bwfabt-rest-experiment.php';
+				require __DIR__ . '/includes/class-bwfabt-rest-analytics.php';
+			} catch ( \Throwable $e ) {
+				BWF_logger::get_instance()->log(
+					'Error loading AB test classes in ' . $e->getFile() . ':' . $e->getLine() . ' - ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString(),
+					'bwfabt-class-loading'
+				);
+			}
 		}
 
 		/**

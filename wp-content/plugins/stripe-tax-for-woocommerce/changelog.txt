@@ -1,4 +1,7 @@
 *** Stripe Tax - Sales tax automation for WooCommerce ***
+2025-10-23 - version 1.2.4
+* Fixed reversal error message for older tax transactions.
+
 2025-09-29 - version 1.2.3
 * Fixed a bug that prevented tax calculations for orders created via WooCommerce mobile app on iOS.
 * Fixed a bug where order tax rate IDs were in the wrong format.

@@ -2,13 +2,13 @@
 //phpcs:disable
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier;
+namespace BWFAN\Pelago\Emogrifier;
 
-use Pelago\Emogrifier\Css\CssDocument;
-use Pelago\Emogrifier\HtmlProcessor\AbstractHtmlProcessor;
-use Pelago\Emogrifier\Utilities\CssConcatenator;
-use Symfony\Component\CssSelector\CssSelectorConverter;
-use Symfony\Component\CssSelector\Exception\ParseException;
+use BWFAN\Pelago\Emogrifier\Css\CssDocument;
+use BWFAN\Pelago\Emogrifier\HtmlProcessor\AbstractHtmlProcessor;
+use BWFAN\Pelago\Emogrifier\Utilities\CssConcatenator;
+use BWFAN\Symfony\Component\CssSelector\CssSelectorConverter;
+use BWFAN\Symfony\Component\CssSelector\Exception\ParseException;
 
 /**
  * This class provides functions for converting CSS styles into inline style attributes in your HTML code.

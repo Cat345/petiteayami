@@ -36,9 +36,13 @@ class BWFAN_Conditional_Controller extends BWFAN_Base_Step_Controller {
 					continue;
 				}
 
-				$rule_data = $rule;
-				$rule      = BWFAN_Core()->rules->get_rule( $rule['filter'] );
-				if ( ! $rule instanceof BWFAN_Rule_Base || ! $rule->is_match_v2( $this->automation_data, $rule_data ) ) {
+				$rule_data  = $rule;
+				$rule_class = BWFAN_Core()->rules->get_rule( $rule['filter'] );
+				if ( empty( $rule_class ) ) {
+					BWFAN_Core()->rules->load_rules_classes();
+					$rule_class = BWFAN_Core()->rules->get_rule( $rule['filter'] );
+				}
+				if ( ! $rule_class instanceof BWFAN_Rule_Base || ! $rule_class->is_match_v2( $this->automation_data, $rule_data ) ) {
 					$rule_set_passed = false;
 					break;
 				}

@@ -522,7 +522,10 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 
 		public function get_all_upsells( $request, $type = 'analytics' ) {
 			global $wpdb;
+			$is_fkcart_exists = class_exists( 'FKCart\Pro\Rest\Conversions' );
+
 			try {
+				$is_fkcart_exists = class_exists( 'FKCart\Pro\Rest\Conversions' );
 				$limit      = isset( $request['limit'] ) && '' !== $request['limit'] ? intval( $request['limit'] ) : 5;
 				$page_no    = isset( $request['page_no'] ) ? intval( $request['page_no'] ) : 1;
 				$offset     = intval( $limit ) * intval( $page_no - 1 );
@@ -604,7 +607,6 @@ if ( ! class_exists( 'WFFN_REST_API_Dashboard_EndPoint' ) ) {
 							}
 						}
 					}
-					$is_fkcart_exists = class_exists( 'FKCart\Pro\Rest\Conversions' );
 					if ( $is_fkcart_exists ) {
 						$cart_upsells_data = $this->get_cart_upsells_for_analytics( $start_date, $end_date );
 						if ( ! empty( $cart_upsells_data ) ) {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Order delivery date pro tyche
  *  class WFACP_Compatibility_Order_Delivery_Date_Tyche_lite
@@ -25,10 +24,13 @@ if ( ! class_exists( 'WFACP_Compatibility_Order_Delivery_Date_Tyche_lite' ) ) {
 
 		}
 
-		public function remove_action() {
-
-			WFACP_Common::remove_actions( 'woocommerce_after_checkout_billing_form', 'Orddd_Lite_Process', 'orddd_lite_my_custom_checkout_field' );
-		}
+	public function remove_action() {
+		// Issue #8215: Remove the field from the appropriate hook based on appearance settings
+		// The plugin defines ORDDD_LITE_SHOPPING_CART_HOOK constant dynamically based on user settings
+		// Use the plugin's own constant to determine which hook to remove (DRY principle)
+		$hook_to_remove = defined( 'ORDDD_LITE_SHOPPING_CART_HOOK' ) ? ORDDD_LITE_SHOPPING_CART_HOOK : 'woocommerce_after_checkout_billing_form';
+		WFACP_Common::remove_actions( $hook_to_remove, 'Orddd_Lite_Process', 'orddd_lite_my_custom_checkout_field' );
+	}
 
 		public function add_field( $fields ) {
 			if ( $this->is_enable() ) {

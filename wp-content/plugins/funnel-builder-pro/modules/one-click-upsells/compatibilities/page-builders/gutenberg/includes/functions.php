@@ -83,6 +83,10 @@ if ( ! function_exists( 'bwfupsell_get_block_defaults' ) ) {
 			'classWrap'              => 'bwf-upsell-offer-wrap wfocu-price-wrapper',
 			'content'                => 'Regular Price',
 			'secondaryContent'       => 'Offer Price',
+			'show_signup_fee'        => true,
+			'signup_label'           => 'Signup Fee: ',
+			'show_rec_price'         => true,
+			'recurring_label'        => 'Recurring Total: ',
 		] );
 
 		$defaults['product-quantity'] = array_merge( $common, [

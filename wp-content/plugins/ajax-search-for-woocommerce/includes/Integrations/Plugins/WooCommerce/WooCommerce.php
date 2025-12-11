@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\WooCommerce;
 
 use \DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,9 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Integration with native WooCommerce filters
  */
-class WooCommerce {
+class WooCommerce extends AbstractPluginIntegration {
+	protected const LABEL         = 'WooCommerce';
+	protected const VERSION_CONST = 'WC_VERSION';
 
-	public function init() {
+	public static function isActive(): bool {
+		return true;
+	}
+
+	public function init(): void {
 
 		add_filter( 'woocommerce_layered_nav_link', array( $this, 'add_search_param_to_link' ) );
 

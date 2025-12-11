@@ -4,7 +4,7 @@
  * Plugin Name: FunnelKit Order Bumps
  * Plugin URI: https://funnelkit.com
  * Description: Use Order Bumps to make last minute pre-purchase offers. Let user upgrade their order with a single click. Control visibility by setting rules. Super Easy to customize Bump designs.
- * Version: 3.12.1
+ * Version: 3.13.3
  * Author: Funnelkit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -108,7 +108,7 @@ if ( ! class_exists( 'WFOB_Core' ) ) {
 		 * Defining constants
 		 */
 		public function define_plugin_properties() {
-			define( 'WFOB_VERSION', '3.12.1' );
+			define( 'WFOB_VERSION', '3.13.3' );
 			define( 'WFOB_MIN_WC_VERSION', '3.0' );
 			define( 'WFOB_BWF_VERSION', '1.10.12.61' );
 			define( 'WFOB_MIN_WP_VERSION', '4.9' );

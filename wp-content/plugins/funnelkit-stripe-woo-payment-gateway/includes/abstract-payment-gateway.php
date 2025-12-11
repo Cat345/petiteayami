@@ -579,7 +579,6 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 	 */
 	public function get_payment_intent( $order, $idempotency_key, $args ) {
 		$stripe_api  = $this->set_client_by_order_payment_mode( $order );
-		$retry_count = Helper::get_meta( $order, '_fkwcs_retry_count' );
 
 		// Use enhanced validation to check if existing intent can be reused
 		$existing_intent = $this->validate_existing_intent( $order );
@@ -608,11 +607,12 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 			unset( $args['customer'] );
 		}
 
+		$args = apply_filters( 'fkwcs_payment_intent_data', $args, $order );
+
+		$retry_count = Helper::get_meta( $order, '_fkwcs_retry_count' );
 		if ( ! empty( $retry_count ) ) {
 			$idempotency_key = $idempotency_key . '_' . $retry_count;
 		}
-
-		$args = apply_filters( 'fkwcs_payment_intent_data', $args, $order );
 
 		$args     = array(
 			array( $args ),
@@ -621,11 +621,6 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 		$response = $stripe_api->payment_intents( 'create', $args );
 		$intent   = $this->handle_client_response( $response );
 
-		if ( empty( $retry_count ) ) {
-			$order->update_meta_data( '_fkwcs_retry_count', 1 );
-		} else {
-			$order->update_meta_data( '_fkwcs_retry_count', absint( $retry_count ) + 1 );
-		}
 		$this->save_intent_to_order( $order, $intent );
 
 		return $intent;
@@ -661,6 +656,7 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 			if ( in_array( $payment_intent->status, $invalid_statuses, true ) ) {
 				return false;
 			}
+
 
 			// Verify intent belongs to this specific order
 			if ( ! empty( $payment_intent->metadata['order_id'] ) ) {
@@ -2846,6 +2842,17 @@ abstract class Abstract_Payment_Gateway extends WC_Payment_Gateway {
 				remove_filter( 'woocommerce_new_order_note_data', array( $this, 'add_transition_suffix_in_note' ), 9999 );
 
 			}
+
+			// Increment and save retry count when order is marked as failed
+			$retry_count = Helper::get_meta( $order, '_fkwcs_retry_count' );
+			if ( empty( $retry_count ) ) {
+				$retry_count = 1;
+			} else {
+				$retry_count = absint( $retry_count ) + 1;
+			}
+			$order->update_meta_data( '_fkwcs_retry_count', $retry_count );
+			$order->save_meta_data();
+
 			do_action( 'fkwcs_order_failed', $order->get_id(), $message );
 		} catch ( \Exception $e ) {
 			/* translators: error message */

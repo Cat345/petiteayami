@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Pelago\Emogrifier\Css;
+namespace BWFAN\Pelago\Emogrifier\Css;
 
-use Sabberworm\CSS\CSSList\AtRuleBlockList as CssAtRuleBlockList;
-use Sabberworm\CSS\CSSList\Document as SabberwormCssDocument;
-use Sabberworm\CSS\Parser as CssParser;
-use Sabberworm\CSS\Property\AtRule as CssAtRule;
-use Sabberworm\CSS\Property\Charset as CssCharset;
-use Sabberworm\CSS\Property\Import as CssImport;
-use Sabberworm\CSS\Renderable as CssRenderable;
-use Sabberworm\CSS\RuleSet\DeclarationBlock as CssDeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet as CssRuleSet;
-use Sabberworm\CSS\Settings as ParserSettings;
+use BWFAN\Sabberworm\CSS\CSSList\AtRuleBlockList as CssAtRuleBlockList;
+use BWFAN\Sabberworm\CSS\CSSList\Document as SabberwormCssDocument;
+use BWFAN\Sabberworm\CSS\Parser as CssParser;
+use BWFAN\Sabberworm\CSS\Property\AtRule as CssAtRule;
+use BWFAN\Sabberworm\CSS\Property\Charset as CssCharset;
+use BWFAN\Sabberworm\CSS\Property\Import as CssImport;
+use BWFAN\Sabberworm\CSS\Renderable as CssRenderable;
+use BWFAN\Sabberworm\CSS\RuleSet\DeclarationBlock as CssDeclarationBlock;
+use BWFAN\Sabberworm\CSS\RuleSet\RuleSet as CssRuleSet;
+use BWFAN\Sabberworm\CSS\Settings as ParserSettings;
 
 /**
  * Parses and stores a CSS document from a string of CSS, and provides methods to obtain the CSS in parts or as data

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabberworm\CSS\Value;
+namespace BWFAN\Sabberworm\CSS\Value;
 
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Parsing\ParserState;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Parsing\ParserState;
 
 /**
  * A `CSSFunction` represents a special kind of value that also contains a function name and where the values are the

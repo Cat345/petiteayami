@@ -218,7 +218,7 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 			$experiment    = [];
 			$update_data   = [];
 			$experiment_id = $args['entity_id'];
-			$query         = "SELECT activity, control FROM {table_name} WHERE id = " . $experiment_id;
+			$query         = "SELECT activity, control, status FROM {table_name} WHERE id = " . $experiment_id;
 			$results       = $this->get_results( $query );
 			$get_data      = isset( $results[0] ) ? $results[0] : [];
 			/**
@@ -230,8 +230,15 @@ if ( ! class_exists( 'BWFABT_Data_Store' ) ) {
 				unset( $get_data['control'] );
 			}
 			if ( isset( $args['type'] ) && absint( $control_id ) > 0 ) {
-				$experiment_status = ( 1 === absint( $args['type'] ) ) ? '' : 'not_active';
-				update_post_meta( $control_id, '_experiment_status', $experiment_status );
+				$experiment_status = isset( $get_data['status'] ) ? absint( $get_data['status'] ) : BWFABT_Experiment::STATUS_DRAFT;
+				
+				// Check experiment status instead of activity type
+				// Only experiments with STATUS_START (2) are considered active
+				// STATUS_DRAFT (1), STATUS_PAUSE (3), STATUS_COMPLETE (4) are not active
+				$is_active = ( BWFABT_Experiment::STATUS_START === $experiment_status );
+				$experiment_status_meta = $is_active ? '' : 'not_active';
+				
+				update_post_meta( $control_id, '_experiment_status', $experiment_status_meta );
 			}
 
 			unset( $args['entity_id'] );

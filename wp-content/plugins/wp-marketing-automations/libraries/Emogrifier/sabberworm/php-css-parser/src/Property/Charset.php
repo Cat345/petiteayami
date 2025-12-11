@@ -1,10 +1,10 @@
 <?php
 
-namespace Sabberworm\CSS\Property;
+namespace BWFAN\Sabberworm\CSS\Property;
 
-use Sabberworm\CSS\Comment\Comment;
-use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Value\CSSString;
+use BWFAN\Sabberworm\CSS\Comment\Comment;
+use BWFAN\Sabberworm\CSS\OutputFormat;
+use BWFAN\Sabberworm\CSS\Value\CSSString;
 
 /**
  * Class representing an `@charset` rule.

@@ -31,8 +31,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Astra' ) ) {
 			WFACP_Common::remove_actions( 'wp', 'ASTRA_Ext_WooCommerce_Markup', 'modern_checkout' );
 			WFACP_Common::remove_actions( 'wp', 'ASTRA_Ext_WooCommerce_Markup', 'multistep_checkout' );
 			WFACP_Common::remove_actions( 'woocommerce_before_checkout_form', 'ASTRA_Ext_WooCommerce_Markup', 'checkout_collapsible_order_review' );
-
-
 		}
 
 		public function remove_actions() {
@@ -42,6 +40,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Astra' ) ) {
 			remove_action( 'woocommerce_checkout_order_review', 'astra_woocommerce_ul_close', 30 );
 			remove_action( 'woocommerce_checkout_before_customer_details', 'astra_two_step_checkout_address_li_wrapper', 5 );
 			remove_action( 'woocommerce_checkout_after_customer_details', 'astra_woocommerce_li_close' );
+            if ( class_exists( 'ASTRA_Ext_WooCommerce_Markup' ) ) {
+                WFACP_Common::remove_actions( 'woocommerce_cart_item_name', 'ASTRA_Ext_WooCommerce_Markup', 'add_cart_product_image' );
+            }
 		}
 
 

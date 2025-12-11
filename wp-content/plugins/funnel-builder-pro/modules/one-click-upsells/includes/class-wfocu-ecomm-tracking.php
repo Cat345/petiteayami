@@ -1600,7 +1600,6 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 				$pint_products       = [];
 				$google_products     = [];
 				$tiktok_contents     = [];
-				$content_id_format   = $this->admin_general_settings->get_option( 'content_id_value' );
 
 				foreach ( $get_package['products'] as $product ) {
 
@@ -1633,7 +1632,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 						$products[]      = array_map( 'html_entity_decode', array(
 							'name'       => $product['_offer_data']->name,
 							'category'   => esc_attr( $category_name ),
-							'id'         => ( 'product_sku' === $content_id_format ) ? get_post_meta( $fbpid, '_sku', true ) : $fbpid,
+							'id'         => $fbpid,
 							'quantity'   => $product['qty'],
 							'item_price' => $product['args']['total'],
 						) );
@@ -2032,7 +2031,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 									for (var eachLS in wfocuRemoveLS) {
 										localStorage.removeItem(wfocuRemoveLS[eachLS]);
 									}
-	
+
 								}
 							});
                         });
@@ -2525,7 +2524,7 @@ if ( ! class_exists( 'WFOCU_Ecomm_Tracking' ) ) {
 	                            $is_clear = true;
 							}
                         }
-						
+
 					}
 					/**
 					 * clear data for last pixel purchase events

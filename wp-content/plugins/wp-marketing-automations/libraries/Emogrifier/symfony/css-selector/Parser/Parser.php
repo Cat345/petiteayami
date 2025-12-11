@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace BWFAN\Symfony\Component\CssSelector\Parser;
 
-use Symfony\Component\CssSelector\Exception\SyntaxErrorException;
-use Symfony\Component\CssSelector\Node;
-use Symfony\Component\CssSelector\Parser\Tokenizer\Tokenizer;
+use BWFAN\Symfony\Component\CssSelector\Exception\SyntaxErrorException;
+use BWFAN\Symfony\Component\CssSelector\Node;
+use BWFAN\Symfony\Component\CssSelector\Parser\Tokenizer\Tokenizer;
 
 /**
  * CSS selector parser.

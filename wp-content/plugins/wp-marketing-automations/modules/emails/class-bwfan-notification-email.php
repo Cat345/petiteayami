@@ -345,7 +345,7 @@ class BWFAN_Notification_Email {
 	 * @return array The recipients for the email.
 	 */
 	private function get_recipients() {
-		$recipients = array( get_option( 'admin_email' ) );
+		$recipients = [];
 
 		if ( isset( $this->global_settings['bwf_notification_user_selector'] ) && is_array( $this->global_settings['bwf_notification_user_selector'] ) ) {
 			foreach ( $this->global_settings['bwf_notification_user_selector'] as $user ) {
@@ -365,6 +365,9 @@ class BWFAN_Notification_Email {
 				}
 			}
 		}
+		if ( empty( $recipients ) ) {
+			$recipients[] = get_option( 'admin_email' );
+		}
 
 		/** Filter array */
 		$recipients = array_filter( $recipients, function ( $email ) {
@@ -376,7 +379,12 @@ class BWFAN_Notification_Email {
 			sort( $recipients );
 		}
 
-		return $recipients;
+		/**
+		 * Filter the email recipients before returning
+		 *
+		 * @param array $recipients Array of email addresses
+		 */
+		return apply_filters( 'bwfan_notification_recipients', $recipients );
 	}
 
 	/**

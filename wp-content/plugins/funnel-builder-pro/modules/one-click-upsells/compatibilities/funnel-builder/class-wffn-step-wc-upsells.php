@@ -523,12 +523,16 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			if ( empty( $wfacp_id ) ) {
 				$orderID = WFFN_Core()->data->get( 'wc_order' );
 				$order   = wc_get_order( $orderID );
-				if ( ! $order instanceof WC_Order ) {
-					WFFN_Core()->logger->log( 'No Order found.' );
+				if (! $order instanceof WC_Order) {
 
-					return false;
+					$order_id = WFOCU_Core()->rules->get_environment_var( 'order' );
+					$order    = wc_get_order( $order_id );
+					if (! $order instanceof WC_Order) {
+						WFFN_Core()->logger->log('No Order found.');
+
+						return false;
+					}
 				}
-
 				$get_checkout_id = $order->get_meta( '_wfacp_post_id', true );
 				$wfacp_id        = $get_checkout_id;
 

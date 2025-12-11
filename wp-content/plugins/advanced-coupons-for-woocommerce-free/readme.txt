@@ -1,9 +1,9 @@
-=== Advanced Coupons – WooCommerce Coupons & Store Credit ===
+=== Advanced Coupons – Enhanced WooCommerce Coupons & Store Credit ===
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
 Tested up to: 6.8
-Stable tag: 4.6.9
+Stable tag: trunk
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -380,6 +380,16 @@ Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
 
+= 4.7.0 =
+* Bug Fix: BOGO GET item added all available stock instead of the defined quantity when stock management was enabled
+* Bug Fix: Unable to uncheck the "automatically add deal product" option when selecting BOGO Specific Product or Same Product
+* Bug Fix: Unable to click the button on the "Non-Qualifying coupon" cart condition error notice
+* Bug Fix: A used coupon showed an incorrect remaining message on the "My Coupons" page
+* Bug Fix: WPML Multicurrency Integration: Store credits did not apply correctly on secondary currencies
+* Feature: Added a new coupon popup (Choose Manual Creation or Coupon Template)
+* Improvement: Allowed BOGO condition Product Categories to select a category with no products
+* Improvement: Displayed the store credit expiry date in the customer's Store Credits dashboard
+
 = 4.6.9 =
 * Bug Fix: BOGO discount is not applied on translated cart/checkout pages
 * Bug Fix: BOGO discount not applying on wholesale products
@@ -395,10 +405,8 @@ Josh Kohlbach (CEO of Rymera Web Co)
 * Feature: Custom taxonomy feature for grouping coupons based on the features they use
 * Improvement: Add option to hide expired coupons in Advanced Coupons block
 * Improvement: Add coupon count under feature term in usage tracking data
-* Improvement: Add upsell for premium features in coupon editor
-* Improvement: Feature Custom Taxonomy: Add new filter for ACFWP module
+* Improvement: Feature Custom Taxonomy: Add required filters for premium plugin
 * Improvement: Option to hide store credits on My Account if zero balance
-* Improvement: Rename feature custom taxonomy on coupon list following standard format
 
 = 4.6.8 =
 * Bug Fix: BOGO discount is not applied on wholesale product until page is refreshed

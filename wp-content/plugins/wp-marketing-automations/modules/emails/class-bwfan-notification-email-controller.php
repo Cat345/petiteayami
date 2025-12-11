@@ -65,10 +65,19 @@ class BWFAN_Notification_Email_Controller {
 			'button_url'  => $highlight_button_url,
 			'theme'       => 'light',
 		);
-		$time  = strtotime( gmdate( 'c' ) );
-		if ( false === bwfan_is_autonami_pro_active() && $time >= 1732510800 && $time < 1733547600 ) {
+
+		$notification = BWFAN_Common::sale_notification_menu();
+
+		if ( false === bwfan_is_autonami_pro_active() && ! empty( $notification ) ) {
 			$theme['theme']    = 'dark';
-			$theme['subtitle'] = __( '💰 Black Friday is HERE - Subscribe Now for Upto 55% Off 💰', 'wp-marketing-automations' );
+			$title             = ! empty( $notification['title'] ) ? $notification['title'] : __( 'Black Friday', 'wp-marketing-autoations' );
+			$theme['subtitle'] = '💰 ' . $title . __( ' is HERE - Subscribe Now for Upto 55% Off 💰', 'wp-marketing-automations' );
+			if ( ! empty( $notification['campaign'] ) ) {
+				$theme['button_url'] = add_query_arg( [
+					'utm_campaign' => 'FKA+Lite+Notification+' . $notification['campaign'],
+					'utm_medium'   => 'Email+Highlight'
+				], $upgrade_link );
+			}
 		}
 
 		$email_sections = array(

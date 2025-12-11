@@ -1,7 +1,6 @@
 <?php
-
 /**
- * WooCommerce Smart Coupons by StoreApps
+ * WooCommerce Smart Coupons by StoreApps v.9.54.0
  */
 if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 	class WFACP_Storeapps_Coupons {
@@ -13,6 +12,10 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 
 			add_action( 'wc_sc_before_auto_apply_coupons', [ $this, 'handle_auto_apply' ], 10 );
 
+			/**
+			 * Remove wc_sc_before_auto_apply_coupons hook when version is greater than or equal to 9.54.0
+			 */
+			add_action( 'wfacp_template_load', array( $this, 'remove_handle_aero_coupons' ) );
 		}
 
 		/**
@@ -41,6 +44,23 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 				return;
 			}
 			add_filter( 'woocommerce_notice_types', '__return_empty_array' );
+		}
+
+		/**
+		 * Remove handle auto coupons hook for newer versions
+		 */
+		public function remove_handle_aero_coupons() {
+			if ( ! defined( 'WC_SC_PLUGIN_FILE' ) ) {
+				return;
+			}
+
+			$plugin_data = get_plugin_data( WC_SC_PLUGIN_FILE );
+			$current_wsc_version = $plugin_data['Version'];
+
+			// Remove hook when version is >= 9.54.0
+			if ( version_compare( $current_wsc_version, '9.54.0', '>=' ) ) {
+				WFACP_Common::remove_actions( 'wc_sc_before_auto_apply_coupons', 'WFACP_Storeapps_Coupons', 'handle_auto_apply' );
+			}
 		}
 	}
 

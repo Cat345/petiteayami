@@ -272,6 +272,52 @@ return [
 					],
 				],
 			],
+			[
+				'type'    => 'radios',
+				'key'     => 'google_ua_add_shipping_info_event',
+				'label'   => __( 'Enable AddShippingInfo Event', 'funnel-builder' ),
+				'hint'    => '',
+				'toggler' => [
+					'key'   => 'override_global_track_event',
+					'value' => 'true',
+				],
+				'values'  => [
+					[
+						'value' => 'true',
+						'name'  => __( 'Yes', 'funnel-builder' ),
+					],
+					[
+						'value' => 'false',
+						'name'  => __( 'No', 'funnel-builder' ),
+					],
+				],
+			],
+			[
+				'type'    => 'select',
+				'key'     => 'google_ua_add_shipping_info_event_position',
+				'label'   => __( 'Trigger Event', 'funnel-builder' ),
+				'hint'    => '',
+				'toggler' => [
+					[
+						"key"   => "override_global_track_event",
+						"value" => "true"
+					],
+					[
+						"key"   => "google_ua_add_shipping_info_event",
+						"value" => "true"
+					]
+				],
+				'values'  => [
+					[
+						'value' => 'load',
+						'name'  => __( 'On Page Load', 'funnel-builder' ),
+					],
+					[
+						'value' => 'button',
+						'name'  => __( 'On Button Click', 'funnel-builder' ),
+					],
+				],
+			],
 			// Google Ads.
 			[
 				'type'    => 'bwf-label',
@@ -335,6 +381,43 @@ return [
 					],
 					[
 						"key"   => "google_ads_add_to_cart_event",
+						"value" => "true"
+					]
+				],
+				'values'  => $track_event_options,
+			],
+			[
+				'type'    => 'radios',
+				'key'     => 'google_ads_initiate_checkout_event',
+				'label'   => __( 'Enable InitiateCheckout Event', 'funnel-builder' ),
+				'hint'    => '',
+				'toggler' => [
+					'key'   => 'override_global_track_event',
+					'value' => 'true',
+				],
+				'values'  => [
+					[
+						'value' => 'true',
+						'name'  => __( 'Yes', 'funnel-builder' ),
+					],
+					[
+						'value' => 'false',
+						'name'  => __( 'No', 'funnel-builder' ),
+					],
+				],
+			],
+			[
+				'type'    => 'select',
+				'key'     => 'google_ads_initiate_checkout_event_position',
+				'label'   => __( 'Trigger Event', 'funnel-builder' ),
+				'hint'    => '',
+				'toggler' => [
+					[
+						"key"   => "override_global_track_event",
+						"value" => "true"
+					],
+					[
+						"key"   => "google_ads_initiate_checkout_event",
 						"value" => "true"
 					]
 				],

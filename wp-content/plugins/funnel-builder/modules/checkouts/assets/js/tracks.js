@@ -19,7 +19,7 @@
             this.positions = data.positions;
             this.is_bumpevent = false;
             this.data = {
-                'add_to_cart': data.add_to_cart ? data.add_to_cart : {}, 'checkout': data.checkout, 'payment_info': {}, 'last_checkout_data': null
+                'add_to_cart': data.add_to_cart ? data.add_to_cart : {}, 'checkout': data.checkout, 'payment_info': {}, 'shipping_info': data.shipping_info ? data.shipping_info : {}, 'last_checkout_data': null
             };
 
             this.add_to_cart_run = false;
@@ -43,6 +43,9 @@
             }
             if (this.positions.checkout === type) {
                 this.checkout();
+            }
+            if (this.positions.shipping_info === type) {
+                this.shipping_info();
             }
         }
 
@@ -140,6 +143,33 @@
                     console.log(error);
                 }
 
+            });
+
+            // Trigger shipping_info event when shipping fields change
+            $(document.body).on('change', '#shipping_country, #shipping_state, #shipping_postcode, #shipping_city, #shipping_address_1, #shipping_address_2', function () {
+                try {
+                    self.fire_events('shipping_info');
+                }catch (error) {
+                    console.log( error );
+                }
+            });
+
+            // Trigger shipping_info event when cart is updated after shipping changes
+            $(document.body).on('updated_checkout', function () {
+                try {
+                    self.fire_events('shipping_info');
+                }catch (error) {
+                    console.log( error );
+                }
+            });
+
+            // Trigger shipping_info event when shipping method is selected
+            $(document.body).on('change', 'input[name="shipping_method[0]"], input[name="shipping_method"]', function () {
+                try {
+                    self.fire_events('shipping_info');
+                }catch (error) {
+                    console.log( error );
+                }
             });
 
             $(document.body).on('wfob_product_added', function (e, v) {
@@ -282,6 +312,12 @@
         payment_info() {
             if (this.settings.payment === 'true') {
                 this.event_payment_info();
+            }
+        }
+
+        shipping_info() {
+            if (this.settings.shipping === 'true') {
+                this.event_shipping_info();
             }
         }
 
@@ -571,6 +607,28 @@
             this.gtag('event', 'add_payment_info', event_data);
         }
 
+        event_shipping_info() {
+            var event_data = {send_to: this.track_id, non_interaction: true};
+            if ('google_ua' === this.track_name) {
+                var shipping_data = this.data.shipping_info;
+                if (shipping_data.length > 0) {
+                    event_data = shipping_data[0];
+                    event_data.send_to = this.track_id;
+                    event_data.non_interaction = true;
+                    
+                    // Add enhanced shipping data structure (similar to PixelYourSite)
+                    if (event_data.shipping_address) {
+                        event_data.user_data = event_data.user_data || {};
+                        event_data.user_data.address = [event_data.shipping_address];
+                    }
+                }
+            }
+
+            event_data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(event_data) : event_data;
+
+            this.gtag('event', 'add_shipping_info', event_data);
+        }
+
 
         custom_event(event, data) {
             data.send_to = this.track_id;
@@ -617,8 +675,16 @@
             return data;
         }
 
-        event_checkout() {
-
+        event_checkout(checkout_data) {
+            var event_data = {
+                send_to: this.track_id, 
+                event_category: "ecommerce", 
+                items: JSON.parse(checkout_data), 
+                non_interaction: true
+            };
+            event_data = this.set_send_id(event_data);
+            event_data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(event_data) : event_data;
+            this.gtag('event', 'begin_checkout', event_data);
         }
 
         event_payment_info() {

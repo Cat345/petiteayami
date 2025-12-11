@@ -83,7 +83,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
                                     /** move to order received page */
                                     if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                        window.location = wfocu_vars.order_received_url + '&ec=' + jqXHR.status;
+                                        window.location = wfocu_vars.order_received_url;
 
                                     }
 
@@ -146,7 +146,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					),
 
 				);
-				WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args" . print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args: " . wp_json_encode( $data ) );
 				$arguments = apply_filters( 'wfocu_ppcp_gateway_process_client_order_api_args', array(
 					'method'  => 'POST',
 					'headers' => array(
@@ -159,6 +159,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				), $get_order, $posted_data, $offer_package );
 
 				$arguments['body'] = wp_json_encode( $arguments['body'] );
+				WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args: " . wp_json_encode( $arguments ) );
 
 				$payment_env = $get_order->get_meta( '_ppcp_paypal_payment_mode' );
 				// Refer https://developer.paypal.com/docs/api/orders/v2/ documentation to generate create order endpoint.
@@ -247,8 +248,19 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			if ( empty( $token ) ) {
 				$payment_env   = $order->get_meta( '_ppcp_paypal_payment_mode' );
 				$ppcp_settings = $this->get_paypal_options();
-				if ( ! isset( $ppcp_settings['client_id'] ) || ! isset( $ppcp_settings['client_secret'] ) ) {
+				if ( function_exists( 'WFOCU_Core' ) && isset( WFOCU_Core()->log ) ) {
+					WFOCU_Core()->log->log(
+						'PayPal get_bearer ppcp_settings: ' . print_r( $ppcp_settings, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					);
+				}
+				if ( ! isset( $ppcp_settings['client_id'] ) || empty( $ppcp_settings['client_id'] ) || ! isset( $ppcp_settings['client_secret'] ) || empty( $ppcp_settings['client_secret'] ) ) {
 					$ppcp_settings = $this->get_paypal_settings();
+				}
+
+				if ( function_exists( 'WFOCU_Core' ) && isset( WFOCU_Core()->log ) ) {
+					WFOCU_Core()->log->log(
+						'PayPal get_bearer ppcp_settings: ' . print_r( $ppcp_settings, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					);
 				}
 				$client_id  = $ppcp_settings['client_id'];
 				$secret_key = $ppcp_settings['client_secret'];
@@ -262,7 +274,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					),
 				);
 
+
 				$response = wp_remote_get( $url, $args ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
+				if ( function_exists( 'WFOCU_Core' ) && isset( WFOCU_Core()->log ) ) {
+					WFOCU_Core()->log->log(
+						'PayPal get_bearer response: ' . print_r( $response, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					);
+				}
 
 				if ( ! is_wp_error( $response ) ) {
 					$res_body = json_decode( $response['body'] );
@@ -272,6 +290,32 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 
 			return $token;
 		}
+		/**
+		 * Retrieve a PayPal option by key, checking both get_paypal_settings and get_paypal_options.
+		 *
+		 * @param string $key The option key to retrieve.
+		 * @return mixed|null The option value if found, or null.
+		 */
+		public function get_paypal_option_by_key( $key ) {
+			$value = null;
+
+			if ( method_exists( $this, 'get_paypal_settings' ) ) {
+				$settings = $this->get_paypal_settings();
+				if ( is_array( $settings ) && array_key_exists( $key, $settings ) && ! empty( $settings[ $key ] ) ) {
+					$value = $settings[ $key ];
+				}
+			}
+
+			if ( null === $value && method_exists( $this, 'get_paypal_options' ) ) {
+				$options = $this->get_paypal_options();
+				if ( is_array( $options ) && array_key_exists( $key, $options ) && ! empty( $options[ $key ] ) ) {
+					$value = $options[ $key ];
+				}
+			}
+
+			return $value;
+		}
+
 
 		/**
 		 * Create purchase unite for create order.
@@ -283,21 +327,63 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 * @return array $purchase_unit.
 		 */
 		public function get_purchase_units( $order, $package ) {
-			$paypal_settings = get_option( 'woocommerce-ppcp-settings' );
-			$invoice_id      = $paypal_settings['prefix'] . '-wfocu-' . $this->get_order_number( $order );
-			$total_amount    = $package['total'];
+
+
+			$prefix     = $this->get_paypal_option_by_key( 'prefix' );
+			$invoice_id = $prefix . '-wfocu-' . $this->get_order_number( $order );
+
+			// Get breakdown first to calculate the correct total
+			$breakdown = $this->get_item_breakdown( $order, $package );
+
+			// Calculate total from breakdown components to ensure accuracy
+			$calculated_total = 0;
+			$calculated_total += (float) $breakdown['item_total']['value'];
+			$calculated_total += (float) $breakdown['tax_total']['value'];
+
+			// Add shipping if present
+			if ( isset( $breakdown['shipping'] ) ) {
+				$calculated_total += (float) $breakdown['shipping']['value'];
+			}
+
+			// Subtract shipping discount if present
+			if ( isset( $breakdown['shipping_discount'] ) ) {
+				$calculated_total -= (float) $breakdown['shipping_discount']['value'];
+			}
+
+			// Use the calculated total to ensure PayPal validation passes
+			$total_amount = $this->round( $calculated_total );
+
+			// If there's a significant discrepancy, adjust the breakdown to match package total
+			$package_total = $this->round( $package['total'] );
+			$discrepancy = abs( $total_amount - $package_total );
+
+			if ( $discrepancy > 0.01 ) { // Allow for small rounding differences
+				// Adjust tax to match the package total
+				$tax_adjustment = $package_total - $calculated_total;
+				$new_tax = (float) $breakdown['tax_total']['value'] + $tax_adjustment;
+
+				if ( $new_tax >= 0 ) {
+					$breakdown['tax_total']['value'] = (string) $this->round( $new_tax );
+					$total_amount = $package_total;
+					WFOCU_Core()->log->log( "PayPal amount adjusted - Tax adjusted by: {$tax_adjustment}, New tax: {$breakdown['tax_total']['value']}, Final total: {$total_amount}" );
+				}
+			}
+
+			// Log the calculation for debugging
+			WFOCU_Core()->log->log( "PayPal amount calculation - Item total: {$breakdown['item_total']['value']}, Tax total: {$breakdown['tax_total']['value']}, Calculated total: {$total_amount}, Original package total: {$package['total']}" );
+
 			$purchase_unit   = array(
 				'reference_id' => 'default',
 				'amount'       => array(
 					'currency_code' => $order->get_currency(),
-					'value'         => (string) $this->round( $total_amount ),
-					'breakdown'     => $this->get_item_breakdown( $order, $package ),
+					'value'         => (string) $total_amount,
+					'breakdown'     => $breakdown,
 				),
 				'description'  => __( 'Special offer OTO', 'woocommerce-one-click-upsells' ), // phpcs:ignore
 				'items'        => $this->add_offer_item_data( $order, $package ),
 				'payee'        => array(
-					'email_address' => $paypal_settings['merchant_email'],
-					'merchant_id'   => $paypal_settings['merchant_id'],
+					'email_address' => $this->get_paypal_option_by_key( 'merchant_email' ),
+					'merchant_id'   => $this->get_paypal_option_by_key( 'merchant_id' ),
 				),
 				'shipping'     => array(
 					'name' => array(
@@ -323,50 +409,54 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 
 			$breakdown      = array();
 			$order_subtotal = 0.00;
-			foreach ( $offer_package['products'] as $item ) {
 
-				$order_subtotal += $item['args']['total'];
+			// Calculate item total from individual product prices
+			foreach ( $offer_package['products'] as $item ) {
+				$order_subtotal += $item['price'];
 			}
+
 			$breakdown['item_total'] = array(
 				'currency_code' => $order->get_currency(),
 				'value'         => (string) $this->round( $order_subtotal ),
 			);
-			$breakdown['tax_total']  = array(
+
+			// Calculate tax more accurately
+			$tax_amount = 0;
+			if ( isset( $offer_package['taxes'] ) && ! empty( $offer_package['taxes'] ) ) {
+				$tax_amount = $this->validate_tax( $offer_package );
+			}
+
+			$breakdown['tax_total'] = array(
 				'currency_code' => $order->get_currency(),
-				'value'         => ( isset( $offer_package['taxes'] ) ) ? ( (string) $this->validate_tax( $offer_package ) ) : '0',
+				'value'         => (string) $this->round( $tax_amount ),
 			);
 
-
+			// Handle shipping
 			if ( ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ) {
 				/**
 				 * It means we have shipping to pass
 				 */
-				if ( 0 <= $offer_package['shipping']['diff']['cost'] ) {
-					$shipping = ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? ( (string) $offer_package['shipping']['diff']['cost'] ) : 0;
+				$shipping_cost = $offer_package['shipping']['diff']['cost'];
 
-					if ( ! empty( $shipping ) && 0 < intval( $shipping ) ) {
+				if ( 0 <= $shipping_cost ) {
+					if ( ! empty( $shipping_cost ) && 0 < $shipping_cost ) {
 						$breakdown['shipping'] = array(
 							'currency_code' => $order->get_currency(),
-							'value'         => (string) $this->round( $shipping ),
+							'value'         => (string) $this->round( $shipping_cost ),
 						);
 					}
-
 				} else {
-					$shipping = ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? ( (string) $offer_package['shipping']['diff']['cost'] ) : 0;
-
-
+					// Negative shipping cost means discount
 					$breakdown['shipping_discount'] = array(
 						'currency_code' => $order->get_currency(),
-						'value'         => (string) abs( $this->round( $shipping ) ),
+						'value'         => (string) $this->round( abs( $shipping_cost ) ),
 					);
-					$breakdown['shipping']          = array(
+					$breakdown['shipping'] = array(
 						'currency_code' => $order->get_currency(),
 						'value'         => '0.00',
 					);
-
 				}
 			}
-
 
 			return $breakdown;
 		}
@@ -388,10 +478,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		public function add_offer_item_data( $order, $offer_package ) {
 
 
-			$order_items = [];
-			foreach ( $offer_package['products'] as $item ) {
+		$order_items = [];
+		foreach ( $offer_package['products'] as $item ) {
 
-				$product = $item['data'];
+			$product = $item['data'];
+
+			try {
 				$title   = $product->get_title();
 				if ( strlen( $title ) > 127 ) {
 					$title = substr( $title, 0, 124 ) . '...';
@@ -405,6 +497,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					'quantity'    => 1,
 					'description' => $this->get_item_description( $product ),
 				);
+			} catch ( Throwable $e ) {
+				WFOCU_Core()->log->log( 'Error processing product data in PayPal payments gateway: ' . $e->getMessage() );
+				continue;
+			}
 
 			};
 
@@ -666,25 +762,31 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			$tax = $this->round( $offer_package['taxes'] );
 
 			$total_amount = (float) $offer_package['total'];
-			$shipping     = ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? ( (string) $offer_package['shipping']['diff']['cost'] ) : 0;
+			$shipping     = ( isset( $offer_package['shipping'] ) && isset( $offer_package['shipping']['diff'] ) ) ? (float) $offer_package['shipping']['diff']['cost'] : 0;
 
 			$item_total = 0;
 			foreach ( $offer_package['products'] as $item ) {
 				$item_total += $this->round( $item['price'] );
+			}
 
-			};
-			if ( $total_amount === ( $item_total + $tax ) ) {
+			// Calculate expected total: item_total + tax + shipping
+			$expected_total = $item_total + $tax + $shipping;
+
+			// If totals match, return the tax as is
+			if ( $this->round( $total_amount ) === $this->round( $expected_total ) ) {
 				return $tax;
 			}
 
-			if ( $total_amount !== ( $item_total + $tax ) ) {
-				$tax += $total_amount - ( $item_total + $tax + $this->round( $shipping ) );
-			}
-			if ( $tax < 0 ) {
+			// If there's a discrepancy, adjust tax to match the total
+			$tax_adjustment = $total_amount - $expected_total;
+			$adjusted_tax = $tax + $tax_adjustment;
+
+			// Ensure tax is not negative
+			if ( $adjusted_tax < 0 ) {
 				return $this->round( 0 );
 			}
 
-			return $this->round( $tax );
+			return $this->round( $adjusted_tax );
 		}
 
 		public function get_paypal_settings() {

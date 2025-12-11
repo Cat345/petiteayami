@@ -61,10 +61,10 @@ if ( ! class_exists( 'WFACP_Analytics_Pint' ) ) {
 
 			$item_id   = $this->get_cart_item_id( $cart_item );
 			$item_id   = $this->get_product_content_id( $item_id );
-			$sub_total = apply_filters( 'wfacp_add_to_cart_tracking_line_subtotal', $cart_item['line_subtotal'], 'pint', $this->admin_general_settings );
+			$sub_total = apply_filters( 'wfacp_add_to_cart_tracking_line_subtotal', isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0, 'pint', $this->admin_general_settings );
 
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
-				$sub_total += $cart_item['line_subtotal_tax'];
+				$sub_total += isset( $cart_item['line_subtotal_tax'] ) ? $cart_item['line_subtotal_tax'] : 0;
 			}
 
 			$sub_total = $this->number_format( $sub_total );

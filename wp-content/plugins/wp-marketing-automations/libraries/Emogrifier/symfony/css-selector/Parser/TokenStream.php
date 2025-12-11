@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser;
+namespace BWFAN\Symfony\Component\CssSelector\Parser;
 
-use Symfony\Component\CssSelector\Exception\InternalErrorException;
-use Symfony\Component\CssSelector\Exception\SyntaxErrorException;
+use BWFAN\Symfony\Component\CssSelector\Exception\InternalErrorException;
+use BWFAN\Symfony\Component\CssSelector\Exception\SyntaxErrorException;
 
 /**
  * CSS selector token stream.

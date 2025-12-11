@@ -32,8 +32,9 @@ $wfacp_colspan_attr_2 = $colspan_attr_2;
 add_filter( 'wfacp_order_shipping_colspan', 'WFACP_Common_Helper::order_review_shipping_colspan' );
 do_action( 'wfacp_mini_cart_before_order_total', $this, [] );
 
+$dynamic_class_name = 'wfacp_mini_cart_reviews_' . $widget_id;
 ?>
-    <table class="shop_table <?php echo $instance->get_template_slug(); ?> wfacp_mini_cart_reviews mini_cart_wrap_here" id="wfacp_mini_cart_reviews_<?php echo $widget_id ?>">
+    <table class="shop_table <?php echo $instance->get_template_slug(); ?> wfacp_mini_cart_reviews mini_cart_wrap_here <?php echo $dynamic_class_name ?>" id="<?php echo $dynamic_class_name ?>">
         <tr class="cart-subtotal">
             <th colspan="<?php echo $colspan_first ?>"><span><?php _e( 'Subtotal', 'woocommerce' ); ?></span></th>
             <td colspan="<?php echo $colspan_second ?>"><?php wc_cart_totals_subtotal_html(); ?></td>

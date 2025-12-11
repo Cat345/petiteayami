@@ -204,8 +204,6 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			/* ------------------------------------ Products Start------------------------------------ */
 
-
-
 			$mini_cart_product_typo = [
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_items',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td:not(.product-total)',
@@ -227,17 +225,25 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name bdi',
 			];
 
+
+
+
+			$css = array();
+			foreach ( $mini_cart_product_typo as $selector ) {
+				$css[] = array(
+					'property' => 'typography',
+					'selector' => $selector,
+				);
+			}
 			$this->controls['mini_cart_product_typo'] = array(
 				'group' => 'styleProducts',
 				'label' => esc_html__( 'Typography' ),
 				'type'  => 'typography',
-				'css'   => array(
-					array(
-						'property' => 'typography',
-						'selector' => implode( ',', $mini_cart_product_typo ),
-					),
-				),
+				'inline'  => true,
+				'popup'   => false,
+				'css'   => $css,
 			);
+
 
 			$this->controls['mini_cart_product_image_border'] = array(
 				'group' => 'styleProducts',
@@ -464,26 +470,32 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 
 			$mini_cart_product_meta_typo = [
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount)',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td small',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td bdi',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount)',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th span',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td small',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td bdi',
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a',
 			];
+
+
+			$css = array();
+			foreach ( $mini_cart_product_meta_typo as $selector ) {
+				$css[] = array(
+					'property' => 'typography',
+					'selector' => $selector,
+				);
+			}
+
 
 			$this->controls['mini_cart_product_meta_typo'] = array(
 				'group' => 'styleCartTotal',
 				'label' => esc_html__( 'Typography' ),
 				'type'  => 'typography',
-				'css'   => array(
-					array(
-						'property' => 'typography',
-						'selector' => implode( ',', $mini_cart_product_meta_typo ),
-					),
-				),
+				'css'   => $css,
+				'inline'  => true,
 			);
 
 			/* ------------------------------------ End ------------------------------------ */
@@ -601,30 +613,36 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h  table.shop_table tbody tr.order-total td p',
 			);
 
+			$css = array();
+			foreach ( $cart_total_label_typo_option as $selector ) {
+				$css[] = array(
+					'property' => 'typography',
+					'selector' => $selector,
+				);
+			}
+
 			$this->controls['mini_cart_total_label_typo'] = array(
 				'group'   => 'styleCartTotal',
 				'label'   => esc_html__( 'Label Typography' ),
 				'type'    => 'typography',
-				'css'     => array(
-					array(
-						'property' => 'typography',
-						'selector' => implode( ', ', $cart_total_label_typo_option ),
-					),
-				),
-				'exclude' => array( 'text-align' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+				'css'     => $css,
+				'exclude' => array( 'text-align','color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 			);
+
+			$css = array();
+			foreach ( $cart_total_value_typo_option as $selector ) {
+				$css[] = array(
+					'property' => 'typography',
+					'selector' => $selector,
+				);
+			}
 
 			$this->controls['mini_cart_total_typo'] = array(
 				'group'   => 'styleCartTotal',
 				'label'   => esc_html__( 'Price Typography' ),
 				'type'    => 'typography',
-				'css'     => array(
-					array(
-						'property' => 'typography',
-						'selector' => implode( ', ', $cart_total_value_typo_option ),
-					),
-				),
-				'exclude' => array( 'text-align' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+				'css'     =>$css,
+				'exclude' => array( 'text-align' ,'color'), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 			);
 
 			$this->set_current_group( 'styleCartTotal' );
@@ -640,7 +658,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'type'  => 'separator',
 			);
 
-			$wfacp_mini_cart_font_family = array(
+			$wfacp_mini_cart_font_family = [
 				'.wfacp_mini_cart_start_h *',
 				'.wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount',
 				'.wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount bdi',
@@ -679,7 +697,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
 				'.wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
 				'.wfacp_mini_cart_start_h .wfacp-coupon-btn',
-			);
+			];
 
 			$this->set_current_group( 'styleSettings' );
 			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_font_family );

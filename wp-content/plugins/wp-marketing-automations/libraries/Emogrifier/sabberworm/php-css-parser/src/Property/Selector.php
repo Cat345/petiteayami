@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabberworm\CSS\Property;
+namespace BWFAN\Sabberworm\CSS\Property;
 
 /**
  * Class representing a single CSS selector. Selectors have to be split by the comma prior to being passed into this

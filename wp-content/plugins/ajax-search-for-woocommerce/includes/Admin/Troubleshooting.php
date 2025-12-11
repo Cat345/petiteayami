@@ -676,6 +676,67 @@ class Troubleshooting {
     }
 
     /**
+     * Test if Product Filter by WBW has Remove Actions Before Filtering option enabled.
+     * If so, it can cause filtering to return 0 results.
+     *
+     * Enable this option when ajax filtering does not work as expected. For example, sorting does not work. Removes filters such as posts_orderby and pre_get_posts.
+     *
+     * @return array The test result.
+     */
+    public function getTestProductFilterByWBW() {
+        $result = array(
+            'label'       => '',
+            'status'      => 'good',
+            'description' => '',
+            'actions'     => '',
+            'test'        => 'ProductFilterByWBW',
+        );
+        if ( !defined( 'WPF_VERSION' ) ) {
+            return $result;
+        }
+        if ( !class_exists( '\\FrameWpf' ) ) {
+            return $result;
+        }
+        $filters = \FrameWpf::_()->getModule( 'woofilters' )->getModel()->getFromTbl();
+        if ( !is_array( $filters ) ) {
+            return $result;
+        }
+        $removeActionBeforeFilteringOptionEnabled = false;
+        foreach ( $filters as $filter ) {
+            if ( !isset( $filter['setting_data'] ) ) {
+                continue;
+            }
+            $raw = ( is_array( $filter['setting_data'] ) ? $filter['setting_data'] : unserialize( $filter['setting_data'] ) );
+            if ( !is_array( $raw ) ) {
+                continue;
+            }
+            $settings = ( isset( $raw['settings'] ) && is_array( $raw['settings'] ) ? $raw['settings'] : array() );
+            // Break if AJAX is disabled for this filter settings.
+            if ( isset( $settings['enable_ajax'] ) && $settings['enable_ajax'] === '0' ) {
+                continue;
+            }
+            if ( !empty( $settings['remove_actions'] ) && (string) $settings['remove_actions'] === '1' ) {
+                $removeActionBeforeFilteringOptionEnabled = true;
+                break;
+            }
+        }
+        if ( !$removeActionBeforeFilteringOptionEnabled ) {
+            return $result;
+        }
+        $result['status'] = 'critical';
+        $option_label = __( 'Remove Actions Before Filtering', 'ajax-search-for-woocommerce' );
+        $result['label'] = sprintf( __( 'WBW Product Filter: Option %s is enabled', 'ajax-search-for-woocommerce' ), $option_label );
+        $result['description'] = '<p>' . sprintf( __( 'We detected that Product Filter by WBW has the %s option enabled. With filtering active, this can cause filtering to return 0 results.', 'ajax-search-for-woocommerce' ), '<code>' . esc_html( $option_label ) . '</code>' ) . '</p>';
+        $result['description'] .= '<p><strong>' . __( 'To make everything work properly, turn this option off.', 'ajax-search-for-woocommerce' ) . '</strong></p>';
+        $result['description'] .= '<ol>';
+        $result['description'] .= '<li>' . __( 'Open the settings of the relevant filter in Product Filter by WBW.', 'ajax-search-for-woocommerce' ) . '</li>';
+        $result['description'] .= '<li>' . sprintf( __( 'Turn off the %s option.', 'ajax-search-for-woocommerce' ), '<code>' . esc_html( $option_label ) . '</code>' ) . '</li>';
+        $result['description'] .= '<li>' . __( 'Save the settings and test filtering again.', 'ajax-search-for-woocommerce' ) . '</li>';
+        $result['description'] .= '</ol>';
+        return $result;
+    }
+
+    /**
      * Test if images need to be regenerated
      *
      * @return array The test result.
@@ -778,6 +839,10 @@ class Troubleshooting {
                 array(
                     'label' => __( 'Minimum theme versions', 'ajax-search-for-woocommerce' ),
                     'test'  => 'MinPluginVersions',
+                ),
+                array(
+                    'label' => __( 'Remove Actions Before Filtering option is enabled', 'ajax-search-for-woocommerce' ),
+                    'test'  => 'ProductFilterByWBW',
                 )
             ),
             'async'  => array(array(

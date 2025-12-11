@@ -45,7 +45,10 @@
 .woocommerce_page_dgwt_wcas_settings #nri-slug-wrapper,
 .woocommerce_page_dgwt_wcas_settings .toucan-welcome-panel,
 .woocommerce_page_dgwt_wcas_debug .toucan-welcome-panel,
-.woocommerce_page_dgwt_wcas_debug #beacon-container {
+.woocommerce_page_dgwt_wcas_debug #beacon-container,
+.woocommerce_page_dgwt_wcas_settings #ehe-admin-cb,
+.woocommerce_page_dgwt_wcas_settings #admin_banner_about_automatic_media_detection,
+.woocommerce_page_dgwt_wcas_debug #ehe-admin-cb {
 	display: none !important;
 }
 
@@ -2228,6 +2231,20 @@ h3.dgwt-wcas-troubleshooting-issue-title {
 	cursor: default;
 }
 
+.dgwt-wcas-debug .dgwt-wcas-debug-active-integrations table tr td {
+	padding: 15px;
+}
+.dgwt-wcas-debug .dgwt-wcas-debug-active-integrations table {
+	max-width: 54%;
+	margin-top: 8px;
+}
+
+.dgwt-wcas-debug .dgwt-wcas-debug-active-integrations table tr td.plugin-name {
+	margin-top: 8px;
+	width: auto;
+	text-align: left;
+}
+
 /* Dashboard widget */
 .dgwt-wcas-widget-tab-wrapper {
 	color: #dcdcde;
@@ -2257,6 +2274,17 @@ h3.dgwt-wcas-troubleshooting-issue-title {
 	opacity: 1;
 	border: 3px solid rgba(205, 98, 105, 0.5);
 	transition: all 200ms ease-in-out;
+}
+
+input.dgwt-wcas-selectize {
+	min-width: 280px;
+	max-width: 280px;
+	height: 35px;
+	margin-top: -2px;
+}
+
+input.dgwt-wcas-selectize.loading {
+	background: url(../img/preloader.gif) no-repeat right 8px center / 20px 20px, rgba(255, 255, 255, 0.5) !important;
 }
 
 @media only screen and (max-width: 1150px) {

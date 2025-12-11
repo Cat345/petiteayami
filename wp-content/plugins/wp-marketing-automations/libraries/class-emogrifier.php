@@ -3,9 +3,9 @@
 
 namespace BWF_Pelago;
 
-use Pelago\Emogrifier\CssInliner;
-use Pelago\Emogrifier\HtmlProcessor\CssToAttributeConverter;
-use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
+use BWFAN\Pelago\Emogrifier\CssInliner;
+use BWFAN\Pelago\Emogrifier\HtmlProcessor\CssToAttributeConverter;
+use BWFAN\Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 
 /**
  * This class provides functions for converting CSS styles into inline style attributes in your HTML code.
@@ -40,7 +40,7 @@ class Emogrifier {
 		$css_inliner  = CssInliner::fromHtml( $this->content )->inlineCss( $this->css );
 		$dom_document = $css_inliner->getDomDocument();
 
-		$content = CssToAttributeConverter::fromDomDocument( $dom_document )->convertCssToVisualAttributes()->render();;
+		$content = CssToAttributeConverter::fromDomDocument( $dom_document )->convertCssToVisualAttributes()->render();
 
 		return defined( 'BWFAN_MINIFY_MAIL_CONTENT' ) && BWFAN_MINIFY_MAIL_CONTENT && method_exists( 'BWFAN_Common', 'minifyHtmlData' ) ? \BWFAN_Common::minifyHtmlData( $content ) : $content;
 	}
@@ -90,4 +90,5 @@ class Emogrifier {
 
 		return $emogrifier->emogrify();
 	}
+
 }

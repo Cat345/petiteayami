@@ -444,6 +444,10 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'text-align', $this->has_attr( $attr, 'alignment', $screen ) );
 				$css->set_selector( "{$selector_wrapper} .offer_wrapper.bwf-price-wrap.bwf-offer" );
 				$css->add_property( 'text-align', $this->has_attr( $attr, 'alignment', $screen ) );
+				$css->set_selector( "{$selector_wrapper} .signup_details_wrap" );
+				$css->add_property( 'text-align', $this->has_attr( $attr, 'alignment', $screen ) );
+				$css->set_selector( "{$selector_wrapper} .recurring_details_wrap" );
+				$css->add_property( 'text-align', $this->has_attr( $attr, 'alignment', $screen ) );
 
 				// ${priceSpace && priceSpace[screen] && priceSpace[screen]['width']? `gap:${priceSpace[screen]['width']}${priceSpace[screen]['unit'] ? priceSpace[screen]['unit'] : 'px'}`: ``}
 				/**
@@ -530,6 +534,74 @@ if ( ! class_exists( 'BWF_Blocks_Upsell_Frontend_CSS' ) ) {
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'offerPriceLetterSpacingHover', $screen ), true );
 				$css->add_property( 'font', $this->has_attr( $attr, 'offerPriceFontHover', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'offerPriceTextHover', $screen ) );
+
+				// Signup Fee Label
+				$css->set_selector( "{$selector_wrapper} .signup_details_wrap .signup_price_label" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'signupFeeColor', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'signupFeeLineHeight', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'signupFeeLetterSpacing', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'signupFeeFont', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'signupFeeText', $screen ) );
+
+				$css->set_selector( "{$selector_wrapper} .signup_details_wrap .signup_price_label:hover" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'signupFeeColorHover', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'signupFeeLineHeightHover', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'signupFeeLetterSpacingHover', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'signupFeeFontHover', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'signupFeeTextHover', $screen ) );
+
+				// Signup Fee Price
+				$css->set_selector( "{$selector_wrapper} .signup_details_wrap .woocommerce-Price-amount" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'signupFeePriceColor', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'signupFeePriceLineHeight', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'signupFeePriceLetterSpacing', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'signupFeePriceFont', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'signupFeePriceText', $screen ) );
+				$grid = $this->has_attr( $attr, 'signupFeeSpace', $screen );
+				if ( $grid ) {
+					$css->add_property( 'margin-left', $grid['width'] . ( $grid['unit'] ? $grid['unit'] : 'px' ) );
+				}
+
+				$css->set_selector( "{$selector_wrapper} .signup_details_wrap .woocommerce-Price-amount:hover" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'signupFeePriceColorHover', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'signupFeePriceLineHeightHover', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'signupFeePriceLetterSpacingHover', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'signupFeePriceFontHover', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'signupFeePriceTextHover', $screen ) );
+
+				// Recurring Total Label
+				$css->set_selector( "{$selector_wrapper} .recurring_details_wrap .recurring_price_label" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'recurringTotalColor', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'recurringTotalLineHeight', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'recurringTotalLetterSpacing', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'recurringTotalFont', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'recurringTotalText', $screen ) );
+
+				$css->set_selector( "{$selector_wrapper} .recurring_details_wrap .recurring_price_label:hover" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'recurringTotalColorHover', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'recurringTotalLineHeightHover', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'recurringTotalLetterSpacingHover', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'recurringTotalFontHover', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'recurringTotalTextHover', $screen ) );
+
+				// Recurring Total Price
+				$css->set_selector( "{$selector_wrapper} .recurring_details_wrap .woocommerce-Price-amount, {$selector_wrapper} .recurring_details_wrap .subscription-details" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'recurringTotalPriceColor', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'recurringTotalPriceLineHeight', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'recurringTotalPriceLetterSpacing', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'recurringTotalPriceFont', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'recurringTotalPriceText', $screen ) );
+				$grid = $this->has_attr( $attr, 'recurringTotalSpace', $screen );
+				if ( $grid ) {
+					$css->add_property( 'margin-left', $grid['width'] . ( $grid['unit'] ? $grid['unit'] : 'px' ) );
+				}
+
+				$css->set_selector( "{$selector_wrapper} .recurring_details_wrap .woocommerce-Price-amount:hover, {$selector_wrapper} .recurring_details_wrap .subscription-details:hover" );
+				$css->add_property( 'color', $this->has_attr( $attr, 'recurringTotalPriceColorHover', $screen ) );
+				$css->add_property( 'line-height', $this->has_attr( $attr, 'recurringTotalPriceLineHeightHover', $screen ), true );
+				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'recurringTotalPriceLetterSpacingHover', $screen ), true );
+				$css->add_property( 'font', $this->has_attr( $attr, 'recurringTotalPriceFontHover', $screen ) );
+				$css->add_property( 'text', $this->has_attr( $attr, 'recurringTotalPriceTextHover', $screen ) );
 
 
 				if ( 'desktop' === $screen ) {

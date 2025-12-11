@@ -3,11 +3,11 @@ class BeRocket_terms_pages_addon extends BeRocket_framework_addon_lib {
     public $addon_file = __FILE__;
     public $plugin_name = 'terms_cond_popup';
     public $php_file_name   = 'custom_post_terms';
-    function init_active() {
+    function init_active($file_path = '') {
         $pluginpath = dirname(BeRocket_terms_cond_popup_file);
         require_once($pluginpath . '/libraries/post_conditions.php');
         require_once($pluginpath . '/libraries/custom_post_type.php');
-        parent::init_active();
+        parent::init_active($file_path);
     }
     function get_addon_data() {
         $data = parent::get_addon_data();

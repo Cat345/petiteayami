@@ -11,6 +11,28 @@ global $dgwtWcasBricksStyles;
 
 $dgwtWcasBricksStyles = '';
 
+add_action( 'wp_head', function () {
+	?>
+	<style>
+		.dgwt-wcas-pd-addtc-form .quantity .action {
+			display: none;
+		}
+
+		.dgwt-wcas-pd-addtc-form .add_to_cart_inline .add_to_cart_button{
+			padding: 7px 13px;
+		}
+
+		.dgwt-wcas-pd-rating .star-rating::before{
+			left: 0;
+		}
+
+		.woocommerce .dgwt-wcas-pd-rating .star-rating{
+			color: #d5d6d7;
+		}
+	</style>
+	<?php
+} );
+
 /**
  * Support for Bricks custom pagination parameter.
  */
@@ -151,3 +173,28 @@ add_action( 'pre_get_posts', function ( $query ) {
 		$bricksWcQuery->get_catalog_ordering_args( $orderby, $order );
 	}
 } );
+
+/**
+ * Reinitialize Bricks AJAX "Add to Cart" handlers
+ * when the FiboSearch details panel is opened.
+ *
+ * This ensures that "Add to Cart" buttons inside the
+ * FiboSearch details panel work correctly when the
+ * "Enable AJAX add to cart" option is enabled in Bricks.
+ */
+add_action( 'wp_footer', function () {
+	if ( ! class_exists( '\Bricks\Woocommerce' ) ||
+		 ! method_exists( '\Bricks\Woocommerce', 'enabled_ajax_add_to_cart' ) ||
+		 ! \Bricks\Woocommerce::enabled_ajax_add_to_cart() ) {
+		return;
+	}
+	?>
+	<script>
+		document.addEventListener('fibosearch/show-details-panel', function () {
+			if (typeof bricksWooAjaxAddToCartFn !== 'undefined') {
+				bricksWooAjaxAddToCartFn.run();
+			}
+		});
+	</script>
+	<?php
+}, 100 );

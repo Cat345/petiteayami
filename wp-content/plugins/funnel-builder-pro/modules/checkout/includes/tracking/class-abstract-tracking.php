@@ -103,7 +103,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 		}
 
 		public function get_cart_item_id( $item ) {
-			$product_id = $item['product_id'];
+			$product_id = isset( $item['product_id'] ) ? $item['product_id'] : 0;
 
 			if ( false === wc_string_to_bool( $this->variable_as_simple ) && isset( $item['variation_id'] ) && $item['variation_id'] !== 0 ) {
 
@@ -133,14 +133,17 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			$checkout_ev  = $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) : 'false';
 			$page_view    = false === $this->is_global_pageview_enabled() ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) : 'false' : 'true';
 			$payment_info = $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) : 'false';
+			$shipping_info = $this->admin_general_settings->get_option( $this->slug . '_add_shipping_info_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_shipping_info_event' ) : 'false';
 
 			$custom_event         = $this->enable_custom_event();
 			$add_to_cart_position = 'load';
 			$checkout_ev_position = 'load';
+			$shipping_info_position = 'load';
 			if ( true == $override_global_track_event ) {
 				$add_to_cart  = isset( $page_settings[ $this->slug . '_add_to_cart_event' ] ) ? $page_settings[ $this->slug . '_add_to_cart_event' ] : false;
 				$checkout_ev  = isset( $page_settings[ $this->slug . '_initiate_checkout_event' ] ) ? $page_settings[ $this->slug . '_initiate_checkout_event' ] : false;
 				$payment_info = isset( $page_settings[ $this->slug . '_add_payment_info_event' ] ) ? $page_settings[ $this->slug . '_add_payment_info_event' ] : false;
+				$shipping_info = isset( $page_settings[ $this->slug . '_add_shipping_info_event' ] ) ? $page_settings[ $this->slug . '_add_shipping_info_event' ] : false;
 				$page_view    = isset( $page_settings[ $this->slug . '_is_page_view' ] ) ? $page_settings[ $this->slug . '_is_page_view' ] : false;
 
 				if ( wc_string_to_bool( $add_to_cart ) ) {
@@ -150,6 +153,9 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 				if ( wc_string_to_bool( $checkout_ev ) ) {
 					$checkout_ev_position = isset( $page_settings[ $this->slug . '_initiate_checkout_event_position' ] ) ? $page_settings[ $this->slug . '_initiate_checkout_event_position' ] : $checkout_ev_position;
 				}
+				if ( wc_string_to_bool( $shipping_info ) ) {
+					$shipping_info_position = isset( $page_settings[ $this->slug . '_add_shipping_info_event_position' ] ) ? $page_settings[ $this->slug . '_add_shipping_info_event_position' ] : $shipping_info_position;
+				}
 			}
 
 			$locals = [
@@ -158,12 +164,14 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 				'positions'   => [
 					'add_to_cart' => $add_to_cart_position,
 					'checkout'    => $checkout_ev_position,
+					'shipping_info' => $shipping_info_position,
 				],
 				'settings'    => [
 					'add_to_cart' => wc_string_to_bool( $add_to_cart ) ? 'true' : 'false',
 					'page_view'   => wc_string_to_bool( $page_view ) ? 'true' : 'false',
 					'checkout'    => wc_string_to_bool( $checkout_ev ) ? 'true' : 'false',
 					'payment'     => wc_string_to_bool( $payment_info ) ? 'true' : 'false',
+					'shipping'    => wc_string_to_bool( $shipping_info ) ? 'true' : 'false',
 					'custom'      => wc_string_to_bool( $custom_event ) ? 'true' : 'false',
 				]
 			];

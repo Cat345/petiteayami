@@ -1733,7 +1733,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 
 				if ( empty( $post_type ) && ! empty( $page_id ) ) {
 					$t_post = get_post( $page_id );
-					if ( $t_post->post_type == WFACP_Common::get_post_type_slug() ) {
+					if ( $t_post && $t_post->post_type == WFACP_Common::get_post_type_slug() ) {
 						$query->set( 'post_type', get_post_type( $page_id ) );
 					}
 				}

@@ -3,6 +3,8 @@
 namespace DgoraWcas\Integrations\Plugins\WPRocket;
 
 // Exit if accessed directly
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -13,15 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URL: https://wp-rocket.me/
  * Author: WP Media
  */
-class WPRocket {
-	public function init() {
-		if ( ! defined( 'WP_ROCKET_VERSION' ) ) {
-			return;
-		}
-		if ( version_compare( WP_ROCKET_VERSION, '3.7' ) < 0 ) {
-			return;
-		}
+class WPRocket extends AbstractPluginIntegration {
+	protected const LABEL         = 'WP Rocket';
+	protected const MIN_VERSION   = '3.7';
+	protected const VERSION_CONST = 'WP_ROCKET_VERSION';
 
+	public function init(): void {
 		add_filter( 'rocket_delay_js_exclusions', array( $this, 'excludedJs' ) );
 		add_filter( 'rocket_rucss_inline_content_exclusions', array( $this, 'addRucssContentExcluded' ) );
 	}

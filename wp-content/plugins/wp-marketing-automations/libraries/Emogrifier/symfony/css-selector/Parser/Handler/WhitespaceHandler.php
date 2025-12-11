@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\CssSelector\Parser\Handler;
+namespace BWFAN\Symfony\Component\CssSelector\Parser\Handler;
 
-use Symfony\Component\CssSelector\Parser\Reader;
-use Symfony\Component\CssSelector\Parser\Token;
-use Symfony\Component\CssSelector\Parser\TokenStream;
+use BWFAN\Symfony\Component\CssSelector\Parser\Reader;
+use BWFAN\Symfony\Component\CssSelector\Parser\Token;
+use BWFAN\Symfony\Component\CssSelector\Parser\TokenStream;
 
 /**
  * CSS selector whitespace handler.

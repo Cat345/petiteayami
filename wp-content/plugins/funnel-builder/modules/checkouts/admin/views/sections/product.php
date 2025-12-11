@@ -42,19 +42,19 @@ defined( 'ABSPATH' ) || exit;
                                         <p>
                                             <label>
                                                 <input type="radio" name="add_to_cart_setting" value="1" checked>
-												<?php _e( 'Force sell all of the above product(s) (e.g. when selling a fixed price bundle)', 'woofunnels-aero-checkout' ); ?>
+												<?php _e( 'All products listed will be sold together at checkout (e.g. when selling a fixed price bundle)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                         <p class="wfacp_lock_setting restrict_lock_set">
                                             <a href="javascript:void(0)" v-on:click="wfacp.show_pro_message('product_settings', 'restrict_lock_set')"><img src="<?php echo esc_url( WFACP_PLUGIN_URL . '/admin/assets/img/lock.svg' ); ?>"></a>
                                             <label>
-												<?php esc_html_e( 'Restrict buyer to select only one of the above products (e.g. when selling similar products with different pricing plans or quantity)', 'woofunnels-aero-checkout' ); ?>
+												<?php esc_html_e( 'Allow only one product selection at checkout (e.g. when selling similar products with different pricing plans or quantity)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                         <p class="wfacp_lock_setting allow_lock_set">
                                             <a href="javascript:void(0)" v-on:click="wfacp.show_pro_message('product_settings', 'allow_lock_set')"><img src="<?php echo esc_url( WFACP_PLUGIN_URL . '/admin/assets/img/lock.svg' ); ?>"></a>
                                             <label>
-												<?php esc_html_e( 'Allow buyer to select any of the above product(s) (e.g. when selling multiple products)', 'woofunnels-aero-checkout' ); ?>
+												<?php esc_html_e( 'Allow multiple product selections at checkout (e.g. when selling multiple products)', 'woofunnels-aero-checkout' ); ?>
                                             </label>
                                         </p>
                                     </div>

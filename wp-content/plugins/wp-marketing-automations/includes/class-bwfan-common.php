@@ -256,6 +256,74 @@ class BWFAN_Common {
 		add_action( 'user_register', [ __CLASS__, 'bwfan_register_user' ], 10, 1 );
 
 		add_action( 'bwfan_store_template_links', [ __CLASS__, 'bwfan_store_template_links' ] );
+
+		// Hook for allowing whitelisted endpoints.
+		add_filter( 'rest_authentication_errors', [ __CLASS__, 'bwfan_allow_whitelisted_endpoints' ], PHP_INT_MAX );
+	}
+
+	/**
+	 * Allow Autonami and WooFunnels endpoints in rest calls
+	 *
+	 * @param WP_Error|null|true $result Authentication result
+	 *
+	 * @return WP_Error|null|true
+	 */
+	public static function bwfan_allow_whitelisted_endpoints( $result ) {
+		if ( ! is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$route = self::get_rest_route_url();
+
+		if ( empty( $route ) ) {
+			return $result;
+		}
+
+		// Build complete whitelist including dynamic endpoints (namespace only, without prefix).
+		$allowed_namespaces = [
+			'/woofunnels/',
+			'/autonami/',
+			'/funnelkit-automations/',
+			'/funnelkit-app/',
+			'/autonami-app/',
+			'/autonami-admin/',
+			'/autonami-webhook/',
+			'/woofunnel_customer/',
+		];
+
+		// Get REST API prefix dynamically to support custom prefixes and permalink changes.
+		$rest_prefix = function_exists( 'rest_get_url_prefix' ) ? rest_get_url_prefix() : 'wp-json';
+
+		if ( str_contains( $route, $rest_prefix ) ) {
+			$split = explode( $rest_prefix, $route );
+			$route = $split[1];
+		}
+
+		// Check if the current request matches any whitelisted endpoint.
+		foreach ( $allowed_namespaces as $namespace ) {
+			// Check if route starts with the namespace to ensure exact namespace matching.
+			if ( strpos( $route, $namespace ) === 0 ) {
+				// Allow public access - return null/empty to bypass authentication.
+				return true;
+			}
+		}
+
+		// Otherwise, let other filters handle it.
+		return $result;
+	}
+
+	/**
+	 * Get the current REST route URL
+	 *
+	 * @return string
+	 */
+	public static function get_rest_route_url() {
+		$rest_route = filter_input( INPUT_GET, 'rest_route', FILTER_SANITIZE_URL );
+		if ( empty( $rest_route ) ) {
+			$rest_route = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+		}
+
+		return $rest_route;
 	}
 
 	public static function display_marketing_optin_checkbox() {
@@ -1150,9 +1218,16 @@ class BWFAN_Common {
 	 * @return array
 	 */
 	public static function get_all_events_rules() {
+		if ( ! bwfan_is_autonami_pro_active() ) {
+			return [];
+		}
 		$all_rules_groups = array();
 		$events           = BWFAN_Core()->sources->get_events();
 		if ( empty( $events ) ) {
+			return $all_rules_groups;
+		}
+		/** Null check */
+		if ( ! is_object( BWFAN_Core()->rules ) || ! method_exists( BWFAN_Core()->rules, 'get_default_rule_groups' ) ) {
 			return $all_rules_groups;
 		}
 		/**
@@ -3235,7 +3310,7 @@ class BWFAN_Common {
 		$cart_details = $abandoned_obj->get_cart_by_key( 'cookie_key', $post_parameters['bwfan_visitor'], '%s' );
 		$cart_details = empty( $cart_details ) ? $abandoned_obj->get_cart_by_key( 'email', $email, '%s' ) : $cart_details;
 
-		if ( ! empty( $email ) && false === $cart_details ) {
+		if ( ! empty( $email ) && empty( $cart_details ) ) {
 			self::create_abandoned_cart( array(
 				'user_id'    => $user_id,
 				'email'      => $email,
@@ -3248,6 +3323,11 @@ class BWFAN_Common {
 			return;
 		}
 
+		/** If cart details is not found, then return */
+		if ( empty( $cart_details ) || ! isset( $cart_details['ID'] ) ) {
+			return;
+		}
+
 		$cart_details['coupons'] = $coupon_data;
 		$cart_details['items']   = $items;
 		$cart_details['fees']    = $fees;
@@ -3256,7 +3336,8 @@ class BWFAN_Common {
 		$data['last_modified']   = current_time( 'mysql', 1 );
 
 		/** If status lost and others */
-		if ( in_array( intval( $cart_details['status'] ), array( 2, 3, 4 ), true ) ) {
+		$cart_status = isset( $cart_details['status'] ) ? intval( $cart_details['status'] ) : 0;
+		if ( in_array( $cart_status, array( 2, 3, 4 ), true ) ) {
 			$data['status']       = 0;
 			$data['created_time'] = current_time( 'mysql', 1 );
 		}
@@ -6176,6 +6257,7 @@ class BWFAN_Common {
 				'label'    => __( 'Other Recipient', 'wp-marketing-automations' ),
 				'type'     => 'addrecipient',
 				'class'    => '',
+				'hint'     => __( 'If no users or recipients are added, the email summary will be sent to the site admin.', 'wp-marketing-automations' ),
 				'required' => false,
 				'toggler'  => array(
 					'fields'   => array(
@@ -12041,11 +12123,13 @@ class BWFAN_Common {
 		if ( did_action( 'woocommerce_before_checkout_process' ) ) {
 			return;
 		}
-
-		$db_updater = WooFunnels_DB_Updater::get_instance();
-		$db_updater->do_profile_update_async_call( $user_id );
-
-		define( 'BWF_DISABLE_CONTACT_PROFILE_UPDATE', 1 );
+		if ( class_exists( 'WooFunnels_DB_Updater' ) ) {
+			$db_updater = WooFunnels_DB_Updater::get_instance();
+			if ( is_object( $db_updater ) && method_exists( $db_updater, 'do_profile_update_async_call' ) ) {
+				$db_updater->do_profile_update_async_call( $user_id );
+				define( 'BWF_DISABLE_CONTACT_PROFILE_UPDATE', 1 );
+			}
+		}
 	}
 
 	/**
@@ -12307,5 +12391,303 @@ class BWFAN_Common {
 		}
 
 		return $directory;
+	}
+
+	/**
+	 * Check if the site's default language is RTL (right-to-left)
+	 * Unlike WordPress's is_rtl() function which checks current user's language in backend,
+	 * this function checks the site's default language setting
+	 *
+	 * @return bool True if site language is RTL, false otherwise
+	 */
+	public static function is_site_rtl() {
+		// Get the site's default locale
+		$site_locale = get_locale();
+
+		// List of RTL language codes
+		$rtl_locales = array(
+			'ar',     // Arabic
+			'ary',    // Moroccan Arabic
+			'azb',    // South Azerbaijani
+			'ckb',    // Central Kurdish (Sorani)
+			'dv',     // Dhivehi
+			'fa',     // Persian/Farsi
+			'he',     // Hebrew
+			'ku',     // Kurdish
+			'ps',     // Pashto
+			'sd',     // Sindhi
+			'ug',     // Uighur
+			'ur',     // Urdu
+			'yi',     // Yiddish
+		);
+
+		// Allow filtering of RTL locales for flexibility
+		$rtl_locales = apply_filters( 'bwfan_rtl_locales', $rtl_locales );
+
+		// Extract the language code from locale (e.g., 'ar_SA' becomes 'ar')
+		$language_code = substr( $site_locale, 0, 2 );
+
+		// Check if the language code is in the RTL list
+		$is_rtl = in_array( $language_code, $rtl_locales, true );
+
+		// Allow filtering of the final RTL result for complete flexibility
+		return apply_filters( 'bwfan_is_site_rtl', $is_rtl, $site_locale, $language_code );
+	}
+
+	/**
+	 * Returns sale menu data
+	 *
+	 * @return array
+	 */
+	public static function sale_notification_menu() {
+		$month = gmdate( 'm' );
+		if ( ! in_array( intval( $month ), [ 11, 12 ] ) ) {
+			return [];
+		}
+
+		$yearKey = gmdate( 'Y' );
+		$data    = [];
+
+		if ( self::show_pre_black_friday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Black Friday', 'wp-marketing-automations' ),
+				'campaign' => 'PREBF' . $yearKey,
+			];
+		} elseif ( self::show_black_friday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Black Friday', 'wp-marketing-automations' ),
+				'campaign' => 'BF' . $yearKey,
+			];
+		} elseif ( self::show_small_business_saturday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Black Friday', 'wp-marketing-automations' ),
+				'campaign' => 'BFSB' . $yearKey,
+			];
+		} elseif ( self::show_black_friday_extended_header_notification() ) {
+			$data = [
+				'title'    => __( 'Black Friday', 'wp-marketing-automations' ),
+				'campaign' => 'BFE' . $yearKey,
+			];
+		} elseif ( self::show_cyber_monday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Cyber Monday', 'wp-marketing-automations' ),
+				'campaign' => 'CM' . $yearKey,
+			];
+		} elseif ( self::show_extended_cyber_monday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Cyber Monday', 'wp-marketing-automations' ),
+				'campaign' => 'CME' . $yearKey,
+			];
+		}
+
+		// Show Green Monday notification independently
+		if ( empty( $data ) && self::show_green_monday_header_notification() ) {
+			$data = [
+				'title'    => __( 'Green Monday', 'wp-marketing-automations' ),
+				'campaign' => 'GM' . $yearKey,
+			];
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Check black friday difference
+	 *
+	 * @return int
+	 */
+	public static function get_black_friday_day_diff() {
+		// Set the timezone to 'America/New_York'
+		$timezone = new DateTimeZone( 'America/New_York' );
+		// Create DateTime object for today's date and time in the specified timezone
+		$today = new DateTime( 'now', $timezone );
+
+		// Get the current year
+		$year = $today->format( 'Y' );
+		// Start from November 30 at midnight UTC and calculate Black Friday
+		$blackFriday = new DateTime( "{$year}-11-30 00:00:00", new DateTimeZone( 'UTC' ) );
+
+		// Find the last Friday of November
+		while ( $blackFriday->format( 'N' ) != 5 ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			$blackFriday = $blackFriday->modify( '-1 day' );
+		}
+
+		// Convert Black Friday date to 'America/New_York' timezone for accurate diff
+		$blackFriday = $blackFriday->setTimezone( $timezone );
+
+		// Calculate the difference in minutes between today and Black Friday
+		$differenceInMinutes = $today->getTimestamp() - $blackFriday->getTimestamp();
+		$differenceInMinutes = round( $differenceInMinutes / 60 );
+
+		return $differenceInMinutes;
+	}
+
+	/**
+	 * Get green monday difference
+	 *
+	 * @param $diff
+	 *
+	 * @return float|string
+	 * @throws Exception
+	 */
+	public static function get_second_dec_monday_day_diff( $diff = true ) {
+		// Set the timezone to 'America/New_York'
+		$timezone = new DateTimeZone( 'America/New_York' );
+		// Get today's date and time in the specified timezone
+		$today = new DateTime( 'now', $timezone );
+
+		// Get the current year
+		$year = $today->format( 'Y' );
+		// Create a DateTime object for November 30 at midnight UTC
+		$lastNovDay = new DateTime( "{$year}-11-30 00:00:00", new DateTimeZone( 'UTC' ) );
+
+		// Move to December 1
+		$decFirstDay = $lastNovDay->modify( '+1 day' );
+		// Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+		$dayOfWeek = (int) $decFirstDay->format( 'w' );
+		// Calculate days to add to reach the first Monday of December
+		// Monday is 1, so if Dec 1 is Monday (1), add 0 days
+		// If Dec 1 is Sunday (0), add 1 day
+		// If Dec 1 is any other day, add (8 - dayOfWeek) to reach next Monday
+		$daysToAdd = ( 1 === $dayOfWeek ) ? 0 : ( ( 0 === $dayOfWeek ) ? 1 : ( 8 - $dayOfWeek ) );
+		// Move to the first Monday of December
+		$firstDecMonday = $decFirstDay->modify( "+{$daysToAdd} days" );
+		// Move to the second Monday of December
+		$secondDecMonday = $firstDecMonday->modify( '+7 days' );
+
+		if ( $diff ) {
+			// Calculate the difference in minutes between today and the second Monday of December
+			$differenceInMinutes = round( ( $today->getTimestamp() - $secondDecMonday->getTimestamp() ) / 60 );
+
+			return $differenceInMinutes;
+		} else {
+			// Return the formatted date of the second Monday of December
+			return $secondDecMonday->format( 'M d' );
+		}
+	}
+
+	/**
+	 * Show preblack friday notification
+	 *
+	 * @return bool
+	 */
+	public static function show_pre_black_friday_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+		// Check if the difference falls within the range for showing the notification
+		// (-11 days in minutes to -4 days in minutes)
+		if ( $blackFridayDifference >= - ( 11 * 1440 ) && $blackFridayDifference < - ( 4 * 1440 ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Show black friday notification
+	 *
+	 * @return bool
+	 */
+	public static function show_black_friday_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (-4 days in minutes to the day after Black Friday)
+		if ( $blackFridayDifference >= - ( 4 * 1440 ) && $blackFridayDifference < 1440 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Show small busness notification
+	 *
+	 * @return bool
+	 */
+	public static function show_small_business_saturday_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (1 day to 2 days after Black Friday)
+		if ( $blackFridayDifference >= 1440 && $blackFridayDifference < 2880 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * show black friday extended notification
+	 *
+	 * @return bool
+	 */
+	public static function show_black_friday_extended_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (2 days to 3 days after Black Friday)
+		if ( $blackFridayDifference >= 2880 && $blackFridayDifference < 4320 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * show cyber monday notification
+	 *
+	 * @return bool
+	 */
+	public static function show_cyber_monday_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (3 days to 4 days after Black Friday)
+		if ( $blackFridayDifference >= 4320 && $blackFridayDifference < 5760 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * show cyber monday extended notification
+	 *
+	 * @return bool
+	 */
+	public static function show_extended_cyber_monday_header_notification() {
+		// Get the difference in minutes between today and Black Friday
+		$blackFridayDifference = self::get_black_friday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (4 days to 8 days after Black Friday)
+		if ( $blackFridayDifference >= 5760 && $blackFridayDifference < 11520 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * show green monday notification
+	 *
+	 * @return bool
+	 */
+	public static function show_green_monday_header_notification() {
+		// Get the difference in minutes between today and the second Monday of December
+		$secondDecMondayDayDiff = self::get_second_dec_monday_day_diff();
+
+		// Check if the difference falls within the range for showing the notification
+		// (0 to 1 day after the second Monday of December)
+		if ( $secondDecMondayDayDiff >= 0 && $secondDecMondayDayDiff < 1440 ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

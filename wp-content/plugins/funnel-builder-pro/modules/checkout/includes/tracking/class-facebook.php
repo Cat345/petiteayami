@@ -93,10 +93,10 @@ if ( ! class_exists( 'WFACP_Analytics_Pixel' ) ) {
 
 
 			$item_id   = $this->get_product_content_id( $item_id );
-			$sub_total = apply_filters( 'wfacp_add_to_cart_tracking_line_subtotal', $cart_item['line_subtotal'], 'pixel', $this->admin_general_settings );
+			$sub_total = apply_filters( 'wfacp_add_to_cart_tracking_line_subtotal', isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0, 'pixel', $this->admin_general_settings );
 
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
-				$sub_total += $cart_item['line_subtotal_tax'];
+				$sub_total += isset( $cart_item['line_subtotal_tax'] ) ? $cart_item['line_subtotal_tax'] : 0;
 			}
 			$product_plugin = 'FunnelKit Checkout';
 			if ( isset( $cart_item['_wfob_product'] ) ) {
@@ -119,7 +119,7 @@ if ( ! class_exists( 'WFACP_Analytics_Pixel' ) ) {
 					[
 						'id'         => $item_id,
 						'item_price' => $sub_total,
-						'quantity'   => $cart_item['quantity'],
+						'quantity'   => isset( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1,
 						'value'      => $sub_total,
 					],
 				];

@@ -3,6 +3,7 @@
 namespace DgoraWcas\Integrations\Plugins\FacetWP;
 
 use DgoraWcas\Helpers;
+use DgoraWcas\Integrations\Plugins\AbstractPluginIntegration;
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -13,26 +14,18 @@ if ( !defined( 'ABSPATH' ) ) {
  * Plugin URL: https://facetwp.com/
  * Author: FacetWP, LLC
  */
-class FacetWP {
+class FacetWP extends AbstractPluginIntegration {
+    protected const LABEL = 'FacetWP';
+
+    protected const VERSION_CONST = 'FACETWP_VERSION';
+
+    protected const MIN_VERSION = '3.5.5';
+
     private static $engine = 'dgwt_wcas';
 
     public $search_terms;
 
-    public function init() {
-        if ( !defined( 'FACETWP_VERSION' ) ) {
-            return;
-        }
-        if ( version_compare( FACETWP_VERSION, '3.5.5' ) < 0 ) {
-            add_filter( 'dgwt/wcas/troubleshooting/unsupported_plugin_versions', function ( $unsupportedPluginVersions ) {
-                $unsupportedPluginVersions[] = array(
-                    'name'           => 'FacetWP',
-                    'currentVersion' => FACETWP_VERSION,
-                    'minimumVersion' => '3.5.5',
-                );
-                return $unsupportedPluginVersions;
-            } );
-            return;
-        }
+    public function init() : void {
         // Search page
         add_filter(
             'facetwp_query_args',

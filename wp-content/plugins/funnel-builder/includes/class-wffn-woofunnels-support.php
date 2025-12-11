@@ -112,38 +112,30 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 				}, 99 );
 
 
-				$year = gmdate( 'Y' );
+			$year = gmdate( 'Y' );
 
-				if ( WFFN_Core()->admin_notifications->show_pre_black_friday_header_notification() ) {
-					$campaign = 'BF' . $year;
-					$title    = "Black Friday 🔥";
-					$link     = $this->get_campaign_url( $campaign );
-					$this->add_admin_submenu( $title, $link );
+			if ( WFFN_Core()->admin_notifications->show_pre_bfcm_header_notification()
+				|| WFFN_Core()->admin_notifications->show_bf_header_notification()
+				|| WFFN_Core()->admin_notifications->show_small_business_saturday_header_notification()
+				|| WFFN_Core()->admin_notifications->show_bfext_header_notification() ) {
+				$campaign = 'BF' . $year;
+				$title    = "Black Friday 🔥";
+				$link     = $this->get_campaign_url( $campaign );
+				$this->add_admin_submenu( $title, $link );
 
-				} elseif ( WFFN_Core()->admin_notifications->show_black_friday_header_notification() ) {
-					$campaign = 'BF' . $year;
-					$title    = "Black Friday 🔥";
-					$link     = $this->get_campaign_url( $campaign );
-					$this->add_admin_submenu( $title, $link );
+			} elseif ( WFFN_Core()->admin_notifications->show_cm_header_notification()
+				|| WFFN_Core()->admin_notifications->show_cmext_header_notification() ) {
+				$campaign = 'CM' . $year;
+				$title    = "Cyber Monday 🔥";
+				$link     = $this->get_campaign_url( $campaign );
+				$this->add_admin_submenu( $title, $link );
 
-				} elseif ( WFFN_Core()->admin_notifications->show_cyber_monday_header_notification() ) {
-					$campaign = 'CM' . $year;
-					$title    = "Cyber Monday 🔥";
-					$link     = $this->get_campaign_url( $campaign );
-					$this->add_admin_submenu( $title, $link );
-
-				} elseif ( WFFN_Core()->admin_notifications->show_extended_cyber_monday_header_notification() ) {
-					$campaign = 'CM' . $year;
-					$title    = "Cyber Monday Extended 🔥";
-					$link     = $this->get_campaign_url( $campaign );
-					$this->add_admin_submenu( $title, $link );
-
-				} elseif ( WFFN_Core()->admin_notifications->show_green_monday_header_notification() ) {
-					$campaign = 'GM' . $year;
-					$title    = "Green Monday 🔥";
-					$link     = $this->get_campaign_url( $campaign );
-					$this->add_admin_submenu( $title, $link );
-				}
+			} elseif ( WFFN_Core()->admin_notifications->show_green_monday_header_notification() ) {
+				$campaign = 'GM' . $year;
+				$title    = "Green Monday 🔥";
+				$link     = $this->get_campaign_url( $campaign );
+				$this->add_admin_submenu( $title, $link );
+			}
 
 
 			} else {

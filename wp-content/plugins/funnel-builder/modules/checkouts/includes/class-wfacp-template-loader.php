@@ -39,7 +39,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 		public function add_default_template( $force = false ) {
 
-			if ( true === $force || ( ( ( isset( $_REQUEST['page'] ) && 'wfacp' === $_REQUEST['page'] ) || ( isset( $_REQUEST['action'] ) && 'wfacp_import_template' === $_REQUEST['action'] ) ) && isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( true === $force || ( ( ( isset( $_REQUEST['page'] ) && 'wfacp' === sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) ) || ( isset( $_REQUEST['action'] ) && 'wfacp_import_template' === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) ) && isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin page detection for template loading
 				do_action( 'wfacp_register_template_types', $this );
 				$designs = apply_filters( 'wfacp_register_templates', [], $this );
 
@@ -175,7 +175,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 			global $post;
 			if ( WFACP_Common::is_checkout_process() ) {
-				$post_id = absint( $_REQUEST['_wfacp_post_id'] );
+				$post_id = absint( $_REQUEST['_wfacp_post_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checkout process post ID retrieval
 				$post    = get_post( $post_id );
 			}
 
@@ -391,7 +391,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				return $template;
 			}
 			$my_template = get_post_meta( $wfacp_id, '_wp_page_template', true );
-			if ( ( isset( $_REQUEST['elementor-preview'] ) && $_REQUEST['elementor-preview'] > 0 ) || ( isset( $_REQUEST['preview_id'] ) && $_REQUEST['preview_id'] > 0 ) ) {
+			if ( ( isset( $_REQUEST['elementor-preview'] ) && $_REQUEST['elementor-preview'] > 0 ) || ( isset( $_REQUEST['preview_id'] ) && $_REQUEST['preview_id'] > 0 ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Preview mode detection for page builders
 				$wfacp_id             = WFACP_Common::get_id();
 				$revision_my_template = $this->get_last_revision_page_template( $wfacp_id );
 				if ( '' !== $revision_my_template ) {
@@ -812,7 +812,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		private function get_last_revision_page_template( $id ) {
 
 			global $wpdb;
-			$data     = $wpdb->get_results( "select ID from {$wpdb->posts} where post_parent='{$id}' ORDER BY ID DESC  LIMIT 1", ARRAY_A );
+			$data     = $wpdb->get_results( $wpdb->prepare( "select ID from {$wpdb->posts} where post_parent=%d ORDER BY ID DESC LIMIT 1", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Using $wpdb->prepare with direct string query
 			$template = '';
 			if ( ! empty( $data ) ) {
 				$revision_id = $data[0]['ID'];

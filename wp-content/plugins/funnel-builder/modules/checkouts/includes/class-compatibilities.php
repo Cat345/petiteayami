@@ -40,6 +40,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'gateways/class-paysoncheckout-for-wc.php'                       => class_exists( 'PaysonCheckout_For_WooCommerce' ),
 				'gateways/class-peachpay-for-wc.php'                             => function_exists( 'peachpay_init' ),
 				'gateways/class-przelewy24-payment-gateway.php'                  => function_exists( 'woocommerce_p24_add_gateway' ),
+				'gateways/class-sezzle-wocommerce-payment.php'                  => function_exists( 'woocommerce_sezzlepay_init' ),
 				'gateways/class-stripe.php'                                      => function_exists( 'woocommerce_gateway_stripe' ),
 				'gateways/class-wc-affirm.php'                                   => function_exists( 'affirm' ),
 				'gateways/class-wc-gateway-redsys.php'                           => defined( 'REDSYS_VERSION' ),
@@ -50,6 +51,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'plugins/class-aioseo.php'                                       => function_exists( 'aioseo' ),
 				'plugins/class-borlabs-cookie.php'                               => defined( 'BORLABS_COOKIE_VERSION' ),
 				'plugins/class-breakdance-builder.php'                           => defined( 'BREAKDANCE_WOO_DIR' ),
+				'plugins/class-chronopost-by-adexos.php'                           => function_exists('run_chronopost'),
 				'plugins/class-complianz-gdpr-ccpa-cookie-consent.php'           => class_exists( 'COMPLIANZ' ),
 				'plugins/class-conditional-discounts-for-wc-by-orion.php'        => function_exists( 'run_wad' ),
 				'plugins/class-ddpro.php'                                        => function_exists( 'ddp_check_ddpdm' ),
@@ -60,15 +62,18 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'plugins/class-happy-elementor.php'                              => function_exists( 'ha_let_the_journey_begin' ),
 				'plugins/class-indeed-ultimate-affiliate-pro.php'                => class_exists( 'UAP_Main' ),
 				'plugins/class-lubenda-cookie-solution.php'                      => class_exists( 'iubenda' ),
-				'plugins/class-optimizepress.php'                                => ( isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) && false !== strpos( $_REQUEST['page'], 'optimizepress' ) ),
+				'plugins/class-optimizepress.php'                                => ( isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) && false !== strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'optimizepress' ) ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checking for OptimizePress page parameter
 				'plugins/class-oxygen-builder.php'                               => defined( 'CT_VERSION' ),
 				'plugins/class-pdf-invoice-packing-slip.php'                     => class_exists( 'WPO_WCPDF' ),
 				'plugins/class-pixel-cog.php'                                    => defined( 'PIXEL_COG_VERSION' ),
 				'plugins/class-polylang.php'                                     => defined( 'POLYLANG_VERSION' ),
 				'plugins/class-product-composite.php'                            => class_exists( 'WC_Composite_Products' ),
+				'plugins/class-ry-woocommerce-tools.php'                            => function_exists( 'RY_WT' ),
 				'plugins/class-shortpixel-image-optimizer.php'                   => defined( 'SHORTPIXEL_PLUGIN_FILE' ),// MOve to template found
+				'plugins/class-simple-cloudflare-turnstile.php'                   => function_exists('cfturnstile_admin_script_enqueue'),
 				'plugins/class-siteorigin.php'                                   => class_exists( 'SiteOrigin_Panels' ),
 				'plugins/class-skyverge-url-coupons.php'                         => function_exists( 'wc_url_coupons' ),
+				'plugins/class-template-mela-core.php'                         => defined('TMCORE_VERSION'),
 				'plugins/class-ti-wishlist.php'                                  => class_exists( 'TINVWL_URL' ),
 				'plugins/class-wc-avatax.php'                                    => class_exists( 'WC_AvaTax_Loader' ),
 				'plugins/class-wc-chained-product.php'                           => function_exists( 'initialize_chained_products' ),
@@ -84,10 +89,12 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'plugins/class-woochimp.php'                                     => function_exists( 'SSWCMC' ) || function_exists( '_mc4wp_load_plugin' ) || class_exists( 'WooChimp' ),
 				'plugins/class-woocommerce-checkout-field-editor.php'            => function_exists( 'wc_checkout_fields_load' ),
 				'plugins/class-woocommerce-coupon-messages.php'                  => function_exists( 'woocommerce_coupon_messages_plugins_loaded' ),
+				'plugins/class-woocommerce-gls.php'                              => class_exists( 'WC_Gls' ),
 				'plugins/class-woocommerce-pre-orders.php'                       => function_exists( 'woocommerce_pre_orders_load_block_classes' ),
 				'plugins/class-woocommerce-social-login.php'                     => class_exists( 'WC_Social_Login_Loader' ),
 				'plugins/class-woolentor-addon.php'                              => defined( 'WOOLENTOR_VERSION' ),
 				'plugins/class-woosb.php'                                        => function_exists( 'woosb_init' ),
+				'plugins/class-wp-external-links.php'                            => function_exists( 'wpel_init' ),
 				'plugins/class-wp-zasielkovna.php'                               => function_exists( 'run_wp_zasielkovna_shipping' ),//Move to template found
 				'plugins/class-wpc-quanity-premium.php'                          => function_exists( 'woopq_init' ),
 				'plugins/class-wployalty.php'                                    => defined( 'WLR_PLUGIN_VERSION' ),
@@ -261,7 +268,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				'fields/class-wfacp-wc-timologia.php'                   => function_exists( 'tfwc_get_keys_labels' ),
 				'fields/class-wfacp-wfirma-wc.php'                      => class_exists( 'WPDesk\WooCommerceWFirma\WoocommerceIntegration' ),
 				'fields/class-wfacp-woo-fakturownia.php'                => class_exists( 'FakturowniaVendor\WPDesk\Invoices\Field\FormField' ),
-				'fields/class-wfacp-woo-mailerlite.php'                 => class_exists( 'Woo_Mailerlite' ),
+				'fields/class-wfacp-woo-mailerlite.php'                 => class_exists( 'Woo_Mailerlite' ) || defined( 'WOO_MAILERLITE_VERSION' ),
 				'fields/class-wfacp-woo-postnl.php'                     => class_exists( 'Woocommerce_PostNL_Postcode_Fields' ) || class_exists( 'WCPOST' ),
 				'fields/class-wfacp-woocommerce-ups.php'                => class_exists( 'UPS_WooCommerce_Shipping' ),
 				'fields/class-wfacp-yth-wc-points-rewards.php'          => function_exists( 'yith_ywpar_premium_constructor' ),
@@ -390,7 +397,7 @@ if ( ! class_exists( 'WFACP_Plugin_Compatibilities' ) ) {
 				}
 			} catch ( Exception|Error $e ) {
 				if ( defined( 'BWF_DEV' ) && true === BWF_DEV ) {
-					trigger_error( $e->getMessage() );
+					trigger_error( esc_html( $e->getMessage() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Error message for development debugging
 				}
 			}
 

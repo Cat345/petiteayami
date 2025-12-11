@@ -100,7 +100,11 @@ if ( ! class_exists( 'WFACP_Compatibility_WoodMart_Theme' ) ) {
                 body td.product-remove a, body .woocommerce-remove-coupon{display: inline-block;align-items: inherit;justify-content: inherit;width: auto;height: auto;}
                 body td.product-remove a:before, body .woocommerce-remove-coupon:before{display:none;}
                 body .select2-container--default .select2-results>.select2-results__options { color: initial;}
-                body .responsive-table{width: 100%;}
+                body .responsive-table{
+                    width: 100%;
+                    overflow: unset;
+                    margin: 0;
+                }
 
                 .wd-del-overall {
                     width: 100% !important;
@@ -161,6 +165,17 @@ if ( ! class_exists( 'WFACP_Compatibility_WoodMart_Theme' ) ) {
                 .wd-info-msg strong {
                     color: #000;
                     font-weight: 600;
+                }
+                .wd-notice, div.wpcf7-response-output, .mc4wp-alert, :is(.woocommerce-error,.woocommerce-message,.woocommerce-info) {
+                    padding: 0 !important;
+                    margin: 0;
+                    color: #000;
+                }
+
+                body #wfacp-sec-wrapper .wfacp-success, body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg>.wfacp_single_coupon_msg, body #wfacp-sec-wrapper .wfacp_main_form.woocommerce .woocommerce-message, body #wfacp-sec-wrapper .wfacp_success, body #wfacp-sec-wrapper .wfacp_sucuss, body #wfacp-sec-wrapper .woocommerce-message, body .wfacp-coupon-page .wfacp_coupon_remove_msg {
+
+                    padding: 5px 10px 5px 24px !important;;
+
                 }
                 /* Responsive adjustments */
                 @media (max-width: 768px) {
@@ -228,9 +243,12 @@ if ( ! class_exists( 'WFACP_Compatibility_WoodMart_Theme' ) ) {
 	        foreach ( $cart_items as $cart_item ) {
 		        $products[] = $cart_item['data'];
 	        }
+            $delivery_date_string='';
+            if(class_exists('XTS\Modules\Estimate_Delivery\Overal_Delivery_Date')){
+                $overal_dates         = new XTS\Modules\Estimate_Delivery\Overal_Delivery_Date( $products );
+                $delivery_date_string = $overal_dates->get_date_string();
+            }
 
-	        $overal_dates         = new XTS\Modules\Estimate_Delivery\Overal_Delivery_Date( $products );
-	        $delivery_date_string = $overal_dates->get_date_string();
 
 	        if ( empty( $delivery_date_string ) ) {
 		        return;

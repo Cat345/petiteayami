@@ -51,7 +51,7 @@ $apply_coupon_button_text = apply_filters( 'wfacp_form_apply_coupon_button_text'
                     <input type="text" name="wfacp_coupon_field" id='wfacp_coupon_code_field' class="input-text wfacp-form-control wfacp_coupon_code" placeholder="<?php echo $args['label']; ?>" value=""/>
                 </p>
                 <p class="form-row form-row-last <?php echo $coupon_cls; ?> wfacp_coupon_btn_wrap">
-                    <label class="wfacp-form-control-label">&nbsp;</label>
+                    <label class="wfacp-form-control-label"></label>
                     <button type="button" class="button wfacp-coupon-field-btn" name="apply_coupon" value="<?php echo $apply_coupon_button_text; ?>" disabled="disabled"><?php echo $apply_coupon_button_text; ?></button>
                 </p>
                 <div class="clear"></div>
