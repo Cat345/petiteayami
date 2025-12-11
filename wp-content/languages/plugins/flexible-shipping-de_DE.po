@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Plugins - Table Rate Shipping Method for WooCommerce by Flexible Shipping - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-10-02 11:26:23+0000\n"
+"PO-Revision-Date: 2025-11-26 13:07:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Table Rate Shipping Method for WooCommerce by Flexible Shipping - Stable (latest release)\n"
 
@@ -37,17 +37,37 @@ msgstr "Nutzungsverfolgung deaktivieren"
 msgid "Enable usage tracking"
 msgstr "Nutzungsverfolgung aktivieren"
 
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Metabox/Ajax.php:21
+msgid "Insufficient user permissions!"
+msgstr "Unzureichende Benutzerberechtigungen!"
+
 #: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
 msgid "I have found another plugin"
 msgstr "Ich habe ein anderes Plugin gefunden"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "I don't need the plugin anymore"
+msgstr "Ich benötige das Plugin nicht mehr."
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "The plugin doesn't have the functionality I need"
+msgstr "Das Plugin hat nicht die Funktionalität, die ich brauche"
 
 #: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
 msgid "Other reason"
 msgstr "Anderer Grund"
 
 #: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "Why is the plugin not needed anymore?"
+msgstr "Warum wird das Plugin nicht mehr benötigt?"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
 msgid "Which plugin are you switching to?"
 msgstr "Zu welchem Plugin wechselst du?"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "Can you provide some details on the reason behind deactivation?"
+msgstr "Kannst du den Grund für die Deaktivierung näher erläutern?"
 
 #: vendor_prefixed/octolize/octolize-checkout-block-integration/src/Blocks/StoreEndpoint.php:57
 msgid "Field"
@@ -72,6 +92,10 @@ msgstr "Vielen Dank für das Feedback"
 #: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/Plugin.php:122
 msgid "Buy plugin →"
 msgstr "Plugin kaufen →"
+
+#: src/WPDesk/FS/TableRate/FreeShipping/FreeShippingNoticeGenerator.php:195
+msgid "Continue shopping"
+msgstr "Einkauf fortsetzen"
 
 #: src/WPDesk/FS/TableRate/Rule/Condition/Pro/ProductDimensionLength.php:21
 msgid "Length"
@@ -101,9 +125,29 @@ msgstr "Produktkategorie"
 msgid "Item"
 msgstr "Artikel"
 
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/MaxDimension.php:24
+msgid "Max dimension"
+msgstr "Max. Dimension"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/Volume.php:24
+msgid "Volume"
+msgstr "Menge"
+
 #: src/WPDesk/FS/TableRate/Rule/Condition/Pro/UserRole.php:24
 msgid "User Role"
 msgstr "Benutzerrolle"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/DayOfTheWeek.php:24
+msgid "Day of the week"
+msgstr "Wochentag"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/TimeOfTheDay.php:24
+msgid "Time of the day"
+msgstr "Tageszeit"
+
+#: src/WPDesk/FS/TableRate/Rule/Condition/Pro/TotalOverallDimensions.php:26
+msgid "Total overall dimensions"
+msgstr "Gesamtmaße"
 
 #: src/WPDesk/FS/TableRate/Rule/Condition/Pro/DimensionalWeight.php:25
 #: src/WPDesk/FS/TableRate/Rule/Condition/Pro/MaxDimension.php:26
@@ -154,6 +198,19 @@ msgstr "https://octol.io/onboarding-sc"
 msgid "https://octol.io/onboarding-docs"
 msgstr "https://octol.io/onboarding-docs"
 
+#: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateAction.php:79
+msgid "(Copy)"
+msgstr "(Kopie)"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateScript.php:68
+#: assets/js/rules-settings.js:132
+msgid "Duplicate"
+msgstr "Duplizieren"
+
+#: src/WPDesk/FS/TableRate/ShippingMethod/SingleMethodSettings.php:44
+msgid "Tax"
+msgstr "Steuer"
+
 #: vendor_prefixed/wpdesk/wp-forms/templates/input-image.php:46
 msgid "Set image"
 msgstr "Bild festlegen"
@@ -161,6 +218,10 @@ msgstr "Bild festlegen"
 #: vendor_prefixed/wpdesk/wp-forms/templates/input-image.php:57
 msgid "Remove image"
 msgstr "Bild löschen"
+
+#: src/WPDesk/FS/Tracker/TrackerNotices.php:55
+msgid "Learn more »"
+msgstr "Weitere Informationen »"
 
 #: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:34
 #: src/WPDesk/FS/TableRate/Rule/Condition/Price.php:123
@@ -596,7 +657,6 @@ msgid "The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %
 msgstr "Das Plugin &#8222;%s&#8220; kann nicht mit WordPress-Versionen älter als %s ausgeführt werden. Bitte aktualisiere WordPress."
 
 #: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:409
-#: vendor_prefixed/wpdesk/wp-basic-requirements/src/Basic_Requirement_Checker.php:429
 msgid "The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin."
 msgstr "Das Plugin &#8222;%s&#8220; funktioniert leider nicht, wenn %s nicht aktiv ist. Bitte installiere und aktiviere das Plugin %s."
 
@@ -727,11 +787,6 @@ msgstr "Datum"
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:102
 msgid "Number"
 msgstr "Nummer"
-
-#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:159
-#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:183
-msgid "Invalid nonce!"
-msgstr "Momentan ungültig!"
 
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:20
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/views/manifest-metabox.php:79
@@ -1009,6 +1064,11 @@ msgstr "Aktuelle Einstellungen und Nutzungsinformation der WP-Desk-Plugins"
 #: vendor_prefixed/wpdesk/wp-wpdesk-tracker/src/views/tracker-deactivate.php:11
 msgid "You are deactivating %s plugin."
 msgstr "Du deaktivierst das Plugin %s."
+
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:159
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Manifest/CustomPostType.php:183
+msgid "Invalid nonce!"
+msgstr "Ungültige Nonce!"
 
 #: src/WPDesk/FS/Shipment/ModifyOrderTable.php:100
 #: src/WPDesk/FS/Shipment/ModifyOrderTable.php:162
@@ -1367,6 +1427,10 @@ msgstr "Allen Benutzern anzeigen"
 msgid "Shipping Zones"
 msgstr "Versandzonen"
 
+#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:144
+msgid "Check the box to set this option as the default selected choice on the cart page."
+msgstr "Wähle das Kästchen aus, um diese Option als Standardauswahl im Warenkorb festzulegen."
+
 #. Translators: add method.
 #. Translators: free shipping.
 #. Translators: matched condition.
@@ -1382,10 +1446,6 @@ msgstr "Versandzonen"
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/CheckboxValue.php:23
 msgid "yes"
 msgstr "ja"
-
-#: src/WPDesk/FS/TableRate/ShippingMethod/CommonMethodSettings.php:144
-msgid "Check the box to set this option as the default selected choice on the cart page."
-msgstr "Wähle das Kästchen aus, um diese Option als Standardauswahl im Warenkorb festzulegen."
 
 #: classes/table-rate/views/html-shipping-method-settings.php:91
 msgid "Drag and drop the above shipment methods to control their display order. Confirm by clicking Save changes button below."

@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-23 11:11:05+0000\n"
+"PO-Revision-Date: 2025-11-08 00:32:53+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release)\n"
 
@@ -628,10 +628,6 @@ msgstr "Aktivieren"
 msgid "List"
 msgstr "Liste"
 
-#: includes/admin/columns.php:185 legacy/inc/admin/edit-columns.php:138
-msgid "Show all Types"
-msgstr "Zeige alle Typen"
-
 #: legacy/inc/admin/edit-columns.php:147
 msgid "Show all Modes"
 msgstr "Zeige alle Modi"
@@ -1152,3 +1148,7 @@ msgstr "Inhalt"
 #: build/dittyEditor.js:8336 build/dittyEditor.js:8426
 msgid "Hide"
 msgstr "Ausblenden"
+
+#: includes/admin/columns.php:185 legacy/inc/admin/edit-columns.php:138
+msgid "Show all Types"
+msgstr "Alle Typen anzeigen"

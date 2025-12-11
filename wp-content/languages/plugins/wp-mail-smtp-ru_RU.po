@@ -2,18 +2,197 @@
 # This file is distributed under the same license as the Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-06-05 15:48:58+0000\n"
+"PO-Revision-Date: 2025-10-17 06:15:45+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: ru\n"
 "Project-Id-Version: Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release)\n"
+
+#. translators: %s - API key link.
+#: src/Providers/Mandrill/Options.php:116
+msgid "Follow this link to get an API Key from Mandrill: %s."
+msgstr "Перейдите по этой ссылке, чтобы получить API-ключ от Mandrill: %s."
+
+#: src/Providers/Mandrill/Options.php:60
+msgid "Mandrill"
+msgstr "Mandrill"
+
+#. translators: %2$s - URL to wpmailsmtp.com doc.
+#: src/Providers/Mandrill/Options.php:41
+msgid "To get started, read our <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">Mandrill documentation</a>."
+msgstr "Для начала ознакомьтесь с <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">документацией по Mandrill</a>."
+
+#. translators: %1$s - URL to Mandrill website.
+#: src/Providers/Mandrill/Options.php:38
+msgid "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Mandrill</a> is a transactional email API for MailChimp users. It is a reliable, scalable, and secure delivery API for transactional emails. Mandrill requires a paid monthly subscription to send emails."
+msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Mandrill</a> - это API транзакционной электронной почты для пользователей MailChimp. Это надежный, масштабируемый и безопасный API для доставки транзакционных писем. Для отправки писем Mandrill требуется платная месячная подписка."
+
+#. translators: %s - The reason the email was rejected.
+#: src/Providers/Mandrill/Mailer.php:416
+msgid "The email failed to be sent. Reason: %s"
+msgstr "Письмо не удалось отправить. Причина: %s"
+
+#. Translators: %s - discount value $50.
+#: src/Admin/Pages/SettingsTab.php:288
+msgid "<strong>%s OFF</strong> for WP Mail SMTP users, applied at checkout."
+msgstr "<strong>%s OFF</strong> для пользователей WP Mail SMTP, применяется при оформлении заказа."
+
+#: src/Admin/Pages/SettingsTab.php:283
+msgid "Discount"
+msgstr "Скидка"
+
+#: src/Admin/Pages/SettingsTab.php:272
+msgid "Professional Setup and World-Class Support"
+msgstr "Профессиональная настройка и поддержка мирового класса"
+
+#: src/Admin/Pages/SettingsTab.php:271
+msgid "White Glove Setup - Sit back while we handle everything"
+msgstr "Установка в белых перчатках - откиньтесь на спинку кресла, пока мы все сделаем"
+
+#: src/Admin/Pages/SettingsTab.php:268
+msgid "Smart Routing, Multisite Support, and Manage Notifications"
+msgstr "Интеллектуальная маршрутизация, поддержка нескольких сайтов и управление уведомлениями"
+
+#: src/Admin/Pages/SettingsTab.php:267
+msgid "Effortless Management - Control your email experience"
+msgstr "Удобное управление - контролируйте свою работу с электронной почтой"
+
+#: src/Admin/Pages/SettingsTab.php:264
+msgid "Gmail one-click setup, Microsoft 365 / Outlook, Amazon SES, and Zoho Mail"
+msgstr "Настройка Gmail в один клик, Microsoft 365 / Outlook, Amazon SES и Zoho Mail"
+
+#: src/Admin/Pages/SettingsTab.php:263
+msgid "Professional Email Services - Access enterprise-grade email providers"
+msgstr "Профессиональные услуги электронной почты - доступ к поставщикам услуг электронной почты корпоративного уровня"
+
+#: src/Admin/Pages/SettingsTab.php:260
+msgid "Email Logging, Alerts, and Backup Connection"
+msgstr "Ведение журнала, оповещения и подключение резервного копирования по электронной почте"
+
+#: src/Admin/Pages/SettingsTab.php:259
+msgid "Peace of Mind - Never wonder about your email status"
+msgstr "Спокойствие - никогда не задумывайтесь о состоянии своей электронной почты"
+
+#: src/Admin/Pages/SettingsTab.php:254
+msgid "Key Features You’ll Unlock:"
+msgstr "Ключевые особенности, которые вы откроете:"
+
+#: src/Admin/Pages/SettingsTab.php:248
+msgid "Upgrade and join over <strong>4,000,000</strong> websites!"
+msgstr "Обновляйтесь и присоединяйтесь к более чем <strong>4 000 000</strong> веб-сайтов!"
+
+#: src/Admin/Pages/SettingsTab.php:245
+msgid "Level Up Your Email Game - Get Pro Features Now"
+msgstr "Повысьте уровень своей игры с электронной почтой - получите профессиональные функции прямо сейчас"
+
+#: src/Admin/Pages/SettingsTab.php:221
+msgid "Email Logs"
+msgstr "Логи E-mail"
+
+#. Translators: %s - discount value $50
+#: src/Admin/Pages/SettingsTab.php:80
+msgid "As a valued WP Mail SMTP Lite user, you can enjoy an exclusive <strong>%s discount</strong>, automatically applied at checkout to unlock even more features!"
+msgstr "Как ценный пользователь WP Mail SMTP Lite, вы можете воспользоваться эксклюзивной <strong>скидкой%s </strong>, которая автоматически применяется при оформлении заказа и открывает еще больше возможностей!"
+
+#: src/Admin/Pages/SettingsTab.php:74
+msgid "You're using <strong>WP Mail SMTP Lite</strong> - no license needed. Enjoy!"
+msgstr "Вы используете <strong>WP Mail SMTP Lite</strong> - лицензия не нужна. Наслаждайтесь!"
+
+#. translators: %s - WPMailSMTP.com Upgrade page URL.
+#: src/Admin/Education.php:73
+msgid "You’re using WP Mail SMTP Lite. To unlock more features, consider <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">upgrading to Pro</a> for <strong>%2$s OFF</strong>."
+msgstr "Вы используете WP Mail SMTP Lite. Чтобы открыть больше возможностей, <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">перейдите на Pro</a> за <strong>%2$s OFF</strong>."
+
+#: assets/languages/wp-mail-smtp-vue.php:1066
+msgid "Read how to set up Mandrill"
+msgstr "Читайте, как настроить Mandrill"
+
+#: assets/languages/wp-mail-smtp-vue.php:1063
+msgid "Follow this link to get an API Key from Mandrill."
+msgstr "Перейдите по этой ссылке, чтобы получить API-ключ от Mandrill."
+
+#: src/Providers/MailerSend/Options.php:150
+msgid "pricing page"
+msgstr "страница цен"
+
+#. translators: %s - MailerSend pricing page URL.
+#: src/Providers/MailerSend/Options.php:148
+msgid "Activate if you have a Professional or higher plan with MailerSend. This allows you to use custom headers. For more information about MailerSend plans, check their %s."
+msgstr "Активируйте, если у вас есть тарифный план Professional или выше с MailerSend. Это позволит вам использовать пользовательские заголовки. Дополнительную информацию о тарифных планах MailerSend можно найти на сайте %s."
+
+#: src/Providers/MailerSend/Options.php:129
+msgid "Professional Plan"
+msgstr "Профессиональный план"
+
+#. translators: %s - API key link.
+#: src/Providers/MailerSend/Options.php:115
+msgid "Follow this link to get an API Key from MailerSend: %s."
+msgstr "Перейдите по этой ссылке, чтобы получить API-ключ от MailerSend: %s."
+
+#: src/Providers/MailerSend/Options.php:61
+msgid "MailerSend"
+msgstr "MailerSend"
+
+#. translators: %1$s - URL to mailersend.com; %2$s - URL to MailerSend
+#. documentation on wpmailsmtp.com.
+#: src/Providers/MailerSend/Options.php:41
+msgid "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">MailerSend</a> is a reliable transactional email provider with powerful features. They offer 12,000 emails per month for free and have affordable plans for higher volumes. Their modern API and excellent deliverability make them a great choice for WordPress sites.<br><br>To get started, read our <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">MailerSend documentation</a>."
+msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">MailerSend</a> - это надежный поставщик транзакционной электронной почты с мощными функциями. Они предлагают 12 000 писем в месяц бесплатно и имеют доступные тарифные планы для больших объемов. Современный API и отличная доставляемость делают их отличным выбором для сайтов WordPress.<br><br>Чтобы начать работу, прочитайте нашу <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">документацию по MailerSend</a>."
+
+#: src/Admin/Pages/MiscTab.php:161
+msgid "When selected, emails blocked by the \"Do Not Send\" option will be logged in the Email Log."
+msgstr "При выборе этого параметра сообщения электронной почты, заблокированные с помощью опции \"Не отправлять\", будут регистрироваться в журнале электронной почты."
+
+#: src/Admin/Pages/MiscTab.php:158
+msgid "Log Blocked Emails"
+msgstr "Журнал заблокированных сообщений электронной почты"
+
+#: src/Admin/Pages/AlertsTab.php:386
+msgid "Phone Number ID"
+msgstr "Номер телефона ID"
+
+#: src/Admin/Pages/AlertsTab.php:380
+msgid "WhatsApp Business Account ID"
+msgstr "Идентификатор бизнес-аккаунта WhatsApp"
+
+#: src/Admin/Pages/AlertsTab.php:374
+msgid "Access Token"
+msgstr "Токен доступа"
+
+#: src/Admin/Pages/AlertsTab.php:362
+msgid "WhatsApp Alerts"
+msgstr "Оповещения WhatsApp"
+
+#: src/Admin/Pages/AlertsTab.php:357
+msgid "Enter your WhatsApp Cloud API credentials to receive alerts when email sending fails. You'll need to create a Meta developer account and set up WhatsApp Business Platform."
+msgstr "Введите свои учетные данные WhatsApp Cloud API, чтобы получать уведомления о сбоях при отправке электронной почты. Вам потребуется создать учетную запись разработчика Meta и настроить WhatsApp Business Platform."
+
+#: src/Admin/Pages/AlertsTab.php:356
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: assets/languages/wp-mail-smtp-vue.php:1060
+msgid "Read how to set up MailerSend"
+msgstr "Читайте, как настроить MailerSend"
+
+#: assets/languages/wp-mail-smtp-vue.php:1057
+msgid "Enable if you have a Pro plan or higher to use advanced features like custom headers."
+msgstr "Включите, если у вас тарифный план Pro или выше, чтобы использовать расширенные функции, например, пользовательские заголовки."
+
+#: assets/languages/wp-mail-smtp-vue.php:1047
+msgid "Pro Plan Features"
+msgstr "Особенности плана Pro"
 
 #: src/Admin/Pages/AlertsTab.php:345
 msgid "Connection Name"
 msgstr "Имя подключения"
+
+#: src/Admin/Pages/AlertsTab.php:333
+msgid "Push Notification Alerts"
+msgstr "Оповещения Push Notification"
 
 #: src/Admin/Pages/AlertsTab.php:328
 msgid "To receive push notifications on this device, you'll need to allow our plugin to send notifications via this browser. Read our documentation on setting up Push Notification alerts."
@@ -23,7 +202,7 @@ msgstr "Для получения всплывающих уведомлений 
 msgid "Push Notifications"
 msgstr "Всплывающие уведомления"
 
-#: src/Admin/Area.php:1247
+#: src/Admin/Area.php:1269
 msgid "Notice was successfully dismissed."
 msgstr "Уведомление скрыто."
 
@@ -120,6 +299,7 @@ msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Mailjet</
 #: src/Providers/ElasticEmail/Options.php:111
 #: src/Providers/MailerSend/Options.php:106
 #: src/Providers/Mailgun/Options.php:78 src/Providers/Mailjet/Options.php:111
+#: src/Providers/Mandrill/Options.php:107 src/Providers/Resend/Options.php:112
 #: src/Providers/Sendgrid/Options.php:86
 #: src/Providers/Sendinblue/Options.php:130
 #: src/Providers/Sendlayer/Options.php:120
@@ -327,11 +507,11 @@ msgstr "WP Mail SMTP использует настраиваемые табли�
 msgid "WP Mail SMTP is using custom database tables for some of its features. In order to work properly, the custom tables should be created, and it seems they are missing. Please try to <a href=\"%1$s\">create the missing DB tables by clicking on this link</a>. If this issue persists, please <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">contact our support</a> and provide the error message below:"
 msgstr "WP Mail SMTP использует настраиваемые таблицы базы данных для некоторых своих функций. Настраиваемые таблицы должны быть созданы для корректной работы, но, кажется, сейчас они отсутствуют. Попробуйте <a href=\"%1$s\">нажать на эту ссылку и создать недостающие таблицы БД</a>. Если проблема не исчезнет, <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">обратитесь в нашу службу поддержки</a> со следующим сообщением об ошибке:"
 
-#: src/Admin/Area.php:562
+#: src/Admin/Area.php:575
 msgid "We're sorry, Email Rate Limiting is not available on your plan. Please upgrade to the Pro plan to unlock all these awesome features."
 msgstr "К сожалению, ограничение числа отправляемых писем в единицу времени недоступно в вашем плане. Перейдите на план Pro, чтобы получить доступ ко всем потрясающим возможностям."
 
-#: src/Admin/Area.php:561
+#: src/Admin/Area.php:574
 msgid "Email Rate Limiting <br> is a Pro Feature"
 msgstr "Ограничение числа отправляемых электронных писем <br> — функция, доступная в версии Pro"
 
@@ -344,11 +524,11 @@ msgstr "Установите плагин WPForms и создавайте кра
 msgid "Our Gmail mailer works with any Gmail or Google Workspace account via the Google API. You can send WordPress emails from your main email address or a Gmail alias, and it's more secure than connecting to Gmail using SMTP credentials. We now have a One-Click Setup, which simply asks you to authorize your Google account to use our app and takes care of everything for you. Alternatively, you can connect manually, which involves several steps that are more technical than other mailer options, so we created a detailed guide to walk you through the process.<br><br>To get started, read our <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Gmail documentation</a>."
 msgstr "Наша почтовая программа Gmail работает через Google API с любыми учетными записями Gmail или Google Workspace. Вы можете отправлять электронные письма WordPress со своего основного адреса электронной почты или псевдонима Gmail, и это более безопасно, чем подключение к Gmail с использованием учетных данных SMTP. Теперь у нас есть быстрая настройка, при которой для использования нашего приложения вам нужно будет просто авторизоваться в своей учетной записи Google, а остальное будет сделано за вас. Либо вы можете подключиться вручную, и в этом случае вам потребуется выполнить несколько более сложных шагов. Для такой ситуации мы разработали подробное руководство, которое проведет вас через всю процедуру.<br><br>Для начала ознакомьтесь с нашей <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">документацией по Gmail</a>."
 
-#: assets/languages/wp-mail-smtp-vue.php:999 src/Admin/Area.php:558
+#: assets/languages/wp-mail-smtp-vue.php:999 src/Admin/Area.php:571
 msgid "We're sorry, One-Click Setup for Google Mailer is not available on your plan. Please upgrade to the Pro plan to unlock all these awesome features."
 msgstr "К сожалению, в вашем плане быстрая настройка почтовой программы Google недоступна. Чтобы разблокировать все эти удобные функции, рассмотрите смену плана на версию Pro."
 
-#: assets/languages/wp-mail-smtp-vue.php:996 src/Admin/Area.php:557
+#: assets/languages/wp-mail-smtp-vue.php:996 src/Admin/Area.php:570
 msgid "One-Click Setup for Google Mailer <br> is a Pro Feature"
 msgstr "Быстрая настройка почтовой программы Google <br> доступна в версии Pro"
 
@@ -429,34 +609,6 @@ msgstr "Быстрая настройка"
 msgid "Send emails from different additional connections based on your configured conditions. Emails that do not match any of the conditions below will be sent via your Primary Connection."
 msgstr "Отправляйте электронные письма через различные дополнительные подключения в зависимости от настроенных вами условий. Письма, которые не соответствуют ни одному из приведенных ниже условий, будут отправлены через ваше основное подключение."
 
-#: src/Admin/Pages/SettingsTab.php:272
-msgid "Configure SendLayer, SMTP.com or Brevo service"
-msgstr "Настроить службу SendLayer, SMTP.com или Brevo"
-
-#: src/Admin/Pages/SettingsTab.php:271
-msgid "Install & Setup WP Mail SMTP Pro plugin"
-msgstr "Установка и настройка плагина WP Mail SMTP Pro"
-
-#: src/Admin/Pages/SettingsTab.php:264
-msgid "Zoho Mail - use your Zoho Mail account to send emails"
-msgstr "Zoho Mail — используйте для отправки писем свою учетную запись Zoho Mail"
-
-#: src/Admin/Pages/SettingsTab.php:263
-msgid "Outlook - send emails using your Outlook or Microsoft 365 account"
-msgstr "Outlook — отправляйте электронные письма, используя учетную запись Outlook или Microsoft 365"
-
-#: src/Admin/Pages/SettingsTab.php:261
-msgid "Smart Routing - define conditions for your email sending"
-msgstr "Умная маршрутизация — определяйте условия отправки электронной почты"
-
-#: src/Admin/Pages/SettingsTab.php:260
-msgid "Backup Connection - send emails even if your primary connection fails"
-msgstr "Резервное подключение — позволяет отправлять письма, даже если основное подключение не работает"
-
-#: src/Admin/Pages/SettingsTab.php:259
-msgid "Alerts - get notified when your emails fail (via email, slack or SMS)"
-msgstr "Оповещения — получайте уведомления при сбое в отправке электронной почты (по электронной почте, через Slack или SMS)"
-
 #: src/Admin/Pages/MiscTab.php:418
 msgid "All settings will be unrecoverable."
 msgstr "Восстановить настройки будет невозможно."
@@ -513,15 +665,15 @@ msgstr "Настройте хотя бы одну из этих интеграц
 msgid "Create additional connections to set a backup for your Primary Connection or to configure Smart Routing."
 msgstr "Создайте дополнительные подключения, чтобы иметь резервную копию своего основного подключения или настроить умную маршрутизацию."
 
-#: src/Admin/Area.php:1485
+#: src/Admin/Area.php:1507
 msgid "Free Plugins"
 msgstr "Бесплатные плагины"
 
-#: src/Admin/Area.php:1466
+#: src/Admin/Area.php:1488
 msgid "Support"
 msgstr "Поддержка"
 
-#: src/Admin/Area.php:1455
+#: src/Admin/Area.php:1477
 msgid "Made with ♥ by the WP Mail SMTP team"
 msgstr "Сделано с ♥ командой WP Mail SMTP"
 
@@ -662,7 +814,7 @@ msgstr "WPCode Lite"
 msgid "Top-rated WordPress donation and fundraising plugin. Over 10,000+ non-profit organizations and website owners use Charitable to create fundraising campaigns and raise more money online."
 msgstr "Лучший плагин для сбора пожертвований в WordPress. Более 10 000 некоммерческих организаций и сайтов используют Charitable для сбора средств в интернете."
 
-#: src/Admin/Area.php:534
+#: src/Admin/Area.php:547
 msgid "We're sorry, the %name% mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features."
 msgstr "К сожалению, почтовая программа %name% недоступна в вашем плане. Перейдите на план PRO, чтобы разблокировать все эти замечательные функции."
 
@@ -752,16 +904,16 @@ msgid "Enable Smart Routing"
 msgstr "Включить умную маршрутизацию"
 
 #. translators: %s - Smart routing settings page url.
-#: src/Admin/Pages/SettingsTab.php:378
+#: src/Admin/Pages/SettingsTab.php:375
 msgid "Once you add an <a href=\"%s\">additional connection</a>, you can select it here."
 msgstr "После добавления <a href=\"%s\">дополнительного подключения</a> его можно выбрать здесь."
 
 #. translators: %s - WPMailSMTP.com Upgrade page URL.
-#: src/Admin/Pages/SettingsTab.php:346
+#: src/Admin/Pages/SettingsTab.php:343
 msgid "Don’t worry about losing emails. Add an additional connection, then set it as your Backup Connection. Emails that fail to send with the Primary Connection will be sent via the selected Backup Connection. <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Upgrade to WP Mail SMTP Pro!</a>"
 msgstr "Не бойтесь потерять письма. Добавьте дополнительное подключение и установите его в качестве резервного. Электронные письма, которые не удалось отправить с помощью основного подключения, будут отправлены через выбранное резервное подключение. <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Перейдите на WP Mail SMTP Pro!</a>"
 
-#: src/Admin/Pages/SettingsTab.php:85
+#: src/Admin/Pages/SettingsTab.php:108
 msgid "Primary Connection"
 msgstr "Основное подключение"
 
@@ -788,7 +940,7 @@ msgid "Smart Routing"
 msgstr "Умная маршрутизация"
 
 #: src/Admin/Pages/AdditionalConnectionsTab.php:143
-#: src/Admin/Pages/SettingsTab.php:340 src/Admin/Pages/SettingsTab.php:364
+#: src/Admin/Pages/SettingsTab.php:337 src/Admin/Pages/SettingsTab.php:361
 msgid "Backup Connection"
 msgstr "Резервное подключение"
 
@@ -816,7 +968,7 @@ msgstr "перейдите по этой ссылке и создайте нед
 
 #: src/SiteHealth.php:295
 msgid "Go to WP Mail SMTP settings page."
-msgstr "Перейти на страницу настроек WP Mail SMTP"
+msgstr "Перейти на страницу настроек WP Mail SMTP."
 
 #. translators: %1$s - Settings Page URL; %2$s - The aria label; %3$s - The
 #. text that will appear on the link.
@@ -891,64 +1043,64 @@ msgstr "[%1$d] %2$s вызывается в [%3$s:%4$s]"
 msgid "Backtrace:"
 msgstr "Обратная трассировка:"
 
-#: assets/languages/wp-mail-smtp-vue.php:449
+#: assets/languages/wp-mail-smtp-vue.php:443
 msgid "Track when a link in an email is clicked"
 msgstr "Отслеживайте переход по ссылке в электронном письме"
 
-#: assets/languages/wp-mail-smtp-vue.php:196
+#: assets/languages/wp-mail-smtp-vue.php:197
 msgid "Complete Email Reports"
 msgstr "Полные отчеты по электронной почте"
 
-#: assets/languages/wp-mail-smtp-vue.php:199
+#: assets/languages/wp-mail-smtp-vue.php:200
 msgid "See the delivery status, track opens and clicks, and create deliverability graphs."
 msgstr "Просматривайте статус доставки, отслеживайте открытия и клики и создавайте графики доставляемости."
 
-#: assets/languages/wp-mail-smtp-vue.php:193
+#: assets/languages/wp-mail-smtp-vue.php:194
 msgid "Get notifications via email, SMS, Slack, or webhook when emails fail to send."
 msgstr "Получайте уведомления с помощью электронной почты, SMS, Slack или вебхука, если электронные письма не отправляются."
 
-#: assets/languages/wp-mail-smtp-vue.php:190
+#: assets/languages/wp-mail-smtp-vue.php:191
 msgid "Instant Email Alerts"
 msgstr "Мгновенные электронные оповещения"
 
-#: assets/languages/wp-mail-smtp-vue.php:434
+#: assets/languages/wp-mail-smtp-vue.php:428
 msgid "This option must be enabled if you'd like to be able to resend emails. Please be aware that all email content will be stored in your WordPress database. This may include sensitive data, passwords, and personal details."
 msgstr "Эта опция должна быть включена, если вы хотите иметь возможность повторно отправлять электронные письма. Имейте в виду, что все содержимое электронной почты будет храниться в вашей базе данных WordPress. Сюда относится конфиденциальная информация, пароли и личные данные."
 
-#: assets/languages/wp-mail-smtp-vue.php:428
+#: assets/languages/wp-mail-smtp-vue.php:422
 msgid "Enable these powerful logging features for more control of your WordPress emails."
 msgstr "Включите эти эффективные функции регистрации, чтобы лучше контролировать свою электронную почту WordPress."
 
-#: assets/languages/wp-mail-smtp-vue.php:452
+#: assets/languages/wp-mail-smtp-vue.php:446
 msgid "See which links were clicked in emails sent from your WordPress site. Click tracking works with emails that are sent in HTML format."
 msgstr "Узнавайте, по каким ссылками переходили пользователи в электронных письмах, отправленных с вашего сайта WordPress. Отслеживание переходов по ссылкам работает с электронными письмами, отправленными в формате HTML."
 
-#: assets/languages/wp-mail-smtp-vue.php:446
+#: assets/languages/wp-mail-smtp-vue.php:440
 msgid "See which emails were opened by the recipients. Email open tracking works with emails that are sent in HTML format."
 msgstr "Узнавайте о том, какие электронные письма были открыты получателями. Отслеживание открытия писем работает с электронными письмами, отправленными в формате HTML."
 
-#: assets/languages/wp-mail-smtp-vue.php:443
+#: assets/languages/wp-mail-smtp-vue.php:437
 msgid "Track when an email is opened"
 msgstr "Отслеживайте открытие электронных писем"
 
-#: assets/languages/wp-mail-smtp-vue.php:440
+#: assets/languages/wp-mail-smtp-vue.php:434
 msgid "All file attachments sent from your site will be saved to the WordPress Uploads folder. Please note that this may reduce available disk space on your server."
 msgstr "Все прикрепленные файлы, отправленные с вашего сайта, будут сохранены в папке «Загрузки WordPress». Обратите внимание, что доступное дисковое пространство на вашем сервере может уменьшиться."
 
-#: assets/languages/wp-mail-smtp-vue.php:437
+#: assets/languages/wp-mail-smtp-vue.php:431
 msgid "Save file attachments sent from WordPress"
 msgstr "Сохраняйте прикрепленные файлы, отправленные из WordPress"
 
-#: assets/languages/wp-mail-smtp-vue.php:431
+#: assets/languages/wp-mail-smtp-vue.php:425
 msgid "Store the content for all sent emails"
 msgstr "Хранить содержимое всех отправленных писем"
 
-#: assets/languages/wp-mail-smtp-vue.php:425
+#: assets/languages/wp-mail-smtp-vue.php:419
 msgid "Configure Email Logs"
 msgstr "Настроить журналы электронной почты"
 
 #. Translators: Link to the Mailgun API settings.
-#: assets/languages/wp-mail-smtp-vue.php:230
+#: assets/languages/wp-mail-smtp-vue.php:231
 msgid "%1$sFollow this link%2$s to get a Private API Key from Mailgun."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения API ключа Mailgun."
 
@@ -1093,35 +1245,40 @@ msgstr "Перейдите в свою учетную запись Mailgun и у
 msgid "Typically this error occurs because there is an issue with your Mailgun settings, in many cases Mailgun API Key, Domain Name, or Region is incorrect."
 msgstr "Обычно эта ошибка возникает из-за проблемы с настройками Mailgun. Во многих случаях это проблемы с ключом API Mailgun, именем домена или регионом."
 
-#: src/Admin/Area.php:1293 src/Admin/Area.php:1477
+#: src/Admin/Area.php:1315 src/Admin/Area.php:1499
 msgid "Docs"
 msgstr "Документация"
 
-#: src/Admin/Area.php:1292
+#: src/Admin/Area.php:1314
 msgid "Go to WPMailSMTP.com documentation page"
 msgstr "Перейдите на страницу документации WPMailSMTP.com"
 
-#: src/Admin/Area.php:1278
+#: src/Admin/Area.php:1300
 msgid "Get WP Mail SMTP Pro"
 msgstr "Получите WP Mail SMTP Pro"
 
-#: assets/languages/wp-mail-smtp-vue.php:477
+#: assets/languages/wp-mail-smtp-vue.php:471
 #: src/Providers/Sendlayer/Options.php:65
 msgid "Get Started with SendLayer"
 msgstr "Начните работать с SendLayer"
 
-#: assets/languages/wp-mail-smtp-vue.php:480
+#: assets/languages/wp-mail-smtp-vue.php:474
 msgid "Read how to set up SendLayer"
-msgstr "Прочтите, как настроить SendLayer."
+msgstr "Прочтите, как настроить SendLayer"
 
 #. Translators: Link to the SendLayer API settings.
-#: assets/languages/wp-mail-smtp-vue.php:474
+#: assets/languages/wp-mail-smtp-vue.php:468
 msgid "%1$sFollow this link%2$s to get an API Key for SendLayer."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения API ключа SendLayer."
 
 #: assets/languages/wp-mail-smtp-vue.php:912
 msgid "Read how to set up SendGrid"
 msgstr "Узнайте, как настроить SendGrid"
+
+#. Translators: Link to the MailerSend API settings.
+#: assets/languages/wp-mail-smtp-vue.php:1051
+msgid "%1$sFollow this link%2$s to get an API Key for MailerSend."
+msgstr "%1$sПерейдите по этой ссылке%2$s, чтобы получить API-ключ для MailerSend."
 
 #: wp_mail_smtp.php:308
 msgid "<strong>WP Mail SMTP plugin is disabled</strong> on your site until WordPress is updated to the required version."
@@ -1213,7 +1370,7 @@ msgstr "Самый продвинутый поисковый плагин WordPr
 msgid "SearchWP"
 msgstr "SearchWP"
 
-#: src/Admin/Area.php:650 src/Admin/Pages/AboutTab.php:251
+#: src/Admin/Area.php:663 src/Admin/Pages/AboutTab.php:251
 msgid "Visit Site"
 msgstr "Перейти на сайт"
 
@@ -1249,6 +1406,7 @@ msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">SparkPost
 msgid "Region:"
 msgstr "Регион:"
 
+#: src/Providers/Mandrill/Mailer.php:439 src/Providers/Resend/Mailer.php:426
 #: src/Providers/Sendlayer/Mailer.php:404
 #: src/Providers/SparkPost/Mailer.php:484
 msgid "API Key:"
@@ -1288,19 +1446,19 @@ msgstr "Обычно эта ошибка возникает из-за пробл
 msgid "SparkPost API failed."
 msgstr "Сбой API SparkPost."
 
-#: assets/languages/wp-mail-smtp-vue.php:664
+#: assets/languages/wp-mail-smtp-vue.php:658
 msgid "Your mailer is already configured in a WP Mail SMTP constant, so the options below have been disabled. To change your mailer, please edit or remove the <code>WPMS_MAILER</code> constant in your <code>wp-config.php</code> file."
 msgstr "Ваша почтовая программа уже настроена на константу WP Mail SMTP, поэтому указанные ниже настройки отключены. Чтобы изменить почтовую программу, отредактируйте или удалите константу <code>WPMS_MAILER</code> из вашего <code>файла wp-config.php</code>."
 
-#: assets/languages/wp-mail-smtp-vue.php:324
+#: assets/languages/wp-mail-smtp-vue.php:318
 msgid "This setting is already configured with the WP Mail SMTP constant. To change it, please edit or remove the <code></code> constant in your <code>wp-config.php</code> file."
 msgstr "Эта настройка уже настроена с помощью постоянной WP Mail SMTP. Чтобы изменить ее, пожалуйста, отредактируйте или удалите постоянную <code></code> в вашем файле <code>wp-config.php</code>."
 
-#: assets/languages/wp-mail-smtp-vue.php:375
+#: assets/languages/wp-mail-smtp-vue.php:369
 msgid "FluentSMTP"
 msgstr "FluentSMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:670
+#: assets/languages/wp-mail-smtp-vue.php:664
 msgid "Microsoft 365 / Outlook"
 msgstr "Microsoft 365 / Outlook"
 
@@ -1655,38 +1813,38 @@ msgstr "Комментарии"
 msgid "Outlook / 365 requires an SSL certificate, and so is not currently compatible with your site. Please contact your host to request a SSL certificate, or check out "
 msgstr "Outlook / 365 требует наличия SSL-сертификата и в настоящее время несовместим с вашим сайтом. Пожалуйста, свяжитесь с вашим хостинг-провайдером, чтобы запросить SSL-сертификат, или ознакомьтесь с "
 
-#: assets/languages/wp-mail-smtp-vue.php:642
+#: assets/languages/wp-mail-smtp-vue.php:636
 msgid "If you'd prefer not to set up SSL, or need an SMTP solution in the meantime, please go back and select a different mailer option."
 msgstr "Если вы предпочитаете не устанавливать SSL или нуждаетесь в SMTP-решении, вернитесь назад и выберите другой вариант почтовой программы."
 
-#: assets/languages/wp-mail-smtp-vue.php:639
+#: assets/languages/wp-mail-smtp-vue.php:633
 msgid "WPBeginner's tutorial on how to set up SSL"
 msgstr "Инструкция WPBeginner о том, как настроить SSL"
 
-#: assets/languages/wp-mail-smtp-vue.php:636
+#: assets/languages/wp-mail-smtp-vue.php:630
 msgid "Amazon SES requires an SSL certificate, and so is not currently compatible with your site. Please contact your host to request a SSL certificate, or check out "
 msgstr "Amazon SES требует наличия SSL-сертификата и в настоящее время несовместим с вашим сайтом. Пожалуйста, свяжитесь с вашим хостинг-провайдером, чтобы запросить SSL-сертификат, или ознакомьтесь с "
 
-#: assets/languages/wp-mail-smtp-vue.php:422
+#: assets/languages/wp-mail-smtp-vue.php:416
 msgid "Read how to set up Postmark"
 msgstr "Прочтите, как настроить Postmark"
 
 #. Translators: Link to the Postmark Message Stream ID settings.
-#: assets/languages/wp-mail-smtp-vue.php:419
+#: assets/languages/wp-mail-smtp-vue.php:413
 msgid "Message Stream ID is <strong>optional</strong>. By default <strong>outbound</strong> (Default Transactional Stream) will be used. More information can be found in our %1$sPostmark documentation%2$s."
 msgstr "ID потока сообщений является <strong>необязательным</strong>. По умолчанию будет использоваться <strong>исходящий</strong> поток (поток транзакционных сообщений по умолчанию). Более подробную информацию можно найти в нашей %1$sдокументации Postmark%2$s."
 
 #. Translators: Link to the Postmark API settings.
-#: assets/languages/wp-mail-smtp-vue.php:415
+#: assets/languages/wp-mail-smtp-vue.php:409
 msgid "%1$sFollow this link%2$s to get a Server API Token for Postmark."
 msgstr "%1$sПерейдите по этой ссылке%2$s, чтобы получить API-токен сервера для Postmark."
 
-#: assets/languages/wp-mail-smtp-vue.php:411
+#: assets/languages/wp-mail-smtp-vue.php:405
 #: src/Providers/Postmark/Options.php:128
 msgid "Message Stream ID"
 msgstr "ID потока сообщений"
 
-#: assets/languages/wp-mail-smtp-vue.php:408
+#: assets/languages/wp-mail-smtp-vue.php:402
 #: src/Providers/Postmark/Options.php:90
 msgid "Server API Token"
 msgstr "API-токен сервера"
@@ -1756,16 +1914,16 @@ msgid "An email request was sent to the Gmail API."
 msgstr "Запрос по электронной почте был отправлен в API Gmail."
 
 #. Translators: %s the error message.
-#: src/Providers/Gmail/Auth.php:483
+#: src/Providers/Gmail/Auth.php:487
 msgid "An error occurred when trying to get Gmail aliases: %s"
 msgstr "Произошла ошибка при попытке получить псевдонимы Gmail: %s"
 
-#: src/Providers/Gmail/Auth.php:332
+#: src/Providers/Gmail/Auth.php:336
 msgid "There was an error while processing Google authorization: missing code or scope parameter."
 msgstr "При обработке авторизации Google произошла ошибка: отсутствует параметр кода или области."
 
 #. Translators: %s the error code passed from Google.
-#: src/Providers/Gmail/Auth.php:286
+#: src/Providers/Gmail/Auth.php:290
 msgid "There was an error while processing Google authorization: %s"
 msgstr "Произошла ошибка при обработке авторизации Google: %s"
 
@@ -1837,7 +1995,7 @@ msgstr "Сохранить подробные заголовки электро�
 msgid "Unlock these awesome logging features:"
 msgstr "Разблокируйте эти потрясающие функции журнала:"
 
-#: src/Admin/Pages/LogsTab.php:135
+#: src/Admin/Pages/LogsTab.php:135 src/Admin/Pages/SettingsTab.php:226
 msgid "Individual Email Log"
 msgstr "Журнал индивидуальных email сообщений"
 
@@ -1886,6 +2044,7 @@ msgid "Stats at a Glance"
 msgstr "Статистика в общих чертах"
 
 #: src/Admin/Pages/EmailReports.php:41 src/Admin/Pages/EmailReportsTab.php:42
+#: src/Admin/Pages/SettingsTab.php:231
 msgid "Email Reports"
 msgstr "Отчеты по электронной почте"
 
@@ -1953,7 +2112,7 @@ msgstr "На этой странице вы можете просмотреть 
 msgid "An error occurred!"
 msgstr "Произошла ошибка!"
 
-#: src/Admin/Pages/DebugEventsTab.php:150
+#: src/Admin/Pages/DebugEventsTab.php:150 src/Admin/Pages/SettingsTab.php:239
 msgid "Close"
 msgstr "Закрыть"
 
@@ -2077,29 +2236,29 @@ msgstr "Просмотреть пример"
 msgid "<b>NEW!</b> Enable Weekly Email Summaries"
 msgstr "<b>НОВИНКА!</b> Включить еженедельные сводки по электронной почте"
 
-#: assets/languages/wp-mail-smtp-vue.php:576
+#: assets/languages/wp-mail-smtp-vue.php:570
 msgid "We believe in full transparency. The Sendinblue links above are tracking links as part of our partnership with Sendinblue. We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users."
 msgstr "Мы верим в полную прозрачность. Ссылки Sendinblue выше являются отслеживающими ссылками в рамках нашего партнерства с Sendinblue. Мы можем рекомендовать практически любую службу SMTP, но мы рекомендуем только те товары, которые, по нашему мнению, добавят ценности нашим пользователям."
 
-#: assets/languages/wp-mail-smtp-vue.php:503
+#: assets/languages/wp-mail-smtp-vue.php:497
 #: src/Providers/SMTPcom/Options.php:76
 msgid "We believe in full transparency. The SMTP.com links above are tracking links as part of our partnership with SMTP (j2 Global). We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users."
 msgstr "Мы верим в полную прозрачность. Приведенные выше ссылки SMTP.com являются ссылками для отслеживания в рамках нашего партнерства с SMTP (j2 Global). Мы можем порекомендовать практически любой SMTP-сервис, но мы рекомендуем только те продукты, которые, по нашему мнению, принесут пользу нашим пользователям."
 
-#: assets/languages/wp-mail-smtp-vue.php:500
+#: assets/languages/wp-mail-smtp-vue.php:494
 #: src/Providers/Sendinblue/Options.php:68 src/Providers/SMTPcom/Options.php:74
 msgid "Transparency and Disclosure"
 msgstr "Прозрачность и раскрытие информации"
 
-#: assets/languages/wp-mail-smtp-vue.php:705
+#: assets/languages/wp-mail-smtp-vue.php:699
 msgid "Enhanced Weekly Email Summary"
 msgstr "Улучшенная еженедельная сводка по электронной почте"
 
-#: assets/languages/wp-mail-smtp-vue.php:205
+#: assets/languages/wp-mail-smtp-vue.php:206
 msgid "Get statistics about emails you've sent."
 msgstr "Получайте статистику отправленных вами писем."
 
-#: assets/languages/wp-mail-smtp-vue.php:202
+#: assets/languages/wp-mail-smtp-vue.php:203
 msgid "Weekly Email Summary"
 msgstr "Еженедельная сводка по электронной почте"
 
@@ -2382,11 +2541,11 @@ msgstr "Инструменты"
 msgid "You can also send emails with different From Email addresses, by disabling the Force From Email setting and using registered aliases throughout your WordPress site as the From Email addresses."
 msgstr "Вы также можете отправлять электронные письма с разными адресами отправителя, отключив настройку «Принудительно использовать адрес отправителя» и используя зарегистрированные псевдонимы в качестве адресов отправителя для всего вашего сайта WordPress."
 
-#: src/Admin/Pages/SettingsTab.php:101
+#: src/Admin/Pages/SettingsTab.php:124
 msgid "We'll guide you through each step needed to get WP Mail SMTP fully set up on your site."
 msgstr "Шаг за шагом мы поможем вам выполнить полную настройку WP Mail SMTP на вашем сайте."
 
-#: src/Admin/Pages/SettingsTab.php:97
+#: src/Admin/Pages/SettingsTab.php:120
 msgid "Launch Setup Wizard"
 msgstr "Запустить мастер настройки"
 
@@ -2491,34 +2650,34 @@ msgid "You have successfully linked the current site with your Microsoft API pro
 msgstr "Вы успешно связали текущий сайт с проектом Microsoft API. Теперь вы можете начать отправлять электронные письма через Outlook."
 
 #. Translators: bold HTML tags.
-#: assets/languages/wp-mail-smtp-vue.php:709
+#: assets/languages/wp-mail-smtp-vue.php:703
 msgid "Already purchased? Enter your license key below to connect with %1$sWP Mail SMTP Pro%2$s!"
 msgstr "Уже купили? Введите лицензионный ключ ниже, чтобы подключиться к %1$sWP Mail SMTP Pro%2$s!"
 
 #. Translators: Link to the Sendinblue doc page on wpmailsmtp.com.
-#: assets/languages/wp-mail-smtp-vue.php:567
+#: assets/languages/wp-mail-smtp-vue.php:561
 msgid "Please input the sending domain/subdomain you configured in your Sendinblue dashboard. More information can be found in our %1$sSendinblue documentation%2$s"
 msgstr "Пожалуйста, введите отправляющий домен/поддомен, который вы настроили в своей консоли Sendinblue. Более подробную информацию можно найти в нашей %1$sдокументации Sendinblue%2$s"
 
 #. Translators: Link to the Sendgrid doc page on wpmailsmtp.com.
-#: assets/languages/wp-mail-smtp-vue.php:304
+#: assets/languages/wp-mail-smtp-vue.php:297
 msgid "Please input the sending domain/subdomain you configured in your SendGrid dashboard. More information can be found in our %1$sSendGrid documentation%2$s"
 msgstr "Пожалуйста, введите отправляющий домен/поддомен, который вы настроили в своей консоли SendGrid. Более подробную информацию можно найти в нашей %1$sдокументации SendGrid%2$s"
 
-#: assets/languages/wp-mail-smtp-vue.php:163
+#: assets/languages/wp-mail-smtp-vue.php:164
 msgid "The following plugin will be installed for free: WPForms"
 msgstr "Бесплатно будет установлен следующий плагин: WPForms"
 
 #. Translators: %1$s and %2$s are bold tags.
-#: assets/languages/wp-mail-smtp-vue.php:683
+#: assets/languages/wp-mail-smtp-vue.php:677
 msgid "You're currently using %1$sWP Mail SMTP Lite%2$s - no license needed. Enjoy!"
 msgstr "В настоящее время вы используете %1$sWP Mail SMTP Lite%2$s - лицензия не требуется. Наслаждайтесь!"
 
-#: assets/languages/wp-mail-smtp-vue.php:686
+#: assets/languages/wp-mail-smtp-vue.php:680
 msgid "Continue"
 msgstr "Продолжить"
 
-#: assets/languages/wp-mail-smtp-vue.php:733
+#: assets/languages/wp-mail-smtp-vue.php:731
 msgid "Paste your license key here"
 msgstr "Вставьте свой лицензионный ключ сюда"
 
@@ -2530,11 +2689,11 @@ msgstr "Прежде чем продолжить, вам нужно разреш
 msgid "Return to Plugin Settings"
 msgstr "Вернуться к настройкам плагина"
 
-#: assets/languages/wp-mail-smtp-vue.php:676
+#: assets/languages/wp-mail-smtp-vue.php:670
 msgid "Upgrade Failed!"
 msgstr "Обновление не удалось!"
 
-#: assets/languages/wp-mail-smtp-vue.php:673
+#: assets/languages/wp-mail-smtp-vue.php:667
 msgid "Successful Upgrade!"
 msgstr "Успешное обновление!"
 
@@ -2542,7 +2701,7 @@ msgstr "Успешное обновление!"
 msgid "Verification Error!"
 msgstr "Ошибка проверки!"
 
-#: assets/languages/wp-mail-smtp-vue.php:736
+#: assets/languages/wp-mail-smtp-vue.php:735
 msgid "Successful Verification!"
 msgstr "Успешная проверка!"
 
@@ -2555,7 +2714,7 @@ msgid "Authorization Error!"
 msgstr "Ошибка авторизации!"
 
 #. Translators: Link to the SMTP Mailer docs page.
-#: assets/languages/wp-mail-smtp-vue.php:652
+#: assets/languages/wp-mail-smtp-vue.php:646
 msgid "Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our %1$scomplete mailer guide%2$s for details on each option."
 msgstr "Какую почтовую программу вы хотите использовать для отправки писем? Не уверены, какую почтовую программу выбрать? Ознакомьтесь с нашим %1$sполным руководством%2$s для получения подробной информации по каждому варианту."
 
@@ -2621,171 +2780,171 @@ msgstr "Возникла ошибка сети. Настройки не сохр
 msgid "It looks like we can't save the settings."
 msgstr "Похоже, мы не можем сохранить настройки."
 
-#: assets/languages/wp-mail-smtp-vue.php:730
+#: assets/languages/wp-mail-smtp-vue.php:727
 msgid "License key input"
 msgstr "Ввод лицензионного ключа"
 
-#: assets/languages/wp-mail-smtp-vue.php:727
+#: assets/languages/wp-mail-smtp-vue.php:723
 msgid "Pro badge"
 msgstr "Профессиональный бейдж"
 
-#: assets/languages/wp-mail-smtp-vue.php:724
+#: assets/languages/wp-mail-smtp-vue.php:720
 msgid "Your license was successfully verified! You are ready for the next step."
 msgstr "Ваша лицензия успешно подтверждена! Вы готовы к следующему шагу."
 
-#: assets/languages/wp-mail-smtp-vue.php:721
+#: assets/languages/wp-mail-smtp-vue.php:717
 msgid "The License Key format is incorrect. Please enter a valid key and try again."
 msgstr "Неверный формат лицензионного ключа. Пожалуйста, введите действующий ключ и попробуйте еще раз."
 
-#: assets/languages/wp-mail-smtp-vue.php:715
+#: assets/languages/wp-mail-smtp-vue.php:710
 msgid "Verify License Key"
 msgstr "Проверка лицензионного ключа"
 
-#: assets/languages/wp-mail-smtp-vue.php:712
+#: assets/languages/wp-mail-smtp-vue.php:706
 msgid "Enter your license key below to unlock plugin updates!"
 msgstr "Введите свой лицензионный ключ ниже, чтобы разблокировать обновления плагина!"
 
 #. Translators: Link to the WPMailSMTP.com pricing page.
-#: assets/languages/wp-mail-smtp-vue.php:702
+#: assets/languages/wp-mail-smtp-vue.php:696
 msgid "To unlock selected features, %1$sUpgrade to Pro%2$s and enter your license key below."
 msgstr "Чтобы разблокировать выбранные функции, %1$sперейдите на версию Pro%2$s и введите ниже лицензионный ключ."
 
-#: assets/languages/wp-mail-smtp-vue.php:679
+#: assets/languages/wp-mail-smtp-vue.php:673
 msgid "Enter your WP Mail SMTP License Key"
 msgstr "Введите свой лицензионный ключ WP Mail SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:698
+#: assets/languages/wp-mail-smtp-vue.php:692
 msgid "I'll do it later"
 msgstr "Я сделаю это позже"
 
-#: assets/languages/wp-mail-smtp-vue.php:695
+#: assets/languages/wp-mail-smtp-vue.php:689
 msgid "Purchase Now"
 msgstr "Купить сейчас"
 
-#: assets/languages/wp-mail-smtp-vue.php:692
+#: assets/languages/wp-mail-smtp-vue.php:686
 msgid "These features are available as part of WP Mail SMTP Pro plan."
 msgstr "Эти функции доступны в рамках тарифного плана WP Mail SMTP Pro."
 
-#: assets/languages/wp-mail-smtp-vue.php:689
+#: assets/languages/wp-mail-smtp-vue.php:683
 msgid "Would you like to purchase the following features now?"
 msgstr "Хотели бы вы приобрести следующие функции сейчас?"
 
-#: assets/languages/wp-mail-smtp-vue.php:547
+#: assets/languages/wp-mail-smtp-vue.php:541
 msgid "Rate on WordPress.org"
 msgstr "Оценить на WordPress.org"
 
 #. Translators: %1$s and %2$s are HTML bold tags; %3$s is a new line HTML tag;
 #. %4$s are 5 golden star icons in HTML.
-#: assets/languages/wp-mail-smtp-vue.php:544
+#: assets/languages/wp-mail-smtp-vue.php:538
 msgid "Help us spread the word %1$sby giving WP Mail SMTP a 5-star rating %3$s(%4$s) on WordPress.org%2$s. Thanks for your support and we look forward to bringing you more awesome features."
 msgstr "Помогите нам распространить информацию, %1$sпоставив WP Mail SMTP оценку в 5 звезд %3$s(%4$s) на WordPress.org%2$s. Благодарим за вашу поддержку и с нетерпением ждем возможности предложить вам еще больше потрясающих функций."
 
-#: assets/languages/wp-mail-smtp-vue.php:540
+#: assets/languages/wp-mail-smtp-vue.php:534
 msgid "Thanks for the feedback!"
 msgstr "Спасибо за обратную связь!"
 
-#: assets/languages/wp-mail-smtp-vue.php:537
+#: assets/languages/wp-mail-smtp-vue.php:531
 msgid "Star icon"
 msgstr "Значок звездочки"
 
 #. Translators: Different bold styles and discount value (%5$s).
-#: assets/languages/wp-mail-smtp-vue.php:534
+#: assets/languages/wp-mail-smtp-vue.php:528
 msgid "%1$sBonus:%2$s You can upgrade to the Pro plan and %3$ssave %5$s today%4$s, automatically applied at checkout."
 msgstr "%1$sБонус:%2$s Вы можете перейти на план Pro и %3$sсэкономить %5$s сегодня%4$s, скидка автоматически применяется при оплате."
 
-#: assets/languages/wp-mail-smtp-vue.php:527
+#: assets/languages/wp-mail-smtp-vue.php:521
 msgid "Upgrade to Pro Today"
 msgstr "Обновить до версии Pro сегодня"
 
-#: assets/languages/wp-mail-smtp-vue.php:524
+#: assets/languages/wp-mail-smtp-vue.php:518
 msgid "Upgrade to WP Mail SMTP Pro to unlock more awesome features and experience why WP Mail SMTP is used by over 4,000,000 websites."
 msgstr "Перейдите на тариф WP Mail SMTP Pro, чтобы вам открылось еще больше потрясающих функций, из-за которых более уже более 4 000 000 веб-сайтов используют WP Mail SMTP."
 
-#: assets/languages/wp-mail-smtp-vue.php:521
+#: assets/languages/wp-mail-smtp-vue.php:515
 msgid "Upgrade to Unlock Powerful SMTP Features"
 msgstr "Обновитесь, чтобы разблокировать все возможности SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:518
+#: assets/languages/wp-mail-smtp-vue.php:512
 msgid "Check out our other free WordPress plugins:"
 msgstr "Ознакомьтесь с нашими другими бесплатными плагинами для WordPress:"
 
-#: assets/languages/wp-mail-smtp-vue.php:515
+#: assets/languages/wp-mail-smtp-vue.php:509
 msgid "Here’s what to do next:"
 msgstr "Что делать дальше:"
 
-#: assets/languages/wp-mail-smtp-vue.php:512
+#: assets/languages/wp-mail-smtp-vue.php:506
 msgid "Congrats, you’ve successfully set up WP Mail SMTP!"
 msgstr "Поздравляем, вы успешно настроили WP Mail SMTP!"
 
-#: assets/languages/wp-mail-smtp-vue.php:509
+#: assets/languages/wp-mail-smtp-vue.php:503
 msgid "Our goal is to make your SMTP setup as simple and straightforward as possible. We'd love to know how this process went for you!"
 msgstr "Наша цель - сделать настройку SMTP максимально простой и понятной. Мы будем рады узнать, как прошел этот процесс для вас!"
 
-#: assets/languages/wp-mail-smtp-vue.php:506
+#: assets/languages/wp-mail-smtp-vue.php:500
 msgid "How was your WP Mail SMTP setup experience?"
 msgstr "Каков был ваш опыт настройки WP Mail SMTP?"
 
-#: assets/languages/wp-mail-smtp-vue.php:559
+#: assets/languages/wp-mail-smtp-vue.php:553
 msgid "Submit Feedback"
 msgstr "Оставить отзыв"
 
-#: assets/languages/wp-mail-smtp-vue.php:556
+#: assets/languages/wp-mail-smtp-vue.php:550
 msgid "Yes, I give WP Mail SMTP permission to contact me for any follow up questions."
 msgstr "Да, я разрешаю WP Mail SMTP связываться со мной по любым дополнительным вопросам."
 
-#: assets/languages/wp-mail-smtp-vue.php:553
+#: assets/languages/wp-mail-smtp-vue.php:547
 msgid "We're sorry things didn't go smoothly for you, and want to keep improving. Please let us know any specific parts of this process that you think could be better. We really appreciate any details you're willing to share!"
 msgstr "Мы сожалеем, что у вас не все прошло гладко, и хотим продолжать совершенствоваться. Пожалуйста, дайте нам знать, какие конкретные части этого процесса, по вашему мнению, могут быть улучшены. Мы очень ценим любые детали, которыми вы готовы поделиться!"
 
-#: assets/languages/wp-mail-smtp-vue.php:550
+#: assets/languages/wp-mail-smtp-vue.php:544
 msgid "What could we do to improve?"
 msgstr "Что мы можем улучшить?"
 
-#: assets/languages/wp-mail-smtp-vue.php:217
+#: assets/languages/wp-mail-smtp-vue.php:218
 msgid "Save time with powerful WordPress Multisite controls."
 msgstr "Экономьте время благодаря мощным средствам управления WordPress Multisite."
 
-#: assets/languages/wp-mail-smtp-vue.php:214
+#: assets/languages/wp-mail-smtp-vue.php:215
 msgid "Multisite Network Settings"
 msgstr "Сетевые настройки сети сайтов"
 
-#: assets/languages/wp-mail-smtp-vue.php:211
+#: assets/languages/wp-mail-smtp-vue.php:212
 msgid "Control which email notifications your WordPress site sends."
 msgstr "Контролируйте, какие уведомления по электронной почте отправляет ваш сайт."
 
-#: assets/languages/wp-mail-smtp-vue.php:208
+#: assets/languages/wp-mail-smtp-vue.php:209
 msgid "Manage Default Notifications"
 msgstr "Управление уведомлениями по умолчанию"
 
-#: assets/languages/wp-mail-smtp-vue.php:187
+#: assets/languages/wp-mail-smtp-vue.php:188
 msgid "Keep records of every email that's sent out from your website."
 msgstr "Ведите учет всех писем, отправляемых с вашего сайта."
 
-#: assets/languages/wp-mail-smtp-vue.php:184
+#: assets/languages/wp-mail-smtp-vue.php:185
 msgid "Detailed Email Logs"
 msgstr "Подробные журналы"
 
-#: assets/languages/wp-mail-smtp-vue.php:181
+#: assets/languages/wp-mail-smtp-vue.php:182
 msgid "Create beautiful contact forms with just a few clicks."
 msgstr "Создавайте красивые контактные формы всего за несколько кликов."
 
-#: assets/languages/wp-mail-smtp-vue.php:178
+#: assets/languages/wp-mail-smtp-vue.php:179
 msgid "Smart Contact Form"
 msgstr "Умные формы контактов"
 
-#: assets/languages/wp-mail-smtp-vue.php:175
+#: assets/languages/wp-mail-smtp-vue.php:176
 msgid "Easily spot errors causing delivery issues."
 msgstr "Легко обнаруживайте ошибки, вызывающие проблемы с доставкой."
 
-#: assets/languages/wp-mail-smtp-vue.php:172
+#: assets/languages/wp-mail-smtp-vue.php:173
 msgid "Email Error Tracking"
 msgstr "Отслеживание ошибок почты"
 
-#: assets/languages/wp-mail-smtp-vue.php:169
+#: assets/languages/wp-mail-smtp-vue.php:170
 msgid "Ensure your emails are sent successfully and reliably."
 msgstr "Убедитесь, что ваши письма отправляются успешно и надежно."
 
-#: assets/languages/wp-mail-smtp-vue.php:166
+#: assets/languages/wp-mail-smtp-vue.php:167
 msgid "Improved Email Deliverability"
 msgstr "Улучшенная доставка почты"
 
@@ -2797,51 +2956,51 @@ msgstr "Убедитесь, что вы получаете максимальн�
 msgid "Which email features do you want to enable?"
 msgstr "Какие функции электронной почты вы хотите включить?"
 
-#: assets/languages/wp-mail-smtp-vue.php:591
+#: assets/languages/wp-mail-smtp-vue.php:585
 msgid "Enable Auto TLS"
 msgstr "Включить Auto TLS"
 
-#: assets/languages/wp-mail-smtp-vue.php:402
+#: assets/languages/wp-mail-smtp-vue.php:396
 msgid "Yes, count me in"
 msgstr "Да, рассчитывайте на меня"
 
-#: assets/languages/wp-mail-smtp-vue.php:399
+#: assets/languages/wp-mail-smtp-vue.php:393
 msgid "Help make WP Mail SMTP better for everyone"
 msgstr "Помогите сделать WP Mail SMTP лучше"
 
-#: assets/languages/wp-mail-smtp-vue.php:396
+#: assets/languages/wp-mail-smtp-vue.php:390
 msgid "Your email is needed, so you can receive recommendations."
 msgstr "Ваша электронная почта необходима, чтобы вы могли получать рекомендации."
 
-#: assets/languages/wp-mail-smtp-vue.php:393
+#: assets/languages/wp-mail-smtp-vue.php:387
 msgid "Your Email Address"
 msgstr "Ваш адрес электронной почты"
 
-#: assets/languages/wp-mail-smtp-vue.php:390
+#: assets/languages/wp-mail-smtp-vue.php:384
 msgid "Get helpful suggestions from WP Mail SMTP on how to optimize your email deliverability and grow your business."
 msgstr "Получите полезные советы от WP Mail SMTP о том, как оптимизировать доставку электронной почты и развивать свой бизнес."
 
-#: assets/languages/wp-mail-smtp-vue.php:387
+#: assets/languages/wp-mail-smtp-vue.php:381
 msgid "Help Improve WP Mail SMTP + Smart Recommendations"
 msgstr "Помогите улучшить WP Mail SMTP + Smart Recommendations"
 
-#: assets/languages/wp-mail-smtp-vue.php:320
+#: assets/languages/wp-mail-smtp-vue.php:313
 msgid "Below, we'll show you all of the settings required to set up this mailer."
 msgstr "Ниже мы покажем вам все параметры, необходимые для почтовой программы."
 
-#: assets/languages/wp-mail-smtp-vue.php:317
+#: assets/languages/wp-mail-smtp-vue.php:310
 msgid "Configure Mailer Settings"
 msgstr "Настройка параметров почтовой программы"
 
-#: assets/languages/wp-mail-smtp-vue.php:342
+#: assets/languages/wp-mail-smtp-vue.php:336
 msgid "Checking mailer configuration image"
 msgstr "Проверка изображения конфигурации почтовой программы"
 
-#: assets/languages/wp-mail-smtp-vue.php:339
+#: assets/languages/wp-mail-smtp-vue.php:333
 msgid "We're running some tests in the background to make sure everything is set up properly."
 msgstr "Мы проводим несколько тестов в фоновом режиме, чтобы убедиться, что все настроено правильно."
 
-#: assets/languages/wp-mail-smtp-vue.php:336
+#: assets/languages/wp-mail-smtp-vue.php:330
 msgid "Checking Mailer Configuration"
 msgstr "Проверка конфигурации почтовой программы"
 
@@ -2931,6 +3090,7 @@ msgid "Here are the domains and email addresses that have been verified and can 
 msgstr "Вот домены и адреса электронной почты, которые были проверены и могут быть использованы в качестве адреса отправителя."
 
 #: assets/languages/wp-mail-smtp-vue.php:863
+#: src/Providers/Resend/Options.php:60
 msgid "Resend"
 msgstr "Переотправка"
 
@@ -2978,20 +3138,20 @@ msgstr "Подключиться к %s"
 msgid "There was an error while processing the authentication request. Please recheck your Client ID and Client Secret and try again."
 msgstr "При обработке запроса на аутентификацию произошла ошибка. Пожалуйста, перепроверьте ID клиента и Client Secret и повторите попытку."
 
-#: assets/languages/wp-mail-smtp-vue.php:333
+#: assets/languages/wp-mail-smtp-vue.php:327
 msgid "The value entered does not match the required format"
 msgstr "Введенное значение не соответствует требуемому формату"
 
-#: assets/languages/wp-mail-smtp-vue.php:330
+#: assets/languages/wp-mail-smtp-vue.php:324
 msgid "Copied!"
 msgstr "Скопировано!"
 
-#: assets/languages/wp-mail-smtp-vue.php:327
+#: assets/languages/wp-mail-smtp-vue.php:321
 msgid "Copy input value"
 msgstr "Копировать входное значение"
 
 #. Translators: %1$s - the number of current step, %2$s - number of all steps.
-#: assets/languages/wp-mail-smtp-vue.php:314
+#: assets/languages/wp-mail-smtp-vue.php:307
 msgid "Step %1$s of %2$s"
 msgstr "Шаг %1$s из %2$s"
 
@@ -3019,41 +3179,41 @@ msgstr "Похоже, мы не можем загрузить существую
 msgid "It looks like we can't load oAuth connected data."
 msgstr "Похоже, мы не можем загрузить данные, связанные с oAuth."
 
-#: assets/languages/wp-mail-smtp-vue.php:307
+#: assets/languages/wp-mail-smtp-vue.php:300
 msgid "Read how to set up Sendgrid"
 msgstr "Прочтите, как настроить Sendgrid"
 
 #. Translators: italic styling.
-#: assets/languages/wp-mail-smtp-vue.php:300
+#: assets/languages/wp-mail-smtp-vue.php:293
 msgid "To send emails you will need only a %1$sMail Send%2$s access level for this API key."
 msgstr "Для отправки электронных писем вам потребуется только уровень доступа %1$sMail Send%2$s для этого ключа API."
 
 #. Translators: Link to the Sendgrid API settings.
-#: assets/languages/wp-mail-smtp-vue.php:296
+#: assets/languages/wp-mail-smtp-vue.php:289
 msgid "%1$sFollow this link%2$s to get an API Key for Sendgrid."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения API ключа Sendgrid."
 
-#: assets/languages/wp-mail-smtp-vue.php:633
+#: assets/languages/wp-mail-smtp-vue.php:627
 msgid "Read how to set up Amazon SES"
 msgstr "Прочтите, как настроить Amazon SES"
 
-#: assets/languages/wp-mail-smtp-vue.php:630
+#: assets/languages/wp-mail-smtp-vue.php:624
 msgid "Please select the Amazon SES API region which is the closest to where your website is hosted. This can help to decrease network latency between your site and Amazon SES, which will speed up email sending."
 msgstr "Выберите регион Amazon SES API, ближайший к месту размещения вашего веб-сайта. Это может помочь уменьшить сетевую задержку между вашим сайтом и Amazon SES, что ускорит отправку электронной почты."
 
-#: assets/languages/wp-mail-smtp-vue.php:627
+#: assets/languages/wp-mail-smtp-vue.php:621
 msgid "SES Identities"
 msgstr "Идентификаторы SES"
 
-#: assets/languages/wp-mail-smtp-vue.php:624
+#: assets/languages/wp-mail-smtp-vue.php:618
 msgid "Secret Access Key"
 msgstr "Секретный ключ доступа"
 
-#: assets/languages/wp-mail-smtp-vue.php:621
+#: assets/languages/wp-mail-smtp-vue.php:615
 msgid "Access Key ID"
 msgstr "ID ключа доступа"
 
-#: assets/languages/wp-mail-smtp-vue.php:661
+#: assets/languages/wp-mail-smtp-vue.php:655
 msgid "Recommended Mailers"
 msgstr "Рекомендуемые почтовые программы"
 
@@ -3061,19 +3221,19 @@ msgstr "Рекомендуемые почтовые программы"
 msgid "Save and Continue"
 msgstr "Сохранить и продолжить"
 
-#: assets/languages/wp-mail-smtp-vue.php:645
+#: assets/languages/wp-mail-smtp-vue.php:639
 msgid "Choose Your SMTP Mailer"
 msgstr "Выберите SMTP почтовую программу"
 
-#: assets/languages/wp-mail-smtp-vue.php:667
+#: assets/languages/wp-mail-smtp-vue.php:661
 msgid "is a PRO Feature"
 msgstr "это PRO функция"
 
-#: assets/languages/wp-mail-smtp-vue.php:658
+#: assets/languages/wp-mail-smtp-vue.php:652
 msgid "Choose a Different Mailer"
 msgstr "Выберите другую почтовую программу"
 
-#: assets/languages/wp-mail-smtp-vue.php:655
+#: assets/languages/wp-mail-smtp-vue.php:649
 msgid "I Understand, Continue"
 msgstr "Я понимаю, продолжить"
 
@@ -3097,17 +3257,17 @@ msgstr "Пароль приложения"
 msgid "Application ID"
 msgstr "ID приложения"
 
-#: assets/languages/wp-mail-smtp-vue.php:277
+#: assets/languages/wp-mail-smtp-vue.php:270
 msgid "Read how to set up Mailgun"
 msgstr "Прочтите, как настроить Mailgun"
 
 #. Translators: Link to the Mailgun documentation.
-#: assets/languages/wp-mail-smtp-vue.php:238
+#: assets/languages/wp-mail-smtp-vue.php:239
 msgid "Define which endpoint you want to use for sending messages. If you are operating under EU laws, you may be required to use EU region. %1$sMore information%2$s on Mailgun.com."
 msgstr "Определите, какую конечную точку вы хотите использовать для отправки сообщений. Если вы работаете в соответствии с законодательством ЕС, от вас может потребоваться использовать регион ЕС. %1$sБольшая информация %2$s на Mailgun.com."
 
 #. Translators: Link to the Mailgun Domain settings.
-#: assets/languages/wp-mail-smtp-vue.php:234
+#: assets/languages/wp-mail-smtp-vue.php:235
 msgid "%1$sFollow this link%2$s to get a Domain Name from Mailgun."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения доменного имени от Mailgun."
 
@@ -3116,110 +3276,110 @@ msgstr "%1$sПерейдите по этой ссылке%2$s для получ�
 msgid "%1$sFollow this link%2$s to get an API Key for Brevo."
 msgstr "%1$sПерейдите по этой ссылке%2$s, чтобы получить ключ API для Brevo."
 
-#: assets/languages/wp-mail-smtp-vue.php:470
+#: assets/languages/wp-mail-smtp-vue.php:464
 msgid "Read how to set up Zoho Mail"
 msgstr "Прочтите, как настроить Zoho Mail"
 
-#: assets/languages/wp-mail-smtp-vue.php:464
+#: assets/languages/wp-mail-smtp-vue.php:458
 msgid "Redirect URI"
 msgstr "URI перенаправления"
 
-#: assets/languages/wp-mail-smtp-vue.php:455
+#: assets/languages/wp-mail-smtp-vue.php:449
 msgid "The data center location used by your Zoho account."
 msgstr "Местоположение центра обработки данных, используемое вашей учетной записью Zoho."
 
-#: assets/languages/wp-mail-smtp-vue.php:573
+#: assets/languages/wp-mail-smtp-vue.php:567
 msgid "Read how to set up Sendinblue"
 msgstr "Прочтите, как настроить Sendinblue"
 
-#: assets/languages/wp-mail-smtp-vue.php:570
+#: assets/languages/wp-mail-smtp-vue.php:564
 msgid "Get Started with Sendinblue"
 msgstr "Начните работу с Sendinblue"
 
 #. Translators: Link to the Sendinblue API settings.
-#: assets/languages/wp-mail-smtp-vue.php:563
+#: assets/languages/wp-mail-smtp-vue.php:557
 msgid "%1$sFollow this link%2$s to get an API Key for Sendinblue."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения API ключа Sendinblue."
 
-#: assets/languages/wp-mail-smtp-vue.php:497
+#: assets/languages/wp-mail-smtp-vue.php:491
 msgid "Read how to set up SMTP.com"
 msgstr "Прочтите, как настроить SMTP.com"
 
-#: assets/languages/wp-mail-smtp-vue.php:265
+#: assets/languages/wp-mail-smtp-vue.php:260
 msgid "If enabled, the From Email setting above will be used for all emails, ignoring values set by other plugins."
 msgstr "Если этот параметр включен, то вышеприведенный параметр \"От (Email)\" будет использоваться для всех писем, игнорируя значения, установленные другими плагинами."
 
-#: assets/languages/wp-mail-smtp-vue.php:261
+#: assets/languages/wp-mail-smtp-vue.php:256
 msgid "If enabled, the From Name setting above will be used for all emails, ignoring values set by other plugins."
 msgstr "Если этот параметр включен, указанный выше параметр \"От имени\" будет использоваться для всех писем, игнорируя значения, установленные другими плагинами."
 
 #. Translators: Link to the SMTP.com Senders/Channel settings.
-#: assets/languages/wp-mail-smtp-vue.php:491
+#: assets/languages/wp-mail-smtp-vue.php:485
 msgid "%1$sFollow this link%2$s to get a Sender Name for SMTP.com."
 msgstr "%1$sПерейдите по этой ссылке%2$s, чтобы получить имя отправителя от SMTP.com."
 
 #. Translators: Link to the SMTP.com API settings.
-#: assets/languages/wp-mail-smtp-vue.php:487
+#: assets/languages/wp-mail-smtp-vue.php:481
 msgid "%1$sFollow this link%2$s to get an API Key for SMTP.com."
 msgstr "%1$sПерейдите по этой ссылке%2$s для получения API ключа SMTP.com."
 
-#: assets/languages/wp-mail-smtp-vue.php:357
+#: assets/languages/wp-mail-smtp-vue.php:351
 msgid "Finish Setup"
 msgstr "Завершить настройку"
 
-#: assets/languages/wp-mail-smtp-vue.php:354
+#: assets/languages/wp-mail-smtp-vue.php:348
 msgid "Send us Feedback"
 msgstr "Отправьте нам отзыв"
 
-#: assets/languages/wp-mail-smtp-vue.php:351
+#: assets/languages/wp-mail-smtp-vue.php:345
 msgid "Start Troubleshooting"
 msgstr "Начать поиск и устранение неисправностей"
 
-#: assets/languages/wp-mail-smtp-vue.php:348
+#: assets/languages/wp-mail-smtp-vue.php:342
 msgid "We just tried to send a test email, but something prevented that from working. To see more details about the issue we detected, as well as our suggestions to fix it, please start troubleshooting."
 msgstr "Мы только что попытались отправить тестовое письмо, но что-то помешало этому. Чтобы узнать подробности обнаруженной нами проблемы, а также наши предложения по ее устранению, пожалуйста, начните поиск и устранение неисправностей."
 
-#: assets/languages/wp-mail-smtp-vue.php:345
+#: assets/languages/wp-mail-smtp-vue.php:339
 msgid "Whoops, looks like things aren’t configured properly."
 msgstr "Похоже, все настроено неправильно."
 
-#: assets/languages/wp-mail-smtp-vue.php:384
+#: assets/languages/wp-mail-smtp-vue.php:378
 msgid "WP SMTP"
 msgstr "WP SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:381
+#: assets/languages/wp-mail-smtp-vue.php:375
 msgid "SMTP Mailer"
 msgstr "SMTP Mailer"
 
-#: assets/languages/wp-mail-smtp-vue.php:378
+#: assets/languages/wp-mail-smtp-vue.php:372
 msgid "Post SMTP Mailer"
 msgstr "Post SMTP Mailer"
 
-#: assets/languages/wp-mail-smtp-vue.php:372
+#: assets/languages/wp-mail-smtp-vue.php:366
 msgid "Easy WP SMTP"
 msgstr "Easy WP SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:160
+#: assets/languages/wp-mail-smtp-vue.php:161
 msgid "Previous Step"
 msgstr "Предыдущий шаг"
 
-#: assets/languages/wp-mail-smtp-vue.php:369
+#: assets/languages/wp-mail-smtp-vue.php:363
 msgid "Skip this Step"
 msgstr "Пропустить этот шаг"
 
-#: assets/languages/wp-mail-smtp-vue.php:366
+#: assets/languages/wp-mail-smtp-vue.php:360
 msgid "Import Data and Continue"
 msgstr "Импортировать данные и продолжить"
 
-#: assets/languages/wp-mail-smtp-vue.php:363
+#: assets/languages/wp-mail-smtp-vue.php:357
 msgid "We have detected other SMTP plugins installed on your website. Select which plugin's data you would like to import to WP Mail SMTP."
 msgstr "Мы обнаружили другие плагины SMTP, установленные на вашем веб-сайте. Выберите данные плагина, которые вы хотите импортировать в WP Mail SMTP."
 
-#: assets/languages/wp-mail-smtp-vue.php:360
+#: assets/languages/wp-mail-smtp-vue.php:354
 msgid "Import data from your current plugins"
 msgstr "Импорт данных из установленных плагинов"
 
-#: assets/languages/wp-mail-smtp-vue.php:286
+#: assets/languages/wp-mail-smtp-vue.php:279
 msgid "Close and exit the Setup Wizard"
 msgstr "Закрыть и выйти из мастера установки"
 
@@ -3383,7 +3543,7 @@ msgstr "Похоже, что-то мешает загрузке JavaScript на 
 msgid "Whoops, something's not working."
 msgstr "Упс, что-то не работает."
 
-#: assets/languages/wp-mail-smtp-vue.php:310 src/Admin/SetupWizard.php:477
+#: assets/languages/wp-mail-smtp-vue.php:303 src/Admin/SetupWizard.php:477
 msgid "WP Mail SMTP logo"
 msgstr "Логотип WP Mail SMTP"
 
@@ -3404,7 +3564,7 @@ msgstr "<strong>Бонус:</strong> пользователи WP Mail SMTP по�
 msgid "We're sorry, the %mailer% mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features."
 msgstr "К сожалению, почтовая программа %mailer% недоступна в вашем плане. Перейдите на план PRO, чтобы разблокировать все эти замечательные функции."
 
-#: src/Admin/Pages/SettingsTab.php:93
+#: src/Admin/Pages/SettingsTab.php:116
 msgid "Setup Wizard"
 msgstr "Мастер настройки"
 
@@ -3441,20 +3601,16 @@ msgstr "Похоже, ваш ключ API SendGrid недействителен.
 msgid "Invalid SendGrid API key"
 msgstr "Недопустимый ключ API SendGrid"
 
-#: src/Admin/Pages/SettingsTab.php:265
-msgid "Multisite Support - network settings for easy management"
-msgstr "Поддержка нескольких сайтов — сетевые настройки для удобного управления"
-
-#: assets/languages/wp-mail-smtp-vue.php:718
-#: src/Admin/Pages/SettingsTab.php:187
+#: assets/languages/wp-mail-smtp-vue.php:713
+#: src/Admin/Pages/SettingsTab.php:170
 msgid "Connect"
 msgstr "Подключить"
 
-#: src/Admin/Pages/SettingsTab.php:185
+#: src/Admin/Pages/SettingsTab.php:168
 msgid "Paste license key here"
 msgstr "Вставьте лицензионный ключ сюда"
 
-#: src/Admin/Pages/SettingsTab.php:181
+#: src/Admin/Pages/SettingsTab.php:164
 msgid "Already purchased? Simply enter your license key below to connect with WP Mail SMTP Pro!"
 msgstr "Уже купили? Просто введите свой лицензионный ключ ниже, чтобы подключиться к WP Mail SMTP Pro!"
 
@@ -3521,13 +3677,13 @@ msgstr "Введите домен/поддомен отправки, котор�
 msgid "Please input the sending domain/subdomain you configured in your SendGrid dashboard. More information can be found in our <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">SendGrid documentation</a>."
 msgstr "Пожалуйста, введите отправляющий домен/субдомен, который вы настроили на панели инструментов SendGrid. Дополнительную информацию можно найти в нашей <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">документации по SendGrid</a>."
 
-#: assets/languages/wp-mail-smtp-vue.php:292
+#: assets/languages/wp-mail-smtp-vue.php:285
 #: src/Providers/Sendgrid/Options.php:116
 #: src/Providers/Sendinblue/Options.php:152
 msgid "Sending Domain"
 msgstr "Домен отправителя"
 
-#: src/Providers/Gmail/Auth.php:147
+#: src/Providers/Gmail/Auth.php:151
 msgid "Please make sure your Google Client ID and Secret in the plugin settings are valid. Save the settings and try the Authorization again."
 msgstr "Пожалуйста, убедитесь, что Ваш идентификатор клиента Google и секретный ключ в настройках плагина действительны. Сохраните настройки и повторите попытку авторизации."
 
@@ -3597,7 +3753,7 @@ msgstr "Дополнительные параметры почтовой про�
 
 #: src/Admin/Pages/VersusTab.php:229
 msgid "Access is limited to standard mailer options only"
-msgstr "Доступ ограничен только стандартными параметрами почтовой программы."
+msgstr "Доступ ограничен только стандартными параметрами почтовой программы"
 
 #: src/Admin/Pages/VersusTab.php:229
 msgid "Limited Mailers"
@@ -3635,7 +3791,7 @@ msgstr "К сожалению, почтовая программа Zoho Mail н�
 msgid "Zoho Mail"
 msgstr "Zoho Mail"
 
-#: assets/languages/wp-mail-smtp-vue.php:405 src/Admin/Pages/MiscTab.php:288
+#: assets/languages/wp-mail-smtp-vue.php:399 src/Admin/Pages/MiscTab.php:288
 msgid "By allowing us to track usage data we can better help you because we know with which WordPress configurations, themes and plugins we should test."
 msgstr "Позволяя нам отслеживать данные об использовании, мы можем лучше помочь вам, потому что знаем, с какими конфигурациями, темами и плагинами WordPress мы должны тестировать."
 
@@ -3643,14 +3799,9 @@ msgstr "Позволяя нам отслеживать данные об исп�
 msgid "Allow Usage Tracking"
 msgstr "Разрешить отслеживание использования"
 
-#: src/Admin/Education.php:84
+#: src/Admin/Education.php:86
 msgid "Dismiss this message."
 msgstr "Отклонить это сообщение."
-
-#. translators: %s - WPMailSMTP.com Upgrade page URL.
-#: src/Admin/Education.php:73
-msgid "You’re using WP Mail SMTP Lite. To unlock more features, consider <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">upgrading to Pro</a>."
-msgstr "Вы используете WP Mail SMTP Lite. Чтобы разблокировать дополнительные функции, рассмотрите возможность <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">перехода на Pro</a>."
 
 #: src/Admin/Notifications.php:494
 msgid "Next message"
@@ -3718,19 +3869,19 @@ msgstr "Основная ошибка"
 msgid "There was an error while upgrading the database. Please contact %1$s support with this information: %2$s."
 msgstr "При обновлении базы данных произошла ошибка. Пожалуйста, свяжитесь со службой поддержки %1$s и предоставьте следующую информацию: %2$s."
 
-#: src/Admin/Area.php:528
+#: src/Admin/Area.php:541
 msgid "Warning icon"
 msgstr "Значок предупреждения"
 
-#: src/Admin/Area.php:527 src/Admin/Pages/DebugEventsTab.php:149
+#: src/Admin/Area.php:540 src/Admin/Pages/DebugEventsTab.php:149
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/Admin/Area.php:523
+#: src/Admin/Area.php:536
 msgid "<p>The Default (PHP) mailer is currently selected, but is not recommended because in most cases it does not resolve email delivery issues.</p><p>Please consider selecting and configuring one of the other mailers.</p>"
 msgstr "<p>В настоящее время выбрана почтовая программа по умолчанию (PHP), но она не рекомендуется, поскольку в большинстве случаев она не решает проблемы доставки электронной почты.</p><p>Пожалуйста, рассмотрите возможность выбора и настройки другой почтовой программы.</p>"
 
-#: assets/languages/wp-mail-smtp-vue.php:11 src/Admin/Area.php:521
+#: assets/languages/wp-mail-smtp-vue.php:11 src/Admin/Area.php:534
 #: src/Admin/Pages/DebugEventsTab.php:153
 msgid "Heads up!"
 msgstr "Внимание!"
@@ -3883,13 +4034,14 @@ msgstr "Получить имя отправителя"
 msgid "Follow this link to get a Sender Name from SMTP.com: %s."
 msgstr "Перейдите по этой ссылке, чтобы получить имя отправителя от SMTP.com: %s."
 
-#: assets/languages/wp-mail-smtp-vue.php:483
+#: assets/languages/wp-mail-smtp-vue.php:477
 #: src/Providers/SMTPcom/Options.php:146
 msgid "Sender Name"
 msgstr "Имя отправителя"
 
 #: src/Providers/ElasticEmail/Options.php:122
 #: src/Providers/MailerSend/Options.php:117
+#: src/Providers/Mandrill/Options.php:118
 #: src/Providers/Sendlayer/Options.php:131
 #: src/Providers/SMTPcom/Options.php:135
 #: src/Providers/SparkPost/Options.php:120
@@ -3905,7 +4057,7 @@ msgstr "Перейдите по этой ссылке, чтобы получит
 msgid "SMTP.com"
 msgstr "SMTP.com"
 
-#: assets/languages/wp-mail-smtp-vue.php:494
+#: assets/languages/wp-mail-smtp-vue.php:488
 #: src/Providers/SMTPcom/Options.php:69
 msgid "Get Started with SMTP.com"
 msgstr "Начать работу с SMTP.com"
@@ -3918,7 +4070,7 @@ msgstr "Канал:"
 msgid "Api Key:"
 msgstr "Ключ API:"
 
-#: src/Admin/Area.php:1284
+#: src/Admin/Area.php:1306
 msgid "Go to WP Mail SMTP Settings page"
 msgstr "Перейти на страницу настроек"
 
@@ -3974,7 +4126,7 @@ msgstr "Тип лицензионного ключа"
 msgid "Is WP Mail SMTP mailer setup complete?"
 msgstr "Завершена ли настройка почтовой программы WP Mail SMTP?"
 
-#: src/Admin/Area.php:519
+#: src/Admin/Area.php:532
 msgid "Changes that you made to the settings are not saved!"
 msgstr "Изменения, внесенные в настройки, не сохранены!"
 
@@ -4014,7 +4166,7 @@ msgstr "Прочтите нашу <a href=\"%2$s\" target=\"_blank\" rel=\"noope
 msgid "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Pepipost</a> is a transactional email service. Every month Pepipost delivers over 8 billion emails from 20,000+ customers. Their mission is to reliably send emails in the most efficient way and at the most disruptive pricing ever. Pepipost provides users 30,000 free emails the first 30 days."
 msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Pepipost</a> - это сервис транзакционной электронной почты. Каждый месяц Pepipost доставляет более 8 миллиардов писем от 20 000+ клиентов. Их миссия - надежно отправлять электронные письма наиболее эффективным способом и по самым низким ценам. Pepipost предоставляет пользователям 30 000 бесплатных писем в первые 30 дней."
 
-#: src/Admin/Area.php:654
+#: src/Admin/Area.php:667
 msgid "Download"
 msgstr "Скачать"
 
@@ -4045,25 +4197,26 @@ msgstr "Amazon SES"
 msgid "We're sorry, the Microsoft Outlook mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features."
 msgstr "К сожалению, почтовая программа Microsoft Outlook недоступна на вашем тарифном плане. Перейдите на план PRO, чтобы разблокировать все функции."
 
-#: src/Admin/Area.php:554 src/Admin/SetupWizard.php:258
+#: src/Admin/Area.php:567 src/Admin/SetupWizard.php:258
 msgid "Already purchased?"
 msgstr "Уже купили?"
 
 #. Translators: %s - discount value $50.
-#: src/Admin/Area.php:540
+#: src/Admin/Area.php:553
 msgid "<strong>Bonus:</strong> WP Mail SMTP users get <span>%s off</span> regular price,<br>applied at checkout."
 msgstr "<strong>Бонус:</strong> пользователи WP Mail SMTP получают скидку <span>%s</span> от обычной цены,<br>применяемую при оформлении заказа."
 
-#: src/Admin/Area.php:348 src/Admin/Area.php:349 src/Admin/Area.php:535
-#: src/Admin/SetupWizard.php:239 src/Reports/Emails/Summary.php:313
+#: src/Admin/Area.php:348 src/Admin/Area.php:349 src/Admin/Area.php:548
+#: src/Admin/Pages/SettingsTab.php:91 src/Admin/SetupWizard.php:239
+#: src/Reports/Emails/Summary.php:313
 msgid "Upgrade to Pro"
 msgstr "Обновить до версии Pro"
 
-#: src/Admin/Area.php:533
+#: src/Admin/Area.php:546
 msgid "%name% is a PRO Feature"
 msgstr "%name% это PRO функция"
 
-#: src/Admin/Area.php:1243
+#: src/Admin/Area.php:1265
 msgid "Educational notice for this mailer was successfully dismissed."
 msgstr "Информационное уведомление по этому почтовой программе было успешно скрыто."
 
@@ -4104,7 +4257,7 @@ msgstr "Между тем, вы можете переключиться на д�
 msgid "https://wpmailsmtp.com/"
 msgstr "https://wpmailsmtp.com/"
 
-#: src/Providers/Gmail/Auth.php:260
+#: src/Providers/Gmail/Auth.php:264
 msgid "There was an error while processing the Google authentication request. Please make sure that you have Client ID and Client Secret both valid and saved."
 msgstr "При обработке запроса аутентификации Google произошла ошибка. Убедитесь, что у вас есть действительный и сохраненный идентификатор клиента и секретный ключ клиента."
 
@@ -4112,7 +4265,7 @@ msgstr "При обработке запроса аутентификации Go
 msgid "You have successfully linked the current site with your Google API project. Now you can start sending emails through Gmail."
 msgstr "Вы успешно связали текущий сайт со своим Google API. Теперь вы можете отправлять электронные письма через Gmail."
 
-#: src/Admin/Area.php:645 src/Admin/Area.php:653
+#: src/Admin/Area.php:658 src/Admin/Area.php:666
 #: src/Admin/Pages/AboutTab.php:233 src/Connect.php:55
 msgid "Activate"
 msgstr "Активировать"
@@ -4127,89 +4280,21 @@ msgstr "<strong>Плагин WP Mail SMTP отключен на вашем са�
 msgid "Your site is running an <strong>insecure version</strong> of PHP that is no longer supported. Please contact your web hosting provider to update your PHP version or switch to a <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">recommended WordPress hosting company</a>."
 msgstr "На вашем сайте используется <strong>небезопасная версия</strong> PHP, которая больше не поддерживается. Обратитесь к своему хостинг-провайдеру,чтобы обновить версию PHP или перейдите на <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">рекомендованный WordPress хостинг</a>."
 
-#: src/Admin/Area.php:1175
+#: src/Admin/Area.php:1197
 msgid "WP Mail SMTP Pro related message was successfully dismissed."
 msgstr "Сообщение, связанное с WP Mail SMTP Pro, было успешно отклонено."
 
-#: src/Admin/Area.php:652
+#: src/Admin/Area.php:665
 msgid "Install and Activate"
 msgstr "Установить и активировать"
 
-#: src/Admin/Area.php:651
+#: src/Admin/Area.php:664
 msgid "Could not install a plugin. Please download from WordPress.org and install manually."
 msgstr "Не удалось установить плагин. Пожалуйста, скачайте его с WordPress.org и установите вручную."
 
-#: src/Admin/Area.php:649
+#: src/Admin/Area.php:662
 msgid "Processing..."
 msgstr "Обработка..."
-
-#. Translators: %s - discount value $50.
-#: src/Admin/Pages/SettingsTab.php:301
-msgid "<strong>Bonus:</strong> WP Mail SMTP users get <span class=\"price-off\">%s off regular price</span>, automatically applied at checkout."
-msgstr "<strong>Бонус:</strong> пользователи WP Mail SMTP получают скидку <span class=\"price-off\">%s от обычной цены</span>, которая автоматически применяется при оформлении заказа."
-
-#. translators: %s - WPMailSMTP.com URL.
-#: src/Admin/Pages/SettingsTab.php:282
-msgid "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Get WP Mail SMTP Pro Today and Unlock all the Powerful Features &raquo;</a>"
-msgstr "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Получите WP Mail SMTP Pro сегодня и разблокируйте все функции &raquo;</a>"
-
-#: src/Admin/Pages/SettingsTab.php:274
-msgid "Test and verify email delivery"
-msgstr "Тестирование и проверка доставки электронной почты"
-
-#: src/Admin/Pages/SettingsTab.php:273
-msgid "Set up domain name verification (DNS)"
-msgstr "Настройка подтверждения владения доменом"
-
-#: src/Admin/Pages/SettingsTab.php:270
-msgid "White Glove Setup - sit back and relax while we handle everything for you"
-msgstr "Помощь в установке - сядьте поудобнее и расслабьтесь, мы все сделаем за вас"
-
-#: src/Admin/Pages/SettingsTab.php:267
-msgid "Access to our world class support team"
-msgstr "Доступ к нашей высококлассной команде поддержки"
-
-#: src/Admin/Pages/SettingsTab.php:262
-msgid "Amazon SES - harness the power of AWS"
-msgstr "Amazon SES - используйте возможности AWS"
-
-#: src/Admin/Pages/SettingsTab.php:258
-msgid "Email Logging - keep track of every email sent from your site"
-msgstr "Ведение журнала электронной почты - отслеживайте каждое электронное письмо, отправленное с вашего сайта"
-
-#: src/Admin/Pages/SettingsTab.php:266
-msgid "Manage Notifications - control which emails your site sends"
-msgstr "Управление уведомлениями - контролируйте, какие электронные письма отправляет ваш сайт"
-
-#: src/Admin/Pages/SettingsTab.php:254
-msgid "Pro Features:"
-msgstr "Возможности Pro:"
-
-#: src/Admin/Pages/SettingsTab.php:251
-msgid "We know that you will truly love WP Mail SMTP. It's used by over 4,000,000 websites."
-msgstr "Мы уверены, вам понравится WP Mail SMTP. Уже более 4 000 000 веб-сайтов используют этот плагин."
-
-#: src/Admin/Pages/SettingsTab.php:247
-msgid "Thanks for being a loyal WP Mail SMTP user. Upgrade to WP Mail SMTP Pro to unlock more awesome features and experience why WP Mail SMTP is the most popular SMTP plugin."
-msgstr "Спасибо, что являетесь постоянным пользователем SMTP WP Mail. Перейдите на WP Mail SMTP Pro, чтобы получить больше возможностей и узнать, почему WP Mail SMTP является самым популярным плагином SMTP."
-
-#: src/Admin/Pages/SettingsTab.php:243
-msgid "Get WP Mail SMTP Pro and Unlock all the Powerful Features"
-msgstr "Получите WP Mail SMTP Pro и разблокируйте все функции"
-
-#. Translators: %s - discount value $50
-#: src/Admin/Pages/SettingsTab.php:167
-msgid "As a valued WP Mail SMTP Lite user you receive <strong>%s off</strong>, automatically applied at checkout!"
-msgstr "Как ценный пользователь WP Mail SMTP Lite вы получаете скидку <strong>%s</strong>, которая автоматически применяется при оформлении заказа!"
-
-#. translators: %s - WPMailSMTP.com upgrade URL.
-#: src/Admin/Pages/SettingsTab.php:147
-msgid "To unlock more features, consider <strong><a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"wp-mail-smtp-upgrade-modal\">upgrading to PRO</a></strong>."
-msgstr "Чтобы разблокировать дополнительные функции, рассмотрите возможность <strong><a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"wp-mail-smtp-upgrade-modal\">обновления до PRO</a></strong>."
-
-#: src/Admin/Pages/SettingsTab.php:141
-msgid "You're using WP Mail SMTP Lite - no license needed. Enjoy!"
-msgstr "Вы используете WP Mail SMTP Lite - лицензия не требуется. Наслаждайтесь!"
 
 #: src/Admin/ConnectionSettings.php:163
 msgid "Current provider doesn't support setting and forcing From Name. Emails will be sent on behalf of the account name used to setup the OAuth connection below."
@@ -4219,7 +4304,7 @@ msgstr "Текущий провайдер не поддерживает уста
 msgid "Current provider will automatically force From Email to be the email address that you use to set up the OAuth connection below."
 msgstr "Текущий провайдер автоматически заставит From Email быть адресом электронной почты, который вы используете для настройки подключения OAuth ниже."
 
-#: src/Admin/Pages/SettingsTab.php:75
+#: src/Admin/Pages/SettingsTab.php:98
 msgid "License Key"
 msgstr "Лицензионный ключ"
 
@@ -4352,7 +4437,7 @@ msgstr "MonsterInsights Pro"
 msgid "MonsterInsights"
 msgstr "MonsterInsights"
 
-#: src/Admin/Area.php:648 src/Admin/Pages/AboutTab.php:230
+#: src/Admin/Area.php:661 src/Admin/Pages/AboutTab.php:230
 msgid "Inactive"
 msgstr "Неактивный"
 
@@ -4394,7 +4479,7 @@ msgstr "О нас"
 msgid "%s vs Pro"
 msgstr "%s против Pro"
 
-#: src/Admin/Area.php:437 src/Admin/Area.php:1277
+#: src/Admin/Area.php:437 src/Admin/Area.php:1299
 #: src/Admin/DashboardWidget.php:287 src/Admin/FlyoutMenu.php:100
 #: src/Admin/Pages/AdditionalConnectionsTab.php:115
 #: src/Admin/Pages/AdditionalConnectionsTab.php:125
@@ -4403,7 +4488,8 @@ msgstr "%s против Pro"
 #: src/Admin/Pages/EmailReportsTab.php:137
 #: src/Admin/Pages/EmailReportsTab.php:175 src/Admin/Pages/ExportTab.php:89
 #: src/Admin/Pages/ExportTab.php:146 src/Admin/Pages/LogsTab.php:152
-#: src/Admin/Pages/LogsTab.php:190 src/Admin/Pages/SmartRoutingTab.php:111
+#: src/Admin/Pages/LogsTab.php:190 src/Admin/Pages/SettingsTab.php:279
+#: src/Admin/Pages/SmartRoutingTab.php:111
 #: src/Admin/Pages/SmartRoutingTab.php:308
 msgid "Upgrade to WP Mail SMTP Pro"
 msgstr "Обновитесь до WP Mail SMTP Pro"
@@ -4433,7 +4519,7 @@ msgid "Please copy this URL into the \"Authorized redirect URIs\" field of your 
 msgstr "Скопируйте этот URL-адрес в поле «URI авторизованного перенаправления» веб-приложения Google."
 
 #. translators: %1$s - constant that was used; %2$s - file where it was used.
-#: src/Options.php:1692
+#: src/Options.php:1743
 msgid "The value of this field was set using a constant %1$s most likely inside %2$s of your WordPress installation."
 msgstr "Значение этого поля было задано с помощью константы %1$s, скорее всего, внутри %2$s вашей установки WordPress."
 
@@ -4471,11 +4557,11 @@ msgstr "Нажмите на кнопку для подтверждения ав�
 msgid "Allow plugin to send emails using your Google account"
 msgstr "Разрешить плагину отсылать почту используя ваш Google аккаунт"
 
-#: src/Admin/Area.php:518
+#: src/Admin/Area.php:531
 msgid "Are you sure you want to reset the current provider connection? You will need to immediately create a new one to be able to send emails."
 msgstr "Вы действительно хотите сбросить текущую связь с провайдером? Вам нужно будет немедленно создать новое, чтобы отправлять электронную почту."
 
-#: assets/languages/wp-mail-smtp-vue.php:467
+#: assets/languages/wp-mail-smtp-vue.php:461
 #: src/Providers/Gmail/Options.php:180
 msgid "Authorization"
 msgstr "Авторизация"
@@ -4488,12 +4574,12 @@ msgstr "Скопировать URL в буфер обмена"
 msgid "Authorized redirect URI"
 msgstr "URI авторизованного перенаправления"
 
-#: assets/languages/wp-mail-smtp-vue.php:461
+#: assets/languages/wp-mail-smtp-vue.php:455
 #: src/Providers/Gmail/Options.php:128
 msgid "Client Secret"
 msgstr "Секретный код клиента"
 
-#: assets/languages/wp-mail-smtp-vue.php:458
+#: assets/languages/wp-mail-smtp-vue.php:452
 #: src/Providers/Gmail/Options.php:113
 msgid "Client ID"
 msgstr "ID клиента"
@@ -4504,43 +4590,43 @@ msgstr "ID клиента"
 msgid "%1$s requires PHP %2$s to work and does not support your current PHP version %3$s. Please contact your host and request a PHP upgrade to the latest one."
 msgstr "%1$s требует PHP %2$s для работы и не поддерживает вашу текущую версию %3$s. Обратитесь в техническую поддержку хостинга с требованием обновить PHP."
 
-#: assets/languages/wp-mail-smtp-vue.php:606
+#: assets/languages/wp-mail-smtp-vue.php:600
 #: src/Providers/OptionsAbstract.php:362
 msgid "SMTP Password"
 msgstr "Пароль SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:603
+#: assets/languages/wp-mail-smtp-vue.php:597
 #: src/Providers/OptionsAbstract.php:348
 msgid "SMTP Username"
 msgstr "Имя пользователя SMTP"
 
-#: assets/languages/wp-mail-smtp-vue.php:594
+#: assets/languages/wp-mail-smtp-vue.php:588
 #: src/Providers/OptionsAbstract.php:321
 msgid "By default, TLS encryption is automatically used if the server supports it (recommended). In some cases, due to server misconfigurations, this can cause issues and may need to be disabled."
 msgstr "По умолчанию шифрование TLS используется автоматически, если сервер его поддерживает (рекомендуется). В некоторых случаях из-за неправильной конфигурации сервера это может вызвать проблемы и, возможно, потребуется отключить."
 
-#: assets/languages/wp-mail-smtp-vue.php:588
+#: assets/languages/wp-mail-smtp-vue.php:582
 #: src/Providers/OptionsAbstract.php:307
 msgid "Auto TLS"
 msgstr "Аuto TLS"
 
-#: assets/languages/wp-mail-smtp-vue.php:609
+#: assets/languages/wp-mail-smtp-vue.php:603
 #: src/Providers/OptionsAbstract.php:285
 msgid "For most servers TLS is the recommended option. If your SMTP provider offers both SSL and TLS options, we recommend using TLS."
 msgstr "Для большинства серверов рекомендуется TLS. Если SMTP-провайдер поддерживает и то и другое, мы рекомендуем использовать TLS."
 
-#: assets/languages/wp-mail-smtp-vue.php:618
+#: assets/languages/wp-mail-smtp-vue.php:612
 #: src/Providers/OptionsAbstract.php:281
 msgid "TLS"
 msgstr "TLS"
 
-#: assets/languages/wp-mail-smtp-vue.php:615
+#: assets/languages/wp-mail-smtp-vue.php:609
 #: src/Providers/OptionsAbstract.php:272
 msgid "SSL"
 msgstr "SSL"
 
-#: assets/languages/wp-mail-smtp-vue.php:612
-#: src/Admin/Pages/SettingsTab.php:371 src/Providers/OptionsAbstract.php:263
+#: assets/languages/wp-mail-smtp-vue.php:606
+#: src/Admin/Pages/SettingsTab.php:368 src/Providers/OptionsAbstract.php:263
 msgid "None"
 msgstr "Отсутствует"
 
@@ -4557,19 +4643,19 @@ msgstr "Если вы подчиняетесь EU законам, вам, воз
 msgid "Define which endpoint you want to use for sending messages."
 msgstr "Определите, какой регион вы хотите использовать для отправки и хранения писем."
 
-#: assets/languages/wp-mail-smtp-vue.php:283
+#: assets/languages/wp-mail-smtp-vue.php:276
 #: src/Providers/Mailgun/Options.php:150
 #: src/Providers/SparkPost/Options.php:150
 msgid "EU"
 msgstr "ЕС"
 
-#: assets/languages/wp-mail-smtp-vue.php:280
+#: assets/languages/wp-mail-smtp-vue.php:273
 #: src/Providers/Mailgun/Options.php:141
 #: src/Providers/SparkPost/Options.php:141
 msgid "US"
 msgstr "США"
 
-#: assets/languages/wp-mail-smtp-vue.php:226
+#: assets/languages/wp-mail-smtp-vue.php:227
 #: src/Providers/Mailgun/Options.php:131
 #: src/Providers/SparkPost/Options.php:131
 msgid "Region"
@@ -4584,12 +4670,12 @@ msgstr "Получите доменное имя"
 msgid "Follow this link to get a Domain Name from Mailgun: %s."
 msgstr "Перейдите по этой ссылке для получения доменного имени от Mailgun: %s."
 
-#: assets/languages/wp-mail-smtp-vue.php:223
+#: assets/languages/wp-mail-smtp-vue.php:224
 #: src/Providers/Mailgun/Options.php:106
 msgid "Domain Name"
 msgstr "Имя домена"
 
-#: assets/languages/wp-mail-smtp-vue.php:220
+#: assets/languages/wp-mail-smtp-vue.php:221
 msgid "Private API Key"
 msgstr "Закрытый ключ API"
 
@@ -4615,10 +4701,11 @@ msgstr "Создать ключ API"
 msgid "Follow this link to get an API Key from SendGrid: %s."
 msgstr "Перейдите по этой ссылке для получения API ключа SendGrid: %s."
 
-#: assets/languages/wp-mail-smtp-vue.php:289
+#: assets/languages/wp-mail-smtp-vue.php:282
 #: src/Providers/ElasticEmail/Options.php:93
 #: src/Providers/MailerSend/Options.php:88 src/Providers/Mailjet/Options.php:93
-#: src/Providers/PepipostAPI/Options.php:96
+#: src/Providers/Mandrill/Options.php:89
+#: src/Providers/PepipostAPI/Options.php:96 src/Providers/Resend/Options.php:94
 #: src/Providers/Sendgrid/Options.php:68
 #: src/Providers/Sendinblue/Options.php:112
 #: src/Providers/Sendlayer/Options.php:102 src/Providers/SMTP2GO/Options.php:94
@@ -4644,7 +4731,7 @@ msgstr "Внимание! WP Mail SMTP обнаружил, что активир
 msgid "Please review your WP Mail SMTP settings in <a href=\"%s\">plugin admin area</a>."
 msgstr "Ознакомьтесь с параметрами WP Mail SMTP в <a href=\"%s\">области администрирования плагина</a>."
 
-#: assets/languages/wp-mail-smtp-vue.php:897 src/Admin/Area.php:646
+#: assets/languages/wp-mail-smtp-vue.php:897 src/Admin/Area.php:659
 #: src/Admin/Pages/AboutTab.php:225
 msgid "Activated"
 msgstr "Активирован"
@@ -4670,7 +4757,7 @@ msgstr "Тип"
 msgid "Source"
 msgstr "Источник"
 
-#: src/Admin/Area.php:647 src/Admin/Pages/AboutTab.php:222
+#: src/Admin/Area.php:660 src/Admin/Pages/AboutTab.php:222
 msgid "Active"
 msgstr "Активна"
 
@@ -4687,9 +4774,9 @@ msgid "Install Plugin"
 msgstr "Установить плагин"
 
 #. translators: %1$s - WP.org link; %2$s - same WP.org link.
-#: src/Admin/Area.php:723
+#: src/Admin/Area.php:745
 msgid "Please rate <strong>WP Mail SMTP</strong> <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">&#9733;&#9733;&#9733;&#9733;&#9733;</a> on <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">WordPress.org</a> to help us spread the word. Thank you from the WP Mail SMTP team!"
-msgstr "Пожалуйста, оцените <strong>WP Mail SMTP</strong> <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">&#9733;&#9733;&#9733;&#9733;&#9733;</a> на <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">WordPress.org</a>. Так о плагине узнает еще больше пользователей. С благодарностью, команда WP Mail SMTP."
+msgstr "Оцените, пожалуйста,<strong>WP Mail SMTP</strong> <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">&#9733;&#9733;&#9733;&#9733;&#9733;</a> on <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">WordPress.org</a>чтобы помочь нам распространить слово. Спасибо вам от команды WP Mail SMTP!"
 
 #. translators: %s - Mailer anchor link.
 #: src/Admin/Area.php:221
@@ -4725,12 +4812,12 @@ msgstr "Адрес возврата указывает, куда будут на
 msgid "If checked, the From Name setting above will be used for all emails, ignoring values set by other plugins."
 msgstr "В этом случае настройки имени отправителя будут использоваться для всех сообщений. Настройки других плагинов будут игнорироваться."
 
-#: assets/languages/wp-mail-smtp-vue.php:248
+#: assets/languages/wp-mail-smtp-vue.php:245
 #: src/Admin/ConnectionSettings.php:146
 msgid "Force From Name"
 msgstr "Принудительно использовать имя отправителя"
 
-#: assets/languages/wp-mail-smtp-vue.php:270
+#: assets/languages/wp-mail-smtp-vue.php:263
 #: src/Admin/ConnectionSettings.php:139
 msgid "The name that emails are sent from."
 msgstr "Имя, от которого отправляются электронные письма."
@@ -4739,7 +4826,7 @@ msgstr "Имя, от которого отправляются электрон�
 msgid "If checked, the From Email setting above will be used for all emails, ignoring values set by other plugins."
 msgstr "В этом случае настройки адреса отправителя будут использоваться для всех сообщений. Настройки других плагинов будут игнорироваться."
 
-#: assets/languages/wp-mail-smtp-vue.php:256
+#: assets/languages/wp-mail-smtp-vue.php:253
 #: src/Admin/ConnectionSettings.php:95
 msgid "Force From Email"
 msgstr "Принудительно использовать адрес отправителя"
@@ -4752,7 +4839,7 @@ msgstr "Обратите внимание: другие плагины могу�
 msgid "If you're using an email provider (Yahoo, Outlook.com, etc) this should be your email address for that account."
 msgstr "При использовании стороннего сервиса отправки почты (Yahoo, Outlook.com и других) это должен быть адрес эл. почты учетной записи на этом сервисе."
 
-#: assets/languages/wp-mail-smtp-vue.php:274
+#: assets/languages/wp-mail-smtp-vue.php:267
 #: src/Admin/ConnectionSettings.php:82
 msgid "The email address that emails are sent from."
 msgstr "Адрес электронной почты для исходящих сообщений."
@@ -4890,7 +4977,7 @@ msgstr "Обычно эта ошибка возникает из-за того, 
 #. translators: %s - Google support article URL.
 #: src/Admin/Pages/TestTab.php:1062
 msgid "if you are using Google Workspace, please <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">read this article</a> to proceed."
-msgstr "Если вы используете сервисы Google Workspace, <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">прочитайте эту статью</a>, прежде чем продолжить."
+msgstr "если вы используете Google Workspace, <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">прочтите эту статью</a>, чтобы продолжить."
 
 #. translators: %s - Google support article URL.
 #: src/Admin/Pages/TestTab.php:1047
@@ -4984,7 +5071,7 @@ msgstr "Не удалось подключиться к узлу SMTP."
 msgid "Enter correct SMTP Username (usually this is an email address) and Password in the appropriate fields."
 msgstr "Введите правильное имя пользователя SMTP (обычно это адрес электронной почты) и пароль в соответствующих полях."
 
-#: assets/languages/wp-mail-smtp-vue.php:600 src/Admin/Pages/TestTab.php:860
+#: assets/languages/wp-mail-smtp-vue.php:594 src/Admin/Pages/TestTab.php:860
 msgid "Enable Authentication"
 msgstr "Включить проверку подлинности"
 
@@ -5154,11 +5241,11 @@ msgid "Email Test"
 msgstr "Проверка почты"
 
 #: src/Admin/Pages/DebugEventsTab.php:377 src/Admin/Pages/MiscTab.php:539
-#: src/Admin/Pages/SettingsTab.php:440
+#: src/Admin/Pages/SettingsTab.php:437
 msgid "Settings were successfully saved."
 msgstr "Настройки сохранены."
 
-#: src/Admin/Area.php:526 src/Admin/PageAbstract.php:192
+#: src/Admin/Area.php:539 src/Admin/PageAbstract.php:192
 msgid "Save Settings"
 msgstr "Сохранить настройки"
 
@@ -5199,11 +5286,6 @@ msgstr "Разное"
 msgid "WPForms"
 msgstr "WPForms"
 
-#. Description of the plugin
-#: wp_mail_smtp.php
-msgid "Reconfigures the <code>wp_mail()</code> function to use Gmail/Mailgun/SendGrid/SMTP instead of the default <code>mail()</code> and creates an options page to manage the settings."
-msgstr "Перенастраивает функцию <code>wp_mail()</code> для использования Gmail/Mailgun/SendGrid/SMTP вместо стандартной <code>mail()</code> и добавляет страницу настройки для управления плагином."
-
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: wp_mail_smtp.php src/Admin/Area.php:307 src/Admin/Area.php:308
@@ -5213,7 +5295,7 @@ msgstr "Перенастраивает функцию <code>wp_mail()</code> д�
 msgid "WP Mail SMTP"
 msgstr "WP Mail SMTP"
 
-#: src/Admin/Area.php:318 src/Admin/Area.php:319 src/Admin/Area.php:1285
+#: src/Admin/Area.php:318 src/Admin/Area.php:319 src/Admin/Area.php:1307
 msgid "Settings"
 msgstr "Настройки"
 
@@ -5221,7 +5303,7 @@ msgstr "Настройки"
 msgid "Email"
 msgstr "Эл. почта"
 
-#: assets/languages/wp-mail-smtp-vue.php:530 src/Admin/Pages/TestTab.php:253
+#: assets/languages/wp-mail-smtp-vue.php:524 src/Admin/Pages/TestTab.php:253
 #: src/SiteHealth.php:352
 msgid "Send a Test Email"
 msgstr "Отправить тестовое письмо"
@@ -5230,22 +5312,22 @@ msgstr "Отправить тестовое письмо"
 msgid "Save Changes"
 msgstr "Сохранить изменения"
 
-#: assets/languages/wp-mail-smtp-vue.php:597
+#: assets/languages/wp-mail-smtp-vue.php:591
 #: src/Providers/OptionsAbstract.php:329
 msgid "Authentication"
 msgstr "Аутентификация"
 
-#: assets/languages/wp-mail-smtp-vue.php:582
+#: assets/languages/wp-mail-smtp-vue.php:576
 #: src/Providers/OptionsAbstract.php:253
 msgid "Encryption"
 msgstr "Шифрование"
 
-#: assets/languages/wp-mail-smtp-vue.php:585
+#: assets/languages/wp-mail-smtp-vue.php:579
 #: src/Providers/OptionsAbstract.php:293
 msgid "SMTP Port"
 msgstr "SMTP порт"
 
-#: assets/languages/wp-mail-smtp-vue.php:579
+#: assets/languages/wp-mail-smtp-vue.php:573
 #: src/Providers/OptionsAbstract.php:239
 msgid "SMTP Host"
 msgstr "SMTP сервер"
@@ -5254,17 +5336,17 @@ msgstr "SMTP сервер"
 msgid "Return Path"
 msgstr "Адрес возврата (return-path)"
 
-#: assets/languages/wp-mail-smtp-vue.php:648
+#: assets/languages/wp-mail-smtp-vue.php:642
 #: src/Admin/ConnectionSettings.php:202 src/Admin/Pages/ExportTab.php:125
 msgid "Mailer"
 msgstr "Почтовая программа"
 
-#: assets/languages/wp-mail-smtp-vue.php:243
+#: assets/languages/wp-mail-smtp-vue.php:242
 #: src/Admin/ConnectionSettings.php:127 src/Admin/Pages/ExportTab.php:111
 msgid "From Name"
 msgstr "Имя отправителя"
 
-#: assets/languages/wp-mail-smtp-vue.php:252
+#: assets/languages/wp-mail-smtp-vue.php:249
 #: src/Admin/ConnectionSettings.php:70 src/Admin/Pages/SmartRoutingTab.php:180
 #: src/Admin/Pages/SmartRoutingTab.php:210
 msgid "From Email"
