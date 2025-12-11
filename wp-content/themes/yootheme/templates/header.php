@@ -676,18 +676,3 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
 </header>
 
 <?php endif ?>
-
-
-
-
-<div class="uk-container">
- 
-<?php if( function_exists( 'ubermenu' ) ): ?>
-
-  <?php ubermenu( 'main' , array( 'menu' => 128 ) ); ?>
-<?php else: ?>
-  <div id="menu">
-    <?php wp_nav_menu(); ?>
-  </div>
-<?php endif;?>
-</div>

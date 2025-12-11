@@ -59,15 +59,15 @@ $grid = $this->el('div', [
         'parallax-end: {grid_parallax_end};' => $props['grid_parallax'] || $props['grid_parallax_justify'],
     ], $props) ?: count($children) > 1,
 
-    'uk-lightbox' => [
-        'toggle: a[data-type];' => $props['lightbox'],
+    'uk-lightbox' => $props['lightbox'] ? [
+        'toggle: a[data-type];',
         'animation: {lightbox_animation};',
         'nav: {lightbox_nav}; slidenav: false;',
         'delay-controls: 0;' => $props['lightbox_controls'],
         'counter: true;' => $props['lightbox_counter'],
         'bg-close: false;' => !$props['lightbox_bg_close'],
         'video-autoplay: {lightbox_video_autoplay};',
-    ],
+    ] : false,
 
 ]);
 

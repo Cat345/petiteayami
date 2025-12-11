@@ -119,7 +119,7 @@ if ($layout == 'post') {
         <?php wp_head() ?>
     </head>
     <body <?php body_class((array) $config('~theme.body_class')) ?>>
-<? echo do_shortcode( '[ditty id=7835]' );?>
+
         <?php
             wp_body_open();
 

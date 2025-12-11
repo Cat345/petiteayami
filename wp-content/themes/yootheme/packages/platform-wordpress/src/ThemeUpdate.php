@@ -5,14 +5,9 @@ namespace YOOtheme\Wordpress;
 class ThemeUpdate
 {
     /**
-     * Theme instance.
+     * Theme name.
      */
-    protected \WP_Theme $theme;
-
-    /**
-     * Update URL.
-     */
-    protected string $url;
+    protected string $theme;
 
     /**
      * Package URL query parameters.
@@ -32,9 +27,8 @@ class ThemeUpdate
     /**
      * Constructor.
      */
-    public function __construct(\WP_Theme $theme)
+    public function __construct(string $theme)
     {
-        $this->url = $theme->get('UpdateURI');
         $this->theme = $theme;
 
         // @link https://developer.wordpress.org/reference/hooks/upgrader_package_options/
@@ -42,16 +36,6 @@ class ThemeUpdate
 
         // @link https://make.wordpress.org/core/2020/07/30/recommended-usage-of-the-updates-api-to-support-the-auto-updates-ui-for-plugins-and-themes-in-wordpress-5-5/
         add_filter('pre_set_site_transient_update_themes', [$this, 'checkUpdate']);
-    }
-
-    /**
-     * Set the update API URL.
-     */
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
     }
 
     /**
@@ -92,7 +76,7 @@ class ThemeUpdate
         $query = array_filter($this->query);
         $theme = $options['hook_extra']['theme'] ?? null;
 
-        if ($query && $theme === $this->theme->get_template()) {
+        if ($query && $theme === $this->theme) {
             $options['package'] = add_query_arg($query, $options['package']);
         }
 
@@ -108,15 +92,21 @@ class ThemeUpdate
             return $transient;
         }
 
-        $theme = $this->theme->get_template();
-        $release = $this->getRelease($this->stability);
+        $theme = wp_get_theme($this->theme);
+        $release = $this->getRelease($theme->get('UpdateURI'));
+        $installed = [
+            'url' => $theme->get('ThemeURI'),
+            'version' => $theme->get('Version'),
+            'requires' => $theme->get('RequiresWP'),
+            'requires_php' => $theme->get('RequiresPHP'),
+        ];
 
-        if ($release && $this->hasUpdate($release)) {
-            $transient->response[$theme] = $release;
-            unset($transient->no_update[$theme]);
+        if ($release && $this->hasUpdate($release, $installed['version'])) {
+            $transient->response[$this->theme] = $release;
+            unset($transient->no_update[$this->theme]);
         } else {
-            $transient->no_update[$theme] = $this->mapData();
-            unset($transient->response[$theme]);
+            $transient->no_update[$this->theme] = $this->mapData($installed);
+            unset($transient->response[$this->theme]);
         }
 
         return $transient;
@@ -125,9 +115,9 @@ class ThemeUpdate
     /**
      * Check if an update is available.
      */
-    protected function hasUpdate(array $release): bool
+    protected function hasUpdate(array $release, string $version): bool
     {
-        return version_compare($release['new_version'], $this->theme->get('Version'), '>');
+        return version_compare($release['new_version'], $version, '>');
     }
 
     /**
@@ -135,8 +125,7 @@ class ThemeUpdate
      */
     protected function fetchUpdate(string $url): array
     {
-        $theme = $this->theme->get_template();
-        $transient = "{$theme}_theme_update";
+        $transient = "{$this->theme}_theme_update";
 
         if (!is_array($data = get_transient($transient))) {
             $res = wp_remote_get($url);
@@ -156,14 +145,14 @@ class ThemeUpdate
     /**
      * Get the latest release with preferred stability.
      */
-    protected function getRelease(string $stability): ?array
+    protected function getRelease(string $url): ?array
     {
-        $update = $this->fetchUpdate($this->url);
+        $update = $this->fetchUpdate($url);
         $versions = $update['versions'] ?? [];
 
         // normalize update data
         $releases = array_map([$this, 'mapData'], $versions);
-        $stabilities = array_unique(['stable', $stability]);
+        $stabilities = array_unique(['stable', $this->stability]);
 
         // sort releases, the newest version first
         usort($releases, fn($a, $b) => version_compare($a['new_version'], $b['new_version']) * -1);
@@ -184,13 +173,13 @@ class ThemeUpdate
     protected function mapData(array $data = []): array
     {
         return [
-            'theme' => $this->theme->get_template(),
-            'new_version' => strval($data['version'] ?? $this->theme->get('Version')),
-            'url' => strval($data['url'] ?? $this->theme->get('ThemeURI')),
-            'package' => $data['package'] ?? '',
-            'stability' => $data['stability'] ?? '',
-            'requires' => strval($data['requires'] ?? $this->theme->get('RequiresWP')),
-            'requires_php' => strval($data['requires_php'] ?? $this->theme->get('RequiresPHP')),
+            'theme' => $this->theme,
+            'new_version' => strval($data['version'] ?? ''),
+            'url' => strval($data['url'] ?? ''),
+            'package' => strval($data['package'] ?? ''),
+            'stability' => strval($data['stability'] ?? ''),
+            'requires' => strval($data['requires'] ?? ''),
+            'requires_php' => strval($data['requires_php'] ?? ''),
         ];
     }
 }

@@ -30,7 +30,7 @@ class CsrfMiddleware
     public function __construct($token, ?callable $verify = null)
     {
         $this->token = $token;
-        $this->verify = $verify ?: [$this, 'verify'];
+        $this->verify = $verify ?: [$this, 'verifyToken'];
     }
 
     /**
@@ -45,7 +45,7 @@ class CsrfMiddleware
     {
         $csrf = $request->getAttribute('csrf', in_array($request->getMethod(), ['POST', 'DELETE']));
 
-        if ($csrf && !$this->verify($request->getHeaderLine('X-XSRF-Token'))) {
+        if ($csrf && !($this->verify)($request->getHeaderLine('X-XSRF-Token'))) {
             $request->abort(401, 'Invalid CSRF token.');
         }
 
@@ -55,7 +55,7 @@ class CsrfMiddleware
     /**
      * Verifies a CSRF token.
      */
-    public function verify(string $token): bool
+    public function verifyToken(string $token): bool
     {
         return $this->token === $token;
     }

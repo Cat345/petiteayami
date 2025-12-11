@@ -1,5 +1,31 @@
 # Changelog
 
+## 4.5.32 (November 3, 2025)
+
+### Fixed
+
+- Fix rendering the Grid/Gallery element with the Lightbox even though it is disabled
+- Fix csrf token validation (WordPress)
+
+## 4.5.31 (October 16, 2025)
+
+### Fixed
+
+- Fix mod_login default_logout view (Joomla)
+
+## 4.5.30 (October 16, 2025)
+
+### Fixed
+
+- Fix mod_login default_logout view (Joomla)
+- Fix wrong UIkit version in build
+
+## 4.5.29 (October 15, 2025)
+
+### Fixed
+
+- Fix Joomla 6 compatibility
+
 ## 4.5.28 (September 18, 2025)
 
 ### Fixed

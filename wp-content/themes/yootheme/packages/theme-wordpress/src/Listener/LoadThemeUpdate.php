@@ -17,7 +17,7 @@ class LoadThemeUpdate
     public function handle()
     {
         // register theme update
-        $update = new ThemeUpdate(wp_get_theme('yootheme'));
+        $update = new ThemeUpdate('yootheme');
         $update->setQuery(['key' => $this->config->get('~theme.yootheme_apikey')]);
         $update->setStability($this->config->get('~theme.minimum_stability', ''));
 
