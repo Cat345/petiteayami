@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-11 12:28:40+0000\n"
+"PO-Revision-Date: 2025-12-14 03:19:31+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -696,7 +696,7 @@ msgstr "Die Steuerrückerstattungssumme darf nicht höher sein als die Steuersum
 
 #: src/Internal/RestApi/Routes/V4/Refunds/Schema/RefundSchema.php:141
 msgid "The date the refund was created, as GMT."
-msgstr "Das Datum an dem die Rückerstattung erstellt wurde, in GMT."
+msgstr "Das Datum an dem die Rückerstattung erstellt wurde, in UTC."
 
 #: src/Internal/RestApi/Routes/V4/Orders/ActionController.php:38
 msgid "Marks the order as paid. Updates the order status and reduces line item stock if necessary."
@@ -1102,11 +1102,6 @@ msgstr "Bitte wähle Produktoptionen für %1$s aus."
 
 #. translators: %1$s is the payment method, %2$s is the transaction id.
 #: includes/class-wc-order.php:179
-msgid "Payment via %1$s (%2$s)."
-msgstr "Bezahlung über%1$s (%2$s)."
-
-#. translators: %1$s is the payment method, %2$s is the transaction id.
-#: includes/class-wc-order.php:179
 msgid "Payment complete."
 msgstr "Zahlung abgeschlossen."
 
@@ -1129,6 +1124,11 @@ msgstr "Bestellung erfüllt"
 #: includes/emails/class-wc-email-customer-completed-order.php:54
 msgid "Notifies customers when their order has been shipped."
 msgstr "Benachrichtigt Kunden, wenn ihre Bestellung versendet wurde."
+
+#. translators: %1$s is the payment method, %2$s is the transaction id.
+#: includes/class-wc-order.php:179
+msgid "Payment via %1$s (%2$s)."
+msgstr "Bezahlung über %1$s (%2$s)."
 
 #: src/Internal/Abilities/AbilitiesCategories.php:47
 msgid "REST API operations for WooCommerce resources including products, orders, and other store data."
@@ -1658,6 +1658,14 @@ msgstr "Passe das Erscheinungsbild all deiner Benachrichtigungs-E-Mails an."
 #: src/Internal/RestApi/Routes/V4/Settings/Email/Schema/EmailSettingsSchema.php:237
 msgid "Email design"
 msgstr "E-Mail-Design"
+
+#: includes/admin/settings/class-wc-settings-emails.php:177
+msgid "\"Reply-to\" address"
+msgstr "„Antworten-an“-Adresse"
+
+#: includes/admin/settings/class-wc-settings-emails.php:166
+msgid "\"Reply-to\" name"
+msgstr "„Antworten-an“-Name"
 
 #: includes/admin/settings/class-wc-settings-emails.php:157
 msgid "Add \"Reply-to\" email"
@@ -2640,6 +2648,11 @@ msgstr "Einige Details deiner Sendung wurden kürzlich aktualisiert. Dies kann I
 msgid "Here’s the latest info we have:"
 msgstr "Hier sind die neuesten Informationen, die uns vorliegen:"
 
+#: templates/emails/customer-fulfillment-deleted.php:32
+#: templates/emails/plain/customer-fulfillment-deleted.php:24
+msgid "We wanted to let you know that one of the previously fulfilled shipments from your order has been removed from our system. This may have been due to a correction or an update in our fulfillment records. Don’t worry — this won’t affect any items you’ve already received."
+msgstr "Wir möchten dir mitteilen, dass eine der zuvor ausgeführten Sendungen aus deiner Bestellung aus unserem System entfernt wurde. Dies ist möglicherweise auf eine Korrektur oder Aktualisierung in unseren Ausführungsprotokollen zurückzuführen. Keine Sorge – dies betrifft keine Artikel, die du bereits erhalten hast."
+
 #: templates/emails/email-fulfillment-details.php:31
 #: templates/emails/plain/email-fulfillment-details.php:25
 msgid "No tracking information available for this fulfillment at the moment."
@@ -2659,11 +2672,6 @@ msgstr "Sendung verfolgen"
 #: templates/emails/email-fulfillment-details.php:42
 msgid "You can access to more details of your order by visiting <a href=\"%s\" target=\"_blank\">My Account > Orders</a> and select the order you wish to see the latest status of the delivery."
 msgstr "Weitere Details zu deiner Bestellung findest du unter „<a href=\"%s\" target=\"_blank\">Mein Konto > Bestellungen</a>“. Wähle dann die Bestellung aus, für die du den aktuellen Zustellungsstatus anzeigen möchtest."
-
-#: templates/emails/customer-fulfillment-deleted.php:32
-#: templates/emails/plain/customer-fulfillment-deleted.php:24
-msgid "We wanted to let you know that one of the previously fulfilled shipments from your order has been removed from our system. This may have been due to a correction or an update in our fulfillment records. Don’t worry — this won’t affect any items you’ve already received."
-msgstr "Wir möchten dir mitteilen, dass eine der zuvor ausgeführten Sendungen aus deiner Bestellung aus unserem System entfernt wurde. Dies ist möglicherweise auf eine Korrektur oder Aktualisierung in unseren Ausführungsprotokollen zurückzuführen. Keine Sorge – dies betrifft keine Artikel, die du bereits erhalten hast."
 
 #: templates/emails/email-fulfillment-details.php:63
 #: templates/emails/plain/email-fulfillment-details.php:49
@@ -2752,20 +2760,6 @@ msgstr "Bestell-ID ist erforderlich."
 msgid "Unique identifier for the order."
 msgstr "Eindeutige Kennung für die Bestellung."
 
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:680
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:738
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:786
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:826
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:876
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:973
-#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:1046
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:443
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:503
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:549
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:622
-msgid "Unique identifier for the fulfillment."
-msgstr "Eindeutige Kennung für die Ausführung."
-
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:744
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:1074
 #: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:509
@@ -2796,6 +2790,20 @@ msgstr "Der zu löschende Meta-Schlüssel."
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:921
 msgid "The tracking number to look up."
 msgstr "Die zu suchende Sendungsverfolgungsnummer."
+
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:680
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:738
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:786
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:826
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:876
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:973
+#: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:1046
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:443
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:503
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:549
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:622
+msgid "Unique identifier for the fulfillment."
+msgstr "Eindeutige Kennung für die Ausführung."
 
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:936
 msgid "The tracking number details response."
@@ -6289,13 +6297,13 @@ msgstr "Sichere und zuverlässig Zahlungen über das PayPal-Konto deines Kunden.
 msgid "Paymob is a leading payment gateway in the Middle East and Africa. Accept payments online and in-store with Paymob."
 msgstr "Paymob ist ein führendes Zahlungs-Gateway im Nahen Osten und Afrika. Akzeptiere Zahlungen online und in Geschäften mit Paymob."
 
-#: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3368
-msgid "The Payfast extension for WooCommerce enables you to accept payments by Credit Card and EFT via one of South Africa's most popular payment gateways. No setup fees or monthly subscription costs. Selecting this extension will configure your store to use South African rands as the selected currency."
-msgstr "Mithilfe der PayFast-Erweiterung für WooCommerce kannst du über eines der beliebtesten Zahlungs-Gateways Südafrikas Zahlungen per Kreditkarte und elektronischer Überweisung entgegennehmen. Keine Einrichtungsgebühren oder monatlichen Abonnementkosten. Durch die Auswahl dieser Erweiterung wird dein Shop darauf konfiguriert, den südafrikanischen Rand als ausgewählte Währung zu verwenden."
-
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3401
 msgid "Paymob"
 msgstr "Paymob"
+
+#: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3368
+msgid "The Payfast extension for WooCommerce enables you to accept payments by Credit Card and EFT via one of South Africa's most popular payment gateways. No setup fees or monthly subscription costs. Selecting this extension will configure your store to use South African rands as the selected currency."
+msgstr "Mithilfe der PayFast-Erweiterung für WooCommerce kannst du über eines der beliebtesten Zahlungs-Gateways Südafrikas Zahlungen per Kreditkarte und elektronischer Überweisung entgegennehmen. Keine Einrichtungsgebühren oder monatlichen Abonnementkosten. Durch die Auswahl dieser Erweiterung wird dein Shop darauf konfiguriert, den südafrikanischen Rand als ausgewählte Währung zu verwenden."
 
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3282
 msgid "Your trusted payments partner in Asia and around the world."
@@ -8000,7 +8008,7 @@ msgstr[1] ""
 "%%C%1$d%%n kompatible Plugins gefunden%2$s"
 
 #. translators: %s is a generated error message.
-#: src/Blocks/Patterns/PTKPatternsStore.php:232
+#: src/Blocks/Patterns/PTKPatternsStore.php:247
 msgid "Failed to get WooCommerce patterns from the PTK: \"%s\""
 msgstr "Die WooCommerce-Vorlagen konnten nicht aus dem PTK abgerufen werden: „%s“"
 
@@ -9256,25 +9264,25 @@ msgid "Per your %1$sstore settings%2$s, taxes are not enabled."
 msgstr "In deinen %1$sShop-Einstellungen%2$s sind keine Steuern aktiviert."
 
 #. translators: %d is an order ID.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:674
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:673
 msgid "Unable to create backup post for order %d."
 msgstr "Backup-Beitrag für Bestellung %d kann nicht erstellt werden."
 
 #. translators: %s is a list of order property names.
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:567
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:560
 msgid "%s is not a valid order property."
 msgid_plural "%s are not valid order properties."
 msgstr[0] "%s ist keine gültige Bestelleigenschaft."
 msgstr[1] "%s sind keine gültigen Bestelleigenschaften."
 
 #. translators: %s is a comma separated list of metakey names.
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:541
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:534
 msgid "%s is an internal meta key. Use --props to set it."
 msgid_plural "%s are internal meta keys. Use --props to set them."
 msgstr[0] "%s ist ein interner Meta-Schlüssel. Verwende --props, um ihn festzulegen."
 msgstr[1] "%s sind interne Meta-Schlüssel. Verwende --props, um sie festzulegen."
 
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:390
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:383
 msgid "The backup datastore does not support updating orders."
 msgstr "Der Backup-Datastore unterstützt nicht die Aktualisierung von Bestellungen."
 
@@ -12373,8 +12381,8 @@ msgstr "Bestellbestätigung"
 
 #. translators: %1$s = order ID, %2$s = order id, %3$s = error message.
 #. translators: %1$d = peoperty name, %2$d = order ID, %3$s = error message.
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:199
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1780
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:198
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1767
 msgid "Error when setting property '%1$s' for order %2$d: %3$s"
 msgstr "Fehler beim Festlegen der Eigenschaft „%1$s“ für Bestellung %2$d: %3$s"
 
@@ -12458,7 +12466,7 @@ msgid "Please enter a valid email address."
 msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
 
 #. translators: %s: Taxonomy name.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2272
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2259
 msgid "Invalid taxonomy: %s."
 msgstr "Ungültige Taxonomie: %s."
 
@@ -12815,11 +12823,6 @@ msgctxt "block title"
 msgid "Product description"
 msgstr "Produktbeschreibung"
 
-#: assets/client/blocks/category-title/block.json
-msgctxt "block title"
-msgid "Product Category Title"
-msgstr "Produktkategorietitel"
-
 #: assets/client/admin/product-editor/blocks/product-fields/attributes/block.json
 #: assets/client/admin/product-editor/blocks/product-fields/product-attributes-field/block.json
 msgctxt "block description"
@@ -12849,6 +12852,11 @@ msgstr "Ein Feld zum Auswählen von Produkt-Schlagwörtern."
 msgctxt "block keyword"
 msgid "by category"
 msgstr "nach Kategorie"
+
+#: assets/client/blocks/category-title/block.json
+msgctxt "block title"
+msgid "Product Category Title"
+msgstr "Produktkategorietitel"
 
 #. translators: 1 = url of the WooCommerce webhooks settings page
 #: src/Internal/Utilities/WebhookUtil.php:117
@@ -14192,6 +14200,14 @@ msgstr "Der Marketingkanal, zu dem dieser Kampagnentyp gehört."
 msgid "The unique identifier for the marketing channel that this campaign belongs to."
 msgstr "Die eindeutige Kennung des Marketingkanals, zu dem diese Kampagne gehört."
 
+#. translators: 1) is the number of affected actions, 2) is a link to an admin
+#. screen.
+#: packages/action-scheduler/classes/ActionScheduler_AdminView.php:220
+msgid "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due action</a> found; something may be wrong. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Read documentation &raquo;</a>"
+msgid_plural "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due actions</a> found; something may be wrong. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Read documentation &raquo;</a>"
+msgstr[0] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktion</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
+msgstr[1] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktionen</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
+
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1826
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1903
 msgid "Slug automatically generated from the product name."
@@ -14206,14 +14222,6 @@ msgstr "Permalink-Template für das Produkt."
 #: includes/export/abstract-wc-csv-batch-exporter.php:133
 msgid "Unable to create or write to %s during CSV export. Please check file permissions."
 msgstr "Erstellen oder Schreiben unter %s während CSV-Export nicht möglich. Bitte überprüfe die Dateiberechtigungen."
-
-#. translators: 1) is the number of affected actions, 2) is a link to an admin
-#. screen.
-#: packages/action-scheduler/classes/ActionScheduler_AdminView.php:220
-msgid "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due action</a> found; something may be wrong. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Read documentation &raquo;</a>"
-msgid_plural "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due actions</a> found; something may be wrong. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Read documentation &raquo;</a>"
-msgstr[0] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktion</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
-msgstr[1] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktionen</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
 
 #. translators: %d: shipping package number
 #: src/StoreApi/Utilities/CartController.php:953
@@ -14252,7 +14260,7 @@ msgid "Summarize this product in 1-2 short sentences. We'll show it at the top o
 msgstr "Fasse dieses Produkt in ein bis zwei kurzen Sätzen zusammen. Wir zeigen es am Seitenanfang."
 
 #. translators: %1$d order ID.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1597
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1594
 msgid "Unable to load the post record for order %1$d"
 msgstr "Der Beitragseintrag für die Bestellung %1$d konnte nicht geladen werden"
 
@@ -14822,17 +14830,17 @@ msgid "%1$sManage the order%2$s with the app."
 msgstr "%1$sVerwalte die Bestellung%2$s mit der App."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2765
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2752
 msgid "Something went wrong when trying to restore order %d from the trash. It could not be restored."
 msgstr "Beim Versuch, die Bestellung %d aus dem Papierkorb wiederherzustellen, ist ein Fehler aufgetreten. Sie konnte nicht wiederhergestellt werden."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2729
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2716
 msgid "The previous status of order %1$d (\"%2$s\") is invalid. It could not be restored."
 msgstr "Der vorherige Status der Bestellung %1$d („%2$s“) ist ungültig. Sie konnte nicht wiederhergestellt werden."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2717
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2704
 msgid "The previous status of order %1$d (\"%2$s\") is invalid. It has been restored to \"pending\" status instead."
 msgstr "Der vorherige Status der Bestellung %1$d („%2$s“) ist ungültig. Sie wurde stattdessen im Status „ausstehend“ wiederhergestellt."
 
@@ -14859,7 +14867,7 @@ msgid "%1$sCollect payments easily%2$s from your customers anywhere with our mob
 msgstr "%1$sEmpfange Zahlungen ganz einfach%2$s von deinen Kunden aus aller Welt mit unserer Mobil-App."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2699
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2686
 msgid "Order %1$d cannot be restored from the trash: it has already been restored to status \"%2$s\"."
 msgstr "Bestellung %1$d kann nicht aus dem Papierkorb wiederhergestellt werden: Sie wurde bereits im Status „%2$s“ wiederhergestellt."
 
@@ -14930,7 +14938,6 @@ msgid "Are you sure you want to disconnect your store from WooCommerce.com?"
 msgstr "Bist du sicher, dass du deinen Shop von WooCommerce.com trennen möchtest?"
 
 #: includes/admin/class-wc-admin-assets.php:647
-#: assets/client/admin/product-editor/index.js:2
 msgid "Describe this product. What makes it unique? What are its most important features?"
 msgstr "Beschreibe dieses Produkt. Was macht es einzigartig? Was sind seine wichtigsten Merkmale?"
 
@@ -15038,7 +15045,7 @@ msgstr "Tabellen-Alias „%s“ kann in OrdersTableQuery nicht wiederverwendet w
 msgid "%s can not be used as a table alias in OrdersTableQuery"
 msgstr "„%s“ kann nicht als Tabellen-Alias in OrdersTableQuery verwendet werden"
 
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1350
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1349
 msgid "Invalid order IDs in call to read_multiple()"
 msgstr "Ungültige Bestell-IDs in Aufruf an read_multiple()"
 
@@ -15253,7 +15260,7 @@ msgid "Buy postage when you need it"
 msgstr "Kaufe Porto, wenn du es benötigst"
 
 #. translators: %s is a table name.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2124
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2111
 msgid "Could not persist order to database table \"%s\"."
 msgstr "Die Bestellung konnte nicht in die Datenbanktabelle „%s“ übernommen werden."
 
@@ -15293,7 +15300,7 @@ msgstr "Wähle einen Standardformularwert, falls eine bestimmte Variante bereits
 msgid "Batch %1$d (%2$d orders) completed in %3$d seconds"
 msgstr "Batch %1$d (%2$d Bestellungen) wurde in %3$d Sekunden abgeschlossen"
 
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2105
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2092
 msgid "Could not create order in posts table."
 msgstr "Die Bestellung konnte nicht in der Tabelle „posts“ erstellt werden."
 
@@ -15303,7 +15310,7 @@ msgstr "Versandoptionen überprüfen"
 
 #. translators: %s: Order date
 #: includes/class-wc-order-refund.php:85
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:402
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:401
 #: includes/data-stores/class-wc-order-refund-data-store-cpt.php:152
 #: src/Internal/DataStores/Orders/OrdersTableRefundDataStore.php:207
 msgctxt "Order date parsed by DateTime::format"
@@ -30546,6 +30553,10 @@ msgstr[1] "Bewertet mit %1$s von 5, basierend auf %2$s Kundenbewertungen"
 msgid "Subject (paid)"
 msgstr "Betreff (bezahlt)"
 
+#: includes/data-stores/class-wc-order-data-store-cpt.php:577
+msgid "Invalid customer query."
+msgstr "Ungültige Kundenabfrage."
+
 #. translators: %s: Available placeholders for use
 #. translators: %s: list of placeholders
 #: includes/admin/settings/class-wc-settings-emails.php:265
@@ -30563,10 +30574,6 @@ msgstr "Betreff (bezahlt)"
 #: src/Internal/StockNotifications/Emails/CustomerStockNotificationVerifyEmail.php:271
 msgid "Available placeholders: %s"
 msgstr "Verfügbare Platzhalter: %s"
-
-#: includes/data-stores/class-wc-order-data-store-cpt.php:577
-msgid "Invalid customer query."
-msgstr "Ungültige Kundenabfrage."
 
 #: includes/wc-product-functions.php:1016
 msgid "Shop only"
@@ -32759,6 +32766,12 @@ msgstr "Ergebnis auf Produkte mit einer bestimmten Steuerklasse einschränken."
 msgid "The date the image was created, as GMT."
 msgstr "Das Datum, an dem das Bild erstellt wurde, als GMT."
 
+#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1771
+#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1208
+#: src/Internal/RestApi/Routes/V4/Products/Controller.php:1285
+msgid "The date the product was last modified, as GMT."
+msgstr "Das Datum, an dem das Produkt zuletzt geändert wurde, als GMT."
+
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-categories-v2-controller.php:173
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:970
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2184
@@ -32768,12 +32781,6 @@ msgstr "Das Datum, an dem das Bild erstellt wurde, als GMT."
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1741
 msgid "The date the image was last modified, as GMT."
 msgstr "Das Datum, an dem das Bild zuletzt geändert wurde, als GMT."
-
-#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1771
-#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1208
-#: src/Internal/RestApi/Routes/V4/Products/Controller.php:1285
-msgid "The date the product was last modified, as GMT."
-msgstr "Das Datum, an dem das Produkt zuletzt geändert wurde, als GMT."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1759
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1197
@@ -34096,6 +34103,16 @@ msgstr "Name des Rezensenten."
 msgid "Unique identifier for the variation."
 msgstr "Eindeutige Kennung für die Variation."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:46
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:88
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-reviews-v2-controller.php:45
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:55
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:78
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:123
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:56
+msgid "Unique identifier for the variable product."
+msgstr "Eindeutige Kennung für das variable Produkt."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:47
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:79
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:115
@@ -34106,16 +34123,6 @@ msgstr "Eindeutige Kennung für das Attribut der Begriffe."
 #: src/Internal/RestApi/Routes/V4/Customers/Controller.php:125
 msgid "New user password."
 msgstr "Neues Benutzer-Passwort."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:46
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:88
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-reviews-v2-controller.php:45
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:55
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:78
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:123
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:56
-msgid "Unique identifier for the variable product."
-msgstr "Eindeutige Kennung für das variable Produkt."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:78
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:71
@@ -34875,11 +34882,6 @@ msgstr "Pauschale (veraltet)"
 msgid "This method is deprecated in 2.6.0 and will be removed in future versions - we recommend disabling it and instead setting up a new rate within your <a href=\"%s\">Shipping zones</a>."
 msgstr "Diese Versandart ist seit 2.6.0 veraltet und wird in zukünftigen Versionen nicht mehr angeboten. Wir empfehlen sie zu deaktivieren und stattdessen eine neue in deinen <a href=\"%s\">Versandzonen</a> anzulegen."
 
-#: includes/gateways/cheque/class-wc-gateway-cheque.php:159
-msgctxt "Check payment method"
-msgid "Awaiting check payment."
-msgstr "Scheckzahlung noch ausstehend."
-
 #: includes/shipping/flat-rate/class-wc-shipping-flat-rate.php:46
 msgid "Lets you charge a fixed rate for shipping."
 msgstr "Ermöglicht es dir, einen festen Preis für den Versand festzulegen."
@@ -34900,6 +34902,15 @@ msgstr "Bosnische konvertible Mark"
 msgid "Limit results to those matching a string."
 msgstr "Zeigt nur die Ergebnisse an, die zu einer Zeichenfolge passen."
 
+#: includes/shipping/free-shipping/class-wc-shipping-free-shipping.php:57
+msgid "Free shipping is a special method which can be triggered with coupons and minimum spends."
+msgstr "Kostenloser Versand ist eine spezielle Versandart, die durch Gutscheine und Mindestbestellwerte ausgelöst werden kann."
+
+#: includes/gateways/cheque/class-wc-gateway-cheque.php:159
+msgctxt "Check payment method"
+msgid "Awaiting check payment."
+msgstr "Scheckzahlung noch ausstehend."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:724
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:582
 #: src/Admin/API/Leaderboards.php:501 src/Admin/API/Notes.php:664
@@ -34909,11 +34920,7 @@ msgstr "Zeigt nur die Ergebnisse an, die zu einer Zeichenfolge passen."
 #: src/Internal/RestApi/Routes/V4/Orders/CollectionQuery.php:46
 #: src/Internal/RestApi/Routes/V4/Refunds/CollectionQuery.php:47
 msgid "Maximum number of items to be returned in result set."
-msgstr "Maximale Anzahl an Elementen, die im Ergebnissatz zurückgegeben werden."
-
-#: includes/shipping/free-shipping/class-wc-shipping-free-shipping.php:57
-msgid "Free shipping is a special method which can be triggered with coupons and minimum spends."
-msgstr "Kostenloser Versand ist eine spezielle Versandart, die durch Gutscheine und Mindestbestellwerte ausgelöst werden kann."
+msgstr "Maximale Anzahl der im Ergebnissatz zurückgegebenen Elemente."
 
 #: includes/class-wc-form-handler.php:668
 msgid "Undo?"
@@ -36202,10 +36209,6 @@ msgstr "Falls die Lagerverwaltung aktiviert ist, können damit Lieferrückständ
 msgid "Product parent ID."
 msgstr "Eltern-Produkt ID."
 
-#: src/Internal/RestApi/Routes/V4/Refunds/DataUtils.php:117
-msgid "Line item ID is required."
-msgstr "Posten-ID ist erforderlich."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:791
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1058
 #: includes/rest-api/Controllers/Version3/class-wc-rest-orders-controller.php:225
@@ -36574,6 +36577,22 @@ msgstr "Lege fest, ob die Bestellung bezahlt ist. Das setzt den Status auf „In
 msgid "Line subtotal tax (before discounts)."
 msgstr "Zwischensumme der Steuern (vor Preisnachlässen/Rabatten)."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:434
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1332
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1479
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1545
+#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:503
+#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:695
+#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:787
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1541
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1761
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1853
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderFeeSchema.php:62
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:101
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderShippingSchema.php:61
+msgid "Line total (after discounts)."
+msgstr "Gesamtsumme (nach Preisnachlässen/Rabatten)."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1605
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1940
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderCouponSchema.php:53
@@ -36591,22 +36610,6 @@ msgstr "Rabatt Gesamtsteuer."
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:182
 msgid "Total discount amount for the order."
 msgstr "Gesamtbetrag der Rabatte der Bestellung."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:434
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1332
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1479
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1545
-#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:503
-#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:695
-#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:787
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1541
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1761
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1853
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderFeeSchema.php:62
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:101
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderShippingSchema.php:61
-msgid "Line total (after discounts)."
-msgstr "Gesamtsumme (nach Preisnachlässen/Rabatten)."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:440
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1337
@@ -36787,6 +36790,10 @@ msgstr "Beschränkt die Ergebnismenge auf Produkte mit einem bestimmten Attribut
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:90
 msgid "Line subtotal (before discounts)."
 msgstr "Zwischensumme (vor Rabatten)."
+
+#: src/Internal/RestApi/Routes/V4/Refunds/DataUtils.php:117
+msgid "Line item ID is required."
+msgstr "Posten-ID ist erforderlich."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:380
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1283
@@ -37220,14 +37227,6 @@ msgstr "Ungültige Ressource ID für Neuzuordnung."
 msgid "Cannot create order refund, please try again."
 msgstr "Die Erstattung für die Bestellung konnte nicht erstellt werden, bitte versuche es nochmal."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customer-downloads-v1-controller.php:201
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:999
-#: includes/rest-api/Controllers/Version2/class-wc-rest-customer-downloads-v2-controller.php:117
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1171
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:117
-msgid "Order key."
-msgstr "Schlüssel der Bestellung."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:374
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1277
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1411
@@ -37250,6 +37249,14 @@ msgstr "Schlüssel der Bestellung."
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderTaxSchema.php:40
 msgid "Item ID."
 msgstr "Bestellpositions-ID."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customer-downloads-v1-controller.php:201
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:999
+#: includes/rest-api/Controllers/Version2/class-wc-rest-customer-downloads-v2-controller.php:117
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1171
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:117
+msgid "Order key."
+msgstr "Schlüssel der Bestellung."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:110
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:107
@@ -37498,10 +37505,6 @@ msgstr "Bestellhinweis."
 msgid "The date the order note was created, in the site's timezone."
 msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde (in der Zeitzone der Website)."
 
-#: includes/class-wc-rest-authentication.php:517
-msgid "Invalid nonce - nonce has already been used."
-msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:186
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:226
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:268
@@ -37520,6 +37523,10 @@ msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
 #: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:171
 msgid "Invalid order ID."
 msgstr "Ungültige Bestell-ID."
+
+#: includes/class-wc-rest-authentication.php:517
+msgid "Invalid nonce - nonce has already been used."
+msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:788
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:214
@@ -37903,18 +37910,6 @@ msgstr "Erfahre mehr über Gutscheine"
 msgid "List of created resources."
 msgstr "Liste aller erstellen Ressourcen."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:999
-#: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:733
-#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:744
-#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:645
-#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:654
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:988
-#: src/Admin/API/Reports/Stock/Controller.php:441
-#: src/StoreApi/Routes/V1/ProductReviews.php:197
-#: src/StoreApi/Routes/V1/Products.php:216
-msgid "Offset the result set by a specific number of items."
-msgstr "Versieht die Ergebnismenge mit einem Offset."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1014
 #: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:748
 #: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:757
@@ -38150,6 +38145,20 @@ msgstr "Scheckzahlungen"
 msgid "Sorry, you are not allowed to delete %s."
 msgstr "Entschuldigung, du hast nicht die Berechtigung %s zu löschen."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:197
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:116
+msgid "Sorry, you cannot update resource."
+msgstr "Entschuldigung, du kannst die Ressource nicht aktualisieren."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:161
+msgid "Sorry, you cannot create new resource."
+msgstr "Entschuldigung, du kannst keine neue Ressource erstellen."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:205
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:210
+msgid "Sorry, you cannot delete this resource."
+msgstr "Entschuldigung, du kannst diese Ressource nicht löschen."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:188
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:152
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:931
@@ -38212,20 +38221,6 @@ msgstr "Entschuldigung, du hast nicht die Berechtigung diese Ressource zu lösch
 #: includes/rest-api/Controllers/Version3/class-wc-rest-terms-controller.php:237
 msgid "Sorry, you are not allowed to batch manipulate this resource."
 msgstr "Entschuldigung, du hast nicht die Berechtigung diese Ressource zu manipulieren. "
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:197
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:116
-msgid "Sorry, you cannot update resource."
-msgstr "Entschuldigung, du kannst die Ressource nicht aktualisieren."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:161
-msgid "Sorry, you cannot create new resource."
-msgstr "Entschuldigung, du kannst keine neue Ressource erstellen."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:205
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:210
-msgid "Sorry, you cannot delete this resource."
-msgstr "Entschuldigung, du kannst diese Ressource nicht löschen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customer-downloads-v1-controller.php:76
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:137
@@ -38347,6 +38342,18 @@ msgstr "Hilfe und Support"
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1646
 msgid "Invalid post ID."
 msgstr "Die Beitrags-ID ist ungültig."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:999
+#: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:733
+#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:744
+#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:645
+#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:654
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:988
+#: src/Admin/API/Reports/Stock/Controller.php:441
+#: src/StoreApi/Routes/V1/ProductReviews.php:197
+#: src/StoreApi/Routes/V1/Products.php:216
+msgid "Offset the result set by a specific number of items."
+msgstr "Verschiebt den Ergebnissatz um eine bestimmte Elementanzahl."
 
 #: i18n/continents.php:15
 msgid "Africa"
@@ -39050,7 +39057,7 @@ msgid "[Remove]"
 msgstr "[Entfernen]"
 
 #. translators: %s: Order date
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:402
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:401
 msgid "Order &ndash; %s"
 msgstr "Bestellung &ndash; %s"
 
@@ -40233,10 +40240,6 @@ msgstr "Unsere Bankverbindung"
 msgid "BIC"
 msgstr "BIC"
 
-#: includes/gateways/bacs/class-wc-gateway-bacs.php:408
-msgid "Awaiting BACS payment."
-msgstr "Warten auf Zahlungsüberweisung."
-
 #: includes/gateways/bacs/class-wc-gateway-bacs.php:438
 #: assets/client/admin/chunks/settings-payments-bacs.js:1
 msgid "BSB"
@@ -40907,6 +40910,10 @@ msgstr "Protokollierung aktivieren"
 msgid "Plain text"
 msgstr "Reiner Text"
 
+#: includes/gateways/bacs/class-wc-gateway-bacs.php:408
+msgid "Awaiting BACS payment."
+msgstr "Warten auf Zahlungsüberweisung."
+
 #: includes/class-wc-ajax.php:298
 msgid "Sorry there was a problem removing this coupon."
 msgstr "Leider gab es ein Problem beim Löschen dieses Gutscheins."
@@ -41167,7 +41174,7 @@ msgstr "Ungültiger Download-Link."
 
 #: includes/class-wc-download-handler.php:164
 #: includes/class-wc-form-handler.php:805
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:150
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:149
 #: includes/shortcodes/class-wc-shortcode-checkout.php:253
 #: includes/shortcodes/class-wc-shortcode-my-account.php:140
 #: includes/wc-order-functions.php:767
@@ -44697,7 +44704,6 @@ msgstr "Rezensionen aktivieren"
 #: assets/client/admin/components/index.js:2
 #: assets/client/admin/email-editor/index.js:2
 #: assets/client/admin/onboarding/index.js:1
-#: assets/client/admin/product-editor/index.js:2
 #: assets/client/admin/wp-admin-scripts/email-editor-integration.js:2
 #: assets/client/admin/wp-admin-scripts/settings-embed.js:2
 #: assets/client/blocks/all-products.js:13

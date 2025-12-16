@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 6.9.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-11-13 00:57:08+0000\n"
+"PO-Revision-Date: 2025-12-15 12:18:56+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -286,10 +286,85 @@ msgstr "January"
 msgid "Uncategorized"
 msgstr "Uncategorised"
 
+#: wp-includes/blocks/terms-query/block.json
+msgctxt "block keyword"
+msgid "tags"
+msgstr "tags"
+
+#: wp-includes/blocks/terms-query/block.json
+msgctxt "block keyword"
+msgid "taxonomy"
+msgstr "taxonomy"
+
+#: wp-includes/blocks/terms-query/block.json
+msgctxt "block keyword"
+msgid "terms"
+msgstr "terms"
+
+#: wp-includes/blocks/terms-query/block.json
+msgctxt "block description"
+msgid "An advanced block that allows displaying taxonomy terms based on different query parameters and visual configurations."
+msgstr "An advanced block that allows displaying taxonomy terms based on different query parameters and visual configurations."
+
+#: wp-includes/blocks/terms-query/block.json
+msgctxt "block title"
+msgid "Terms Query"
+msgstr "Terms Query"
+
+#: wp-includes/blocks/term-template/block.json
+msgctxt "block description"
+msgid "Contains the block elements used to render a taxonomy term, like the name, description, and more."
+msgstr "Contains the block elements used to render a taxonomy term, like the name, description, and more."
+
+#: wp-includes/blocks/term-template/block.json
+msgctxt "block title"
+msgid "Term Template"
+msgstr "Term Template"
+
+#: wp-includes/blocks/term-name/block.json
+msgctxt "block keyword"
+msgid "term title"
+msgstr "term title"
+
+#: wp-includes/blocks/term-name/block.json
+msgctxt "block description"
+msgid "Displays the name of a taxonomy term."
+msgstr "Displays the name of a taxonomy term."
+
+#: wp-includes/blocks/term-name/block.json
+msgctxt "block title"
+msgid "Term Name"
+msgstr "Term Name"
+
+#: wp-includes/blocks/term-count/block.json
+msgctxt "block description"
+msgid "Displays the post count of a taxonomy term."
+msgstr "Displays the post count of a taxonomy term."
+
+#: wp-includes/blocks/term-count/block.json
+msgctxt "block title"
+msgid "Term Count"
+msgstr "Term Count"
+
+#: wp-includes/blocks/site-tagline/block.json
+msgctxt "block description"
+msgid "Describe in a few words what this site is about. This is important for search results, sharing on social media, and gives overall clarity to visitors."
+msgstr "Describe in a few words what this site is about. This is important for search results, sharing on social media, and gives overall clarity to visitors."
+
+#: wp-includes/blocks/post-time-to-read/block.json
+msgctxt "block description"
+msgid "Show minutes required to finish reading the post. Can also show a word count."
+msgstr "Show minutes required to finish reading the post. Can also show a word count."
+
 #: wp-includes/blocks/post-time-to-read/block.json
 msgctxt "block title"
 msgid "Time to Read"
 msgstr "Time to Read"
+
+#: wp-includes/blocks/post-date/block.json
+msgctxt "block description"
+msgid "Display a custom date."
+msgstr "Display a custom date."
 
 #: wp-includes/blocks/post-comments-link/block.json
 msgctxt "block description"
@@ -311,6 +386,637 @@ msgctxt "block title"
 msgid "Comments Count"
 msgstr "Comments Count"
 
+#: wp-includes/blocks/math/block.json
+msgctxt "block keyword"
+msgid "mathematics"
+msgstr "mathematics"
+
+#: wp-includes/blocks/math/block.json
+msgctxt "block keyword"
+msgid "latex"
+msgstr "latex"
+
+#: wp-includes/blocks/math/block.json
+msgctxt "block keyword"
+msgid "formula"
+msgstr "formula"
+
+#: wp-includes/blocks/math/block.json
+msgctxt "block keyword"
+msgid "equation"
+msgstr "equation"
+
+#: wp-includes/blocks/math/block.json
+msgctxt "block description"
+msgid "Display mathematical notation using LaTeX."
+msgstr "Display mathematical notation using LaTeX."
+
+#: wp-includes/blocks/math/block.json
+msgctxt "block title"
+msgid "Math"
+msgstr "Math"
+
+#: wp-includes/blocks/accordion/block.json
+msgctxt "block description"
+msgid "Displays a foldable layout that groups content in collapsible sections."
+msgstr "Displays a foldable layout that groups content in collapsible sections."
+
+#: wp-includes/blocks/accordion/block.json
+msgctxt "block title"
+msgid "Accordion"
+msgstr "Accordion"
+
+#: wp-includes/blocks/accordion-panel/block.json
+msgctxt "block description"
+msgid "Contains the hidden or revealed content beneath the heading."
+msgstr "Contains the hidden or revealed content beneath the heading."
+
+#: wp-includes/blocks/accordion-panel/block.json
+msgctxt "block title"
+msgid "Accordion Panel"
+msgstr "Accordion Panel"
+
+#: wp-includes/blocks/accordion-item/block.json
+msgctxt "block description"
+msgid "Wraps the heading and panel in one unit."
+msgstr "Wraps the heading and panel in one unit."
+
+#: wp-includes/blocks/accordion-item/block.json
+msgctxt "block title"
+msgid "Accordion Item"
+msgstr "Accordion Item"
+
+#: wp-includes/blocks/accordion-heading/block.json
+msgctxt "block description"
+msgid "Displays a heading that toggles the accordion panel."
+msgstr "Displays a heading that toggles the accordion panel."
+
+#: wp-includes/blocks/accordion-heading/block.json
+msgctxt "block title"
+msgid "Accordion Heading"
+msgstr "Accordion Heading"
+
+#: wp-includes/js/dist/editor.js:6946
+#: wp-admin/includes/class-wp-posts-list-table.php:1934
+#: wp-admin/includes/class-wp-posts-list-table.php:1947
+msgid "Allow"
+msgstr "Allow"
+
+#: wp-includes/js/dist/components.js:73641 wp-admin/options-permalink.php:408
+msgid "Optional"
+msgstr "Optional"
+
+#: wp-includes/js/dist/block-editor.js:51903
+#: wp-admin/includes/class-wp-links-list-table.php:139
+#: wp-admin/includes/class-wp-links-list-table.php:151
+msgid "Visible"
+msgstr "Visible"
+
+#: wp-includes/user.php:2310
+msgid "Cannot create a user with an empty nicename."
+msgstr "Cannot create a user with an empty nicename."
+
+#: wp-includes/user.php:2235
+msgid "The user_pass field is required when creating a new user. The user will need to reset their password before logging in."
+msgstr "The user_pass field is required when creating a new user. The user will need to reset their password before logging in."
+
+#. translators: %s is the throwable class name
+#. translators: %s is the class name
+#: wp-includes/template.php:1026 wp-includes/template.php:1065
+msgid "Uncaught \"%s\" thrown:"
+msgstr "Uncaught \"%s\" thrown:"
+
+#: wp-includes/template.php:975
+msgid "User error triggered:"
+msgstr "User error triggered:"
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:153
+#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:594
+msgid "Sorry, this post type does not support notes."
+msgstr "Sorry, this post type does not support notes."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1592
+msgid "Whether to flip in the vertical direction."
+msgstr "Whether to flip in the vertical direction."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1588
+msgid "Whether to flip in the horizontal direction."
+msgstr "Whether to flip in the horizontal direction."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1580
+msgid "Flip direction."
+msgstr "Flip direction."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1573
+msgid "Flip arguments."
+msgstr "Flip arguments."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1568
+msgid "Flip type."
+msgstr "Flip type."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1565
+msgid "Flip"
+msgstr "Flip"
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1379
+msgid "Limit result set to attachments of a particular MIME type or MIME types."
+msgstr "Limit result set to attachments of a particular MIME type or MIME types."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1369
+msgid "Limit result set to attachments of a particular media type or media types."
+msgstr "Limit result set to attachments of a particular media type or media types."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:677
+msgid "Unable to flip this image."
+msgstr "Unable to flip this image."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:236
+msgid "The result of the ability execution."
+msgstr "The result of the ability execution."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:215
+msgid "Input parameters for the ability execution."
+msgstr "Input parameters for the ability execution."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:177
+msgid "Sorry, you are not allowed to execute this ability."
+msgstr "Sorry, you are not allowed to execute this ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:126
+msgid "Abilities that perform destructive actions require DELETE method."
+msgstr "Abilities that perform destructive actions require DELETE method."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:124
+msgid "Read-only abilities require GET method."
+msgstr "Read-only abilities require GET method."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:122
+msgid "Abilities that perform updates require POST method."
+msgstr "Abilities that perform updates require POST method."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:357
+msgid "Limit results to abilities in specific ability category."
+msgstr "Limit results to abilities in specific ability category."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:319
+msgid "Annotations for the ability."
+msgstr "Annotations for the ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:315
+msgid "Meta information about the ability."
+msgstr "Meta information about the ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:309
+msgid "JSON Schema for the ability output."
+msgstr "JSON Schema for the ability output."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:303
+msgid "JSON Schema for the ability input."
+msgstr "JSON Schema for the ability input."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:297
+msgid "Ability category this ability belongs to."
+msgstr "Ability category this ability belongs to."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:291
+msgid "Description of the ability."
+msgstr "Description of the ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:285
+msgid "Display label for the ability."
+msgstr "Display label for the ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:164
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:87
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:148
+msgid "Ability not found."
+msgstr "Ability not found."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:65
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:279
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:51
+msgid "Unique identifier for the ability."
+msgstr "Unique identifier for the ability."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:257
+msgid "Meta information about the category."
+msgstr "Meta information about the category."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:251
+msgid "Description of the category."
+msgstr "Description of the category."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:245
+msgid "Display label for the category."
+msgstr "Display label for the category."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:149
+msgid "Ability category not found."
+msgstr "Ability category not found."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:65
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:239
+msgid "Unique identifier for the ability category."
+msgstr "Unique identifier for the ability category."
+
+#: wp-includes/post.php:3779
+msgid "The post ID must be greater than 0."
+msgstr "The post ID must be greater than 0."
+
+#. translators: Note notification email subject. 1: Site title, 2: Post title.
+#: wp-includes/pluggable.php:1910
+msgid "[%1$s] Note: \"%2$s\""
+msgstr "[%1$s] Note: \"%2$s\""
+
+#. translators: %s: Note text.
+#: wp-includes/pluggable.php:1907
+msgid "resolved/reopened"
+msgstr "resolved/reopened"
+
+#. translators: %s: Note text.
+#. translators: %s: note excerpt
+#: wp-includes/pluggable.php:1907 wp-includes/js/dist/editor.js:29352
+msgid "Note: %s"
+msgstr "Note: %s"
+
+#. translators: %s: Post title.
+#: wp-includes/pluggable.php:1901
+msgid "New note on your post \"%s\""
+msgstr "New note on your post \"%s\""
+
+#: wp-includes/ms-functions.php:573
+msgid "That email address is pending activation and is not available for new registration. If you made a previous attempt with this email address, please check your inbox for an activation email. If left unconfirmed, it will become available in a couple of days."
+msgstr "That email address is pending activation and is not available for new registration. If you made a previous attempt with this email address, please check your inbox for an activation email. If left unconfirmed, it will become available in a couple of days."
+
+#: wp-includes/html-api/class-wp-html-processor.php:303
+#: wp-includes/html-api/class-wp-html-processor.php:354
+#: wp-includes/html-api/class-wp-html-tag-processor.php:840
+msgid "The HTML parameter must be a string."
+msgstr "The HTML parameter must be a string."
+
+#: wp-includes/comment.php:4178
+msgid "Note resolution status"
+msgstr "Note resolution status"
+
+#: wp-includes/class-wpdb.php:2299
+msgid "Unable to retrieve the error message from the database server"
+msgstr "Unable to retrieve the error message from the database server"
+
+#. translators: 1: $fetchpriority, 2: $handle
+#: wp-includes/class-wp-scripts.php:900
+msgid "Cannot supply a fetchpriority `%1$s` for script `%2$s` because it is an alias (it lacks a `src` value)."
+msgstr "Cannot supply a fetchpriority `%1$s` for script `%2$s` because it is an alias (it lacks a `src` value)."
+
+#. translators: %s: Invalid fetchpriority.
+#: wp-includes/class-wp-script-modules.php:214
+msgid "Invalid fetchpriority: %s"
+msgstr "Invalid fetchpriority: %s"
+
+#. translators: 1: $fetchpriority, 2: $id
+#. translators: 1: $fetchpriority, 2: $handle
+#: wp-includes/class-wp-script-modules.php:150
+#: wp-includes/class-wp-scripts.php:888
+msgid "Invalid fetchpriority `%1$s` defined for `%2$s` during script registration."
+msgstr "Invalid fetchpriority `%1$s` defined for `%2$s` during script registration."
+
+#: wp-includes/class-wp-script-modules.php:113
+#: wp-includes/class-wp-script-modules.php:285
+msgid "Non-empty string required for id."
+msgstr "Non-empty string required for id."
+
+#. translators: %s: $useimap
+#: wp-includes/class-wp-phpmailer.php:92
+msgid "Argument %s is deprecated"
+msgstr "Argument %s is deprecated"
+
+#: wp-includes/class-wp-phpmailer.php:90
+msgid "Using simplified address parser is not recommended. Install the PHP IMAP extension for full RFC822 parsing."
+msgstr "Using simplified address parser is not recommended. Install the PHP IMAP extension for full RFC822 parsing."
+
+#: wp-includes/class-wp-phpmailer.php:89
+msgid "Server does not support SMTPUTF8 needed to send to Unicode addresses"
+msgstr "Server does not support SMTPUTF8 needed to send to Unicode addresses"
+
+#: wp-includes/class-wp-dependencies.php:296
+msgid "IE conditional comments are ignored by all supported browsers."
+msgstr "IE conditional comments are ignored by all supported browsers."
+
+#: wp-includes/blocks/social-link.php:333
+#: wp-includes/js/dist/block-library.js:49286
+msgctxt "social link block variation name"
+msgid "YouTube"
+msgstr "YouTube"
+
+#: wp-includes/blocks/social-link.php:329
+#: wp-includes/js/dist/block-library.js:49280
+msgctxt "social link block variation name"
+msgid "Yelp"
+msgstr "Yelp"
+
+#: wp-includes/blocks/social-link.php:325
+#: wp-includes/js/dist/block-library.js:49274
+msgctxt "social link block variation name"
+msgid "X"
+msgstr "X"
+
+#: wp-includes/blocks/social-link.php:321
+#: wp-includes/js/dist/block-library.js:49267
+msgctxt "social link block variation name"
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: wp-includes/blocks/social-link.php:317
+#: wp-includes/js/dist/block-library.js:49000
+msgctxt "social link block variation name"
+msgid "WordPress"
+msgstr "WordPress"
+
+#: wp-includes/blocks/social-link.php:313
+#: wp-includes/js/dist/block-library.js:49261
+msgctxt "social link block variation name"
+msgid "VK"
+msgstr "VK"
+
+#: wp-includes/blocks/social-link.php:309
+#: wp-includes/js/dist/block-library.js:49255
+msgctxt "social link block variation name"
+msgid "Vimeo"
+msgstr "Vimeo"
+
+#: wp-includes/blocks/social-link.php:305
+#: wp-includes/js/dist/block-library.js:49249
+msgctxt "social link block variation name"
+msgid "Twitter"
+msgstr "Twitter"
+
+#: wp-includes/blocks/social-link.php:301
+#: wp-includes/js/dist/block-library.js:49243
+msgctxt "social link block variation name"
+msgid "Twitch"
+msgstr "Twitch"
+
+#: wp-includes/blocks/social-link.php:297
+#: wp-includes/js/dist/block-library.js:49237
+msgctxt "social link block variation name"
+msgid "Tumblr"
+msgstr "Tumblr"
+
+#: wp-includes/blocks/social-link.php:293
+#: wp-includes/js/dist/block-library.js:49231
+msgctxt "social link block variation name"
+msgid "TikTok"
+msgstr "TikTok"
+
+#: wp-includes/blocks/social-link.php:289
+#: wp-includes/js/dist/block-library.js:49225
+msgctxt "social link block variation name"
+msgid "Threads"
+msgstr "Threads"
+
+#: wp-includes/blocks/social-link.php:285
+#: wp-includes/js/dist/block-library.js:49219
+msgctxt "social link block variation name"
+msgid "Telegram"
+msgstr "Telegram"
+
+#: wp-includes/blocks/social-link.php:281
+#: wp-includes/js/dist/block-library.js:49213
+msgctxt "social link block variation name"
+msgid "Spotify"
+msgstr "Spotify"
+
+#: wp-includes/blocks/social-link.php:277
+#: wp-includes/js/dist/block-library.js:49207
+msgctxt "social link block variation name"
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: wp-includes/blocks/social-link.php:273
+#: wp-includes/js/dist/block-library.js:49201
+msgctxt "social link block variation name"
+msgid "Snapchat"
+msgstr "Snapchat"
+
+#: wp-includes/blocks/social-link.php:269
+#: wp-includes/js/dist/block-library.js:49193
+msgctxt "social link block variation name"
+msgid "Skype"
+msgstr "Skype"
+
+#: wp-includes/blocks/social-link.php:265
+msgctxt "social link block variation name"
+msgid "Share Icon"
+msgstr "Share Icon"
+
+#: wp-includes/blocks/social-link.php:261
+#: wp-includes/js/dist/block-library.js:49187
+msgctxt "social link block variation name"
+msgid "Reddit"
+msgstr "Reddit"
+
+#: wp-includes/blocks/social-link.php:257
+#: wp-includes/js/dist/block-library.js:49181
+msgctxt "social link block variation name"
+msgid "Pocket"
+msgstr "Pocket"
+
+#: wp-includes/blocks/social-link.php:253
+#: wp-includes/js/dist/block-library.js:49175
+msgctxt "social link block variation name"
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: wp-includes/blocks/social-link.php:249
+#: wp-includes/js/dist/block-library.js:49169
+msgctxt "social link block variation name"
+msgid "Patreon"
+msgstr "Patreon"
+
+#: wp-includes/blocks/social-link.php:245
+#: wp-includes/js/dist/block-library.js:49163
+msgctxt "social link block variation name"
+msgid "Medium"
+msgstr "Medium"
+
+#: wp-includes/blocks/social-link.php:241
+#: wp-includes/js/dist/block-library.js:49157
+msgctxt "social link block variation name"
+msgid "Meetup"
+msgstr "Meetup"
+
+#: wp-includes/blocks/social-link.php:237
+#: wp-includes/js/dist/block-library.js:49151
+msgctxt "social link block variation name"
+msgid "Mastodon"
+msgstr "Mastodon"
+
+#: wp-includes/blocks/social-link.php:233
+#: wp-includes/js/dist/block-library.js:49144
+msgctxt "social link block variation name"
+msgid "Mail"
+msgstr "Mail"
+
+#: wp-includes/blocks/social-link.php:229
+#: wp-includes/js/dist/block-library.js:49138
+msgctxt "social link block variation name"
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: wp-includes/blocks/social-link.php:225
+#: wp-includes/js/dist/block-library.js:49132
+msgctxt "social link block variation name"
+msgid "Last.fm"
+msgstr "Last.fm"
+
+#: wp-includes/blocks/social-link.php:221
+#: wp-includes/js/dist/block-library.js:49126
+msgctxt "social link block variation name"
+msgid "Instagram"
+msgstr "Instagram"
+
+#: wp-includes/blocks/social-link.php:217
+#: wp-includes/js/dist/block-library.js:49120
+msgctxt "social link block variation name"
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: wp-includes/blocks/social-link.php:213
+#: wp-includes/js/dist/block-library.js:49114
+msgctxt "social link block variation name"
+msgid "GitHub"
+msgstr "GitHub"
+
+#: wp-includes/blocks/social-link.php:209
+#: wp-includes/js/dist/block-library.js:49108
+msgctxt "social link block variation name"
+msgid "Google"
+msgstr "Google"
+
+#: wp-includes/blocks/social-link.php:205
+#: wp-includes/js/dist/block-library.js:49102
+msgctxt "social link block variation name"
+msgid "Goodreads"
+msgstr "Goodreads"
+
+#: wp-includes/blocks/social-link.php:201
+#: wp-includes/js/dist/block-library.js:49096
+msgctxt "social link block variation name"
+msgid "Foursquare"
+msgstr "Foursquare"
+
+#: wp-includes/blocks/social-link.php:197
+#: wp-includes/js/dist/block-library.js:49090
+msgctxt "social link block variation name"
+msgid "Flickr"
+msgstr "Flickr"
+
+#: wp-includes/blocks/social-link.php:193
+#: wp-includes/js/dist/block-library.js:49084
+msgctxt "social link block variation name"
+msgid "RSS Feed"
+msgstr "RSS Feed"
+
+#: wp-includes/blocks/social-link.php:189
+#: wp-includes/js/dist/block-library.js:49078
+msgctxt "social link block variation name"
+msgid "Facebook"
+msgstr "Facebook"
+
+#: wp-includes/blocks/social-link.php:185
+#: wp-includes/js/dist/block-library.js:49072
+msgctxt "social link block variation name"
+msgid "Etsy"
+msgstr "Etsy"
+
+#: wp-includes/blocks/social-link.php:181
+#: wp-includes/js/dist/block-library.js:49066
+msgctxt "social link block variation name"
+msgid "Dropbox"
+msgstr "Dropbox"
+
+#: wp-includes/blocks/social-link.php:177
+#: wp-includes/js/dist/block-library.js:49060
+msgctxt "social link block variation name"
+msgid "Dribbble"
+msgstr "Dribbble"
+
+#: wp-includes/blocks/social-link.php:173
+#: wp-includes/js/dist/block-library.js:49054
+msgctxt "social link block variation name"
+msgid "Discord"
+msgstr "Discord"
+
+#: wp-includes/blocks/social-link.php:169
+#: wp-includes/js/dist/block-library.js:49048
+msgctxt "social link block variation name"
+msgid "DeviantArt"
+msgstr "DeviantArt"
+
+#: wp-includes/blocks/social-link.php:165
+#: wp-includes/js/dist/block-library.js:49042
+msgctxt "social link block variation name"
+msgid "CodePen"
+msgstr "CodePen"
+
+#: wp-includes/blocks/social-link.php:161
+#: wp-includes/js/dist/block-library.js:49036
+msgctxt "social link block variation name"
+msgid "Link"
+msgstr "Link"
+
+#: wp-includes/blocks/social-link.php:157
+#: wp-includes/js/dist/block-library.js:49030
+msgctxt "social link block variation name"
+msgid "Bluesky"
+msgstr "Bluesky"
+
+#: wp-includes/blocks/social-link.php:153
+#: wp-includes/js/dist/block-library.js:49024
+msgctxt "social link block variation name"
+msgid "Behance"
+msgstr "Behance"
+
+#: wp-includes/blocks/social-link.php:149
+#: wp-includes/js/dist/block-library.js:49018
+msgctxt "social link block variation name"
+msgid "Bandcamp"
+msgstr "Bandcamp"
+
+#: wp-includes/blocks/social-link.php:145
+#: wp-includes/js/dist/block-library.js:49012
+msgctxt "social link block variation name"
+msgid "Amazon"
+msgstr "Amazon"
+
+#: wp-includes/blocks/social-link.php:141
+#: wp-includes/js/dist/block-library.js:49006
+msgctxt "social link block variation name"
+msgid "500px"
+msgstr "500px"
+
+#. translators: %s is the post type name.
+#. translators: %s: Singular post type name of the queried object
+#: wp-includes/blocks/query-title.php:69
+#: wp-includes/js/dist/block-library.js:44916
+msgid "Post Type: \"%s\""
+msgstr "Post Type: \"%s\""
+
+#. translators: %s: the number of characters in the post.
+#: wp-includes/blocks/post-time-to-read.php:151
+#: wp-includes/js/dist/block-library.js:40444
+msgid "%s character"
+msgid_plural "%s characters"
+msgstr[0] "%s character"
+msgstr[1] "%s characters"
+
+#. translators: 1: minimum minutes, 2: maximum minutes to read the post.
+#: wp-includes/blocks/post-time-to-read.php:128
+#: wp-includes/js/dist/block-library.js:40421
+msgctxt "Range of minutes to read"
+msgid "%1$s–%2$s minutes"
+msgstr "%1$s–%2$s minutes"
+
 #. translators: 1: Number of comments, 2: post title
 #: wp-includes/blocks/post-comments-link.php:49
 msgid "%1$s comment<span class=\"screen-reader-text\"> on %2$s</span>"
@@ -322,6 +1028,275 @@ msgstr[1] "%1$s comments<span class=\"screen-reader-text\"> on %2$s</span>"
 #: wp-includes/blocks/post-comments-link.php:43
 msgid "No comments<span class=\"screen-reader-text\"> on %s</span>"
 msgstr "No comments<span class=\"screen-reader-text\"> on %s</span>"
+
+#: wp-includes/block-bindings/term-data.php:112
+msgctxt "block bindings source"
+msgid "Term Data"
+msgstr "Term Data"
+
+#: wp-includes/block-bindings/post-data.php:91
+msgctxt "block bindings source"
+msgid "Post Data"
+msgstr "Post Data"
+
+#: wp-includes/abilities.php:226
+msgid "The WordPress core version running on this site."
+msgstr "The WordPress core version running on this site."
+
+#: wp-includes/abilities.php:222
+msgid "The database server vendor and version string reported by the driver."
+msgstr "The database server vendor and version string reported by the driver."
+
+#: wp-includes/abilities.php:218
+msgid "The PHP runtime version executing WordPress."
+msgstr "The PHP runtime version executing WordPress."
+
+#: wp-includes/abilities.php:213
+msgid "The site's runtime environment classification (can be one of these: production, staging, development, local)."
+msgstr "The site's runtime environment classification (can be one of these: production, staging, development, local)."
+
+#: wp-includes/abilities.php:205
+msgid "Returns core details about the site's runtime context for diagnostics and compatibility (environment, PHP runtime, database server info, WordPress version)."
+msgstr "Returns core details about the site's runtime context for diagnostics and compatibility (environment, PHP runtime, database server info, WordPress version)."
+
+#: wp-includes/abilities.php:204
+msgid "Get Environment Info"
+msgstr "Get Environment Info"
+
+#: wp-includes/abilities.php:170
+msgid "The locale string for the user, such as en_US."
+msgstr "The locale string for the user, such as en_US."
+
+#: wp-includes/abilities.php:163
+msgid "The roles assigned to the user."
+msgstr "The roles assigned to the user."
+
+#: wp-includes/abilities.php:159
+msgid "The login username for the user."
+msgstr "The log-in username for the user."
+
+#: wp-includes/abilities.php:155
+msgid "The URL-friendly name for the user."
+msgstr "The URL-friendly name for the user."
+
+#: wp-includes/abilities.php:151
+msgid "The display name of the user."
+msgstr "The display name of the user."
+
+#: wp-includes/abilities.php:147
+msgid "The user ID."
+msgstr "The user ID."
+
+#: wp-includes/abilities.php:139
+msgid "Returns basic profile details for the current authenticated user to support personalization, auditing, and access-aware behavior."
+msgstr "Returns basic profile details for the current authenticated user to support personalisation, auditing, and access-aware behaviour."
+
+#: wp-includes/abilities.php:138
+msgid "Get User Information"
+msgstr "Get User Information"
+
+#: wp-includes/abilities.php:99
+msgid "Optional: Limit response to specific fields. If omitted, all fields are returned."
+msgstr "Optional: Limit response to specific fields. If omitted, all fields are returned."
+
+#: wp-includes/abilities.php:88
+msgid "Returns site information configured in WordPress. By default returns all fields, or optionally a filtered subset."
+msgstr "Returns site information configured in WordPress. By default returns all fields, or optionally a filtered subset."
+
+#: wp-includes/abilities.php:87
+msgid "Get Site Information"
+msgstr "Get Site Information"
+
+#: wp-includes/abilities.php:79
+msgid "The WordPress version."
+msgstr "The WordPress version."
+
+#: wp-includes/abilities.php:75
+msgid "The site language locale code."
+msgstr "The site language locale code."
+
+#: wp-includes/abilities.php:71
+msgid "The site character encoding."
+msgstr "The site character encoding."
+
+#: wp-includes/abilities.php:67
+msgid "The site administrator email address."
+msgstr "The site administrator email address."
+
+#: wp-includes/abilities.php:63
+msgid "The WordPress installation URL."
+msgstr "The WordPress installation URL."
+
+#: wp-includes/abilities.php:59
+msgid "The site home URL."
+msgstr "The site home URL."
+
+#: wp-includes/abilities.php:55
+msgid "The site tagline."
+msgstr "The site tagline."
+
+#: wp-includes/abilities.php:51
+msgid "The site title."
+msgstr "The site title."
+
+#: wp-includes/abilities.php:32
+msgid "Abilities that retrieve or modify user information and settings."
+msgstr "Abilities that retrieve or modify user information and settings."
+
+#: wp-includes/abilities.php:24
+msgid "Abilities that retrieve or modify site information and settings."
+msgstr "Abilities that retrieve or modify site information and settings."
+
+#. translators: %s ability name.
+#: wp-includes/abilities-api/class-wp-ability.php:619
+msgid "Ability \"%s\" does not have necessary permission."
+msgstr "Ability \"%s\" does not have necessary permission."
+
+#. translators: %1$s ability name, %2$s error message.
+#: wp-includes/abilities-api/class-wp-ability.php:579
+msgid "Ability \"%1$s\" has invalid output. Reason: %2$s"
+msgstr "Ability \"%1$s\" has invalid output. Reason: %2$s"
+
+#. translators: %s ability name.
+#: wp-includes/abilities-api/class-wp-ability.php:552
+msgid "Ability \"%s\" does not have a valid execute callback."
+msgstr "Ability \"%s\" does not have a valid execute callback."
+
+#. translators: %s ability name.
+#: wp-includes/abilities-api/class-wp-ability.php:532
+msgid "Ability \"%s\" does not have a valid permission callback."
+msgstr "Ability \"%s\" does not have a valid permission callback."
+
+#. translators: %1$s ability name, %2$s error message.
+#: wp-includes/abilities-api/class-wp-ability.php:486
+msgid "Ability \"%1$s\" has invalid input. Reason: %2$s"
+msgstr "Ability \"%1$s\" has invalid input. Reason: %2$s"
+
+#. translators: %s ability name.
+#: wp-includes/abilities-api/class-wp-ability.php:474
+msgid "Ability \"%s\" does not define an input schema required to validate the provided input."
+msgstr "Ability \"%s\" does not define an input schema required to validate the provided input."
+
+#: wp-includes/abilities-api/class-wp-ability.php:319
+msgid "The ability meta should provide a valid `show_in_rest` boolean."
+msgstr "The ability meta should provide a valid `show_in_rest` boolean."
+
+#: wp-includes/abilities-api/class-wp-ability.php:313
+msgid "The ability meta should provide a valid `annotations` array."
+msgstr "The ability meta should provide a valid `annotations` array."
+
+#: wp-includes/abilities-api/class-wp-ability.php:307
+msgid "The ability properties should provide a valid `meta` array."
+msgstr "The ability properties should provide a valid `meta` array."
+
+#: wp-includes/abilities-api/class-wp-ability.php:301
+msgid "The ability properties should provide a valid `output_schema` definition."
+msgstr "The ability properties should provide a valid `output_schema` definition."
+
+#: wp-includes/abilities-api/class-wp-ability.php:295
+msgid "The ability properties should provide a valid `input_schema` definition."
+msgstr "The ability properties should provide a valid `input_schema` definition."
+
+#: wp-includes/abilities-api/class-wp-ability.php:288
+msgid "The ability properties must provide a valid `permission_callback` function."
+msgstr "The ability properties must provide a valid `permission_callback` function."
+
+#: wp-includes/abilities-api/class-wp-ability.php:282
+msgid "The ability properties must contain a valid `execute_callback` function."
+msgstr "The ability properties must contain a valid `execute_callback` function."
+
+#: wp-includes/abilities-api/class-wp-ability.php:276
+msgid "The ability properties must contain a `category` string."
+msgstr "The ability properties must contain a `category` string."
+
+#: wp-includes/abilities-api/class-wp-ability.php:270
+msgid "The ability properties must contain a `description` string."
+msgstr "The ability properties must contain a `description` string."
+
+#: wp-includes/abilities-api/class-wp-ability.php:264
+msgid "The ability properties must contain a `label` string."
+msgstr "The ability properties must contain a `label` string."
+
+#. translators: %s: Property name.
+#: wp-includes/abilities-api/class-wp-ability.php:178
+msgid "Property \"%1$s\" is not a valid property for ability \"%2$s\". Please check the %3$s class for allowed properties."
+msgstr "Property \"%1$s\" is not a valid property for ability \"%2$s\". Please check the %3$s class for allowed properties."
+
+#: wp-includes/abilities-api/class-wp-ability-category.php:144
+msgid "The ability category properties should provide a valid `meta` array."
+msgstr "The ability category properties should provide a valid `meta` array."
+
+#: wp-includes/abilities-api/class-wp-ability-category.php:137
+msgid "The ability category properties must contain a `description` string."
+msgstr "The ability category properties must contain a `description` string."
+
+#: wp-includes/abilities-api/class-wp-ability-category.php:131
+msgid "The ability category properties must contain a `label` string."
+msgstr "The ability category properties must contain a `label` string."
+
+#. translators: %s: Property name.
+#: wp-includes/abilities-api/class-wp-ability-category.php:92
+msgid "Property \"%1$s\" is not a valid property for ability category \"%2$s\". Please check the %3$s class for allowed properties."
+msgstr "Property \"%1$s\" is not a valid property for ability category \"%2$s\". Please check the %3$s class for allowed properties."
+
+#: wp-includes/abilities-api/class-wp-ability-category.php:78
+msgid "The ability category slug cannot be empty."
+msgstr "The ability category slug cannot be empty."
+
+#. translators: %s: Ability category slug.
+#: wp-includes/abilities-api/class-wp-ability-categories-registry.php:126
+#: wp-includes/abilities-api/class-wp-ability-categories-registry.php:186
+msgid "Ability category \"%s\" not found."
+msgstr "Ability category \"%s\" not found."
+
+#: wp-includes/abilities-api/class-wp-ability-categories-registry.php:71
+msgid "Ability category slug must contain only lowercase alphanumeric characters and dashes."
+msgstr "Ability category slug must contain only lower case alphanumeric characters and dashes."
+
+#. translators: %s: Ability category slug.
+#: wp-includes/abilities-api/class-wp-ability-categories-registry.php:62
+msgid "Ability category \"%s\" is already registered."
+msgstr "Ability category \"%s\" is already registered."
+
+#. translators: %s: init action.
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:278
+#: wp-includes/abilities-api/class-wp-ability-categories-registry.php:209
+msgid "Ability API should not be initialized before the %s action has fired."
+msgstr "Ability API should not be initialised before the %s action has fired."
+
+#. translators: %s: Ability name.
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:195
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:255
+msgid "Ability \"%s\" not found."
+msgstr "Ability \"%s\" not found."
+
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:152
+msgid "The ability args should provide a valid `ability_class` that extends WP_Ability."
+msgstr "The ability args should provide a valid `ability_class` that extends WP_Ability."
+
+#. translators: %1$s: ability category slug, %2$s: ability name
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:138
+msgid "Ability category \"%1$s\" is not registered. Please register the ability category before assigning it to ability \"%2$s\"."
+msgstr "Ability category \"%1$s\" is not registered. Please register the ability category before assigning it to ability \"%2$s\"."
+
+#. translators: %s: Ability name.
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:96
+msgid "Ability \"%s\" is already registered."
+msgstr "Ability \"%s\" is already registered."
+
+#: wp-includes/abilities-api/class-wp-abilities-registry.php:84
+msgid "Ability name must be a string containing a namespace prefix, i.e. \"my-plugin/my-ability\". It can only contain lowercase alphanumeric characters, dashes and the forward slash."
+msgstr "Ability name must be a string containing a namespace prefix, i.e. \"my-plugin/my-ability\". It can only contain lower case alphanumeric characters, dashes and the forward slash."
+
+#. translators: 1: wp_abilities_api_categories_init, 2: ability category slug.
+#: wp-includes/abilities-api.php:473
+msgid "Ability categories must be registered on the %1$s action. The ability category %2$s was not registered."
+msgstr "Ability categories must be registered on the %1$s action. The ability category %2$s was not registered."
+
+#. translators: 1: wp_abilities_api_init, 2: string value of the ability name.
+#: wp-includes/abilities-api.php:284
+msgid "Abilities must be registered on the %1$s action. The ability %2$s was not registered."
+msgstr "Abilities must be registered on the %1$s action. The ability %2$s was not registered."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:223
 #: wp-admin/users.php:237
@@ -467,6 +1442,11 @@ msgstr "The context element must be a start tag."
 msgid "No valid context element was detected."
 msgstr "No valid context element was detected."
 
+#. translators: %s: The parameter name.
+#: wp-includes/functions.php:8072
+msgid "The %s parameter must not be empty."
+msgstr "The %s parameter must not be empty."
+
 #: wp-includes/customize/class-wp-customize-header-image-control.php:243
 msgid "Add Image"
 msgstr "Add Image"
@@ -600,6 +1580,11 @@ msgstr " mailer is not supported."
 msgid "Invalid host: "
 msgstr "Invalid host: "
 
+#. translators: There is a space after the colon.
+#: wp-includes/class-wp-phpmailer.php:68
+msgid "Invalid host entry: "
+msgstr "Invalid host entry: "
+
 #: wp-includes/class-wp-phpmailer.php:66
 msgid "Invalid header name or value"
 msgstr "Invalid header name or value"
@@ -646,6 +1631,10 @@ msgstr "Unknown encoding: "
 #: wp-includes/class-wp-phpmailer.php:50
 msgid "Message body empty"
 msgstr "Message body empty"
+
+#: wp-includes/class-wp-phpmailer.php:49
+msgid "SMTP Error: Data not accepted."
+msgstr "SMTP Error: Data not accepted."
 
 #: wp-includes/class-wp-phpmailer.php:48
 msgid "SMTP Error: Could not connect to SMTP host."
@@ -1152,6 +2141,11 @@ msgstr "Display footnotes added to the page."
 msgctxt "block description"
 msgid "Reuse this design across your site."
 msgstr "Reuse this design across your site."
+
+#. translators: 1: Menu label, 2: Submenu label.
+#: wp-includes/script-loader.php:3496
+msgid "%1$s > %2$s"
+msgstr "%1$s > %2$s"
 
 #. translators: Hidden accessibility text.
 #: wp-includes/js/dist/block-library.js:18065
@@ -2537,19 +3531,19 @@ msgstr "Please check that the %s PHP extension is installed and enabled."
 msgid "When using the %1$s constant, make sure to set these globals to an array: %2$s."
 msgstr "When using the %1$s constant, make sure to set these globals to an array: %2$s."
 
-#: wp-includes/html-api/class-wp-html-tag-processor.php:4343
+#: wp-includes/html-api/class-wp-html-tag-processor.php:4345
 msgid "The query argument must be an array or a tag name."
 msgstr "The query argument must be an array or a tag name."
 
-#: wp-includes/html-api/class-wp-html-tag-processor.php:3961
+#: wp-includes/html-api/class-wp-html-tag-processor.php:3963
 msgid "Invalid attribute name."
 msgstr "Invalid attribute name."
 
-#: wp-includes/html-api/class-wp-html-tag-processor.php:2629
+#: wp-includes/html-api/class-wp-html-tag-processor.php:2631
 msgid "Too many calls to seek() - this can lead to performance issues."
 msgstr "Too many calls to seek() - this can lead to performance issues."
 
-#: wp-includes/html-api/class-wp-html-tag-processor.php:2611
+#: wp-includes/html-api/class-wp-html-tag-processor.php:2613
 msgid "Unknown bookmark name."
 msgstr "Unknown bookmark name."
 
@@ -3976,6 +4970,10 @@ msgstr "Global styles."
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:465
 msgid "ID of global styles config."
 msgstr "ID of global styles config."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:141
+msgid "No global styles config exists with that ID."
+msgstr "No global styles config exists with that ID."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:183
 msgid "Sorry, you are not allowed to view this global style."
@@ -16425,6 +17423,10 @@ msgctxt "Comma-separated list of search stopwords in your language"
 msgid "about,an,are,as,at,be,by,com,for,from,how,in,is,it,of,on,or,that,the,this,to,was,what,when,where,who,will,with,www"
 msgstr "about,an,are,as,at,be,by,com,for,from,how,in,is,it,of,on,or,that,the,this,to,was,what,when,where,who,will,with,www"
 
+#: wp-includes/post-template.php:1810
+msgid "This content is password-protected. To view it, please enter the password below."
+msgstr "This content is password-protected. To view it, please enter the password below."
+
 #: wp-includes/class-wp-http-curl.php:298
 #: wp-includes/class-wp-http-streams.php:336
 msgid "Failed to write request to temporary file."
@@ -18373,6 +19375,10 @@ msgstr "Sorry, that site is reserved!"
 msgid "Sorry, that site already exists!"
 msgstr "Sorry, that site already exists!"
 
+#: wp-includes/class-wp-customize-nav-menus.php:1249
+msgid "Please enter an item title"
+msgstr "Please enter an item title"
+
 #: wp-includes/ms-functions.php:695
 msgid "Sorry, site names must have letters too!"
 msgstr "Sorry, site names must have letters too!"
@@ -19315,6 +20321,10 @@ msgstr "[%1$s] Trackback: \"%2$s\""
 msgid "[%1$s] Comment: \"%2$s\""
 msgstr "[%1$s] Comment: \"%2$s\""
 
+#: wp-includes/pluggable.php:1908
+msgid "You can see all notes on this post here:"
+msgstr "You can see all notes on this post here:"
+
 #: wp-includes/ms-load.php:502
 msgid "If you are still stuck with this message, then check that your database contains the following tables:"
 msgstr "If you are still stuck with this message, then check that your database contains the following tables:"
@@ -19358,6 +20368,10 @@ msgstr "Could not create user"
 #: wp-includes/ms-functions.php:1202
 msgid "Invalid activation key."
 msgstr "Invalid activation key."
+
+#: wp-includes/class-wp-customize-control.php:652
+msgid "Please enter a page title"
+msgstr "Please enter a page title"
 
 #: wp-includes/ms-functions.php:562
 msgid "That username is currently reserved but may be available in a couple of days."

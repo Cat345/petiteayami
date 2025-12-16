@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 6.9.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-11 18:46:34+0000\n"
+"PO-Revision-Date: 2025-12-14 04:43:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1535,7 +1535,7 @@ msgstr "Die Variable kann nicht gesetzt oder zurückgesetzt werden: "
 #. translators: There is a space after the colon.
 #: wp-includes/class-wp-phpmailer.php:86
 msgid "SMTP server error: "
-msgstr "SMTP-Server-Fehler: "
+msgstr "SMTP-Serverfehler: "
 
 #. translators: There is a space after the colon.
 #: wp-includes/class-wp-phpmailer.php:84
@@ -1564,7 +1564,7 @@ msgstr "Signierungsfehler: "
 #. translators: There is a space after the colon.
 #: wp-includes/class-wp-phpmailer.php:75
 msgid "SMTP Error: The following recipients failed: "
-msgstr "SMTP-Fehler: Die folgenden Empfänger schlugen fehl: "
+msgstr "SMTP-Fehler: Die Zustellung an folgende Empfänger ist fehlgeschlagen: "
 
 #: wp-includes/class-wp-phpmailer.php:73
 msgid "You must provide at least one recipient email address."
@@ -3050,7 +3050,7 @@ msgstr "Kommentare bei neuen Beiträgen erlauben"
 
 #: wp-includes/option.php:2896
 msgid "Maximum posts per page"
-msgstr "Maximale Anzahl an Beiträgen pro Seite"
+msgstr "Maximale Beitragsanzahl pro Seite"
 
 #. translators: Hidden accessibility text.
 #: wp-includes/js/dist/block-editor.js:41858
@@ -3321,7 +3321,7 @@ msgstr "Einzeleinträge"
 #: wp-includes/block-template-utils.php:148
 msgctxt "Template name"
 msgid "Blog Home"
-msgstr "Blog-Startseite"
+msgstr "Blog-Titelseite"
 
 #: wp-includes/block-template-utils.php:92
 msgctxt "template part area"
@@ -3418,11 +3418,11 @@ msgstr "Zeigt jeden einzelnen Eintrag wie einen Beitrag oder eine Seite an. Dies
 
 #: wp-includes/block-template-utils.php:153
 msgid "Displays your site's homepage, whether it is set to display latest posts or a static page. The Front Page template takes precedence over all templates."
-msgstr "Zeigt die Homepage deiner Website an, egal ob eingestellt ist, dass sie die letzten Beiträge oder eine statische Seite anzeigt. Das Startseiten-Template erhält Vorrang vor allen anderen Templates."
+msgstr "Zeigt die Homepage deiner Website an, egal ob eingestellt ist, dass sie die letzten Beiträge oder eine statische Seite anzeigt. Das Titelseiten-Template erhält Vorrang vor allen anderen Templates."
 
 #: wp-includes/block-template-utils.php:149
 msgid "Displays the latest posts as either the site homepage or as the \"Posts page\" as defined under reading settings. If it exists, the Front Page template overrides this template when posts are shown on the homepage."
-msgstr "Zeigt die letzten Beiträge entweder als Homepage der Website oder als „Beitragsseite“ an, wie unter den Einstellungen „Lesen“ definiert. Wenn es existiert und wenn Beiträge auf der Homepage angezeigt werden, überschreibt das Startseiten-Template dieses Template."
+msgstr "Zeigt die letzten Beiträge entweder als Homepage der Website oder als „Beitragsseite“ an, wie unter den Einstellungen „Lesen“ definiert. Falls vorhanden, überschreibt das Titelseiten-Template dieses Template, wenn Beiträge auf der Homepage angezeigt werden."
 
 #: wp-includes/block-template-utils.php:145
 msgid "Used as a fallback template for all pages when a more specific template is not defined."
@@ -3995,7 +3995,7 @@ msgstr "Die ID der Seite, die auf der Startseite angezeigt werden soll"
 
 #: wp-includes/option.php:2909
 msgid "What to show on the front page"
-msgstr "Was auf der Startseite angezeigt werden soll"
+msgstr "Was auf der Homepage angezeigt werden soll"
 
 #. translators: 1: PHP file name, 2: Version number.
 #: wp-includes/functions.php:5819
@@ -5317,7 +5317,7 @@ msgstr "Einzelne Beiträge"
 #: wp-includes/block-template-utils.php:152
 msgctxt "Template name"
 msgid "Front Page"
-msgstr "Startseite"
+msgstr "Titelseite"
 
 #: wp-includes/block-template-utils.php:144
 msgctxt "Template name"
@@ -6185,7 +6185,7 @@ msgstr "Ein Tages-Archiv deiner Beiträge anzeigen."
 
 #: wp-includes/option.php:2919
 msgid "Page on front"
-msgstr "Frontseite"
+msgstr "Titelseite"
 
 #: wp-includes/option.php:2908
 msgid "Show on front"
@@ -8142,7 +8142,7 @@ msgstr "Der WordPress.org-Benutzername des Block-Autors."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:266
 msgid "The number of blocks published by the same author."
-msgstr "Die Anzahl an Blöcken, die vom gleichen Autor veröffentlicht wurden."
+msgstr "Die Anzahl der Blöcke, die vom gleichen Autor veröffentlicht wurden."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:261
 msgid "The average rating of blocks published by the same author."
@@ -8984,24 +8984,24 @@ msgstr "Navigations-Menüpositionen müssen aus Zeichenfolgen bestehen."
 #. translators: %s: The currently used PHP version.
 #: wp-includes/class-wp-recovery-mode-email-service.php:374
 msgid "PHP version %s"
-msgstr "PHP-Version %s"
+msgstr "PHP-Version %s"
 
 #. translators: 1: The failing plugins name. 2: The failing plugins version.
 #: wp-includes/class-wp-recovery-mode-email-service.php:366
 msgid "Current plugin: %1$s (version %2$s)"
-msgstr "Aktuelles Plugin: %1$s (Version %2$s)"
+msgstr "Aktuelles Plugin: %1$s (Version %2$s)"
 
 #. translators: 1: Current active theme name. 2: Current active theme version.
 #: wp-includes/class-wp-recovery-mode-email-service.php:357
 msgid "Active theme: %1$s (version %2$s)"
-msgstr "Aktives Theme: %1$s (Version %2$s)"
+msgstr "Aktives Theme: %1$s (Version %2$s)"
 
 #. translators: %s: Current WordPress version number.
 #. translators: %s: Your current version of WordPress.
 #: wp-includes/class-wp-recovery-mode-email-service.php:352
 #: wp-admin/includes/class-wp-site-health.php:275
 msgid "WordPress version %s"
-msgstr "WordPress-Version %s"
+msgstr "WordPress-Version %s"
 
 #: wp-includes/formatting.php:5088
 msgid "https://wordpress.org/documentation/article/customize-permalinks/#choosing-your-permalink-structure"
@@ -12550,7 +12550,7 @@ msgstr "Die gelöschten Beiträge und Links des Benutzers dieser Benutzer-ID ern
 
 #: wp-includes/script-loader.php:1333
 msgid "This theme does not support video headers on this page. Navigate to the front page or another page that supports video headers."
-msgstr "Dieses Theme unterstützt auf dieser Seite keine Video-Header. Gehe zur Startseite oder zu einer anderen Seite, die Video-Header unterstützt."
+msgstr "Dieses Theme unterstützt auf dieser Seite keine Video-Header. Gehe zur Titelseite oder zu einer anderen Seite, die Video-Header unterstützt."
 
 #: wp-includes/customize/class-wp-customize-media-control.php:233
 msgid "Choose video"
@@ -13014,7 +13014,7 @@ msgstr "Ergebnissatz auf alle Elemente bestimmter Eltern-IDs begrenzen."
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1156
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1593
 msgid "Offset the result set by a specific number of items."
-msgstr "Verschiebt den Ergebnissatz um eine bestimmte Anzahl an Elementen."
+msgstr "Verschiebt den Ergebnissatz um eine bestimmte Elementanzahl."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:954
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2983
@@ -13254,7 +13254,7 @@ msgstr "Ergebnisse auf alle begrenzen, die mit einer Zeichenfolge übereinstimme
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:350
 #: wp-includes/rest-api/endpoints/class-wp-rest-controller.php:353
 msgid "Maximum number of items to be returned in result set."
-msgstr "Maximale Anzahl an Elementen, die im Ergebnissatz zurückgegeben werden."
+msgstr "Maximale Anzahl der im Ergebnissatz zurückgegebenen Elemente."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:279
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:344

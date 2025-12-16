@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 6.9.x - Development - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-06 12:48:35+0000\n"
+"PO-Revision-Date: 2025-12-15 12:12:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,65 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: en_GB\n"
 "Project-Id-Version: WordPress - 6.9.x - Development - Administration - Network Admin\n"
+
+#: wp-admin/network/sites.php:361
+msgid "Site flagged for deletion."
+msgstr "Site flagged for deletion."
+
+#: wp-admin/network/sites.php:358
+msgid "Site deletion flag removed."
+msgstr "Site deletion flag removed."
+
+#: wp-admin/network/sites.php:346
+msgid "Site permanently deleted."
+msgstr "Site permanently deleted."
+
+#: wp-admin/network/sites.php:343
+msgid "Sites permanently deleted."
+msgstr "Sites permanently deleted."
+
+#: wp-admin/network/sites.php:237
+msgid "Delete these sites permanently"
+msgstr "Delete these sites permanently"
+
+#: wp-admin/network/sites.php:137
+msgid "Flagging a site for deletion makes the site unavailable to its users and visitors. This is a reversible action. A super admin can permanently delete the site at a later date."
+msgstr "Flagging a site for deletion makes the site unavailable to its users and visitors. This is a reversible action. A super admin can permanently delete the site at a later date."
+
+#: wp-admin/network/sites.php:131
+msgid "Archiving a site makes the site unavailable to its users and visitors. This is a reversible action."
+msgstr "Archiving a site makes the site unavailable to its users and visitors. This is a reversible action."
+
+#. translators: %s: Site URL.
+#: wp-admin/network/sites.php:66
+msgid "You are about to flag the site %s for deletion."
+msgstr "You are about to flag the site %s for deletion."
+
+#. translators: %s: Site URL.
+#: wp-admin/network/sites.php:64
+msgid "You are about to remove the deletion flag from the site %s."
+msgstr "You are about to remove the deletion flag from the site %s."
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:772
+msgid "Flag for Deletion"
+msgstr "Flag for Deletion"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:761
+msgctxt "site"
+msgid "Remove Deletion Flag"
+msgstr "Remove Deletion Flag"
+
+#. translators: %s: Number of sites.
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:258
+msgid "Flagged for Deletion <span class=\"count\">(%s)</span>"
+msgid_plural "Flagged for Deletion <span class=\"count\">(%s)</span>"
+msgstr[0] "Flagged for Deletion <span class=\"count\">(%s)</span>"
+msgstr[1] "Flagged for Deletion <span class=\"count\">(%s)</span>"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:40
+#: wp-admin/network/site-info.php:205
+msgid "Flagged for Deletion"
+msgstr "Flagged for Deletion"
 
 #: wp-admin/network/upgrade.php:37
 msgid "<a href=\"https://developer.wordpress.org/advanced-administration/multisite/admin/#network-admin-updates-screen\">Documentation on Upgrade Network</a>"
@@ -875,6 +934,10 @@ msgstr "Invalid site ID."
 msgid "Sorry, you are not allowed to delete the site %s."
 msgstr "Sorry, you are not allowed to delete the site %s."
 
+#: wp-admin/network/sites.php:37
+msgid "Delete Permanently which is a permanent action after the confirmation screen."
+msgstr "Delete Permanently, which is a permanent action after the confirmation screen."
+
 #: wp-admin/network/sites.php:35
 msgid "Dashboard leads to the Dashboard for that site."
 msgstr "Dashboard leads to the Dashboard for that site."
@@ -1066,6 +1129,10 @@ msgstr "Warning! User cannot be modified. The user %s is a network administrator
 #: wp-admin/network/site-new.php:26
 msgid "If the admin email for the new site does not exist in the database, a new user will also be created."
 msgstr "If the admin email for the new site does not exist in the database, a new user will also be created."
+
+#: wp-admin/network/sites.php:36
+msgid "Flag for Deletion, Archive, and Spam which lead to confirmation screens. These actions can be reversed later."
+msgstr "Flag for Deletion, Archive, and Spam, which lead to confirmation screens. These actions can be reversed later."
 
 #: wp-admin/network/sites.php:33
 msgid "Hovering over each site reveals seven options (three for the primary site):"

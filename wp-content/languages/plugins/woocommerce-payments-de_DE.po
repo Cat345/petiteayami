@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-07 20:08:20+0000\n"
+"PO-Revision-Date: 2025-12-11 20:10:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,44 +11,44 @@ msgstr ""
 
 #: client/settings/payment-methods-list/payment-method.tsx:54
 msgid "Promotion details"
-msgstr ""
+msgstr "Details zur Werbeaktion"
 
 #: client/settings/payment-methods-list/payment-method.tsx:47
 msgid "Discount details"
-msgstr ""
+msgstr "Rabattdetails"
 
 #: client/data/pm-promotions/resolvers.ts:68
 msgid "Error retrieving promotions. Please try again later."
-msgstr ""
+msgstr "Fehler beim Abrufen der Werbeaktionen. Bitte versuche es später erneut."
 
 #: client/data/pm-promotions/actions.ts:83
 msgid "Error dismissing promotion. Please try again."
-msgstr ""
+msgstr "Fehler beim Verwerfen der Werbeaktion. Bitte versuche es erneut."
 
 #: client/data/pm-promotions/actions.ts:78
 msgid "Promotion dismissed."
-msgstr ""
+msgstr "Werbeaktion verworfen."
 
 #: client/data/pm-promotions/actions.ts:62
 msgid "Error activating promotion. Please try again."
-msgstr ""
+msgstr "Fehler beim Aktivieren der Werbeaktion. Bitte versuche es erneut."
 
 #: client/data/pm-promotions/actions.ts:57
 msgid "Promotion activated successfully!"
-msgstr ""
+msgstr "Werbeaktion erfolgreich aktiviert!"
 
 #: client/components/spotlight/index.tsx:74
 msgid "Dialog opened: %s"
-msgstr ""
+msgstr "Dialog geöffnet: %s"
 
 #: includes/class-wc-payments-pm-promotions-service.php:883
 msgid "See terms"
-msgstr ""
+msgstr "Geschäftsbedingungen ansehen"
 
 #: includes/admin/class-wc-rest-payments-pm-promotions-controller.php:67
 #: includes/admin/class-wc-rest-payments-pm-promotions-controller.php:85
 msgid "The promotion unique identifier."
-msgstr ""
+msgstr "Die eindeutige Kennung der Werbeaktion."
 
 #: client/payment-methods-icons.tsx:40
 #: client/settings/express-checkout/amazon-pay-item.tsx:26
