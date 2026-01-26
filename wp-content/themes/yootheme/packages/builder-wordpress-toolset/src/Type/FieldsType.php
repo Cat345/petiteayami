@@ -2,39 +2,60 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Type;
 
+use Types_Field_Group_Repeatable_Item;
+use Types_Field_Service;
+use WP_Post;
+use WP_Term;
+use WP_User;
 use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Toolset\Helper;
 use YOOtheme\Event;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ * @phpstan-import-type FieldConfig from Source
+ * @phpstan-import-type Field from Helper
+ */
 class FieldsType
 {
-    public static function config($source, $fields)
+    /**
+     * @param array<Field> $fields
+     * @return ObjectConfig
+     */
+    public static function config(Source $source, array $fields): array
     {
         return [
             'fields' => array_filter(
                 array_reduce(
                     $fields,
-                    function ($fields, $field) use ($source) {
-                        $config = [
-                            'type' => 'String',
-                            'name' => Str::snakeCase($field['slug']),
-                            'metadata' => [
-                                'label' => $field['name'],
-                                'group' => $field['group'] ?: trans('Fields'),
+                    fn($fields, $field) => $fields +
+                        static::configFields(
+                            $field,
+                            [
+                                'type' => 'String',
+                                'name' => Str::snakeCase($field['slug']),
+                                'metadata' => [
+                                    'label' => $field['name'],
+                                    'group' => $field['group'] ?: trans('Fields'),
+                                ],
                             ],
-                        ];
-
-                        return $fields + static::configFields($field, $config, $source);
-                    },
+                            $source,
+                        ),
                     [],
                 ),
             ),
         ];
     }
 
-    public static function configFields($field, array $config, Source $source)
+    /**
+     * @param Field $field
+     * @param array<string, mixed> $config
+     * @param Source $source
+     * @return array<FieldConfig>
+     */
+    public static function configFields($field, array $config, Source $source): array
     {
         $fields = [];
         if ($field['type'] !== 'rfg') {
@@ -70,28 +91,37 @@ class FieldsType
         );
     }
 
-    public static function toolset($post, $args, $context, $info)
+    /**
+     * @param WP_Post $post
+     * @return ?WP_Post
+     */
+    public static function toolset($post)
     {
         return $post;
     }
 
-    public static function resolveField($item, $args, $context, $info)
+    /**
+     * @param WP_Post|WP_Term|WP_User $item
+     * @param array<string, mixed> $args
+     * @return mixed
+     */
+    public static function resolveField($item, $args)
     {
-        $fieldService = new \Types_Field_Service(false);
+        $fieldService = new Types_Field_Service(false);
 
-        if ($item instanceof \WP_Post) {
+        if ($item instanceof WP_Post) {
             $fieldInstance = $fieldService->get_field(
                 new \Types_Field_Gateway_Wordpress_Post(),
                 $args['slug'],
                 $item->ID,
             );
-        } elseif ($item instanceof \WP_Term) {
+        } elseif ($item instanceof WP_Term) {
             $fieldInstance = $fieldService->get_field(
                 new \Types_Field_Gateway_Wordpress_Term(),
                 $args['slug'],
                 $item->term_id,
             );
-        } elseif ($item instanceof \WP_User) {
+        } elseif ($item instanceof WP_User) {
             $fieldInstance = $fieldService->get_field(
                 new \Types_Field_Gateway_Wordpress_User(),
                 $args['slug'],
@@ -99,12 +129,16 @@ class FieldsType
             );
         }
 
-        if (!empty($fieldInstance)) {
-            return Helper::getFieldValue($fieldInstance);
-        }
+        return !empty($fieldInstance) ? Helper::getFieldValue($fieldInstance) : null;
     }
 
-    protected static function loadRfgField($source, $field, array $config)
+    /**
+     * @param Source $source
+     * @param Field $field
+     * @param array<string, mixed> $config
+     * @return FieldConfig
+     */
+    protected static function loadRfgField(Source $source, array $field, array $config): array
     {
         $type = Str::camelCase(['toolset', $field['slug'], 'group'], true);
         $source->objectType($type, GroupType::config($field));
@@ -112,27 +146,37 @@ class FieldsType
         return ['type' => ['listOf' => $type]] + $config;
     }
 
-    public static function resolveRfgField($item, $args, $context, $info)
+    /**
+     * @param WP_Post|WP_Term|WP_User $item
+     * @param array<string, mixed> $args
+     * @return ?array<Types_Field_Group_Repeatable_Item>
+     */
+    public static function resolveRfgField($item, $args)
     {
         $rfg_service = new \Types_Field_Group_Repeatable_Service();
         $repeatableGroup = $rfg_service->get_object_from_prefixed_string($args['slug']);
 
         if (!$repeatableGroup) {
-            return;
+            return null;
         }
 
         $rfg = $rfg_service->get_object_by_id($repeatableGroup->get_id(), $item);
 
         if (!$rfg) {
-            return;
+            return null;
         }
 
         return $rfg->get_posts();
     }
 
-    public static function resolveStringField($item, $args, $context, $info)
+    /**
+     * @param WP_Post|WP_Term|WP_User $item
+     * @param array<string, mixed> $args
+     * @return ?array{value: string}
+     */
+    public static function resolveStringField($item, $args): ?array
     {
-        $value = static::resolveField($item, $args, $context, $info);
+        $value = static::resolveField($item, $args);
 
         return $value ? ['value' => join(', ', array_column($value, 'value'))] : null;
     }

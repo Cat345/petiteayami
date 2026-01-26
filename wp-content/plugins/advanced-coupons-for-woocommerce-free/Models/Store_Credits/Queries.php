@@ -159,10 +159,16 @@ class Queries {
             'action'  => 'e.entry_action',
         );
 
-        // sort query.
-        $sort_column = isset( $sort_columns[ $params['sort_by'] ] ) ? $sort_columns[ $params['sort_by'] ] : 'e.entry_date';
-        $sort_type   = 'asc' === $params['sort_order'] ? 'ASC' : 'DESC';
-        $sort_query  = "ORDER BY {$sort_column} {$sort_type}";
+        // sort query - ensure sort_by is in whitelist to prevent SQL injection.
+        if ( ! isset( $sort_columns[ $params['sort_by'] ] ) ) {
+            $params['sort_by'] = 'date'; // Default fallback.
+        }
+        $sort_column = $sort_columns[ $params['sort_by'] ];
+
+        // Ensure sort_order is only ASC or DESC to prevent SQL injection.
+        $sort_order_upper = strtoupper( $params['sort_order'] );
+        $sort_type        = in_array( $sort_order_upper, array( 'ASC', 'DESC' ), true ) ? $sort_order_upper : 'DESC';
+        $sort_query       = "ORDER BY {$sort_column} {$sort_type}";
 
         // limit query.
         $limit_query = 1 <= $params['page'] ? $wpdb->prepare( 'LIMIT %d OFFSET %d', $params['per_page'], $offset ) : '';

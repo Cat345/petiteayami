@@ -10,31 +10,36 @@ use YOOtheme\GraphQL\Type\Schema;
 use YOOtheme\GraphQL\Utils\AST;
 use YOOtheme\GraphQL\Utils\Introspection;
 
+/**
+ * @phpstan-type FieldConfig array{
+ *  name?: string,
+ *  type: string|array{listOf: string},
+ *  args?: array<string, array{type: string|array{listOf: string}}>,
+ *  metadata?: array<string, mixed>,
+ *  extensions?: array<string, mixed>,
+ * }
+ *
+ * @phpstan-type ObjectConfig array{
+ *  fields: array<string, FieldConfig>,
+ *  metadata?: array<string, mixed>,
+ * }
+ */
 class Source extends SchemaBuilder
 {
-    /**
-     * @var Schema|null
-     */
-    protected $schema;
+    protected ?Schema $schema = null;
 
     /**
      * Gets the schema.
-     *
-     * @return Schema
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
-        return $this->schema ?: ($this->schema = $this->buildSchema());
+        return $this->schema ??= $this->buildSchema();
     }
 
     /**
      * Sets the schema.
-     *
-     * @param Schema $schema
-     *
-     * @return Schema
      */
-    public function setSchema(Schema $schema)
+    public function setSchema(Schema $schema): Schema
     {
         return $this->schema = $schema;
     }
@@ -42,15 +47,13 @@ class Source extends SchemaBuilder
     /**
      * Executes a query on schema.
      *
-     * @param mixed       $source
-     * @param mixed       $value
-     * @param mixed       $context
-     * @param array|null  $variables
-     * @param string|null $operation
-     * @param callable    $fieldResolver
-     * @param array       $validationRules
-     *
-     * @return ExecutionResult
+     * @param mixed $source
+     * @param mixed $value
+     * @param mixed $context
+     * @param ?array<mixed> $variables
+     * @param ?string $operation
+     * @param callable $fieldResolver
+     * @param array<mixed> $validationRules
      */
     public function query(
         $source,
@@ -60,7 +63,7 @@ class Source extends SchemaBuilder
         $operation = null,
         $fieldResolver = null,
         $validationRules = null
-    ) {
+    ): ExecutionResult {
         if (is_array($source)) {
             $source = AST::fromArray($source);
         }
@@ -80,11 +83,9 @@ class Source extends SchemaBuilder
     /**
      * Executes an introspection on schema.
      *
-     * @param array $options
-     *
-     * @return ExecutionResult
+     * @param array<string, mixed> $options
      */
-    public function queryIntrospection(array $options = [])
+    public function queryIntrospection(array $options = []): ExecutionResult
     {
         $metadata = [
             'type' => $this->getType('Object'),

@@ -9,16 +9,8 @@ use YOOtheme\Url;
 
 class Styler
 {
-    /**
-     * @var Config
-     */
-    protected $config;
+    protected Config $config;
 
-    /**
-     * Constructor.
-     *
-     * @param Config $config
-     */
     public function __construct(Config $config)
     {
         $this->config = $config;
@@ -27,9 +19,9 @@ class Styler
     /**
      * Gets theme styles.
      *
-     * @return array
+     * @return list<array<string, mixed>>
      */
-    public function getThemes()
+    public function getThemes(): array
     {
         $themes = [];
         $directories = join(
@@ -47,12 +39,15 @@ class Styler
         return $themes;
     }
 
-    public function getTheme($id)
+    /**
+     * @return ?array<string, mixed>
+     */
+    public function getTheme(string $id): ?array
     {
         $file = File::get("~theme/less/theme.{$id}.less");
 
         if (!$file) {
-            return;
+            return null;
         }
 
         return array_merge(
@@ -65,7 +60,12 @@ class Styler
         );
     }
 
-    public function resolveImports($file, $vars = [])
+    /**
+     * @param array<string, string> $vars
+     *
+     * @return array<string, string>
+     */
+    public function resolveImports(string $file, array $vars = []): array
     {
         $importFile = $file;
         $extension = Path::extname($file);
@@ -106,7 +106,10 @@ class Styler
         return $imports;
     }
 
-    protected static function getMeta($file)
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function getMeta(string $file): array
     {
         $meta = [];
         $style = false;
@@ -155,7 +158,7 @@ class Styler
         return $meta;
     }
 
-    protected static function namify($id)
+    protected static function namify(string $id): string
     {
         return ucwords(str_replace('-', ' ', $id));
     }

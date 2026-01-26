@@ -5,8 +5,18 @@
  * https://wordpress.org/plugins/security-malware-firewall/
  */
 if ( ! class_exists( 'BWFAN_Compatibility_With_Security_By_CleanTalk' ) ) {
+	/**
+	 * Bwfan Compatibility With Security By Cleantalk
+	 *
+	 * @since 1.0.0
+	 */
 	class BWFAN_Compatibility_With_Security_By_CleanTalk {
 
+		/**
+		 *   Construct
+		 *
+		 * @since 1.0.0
+		 */
 		public function __construct() {
 			add_filter( 'rest_jsonp_enabled', array( $this, 'bwfan_allow_rest_apis_with_force_login' ), 100 );
 		}
@@ -25,8 +35,11 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Security_By_CleanTalk' ) ) {
 			}
 
 			try {
-				$rest_route = $_GET['rest_route'] ?? '';
-				$rest_route = empty( $rest_route ) ? $_SERVER['REQUEST_URI'] : $rest_route;
+				$rest_route = filter_input( INPUT_GET, 'rest_route' );
+				if ( empty( $rest_route ) ) {
+					$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+				}
+
 				if ( empty( $rest_route ) ) {
 					return $status;
 				}

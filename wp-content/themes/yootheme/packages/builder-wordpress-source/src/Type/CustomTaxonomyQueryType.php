@@ -2,18 +2,24 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Taxonomy;
+use WP_Term;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper as SourceHelper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class CustomTaxonomyQueryType
 {
     /**
-     * @param \WP_Taxonomy $taxonomy
+     * @param WP_Taxonomy $taxonomy
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Taxonomy $taxonomy)
+    public static function config(WP_Taxonomy $taxonomy): array
     {
         $name = Str::camelCase($taxonomy->name, true);
         $base = Str::camelCase(SourceHelper::getBase($taxonomy), true);
@@ -174,16 +180,26 @@ class CustomTaxonomyQueryType
         ];
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return ?WP_Term
+     */
     public static function resolveTerm($root, array $args)
     {
         $args += ['id' => 0];
 
         $term = get_term($args['id']);
 
-        return $term instanceof \WP_Term ? $term : null;
+        return $term instanceof WP_Term ? $term : null;
     }
 
-    public static function resolveTerms($root, array $args)
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return array<WP_Term>
+     */
+    public static function resolveTerms($root, array $args): array
     {
         $args += [
             'order' => 'term_order',

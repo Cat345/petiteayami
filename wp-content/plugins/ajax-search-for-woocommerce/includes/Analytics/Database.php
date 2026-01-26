@@ -59,7 +59,7 @@ class Database {
 
 		if ( file_exists( $upFile ) ) {
 
-			require_once( $upFile );
+			require_once $upFile;
 
 			$collate = Helpers::getCollate( 'stats/main' );
 
@@ -76,8 +76,9 @@ class Database {
 
 			dbDelta( $table );
 
+			//phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 			if ( $freshInstall ) {
-				//@TODO mount index for columns if necessary
+				// @TODO mount index for columns if necessary
 			}
 
 			update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
@@ -182,6 +183,6 @@ class Database {
 	public static function getTableName() {
 		global $wpdb;
 
-		return $wpdb->prefix . Database::DB_NAME;
+		return $wpdb->prefix . self::DB_NAME;
 	}
 }

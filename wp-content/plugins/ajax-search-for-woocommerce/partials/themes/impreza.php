@@ -5,7 +5,9 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', function () { ?>
+add_action(
+	'wp_head',
+	function () { ?>
 	<style>
 		.w-search.layout_modern .w-search-close {
 
@@ -27,10 +29,14 @@ add_action( 'wp_head', function () { ?>
 			top: 48px;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_footer', function () { ?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 			function dgwtWcasImprezaGetActiveInstance() {
@@ -96,46 +102,58 @@ add_action( 'wp_footer', function () { ?>
 			});
 		})(jQuery);
 	</script>
-	<?php
-}, 1000 );
+		<?php
+	},
+	1000
+);
 
 /**
  * Activate the search engine during AJAX loading of subsequent pages when the Grid
  * element's pagination is set to "Load items on page scroll"
  */
-add_filter( 'dgwt/wcas/helpers/is_search_query', function ( $enabled, $query ) {
-	if (
+add_filter(
+	'dgwt/wcas/helpers/is_search_query',
+	function ( $enabled, $query ) {
+		if (
 		did_action( 'us_grid_before_custom_query' ) &&
 		$query->get( 'post_type' ) &&
 		is_string( $query->get( 'post_type' ) ) &&
 		$query->get( 'post_type' ) === 'product' &&
 		is_string( $query->get( 's' ) ) &&
 		strlen( $query->get( 's' ) ) > 0
-	) {
-		$enabled = true;
-	}
+		) {
+			$enabled = true;
+		}
 
-	return $enabled;
-}, 10, 2 );
+		return $enabled;
+	},
+	10,
+	2
+);
 
 /**
  * Force orderby (if empty) during AJAX loading of subsequent pages when the Grid
  * element's pagination is set to "Load items on page scroll"
  */
-add_filter( 'woocommerce_get_catalog_ordering_args', function ( $args ) {
-	if ( function_exists( 'us_maybe_get_post_json' ) ) {
-		$template_vars = us_maybe_get_post_json();
-		if (
+add_filter(
+	'woocommerce_get_catalog_ordering_args',
+	function ( $args ) {
+		if ( function_exists( 'us_maybe_get_post_json' ) ) {
+			$template_vars = us_maybe_get_post_json();
+			if (
 			! empty( $template_vars ) &&
 			isset( $template_vars['query_args']['post_type'] ) &&
 			$template_vars['query_args']['post_type'] === 'product' &&
 			! empty( $template_vars['query_args']['s'] ) &&
 			empty( $template_vars['query_args']['orderby'] )
-		) {
-			$args['orderby'] = 'relevance';
-			$args['order']   = 'DESC';
+			) {
+				$args['orderby'] = 'relevance';
+				$args['order']   = 'DESC';
+			}
 		}
-	}
 
-	return $args;
-}, 999, 1 );
+		return $args;
+	},
+	999,
+	1
+);

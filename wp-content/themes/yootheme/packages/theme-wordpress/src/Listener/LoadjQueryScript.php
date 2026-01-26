@@ -20,10 +20,7 @@ class LoadjQueryScript
      */
     public function handle(): void
     {
-        if (
-            $this->config->get('~theme.jquery') ||
-            str_contains($this->config->get('~theme.custom_js', ''), 'jQuery')
-        ) {
+        if ($this->config->get('~theme.jquery')) {
             wp_enqueue_script('jquery');
         }
     }

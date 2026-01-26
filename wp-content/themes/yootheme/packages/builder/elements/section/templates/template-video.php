@@ -1,43 +1,18 @@
 <?php
 
-if ($iframe = $this->iframeVideo($props['video'])) {
+$video = $this->el('video', [
 
-    $video = $this->el('iframe', [
+    'src' => $props['video'],
+    'playsinline' => true,
+    'loop' => true,
+    'muted' => true,
+    'preload' => ['none {@!image_loading}'],
 
-        'class' => [
-            'uk-disabled',
-        ],
-
-        'src' => $iframe,
-        'title' => $props['video_title'],
-
-    ]);
-
-} else {
-
-    $video = $this->el('video', [
-
-        'src' => $props['video'],
-        'controls' => false,
-        'loop' => true,
-        'autoplay' => true,
-        'muted' => true,
-        'playsinline' => true,
-
-        'class' => [
-            'uk-object-{media_focal_point}',
-        ],
-
-    ]);
-
-}
-
-$video->attr([
-
-    'width' => $props['video_width'],
-    'height' => $props['video_height'],
+    'width' => $props['image_width'],
+    'height' => $props['image_height'],
 
     'class' => [
+        'uk-object-{media_focal_point}',
         'uk-blend-{media_blend_mode}',
         'uk-visible@{media_visibility}',
     ],

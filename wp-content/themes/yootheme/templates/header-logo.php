@@ -15,6 +15,10 @@ $attrs_link['class'][] = 'uk-logo';
 
 if ($position == 'logo' && preg_match('/^(horizontal|stacked-center-split-[ab])/', $config("$header.layout"))) {
     $attrs_link['class'][] = 'uk-navbar-item';
+
+    if ($config("$header.logo_padding_remove") && $config("$header.width") == 'expand' && preg_match('/^horizontal-(left|center|right|justify)$/', $config("$header.layout"))) {
+        $attrs_link['class'][] = 'uk-padding-remove-left';
+    }
 }
 
 if ($position == 'logo-mobile') {
@@ -26,17 +30,13 @@ if ($position == 'logo-mobile') {
 }
 
 // Function
-$logo_img = function ($image, $width, $height, array $attrs = []) use ($config, $logo) {
-
-    $attrs['alt'] = __($config("$logo.text", ''), 'yootheme');
-    $attrs['loading'] = '';
-
-    if ($this->isImage($image) === 'svg') {
-        return $this->image($image, array_merge($attrs, ['width' => $width, 'height' => $height, 'uk-svg' => $config("$logo.image_svg_inline")]));
-    }
-
-    return $this->image([$image, 'thumbnail' => [$width, $height], 'srcset' => true], $attrs);
-};
+$logo_img = fn($image, $width, $height, array $attrs = []) => $this->image([$image, 'thumbnail' => true], array_merge($attrs, [
+    'width' => $width,
+    'height' => $height,
+    'loading' => '',
+    'alt' => __($config("$logo.text", '', 'yootheme')),
+    'uk-svg' => $config("$logo.image_svg_inline")
+]));
 
 // Logo
 $logo_el = '';
@@ -66,7 +66,7 @@ if (in_array($position, ['dialog', 'dialog-mobile'])) {
     }
 
 } else {
-    $logo_el = __($config("$logo.text", ''), 'yootheme');
+    $logo_el = __($config("$logo.text", '', 'yootheme'));
 }
 
 ?>

@@ -2,34 +2,45 @@
 
 namespace YOOtheme;
 
+use ReflectionClass;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use ReflectionParameter;
+use ReflectionProperty;
+use Reflector;
+
 /**
  * A static class which provides utilities for working with class reflections.
+ *
+ * @phpstan-type Annotation object{name: string, value: string|null}
  */
 abstract class Reflection
 {
     public const REGEX_ANNOTATION = '/@(?<name>[\w\\\\]+)(?:\s*(?:\(\s*)?(?<value>.*?)(?:\s*\))?)??\s*(?:\n|\*\/)/';
 
     /**
-     * @var array
+     * @var array<string, list<Annotation>>
      */
-    public static $annotations = [];
+    public static array $annotations = [];
 
     /**
      * Gets reflector string representation.
-     *
-     * @param \Reflector $reflector
-     *
-     * @return string
      */
-    public static function toString(\Reflector $reflector)
+    public static function toString(Reflector $reflector): string
     {
-        $string = $reflector->getName();
+        $string = method_exists($reflector, 'getName') ? $reflector->getName() : '';
 
-        if ($reflector instanceof \ReflectionMethod) {
+        if ($reflector instanceof ReflectionMethod) {
             $string = "{$reflector->getDeclaringClass()->getName()}::{$string}()";
         }
 
-        if (ini_get('display_errors') && method_exists($reflector, 'getFileName')) {
+        if (
+            ini_get('display_errors') &&
+            method_exists($reflector, 'getFileName') &&
+            method_exists($reflector, 'getStartLine') &&
+            method_exists($reflector, 'getEndLine')
+        ) {
             $string .= " in {$reflector->getFileName()}:{$reflector->getStartLine()}-{$reflector->getEndLine()}";
         }
 
@@ -39,46 +50,39 @@ abstract class Reflection
     /**
      * Gets caller info using backtrace.
      *
-     * @param string $key
-     * @param int    $index
-     *
-     * @return mixed
+     * @return array{function: string, line: int, file: string, class: string, object: object, type: string}
      */
-    public static function getCaller($key = null, $index = 1)
+    public static function getCaller(int $index = 1): array
     {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $index + 1);
-
-        return $key ? $backtrace[$index][$key] : $backtrace[$index];
+        return debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $index + 1)[$index];
     }
 
     /**
      * Gets reflection class for given classname.
      *
-     * @param \ReflectionClass|object|string $class
+     * @param ReflectionClass|class-string<object>|object $class
      *
-     * @throws \ReflectionException
-     *
-     * @return \ReflectionClass
+     * @return ReflectionClass<object>
      *
      * @example
      * Reflection::getClass('ClassName');
      */
-    public static function getClass($class)
+    public static function getClass($class): ReflectionClass
     {
-        return $class instanceof \ReflectionClass ? $class : new \ReflectionClass($class);
+        return $class instanceof ReflectionClass ? $class : new ReflectionClass($class);
     }
 
     /**
      * Gets the parent reflection classes for a given class.
      *
-     * @param \ReflectionClass|object|string $class
+     * @param ReflectionClass|class-string<object>|object $class
      *
-     * @return \ReflectionClass[]
+     * @return list<ReflectionClass<object>>
      *
      * @example
      * Reflection::getParentClasses('ClassName');
      */
-    public static function getParentClasses($class)
+    public static function getParentClasses($class): array
     {
         $class = static::getClass($class);
 
@@ -92,14 +96,14 @@ abstract class Reflection
     /**
      * Gets the reflection properties for given class.
      *
-     * @param \ReflectionClass|object|string $class
+     * @param ReflectionClass|class-string<object>|object $class
      *
-     * @return \ReflectionProperty[]
+     * @return array<string, ReflectionProperty>
      *
      * @example
      * Reflection::getProperties('ClassName');
      */
-    public static function getProperties($class)
+    public static function getProperties($class): array
     {
         $properties = [];
 
@@ -115,22 +119,19 @@ abstract class Reflection
      * Gets the reflection function for given callback.
      *
      * @param callable|string $callback
-     *
-     * @throws \ReflectionException
-     *
-     * @return \ReflectionFunctionAbstract
+     * @return ReflectionFunction|ReflectionMethod
      *
      * @example
      * Reflection::getFunction('ClassName::methodName');
      */
-    public static function getFunction($callback)
+    public static function getFunction($callback): ReflectionFunctionAbstract
     {
         if (is_string($callback) && strpos($callback, '::')) {
             $callback = explode('::', $callback);
         }
 
         if (is_array($callback)) {
-            return new \ReflectionMethod($callback[0], $callback[1]);
+            return new ReflectionMethod($callback[0], $callback[1]);
         }
 
         if (is_object($callback) && !$callback instanceof \Closure) {
@@ -145,14 +146,12 @@ abstract class Reflection
      *
      * @param callable|string $callback
      *
-     * @throws \ReflectionException
-     *
-     * @return \ReflectionParameter[]
+     * @return list<ReflectionParameter>
      *
      * @example
      * Reflection::getParameters('ClassName::methodName');
      */
-    public static function getParameters($callback)
+    public static function getParameters($callback): array
     {
         return static::getFunction($callback)->getParameters();
     }
@@ -160,48 +159,41 @@ abstract class Reflection
     /**
      * Gets an annotation by name for given reflector.
      *
-     * @param \Reflector $reflector
-     * @param string     $name
-     *
-     * @return object|void
-     *
      * @example
      * $reflector = Reflection::getAnnotation('ClassName');
      * Reflection::getAnnotation($reflector, 'tag');
      */
-    public static function getAnnotation(\Reflector $reflector, $name)
+    public static function getAnnotation(Reflector $reflector, string $name): ?object
     {
-        if ($annotations = static::getAnnotations($reflector, $name)) {
-            return $annotations[0];
-        }
+        return static::getAnnotations($reflector, $name)[0] ?? null;
     }
 
     /**
      * Gets all annotations for given reflector.
      *
-     * @param \Reflector $reflector
-     * @param string     $name
-     *
-     * @return array
+     * @return list<Annotation>
      *
      * @example
      * $reflector = Reflection::getClass('ClassName');
      * Reflection::getAnnotations($reflector);
      */
-    public static function getAnnotations(\Reflector $reflector, $name = null)
+    public static function getAnnotations(Reflector $reflector, ?string $name = null): array
     {
-        if ($reflector instanceof \ReflectionClass) {
+        if ($reflector instanceof ReflectionClass) {
             $key = $reflector->name;
-        } elseif ($reflector instanceof \ReflectionProperty) {
+        } elseif ($reflector instanceof ReflectionProperty) {
             $key = "{$reflector->class}.{$reflector->name}";
-        } elseif ($reflector instanceof \ReflectionMethod) {
+        } elseif ($reflector instanceof ReflectionMethod) {
             $key = "{$reflector->class}:{$reflector->name}";
         } else {
             $key = null;
         }
 
         if (!isset(static::$annotations[$key])) {
-            $comment = $reflector->getDocComment() ?: '';
+            $comment = method_exists($reflector, 'getDocComment')
+                ? ($reflector->getDocComment() ?:
+                '')
+                : '';
 
             if (!$name || strpos($comment, "@{$name}")) {
                 static::$annotations[$key] = static::parseAnnotations($comment);
@@ -220,11 +212,9 @@ abstract class Reflection
     /**
      * Parses all annotations from given string.
      *
-     * @param string $string
-     *
-     * @return array
+     * @return list<Annotation>
      */
-    protected static function parseAnnotations($string)
+    protected static function parseAnnotations(string $string): array
     {
         $annotations = [];
 
@@ -243,17 +233,16 @@ abstract class Reflection
     /**
      * Filters annotations by given name.
      *
-     * @param array $annotations
-     * @param mixed $name
+     * @param list<Annotation> $annotations
      *
-     * @return array
+     * @return list<Annotation>
      */
-    protected static function filterAnnotations(array $annotations, $name)
+    protected static function filterAnnotations(array $annotations, string $name): array
     {
         $results = [];
 
         foreach ($annotations as $annotation) {
-            if ($annotation->name == $name) {
+            if ($annotation->name === $name) {
                 $results[] = $annotation;
             }
         }

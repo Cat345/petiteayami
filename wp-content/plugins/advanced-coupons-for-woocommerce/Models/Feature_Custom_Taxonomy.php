@@ -207,7 +207,7 @@ class Feature_Custom_Taxonomy extends Base_Model implements Model_Interface, Act
      * @inherit ACFWF\Interfaces\Activatable_Interface
      */
     public function activate() {
-        if ( class_exists( '\ACFWF\Models\Feature_Custom_Taxonomy' ) ) {
+        if ( file_exists( WP_PLUGIN_DIR . '/advanced-coupons-for-woocommerce-free/Models/Feature_Custom_Taxonomy.php' ) ) {
             \ACFWF()->Feature_Custom_Taxonomy->create_feature_terms();
             \ACFWF()->Feature_Custom_Taxonomy->schedule_bulk_update_coupon_features();
             \ACFWF()->Feature_Custom_Taxonomy->calculate_and_update_feature_counts( true );

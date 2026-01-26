@@ -1,0 +1,10 @@
+<?php
+
+return [
+    'defaults' => [
+        'woocommerce' => [
+            'product_thumbnails_columns' => '4',
+            'cross_sells_columns' => '2',
+        ],
+    ],
+];

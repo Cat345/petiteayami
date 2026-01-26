@@ -10,6 +10,10 @@ class FilterMenuArgs
     /**
      * Filters the arguments used to display a navigation menu.
      *
+     * @param array<string, mixed> $args
+     *
+     * @return array<string, mixed>
+     *
      * @link https://developer.wordpress.org/reference/hooks/wp_nav_menu_args/
      */
     public static function handle(array $args): array

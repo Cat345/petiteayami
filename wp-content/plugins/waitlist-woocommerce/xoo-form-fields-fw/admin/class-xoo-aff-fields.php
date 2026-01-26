@@ -9,6 +9,13 @@ class Xoo_Aff_Fields{
 	public $aff;
 	public $db_field;
 
+	public $field_groups = array(
+		'others' => array(
+			'title'		=> 'Others',
+			'priority' 	=> 1000
+		)
+	);
+
 
 	public function __construct( Xoo_Aff $aff ){
 		$this->aff = $aff;
@@ -513,6 +520,8 @@ class Xoo_Aff_Fields{
 
 			}
 
+		
+
 			$this->register_field_strings( $field_id );
 
 		}
@@ -537,6 +546,12 @@ class Xoo_Aff_Fields{
 
 		return $nonDeletableFields;
 
+	}
+
+
+	public function update_field_option( $value ){
+		$value = is_array( $value ) ? json_encode( $value ) : $value;
+		update_option( $this->db_field, $value );
 	}
 
 
@@ -574,6 +589,7 @@ class Xoo_Aff_Fields{
 			var xoo_aff_field_types 	= <?php echo json_encode( $this->types ); ?>;
 			var xoo_aff_field_sections 	= <?php echo json_encode( $this->sections ); ?>;
 			var xoo_aff_db_fields		= <?php echo $this->get_fields_data('json'); ?>;
+			var xoo_aff_field_groups  	= <?php echo json_encode( $this->field_groups ); ?>;
 			var xoo_aff_plugin_info 	= <?php echo json_encode( array(
 				'admin_page_slug' 	=> $this->aff->admin_page_slug,
 				'plugin_slug' 		=> $this->aff->plugin_slug
@@ -591,19 +607,46 @@ class Xoo_Aff_Fields{
 	 * @param 	array 		$settings 		Set settings value
 	 * @param 	int 		$field_priority Priority in which field displays
 	*/
-	public function add_field( $field_id, $field_type, $settings, $field_priority = null ){
+	public function add_field( $field_id, $field_type, $settings, $args = array() ){
 
 		if( !isset( $this->types[ $field_type ] ) || empty( $settings ) ) return; // Return if field type doesn't exist
 		$field_type_data = $this->types[ $field_type ];
+
+		if( is_int( $args ) ){ // earlier 4th argument was priority
+			$field_priority 	= $args;
+			$args 				= array();
+			$args['priority'] 	= $args;
+		}
 		
 		$this->fields[ $field_id ] = array(
-			'field_type' => $field_type,
-			'input_type' => $field_type_data[ 'type' ],
-			'settings' 	 => $settings,
-			'priority'	 => !$field_priority ? $this->set_default_priority() : $field_priority
+			'field_type' 	=> $field_type,
+			'input_type' 	=> $field_type_data[ 'type' ],
+			'settings' 	 	=> $settings,
+			'priority'	 	=> isset( $args['group'] ) ? $args['priority'] : $this->set_default_priority(),
+			'group' 		=> isset( $args['group'] ) ? $args['group'] : 'others',
+			'step' 			=> isset( $args['step'] ) ? $args['step'] : 1
 		) ;
 
 
+	}
+
+
+	public function add_group( $id, $title, $add_field = false, $priority = null, $args = array() ){
+
+		if( !$priority ){
+			$priority = !empty( $this->field_groups ) ?  ( end($this->field_groups)['priority'] + 10 ) : 10;
+		}
+
+		$this->field_groups[ $id ] = array_merge( array(
+			'title' 	=> 	$title,
+			'priority'	=> $priority,
+			'add_field' => $add_field
+		), $args );
+	}
+
+
+	public function get_field_groups(){
+		return $this->sort_by_priority( $this->field_groups );
 	}
 
 
@@ -695,7 +738,6 @@ class Xoo_Aff_Fields{
 		$fields_settings 	= $this->settings;
 
 		if( empty( $fields_settings ) ) return;
-
 
 		foreach ( $fields_settings as $field_type_id => $settings ) {
 			$priority = 10;

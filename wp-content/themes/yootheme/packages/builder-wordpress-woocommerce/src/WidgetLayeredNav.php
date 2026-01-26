@@ -13,18 +13,19 @@ class WidgetLayeredNav extends WC_Widget_Layered_Nav
     /**
      * Show dropdown layered nav.
      *
-     * @param array  $terms Terms.
+     * @param list<\WP_Term> $terms Terms.
      * @param string $taxonomy Taxonomy.
      * @param string $query_type Query Type.
      */
     protected function layered_nav_list($terms, $taxonomy, $query_type): bool
     {
-        global $wp;
-        $found = false;
-
         if ($taxonomy === $this->get_current_taxonomy()) {
-            return $found;
+            return false;
         }
+
+        global $wp;
+
+        $found = false;
 
         $term_counts = $this->get_filtered_term_product_counts(
             wp_list_pluck($terms, 'term_id'),
@@ -33,15 +34,6 @@ class WidgetLayeredNav extends WC_Widget_Layered_Nav
         );
         $_chosen_attributes = WC_Query::get_layered_nav_chosen_attributes();
         $taxonomy_filter_name = wc_attribute_taxonomy_slug($taxonomy);
-        $taxonomy_label = wc_attribute_label($taxonomy);
-
-        /* translators: %s: taxonomy name */
-        $any_label = apply_filters(
-            'woocommerce_layered_nav_any_label',
-            sprintf(__('Any %s', 'woocommerce'), $taxonomy_label),
-            $taxonomy_label,
-            $taxonomy,
-        );
 
         $current_values = $_chosen_attributes[$taxonomy]['terms'] ?? [];
 
@@ -120,20 +112,20 @@ class WidgetLayeredNav extends WC_Widget_Layered_Nav
         $jsTaxonomyFilterName = esc_js($taxonomy_filter_name);
         wc_enqueue_js(
             "
-				// Update value on change.
-				jQuery( '.list_layered_nav_{$jsTaxonomyFilterName}' ).on( 'change', function() {
-				
-				    var form = jQuery( this ).closest( 'form' );
+                // Update value on change.
+                jQuery( '.list_layered_nav_{$jsTaxonomyFilterName}' ).on( 'change', function() {
+                
+                    var form = jQuery( this ).closest( 'form' );
                     var value = form.find('li input').map(function (i, el) {
                         return el.checked ? el.value : '';
                     }).toArray().filter(Boolean).join(',');
 
                     jQuery( ':input[name=\"filter_{$jsTaxonomyFilterName}\"]' ).val( value );
 
-					// Submit form on change if standard dropdown.
-					form.trigger( 'submit' );					
-				});
-			",
+                    // Submit form on change if standard dropdown.
+                    form.trigger( 'submit' );
+                });
+            ",
         );
 
         return $found;

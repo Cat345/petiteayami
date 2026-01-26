@@ -7,7 +7,7 @@ if ($props['overlay_link']) { $props['title_link'] = ''; }
 if (!$props['grid_parallax'] && $props['grid_parallax_justify']) {
     $props['grid_parallax'] = '0';
 }
-if ($props['content_expand']) {
+if ($props['content_expand'] = $props['title_margin_auto'] ?: $props['meta_margin_auto'] ?: $props['content_margin_auto']) {
     if (in_array($props['overlay_position'], ['top', 'bottom'])) {
         $props['overlay_position'] = 'cover';
     }
@@ -45,8 +45,8 @@ $grid = $this->el('div', [
         'uk-child-width-[1-{@!grid_medium: auto}]{grid_medium}@m',
         'uk-child-width-[1-{@!grid_large: auto}]{grid_large}@l',
         'uk-child-width-[1-{@!grid_xlarge: auto}]{grid_xlarge}@xl',
-        'uk-flex-center {@grid_column_align} {@!grid_masonry}',
-        'uk-flex-middle {@grid_row_align} {@!grid_masonry}',
+        'uk-flex-center {@grid_column_align} {@!grid_masonry} {@!grid_parallax} {@!grid_parallax_justify}',
+        'uk-flex-middle {@grid_row_align} {@!grid_masonry} {@!grid_parallax} {@!grid_parallax_justify}',
         $props['grid_column_gap'] == $props['grid_row_gap'] ? 'uk-grid-{grid_column_gap}' : '[uk-grid-column-{grid_column_gap}] [uk-grid-row-{grid_row_gap}]',
         'uk-grid-divider {@grid_divider} {@!grid_column_gap: collapse} {@!grid_row_gap:collapse}' => count($children) > 1,
     ],

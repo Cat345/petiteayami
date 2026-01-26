@@ -293,6 +293,41 @@ class Scheduler extends Base_Model implements Model_Interface {
         return 'yes' === $is_enabled;
     }
 
+    /**
+     * Override the coupon expiration date for Store API validations.
+     *
+     * The WooCommerce Store API does not trigger `woocommerce_coupon_is_valid`
+     * when a coupon has an expiration date set. Because of this, coupons that
+     * should remain valid based on custom scheduling rules may be rejected too
+     * early.
+     *
+     * This filter forces the Store API to treat the coupon as non-expired
+     * (by returning `null` as the expiry date) if our custom schedule check
+     * determines that the coupon is valid. Otherwise, the original expiration
+     * date is returned.
+     *
+     * @since 4.7.1
+     * @access public
+     *
+     * @param string|null $date_expires Date expires.
+     * @param \WC_Coupon  $coupon WC_Coupon object.
+     * @return string|null Date expires.
+     */
+    public function maybe_override_date_expires( $date_expires, $coupon ) {
+        $coupon = new Advanced_Coupon( $coupon );
+
+        // Only override if scheduler is enabled for this coupon.
+        if ( ! $this->is_date_range_enabled( $coupon ) ) {
+            return $date_expires;
+        }
+
+        $schedule_error = $this->check_coupon_schedule_error( $coupon );
+        if ( is_array( $schedule_error ) && empty( $schedule_error ) ) {
+            return null; // treat as no expiry.
+        }
+        return $date_expires;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -313,6 +348,7 @@ class Scheduler extends Base_Model implements Model_Interface {
 
         add_filter( 'woocommerce_coupon_is_valid', array( $this, 'implement_coupon_error_message' ), 10, 2 );
         add_filter( 'woocommerce_coupon_error', array( $this, 'implement_coupon_error_message_block' ), 10, 3 );
+        add_filter( 'woocommerce_coupon_get_date_expires', array( $this, 'maybe_override_date_expires' ), 10, 2 );
         add_action( 'wp', array( $this, 'disable_wc_default_coupon_expiry_check' ) );
     }
 }

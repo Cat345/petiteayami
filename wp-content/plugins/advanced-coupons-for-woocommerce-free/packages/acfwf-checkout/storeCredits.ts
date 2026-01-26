@@ -6,6 +6,11 @@ declare var wc_checkout_params: any;
 const $ = jQuery;
 
 export default function storeCreditEvents() {
+  // Remove any existing handlers to prevent duplicates when re-initialized.
+  $(document.body).off('click', '.acfw-redeem-store-credit-form-field .button', applyStoreCredits);
+  $(document.body).off('click', '.acfw-remove-store-credits', removeStoreCredits);
+
+  // Add the event handlers
   $(document.body).on('click', '.acfw-redeem-store-credit-form-field .button', applyStoreCredits);
   $(document.body).on('click', '.acfw-remove-store-credits', removeStoreCredits);
 }

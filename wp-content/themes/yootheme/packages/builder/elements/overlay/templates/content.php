@@ -6,11 +6,7 @@
     <?php endif ?>
 
     <?php if ($props['video']) : ?>
-        <?php if ($this->iframeVideo($props['video'], [], false)) : ?>
-        <iframe src="<?= $props['video'] ?>"></iframe>
-        <?php else : ?>
-        <video src="<?= $props['video'] ?>"></video>
-        <?php endif ?>
+    <video src="<?= $props['video'] ?>"></video>
     <?php endif ?>
 
     <?php if ($props['hover_image']) : ?>
@@ -18,11 +14,7 @@
     <?php endif ?>
 
     <?php if ($props['hover_video']) : ?>
-        <?php if ($this->iframeVideo($props['hover_video'], [], false)) : ?>
-        <iframe src="<?= $props['hover_video'] ?>"></iframe>
-        <?php else : ?>
-        <video src="<?= $props['hover_video'] ?>"></video>
-        <?php endif ?>
+    <video src="<?= $props['hover_video'] ?>"></video>
     <?php endif ?>
 
     <?php if ($props['title'] != '') : ?>

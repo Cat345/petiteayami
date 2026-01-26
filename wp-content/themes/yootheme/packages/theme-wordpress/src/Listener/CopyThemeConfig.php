@@ -11,7 +11,7 @@ class CopyThemeConfig
      *
      * @link https://developer.wordpress.org/reference/hooks/after_switch_theme/
      */
-    public static function handle()
+    public static function handle(): void
     {
         if (!is_child_theme()) {
             return;

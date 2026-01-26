@@ -37,7 +37,7 @@ class BWFAN_Public {
 	/**
 	 * Check is unsubscribe page
 	 *
-	 * @param $settings
+	 * @param array $settings
 	 *
 	 * @return bool
 	 */
@@ -49,13 +49,32 @@ class BWFAN_Public {
 		return is_page( intval( $settings['bwfan_unsubscribe_page'] ) );
 	}
 
-	public function enqueue_assets() {
-		$setting_data = BWFAN_Common::get_global_settings();
+	/**
+	 * Check is manage profile page
+	 *
+	 * @param array $settings
+	 *
+	 * @return bool
+	 */
+	public function is_manage_profile_page( $settings = [] ) {
+		if( empty( $settings['bwfan_profile_page'] ) ) {
+			global $post;
+			$page_content = $post instanceof WP_Post ? get_post_field( 'post_content', $post->ID ) : '';
+
+			return has_shortcode( $page_content, 'fka_contact_profile_form' );
+		}
+
+		return is_page( intval( $settings['bwfan_profile_page'] ) );
+	}
+	public function enqueue_assets( $setting = [] ) {
+		$setting_data = empty( $setting ) ? BWFAN_Common::get_global_settings() : $setting;
 
 		$should_include_scripts = ( bwfan_is_woocommerce_active() && is_checkout() ) || // Checkout page for abandoned cart & dob field
 		                          ( bwfan_is_woocommerce_active() && is_account_page() && ! empty( $setting_data['bwfan_dob_field_my_account'] ) ) || // My account page for DOB field
 		                          $this->is_unsubscribe_page( $setting_data ) || // Unsubscribe page
-		                          ( function_exists( 'WFOPP_Core' ) && WFOPP_Core()->optin_pages->is_wfop_page() ) || apply_filters( 'bwfan_public_scripts_include', false );
+		                          $this->is_manage_profile_page( $setting_data ) || // Manage Profile page
+		                          ( function_exists( 'WFOPP_Core' ) && WFOPP_Core()->optin_pages->is_wfop_page() )
+		                          || apply_filters( 'bwfan_public_scripts_include', false );
 
 		if ( ! $should_include_scripts ) {
 			return;
@@ -65,6 +84,7 @@ class BWFAN_Public {
 
 		$data['bwfan_checkout_js_data'] = 'no';
 		$data['bwfan_no_thanks']        = __( 'No Thanks', 'wp-marketing-automations' );
+		$data['is_user_loggedin']       = 0;
 		$data['ajax_url']               = admin_url( 'admin-ajax.php' );
 		$data['wc_ajax_url']            = class_exists( 'WC_AJAX' ) ? WC_AJAX::get_endpoint( '%%endpoint%%' ) : '';
 		$data['ajax_nonce']             = wp_create_nonce( 'bwfan-action-admin' );
@@ -112,12 +132,100 @@ class BWFAN_Public {
 			$data[ 'bwfan_ab_email_consent_message_' . $site_language ] = $setting_data[ 'bwfan_ab_email_consent_message_' . $site_language ];
 		}
 
+		if ( isset( $setting_data[ 'bwfan_profile_message_text' ] ) ) {
+			$data[ 'profile_success' ] = $setting_data[ 'bwfan_profile_message_text' ];
+		}
+
+		// Messages for the profile page
+		$data['email_not_fill'] = __( 'Please fill the email field.', 'wp-marketing-automations' );
+		$data['email_not_valid'] = __( 'Please enter a valid email.', 'wp-marketing-automations' );
+		$data['dob_not_valid'] = __( 'Please enter a valid date of birth.', 'wp-marketing-automations' );
+		$data['dob_not_in_future'] = __( 'Date of birth cannot be in the future.', 'wp-marketing-automations' );
+		$data['dob_not_all_parts'] = __( 'Please select all date of birth fields (day, month, and year).', 'wp-marketing-automations' );
+
 		$data = apply_filters( 'bwfan_external_checkout_custom_data', $data );
 
-		wp_enqueue_style( 'bwfan-public', BWFAN_PLUGIN_URL . '/assets/css/bwfan-public.min.css', array(), BWFAN_VERSION_DEV );
+		$suffix = ( defined( 'BWFAN_IS_DEV' ) && true === BWFAN_IS_DEV ) ? '' : '.min';
+
+		wp_enqueue_style( 'bwfan-public', BWFAN_PLUGIN_URL . '/assets/css/bwfan-public' . $suffix . '.css', array(), BWFAN_VERSION_DEV );
+
+		$isPreview = filter_input( INPUT_GET, 'bwf-preview' );
+		$isPreview = ! empty( $isPreview ) ? sanitize_key( $isPreview ) : '';
+
+		// Enqueue the public styles for prebuild pages
+		if( ( $this->is_manage_profile_page( $setting_data ) && ! empty( $setting_data['bwfan_profile_page_type'] ) && 'prebuild' === $setting_data['bwfan_profile_page_type'] ) ||
+		    ( $this->is_unsubscribe_page( $setting_data ) && ! empty( $setting_data['bwfan_unsubscribe_page_type'] ) && 'prebuild' === $setting_data['bwfan_unsubscribe_page_type'] ) ||
+		    ( 'prebuild' === $isPreview )
+		) {
+			$css_var = [
+				'bwfan-brand-color'   => ! empty( $setting_data['bwfan_setting_business_color'] ) ? $setting_data['bwfan_setting_business_color'] : '',
+				'bwfan-brand-color-border'   => ! empty( $setting_data['bwfan_setting_business_color'] ) ? $this->adjust_brightness( '#DEDFEA', - 30 ) : '',
+				'bwfan-brand-color-contrast' => ! empty( $setting_data['bwfan_setting_business_color'] ) ? $this->get_contrast_color( $setting_data['bwfan_setting_business_color'] ) : '',
+			];
+
+
+
+			$custom_css = ":root { ";
+			foreach ( $css_var as $key => $value ) {
+				$custom_css .= "--" . esc_attr( $key ) . ": " . esc_attr( $value ) . "; ";
+			}
+			$custom_css .= "}";
+			wp_register_style( 'bwfan-public-var', false );
+			wp_enqueue_style( 'bwfan-public-var' );
+			wp_add_inline_style( 'bwfan-public-var', $custom_css );
+		}
+
 
 		wp_enqueue_script( 'bwfan-public', BWFAN_PLUGIN_URL . '/assets/js/bwfan-public.js', array( 'jquery' ), BWFAN_VERSION_DEV, true );
 		wp_localize_script( 'bwfan-public', 'bwfanParamspublic', $data );
+	}
+
+	public function adjust_brightness($hexColor, $steps = -30) {
+		// Handle empty input
+		if (empty($hexColor)) {
+			return '#000000';
+		}
+
+		// Validate and sanitize inputs
+		$steps = max(-255, min(255, $steps));
+		$hexColor = ltrim($hexColor, '#');
+
+		// Handle 3-digit hex codes
+		if (strlen($hexColor) === 3) {
+			$hexColor = $hexColor[0] . $hexColor[0] . $hexColor[1] . $hexColor[1] . $hexColor[2] . $hexColor[2];
+		}
+
+		// Quick return for common cases
+		if ($steps === 0) {
+			return '#' . $hexColor;
+		}
+
+		// More efficient RGB conversion using sscanf
+		list($r, $g, $b) = sscanf($hexColor, "%2x%2x%2x");
+
+		// Adjust and clamp RGB values
+		$r = max(0, min(255, $r + $steps));
+		$g = max(0, min(255, $g + $steps));
+		$b = max(0, min(255, $b + $steps));
+
+		// Return formatted hex color
+		return sprintf("#%02x%02x%02x", $r, $g, $b);
+	}
+
+	public function get_contrast_color( $hexColor ) {
+		// Remove "#" if present
+		$hexColor = ltrim( $hexColor, '#' );
+
+		// Convert to RGB
+		$r = hexdec( substr( $hexColor, 0, 2 ) );
+		$g = hexdec( substr( $hexColor, 2, 2 ) );
+		$b = hexdec( substr( $hexColor, 4, 2 ) );
+
+		// Calculate luminance
+		$luminance = ( 0.299 * $r + 0.587 * $g + 0.114 * $b );
+
+		// Return black or white depending on brightness
+		return ( $luminance > 186 ) ? '#000000' : '#FFFFFF';
 	}
 
 	/**

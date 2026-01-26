@@ -4,14 +4,16 @@ namespace YOOtheme\Builder\Newsletter;
 
 class CampaignMonitorProvider extends AbstractProvider
 {
-    protected $apiEndpoint = 'https://api.createsend.com/api/v3.1';
+    protected string $apiEndpoint = 'https://api.createsend.com/api/v3.1';
 
     /**
      * @inheritdoc
      */
-    public function lists($provider)
+    public function lists(array $provider): array
     {
-        if (!($result = $this->get('clients.json')) || !$result['success']) {
+        $result = $this->get('clients.json');
+
+        if (!$result['success']) {
             throw new \Exception($result['data']);
         }
 
@@ -24,7 +26,8 @@ class CampaignMonitorProvider extends AbstractProvider
             throw new \Exception('Invalid client id.');
         }
 
-        if (!($result = $this->get("/clients/{$clientId}/lists.json")) || !$result['success']) {
+        $result = $this->get("/clients/{$clientId}/lists.json");
+        if (!$result['success']) {
             throw new \Exception($result['data']);
         }
 
@@ -33,13 +36,13 @@ class CampaignMonitorProvider extends AbstractProvider
             $result['data'],
         );
 
-        return compact('clients', 'lists');
+        return ['clients' => $clients, 'lists' => $lists];
     }
 
     /**
      * @inheritdoc
      */
-    public function subscribe($email, $data, $provider)
+    public function subscribe(string $email, array $data, array $provider): bool
     {
         if (empty($provider['list_id'])) {
             throw new \Exception('No list selected.');
@@ -63,7 +66,7 @@ class CampaignMonitorProvider extends AbstractProvider
     /**
      * @inheritdoc
      */
-    protected function getHeaders()
+    protected function getHeaders(): array
     {
         return parent::getHeaders() + [
             'Authorization' => 'Basic ' . base64_encode("{$this->apiKey}:nopass"),
@@ -73,7 +76,7 @@ class CampaignMonitorProvider extends AbstractProvider
     /**
      * @inheritdoc
      */
-    protected function findError($response, $formattedResponse)
+    protected function findError($response, $formattedResponse): string
     {
         return isset($formattedResponse['Message'])
             ? sprintf('%d: %s', $formattedResponse['Code'], $formattedResponse['Message'])

@@ -1,6 +1,11 @@
 <?php
 if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
+	/**
+	 * Bwfcrm Model Contact
+	 *
+	 * @since 1.0.0
+	 */
 	class BWFCRM_Model_Contact extends BWFAN_Model {
 		static $primary_key = 'ID';
 
@@ -45,8 +50,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		}
 
 		public static function get_contacts( $search = '', $limit = 25, $offset = 0, $normalized_filters = array(), $additional_info = array(), $filter_match = ' AND ' ) {
-			$grab_totals = is_array( $additional_info ) && isset( $additional_info['grab_totals'] ) && true === $additional_info['grab_totals'];
-			$only_count  = is_array( $additional_info ) && isset( $additional_info['only_count'] ) && true === $additional_info['only_count'];
+			$grab_totals    = is_array( $additional_info ) && isset( $additional_info['grab_totals'] ) && true === $additional_info['grab_totals'];
+			$only_count     = is_array( $additional_info ) && isset( $additional_info['only_count'] ) && true === $additional_info['only_count'];
+			$customer_count = is_array( $additional_info ) && isset( $additional_info['customer_count'] ) && true === $additional_info['customer_count'];
 
 			/** Fallback for limit */
 			if ( false === $only_count && empty( $limit ) ) {
@@ -72,20 +78,32 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$total_count = '';
 			if ( (bool) $grab_totals || (bool) $only_count ) {
 				/** Total Count (For Pagination) */
-				$total_count = $wpdb->get_var( $sql_queries['total'] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$total_count = $wpdb->get_row( $sql_queries['total'], ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				if ( (bool) $only_count ) {
-					return array(
+					$data = [
 						'contacts' => array(),
-						'total'    => $total_count,
-					);
+						'total'    => $total_count['contact_count'] ?? 0,
+					];
+					if ( $customer_count ) {
+						$data['customer_count'] = $total_count['customer_count'] ?? 0;
+						$data['total_revenue']  = $total_count['total_revenue'] ?? 0;
+					}
+
+					return $data;
 				}
 			}
 
 			$time     = microtime( true );
 			$contacts = $wpdb->get_results( $sql_queries['base'], ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$time     = microtime( true ) - $time;
-			self::set_log( 'Time to execute the query: ' . $time . ' secs' );
 
+			/** Log the query if it takes more than threshold seconds */
+			$slow_query_threshold = apply_filters( 'bwfan_slow_query_threshold', 4 );
+			if ( $time >= $slow_query_threshold ) {
+				self::log_slow_query( $sql_queries['base'], $time, $slow_query_threshold );
+			}
+
+			self::set_log( 'Time to execute the query: ' . $time . ' secs' );
 			self::log();
 
 			/** In case there is DB error and no contacts */
@@ -110,17 +128,18 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			return array(
 				'contacts' => $contacts,
-				'total'    => $total_count,
+				'total'    => $total_count['contact_count'] ?? 0,
 			);
 		}
 
 		public static function _get_contacts_sql( $search = '', $limit = 25, $offset = 0, $filters = array(), $additional_info = array(), $filter_match = ' AND ', $column_preference = false ) {
-			$should_send_wc = is_array( $additional_info ) && isset( $additional_info['customer_data'] ) && true === $additional_info['customer_data'];
-			$should_send_cf = is_array( $additional_info ) && isset( $additional_info['grab_custom_fields'] ) && true === $additional_info['grab_custom_fields'];
-			$contact_mode   = is_array( $additional_info ) && isset( $additional_info['fetch_base'] ) ? absint( $additional_info['fetch_base'] ) : 1;
-			$exclude_unsubs = is_array( $additional_info ) && isset( $additional_info['exclude_unsubs'] ) && true === $additional_info['exclude_unsubs'];
-			$order_by       = is_array( $additional_info ) && isset( $additional_info['order_by'] ) && ! empty( $additional_info['order_by'] ) ? $additional_info['order_by'] : 'last_modified';
-			$order          = is_array( $additional_info ) && isset( $additional_info['order'] ) && ! empty( $additional_info['order'] ) ? $additional_info['order'] : 'DESC';
+			$should_send_wc  = is_array( $additional_info ) && isset( $additional_info['customer_data'] ) && true === $additional_info['customer_data'];
+			$should_send_wcs = is_array( $additional_info ) && isset( $additional_info['wcs_data'] ) && true === $additional_info['wcs_data'];
+			$should_send_cf  = is_array( $additional_info ) && isset( $additional_info['grab_custom_fields'] ) && true === $additional_info['grab_custom_fields'];
+			$contact_mode    = is_array( $additional_info ) && isset( $additional_info['fetch_base'] ) ? absint( $additional_info['fetch_base'] ) : 1;
+			$exclude_unsubs  = is_array( $additional_info ) && isset( $additional_info['exclude_unsubs'] ) && true === $additional_info['exclude_unsubs'];
+			$order_by        = is_array( $additional_info ) && isset( $additional_info['order_by'] ) && ! empty( $additional_info['order_by'] ) ? $additional_info['order_by'] : 'last_modified';
+			$order           = is_array( $additional_info ) && isset( $additional_info['order'] ) && ! empty( $additional_info['order'] ) ? $additional_info['order'] : 'DESC';
 
 			$start_id       = is_array( $additional_info ) && isset( $additional_info['start_id'] ) && ! empty( $additional_info['start_id'] ) ? absint( $additional_info['start_id'] ) : 0;
 			$end_id         = is_array( $additional_info ) && isset( $additional_info['end_id'] ) && ! empty( $additional_info['end_id'] ) ? absint( $additional_info['end_id'] ) : 0;
@@ -134,9 +153,12 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$include_ids = array_map( 'absint', $include_ids );
 			$include_ids = implode( ',', $include_ids );
 
+			$customer_count = ! empty( $additional_info['customer_count'] );
+
 			global $wpdb;
 			$contact_table        = $wpdb->prefix . 'bwf_contact';
 			$customer_table       = $wpdb->prefix . 'bwf_wc_customers';
+			$wcs_subscriber_table = $wpdb->prefix . 'bwfan_wcs_subscriber';
 			$contact_fields_table = $wpdb->prefix . 'bwf_contact_fields';
 
 			/** Extract status filter, and unset the status filter if unsubscribe value */
@@ -166,6 +188,13 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 			/** Excludes Un-subscribers or not */
 			$unsubs_query = self::_get_unsubscribers_query( $status_filter, $exclude_unsubs, $additional_info );
+			$unsubs_join  = '';
+
+			// Handle LEFT JOIN approach for unsubscribe table
+			if ( is_array( $unsubs_query ) && isset( $unsubs_query['join'] ) ) {
+				$unsubs_join  = $unsubs_query['join'];
+				$unsubs_query = $unsubs_query['where'];
+			}
 
 			/** Contact (wp) and Customer (wc) SQL Queries */
 			$filter_query = bwfan_is_autonami_pro_active() ? self::_get_filters_sql( $filters, $filter_match ) : [];
@@ -177,9 +206,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			/** Columns needed and JOINS */
-			$wp_wc_columns = $should_send_wc ? ' c.*, wc.aov, wc.id as customer_id, wc.l_order_date,wc.f_order_date,wc.total_order_count, wc.total_order_value, wc.purchased_products, wc.purchased_products_cats, wc.purchased_products_tags, wc.used_coupons' : ' c.*';
-			$join_wc_query = ( isset( $filters['wc'] ) || $should_send_wc ) ? "LEFT JOIN $customer_table as wc ON c.id = wc.cid" : '';
-			$join_cf_query = '';
+			$wp_wc_columns  = $should_send_wc ? ' c.*, wc.aov, wc.id as customer_id, wc.l_order_date,wc.f_order_date,wc.total_order_count, wc.total_order_value, wc.purchased_products, wc.purchased_products_cats, wc.purchased_products_tags, wc.used_coupons' : ' c.*';
+			$join_wc_query  = ( isset( $filters['wc'] ) || $should_send_wc || $customer_count ) ? "LEFT JOIN $customer_table as wc ON c.id = wc.cid" : '';
+			$join_wcs_query = ( isset( $filters['wcs'] ) || $should_send_wcs ) ? "LEFT JOIN $wcs_subscriber_table as wcs ON c.id = wcs.cid" : '';
+			$join_cf_query  = '';
 
 			/**
 			 * $should_send_cf - passed from contact export as need to show the data from contact field table
@@ -201,28 +231,21 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$group_by_query = apply_filters( 'bwfan_contact_sql_group_by_query', $group_by_query, $filters['custom'] );
 				$group_by_query = ! empty( $group_by_query ) ? 'GROUP BY ' . $group_by_query : '';
 			}
-
+			$join_cf_query = '';
 			/** Checking column preferences  */
 			if ( true !== $column_preference ) {
 				/** Columns needed and JOINS */
-				$wp_wc_columns = $should_send_wc ? ' c.*, wc.aov, wc.id as customer_id, wc.l_order_date, wc.f_order_date, wc.total_order_count, wc.total_order_value, wc.purchased_products, wc.purchased_products_cats, wc.purchased_products_tags, wc.used_coupons' : ' c.*';
-				$join_wc_query = ( isset( $filters['wc'] ) || $should_send_wc ) ? "LEFT JOIN $customer_table as wc ON c.id = wc.cid" : '';
-				$join_cf_query = '';
+				$wp_wc_columns  = $should_send_wc ? ' c.*, wc.aov, wc.id as customer_id, wc.l_order_date, wc.f_order_date, wc.total_order_count, wc.total_order_value, wc.purchased_products, wc.purchased_products_cats, wc.purchased_products_tags, wc.used_coupons' : ' c.*';
+				$join_wc_query  = ( isset( $filters['wc'] ) || $should_send_wc || $customer_count ) ? "LEFT JOIN $customer_table as wc ON c.id = wc.cid" : '';
+				$join_wcs_query = ( isset( $filters['wcs'] ) || $should_send_wcs ) ? "LEFT JOIN $wcs_subscriber_table as wcs ON c.id = wcs.cid" : '';
 				if ( $should_send_cf || isset( $filters['cm'] ) ) {
 					$contact_field_columns = self::_get_contact_fields_columns_sql();
 					$wp_wc_columns         = $should_send_cf && ! empty( $contact_field_columns ) ? "$wp_wc_columns, " . $contact_field_columns : $wp_wc_columns;
 					$join_cf_query         = "LEFT JOIN $contact_fields_table as `cm` ON c.id = cm.cid";
 				}
-
-				if ( isset( $filters['custom'] ) ) {
-					$join_cf_query = apply_filters( 'bwfan_contact_sql_join_query', $join_cf_query, $filters['custom'] );
-				}
-
-			} else {
-				$join_cf_query = '';
-				if ( isset( $filters['custom'] ) ) {
-					$join_cf_query = apply_filters( 'bwfan_contact_sql_join_query', $join_cf_query, $filters['custom'] );
-				}
+			}
+			if ( isset( $filters['custom'] ) ) {
+				$join_cf_query = apply_filters( 'bwfan_contact_sql_join_query', $join_cf_query, $filters['custom'] );
 			}
 
 			/** Implode Filters SQL */
@@ -238,7 +261,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				/** Search Contact by f_name, l_name, contact_no (phone), email */
 				$search_query = "AND ( c.email like '%" . esc_sql( $search ) . "%' OR c.f_name like '%" . esc_sql( $search ) . "%' OR c.l_name LIKE '%" . esc_sql( $search ) . "%' OR c.contact_no LIKE '%" . esc_sql( $search ) . "%' )";
 
-				/** Get f_name and l_name from search string and append in query */
+				/** Get f_name and l_name from search string and append in a query */
 				if ( false !== strpos( $search, ' ' ) ) {
 					$search_arr   = explode( ' ', $search );
 					$first_name   = isset( $search_arr[0] ) ? $search_arr[0] : '';
@@ -250,25 +273,25 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			/** Check if one of Email or Phone must not empty */
 			$empty_email_check = ( 2 === $contact_mode ) ? "AND ( c.contact_no != '' AND c.contact_no IS NOT NULL )" : "AND ( c.email != '' AND c.email IS NOT NULL )";
 			/** Order, Order By, Limit, Offset */
-			$order_column_alias = in_array( $order_by, self::$wc_filters ) ? 'wc' : 'c';
+			$order_column_alias = in_array( $order_by, self::$wc_filters, true ) ? 'wc' : 'c';
 			$order_by_query     = "ORDER BY {$order_column_alias}.{$order_by} {$order}";
-			$pagination_query   = empty( $limit ) ? '' : "limit $offset, $limit";
+			$pagination_query   = empty( $limit ) ? '' : sprintf( 'limit %d, %d', absint( $offset ), absint( $limit ) );
 
 			/** Exclude Contacts from this query */
-			$exclude_ids_query = ! empty( $exclude_ids ) ? "AND c.id NOT IN ({$exclude_ids})" : '';
+			$exclude_ids_query = ! empty( $exclude_ids ) ? "AND c.id NOT IN (" . esc_sql( $exclude_ids ) . ")" : '';
 
 			/** Include Contacts into this query */
-			$include_ids_query = ! empty( $include_ids ) ? "AND c.id IN ({$include_ids})" : '';
+			$include_ids_query = ! empty( $include_ids ) ? "AND c.id IN (" . esc_sql( $include_ids ) . ")" : '';
 
 			/** Start ID and End ID queries */
-			$start_id_query  = ! empty( $start_id ) ? "AND c.id > $start_id" : '';
+			$start_id_query  = ! empty( $start_id ) ? sprintf( 'AND c.id > %d', absint( $start_id ) ) : '';
 			$end_id_operator = ( true === $exclude_end_id ) ? '<' : '<=';
-			$end_id_query    = ! empty( $end_id ) ? "AND c.id $end_id_operator $end_id" : '';
+			$end_id_query    = ! empty( $end_id ) ? sprintf( 'AND c.id %s %d', $end_id_operator, absint( $end_id ) ) : '';
 
 			if ( true === $column_preference ) {
 				$queries           = self::get_column_preferences_query( $join_cf_query, $join_wc_query, $status_filter, $filters, $additional_info );
-				$base_query        = $queries['base_query'] . " $join_cf_query WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query $group_by_query $order_by_query $pagination_query";
-				$total_count_query = $queries['count_query'] . " $join_cf_query WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query ";
+				$base_query        = $queries['base_query'] . " $join_cf_query $unsubs_join WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query $group_by_query $order_by_query $pagination_query";
+				$total_count_query = $queries['count_query'] . " $join_cf_query $unsubs_join WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query ";
 
 				return array(
 					'base'           => $base_query,
@@ -276,9 +299,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					'needs_to_added' => $queries['needs_to_added']
 				);
 			}
-			$base_query = "SELECT $wp_wc_columns FROM $contact_table as c $join_wc_query $join_cf_query WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query $group_by_query $order_by_query $pagination_query";
+			$base_query = "SELECT $wp_wc_columns FROM $contact_table as c $join_wc_query $join_cf_query $unsubs_join WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query $group_by_query $order_by_query $pagination_query";
 
-			$total_count_query = "SELECT COUNT(DISTINCT c.id) FROM $contact_table as c $join_wc_query $join_cf_query WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query";
+			$customer_count_data = $customer_count ? ", COUNT(DISTINCT wc.id) AS customer_count, sum(wc.`total_order_value`) AS total_revenue" : '';
+			$total_count_query = "SELECT COUNT(DISTINCT c.id) AS contact_count  $customer_count_data FROM $contact_table as c $join_wc_query $join_cf_query $unsubs_join WHERE 1=1 $empty_email_check $exclude_ids_query $include_ids_query $start_id_query $end_id_query $filter_query $search_query $unsubs_query";
 
 			return array(
 				'base'  => $base_query,
@@ -286,12 +310,32 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			);
 		}
 
+		/**
+		 * Get unsubscribe query using NOT EXISTS approach
+		 *
+		 * @param array $filter
+		 * @param bool $exclude_unsubs
+		 * @param array $additional_info
+		 *
+		 * @return array|string|string[]
+		 */
 		public static function _get_unsubscribers_query( $filter, $exclude_unsubs = false, $additional_info = [] ) {
+			global $wpdb;
+			$unsubscribe_table = $wpdb->prefix . 'bwfan_message_unsubscribe';
+
+			/** Allow filtering the unsubscribe query approach */
+			$use_left_join = apply_filters( 'bwfan_contact_use_left_join', false, $filter, $additional_info );
+
+			if ( true === $use_left_join ) {
+				/** Use LEFT JOIN approach for better performance */
+				return self::_get_unsubscribers_query_with_join( $filter, $exclude_unsubs, $additional_info );
+			}
+
+			/** Default NOT EXISTS approach */
 			$exclude_unsub_query = "  NOT EXISTS ";
 			$include_unsub_query = " EXISTS ";
-			global $wpdb;
-			$email_query      = "(SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub WHERE c.email = unsub.recipient )";
-			$contact_no_query = "(SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub1 WHERE c.contact_no = unsub1.recipient )";
+			$email_query         = "(SELECT 1 FROM {$unsubscribe_table} AS unsub WHERE c.email = unsub.recipient )";
+			$contact_no_query    = "(SELECT 1 FROM {$unsubscribe_table} AS unsub1 WHERE c.contact_no = unsub1.recipient )";
 
 			if ( true === $exclude_unsubs ) {
 				return "AND " . "( $exclude_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
@@ -317,12 +361,74 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return "AND " . "( $include_unsub_query  $email_query OR $include_unsub_query $contact_no_query )";
 			}
 
-			/** Exclude Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is' */
-			if ( 'is' === $filter['rule'] && in_array( $filter_value, array( 0, 1, 2 ) ) ) {
+			/**
+			 * Exclude Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is'
+			 * Status values: 0 = unverified, 1 = subscribed, 2 = bounced, 3 = unsubscribed, 4 = soft bounced
+			 */
+			if ( 'is' === $filter['rule'] && in_array( $filter_value, array( 0, 1, 2, 4 ), true ) ) {
 				return "AND " . "( $exclude_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
 			}
 
 			return '';
+		}
+
+		/**
+		 * Get unsubscribe query using LEFT JOIN approach for better performance
+		 *
+		 * @param array $filter
+		 * @param bool $exclude_unsubs
+		 * @param array $additional_info
+		 *
+		 * @return array
+		 */
+		public static function _get_unsubscribers_query_with_join( $filter, $exclude_unsubs = false, $additional_info = [] ) {
+			global $wpdb;
+			$unsubscribe_table = $wpdb->prefix . 'bwfan_message_unsubscribe';
+			$where_query       = '';
+
+			/** Add LEFT JOINs for unsubscribe table */
+			$join_query = "LEFT JOIN {$unsubscribe_table} AS unsub_email ON c.email = unsub_email.recipient ";
+			$join_query .= "LEFT JOIN {$unsubscribe_table} AS unsub_phone ON c.contact_no = unsub_phone.recipient ";
+
+			if ( true === $exclude_unsubs ) {
+				$where_query = "AND unsub_email.recipient IS NULL AND unsub_phone.recipient IS NULL";
+			} elseif ( ! empty( $additional_info['include_unsubscribe'] ) ) {
+				$where_query = "AND (unsub_email.recipient IS NOT NULL OR unsub_phone.recipient IS NOT NULL)";
+			}
+			if ( ! empty( $where_query ) ) {
+				return [
+					'join'  => $join_query,
+					'where' => $where_query
+				];
+			}
+
+			/** Has to be valid filter */
+			if ( ! is_array( $filter ) || ! isset( $filter['rule'] ) ) {
+				return [
+					'join'  => '',
+					'where' => ''
+				];
+			}
+			$filter_value = isset( $filter['value'] ) ? absint( $filter['value'] ) : '';
+
+			/** when "status is not unsubscribed" */
+			if ( 'is_not' === $filter['rule'] && 3 === $filter_value ) {
+				$where_query = "AND unsub_email.recipient IS NULL AND unsub_phone.recipient IS NULL";
+			} elseif ( 'is' === $filter['rule'] && 3 === $filter_value ) {
+				/** Include Un-subscribers when "status is unsubscribed" */
+				$where_query = "AND (unsub_email.recipient IS NOT NULL OR unsub_phone.recipient IS NOT NULL)";
+			} elseif ( 'is' === $filter['rule'] && in_array( $filter_value, array( 0, 1, 2, 4 ), true ) ) {
+				/**
+				 * Exclude Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is'
+				 * Status values: 0 = unverified, 1 = subscribed, 2 = bounced, 3 = unsubscribed, 4 = soft bounced
+				 */
+				$where_query = "AND unsub_email.recipient IS NULL AND unsub_phone.recipient IS NULL";
+			}
+
+			return [
+				'join'  => $join_query,
+				'where' => $where_query
+			];
 		}
 
 		public static function _get_filters_sql( $filters, $filter_match ) {
@@ -415,14 +521,14 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					self::$filter_queries[] = "( {$filter_group_key}.{$key} IS NOT NULL AND {$filter_group_key}.{$key} NOT LIKE '[]' )";
 					continue;
 				}
-				$rule     = in_array( $filter['rule'], array( 'contains', 'is', 'any', 'all' ) ) ? 'LIKE' : 'NOT LIKE';
+				$rule     = in_array( $filter['rule'], array( 'contains', 'is', 'any', 'all' ), true ) ? 'LIKE' : 'NOT LIKE';
 				$sub_rule = ( 'LIKE' === $rule ) && ( 'all' !== $filter['rule'] ) ? 'OR' : 'AND';
 
 				/** Filter hook to modify query */
 				$modified = apply_filters( 'bwfan_modify_json_query', false, $val_item, $filter, $filter_group_key );
 
 				if ( false === $modified ) {
-					$val_item = array_map( function ( $val ) use ( $rule, $key, $sub_rule, $filter_group_key ) {
+					$val_item = array_map( function ( $val ) use ( $rule, $key, $filter_group_key ) {
 						return "$filter_group_key.$key $rule '%\"$val\"%'";
 					}, $val_item );
 				} else {
@@ -502,7 +608,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$if_column_exists = '';
-			if ( in_array( $filter['rule'], array( 'not_contains', 'is_not', 'is_blank' ) ) ) {
+			if ( in_array( $filter['rule'], array( 'not_contains', 'is_not', 'is_blank' ), true ) ) {
 				$if_column_exists = "{$filter_group_key}.{$filter_key} IS NULL OR";
 			}
 
@@ -551,7 +657,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( bwfan_is_autonami_pro_active() && version_compare( BWFAN_PRO_VERSION, '3.4.0', '>' ) && intval( $filter['type'] ) === BWFCRM_Filters::$TYPE_DATETIME ) {
 				$format = 'Y-m-d H:i:s';
 			}
-			if ( bwfan_is_autonami_pro_active() && version_compare( BWFAN_PRO_VERSION, '3.4.0', '>' ) && intval( $filter['type'] ) == BWFCRM_Filters::$TYPE_TIME ) {
+			if ( bwfan_is_autonami_pro_active() && version_compare( BWFAN_PRO_VERSION, '3.4.0', '>' ) && intval( $filter['type'] ) === BWFCRM_Filters::$TYPE_TIME ) {
 				$format = 'H:i';
 			}
 
@@ -560,8 +666,8 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$filter_before_date = bwfcrm_maybe_get_datetime( $filter['value'][0], $format );
 				$filter_after_date  = bwfcrm_maybe_get_datetime( $filter['value'][1], $format );
 
-				$filter_before_date = date( $format, $filter_before_date->getTimestamp() );
-				$filter_after_date  = date( $format, $filter_after_date->getTimestamp() );
+				$filter_before_date = gmdate( $format, $filter_before_date->getTimestamp() );
+				$filter_after_date  = gmdate( $format, $filter_after_date->getTimestamp() );
 
 				if ( 'Y-m-d' === $format ) {
 					$filter_before_date = "$filter_before_date 00:00:00";
@@ -572,7 +678,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			} else {
 				$filter_value = bwfcrm_maybe_get_datetime( $filter['value'], $format );
 
-				$filter_date = date( $format, $filter_value->getTimestamp() );
+				$filter_date = gmdate( $format, $filter_value->getTimestamp() );
 
 				if ( 'Y-m-d' === $format ) {
 					$filter_before_date = "$filter_date 00:00:00";
@@ -642,6 +748,14 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					}
 
 					return;
+				case 'wcs_has_active_subscription':
+					if ( 'yes' === $filter_value ) {
+						self::$filter_queries[] = "(wcs.active_subs_count IS NOT NULL AND wcs.active_subs_count != '' AND wcs.active_subs_count > 0)";
+					} else {
+						self::$filter_queries[] = "(wcs.active_subs_count IS NULL OR wcs.active_subs_count = '' OR wcs.active_subs_count = 0)";
+					}
+
+					return;
 			}
 		}
 
@@ -653,7 +767,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			/** Only on Status filter */
 			/** Include Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is_not' */
 			$include_unsub_query_or = '';
-			if ( 'status' === $filter_key && 'is_not' === $filter_rule && in_array( $filter_value, array( 0, 1, 2 ) ) ) {
+			if ( 'status' === $filter_key && 'is_not' === $filter_rule && in_array( $filter_value, array( 0, 1, 2 ), true ) ) {
 				/** Using OR query because contact maybe not fall within status (0,1,2), but is present in unsubscribed table */ global $wpdb;
 				$include_unsub_query_or = "OR EXISTS (SELECT 1 FROM {$wpdb->prefix}bwfan_message_unsubscribe AS unsub WHERE c.email = unsub.recipient )";
 			}
@@ -703,7 +817,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$if_column_exists = '';
-			if ( in_array( $filter['rule'], array( 'less_than', 'is_not', 'is_blank', 'less_than_equal' ) ) ) {
+			if ( in_array( $filter['rule'], array( 'less_than', 'is_not', 'is_blank', 'less_than_equal' ), true ) ) {
 				$if_column_exists = "{$filter_group_key}.{$filter_key} IS NULL OR";
 			}
 
@@ -712,7 +826,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			/** check for property in case value 0 and rule is equal */
-			if ( in_array( $filter['rule'], array( 'less_than', 'is' ) ) && 0 === absint( $filter_value ) ) {
+			if ( in_array( $filter['rule'], array( 'less_than', 'is' ), true ) && 0 === absint( $filter_value ) ) {
 				$if_column_exists = "{$filter_group_key}.{$filter_key} IS NULL OR";
 			}
 
@@ -760,7 +874,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$if_column_exists = '';
-			if ( in_array( $filter['rule'], array( 'less_than', 'less_than_equal' ) ) ) {
+			if ( in_array( $filter['rule'], array( 'less_than', 'less_than_equal' ), true ) ) {
 				$if_column_exists = "{$filter_group_key}.{$filter_key} IS NULL OR";
 			}
 
@@ -781,24 +895,25 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return;
 			}
 
+			$symbol       = strpos( $filter_key, 'next' ) !== false ? "+" : "-";
+			$date         = new DateTime( 'now', wp_timezone() );
 			$filter_value = '';
 			if ( ! is_array( $filter['value'] ) ) {
-				$filter_value = absint( $filter['value'] );
-				$date         = $datetime = new DateTime( 'now', wp_timezone() );
-				$date->modify( "-$filter_value days" );
+				$filter_value = intval( $filter['value'] );
+				$date->modify( "$symbol $filter_value days" );
 				$filter_value = $date->format( 'Y-m-d' );
 			} else {
-				$filter_value = array();
+				if ( 'next' !== $filter['rule'] ) {
+					$filter_value = array();
+					$from         = intval( $filter['value'][0] );
+					$date->modify( "$symbol $from days" );
+					$filter_value[] = $date->format( 'Y-m-d' );
 
-				$from = absint( $filter['value'][0] );
-				$date = $datetime = new DateTime( 'now', wp_timezone() );
-				$date->modify( "-$from days" );
-				$filter_value[] = $date->format( 'Y-m-d' );
-
-				$to   = absint( $filter['value'][1] );
-				$date = $datetime = new DateTime( 'now', wp_timezone() );
-				$date->modify( "-$to days" );
-				$filter_value[] = $date->format( 'Y-m-d' );
+					$to   = intval( $filter['value'][1] );
+					$date = new DateTime( 'now', wp_timezone() );
+					$date->modify( "$symbol $to days" );
+					$filter_value[] = $date->format( 'Y-m-d' );
+				}
 			}
 
 			switch ( $filter['rule'] ) {
@@ -809,7 +924,28 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					$filter_rule = '>=';
 					break;
 				case 'between':
+					if ( 'next_renewal_date' === $filter_key ) {
+						$filter_value = [
+							$filter_value[1] . " 23:59:59",
+							$filter_value[0] . " 00:00:00",
+						];
+					}
 					$filter_rule = 'between';
+					break;
+				case 'next':
+
+					/** current date */
+					$date         = new DateTime( 'now', wp_timezone() );
+					$before_date  = $date->format( 'Y-m-d' );
+					$filter_value = [
+						"$filter_value 23:59:59",
+						"$before_date 00:00:00",
+					];
+
+					$filter_rule = 'between';
+					break;
+				case 'after':
+					$filter_rule = '>';
 					break;
 				default:
 					return;
@@ -841,13 +977,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			global $wpdb;
-			$query               = "Select automation_id, time from {$wpdb->prefix}bwfan_contact_automations where contact_id ='" . $contact_id . "' ORDER BY time DESC";
-			$contact_automations = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			if ( empty( $contact_automations ) ) {
-				return array();
-			}
 
-			return $contact_automations;
+			$contact_automations = $wpdb->get_results( $wpdb->prepare( "SELECT automation_id, time FROM {$wpdb->prefix}bwfan_contact_automations WHERE contact_id = %d ORDER BY time DESC", $contact_id ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			return ( empty( $contact_automations ) ) ? array() : $contact_automations;
 		}
 
 		/**
@@ -903,8 +1036,15 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$wpdb->delete( $automation_complete_contact, array( 'cid' => $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->delete( $automation_contact_trail, array( 'cid' => $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key LIKE '_woofunnel_cid' AND meta_value = %d", $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key LIKE '_woofunnel_custid' AND meta_value = %d", $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			/** Delete WooCommerce orders meta by contact id from WC_Orders_Meta table if HPOS is enabled */
+			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
+				//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE (meta_key = %s OR meta_key = %s) AND meta_value = %d", '_woofunnel_cid', '_woofunnel_custid', $contact_id ) );
+			} else {
+				/** Delete WooCommerce orders meta by contact id from postmeta table if HPOS is not enabled */
+				//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE (meta_key = %s OR meta_key = %s) AND meta_value = %d", '_woofunnel_cid', '_woofunnel_custid', $contact_id ) );
+			}
 
 			$engagement_meta_query = $wpdb->prepare( "DELETE $contact_engagement_meta_table
 				FROM $contact_engagement_meta_table
@@ -915,7 +1055,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$wpdb->query( $engagement_meta_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->delete( $contact_engagement_table, array( 'cid' => $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-			/** delete from the unsubscribe table */
+			/** delete from unsubscribe table */
 
 			if ( is_array( $contact_email ) && ! empty( $contact_email[0] ) ) {
 				$wpdb->delete( $contact_unsubscribe_table, array( 'recipient' => $contact_email[0] ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -958,22 +1098,22 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			$contact_orders_total_results = [];
 			if ( method_exists( 'BWF_WC_Compatibility', 'is_hpos_enabled' ) && BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$contact_orders_total_query   = $wpdb->prepare( "SELECT count(wc_stats.order_id) as orders, SUM(wc_stats.total_sales) as total 
-									FROM {$wpdb->prefix}wc_order_stats as wc_stats 
-									LEFT JOIN {$wpdb->prefix}wc_orders_meta pm 
-									ON wc_stats.order_id =pm.order_id 
-									WHERE wc_stats.status = 'wc-completed' 
+				$contact_orders_total_query   = $wpdb->prepare( "SELECT count(wc_stats.order_id) as orders, SUM(wc_stats.total_sales) as total
+									FROM {$wpdb->prefix}wc_order_stats as wc_stats
+									LEFT JOIN {$wpdb->prefix}wc_orders_meta pm
+									ON wc_stats.order_id =pm.order_id
+									WHERE wc_stats.status = 'wc-completed'
 									and pm.meta_key='_woofunnel_cid'
 									and pm.meta_value=%d", $contact_id );
 				$contact_orders_total_results = $wpdb->get_results( $contact_orders_total_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			}
 
 			if ( empty( $contact_orders_total_results ) ) {
-				$contact_orders_total_query   = $wpdb->prepare( "SELECT count(wc_stats.order_id) as orders, SUM(wc_stats.total_sales) as total 
-									FROM {$wpdb->prefix}wc_order_stats as wc_stats 
-									LEFT JOIN {$wpdb->prefix}postmeta pm 
-									ON wc_stats.order_id =pm.post_id 
-									WHERE wc_stats.status = 'wc-completed' 
+				$contact_orders_total_query   = $wpdb->prepare( "SELECT count(wc_stats.order_id) as orders, SUM(wc_stats.total_sales) as total
+									FROM {$wpdb->prefix}wc_order_stats as wc_stats
+									LEFT JOIN {$wpdb->prefix}postmeta pm
+									ON wc_stats.order_id =pm.post_id
+									WHERE wc_stats.status = 'wc-completed'
 									and pm.meta_key='_woofunnel_cid'
 									and pm.meta_value=%d", $contact_id );
 				$contact_orders_total_results = $wpdb->get_results( $contact_orders_total_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -999,12 +1139,13 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			global $wpdb;
+			$bump_data             = [];
 			$bump_data['accepted'] = 0;
 			$bump_data['revenue']  = 0;
 
 			$bump_query   = $wpdb->prepare( "SELECT bump.bid as 'object_id',
-						bump.total as 'total_revenue', 
-						'bump' as 'type' FROM {$wpdb->prefix}wfob_stats AS bump WHERE bump.cid='%d' AND bump.converted=1", $contact_id );
+						bump.total as 'total_revenue',
+						'bump' as 'type' FROM {$wpdb->prefix}wfob_stats AS bump WHERE bump.cid=%d AND bump.converted=1", $contact_id );
 			$bump_results = $wpdb->get_results( $bump_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( empty( $bump_results ) ) {
 				return $bump_data;
@@ -1027,12 +1168,13 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return array();
 			}
 			global $wpdb;
+			$upstroke_data             = [];
 			$upstroke_data['accepted'] = 0;
 
-			$upstroke_query  = $wpdb->prepare( "SELECT event.action_type_id,event.value 
-						   FROM {$wpdb->prefix}wfocu_event as event LEFT JOIN {$wpdb->prefix}wfocu_session as session 
-						   ON event.sess_id = session.id 
-						   WHERE (event.action_type_id = 4) AND session.cid='%d'", $contact_id );
+			$upstroke_query  = $wpdb->prepare( "SELECT event.action_type_id,event.value
+						   FROM {$wpdb->prefix}wfocu_event as event LEFT JOIN {$wpdb->prefix}wfocu_session as session
+						   ON event.sess_id = session.id
+						   WHERE (event.action_type_id = 4) AND session.cid=%d", $contact_id );
 			$upstroke_result = $wpdb->get_results( $upstroke_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( empty( $upstroke_result ) ) {
 				return $upstroke_data;
@@ -1126,10 +1268,6 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				'exclude_unsubs' => true,
 				'customer_data'  => $wc_data_send,
 			);
-			// $saved_last_id   = get_option( 'bwfan_show_contacts_from' );
-			// if ( ! empty( $saved_last_id ) ) {
-			// $additional_info['start_id'] = $saved_last_id;
-			// }
 
 			return self::get_contacts( '', $limit, $offset, array(), $additional_info );
 		}
@@ -1187,9 +1325,8 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		public static function get_last_contact_id() {
 			global $wpdb;
 			$table_name = self::_table();
-			$query      = "SELECT max(id) as last_id FROM $table_name";
 
-			return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_var( "SELECT max(id) as last_id FROM $table_name" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		public static function set_log( $log ) {
@@ -1229,6 +1366,13 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$time     = microtime( true );
 			$contacts = $wpdb->get_results( $sql_queries['base'], ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$time     = microtime( true ) - $time;
+
+			/** Log the query if it takes more than threshold seconds */
+			$slow_query_threshold = apply_filters( 'bwfan_slow_query_threshold', 4 );
+			if ( $time >= $slow_query_threshold ) {
+				self::log_slow_query( $sql_queries['base'], $time, $slow_query_threshold );
+			}
+
 			self::set_log( 'Time to execute the query: ' . $time . ' secs' );
 			self::log();
 
@@ -1442,7 +1586,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		}
 
 		/**
-		 * Get formated time
+		 * Get formatted time
 		 *
 		 * @param $time
 		 *
@@ -1464,7 +1608,6 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$contact_table        = $wpdb->prefix . 'bwf_contact';
 			$customer_table       = $wpdb->prefix . 'bwf_wc_customers';
 			$contact_fields_table = $wpdb->prefix . 'bwf_contact_fields';
-			$unsubscribe_table    = $wpdb->prefix . 'bwfan_message_unsubscribe';
 
 			$columns = self::get_columns_for_query();
 
@@ -1577,17 +1720,17 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 							break;
 						case 'woocommerce' === $fields['groupKey'] :
 							if ( 'l_order_days' === $slug ) {
-								$slug = ! in_array( $slug, $added_columns ) ? " DATEDIFF(now(), wc.l_order_date) as `l_order_days` " : '';
+								$slug = ! in_array( $slug, $added_columns, true ) ? " DATEDIFF(now(), wc.l_order_date) as `l_order_days` " : '';
 								break;
 							}
 							if ( 'f_order_days' === $slug ) {
-								$slug = ! in_array( $slug, $added_columns ) ? " DATEDIFF(now(), wc.f_order_date) as `f_order_days` " : '';
+								$slug = ! in_array( $slug, $added_columns, true ) ? " DATEDIFF(now(), wc.f_order_date) as `f_order_days` " : '';
 								break;
 							}
 							if ( isset( $modified_columns[ $slug ] ) ) {
 								$slug = $modified_columns[ $slug ];
 							}
-							$slug = ! in_array( $slug, $added_columns ) ? "wc." . $slug : '';
+							$slug = ! in_array( $slug, $added_columns, true ) ? "wc." . $slug : '';
 							break;
 						case 'contact_custom_fields' === $fields['groupKey'] :
 							$custom_field_slug = str_replace( 'bwf_cf', '', $slug );
@@ -1703,11 +1846,10 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		 */
 		public static function get_contact_id( $id, $type = 'object' ) {
 			global $wpdb;
-			$query = "SELECT * FROM {$wpdb->prefix}bwf_contact WHERE `id` = %d";
 
 			$type = 'object' === $type ? OBJECT : ARRAY_A;
 
-			return $wpdb->get_row( $wpdb->prepare( $query, $id ), $type ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}bwf_contact WHERE `id` = %d", $id ), $type ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**
@@ -1730,6 +1872,24 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$obj->cached_contact_obj['cid'][ $contact_id ] = $contact_row;
+		}
+
+		/**
+		 * Log slow queries for performance monitoring
+		 *
+		 * @param string $query The SQL query
+		 * @param float $time Query execution time
+		 * @param int $threshold Slow query threshold in seconds
+		 *
+		 * @return void
+		 */
+		private static function log_slow_query( $query, $time, $threshold = 4 ) {
+			if ( $time >= $threshold ) {
+				BWFAN_Common::log_test_data( [
+					'query' => $query,
+					'time'  => $time
+				], 'slow-contact-query', true );
+			}
 		}
 	}
 }

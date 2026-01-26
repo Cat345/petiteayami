@@ -18,7 +18,6 @@ $nav = $this->el('ul', [
 
 ]);
 
-
 // Image align
 $grid = $this->el('div', [
 

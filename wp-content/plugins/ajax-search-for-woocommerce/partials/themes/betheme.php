@@ -4,13 +4,18 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search-icon" style="display: block;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
-	echo '<div id="wcas-theme-search-input" style="display: block;">' . do_shortcode( '[fibosearch layout="classic"]' ) . '</div>';
-} );
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search-icon" style="display: block;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
+		echo '<div id="wcas-theme-search-input" style="display: block;">' . do_shortcode( '[fibosearch layout="classic"]' ) . '</div>';
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		var wcasThemeSearchIcon = document.querySelector('#search_button');
 		if (wcasThemeSearchIcon !== null) {
@@ -34,7 +39,7 @@ add_action( 'wp_footer', function () {
 		}
 
 		.dgwt-wcas-search-wrapp {
-			max-width: <?php echo function_exists('mfn_opts_get') ? mfn_opts_get('header-search-input-width', 200, ['unit' => 'px']) : '200px'; ?>
+			max-width: <?php echo function_exists( 'mfn_opts_get' ) ? mfn_opts_get( 'header-search-input-width', 200, [ 'unit' => 'px' ] ) : '200px'; ?>
 		}
 
 		.dgwt-wcas-style-pirx .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit::after {
@@ -45,5 +50,7 @@ add_action( 'wp_footer', function () {
 			margin-top: 0 !important;
 		}
 	</style>
-	<?php
-}, 100 );
+		<?php
+	},
+	100
+);

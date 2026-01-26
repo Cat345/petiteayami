@@ -14,6 +14,7 @@ import { CouponTemplatesActions } from '../../store/actions/couponTemplates';
 
 // Helpers
 import { getPathPrefix } from '../../helpers/utils';
+import { sanitizeHtml } from '../../../shared/helpers/sanitize';
 
 // #endregion [Imports]
 
@@ -75,7 +76,7 @@ const CouponTemplateCard = (props: IProps) => {
         <span
           className="image-svg"
           onClick={handleTemplateClick}
-          dangerouslySetInnerHTML={{ __html: template.image_svg }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(template.image_svg) }}
         />
         {template.license_type === 'premium' && <span className="premium-badge">{labels.premium}</span>}
       </div>

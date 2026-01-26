@@ -43,7 +43,7 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 	 */
 	public function parse_shortcode( $attr ) {
 		if ( true === BWFAN_Merge_Tag_Loader::get_data( 'is_preview' ) ) {
-			return $this->get_dummy_preview();
+			return $this->get_dummy_preview( $attr );
 		}
 
 		$this->item_type = 'item_data';
@@ -52,8 +52,19 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 		} catch ( Exception $e ) {
 			return $this->parse_shortcode_output( '', $attr );
 		}
-		/** if value is date then checking format in attribute */
-		$value = $this->get_date_value( $value, $attr );
+
+		$type = isset( $attr['type'] ) ? $attr['type'] : '';
+
+		switch ( $type ) {
+			case 'date':
+				$value = $this->get_date_value( $value, $attr );
+				break;
+			case 'price':
+				$value = $this->get_price_value( $value, $attr );
+				break;
+			default:
+				break;
+		}
 
 		return $this->parse_shortcode_output( $value, $attr );
 	}
@@ -61,10 +72,21 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 	/**
 	 * Show dummy value of the current merge tag.
 	 *
+	 * @param array $attr
+	 *
 	 * @return string
 	 */
-	public function get_dummy_preview() {
-		return __( 'Value of the key', 'wp-marketing-automations' );
+	public function get_dummy_preview( $attr = array() ) {
+		$type = isset( $attr['type'] ) ? $attr['type'] : '';
+		// If type is price, show formatted price preview
+		switch ( $type ) {
+			case 'date':
+				return $this->get_date_value( date( 'Y-m-d H:i:s' ), $attr );
+			case 'price':
+				return $this->get_price_value( 1255.50, $attr );
+			default:
+				return __( 'Value of the key', 'wp-marketing-automations' ) . ' (' . ( $attr['key'] ?? 'key' ) . ')';
+		}
 	}
 
 	/**
@@ -81,6 +103,50 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 		}
 
 		return $this->format_datetime( $value, $attr );
+	}
+
+	/**
+	 * Get formatted price value
+	 *
+	 * @param $value
+	 * @param $attr
+	 *
+	 * @return string|float
+	 */
+	public function get_price_value( $value, $attr ) {
+		if ( ! is_array( $attr ) || ! isset( $attr['type'] ) || 'price' !== $attr['type'] ) {
+			return $value;
+		}
+
+		// Get the order for currency formatting
+		$item_id = BWFAN_Merge_Tag_Loader::get_data( 'wc_single_item_id' );
+		$order   = null;
+
+		if ( ! empty( $item_id ) ) {
+			try {
+				$item = new WC_Order_Item_Product( $item_id );
+				if ( $item instanceof WC_Order_Item_Product ) {
+					$order = $item->get_order();
+				}
+			} catch ( Exception $e ) {
+				// Order not found, continue without it
+			}
+		}
+
+		// Convert value to float for price formatting
+		$price_value = is_numeric( $value ) ? floatval( $value ) : 0;
+
+		// Map price_display to format for compatibility with get_formatting_for_wc_price
+		$price_attr = $attr;
+		if ( isset( $attr['price_display'] ) ) {
+			$price_attr['format'] = $attr['price_display'];
+		}
+
+		// Get formatting options
+		$formatting = BWFAN_Common::get_formatting_for_wc_price( $price_attr, $order );
+
+		// Format the price
+		return BWFAN_Common::get_formatted_price_wc( $price_value, $formatting['raw'], $formatting['currency'] );
 	}
 
 
@@ -124,6 +190,10 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 					[
 						'value' => 'date',
 						'label' => __( 'Date', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'price',
+						'label' => __( 'Price', 'wp-marketing-automations' ),
 					]
 				],
 				'label'       => __( 'Meta Field Type', 'wp-marketing-automations' ),
@@ -164,6 +234,38 @@ class BWFAN_WC_Item_Data extends BWFAN_Cart_Display {
 						array(
 							'id'    => 'type',
 							'value' => 'date',
+						),
+					),
+					'relation' => 'AND',
+				)
+			],
+			[
+				'id'          => 'price_display',
+				'type'        => 'select',
+				'options'     => [
+					[
+						'value' => 'raw',
+						'label' => __( 'Raw', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'formatted',
+						'label' => __( 'Formatted', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'formatted-currency',
+						'label' => __( 'Formatted with currency', 'wp-marketing-automations' ),
+					],
+				],
+				'label'       => __( 'Display', 'wp-marketing-automations' ),
+				"class"       => 'bwfan-input-wrapper',
+				"placeholder" => __( 'Raw', 'wp-marketing-automations' ),
+				"required"    => false,
+				"description" => "",
+				'toggler'     => array(
+					'fields'   => array(
+						array(
+							'id'    => 'type',
+							'value' => 'price',
 						),
 					),
 					'relation' => 'AND',

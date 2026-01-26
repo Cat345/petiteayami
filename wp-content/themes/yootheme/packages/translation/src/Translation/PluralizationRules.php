@@ -9,17 +9,15 @@ namespace YOOtheme\Translation;
  */
 class PluralizationRules
 {
+    /**
+     * @var array<callable>
+     */
     private static $rules = [];
 
     /**
      * Returns the plural position to use for the given locale and number.
-     *
-     * @param int    $number The number
-     * @param string $locale The locale
-     *
-     * @return int The plural position
      */
-    public static function get($number, $locale)
+    public static function get(int $number, string $locale): int
     {
         if ('pt_BR' === $locale) {
             // temporary set a locale for brazilian
@@ -31,7 +29,7 @@ class PluralizationRules
         }
 
         if (isset(self::$rules[$locale])) {
-            $return = call_user_func(self::$rules[$locale], $number);
+            $return = self::$rules[$locale]($number);
 
             if (!is_int($return) || $return < 0) {
                 return 0;
@@ -226,12 +224,11 @@ class PluralizationRules
     /**
      * Overrides the default plural rule for a given locale.
      *
-     * @param string $rule   A PHP callable
-     * @param string $locale The locale
+     * @param mixed $rule
      *
      * @throws \LogicException
      */
-    public static function set($rule, $locale)
+    public static function set($rule, string $locale): void
     {
         if ('pt_BR' === $locale) {
             // temporary set a locale for brazilian

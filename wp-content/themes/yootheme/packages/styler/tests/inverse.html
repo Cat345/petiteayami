@@ -1,7 +1,7 @@
 <div>
     <nav class="uk-navbar-container uk-navbar-transparent test-inverse-background uk-light">
         <div class="uk-container">
-            <div uk-navbar>
+            <div uk-navbar="container: body">
                 <div class="uk-navbar-left">
 
                     <a class="uk-navbar-item uk-logo" href="#">Logo</a>
@@ -21,16 +21,16 @@
                                         </ul>
                                     </li>
                                     <li class="uk-nav-header">Header</li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                     <li class="uk-nav-divider"></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                 </ul>
                             </div>
                         </li>
                         <li>
                             <a href="#">Dropbar <span uk-navbar-parent-icon></span></a>
-                            <div class="uk-dropbar uk-dropbar-top" uk-drop="pos: bottom-left; stretch: x; target-y: !.uk-navbar-container; animation: slide-top; animate-out: true">
+                            <div class="uk-dropbar uk-dropbar-top" uk-drop="container: body; pos: bottom-left; stretch: x; target-y: .uk-navbar-container; animation: slide-top; animate-out: true">
                                 <ul class="uk-nav uk-navbar-dropdown-nav">
                                     <li class="uk-active"><a href="#">Active</a></li>
                                     <li class="uk-parent">
@@ -41,14 +41,13 @@
                                         </ul>
                                     </li>
                                     <li class="uk-nav-header">Header</li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                     <li class="uk-nav-divider"></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                 </ul>
                             </div>
                         </li>
-                        <li><a href="#">Item</a></li>
                         <li><a href="#">Item</a></li>
                     </ul>
 
@@ -112,10 +111,10 @@
                                         </ul>
                                     </li>
                                     <li class="uk-nav-header">Header</li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                     <li class="uk-nav-divider"></li>
-                                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -277,10 +276,10 @@
                         </ul>
                     </li>
                     <li class="uk-nav-header">Header</li>
-                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                     <li class="uk-nav-divider"></li>
-                    <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                    <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                 </ul>
 
                 <ul class="uk-list uk-list-bullet uk-margin-medium">
@@ -301,10 +300,10 @@
                     <li>List item 3</li>
                 </ul>
 
-                <ul class="uk-margin-medium" uk-accordion>
+                <ul class="uk-accordion-default uk-margin-medium" uk-accordion>
                     <li class="uk-open">
 
-                        <a class="uk-accordion-title" href="#">Item 1</a>
+                        <a class="uk-accordion-title" href="#">Item 1 <span uk-accordion-icon></span></a>
                         <div class="uk-accordion-content">
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
                         </div>
@@ -312,7 +311,7 @@
                     </li>
                     <li>
 
-                        <a class="uk-accordion-title" href="#">Item 2</a>
+                        <a class="uk-accordion-title" href="#">Item 2 <span uk-accordion-icon></span></a>
                         <div class="uk-accordion-content">
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
                         </div>
@@ -320,7 +319,7 @@
                     </li>
                     <li>
 
-                        <a class="uk-accordion-title" href="#">Item 3</a>
+                        <a class="uk-accordion-title" href="#">Item 3 <span uk-accordion-icon></span></a>
                         <div class="uk-accordion-content">
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
                         </div>
@@ -330,15 +329,22 @@
 
                 <div class="uk-margin">
                     <div class="uk-inline">
-                        <canvas width="800" height="600" class="test-img"></canvas>
-                        <div class="uk-position-center">
-                            <span uk-overlay-icon></span>
-                        </div>
+                        <canvas width="800" height="300" class="test-img"></canvas>
                         <a class="uk-position-absolute uk-transform-center" style="left: 20%; top: 30%" href="#" uk-marker></a>
                         <a class="uk-position-absolute uk-transform-center" style="left: 60%; top: 40%" href="#" uk-marker></a>
                         <a class="uk-position-absolute uk-transform-center" style="left: 80%; top: 70%" href="#" uk-marker></a>
                     </div>
                 </div>
+
+                <div class="uk-margin">
+                    <a href class="uk-inline">
+                        <canvas width="800" height="300" class="test-img"></canvas>
+                        <div class="uk-position-center">
+                            <span class="uk-icon-overlay" href="#" uk-icon="ratio: 3; icon: play-circle"></span>
+                        </div>
+                    </a>
+                </div>
+
 
             </div>
         </div>
@@ -399,7 +405,7 @@
                     </table>
                 </div>
 
-                <div class="uk-grid-small uk-child-width-auto uk-margin-medium-top" uk-grid js-countdown>
+                <div class="uk-heading-medium uk-grid-small uk-child-width-auto uk-flex-middle uk-margin-medium-top" uk-grid js-countdown>
                     <div>
                         <div class="uk-countdown-number uk-countdown-days"></div>
                     </div>

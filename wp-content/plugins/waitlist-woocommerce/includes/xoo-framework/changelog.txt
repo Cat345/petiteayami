@@ -1,5 +1,8 @@
-== 1.7.3 == 12-07-2025
-* Sidebar
+== 1.7.4 == 13-11-2025
+* Setting changes
+
+== 1.7.3 = 19-08-2025
+* Style changes
 
 == 1.7.2 == 06-07-2025
 * Allow xoo_exception to return wp_error

@@ -7,7 +7,6 @@ use ACFWP\Helpers\Helper_Functions;
 use ACFWP\Helpers\Plugin_Constants;
 use ACFWP\Interfaces\Model_Interface;
 use ACFWP\Models\Objects\Advanced_Coupon;
-use ACFWP\Models\Objects\Virtual_Coupon;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -175,6 +174,7 @@ class Force_Apply extends Base_Model implements Model_Interface {
      * @param \WC_Coupon $coupon   Coupon data.
      *
      * @return bool
+     * @throws \Exception Error message.
      */
     public function checkpoint_before_reapply_coupons( $is_valid, $coupon ) {
         /**
@@ -182,7 +182,8 @@ class Force_Apply extends Base_Model implements Model_Interface {
          */
         if ( ( did_action( 'wc_ajax_apply_coupon' ) || $this->_apply_coupon_store_api || apply_filters( 'acfw_should_force_apply_run', false, $coupon ) )
             && ! did_action( 'acfwp_before_auto_apply_coupons' ) // Don't run force apply if the coupon is being applied via the "Auto Apply" feature.
-            && ! in_array( $coupon->get_code(), WC()->cart->get_applied_coupons(), true ) ) {
+            && ! in_array( $coupon->get_code(), WC()->cart->get_applied_coupons(), true )
+            && $this->is_coupon_force_apply( $coupon, 'all' ) ) { // Only force apply if enabled for 'all' (not URL-only).
             // Create checkpoint for force apply rule.
             $this->implement_force_apply_coupons( $coupon );
         }
@@ -201,11 +202,6 @@ class Force_Apply extends Base_Model implements Model_Interface {
      */
     public function implement_force_apply_coupons( $coupon ) {
         $coupon = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
-
-        // Skip if the coupon is not enabled for force apply.
-        if ( ! $this->is_coupon_force_apply( $coupon ) ) {
-            return;
-        }
 
         $this->_force_applied_coupon = $coupon;
 
@@ -237,6 +233,24 @@ class Force_Apply extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Implement force apply for URL coupons.
+     * Check if coupon is enabled for force apply (either 'yes' for URL-only or 'all'), then implement force apply.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @param string|Advanced_Coupon $coupon Coupon code or object.
+     */
+    public function implement_force_apply_for_url_coupons( $coupon ) {
+        $coupon = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
+
+        // Only implement force apply if the coupon is enabled for force apply (either 'yes' or 'all').
+        if ( $this->is_coupon_force_apply( $coupon ) ) {
+            $this->implement_force_apply_coupons( $coupon );
+        }
+    }
+
+    /**
      * Reapply coupons that was removed when force apply was enabled.
      * - Hook : woocommerce_applied_coupon
      *
@@ -255,7 +269,7 @@ class Force_Apply extends Base_Model implements Model_Interface {
 
         foreach ( $this->_applied_coupons as $applied_coupon ) {
             // Check if coupon is valid.
-            $coupon = new \WC_Coupon( $applied_coupon );
+            $coupon = new Advanced_Coupon( $applied_coupon );
             $valid  = $discounts->is_coupon_valid( $coupon );
 
             /**
@@ -284,6 +298,8 @@ class Force_Apply extends Base_Model implements Model_Interface {
      * @return bool True if the coupon can be force applied, false otherwise.
      */
     public function is_coupon_force_apply( $coupon, $expected_value = null ) {
+        $coupon = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
+
         $force_apply = $coupon->get_advanced_prop( 'force_apply_url_coupon' );
 
         if ( $expected_value ) {
@@ -291,6 +307,27 @@ class Force_Apply extends Base_Model implements Model_Interface {
         }
 
         return in_array( $force_apply, array( 'yes', 'all' ), true );
+    }
+
+    /**
+     * Get the force applied coupon.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @return Advanced_Coupon|null The force applied coupon or null if no force applied coupon is found.
+     */
+    public function get_force_applied_coupon() {
+        $force_applied_coupon = null;
+        foreach ( \WC()->cart->get_applied_coupons() as $coupon_code ) {
+            $coupon = new Advanced_Coupon( $coupon_code );
+            if ( $this->is_coupon_force_apply( $coupon ) ) {
+                $force_applied_coupon = $coupon;
+                break;
+            }
+        }
+
+        return $force_applied_coupon;
     }
 
     /*
@@ -317,6 +354,6 @@ class Force_Apply extends Base_Model implements Model_Interface {
         add_action( 'woocommerce_applied_coupon', array( $this, 'reapply_coupons_removed_by_force_apply' ), 10, 1 ); // Implement force apply coupons.
 
         // Integration - URL Coupons.
-        add_filter( 'acfw_before_apply_coupon', array( $this, 'implement_force_apply_coupons' ), 10 ); // Check if we need to implement "force apply" for URL coupon.
+        add_filter( 'acfw_before_apply_coupon', array( $this, 'implement_force_apply_for_url_coupons' ), 10 ); // Check if we need to implement "force apply" for URL coupon.
     }
 }

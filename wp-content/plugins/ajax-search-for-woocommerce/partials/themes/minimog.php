@@ -4,7 +4,9 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', function () { ?>
+add_action(
+	'wp_head',
+	function () { ?>
 	<style>
 		#popup-search .row-popular-search-keywords {
 			display: none;
@@ -14,17 +16,24 @@ add_action( 'wp_head', function () { ?>
 			transition: none;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_enqueue_scripts', function () {
-	// Force faster enqueuing as otherwise jQuery dependency error occurs.
-	wp_enqueue_script( 'jquery-dgwt-wcas' );
-}, 15 );
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		// Force faster enqueuing as otherwise jQuery dependency error occurs.
+		wp_enqueue_script( 'jquery-dgwt-wcas' );
+	},
+	15
+);
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[fibosearch layout="classic"]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[fibosearch layout="classic"]' ) . '</div>';
+		?>
 	<script>
 		wcasThemeSearch = document.querySelector('#popup-search .page-search-popup-content');
 		if (wcasThemeSearch !== null) {
@@ -54,5 +63,7 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-}, 50 );
+		<?php
+	},
+	50
+);

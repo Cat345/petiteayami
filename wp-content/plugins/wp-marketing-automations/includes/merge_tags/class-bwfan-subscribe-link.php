@@ -61,16 +61,14 @@ class BWFAN_Contact_Subscribe_Link extends BWFAN_Merge_Tag {
 			$general_options   = BWFAN_Common::get_global_settings();
 			$confirmation_type = isset( $general_options['after_confirmation_type'] ) ? $general_options['after_confirmation_type'] : 'show_message';
 
-			if ( 'show_message' === $confirmation_type ) {
-				$args['show_message'] = 1;
-			} else {
-				$redirect_url = isset( $general_options['bwfan_confirmation_redirect_url'] ) && ! empty( $general_options['bwfan_confirmation_redirect_url'] ) ? $general_options['bwfan_confirmation_redirect_url'] : home_url( '/' );
+			if ( 'show_message' !== $confirmation_type ) {
+				$redirect_url = ! empty( $general_options['bwfan_confirmation_redirect_url'] ) ? $general_options['bwfan_confirmation_redirect_url'] : home_url( '/' );
+				if ( ! empty( $redirect_url ) ) {
+					$args['bwfan-link'] = urlencode( $redirect_url );
+				}
 			}
 		}
 
-		if ( ! empty( $redirect_url ) && false !== wp_http_validate_url( $redirect_url ) ) {
-			$args['bwfan-link'] = urlencode( $redirect_url );
-		}
 
 		return add_query_arg( $args, esc_url_raw( home_url( '/' ) ) );
 	}

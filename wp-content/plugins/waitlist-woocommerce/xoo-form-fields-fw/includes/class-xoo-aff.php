@@ -141,12 +141,12 @@ class Xoo_Aff{
 
 		if( $has_select2 ){
 
-			if( !wp_style_is( 'select2' ) ){
-				wp_enqueue_style( 'select2', XOO_AFF_URL.'/lib/select2/select2.css');
+			if( !wp_style_is( 'wc-select2' ) ){
+				wp_enqueue_style( 'xoo-select2', XOO_AFF_URL.'/lib/select2/select2.css');
 			}
 
-			if( !wp_script_is( 'select2' ) ){
-				wp_enqueue_script( 'select2', XOO_AFF_URL.'/lib/select2/select2.js', array('jquery'), XOO_AFF_VERSION, $strategy ); // Main JS
+			if( !wp_script_is( 'wc-select2' ) ){
+				wp_enqueue_script( 'xoo-select2', XOO_AFF_URL.'/lib/select2/select2.js', array('jquery'), XOO_AFF_VERSION, $strategy ); // Main JS
 			}
 
 		}

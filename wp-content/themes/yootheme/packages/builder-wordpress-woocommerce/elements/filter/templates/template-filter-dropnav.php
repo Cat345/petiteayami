@@ -18,7 +18,7 @@ $dropnav = $this->el('div', [
     'uk-dropnav' => [
         'mode: click; {@filter_dropnav_dropdown_click}',
         'align: {filter_dropnav_dropdown_align};',
-        'boundary: !.js-filter;',
+        'boundary-x: !.js-filter;',
         'target-x: !.js-filter; {@filter_dropnav_dropdown_target}',
     ],
 

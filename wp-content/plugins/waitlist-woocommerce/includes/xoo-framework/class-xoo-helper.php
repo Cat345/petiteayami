@@ -11,8 +11,7 @@ class Xoo_Helper{
 		$this->path 		= $path;
 		$this->helperArgs 	= wp_parse_args( $helperArgs, array(
 			'pluginFile' 	=> '',
-			'pluginName' 	=> '',
-
+			'pluginName' 	=> ''
 		) );
 
 		$this->set_constants();
@@ -23,7 +22,7 @@ class Xoo_Helper{
 
 	public function set_constants(){
 		$this->define( 'XOO_FW_URL', untrailingslashit(plugin_dir_url( XOO_FW_DIR .'/'.basename( XOO_FW_DIR ) ) ) );
-		$this->define( 'XOO_FW_VERSION', '1.7.3' );
+		$this->define( 'XOO_FW_VERSION', '1.7.4' );
 	}
 
 	public function define( $name, $value ){
@@ -352,7 +351,7 @@ class Xoo_Helper{
 							}	
 						}
 
-						return new WP_Error( 'failed', __( 'Some files failed to upload', 'easy-login-woocommerce' ). ' - ' . $file['name'] . '('.$attachment_id->get_error_message().')' );
+						return new WP_Error( 'failed', 'Some files failed to upload'. ' - ' . $file['name'] . '('.$attachment_id->get_error_message().')' );
 					} 
 					else{
 						$attachmentIDS[ $field_id ][] = $attachment_id;
@@ -386,6 +385,77 @@ class Xoo_Helper{
 				return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
 		}
 	}
+
+
+	public function parsePlaceHolders( $text, $placeholders = array() ){
+
+		foreach ( $placeholders as $placeholder => $placeholder_value ) {
+			$text = str_replace( $placeholder , $placeholder_value , $text );
+		}
+
+		return $text;
+	}
+
+	public function geolocate(){
+		require_once XOO_FW_DIR.'/class-xoo-geolocation.php';
+		return xoo_geolocate();
+	}
+
+
+	public function email_get_from_address( $from_address ){
+		return $from_address;
+	}
+
+	public function email_get_from_name( $from_name ){
+		return $from_name;
+	}
+
+	public function email_get_content_type( $content_type ){
+		$content_type = 'text/html';
+		return $content_type;
+	}
+
+
+	public function send_email( $identifier, $to, $subject, $message, $headers = array(), $attachments = array(), $locale = '' ) {
+
+	    if ( ! $locale ) {
+	        $locale = get_locale();
+	    }
+
+	    switch_to_locale( $locale );
+
+	    try {
+
+	        // Add filters inside try block so they're properly removed in finally
+	        add_filter( 'wp_mail_from', array( $this, 'email_get_from_address' ) );
+	        add_filter( 'wp_mail_from_name', array( $this, 'email_get_from_name' ) );
+	        add_filter( 'wp_mail_content_type', array( $this, 'email_get_content_type' ) );
+
+	        $message              = apply_filters( 'xoo_mail_' . $this->slug . '_' . $identifier . '_content', $message );
+	        $mail_callback        = apply_filters( 'xoo_mail_' . $this->slug . '_' . $identifier . '_callback', 'wp_mail' );
+	        $mail_callback_params = apply_filters(
+	            'xoo_mail_' . $this->slug . '_' . $identifier . '_callback_params',
+	            array( $to, wp_specialchars_decode( $subject ), $message, $headers, $attachments ),
+	            $this
+	        );
+
+	        $return = $mail_callback( ...$mail_callback_params );
+
+	    } finally {
+	        // Always remove filters and restore locale
+	        remove_filter( 'wp_mail_from', array( $this, 'email_get_from_address' ) );
+	        remove_filter( 'wp_mail_from_name', array( $this, 'email_get_from_name' ) );
+	        remove_filter( 'wp_mail_content_type', array( $this, 'email_get_content_type' ) );
+
+	        restore_previous_locale();
+	    }
+
+	    do_action( 'xoo_mail_' . $this->slug . '_' . $identifier . '_sent', $return );
+
+	    return $return;
+
+	}
+
 
 }
 

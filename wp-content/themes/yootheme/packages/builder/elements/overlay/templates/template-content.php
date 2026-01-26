@@ -11,10 +11,9 @@ $title = $this->el($props['title_element'], [
         'uk-text-{title_color} {@!title_color: background}',
         'uk-link-{title_hover_style} {@title_link}', // Set here to style links which already come with dynamic content (WP taxonomy links)
         'uk-transition-{title_transition} {@overlay_hover}',
-        'uk-margin[-{title_margin}]-top {@!title_margin: remove}',
-        'uk-margin-remove-top {@title_margin: remove}',
-        'uk-margin-remove-bottom',
-        'uk-flex-1 {@content_expand}' => !$props['content'] && (!$props['meta'] || $props['meta_align'] == 'above-title'),
+        'uk-margin[-{title_margin}]-top',
+        'uk-margin-remove-bottom {@!title_margin_auto}',
+        'uk-margin-auto-bottom {@title_margin_auto}',
     ],
 
 ]);
@@ -27,9 +26,9 @@ $meta = $this->el($props['meta_element'], [
         'uk-transition-{meta_transition} {@overlay_hover}',
         'uk-{meta_style}',
         'uk-text-{meta_color}',
-        'uk-margin[-{meta_margin}]-top {@!meta_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{meta_margin: remove}-top]' => !in_array($props['meta_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']) || $props['meta_element'] != 'div',
-        'uk-flex-1 {@content_expand}' => $props['meta_align'] == 'below-content' || (!$props['content'] && ($props['meta_align'] == 'above-content' || ($props['meta_align'] == 'below-title' ))),
+        'uk-margin[-{meta_margin}]-top',
+        'uk-margin-remove-bottom {@!meta_margin_auto}' => str_starts_with($props['meta_style'] ?? '', 'h') || $props['meta_element'] != 'div',
+        'uk-margin-auto-bottom {@meta_margin_auto}',
     ],
 
 ]);
@@ -41,9 +40,9 @@ $content = $this->el('div', [
         'el-content uk-panel',
         'uk-transition-{content_transition} {@overlay_hover}',
         'uk-{content_style}',
-        'uk-margin[-{content_margin}]-top {@!content_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{content_margin: remove}-top]' => !in_array($props['content_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']),
-        'uk-flex-1 {@content_expand}' => !($props['meta'] && $props['meta_align'] == 'below-content'),
+        'uk-margin[-{content_margin}]-top',
+        'uk-margin-remove-bottom {@!content_margin_auto}' => str_starts_with($props['content_style'] ?? '', 'h'),
+        'uk-margin-auto-bottom {@content_margin_auto}',
     ],
 
 ]);

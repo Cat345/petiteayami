@@ -8,10 +8,13 @@ jQuery(document).ready(function($){
 	var required_settings 	= {}; 
 
 	var $selectable 	= $( '.xoo-aff-select-fields-type' ),
-		$fieldsDisplay 	= $( '.xoo-aff-main' ),
+		$fieldsDisplay 	= $( '.xoo-aff-fields-list' ),
 		$fieldSettings 	= $( '.xoo-aff-field-settings-container' ),
 		$fieldSelector 	= $( '.xoo-aff-field-selector' ),
-		$container 		= $( '.xoo-aff-settings-container' );
+		$container 		= $( '.xoo-aff-settings-container' ),
+		$addFieldBtn 	= $('.xoo-aff-add-field'),
+		$pageContainer 	= $('.xoo-aff-container'),
+		$fieldView 		= $('.xoo-aff-field-view');
 
 
 	//Select multiple list
@@ -185,7 +188,7 @@ jQuery(document).ready(function($){
 	/* ----- XXXX ---- */
 
 	// Field
-	var Field = function( id, type ){
+	var Field = function( id, type, group = null ){
 
 		var self = this;
 
@@ -215,7 +218,9 @@ jQuery(document).ready(function($){
 				field_type: self.type,
 				input_type: _types[ self.type ]['type'],
 				settings: {},
-				priority: 0 //sort fields later
+				priority: 0, //sort fields later
+				group: group ? group : 'others',
+				custom_field: 1,
 			}
 			self.createSettings();
 		}
@@ -279,6 +284,9 @@ jQuery(document).ready(function($){
 			fields_html: fields_html,
 			field_title: this.getTitle()
 		}
+
+		
+
 		$fieldSettings.html( this.settings_container_template( settings_container_data ) );
 
 	};
@@ -364,12 +372,14 @@ jQuery(document).ready(function($){
 
 	Field.prototype.addToDisplayList = function() {
 
-		//If already displayed or Id not found
+		//If Id not found
 		if( !_userFields[ this.id ] ) return;
 
 		var field_display_data = {
 			field_id: this.id,
 			type_data: _types[this.type],
+			group: _userFields[ this.id ]['group'],
+			settings: _userFields[ this.id ]['settings']
 		};
 
 		field_display_data.field_title = this.getTitle();
@@ -380,12 +390,13 @@ jQuery(document).ready(function($){
 		var displayFieldHTML = this.display_template( field_display_data );
 
 		if( $fieldsDisplay.find('#'+this.id).length ){
-			console.log('trigger');
 			$fieldsDisplay.find('#'+this.id).replaceWith(displayFieldHTML); 
 		}
 		else{
 			$fieldsDisplay.append(displayFieldHTML);
 		}
+
+		showGroupFieldsInDisplay();
 
 	};
 
@@ -458,7 +469,8 @@ jQuery(document).ready(function($){
 			return false;
 		} );
 
-		_userFields[ this.id ]['settings'] = settings;
+
+		_userFields[ this.id ]['settings'] = $.extend({}, _userFields[ this.id ]['settings'], settings);;
 
 		$form.trigger( 'xoo_aff_settings_updated', this.id );
 		this.updateUniquedID();
@@ -508,16 +520,24 @@ jQuery(document).ready(function($){
 		init: function(){
 
 			//Events
-			$( '.xoo-aff-add-field' ).click(  this.openFieldsSelector );
+			$addFieldBtn.click(  this.openFieldsSelector );
 			$selectable.on( 'selectableselected', this.addNewField);
 			$( '.xoo-aff-reset-field' ).click( this.resetFields );
 			$( 'body' ).on( 'click', '.xoo-aff-fsd-cta-del', this.deleteButtonClick );
 			$( 'body' ).on( 'click', '.xoo-aff-fs-display', this.onDisplaySelect );
 			$( document ).on( 'xoo_aff_before_opening_field', this.updateField );
 			$( '#xoo-aff-save' ).on( 'click', this.saveFields);
+			$fieldSettings.on( 'change', 'input#xoo_aff_active', this.onActiveToggle );
 
 			this.loadFields();
 			$selectable.selectable();
+		},
+
+
+		activeField: null,
+
+		onActiveToggle: function(){
+			Handler.getActiveFieldDisplay().attr('data-active', $(this).is(':checked') ? 'yes' : 'no' )
 		},
 
 		openFieldsSelector: function(){
@@ -533,7 +553,7 @@ jQuery(document).ready(function($){
 		addNewField: function( event, ui ){
 			if( !xoo_aff_localize.addField ) return;
 			var type 	= $(ui.selected).data('field');
-			field 		= new Field( null, type );
+			field 		= new Field( null, type, $pageContainer.data('activegrp')  );
 			field.openFieldView();
 
 			if( _types[ type ]['type'] === 'autocomplete_address' ){
@@ -567,7 +587,6 @@ jQuery(document).ready(function($){
 					xoo_aff_plugin_action: window.xoo_aff_plugin_info.plugin_slug
 				},
 				success: function(response){
-					console.log(response);
 					if( response.success && response.success == 1){
 						add_notice('Reset successfully. Refreshing page...','success');
 						window.location.reload();
@@ -588,19 +607,27 @@ jQuery(document).ready(function($){
 
 		//Add priority to fields by order list
 		addPriority: function(){
-			var priority = 10;
+
+			var groupsPriority = {};
+
+			$.each( xoo_aff_field_groups, function( id, data ){
+				groupsPriority[id] = 10;
+			} )
+			
 			$fieldsDisplay.find('li').each(function( index, li ){
-				var $li 	 = $( li ),
-					field_id = $li.attr('id');
+
+				var $li 	 	= $( li ),
+					field_id 	= $li.attr('id'),
+					groupID 	= $li.data('group');
+
 				if( !window._userFields[ field_id ] ) return true;
 
-				_userFields[ field_id ]['priority'] = priority;
+				_userFields[ field_id ]['priority'] = groupsPriority[groupID];
 
-				priority = priority + 10;
+				groupsPriority[groupID] = groupsPriority[groupID] + 10;
 				
 			});
 
-			console.log(_userFields);
 		},
 
 		//Load fields on page Load
@@ -611,6 +638,27 @@ jQuery(document).ready(function($){
 
 			$fieldSettings.addClass('loading');
 			add_notice('Loading fields, Please wait....','info',10000);
+
+			const inActive = {};
+
+			$.each(_userFields, function( id, data ){
+
+				if( !data['group'] ){
+					_userFields[id]['group'] = 'others';
+				}
+
+				if( data['settings']['active'] && data['settings']['active'] === "no" ){
+					data['priority'] = 20000 + data['priority'];
+					inActive[id] = data;
+					delete _userFields[id];
+				}
+
+
+			})
+
+			_userFields =  $.extend(_userFields, inActive);
+
+			console.log(_userFields);
 
 			//Converting into array type for sorting
 			var _userFieldsArray = Object.entries(_userFields);
@@ -628,8 +676,6 @@ jQuery(document).ready(function($){
 			});
 
 
-			console.log(_userFieldsArray);
-
 			$.each( _userFieldsArray, function( index, field ){
 				//field[0] = Field ID
 				(new Field( field[0] )).createSettings();
@@ -639,14 +685,30 @@ jQuery(document).ready(function($){
 
 			$fieldSettings.removeClass('loading');
 			clear_notice();
-			$fieldsDisplay.find('.xoo-aff-fs-display:first-of-type').trigger('click');
 
 		},
 
 		getActiveField: function(){
+
 			var $form = $('form.xoo-aff-field-settings');
+
 			if( $form.length === 0 ) return;
-			return Handler.getField(  $form.attr('id') );
+
+			if( !this.activeField || this.activeField.id !== $form.attr('id') ){
+				this.activeField = Handler.getField(  $form.attr('id') );
+			}
+
+			return this.activeField;
+
+		},
+
+		getActiveFieldID: function(){
+			if( !this.getActiveField() ) return;
+			return this.getActiveField().id;
+		},
+
+		getActiveFieldDisplay: function(){
+			return $('.xoo-aff-fs-display[id="'+this.getActiveFieldID()+'"]');
 		},
 
 		//Update Field
@@ -688,7 +750,6 @@ jQuery(document).ready(function($){
 				type: 'POST',
 				data: data,
 				success: function(response){
-					console.log(response);
 					if( response.success && response.success == 1){
 						add_notice('Saved successfully.','success');
 					}
@@ -855,6 +916,47 @@ jQuery(document).ready(function($){
 		}
 
 	} )
+
+	$('body').on( 'click', '.xoo-aff-grp-selector:not(.xoo-aff-active)', function(){
+
+		$('.xoo-aff-grp-selector').removeClass('xoo-aff-active');
+
+		let group = $(this).data('grpid');
+
+		$(this).addClass('xoo-aff-active');
+
+		$pageContainer.attr('data-activegrp', group );
+
+		showGroupFieldsInDisplay();
+
+		let $groupFields = $('li.xoo-aff-fs-display[data-group="'+group+'"]');
+
+		if( $groupFields.length ){
+			$($groupFields[0]).trigger('click');
+			$fieldView.add($fieldsDisplay).show();
+		}
+		else{
+			$fieldView.add($fieldsDisplay).hide();
+		}
+
+		//Toggle Add field button
+		if( window.xoo_aff_field_groups[group]['add_field'] ){
+			$addFieldBtn.show();
+		}
+		else{
+			$addFieldBtn.hide();
+		}
+
+		
+	} )
+
+	function showGroupFieldsInDisplay(){
+		var group = $pageContainer.attr('data-activegrp' );
+		$('li.xoo-aff-fs-display').removeClass('xoo-aff-fs-show');
+		$('li.xoo-aff-fs-display[data-group="'+group+'"]').addClass('xoo-aff-fs-show');
+	}
+
+	$('.xoo-aff-field-groups > div:first-child').trigger('click');
 
 })
 

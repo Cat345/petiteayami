@@ -39,6 +39,7 @@ export interface IAdjustCustomerStoreCreditsPayload {
   type: string;
   amount: number | string;
   note?: string;
+  send_email_notification?: boolean;
   processingCB?: () => void;
   successCB?: (arg: any) => void;
   failCB?: (arg: any) => void;

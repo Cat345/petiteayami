@@ -4,7 +4,11 @@ namespace YOOtheme\Builder\Source\Listener;
 
 class OrderSourceMetadata
 {
-    public static function handle($metadata)
+    /**
+     * @param ?array<string, mixed> $metadata
+     * @return array<string, mixed>
+     */
+    public static function handle(?array $metadata): ?array
     {
         if (!empty($metadata['fields'])) {
             uasort(

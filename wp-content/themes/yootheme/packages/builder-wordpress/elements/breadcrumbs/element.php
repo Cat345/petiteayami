@@ -5,9 +5,118 @@ namespace YOOtheme;
 use YOOtheme\Theme\Wordpress\Breadcrumbs;
 
 return [
+    'name' => 'breadcrumbs',
+    'title' => 'Breadcrumbs',
+    'group' => 'system',
+    'icon' => '${url:images/icon.svg}',
+    'iconSmall' => '${url:images/iconSmall.svg}',
+    'element' => true,
+    'width' => 500,
+    'defaults' => [
+        'show_home' => true,
+        'show_current' => true,
+    ],
+    'templates' => [
+        'render' => __DIR__ . '/templates/template.php',
+    ],
     'transforms' => [
         'render' => function ($node) {
             $node->props['items'] = Breadcrumbs::getItems($node->props);
         },
+    ],
+    'fields' => [
+        'show_home' => [
+            'label' => 'Breadcrumbs',
+            'description' =>
+                'Show or hide the home link as first item as well as the current page as last item in the breadcrumb navigation.',
+            'text' => 'Show home link',
+            'type' => 'checkbox',
+        ],
+        'show_current' => [
+            'text' => 'Show current page',
+            'type' => 'checkbox',
+        ],
+        'home_text' => [
+            'label' => 'Home Text',
+            'description' => 'Enter the text for the home link.',
+            'attrs' => [
+                'placeholder' => 'Home',
+            ],
+            'enable' => 'show_home',
+        ],
+        'position' => '${builder.position}',
+        'position_left' => '${builder.position_left}',
+        'position_right' => '${builder.position_right}',
+        'position_top' => '${builder.position_top}',
+        'position_bottom' => '${builder.position_bottom}',
+        'position_z_index' => '${builder.position_z_index}',
+        'blend' => '${builder.blend}',
+        'margin_top' => '${builder.margin_top}',
+        'margin_bottom' => '${builder.margin_bottom}',
+        'text_align' => '${builder.text_align}',
+        'text_align_breakpoint' => '${builder.text_align_breakpoint}',
+        'text_align_fallback' => '${builder.text_align_fallback}',
+        'animation' => '${builder.animation}',
+        '_parallax_button' => '${builder._parallax_button}',
+        'visibility' => '${builder.visibility}',
+        'name' => '${builder.name}',
+        'status' => '${builder.status}',
+        'id' => '${builder.id}',
+        'class' => '${builder.cls}',
+        'attributes' => '${builder.attrs}',
+        'css' => [
+            'label' => 'CSS',
+            'description' =>
+                'Enter your own custom CSS. The following selectors will be prefixed automatically for this element: <code>.el-element</code>',
+            'type' => 'editor',
+            'editor' => 'code',
+            'mode' => 'css',
+            'attrs' => [
+                'debounce' => 500,
+                'hints' => ['.el-element'],
+            ],
+            'source' => true,
+        ],
+        'transform' => '${builder.transform}',
+    ],
+    'fieldset' => [
+        'default' => [
+            'type' => 'tabs',
+            'fields' => [
+                [
+                    'title' => 'Settings',
+                    'fields' => [
+                        [
+                            'label' => 'Breadcrumbs',
+                            'type' => 'group',
+                            'divider' => true,
+                            'fields' => ['show_home', 'show_current', 'home_text'],
+                        ],
+                        [
+                            'label' => 'General',
+                            'type' => 'group',
+                            'fields' => [
+                                'position',
+                                'position_left',
+                                'position_right',
+                                'position_top',
+                                'position_bottom',
+                                'position_z_index',
+                                'blend',
+                                'margin_top',
+                                'margin_bottom',
+                                'text_align',
+                                'text_align_breakpoint',
+                                'text_align_fallback',
+                                'animation',
+                                '_parallax_button',
+                                'visibility',
+                            ],
+                        ],
+                    ],
+                ],
+                '${builder.advanced}',
+            ],
+        ],
     ],
 ];

@@ -1,5 +1,12 @@
 <?php
 
+// Override default settings
+$props['icon'] = $props['icon'] ?: $element['icon'];
+$props['image_svg_color'] = $props['image_svg_color'] ?: $element['image_svg_color'];
+
+// Item
+$el = ($props['id'] || $props['class'] || $props['attributes']) ? $this->el($element['list_type'] == 'vertical' ? 'div' : 'span') : null;
+
 // Image Align
 $grid = $this->el('div', [
 
@@ -20,47 +27,7 @@ $cell_image = $this->el('div', [
 ]);
 
 // Image
-if ($props['image']) {
-
-    $image = $this->el('image', [
-
-        'class' => [
-            'el-image',
-            'uk-border-{image_border}',
-            'uk-text-{image_svg_color} {@image_svg_inline}' => $this->isImage($props['image']) == 'svg',
-        ],
-
-        'src' => $props['image'],
-        'alt' => $props['image_alt'],
-        'loading' => $element['image_loading'] ? false : null,
-        'width' => $element['image_width'],
-        'height' => $element['image_height'],
-        'focal_point' => $props['image_focal_point'],
-        'uk-svg' => $element['image_svg_inline'],
-        'thumbnail' => true,
-    ]);
-
-    $props['image'] = $image($element);
-
-} elseif ($props['icon'] || $element['icon']) {
-
-    $icon = $this->el('span', [
-
-        'class' => [
-            'el-image',
-            'uk-text-{icon_color}',
-        ],
-
-        'uk-icon' => [
-            'icon: {icon};',
-            'width: {icon_width};',
-            'height: {icon_width};',
-        ],
-
-    ]);
-
-    $props['image'] = $icon(array_merge($element, array_filter($props)), '');
-}
+$props['image'] = $this->render("{$__dir}/template-media", compact('props', 'element'));
 
 // Content
 $content = $this->el($element['list_type'] == 'vertical' ? 'div' : 'span', [
@@ -100,6 +67,11 @@ if ($props['image'] && $element['list_type'] == 'horizontal') {
 $link = $props['link'] ? $this->el('a', [
     'href' => $props['link'],
     'target' => ['_blank {@link_target}'],
+    'download' => $props['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
     'uk-scroll' => str_contains((string) $props['link'], '#'),
 ]) : null;
 
@@ -154,23 +126,32 @@ if ($link && !$props['image']) {
 
 // No white space for horizontal lists
 ?>
-<?php if ($props['image']) : ?>
 
-    <?php if ($props['link']) : ?>
-    <?= $link($props) ?>
-    <?php endif ?>
-
-        <?= $grid($element) ?>
-            <?= $cell_image($element, $props['image']) ?>
-            <div>
-                <?= $content($element, $props['content'] ?: '') ?>
-            </div>
-        <?= $grid->end() ?>
-
-    <?php if ($props['link']) : ?>
-    <?= $link->end() ?>
-    <?php endif ?>
-
-<?php else : // No white space for horizontal lists ?>
-<?= $content($element, $props['content'] ?: '') ?>
+<?php if ($el) : ?>
+<?= $el($element, $attrs) ?>
 <?php endif ?>
+
+    <?php if ($props['image']) : ?>
+
+        <?php if ($props['link']) : ?>
+        <?= $link($props) ?>
+        <?php endif ?>
+
+            <?= $grid($element) ?>
+                <?= $cell_image($element, $props['image']) ?>
+                <div>
+                    <?= $content($element, $props['content'] ?: '') ?>
+                </div>
+            <?= $grid->end() ?>
+
+        <?php if ($props['link']) : ?>
+        <?= $link->end() ?>
+        <?php endif ?>
+
+    <?php else :
+        echo $content($element, $props['content'] ?: '');
+    endif;
+
+if ($el) :
+echo $el->end();
+endif;

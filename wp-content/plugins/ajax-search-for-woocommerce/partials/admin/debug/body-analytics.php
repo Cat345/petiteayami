@@ -55,7 +55,12 @@ if (
 		<tr>
 			<td><b>Constant <code>DGWT_WCAS_ANALYTICS_ONLY_CRITICAL</code></b></td>
 			<?php if ( defined( 'DGWT_WCAS_ANALYTICS_ONLY_CRITICAL' ) ) { ?>
-				<td>Is defined. <b><?php var_dump( DGWT_WCAS_ANALYTICS_ONLY_CRITICAL ); ?></b></td>
+				<td>Is defined. <b>
+						<?php
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
+						var_dump( DGWT_WCAS_ANALYTICS_ONLY_CRITICAL );
+						?>
+						</b></td>
 			<?php } else { ?>
 				<td>not defined</td>
 			<?php } ?>

@@ -52,22 +52,15 @@ $attrs_button_container['class'][] = "uk-margin-{$config('~theme.post.button_mar
 $image = function ($attr) use ($config, $view) {
 
     if (!$src = get_the_post_thumbnail_url()) {
-        return;
+        return '';
     }
 
-    $image = app(ImageProvider::class);
-    $meta = get_post_meta(get_post_thumbnail_id());
-    $src = Url::relative(set_url_scheme($src, 'relative'));
-    $alt = $meta['_wp_attachment_image_alt'] ?? '';
-    $width = $config('~theme.post.image_width');
-    $height = $config('~theme.post.image_height');
-
-    if ($view->isImage($src) == 'svg') {
-        $thumbnail = $image->replace($view->image($src, ['width' => $width, 'height' => $height, 'loading' => 'lazy', 'alt' => $alt]));
-    } else {
-        $thumbnail = $image->replace($view->image([$src, 'thumbnail' => [$width, $height], 'srcset' => true], ['loading' => 'lazy', 'alt' => $alt]));
-    }
-
+    $thumbnail = $view->image([Url::relative(set_url_scheme($src, 'relative')), 'thumbnail' => true], [
+        'width' => $config('~theme.post.image_width'),
+        'height' => $config('~theme.post.image_height'),
+        'loading' => 'lazy',
+        'alt' => get_post_meta(get_post_thumbnail_id(), '_wp_attachment_image_alt', true) ?? ''
+    ]);
     ?>
 
     <?php if ($thumbnail) : ?>
@@ -172,10 +165,8 @@ $image = function ($attr) use ($config, $view) {
 
         <?php if ($config('~theme.post.tags') && $tags = get_the_tags()) : ?>
         <p<?= $view->attrs($attrs_tags) ?>>
-            <?php $i = 1 ?>
-            <?php foreach ($tags as $tag) :
-                $seperator = $i++ < count($tags) ? ',' : '' ?>
-                <a href="<?= get_tag_link($tag->term_id) ?>"><?= $tag->name ?></a><?= $seperator ?>
+            <?php foreach ($tags as $tag) : ?>
+                <a href="<?= get_tag_link($tag->term_id) ?>"><?= $tag->name ?></a><?= $tag === array_last($tags) ? '' : ',' ?>
             <?php endforeach ?>
         </p>
         <?php endif ?>

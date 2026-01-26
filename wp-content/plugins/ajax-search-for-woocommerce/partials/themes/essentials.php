@@ -35,8 +35,10 @@ if ( ! function_exists( 'sc_pix_search' ) ) {
 	}
 }
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<style>
 		.pix-header-desktop .dgwt-wcas-search-wrapp,
 		.pix-header-mobile .dgwt-wcas-search-wrapp {
@@ -55,5 +57,6 @@ add_action( 'wp_footer', function () {
 			fill: var(--text-heading-default) !important;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

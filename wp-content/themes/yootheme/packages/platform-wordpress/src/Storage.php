@@ -8,15 +8,16 @@ class Storage extends AbstractStorage
 {
     /**
      * Constructor.
-     *
-     * @param string $name
      */
-    public function __construct($name = 'yootheme')
+    public function __construct(string $name = 'yootheme')
     {
         $this->addJson(get_option($name));
 
         add_action('shutdown', function () use ($name) {
             if ($this->isModified()) {
+                // JSON is not saved with JSON_UNESCAPED_UNICODE
+                // to ensure compatibility with database collations
+                // that don't support the full Unicode range.
                 $data = json_encode($this, JSON_UNESCAPED_SLASHES);
 
                 if ($data !== false) {

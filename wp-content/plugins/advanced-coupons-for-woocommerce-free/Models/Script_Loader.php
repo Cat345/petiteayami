@@ -339,6 +339,8 @@ class Script_Loader extends Base_Model implements Model_Interface {
                         'post_status'                     => $post ? get_post_status( $post ) : '',
                         'user_role_options'               => $this->_helper_functions->get_default_allowed_user_roles(),
                         'cart_condition_fields'           => array(),
+                        // Default value for including tax in cart conditions based on WooCommerce tax settings.
+                        'default_include_tax'             => \wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_cart' ) ? 'yes' : 'no',
                         'help_modal'                      => array(
                             'is_premium'    => function_exists( 'ACFWP' ),
                             'link_logo'     => $this->_helper_functions->get_utm_url( '', function_exists( 'ACFWP' ) ? 'acfwp' : 'acfwf', 'help_modal', false ),
@@ -448,8 +450,10 @@ class Script_Loader extends Base_Model implements Model_Interface {
         $force_load = apply_filters( 'acfw_force_load_frontend_js', false );
 
         // Load regular checkout package.
-        $is_cart_checkout_block = $this->_helper_functions->is_current_page_using_cart_checkout_block();
-        if ( ( is_checkout() && ! $is_cart_checkout_block ) || $force_load ) {
+        $is_cart_checkout_block   = $this->_helper_functions->is_current_page_using_cart_checkout_block();
+        $is_cart_checkout_element = apply_filters( 'acfw_is_cart_checkout_element', false );
+
+        if ( ( ( is_checkout() || $is_cart_checkout_element ) && ! $is_cart_checkout_block ) || $force_load ) {
             $checkout_vite = new Vite_App(
                 'acfwf-checkout',
                 'packages/acfwf-checkout/index.ts',
@@ -611,6 +615,25 @@ class Script_Loader extends Base_Model implements Model_Interface {
 
     /*
     |--------------------------------------------------------------------------
+    | Header tags
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Print ACFWF tag.
+     *
+     * @since 4.7.1
+     * @access public
+     */
+    public function print_acfwf_tag() {
+        printf(
+            '<meta name="generator" content="%s" />',
+            esc_attr( 'Advanced Coupons for WooCommerce Free v' . Plugin_Constants::VERSION )
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
     |--------------------------------------------------------------------------
      */
@@ -626,6 +649,7 @@ class Script_Loader extends Base_Model implements Model_Interface {
         add_filter( 'script_loader_tag', array( $this, 'defer_enqueued_scripts' ), 99, 2 );
         add_action( 'admin_enqueue_scripts', array( $this, 'load_backend_scripts' ), 10, 1 );
         add_action( 'wp_enqueue_scripts', array( $this, 'load_frontend_scripts' ) );
+        add_action( 'wp_head', array( $this, 'print_acfwf_tag' ) );
 
         add_action( 'enqueue_block_editor_assets', array( $this, 'load_gutenberg_editor_scripts' ) );
     }

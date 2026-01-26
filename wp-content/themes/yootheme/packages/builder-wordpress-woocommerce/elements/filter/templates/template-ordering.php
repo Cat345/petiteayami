@@ -19,8 +19,8 @@ if ($props['product_ordering_icon'] || $props['filter_dropdown_parent_icon']) {
 
         $icon->attr([
             'class' => [
-                'uk-margin-small-right {@product_ordering_icon_align: left}',
-                'uk-margin-small-left {@product_ordering_icon_align: right}',
+                'uk-margin-xsmall-right {@product_ordering_icon_align: left}',
+                'uk-margin-xsmall-left {@product_ordering_icon_align: right}',
             ],
 
             'uk-icon' => $props['product_ordering_icon'],
@@ -65,5 +65,3 @@ if ($props['product_ordering_icon'] || $props['filter_dropdown_parent_icon']) {
 
 </div>
 <?php endif ?>
-
-

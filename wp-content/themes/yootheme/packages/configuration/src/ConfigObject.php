@@ -2,17 +2,25 @@
 
 namespace YOOtheme;
 
+/**
+ * @template-extends \ArrayObject<string, mixed>
+ */
 class ConfigObject extends \ArrayObject
 {
     /**
      * Constructor.
+     *
+     * @param array<string, mixed> $values
      */
     public function __construct(array $values = [])
     {
         parent::__construct($values, static::ARRAY_AS_PROPS);
     }
+
     /**
      * Get all configuration values.
+     *
+     * @return array<string, mixed>
      */
     public function all(): array
     {
@@ -100,6 +108,8 @@ class ConfigObject extends \ArrayObject
 
     /**
      * Assign an array of configuration values.
+     *
+     * @param array<string, mixed> $values
      */
     public function assign(array $values): void
     {
@@ -108,6 +118,8 @@ class ConfigObject extends \ArrayObject
 
     /**
      * Merge an array of configuration values recursively.
+     *
+     * @param array<string, mixed> $values
      */
     public function merge(array $values): void
     {

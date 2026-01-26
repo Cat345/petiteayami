@@ -19,7 +19,12 @@ class LoadStylerImports
         $this->styler = $styler;
     }
 
-    public function handle($imports, $themeId): array
+    /**
+     * @param array<string, string> $imports
+     *
+     * @return array<string, string>
+     */
+    public function handle(array $imports, string $themeId): array
     {
         // add general imports
         foreach ($this->config->get('theme.styles.imports', []) as $path) {

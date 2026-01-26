@@ -5,9 +5,9 @@ namespace YOOtheme;
 class Middleware
 {
     /**
-     * @var array
+     * @var array<callable>
      */
-    public $stack;
+    public array $stack;
 
     /**
      * Constructor.

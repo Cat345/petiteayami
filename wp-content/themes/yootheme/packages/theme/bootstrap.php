@@ -3,15 +3,13 @@
 namespace YOOtheme\Theme;
 
 use YOOtheme\Config;
-use YOOtheme\ImageProvider;
 use YOOtheme\View;
 
 return [
-    'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.json'),
+    'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.php'),
 
     'events' => [
-        'app.request' => [Listener\DisableImageCache::class => '@handle'],
-        'metadata.load' => [Listener\LoadThemeVersion::class => ['@handle', -10]],
+        'metadata.load' => [Listener\LoadThemeVersion::class => ['handle', -10]],
 
         'theme.head' => [
             Listener\LoadThemeHead::class => ['@handle', -10],
@@ -21,6 +19,7 @@ return [
             Listener\UpdateBuilderLayouts::class => '@handle',
             Listener\LoadCustomizerData::class => '@handle',
             Listener\LoadConfigData::class => ['@handle', -20],
+            Listener\LoadCustomizerScript::class => ['@handle', 30],
             Listener\LoadUIkitScript::class => ['@handle', 40],
         ],
 
@@ -33,10 +32,6 @@ return [
         View::class => function (View $view, $app) {
             $app(ViewHelper::class)->register($view);
         },
-
-        ImageProvider::class => function (ImageProvider $image, $app) {
-            $image->addLoader($app(ImageLoader::class));
-        },
     ],
 
     'services' => [
@@ -47,6 +42,10 @@ return [
             return $updater;
         },
 
-        Listener\LoadThemeVersion::class => '',
+        ThemeConfig::class => function (Config $config) {
+            $themeConfig = new ThemeConfig();
+            $themeConfig->scripts = $config->get('~theme.scripts', []);
+            return $themeConfig;
+        },
     ],
 ];

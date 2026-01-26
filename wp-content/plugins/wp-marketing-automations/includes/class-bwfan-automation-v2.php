@@ -145,6 +145,11 @@ class BWFAN_Automation_V2 {
 
 			$data['meta'] = array_filter( $automation_meta );
 
+			if ( bwfan_is_autonami_pro_active() && ! empty( $selected_event ) ) {
+				BWFAN_Core()->rules->load_rules_classes();
+				$data['rules'] = BWFAN_Core()->rules->get_rules( $selected_event, $this->automation_id );
+			}
+
 			$response['status']  = true;
 			$response['message'] = 'Successfully fetched automation';
 			$response['data']    = $data;

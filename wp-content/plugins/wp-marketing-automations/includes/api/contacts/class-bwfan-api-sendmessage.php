@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Bwfan Api Sendmessage
+ *
+ * @since 1.0.0
+ */
 class BWFAN_API_SendMessage extends BWFAN_API_Base {
 	public static $ins;
 	private $conversation = null;
@@ -12,6 +17,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		return self::$ins;
 	}
 
+	/**
+	 *   Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->method       = WP_REST_Server::CREATABLE;
@@ -24,6 +34,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		);
 	}
 
+	/**
+	 * Default Args Values
+	 *
+	 * @since 1.0.0
+	 */
 	public function default_args_values() {
 		return array(
 			'contact_id' => '',
@@ -33,6 +48,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		);
 	}
 
+	/**
+	 * Process Api Call
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_api_call() {
 		$contact_id = $this->get_sanitized_arg( 'contact_id', 'text_field' );
 		$title      = $this->get_sanitized_arg( 'title', 'text_field' );
@@ -152,6 +172,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		return $this->error_response( $sent, null, 500 );
 	}
 
+	/**
+	 * Send Single Push Notification
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_single_push_notification( $conversation, $contact, $template ) {
 		if ( ! bwfan_is_autonami_pro_active() ) {
 			return __( 'FunnelKit automations Pro is not active ', 'wp-marketing-automations' );
@@ -268,6 +293,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		return $result;
 	}
 
+	/**
+	 * Send Single Sms
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_single_sms( $conversation, $contact ) {
 		if ( ! bwfan_is_autonami_pro_active() ) {
 			return __( 'FunnelKit automations Pro is not active ', 'wp-marketing-automations' );
@@ -312,6 +342,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		return true;
 	}
 
+	/**
+	 * Send Single Whatsapp Message
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_single_whatsapp_message( $conversation, $contact ) {
 		if ( ! bwfan_is_autonami_pro_active() ) {
 			return __( 'FunnelKit automations Pro is not active ', 'wp-marketing-automations' );
@@ -342,7 +377,7 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 			)
 		) );
 
-		if ( ! empty( $response['status'] ) && $response['status'] == true ) {
+		if ( is_array( $response ) && isset( $response['status'] ) && $response['status'] == true ) {
 			/** Save the time of last sent engagement **/
 			$data = array( 'cid' => $contact_id );
 			$this->conversation::save_last_sent_engagement( $data );
@@ -350,12 +385,41 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 
 			return true;
 		}
-		$error_message = isset( $response['msg'] ) && ! empty( $response['msg'] ) ? $response['msg'] : __( 'Unable to send message', 'wp-marketing-automations' );
+		$error_message = $this->get_error_message_from_response( $response );
 		$this->conversation->fail_the_conversation( $conversation_id, $error_message );
-
 		return $error_message;
 	}
 
+	/**
+	 * Extract error message from API response
+	 *
+	 * @param mixed $response
+	 *
+	 * @return string
+	 */
+	private function get_error_message_from_response( $response ) {
+		$default_error = __( 'Unable to send message', 'wp-marketing-automations' );
+
+		if ( ! is_array( $response ) ) {
+			return $default_error;
+		}
+
+		// Check for error message in different response formats
+		$error_keys = [ 'msg', 'message', 'error', 'error_message' ];
+		foreach ( $error_keys as $key ) {
+			if ( isset( $response[ $key ] ) && ! empty( $response[ $key ] ) ) {
+				return $response[ $key ];
+			}
+		}
+
+		return $default_error;
+	}
+
+	/**
+	 * Prepare Email Subject
+	 *
+	 * @since 1.0.0
+	 */
 	public function prepare_email_subject( $subject, $contact_id ) {
 		BWFAN_Merge_Tag_Loader::set_data( array(
 			'contact_id'   => $contact_id,
@@ -365,6 +429,11 @@ class BWFAN_API_SendMessage extends BWFAN_API_Base {
 		return BWFAN_Common::decode_merge_tags( $subject );
 	}
 
+	/**
+	 * Send Notification
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_notification( $args ) {
 		// fetching provider for test sms
 		$provider = isset( $args['push_provider'] ) ? $args['push_provider'] : '';

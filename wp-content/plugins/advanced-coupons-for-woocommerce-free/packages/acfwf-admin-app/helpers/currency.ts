@@ -1,6 +1,6 @@
 // #region [Imports] ===================================================================================================
 
-import { isNull } from "lodash";
+import { isNull } from 'lodash';
 
 // #endregion [Imports]
 
@@ -22,24 +22,43 @@ interface INumberFormatProps {
 
 // #region [Functions] =================================================================================================
 
+/**
+ * Format a number with the specified precision and separators.
+ *
+ * @param {INumberFormatProps} props
+ * @param {number} number
+ * @returns {string}
+ */
 export function numberFormat(
-  { precision = null, decimalSeparator = ".", thousandSeparator = "," }: INumberFormatProps,
+  { precision = null, decimalSeparator = '.', thousandSeparator = ',' }: INumberFormatProps,
   number: number
 ) {
   if (isNull(precision)) {
-    const [, decimals] = number.toString().split(".");
+    const [, decimals] = number.toString().split('.');
     precision = decimals ? decimals.length : 0;
   }
 
   let formatted = number.toFixed(precision);
-  let [whole, decimal] = formatted.split(".");
-  const regex = /(\d+)(\d{3})/;
-  while (regex.test(whole)) {
-    whole = whole.replace(regex, "$1" + thousandSeparator + "$2");
+  let [whole, decimal] = formatted.split('.');
+
+  // Only apply thousand separator if it's not empty to avoid infinite loop
+  if (thousandSeparator && thousandSeparator !== '') {
+    const regex = /(\d+)(\d{3})/;
+    while (regex.test(whole)) {
+      whole = whole.replace(regex, '$1' + thousandSeparator + '$2');
+    }
   }
+
   return `${whole}${decimalSeparator}${decimal}`;
 }
 
+/**
+ * Format a number as a price string with the currency symbol.
+ *
+ * @param {number} number
+ * @param {boolean} useCode
+ * @returns {string}
+ */
 export function priceFormat(number: number, useCode = false) {
   const { currency } = acfwAdminApp.store_credits_page;
   const currencySettings = {
@@ -50,11 +69,26 @@ export function priceFormat(number: number, useCode = false) {
 
   const formattedNumber = numberFormat(currencySettings, number);
 
-  if ("" === formattedNumber) {
+  if ('' === formattedNumber) {
     return formattedNumber;
   }
 
   return `${currency.symbol}${formattedNumber}`;
+}
+
+/**
+ * Remove thousand separator from a value string.
+ *
+ * @param {string} value
+ * @param {string} separator
+ * @returns {string}
+ */
+function removeThousandSeparator(value: string, separator: string): string {
+  if (separator && separator !== '') {
+    const thousandRegex = new RegExp(`\\${separator}`, 'g');
+    return value.replace(thousandRegex, '');
+  }
+  return value;
 }
 
 /**
@@ -65,18 +99,22 @@ export function priceFormat(number: number, useCode = false) {
  */
 export function validatePrice(value: string): boolean {
   const { currency } = acfwAdminApp.store_credits_page;
-  const regex = new RegExp(`[^-0-9%\\${currency.decimal_separator}]+`, "gi");
-  const decimalRegex = new RegExp(`[^\\${currency.decimal_separator}"]`, "gi");
-  let newvalue = value.replace(regex, "");
+
+  // First, remove thousand separators if present
+  const cleanValue = removeThousandSeparator(value, currency.thousand_separator);
+
+  const regex = new RegExp(`[^-0-9%\\${currency.decimal_separator}]+`, 'gi');
+  const decimalRegex = new RegExp(`[^\\${currency.decimal_separator}"]`, 'gi');
+  let newvalue = cleanValue.replace(regex, '');
 
   // Check if newvalue have more than one decimal point.
-  if (1 < newvalue.replace(decimalRegex, "").length) {
-    newvalue = newvalue.replace(decimalRegex, "");
+  if (1 < newvalue.replace(decimalRegex, '').length) {
+    newvalue = newvalue.replace(decimalRegex, '');
   }
 
-  const floatVal = parseFloat(newvalue.replace(currency.decimal_separator, "."));
+  const floatVal = parseFloat(newvalue.replace(currency.decimal_separator, '.'));
 
-  return value === newvalue && floatVal > 0.0;
+  return cleanValue === newvalue && floatVal > 0.0;
 }
 
 /**
@@ -87,7 +125,11 @@ export function validatePrice(value: string): boolean {
  */
 export function parsePrice(value: string): number {
   const { currency } = acfwAdminApp.store_credits_page;
-  return parseFloat(value.replace(currency.decimal_separator, "."));
+
+  // Remove thousand separators if present
+  const cleanValue = removeThousandSeparator(value, currency.thousand_separator);
+
+  return parseFloat(cleanValue.replace(currency.decimal_separator, '.'));
 }
 
 // #endregion [Functions]

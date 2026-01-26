@@ -16,6 +16,21 @@ class BWFAN_DB_Table_Task_Claim extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'claim_id',
+			'indexes'    => [
+				'date_created_gmt' => [ 'date_created_gmt' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string

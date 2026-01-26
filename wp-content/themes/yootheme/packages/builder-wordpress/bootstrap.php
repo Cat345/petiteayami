@@ -3,6 +3,10 @@
 namespace YOOtheme\Builder\Wordpress;
 
 use YOOtheme\Builder;
+use YOOtheme\File;
+use YOOtheme\Builder\Listener\LoadGoogleMapsScript;
+use YOOtheme\Builder\Listener\LoadLeafletScript;
+use YOOtheme\Builder\Listener\LoadYoutubeScript;
 use YOOtheme\View;
 
 return [
@@ -14,6 +18,11 @@ return [
 
     'actions' => [
         'wp_body_open' => [Listener\RenderBuilder::class => '@handle'],
+        'wp_footer' => [
+            LoadLeafletScript::class => ['@body', 10],
+            LoadGoogleMapsScript::class => ['@body', 10],
+            LoadYoutubeScript::class => ['@body', 10],
+        ],
     ],
 
     'filters' => [
@@ -39,10 +48,17 @@ return [
         },
 
         Builder::class => function (Builder $builder, $app) {
-            $builder->addTypePath(__DIR__ . '/elements/*/element.json');
+            $elements = ['breadcrumbs', 'menu', 'module', 'module_position', 'search'];
+
+            foreach ($elements as $element) {
+                $builder->addType($element, __DIR__ . "/elements/{$element}/element.php");
+            }
 
             if ($childDir = $app->config->get('theme.childDir')) {
-                $builder->addTypePath("{$childDir}/builder/*/element.json");
+                $files = File::glob("{$childDir}/builder/*/element.{json,php}");
+                $filter = fn($file) => str_ends_with($file, '.json') ||
+                    !in_array(dirname($file) . '/element.json', $files);
+                $builder->addTypePath(array_filter($files, $filter));
             }
         },
     ],

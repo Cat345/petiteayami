@@ -12,7 +12,7 @@ class CsrfMiddleware
      *
      * @var string
      */
-    protected $token;
+    protected string $token;
 
     /**
      * Verify callable.
@@ -23,11 +23,8 @@ class CsrfMiddleware
 
     /**
      * Constructor.
-     *
-     * @param string   $token
-     * @param ?callable $verify
      */
-    public function __construct($token, ?callable $verify = null)
+    public function __construct(string $token, ?callable $verify = null)
     {
         $this->token = $token;
         $this->verify = $verify ?: [$this, 'verifyToken'];
@@ -38,10 +35,8 @@ class CsrfMiddleware
      *
      * @param Request  $request
      * @param callable $next
-     *
-     * @return Response
      */
-    public function handle($request, callable $next)
+    public function handle($request, callable $next): Response
     {
         $csrf = $request->getAttribute('csrf', in_array($request->getMethod(), ['POST', 'DELETE']));
 

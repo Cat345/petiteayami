@@ -3,7 +3,7 @@
 $el = $this->el('div', [
 
     'class' => [
-        'uk-alert',
+        'uk-alert uk-margin-remove-first-child',
         'uk-alert-{alert_style}',
         'uk-padding {@alert_size}',
     ],
@@ -42,6 +42,11 @@ $link = $props['link'] ? $this->el('a', [
 
     'href' => ['{link}'],
     'target' => ['_blank {@link_target}'],
+    'download' => $props['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
     'uk-scroll' => str_contains((string) $props['link'], '#'),
 
 ]) : null;

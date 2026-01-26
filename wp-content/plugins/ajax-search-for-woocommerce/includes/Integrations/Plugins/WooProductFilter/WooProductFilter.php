@@ -21,14 +21,14 @@ class WooProductFilter extends AbstractPluginIntegration {
 
     protected const MIN_VERSION = '1.2.8';
 
-    private $post_ids = array();
+    private $post_ids = [];
 
     public function init() : void {
         // TODO This filter must be added by the plugin author
-        add_filter( 'wpf_getFilteredPriceSql', array($this, 'filter_price_sql') );
-        add_action( 'pre_get_posts', array($this, 'pre_get_posts') );
-        add_action( 'wp_ajax_filtersFrontend', array($this, 'set_search_post_ids_from_ajax'), 5 );
-        add_action( 'wp_ajax_nopriv_filtersFrontend', array($this, 'set_search_post_ids_from_ajax'), 5 );
+        add_filter( 'wpf_getFilteredPriceSql', [$this, 'filter_price_sql'] );
+        add_action( 'pre_get_posts', [$this, 'pre_get_posts'] );
+        add_action( 'wp_ajax_filtersFrontend', [$this, 'set_search_post_ids_from_ajax'], 5 );
+        add_action( 'wp_ajax_nopriv_filtersFrontend', [$this, 'set_search_post_ids_from_ajax'], 5 );
     }
 
     /**
@@ -40,25 +40,28 @@ class WooProductFilter extends AbstractPluginIntegration {
      */
     public function filter_price_sql( $sql ) {
         global $wpdb;
-        $post_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', array() );
+        $post_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', [] );
         if ( $post_ids ) {
-            $sql .= " AND {$wpdb->posts}.ID IN(" . implode( ',', $post_ids ) . ")";
+            $sql .= " AND {$wpdb->posts}.ID IN(" . implode( ',', $post_ids ) . ')';
         }
         return $sql;
     }
 
     public function set_search_post_ids_from_ajax() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if ( !isset( $_POST['mod'] ) || isset( $_POST['mod'] ) && $_POST['mod'] !== 'woofilters' ) {
             return;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if ( !isset( $_POST['currenturl'] ) ) {
             return;
         }
         $orderby = 'relevance';
         $order = 'desc';
         // parse args from url passed as POST var
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $url_query = wp_parse_url( $_POST['currenturl'] );
-        $url_query_args = array();
+        $url_query_args = [];
         if ( empty( $url_query['query'] ) ) {
             return;
         }
@@ -91,6 +94,7 @@ class WooProductFilter extends AbstractPluginIntegration {
         if ( !defined( 'DOING_AJAX' ) ) {
             return;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if ( !isset( $_POST['action'] ) || isset( $_POST['action'] ) && $_POST['action'] !== 'filtersFrontend' ) {
             return;
         }

@@ -17,7 +17,7 @@ function xoo_wl_is_product_out_of_stock( $product_id ){
 	$product = wc_get_product( $product_id );
 
 	if( $product ){
-		return apply_filters( 'xoo_wl_product_is_out_of_stock', !$product->is_in_stock() || ( xoo_wl_helper()->get_general_option( 'm-en-bod' ) === "yes" &&  $product->get_stock_status() === "onbackorder" && ( !$product->get_manage_stock() || $product->get_stock_quantity() <= 0 ) ), $product );
+		return apply_filters( 'xoo_wl_product_is_out_of_stock', !$product->is_in_stock(), $product );
 
 	}
 	
@@ -25,21 +25,39 @@ function xoo_wl_is_product_out_of_stock( $product_id ){
 
 }
 
-function xoo_wl_should_show_waitlist( $product_id ){
+function xoo_wl_should_show_waitlist( $product_id ) {
 
 	$product = wc_get_product( $product_id );
 
-	if( $product ){
-
-		$parentProductID 	= $product->is_type('variation') ? $product->get_parent_id() : $product_id;
-		$forceShow 			= get_post_meta( $parentProductID, '_xoo_waitlist_force_show', true ) === "yes";
-
-		return apply_filters( 'xoo_wl_product_should_show_waitlist', $forceShow || xoo_wl_is_product_out_of_stock( $product_id ), $product );
-
+	if ( ! $product ) {
+		return false;
 	}
-	
-	return false;
+
+	$parentProductID = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+
+	$showBtn = get_post_meta( $parentProductID, '_xoo_waitlist_force_show', true ) === 'yes';
+
+	if ( ! $showBtn ) {
+
+		$setting = (array) xoo_wl_helper()->get_general_option( 'm-btn-show' );
+
+		if ( in_array( 'outofstock', $setting, true ) && !$product->is_in_stock() ) {
+			$showBtn = true;
+		}
+		else if ( in_array( 'backorder', $setting, true ) && $product->backorders_allowed() ) {
+			$showBtn = true;
+		}
+		else if ( in_array( 'backorder_out', $setting, true ) && $product->backorders_allowed() && ( ! $product->get_manage_stock() || $product->get_stock_quantity() <= 0 ) ) {
+			$showBtn = true;
+		}
+		else if ( in_array( 'instock', $setting, true ) && $product->is_in_stock() ) {
+			$showBtn = true;
+		}
+	}
+
+	return apply_filters( 'xoo_wl_product_should_show_waitlist', $showBtn, $product );
 }
+
 
 
 function xoo_wl_form_markup( $product_id , $type = 'popup', $args = array() ){
@@ -162,5 +180,25 @@ function xoo_wl_prefill_email( $args ){
 }
 
 add_action( 'xoo_aff_waitlist-woocommerce_input_args', 'xoo_wl_prefill_email' );
+
+
+function xoo_wl_get_product_name( $product ){
+
+	$title = '';
+
+	if ( $product && $product->is_type( 'variation' ) ) {
+
+	    $parent_name = wc_get_product( $product->get_parent_id() )->get_name();
+	    $attributes  = wc_get_formatted_variation( $product, true, false, false );
+
+	    $title = $parent_name . ' - ' . $attributes;
+
+	} elseif ( $product ) {
+	    $title = $product->get_name();
+	}
+
+	return $title;
+
+}
 
 ?>

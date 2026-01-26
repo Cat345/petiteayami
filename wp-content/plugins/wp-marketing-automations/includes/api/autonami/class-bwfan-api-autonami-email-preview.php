@@ -84,8 +84,18 @@ class BWFAN_API_Campaign_Email_Preview extends BWFAN_API_Base {
 		$body = BWFAN_Common::decode_merge_tags( $body );
 		$body = BWFAN_Common::bwfan_correct_protocol_url( $body );
 
-		$data['body']        = $body;
-		$action_object       = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
+		$data['body']  = $body;
+		$action_object = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
+		if ( null === $action_object && class_exists( 'BWFAN_Wp_Sendemail' ) ) {
+			/** Try to get the instance directly */
+			$action_object = BWFAN_Wp_Sendemail::get_instance();
+		}
+		if ( null === $action_object || ! method_exists( $action_object, 'email_content_v2' ) ) {
+			$this->response_code = 500;
+
+			return $this->error_response( __( 'Email action handler not available', 'wp-marketing-automations' ) );
+		}
+
 		$body                = $action_object->email_content_v2( $data );
 		$this->response_code = 200;
 

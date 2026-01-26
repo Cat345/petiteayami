@@ -5,19 +5,19 @@ namespace YOOtheme;
 class EventDispatcher
 {
     /**
-     * @var array
+     * @var array<string, callable>
      */
-    protected $handlers = [];
+    protected array $handlers = [];
 
     /**
-     * @var array
+     * @var array<string, array<int, list<callable>>>
      */
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * Constructor.
      *
-     * @param array $handlers
+     * @param array<string, mixed> $handlers
      */
     public function __construct(array $handlers = [])
     {
@@ -32,11 +32,11 @@ class EventDispatcher
      * Dispatches an event with arguments.
      *
      * @param string $event
-     * @param array  $arguments
+     * @param mixed ...$arguments
      *
      * @return mixed
      */
-    public function dispatch($event, ...$arguments)
+    public function dispatch(string $event, ...$arguments)
     {
         [$event, $type] = explode('|', $event, 2) + [1 => 'default'];
 
@@ -48,23 +48,17 @@ class EventDispatcher
     /**
      * Gets the event listeners.
      *
-     * @param string $event
-     *
-     * @return array
+     * @return list<callable>
      */
-    public function getListeners($event)
+    public function getListeners(string $event): array
     {
         return array_merge(...$this->listeners[$event] ?? []);
     }
 
     /**
      * Adds an event listener.
-     *
-     * @param string   $event
-     * @param callable $listener
-     * @param int      $priority
      */
-    public function addListener($event, $listener, $priority = 0)
+    public function addListener(string $event, callable $listener, int $priority = 0): void
     {
         $exists = isset($this->listeners[$event][$priority]);
 
@@ -77,13 +71,8 @@ class EventDispatcher
 
     /**
      * Removes an event listener.
-     *
-     * @param string   $event
-     * @param callable $listener
-     *
-     * @return bool
      */
-    public function removeListener($event, $listener = null)
+    public function removeListener(string $event, ?callable $listener = null): bool
     {
         if (($result = is_null($listener)) || !isset($this->listeners[$event])) {
             $this->listeners[$event] = [];
@@ -102,8 +91,8 @@ class EventDispatcher
     /**
      * The default handler calls every listener ordered by the priority.
      *
-     * @param array $listeners
-     * @param array $arguments
+     * @param list<callable> $listeners
+     * @param list<mixed> $arguments
      *
      * @return mixed
      */
@@ -130,8 +119,8 @@ class EventDispatcher
     /**
      * The filter handler calls every listener ordered by the priority. It passes the return value from each listener to the next listener.
      *
-     * @param array $listeners
-     * @param array $arguments
+     * @param list<callable> $listeners
+     * @param list<mixed> $arguments
      *
      * @return mixed
      */
@@ -151,8 +140,8 @@ class EventDispatcher
     /**
      * The middleware handler calls every listener with arguments and a next() function which is invoked to execute the "next" middleware function.
      *
-     * @param array $listeners
-     * @param array $arguments
+     * @param list<callable> $listeners
+     * @param list<mixed> $arguments
      *
      * @return mixed
      */

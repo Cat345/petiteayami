@@ -1,0 +1,7 @@
+<svg width="130" height="90" viewBox="0 0 130 90" xmlns="http://www.w3.org/2000/svg">
+    <path class="uk-preserve" d="M128,88H2v-18h126v18Z" fill="#fff" />
+    <path d="M1,1h128v88H1V1Z" fill="none" stroke="#444" stroke-width="2" />
+    <rect x="7" y="80" width="17" height="2" fill="#444" />
+    <rect x="7" y="76" width="20" height="2" fill="#444" />
+    <line x1="1" y1="69.5" x2="129" y2="69.5" fill="none" stroke="#444" />
+</svg>

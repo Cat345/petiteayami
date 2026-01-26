@@ -2,6 +2,10 @@
 
 $el = $this->el('div', [
 
+    'class' => [
+        'uk-accordion-default',
+    ],
+
     'uk-accordion' => [
         'multiple: {multiple};',
         'collapsible: {0};' => $props['collapsible'] ? 'true' : 'false',

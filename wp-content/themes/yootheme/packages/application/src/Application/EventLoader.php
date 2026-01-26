@@ -3,6 +3,7 @@
 namespace YOOtheme\Application;
 
 use YOOtheme\Container;
+use YOOtheme\Container\ParameterResolver;
 use YOOtheme\Event;
 use YOOtheme\EventDispatcher;
 
@@ -13,9 +14,6 @@ class EventLoader
      */
     protected $dispatcher;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->dispatcher = Event::getDispatcher();
@@ -23,8 +21,11 @@ class EventLoader
 
     /**
      * Load event listeners.
+     *
+     * @param Container $container
+     * @param list<array<string, array<class-string, string|list{string, ?int}|list<list{string, ?int}>>>>  $configs
      */
-    public function __invoke(Container $container, array $configs)
+    public function __invoke(Container $container, array $configs): void
     {
         foreach ($configs as $events) {
             foreach ($events as $event => $listeners) {
@@ -45,6 +46,8 @@ class EventLoader
 
     /**
      * Adds a listener.
+     *
+     * @param int $params
      */
     public function addListener(
         Container $container,
@@ -53,12 +56,14 @@ class EventLoader
         string $method,
         ...$params
     ): void {
+        $isStatic = $method[0] !== '@';
+        $listener = $isStatic ? [$class, $method] : $class . $method;
+
         $this->dispatcher->addListener(
             $event,
-            fn(...$arguments) => $container->call(
-                $method[0] === '@' ? $class . $method : [$class, $method],
-                $arguments,
-            ),
+            fn(...$arguments) => $isStatic && !ParameterResolver::needsResolving($listener)
+                ? $listener(...$arguments)
+                : $container->call($listener, $arguments),
             ...$params,
         );
     }

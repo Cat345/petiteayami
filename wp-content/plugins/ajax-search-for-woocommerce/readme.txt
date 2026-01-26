@@ -4,7 +4,7 @@ Tags: woocommerce search, ajax search, search by sku, product search, woocommerc
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.32.0
+Stable tag: 1.32.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,20 @@ You can read more and compare Pro and Free features here: [Full comparison - Pro
 9. Sample settings page (Search Analytics tab)
 
 == Changelog ==
+
+= 1.32.2, January 05, 2026 =
+* ADDED: Integration with the Themify Builder Pro plugin
+* ADDED: Integration with the FOX WooCommerce Currency Switcher plugin
+* FIXED: Improved visibility checks for products
+* FIXED: Added nonce validation in an AJAX action
+* FIXED: Improved detection of visibility plugin integrations
+
+= 1.32.1, December 15, 2025 =
+* FIXED: The Details panel inside the results wrapper didn’t expand to match the width of the search bar
+* FIXED: Improved input handling in TheGem theme integration
+* FIXED: The search didn’t work when the "Load JavaScript deferred" feature in WP Rocket was enabled
+* FIXED: No search results appeared when using a multilingual setup and the exact SKU match function was triggered
+* REFACTOR: Implemented a more consistent and unified PHP code style
 
 = 1.32.0, November 17, 2025 =
 * ADDED: Integration with the [Bacola theme](https://fibosearch.com/documentation/themes-integrations/bacola-theme/).

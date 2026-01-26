@@ -9,7 +9,7 @@ use YOOtheme\GraphQL\Type\Definition\ScalarType;
 class ObjectScalarType extends ScalarType
 {
     /**
-     * @param array $config
+     * @inheritdoc
      */
     public function __construct(array $config = [])
     {
@@ -29,18 +29,17 @@ class ObjectScalarType extends ScalarType
     /**
      * @param mixed $value
      *
-     * @return array|null
+     * @return ?array<string, mixed>
      */
-    public function parseValue($value)
+    public function parseValue($value): ?array
     {
         return is_array($value) ? $value : null;
     }
 
     /**
-     * @param Node       $valueNode
-     * @param null|array $variables
+     * @param ?array<object> $variables
      */
-    public function parseLiteral($valueNode, ?array $variables = null)
+    public function parseLiteral(Node $valueNode, ?array $variables = null): void
     {
         throw new Error("Query error: Can't parse Object literal");
     }

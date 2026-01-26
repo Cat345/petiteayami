@@ -12,44 +12,59 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class TheGem extends ThemeIntegration {
 	public function extraFunctions() {
-		add_filter( 'dgwt/wcas/settings', array( $this, 'registerSettingsExtra' ), 20 );
+		add_filter( 'dgwt/wcas/settings', [ $this, 'registerSettingsExtra' ], 20 );
 
-		add_action( 'init', function () {
-			// Header Vertical
-			remove_filter( 'wp_nav_menu_items', 'thegem_menu_item_search', 10, 2 );
-			add_filter( 'wp_nav_menu_items', array( $this, 'replaceSearchInMenu' ), 10, 2 );
+		add_action(
+			'init',
+			function () {
+				// Header Vertical
+				remove_filter( 'wp_nav_menu_items', 'thegem_menu_item_search', 10, 2 );
+				add_filter( 'wp_nav_menu_items', [ $this, 'replaceSearchInMenu' ], 10, 2 );
 
-			// Header Fullwidth hamburger
-			remove_filter( 'wp_nav_menu_items', 'thegem_menu_item_hamburger_widget', 100, 2 );
-			add_action( 'thegem_before_nav_menu', function () {
-				if ( in_array( thegem_get_option( 'header_layout' ), array( 'perspective', 'fullwidth_hamburger' ) ) ) {
-					echo do_shortcode( '[wcas-search-form]' );
-				}
-			} );
+				// Header Fullwidth hamburger
+				remove_filter( 'wp_nav_menu_items', 'thegem_menu_item_hamburger_widget', 100, 2 );
+				add_action(
+					'thegem_before_nav_menu',
+					function () {
+						if ( in_array( thegem_get_option( 'header_layout' ), [ 'perspective', 'fullwidth_hamburger' ] ) ) {
+							echo do_shortcode( '[wcas-search-form]' );
+						}
+					}
+				);
 
-			// Perspective header
-			remove_filter( 'get_search_form', 'thegem_serch_form_vertical_header' );
-			add_action( 'thegem_perspective_menu_buttons', function () {
-				echo do_shortcode( '[wcas-search-form]' );
-			} );
+				// Perspective header
+				remove_filter( 'get_search_form', 'thegem_serch_form_vertical_header' );
+				add_action(
+					'thegem_perspective_menu_buttons',
+					function () {
+						echo do_shortcode( '[wcas-search-form]' );
+					}
+				);
 
-		} );
+			}
+		);
 
-		add_filter( 'get_search_form', array( $this, 'removeSearchBarFromVerticalHeader' ), 100 );
-		add_action( 'thegem_before_header', array( $this, 'addSearchBarToVerticalHeader' ), 20 );
+		add_filter( 'get_search_form', [ $this, 'removeSearchBarFromVerticalHeader' ], 100 );
+		add_action( 'thegem_before_header', [ $this, 'addSearchBarToVerticalHeader' ], 20 );
 
 		// Force enabling the option "mobile overlay"
-		add_filter( 'dgwt/wcas/settings/load_value/key=enable_mobile_overlay', function () {
-			return 'on';
-		} );
+		add_filter(
+			'dgwt/wcas/settings/load_value/key=enable_mobile_overlay',
+			function () {
+				return 'on';
+			}
+		);
 
 		// Mark that the value of the option "mobile overlay" is forced
-		add_filter( 'dgwt/wcas/settings/section=form', function ( $settings ) {
-			$settings[680]['disabled'] = true;
-			$settings[680]['label']    = Helpers::createOverrideTooltip( 'ovtt-storefront-mobile-overlay', Helpers::getOverrideOptionText( $this->themeName ) ) . $settings[680]['label'];
+		add_filter(
+			'dgwt/wcas/settings/section=form',
+			function ( $settings ) {
+				$settings[680]['disabled'] = true;
+				$settings[680]['label']    = Helpers::createOverrideTooltip( 'ovtt-storefront-mobile-overlay', Helpers::getOverrideOptionText( $this->themeName ) ) . $settings[680]['label'];
 
-			return $settings;
-		} );
+				return $settings;
+			}
+		);
 	}
 
 	/**
@@ -99,7 +114,7 @@ class TheGem extends ThemeIntegration {
 	 * @return string
 	 */
 	public function removeSearchBarFromVerticalHeader( $form ) {
-		if ( in_array( thegem_get_option( 'header_layout' ), array( 'fullwidth_hamburger', 'vertical' ) ) ) {
+		if ( in_array( thegem_get_option( 'header_layout' ), [ 'fullwidth_hamburger', 'vertical' ] ) ) {
 			$form = '';
 		}
 
@@ -112,11 +127,11 @@ class TheGem extends ThemeIntegration {
 	 * @return void
 	 */
 	public function addSearchBarToVerticalHeader() {
-		if ( ! in_array( thegem_get_option( 'header_layout' ), array( 'vertical' ) ) ) {
+		if ( ! in_array( thegem_get_option( 'header_layout' ), [ 'vertical' ] ) ) {
 			return;
 		}
 
-		$html = '<div class="dgwt-wcas-thegem-vertical-search">';
+		$html  = '<div class="dgwt-wcas-thegem-vertical-search">';
 		$html .= do_shortcode( '[wcas-search-form]' );
 		$html .= '</div>';
 

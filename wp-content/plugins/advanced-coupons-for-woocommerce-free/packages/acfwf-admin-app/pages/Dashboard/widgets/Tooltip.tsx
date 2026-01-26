@@ -4,6 +4,9 @@
 import { Card, Popover } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
+// Helpers
+import { sanitizeHtml } from "../../../../shared/utils";
+
 // #endregion [Imports]
 
 // #region [Interfaces]=================================================================================================
@@ -22,7 +25,7 @@ const Tooltip = (props: IProps) => {
 
   return (
     <span className="tooltip">
-      <Popover overlayClassName="dashboard-tooltip" placement="top" content={<span dangerouslySetInnerHTML={{__html: content}} />} trigger="click">
+      <Popover overlayClassName="dashboard-tooltip" placement="top" content={<span dangerouslySetInnerHTML={{__html: sanitizeHtml(content)}} />} trigger="click">
         <ExclamationCircleOutlined />
       </Popover>
     </span>

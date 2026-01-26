@@ -3,16 +3,19 @@
 namespace YOOtheme\Application;
 
 use YOOtheme\Container;
+use YOOtheme\Container\Service;
 
+/**
+ * @phpstan-type ServiceDefinition array{class?: string, factory?: callable|string, arguments?: array<string, mixed>, shared?: bool}
+ */
 class ServiceLoader
 {
     /**
-     * Load services configuration.
+     * Load services configuration∆.
      *
-     * @param Container $container
-     * @param array     $configs
+     * @param list<array<string, string|callable|Service|ServiceDefinition>> $configs
      */
-    public function __invoke(Container $container, array $configs)
+    public function __invoke(Container $container, array $configs): void
     {
         $config = array_merge(...$configs);
 

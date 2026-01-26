@@ -6,7 +6,11 @@ if (!$element['show_title']) {
 }
 
 // Item
-$el = $props['item_element'] ? $this->el($props['item_element']) : null;
+$el = $props['item_element']
+    ? $this->el($props['item_element'])
+    : (($props['id'] || $props['class'] || $props['attributes'])
+        ? $this->el('div')
+        : null);
 
 // Image
 $image = $this->render("{$__dir}/template-image", compact('props'));
@@ -43,7 +47,7 @@ $cell_content = $this->el('div', [
 ?>
 
 <?php if ($el) : ?>
-<?= $el($element) ?>
+<?= $el($element, $attrs) ?>
 <?php endif ?>
 
 <?php if ($image && in_array($element['image_align'], ['left', 'right'])) : ?>

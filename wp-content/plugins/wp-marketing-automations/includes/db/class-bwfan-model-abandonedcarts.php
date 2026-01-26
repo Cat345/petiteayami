@@ -24,26 +24,36 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 		}
 
 		global $wpdb;
-		$where      = '';
-		$count      = count( $data );
-		$i          = 0;
 		$table_name = $wpdb->prefix . 'bwfan_abandonedcarts';
 
-		foreach ( $data as $key => $value ) {
-			$i ++;
+		// Whitelist allowed column names
+		$allowed_columns = array( 'ID', 'email', 'user_id', 'checkout_page_id' );
+		$where_clauses   = array();
+		$where_values    = array();
 
-			if ( 'string' === gettype( $value ) ) {
-				$where .= '`' . $key . '` = ' . "'" . $value . "'";
-			} else {
-				$where .= '`' . $key . '` = ' . $value;
+		foreach ( $data as $key => $value ) {
+			// Only allow whitelisted columns
+			if ( ! in_array( $key, $allowed_columns, true ) || empty( $value ) ) {
+				continue;
 			}
 
-			if ( $i < $count ) {
-				$where .= ' AND ';
+			if ( 'string' === gettype( $value ) ) {
+				$where_clauses[] = "`{$key}` = %s";
+				$where_values[]  = $value;
+			} else {
+				$where_clauses[] = "`{$key}` = %d";
+				$where_values[]  = $value;
 			}
 		}
 
-		return $wpdb->query( 'DELETE FROM ' . $table_name . " WHERE $where" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( empty( $where_clauses ) ) {
+			return;
+		}
+
+		$where = implode( ' AND ', $where_clauses );
+		$query = $wpdb->prepare( "DELETE FROM {$table_name} WHERE {$where}", ...$where_values ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**

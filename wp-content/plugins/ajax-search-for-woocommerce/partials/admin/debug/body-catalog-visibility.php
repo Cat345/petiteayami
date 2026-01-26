@@ -50,10 +50,10 @@ wp_nonce_field( 'dgwt_wcas_debug_visibility', '_wpnonce', false );
 		<button class="button" type="submit">Show results</button>
 	</form>
 
-    <?php 
+	<?php 
 ?>
 
-    <br/>
+	<br/>
 <?php 
 if ( !empty( $_GET['catalog_visibility'] ) && !empty( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'dgwt_wcas_debug_visibility' ) ) {
     $shopOnly = Helpers::getProductsByVisibility( $visibility_terms['exclude-from-search'] );
@@ -136,16 +136,16 @@ if ( !empty( $_GET['catalog_visibility'] ) && !empty( $_REQUEST['_wpnonce'] ) &&
 		</tbody>
 	</table>
 
-<?php 
+	<?php 
 }
 if ( !empty( $_GET['out_of_stock_visibility_fix_tool'] ) && !empty( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'dgwt_wcas_debug_visibility_fix_outofstock' ) ) {
     Helpers::fixOutOfStock__premium_only();
-    wp_redirect( admin_url( 'admin.php?page=dgwt_wcas_debug&outofstock_fixed=1' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=dgwt_wcas_debug&outofstock_fixed=1' ) );
 }
 if ( isset( $_GET['outofstock_fixed'] ) && $_GET['outofstock_fixed'] === '1' ) {
     ?>
-    <div class="dgwt-wcas-notice notice notice-success">
-        <p>Success!</p>
-    </div>
-<?php 
+	<div class="dgwt-wcas-notice notice notice-success">
+		<p>Success!</p>
+	</div>
+	<?php 
 }

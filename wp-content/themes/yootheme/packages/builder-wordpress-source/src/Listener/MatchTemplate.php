@@ -2,6 +2,10 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Listener;
 
+use Closure;
+use WP_Post;
+use WP_Query;
+use WP_Term;
 use YOOtheme\Config;
 use YOOtheme\Http\Request;
 
@@ -17,9 +21,11 @@ class MatchTemplate
     }
 
     /**
-     * @param \WP_Query $query
+     * @param WP_Query $query
+     *
+     * @return ?array{type: string, query: array<string, mixed>}
      */
-    public function handle($query)
+    public function handle($query): ?array
     {
         $locale = $this->getLocale($this->config->get('locale.code'));
 
@@ -102,9 +108,14 @@ class MatchTemplate
                     : fn() => false,
             ];
         }
+
+        return null;
     }
 
-    protected function getLocale($locale)
+    /**
+     * @return list<string>|string
+     */
+    protected function getLocale(string $locale)
     {
         if (str_contains($locale, '_')) {
             // Fallback to language code, if e.g. WPML changed the locale
@@ -114,7 +125,7 @@ class MatchTemplate
         return $locale;
     }
 
-    protected function getSingleTermsFn($post): \Closure
+    protected function getSingleTermsFn(WP_Post $post): Closure
     {
         $postTaxonomies = get_object_taxonomies($post);
         $postTermIds = array_column(wp_get_object_terms($post->ID, $postTaxonomies), 'term_id');
@@ -159,7 +170,7 @@ class MatchTemplate
         };
     }
 
-    protected function getTaxonomyTermsFn($term): \Closure
+    protected function getTaxonomyTermsFn(WP_Term $term): Closure
     {
         return function ($termIds, $query) use ($term): bool {
             $includeChildren = $query['include_children'] ?? false;
@@ -181,7 +192,7 @@ class MatchTemplate
         };
     }
 
-    protected function getTaxonomyTermsFilterFn(): \Closure
+    protected function getTaxonomyTermsFilterFn(): Closure
     {
         return function ($terms): bool {
             global $wp_query;

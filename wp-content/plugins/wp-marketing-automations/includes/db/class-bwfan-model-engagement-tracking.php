@@ -7,12 +7,16 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 		static function get_conversations_by_cid( $cid, $mode, $offset = 0, $limit = 25 ) {
 			global $wpdb;
-			$table = self::_table();
-			$and   = '';
+			$table  = self::_table();
+			$cid    = absint( $cid );
+			$offset = absint( $offset );
+			$limit  = absint( $limit );
+			$and    = '';
 			if ( ! empty( $mode ) ) {
-				$and = " AND con.mode = $mode";
+				$mode = absint( $mode );
+				$and  = $wpdb->prepare( ' AND con.mode = %d', $mode );
 			}
-			$query = "SELECT con.*, ct.subject, ct.template as message FROM $table AS con LEFT JOIN {$wpdb->prefix}bwfan_templates AS ct ON con.tid=ct.ID WHERE cid = '$cid' $and ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+			$query = $wpdb->prepare( "SELECT con.*, ct.subject, ct.template as message FROM $table AS con LEFT JOIN {$wpdb->prefix}bwfan_templates AS ct ON con.tid=ct.ID WHERE cid = %d $and ORDER BY created_at DESC LIMIT %d OFFSET %d", $cid, $limit, $offset );
 
 			return self::get_results( $query );
 		}
@@ -32,12 +36,16 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			global $wpdb;
 
 			/** Fetching all Engagements for broadcast **/
-			$table   = self::_table();
-			$query   = "SELECT conv.ID AS conversation_id,c.f_name,c.l_name,c.wpid,conv.send_to,conv.cid,conv.mode,conv.type,conv.open,conv.click,conv.oid,if(conv.c_status=2,1,0) as sent,conv.created_at as sent_time FROM {table_name} AS conv LEFT JOIN {$wpdb->prefix}bwf_contact AS c ON c.ID = conv.cid WHERE conv.type = $type AND conv.oid = $oid AND (c_status = 2 OR c_status = 3) ORDER BY conv.updated_at DESC LIMIT $limit OFFSET $offset";
+			$table  = self::_table();
+			$oid    = absint( $oid );
+			$type   = absint( $type );
+			$offset = absint( $offset );
+			$limit  = absint( $limit );
+			$query  = $wpdb->prepare( "SELECT conv.ID AS conversation_id,c.f_name,c.l_name,c.wpid,conv.send_to,conv.cid,conv.mode,conv.type,conv.open,conv.click,conv.oid,if(conv.c_status=2,1,0) as sent,conv.created_at as sent_time FROM {table_name} AS conv LEFT JOIN {$wpdb->prefix}bwf_contact AS c ON c.ID = conv.cid WHERE conv.type = %d AND conv.oid = %d AND (c_status = 2 OR c_status = 3) ORDER BY conv.updated_at DESC LIMIT %d OFFSET %d", $type, $oid, $limit, $offset );
 			$results = self::get_results( $query );
 
 			/** Fetch Engagements total count **/
-			$query = "SELECT COUNT(conv.ID) FROM $table AS conv WHERE conv.type = $type AND conv.oid = $oid";
+			$query = $wpdb->prepare( "SELECT COUNT(conv.ID) FROM $table AS conv WHERE conv.type = %d AND conv.oid = %d", $type, $oid );
 			$total = absint( $wpdb->get_var( $query ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			$conversations_ids = empty( $results ) ? [] : array_column( $results, 'conversation_id' );
@@ -45,8 +53,9 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 			/** Fetch Engagement's conversions **/
 			if ( ! empty( $conversations_ids ) ) {
-				$conv_ids           = implode( ', ', $conversations_ids );
-				$conversion_query   = "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_ids ) AND otype = $type";
+				$conversations_ids  = array_map( 'absint', $conversations_ids );
+				$conv_placeholder   = implode( ', ', array_fill( 0, count( $conversations_ids ), '%d' ) );
+				$conversion_query   = $wpdb->prepare( "SELECT wcid,cid,trackid,wctotal FROM {$wpdb->prefix}bwfan_conversions WHERE trackid IN( $conv_placeholder ) AND otype = %d", array_merge( $conversations_ids, array( $type ) ) );
 				$conversions_result = self::get_results( $conversion_query );
 				foreach ( $conversions_result as $conversion ) {
 					if ( ! isset( $conversions[ absint( $conversion['cid'] ) ] ) ) {
@@ -59,12 +68,13 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 				}
 			}
 			$send_to       = empty( $results ) ? [] : array_column( $results, 'send_to' );
-			$recipients    = implode( "', '", $send_to );
 			$unsubscribers = [];
 
 			/** Fetch Unsubsribers of broadcast **/
-			if ( ! empty( $recipients ) ) {
-				$unsubscribe_query    = "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ('$recipients') AND automation_id=$oid AND c_type = 2";
+			if ( ! empty( $send_to ) ) {
+				$send_to              = array_map( 'sanitize_text_field', $send_to );
+				$recipients_ph        = implode( ', ', array_fill( 0, count( $send_to ), '%s' ) );
+				$unsubscribe_query    = $wpdb->prepare( "SELECT ID,recipient FROM {$wpdb->prefix}bwfan_message_unsubscribe WHERE recipient IN ($recipients_ph) AND automation_id=%d AND c_type = 2", array_merge( $send_to, array( $oid ) ) );
 				$unsubscribers_result = self::get_results( $unsubscribe_query );
 				foreach ( $unsubscribers_result as $unsubscriber ) {
 					$unsubscribers[ $unsubscriber['recipient'] ] = $unsubscriber;
@@ -94,18 +104,21 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 
 		public static function get_automation_recipents( $oid, $offset = 0, $limit = 25 ) {
 			global $wpdb;
-			$table = self::_table();
-			$type  = BWFAN_Email_Conversations::$TYPE_AUTOMATION;
+			$table  = self::_table();
+			$type   = BWFAN_Email_Conversations::$TYPE_AUTOMATION;
+			$oid    = absint( $oid );
+			$offset = absint( $offset );
+			$limit  = absint( $limit );
 
 			/** Fetching all Engagements for automation **/
-			$query       = "SELECT GROUP_CONCAT(DISTINCT ID) as track_ids,cid, send_to, SUM(open) as open,mode, SUM(click) as click, COUNT(*) as total, SUM(IF(c_status=2,1,0)) as sent,MAX(created_at) as sent_time FROM $table WHERE oid = $oid AND type = $type AND cid>0 AND (c_status = 2 OR c_status = 3) GROUP BY send_to,cid,mode ORDER BY sent_time DESC LIMIT $limit OFFSET $offset";
+			$query       = $wpdb->prepare( "SELECT GROUP_CONCAT(DISTINCT ID) as track_ids,cid, send_to, SUM(open) as open,mode, SUM(click) as click, COUNT(*) as total, SUM(IF(c_status=2,1,0)) as sent,MAX(created_at) as sent_time FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3) GROUP BY send_to,cid,mode ORDER BY sent_time DESC LIMIT %d OFFSET %d", $oid, $type, $limit, $offset );
 			$engagements = self::get_results( $query );
 			if ( empty( $engagements ) ) {
 				array( 'conversations' => [], 'total' => 0 );
 			}
 
 			/** Get Engagements total count **/
-			$count_query = "SELECT count(send_to) FROM $table WHERE oid = $oid AND type = $type AND cid>0 AND (c_status = 2 OR c_status = 3)  GROUP BY send_to,cid,mode";
+			$count_query = $wpdb->prepare( "SELECT count(send_to) FROM $table WHERE oid = %d AND type = %d AND cid>0 AND (c_status = 2 OR c_status = 3)  GROUP BY send_to,cid,mode", $oid, $type );
 			$total       = self::get_results( $count_query );
 
 			$c_ids       = empty( $engagements ) ? [] : array_column( $engagements, 'cid' );
@@ -114,15 +127,16 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 			if ( ! empty( $c_ids ) ) {
 
 				/** Get contacts f_name, l_name **/
-				$cids          = implode( ',', $c_ids );
-				$contact_query = "SELECT id,f_name,l_name,email,contact_no FROM {$wpdb->prefix}bwf_contact WHERE id IN($cids)";
-				$contact_data  = self::get_results( $contact_query );
+				$c_ids            = array_map( 'absint', $c_ids );
+				$cids_placeholder = implode( ',', array_fill( 0, count( $c_ids ), '%d' ) );
+				$contact_query    = $wpdb->prepare( "SELECT id,f_name,l_name,email,contact_no FROM {$wpdb->prefix}bwf_contact WHERE id IN($cids_placeholder)", $c_ids );
+				$contact_data     = self::get_results( $contact_query );
 				foreach ( $contact_data as $contact ) {
 					$contacts[ $contact['id'] ] = $contact;
 				}
 
 				/** Get contacts conversion **/
-				$conversion_query  = "SELECT c.wcid,c.cid,c.trackid,c.wctotal FROM {$wpdb->prefix}bwfan_conversions as c JOIN {$wpdb->prefix}posts as p on c.wcid=p.ID  WHERE 1=1 AND c.oid = $oid AND c.otype = $type AND c.cid IN( $cids )";
+				$conversion_query  = $wpdb->prepare( "SELECT c.wcid,c.cid,c.trackid,c.wctotal FROM {$wpdb->prefix}bwfan_conversions as c JOIN {$wpdb->prefix}posts as p on c.wcid=p.ID  WHERE 1=1 AND c.oid = %d AND c.otype = %d AND c.cid IN( $cids_placeholder )", array_merge( array( $oid, $type ), $c_ids ) );
 				$conversion_result = self::get_results( $conversion_query );
 				foreach ( $conversion_result as $conversion ) {
 					if ( ! isset( $conversions[ absint( $conversion['cid'] ) ] ) ) {

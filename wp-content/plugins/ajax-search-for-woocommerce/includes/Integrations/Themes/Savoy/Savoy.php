@@ -11,10 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Savoy extends ThemeIntegration {
 	public function extraFunctions() {
-		add_filter( 'wc_get_template', array( $this, 'getTemplate' ), 10, 5 );
-		add_filter( 'nm_header_default_links', array( $this, 'headerLinks' ) );
+		add_filter( 'wc_get_template', [ $this, 'getTemplate' ], 10, 5 );
+		add_filter( 'nm_header_default_links', [ $this, 'headerLinks' ] );
 
-		add_action( 'wp_footer', array( $this, 'overwriteMobileSearch' ), 100 );
+		add_action( 'wp_footer', [ $this, 'overwriteMobileSearch' ], 100 );
 	}
 
 	/**

@@ -20,7 +20,7 @@ class Install {
      */
     public static function maybeInstall() {
         if ( !(defined( 'DOING_AJAX' ) && DOING_AJAX) ) {
-            add_action( 'admin_init', array(__CLASS__, 'checkVersion'), 5 );
+            add_action( 'admin_init', [__CLASS__, 'checkVersion'], 5 );
         }
     }
 
@@ -48,7 +48,7 @@ class Install {
     public static function createOptions() {
         global $dgwtWcasSettings;
         $sections = DGWT_WCAS()->settings->settingsFields();
-        $settings = array();
+        $settings = [];
         if ( is_array( $sections ) && !empty( $sections ) ) {
             foreach ( $sections as $options ) {
                 if ( is_array( $options ) && !empty( $options ) ) {

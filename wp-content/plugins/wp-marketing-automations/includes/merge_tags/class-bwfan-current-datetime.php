@@ -34,8 +34,9 @@ class BWFAN_Current_Datetime extends BWFAN_Merge_Tag {
 		if ( isset( $attr['modify'] ) ) {
 			$parameters['modify'] = $attr['modify'];
 		}
+		$is_gmt = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
 
-		$date_time = $this->format_datetime( date( 'Y-m-d H:i:s' ), $parameters );
+		$date_time = $this->format_datetime( gmdate( 'Y-m-d H:i:s' ), $parameters, $is_gmt );
 
 		return $this->parse_shortcode_output( $date_time, $attr );
 	}
@@ -50,7 +51,7 @@ class BWFAN_Current_Datetime extends BWFAN_Merge_Tag {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,
@@ -77,6 +78,12 @@ class BWFAN_Current_Datetime extends BWFAN_Merge_Tag {
 				'placeholder' => 'e.g. +2 months, -1 day, +6 hours',
 				'required'    => false,
 				'toggler'     => array(),
+			],
+			[
+				'id'            => 'is_gmt',
+				'type'          => 'checkbox',
+				'checkboxlabel' => __( 'In GMT time ( Default in store time )', 'wp-marketing-automations' ),
+				'description'   => '',
 			],
 		];
 	}

@@ -157,10 +157,13 @@ class Xoo_Wl_Frontend{
 		wp_localize_script('xoo-wl-js','xoo_wl_localize',array(
 			'adminurl'  			=> admin_url().'admin-ajax.php',
 			'notices' 				=> array(
-				'empty_id' 	=> xoo_wl_add_notice( __( 'Product ID not found, please contact support.', 'waitlist-woocommerce' ), 'error' ),
+				'empty_id' 	=> xoo_wl_add_notice( 'Something went wrong, please contact support.', 'error' ),
 				'empty_email' 	=> xoo_wl_add_notice( __( 'Email address cannot be empty.', 'waitlist-woocommerce' ), 'error' ),
 			),
-			'showOnBackorders' 	=> xoo_wl_helper()->get_general_option( 'm-en-bod' )
+			'waitlist_show' 	=> (array) xoo_wl_helper()->get_general_option( 'm-btn-show' ),
+			'html' 				=> array(
+				'spinner' 	=> '<i class="xoo-wl-icon-spinner8 xoo-wl-spinner"></i>',
+			)
 		));
 	}
 

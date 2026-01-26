@@ -21,6 +21,22 @@ class BWFAN_DB_Table_Logs extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'status'       => [ 'status' ],
+				'automation_id' => [ 'automation_id' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -38,7 +54,6 @@ class BWFAN_DB_Table_Logs extends BWFAN_DB_Tables_Base {
  		  `integration_action` varchar(100) default NULL,
  		  `automation_id` int(10) NOT NULL,
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `status` (`status`),
 		  KEY `automation_id` (`automation_id`)
 		) $collate;";

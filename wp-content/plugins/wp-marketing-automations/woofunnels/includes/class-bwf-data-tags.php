@@ -57,12 +57,12 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( $_COOKIE[ $attr['key'] ] ) : '';
+			$data = isset( $_COOKIE[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_COOKIE[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading cookie data for display, nonce verification not required
 
 			/*** read cookie when drop cookie on page **/
 			if ( empty( $data ) ) {
 				$key  = str_replace( 'bwf_', '', $attr['key'] );
-				$data = isset( $_GET[ $key ] ) ? bwf_clean( $_GET[ $key ] ) : '';
+				$data = isset( $_GET[ $key ] ) ? bwf_clean( wp_unslash( $_GET[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
 			}
 
 			return $data;
@@ -79,7 +79,7 @@ if ( ! class_exists( 'BWF_Data_Tags' ) ) {
 				return '';
 			}
 
-			return isset( $_GET[ $attr['key'] ] ) ? bwf_clean( $_GET[ $attr['key'] ] ) : '';
+			return isset( $_GET[ $attr['key'] ] ) ? bwf_clean( wp_unslash( $_GET[ $attr['key'] ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for display, nonce verification not required
 
 		}
 

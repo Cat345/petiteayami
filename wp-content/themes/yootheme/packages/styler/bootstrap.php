@@ -6,10 +6,10 @@ use YOOtheme\Config;
 use YOOtheme\Path;
 
 return [
-    'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.json'),
+    'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.php'),
 
     'config' => [
-        StylerConfig::class => __DIR__ . '/config/styler.json',
+        StylerConfig::class => __DIR__ . '/config/styler.php',
     ],
 
     'routes' => [

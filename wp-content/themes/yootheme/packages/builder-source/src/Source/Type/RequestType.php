@@ -2,13 +2,16 @@
 
 namespace YOOtheme\Builder\Source\Type;
 
-use function YOOtheme\trans;
 use YOOtheme\Http\Request;
+use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class RequestType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
     public static function config()
     {
@@ -81,41 +84,61 @@ class RequestType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('Request'),
             ],
         ];
     }
 
+    /**
+     * @return string
+     */
     public static function resolveUrl(Request $request)
     {
         return (string) $request->getUri();
     }
 
+    /**
+     * @return string
+     */
     public static function resolveMethod(Request $request)
     {
         return $request->getMethod();
     }
 
+    /**
+     * @return string
+     */
     public static function resolveScheme(Request $request)
     {
         return $request->getUri()->getScheme();
     }
 
+    /**
+     * @return string
+     */
     public static function resolveHost(Request $request)
     {
         return $request->getUri()->getHost();
     }
 
+    /**
+     * @return ?int
+     */
     public static function resolvePort(Request $request)
     {
         return $request->getUri()->getPort();
     }
 
+    /**
+     * @return string
+     */
     public static function resolvePath(Request $request)
     {
         return $request->getUri()->getPath();
     }
 
+    /**
+     * @return string
+     */
     public static function resolveQuery(Request $request)
     {
         return $request->getUri()->getQuery();

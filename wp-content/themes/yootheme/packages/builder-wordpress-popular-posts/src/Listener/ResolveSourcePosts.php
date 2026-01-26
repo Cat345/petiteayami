@@ -2,12 +2,16 @@
 
 namespace YOOtheme\Builder\Wordpress\PopularPosts\Listener;
 
+use DateTime;
 use WordPressPopularPosts\Helper as PopularPostsHelper;
 use YOOtheme\Builder\Wordpress\Source\Helper as SourceHelper;
 
 class ResolveSourcePosts
 {
-    public static function handle($query)
+    /**
+     * @param array{order: string, orderby: string} $query
+     */
+    public static function handle(array $query): void
     {
         if (!class_exists(PopularPostsHelper::class)) {
             return;
@@ -17,7 +21,7 @@ class ResolveSourcePosts
             return;
         }
 
-        $now = new \DateTime(PopularPostsHelper::now(), wp_timezone());
+        $now = new DateTime(PopularPostsHelper::now(), wp_timezone());
         $range = $query['order'];
         $order = $query['orderby'];
 
@@ -28,18 +32,14 @@ class ResolveSourcePosts
         SourceHelper::filterOnce('posts_join', static::postsJoinFn($range, $order, $now));
     }
 
-    protected static function postsWhereFn($range, $order)
+    protected static function postsWhereFn(string $range, string $order): \Closure
     {
-        return function ($where) use ($range, $order) {
-            if ($range === 'all' && $order === 'comments') {
-                return "{$where} AND comment_count > 0";
-            }
-
-            return $where;
-        };
+        return fn(
+            $where
+        ) => $range === 'all' && $order === 'comments' ? "{$where} AND comment_count > 0" : $where;
     }
 
-    protected static function postsFieldsFn($range, $order, $now)
+    protected static function postsFieldsFn(string $range, string $order, DateTime $now): \Closure
     {
         return function ($fields) use ($range, $order, $now) {
             if ($range === 'all') {
@@ -64,7 +64,7 @@ class ResolveSourcePosts
         };
     }
 
-    protected static function postsOrderbyFn($range, $order)
+    protected static function postsOrderbyFn(string $range, string $order): \Closure
     {
         return function () use ($range, $order) {
             if ($order === 'views') {
@@ -78,7 +78,7 @@ class ResolveSourcePosts
         };
     }
 
-    protected static function postsGroupbyFn($range, $order)
+    protected static function postsGroupbyFn(string $range, string $order): \Closure
     {
         return function ($groupby) use ($range, $order) {
             if ($range === 'all' && $order === 'avg') {
@@ -89,7 +89,7 @@ class ResolveSourcePosts
         };
     }
 
-    protected static function postsJoinFn($range, $order, $now)
+    protected static function postsJoinFn(string $range, string $order, DateTime $now): \Closure
     {
         return function ($join) use ($range, $order, $now) {
             global $wpdb;
@@ -124,7 +124,7 @@ class ResolveSourcePosts
             }
 
             if ($order === 'views') {
-                return "{$join} INNER JOIN (SELECT SUM(pageviews) AS pageviews, postid FROM `{$wpdb->prefix}popularpostssummary` WHERE {$views_time_range} GROUP BY postid) v ON {$wpdb->posts}.ID = v.postid";
+                return "{$join} INNER JOIN (SELECT SUM(pageviews) AS pageviews, postid FROM {$wpdb->prefix}popularpostssummary WHERE {$views_time_range} GROUP BY postid) v ON {$wpdb->posts}.ID = v.postid";
             }
 
             if ($order === 'avg') {
@@ -132,12 +132,14 @@ class ResolveSourcePosts
                     'Y-m-d H:i:s',
                 )}', '{$startDatetime}') > 0, DATEDIFF('{$now->format(
                     'Y-m-d H:i:s',
-                )}', '{$startDatetime}'), 1)) AS avg_views, postid FROM `{$wpdb->prefix}popularpostssummary` WHERE {$views_time_range} GROUP BY postid) v ON {$wpdb->posts}.ID = v.postid";
+                )}', '{$startDatetime}'), 1)) AS avg_views, postid FROM {$wpdb->prefix}popularpostssummary WHERE {$views_time_range} GROUP BY postid) v ON {$wpdb->posts}.ID = v.postid";
             }
 
             if ($order === 'comments') {
-                return "{$join} INNER JOIN (SELECT COUNT(comment_post_ID) AS comment_count, comment_post_ID FROM `{$wpdb->comments}` WHERE comment_date_gmt >= '{$startDatetime}' AND comment_approved = '1' GROUP BY comment_post_ID) c ON {$wpdb->posts}.ID = c.comment_post_ID";
+                return "{$join} INNER JOIN (SELECT COUNT(comment_post_ID) AS comment_count, comment_post_ID FROM {$wpdb->comments} WHERE comment_date_gmt >= '{$startDatetime}' AND comment_approved = '1' GROUP BY comment_post_ID) c ON {$wpdb->posts}.ID = c.comment_post_ID";
             }
+
+            return null;
         };
     }
 }

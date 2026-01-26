@@ -113,7 +113,8 @@ class BWFAN_Model_Automations extends BWFAN_Model {
 	public static function get_tasks_for_contact( $contact_id ) {
 		global $wpdb;
 		$scheduled_tasks           = array();
-		$get_contact_automation_id = $wpdb->get_col( "SELECT DISTINCT automation_id from {$wpdb->prefix}bwfan_contact_automations where contact_id='" . $contact_id . "'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$contact_id                = absint( $contact_id );
+		$get_contact_automation_id = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT automation_id from {$wpdb->prefix}bwfan_contact_automations where contact_id = %d", $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( empty( $get_contact_automation_id ) ) {
 			return $scheduled_tasks;
@@ -135,13 +136,12 @@ class BWFAN_Model_Automations extends BWFAN_Model {
 		return $scheduled_tasks;
 	}
 
-
 	public static function get_logs_for_contact( $contact_id ) {
 		$contact_logs = array();
 
 		global $wpdb;
-
-		$get_contact_automation_id = $wpdb->get_col( "SELECT DISTINCT automation_id from {$wpdb->prefix}bwfan_contact_automations where contact_id='" . $contact_id . "'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$contact_id                = absint( $contact_id );
+		$get_contact_automation_id = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT automation_id from {$wpdb->prefix}bwfan_contact_automations where contact_id = %d", $contact_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( empty( $get_contact_automation_id ) ) {
 			return $contact_logs;
 		}
@@ -161,4 +161,40 @@ class BWFAN_Model_Automations extends BWFAN_Model {
 
 		return $contact_logs;
 	}
+
+	/**
+	 * Get data with categories id.
+	 *
+	 * @param array|int $category_ids Category IDs to filter by
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public static function get_data_with_categories( $category_ids ) {
+		if ( ! is_array( $category_ids ) ) {
+			$category_ids = [ $category_ids ];
+		}
+
+		// Sanitize all category IDs to integers
+		$category_ids = array_map( 'absint', $category_ids );
+		$category_ids = array_filter( $category_ids ); // Remove any invalid values
+
+		if ( empty( $category_ids ) ) {
+			return [];
+		}
+
+		global $wpdb;
+		$conditions = [];
+		foreach ( $category_ids as $category_id ) {
+			// absint() ensures numeric value, so no LIKE wildcards to escape
+			$pattern      = '%"' . absint( $category_id ) . '"%';
+			$conditions[] = $wpdb->prepare( "category LIKE %s", $pattern );
+		}
+
+		$sql = "SELECT id AS ID, category
+           FROM {table_name}
+           WHERE " . implode( ' OR ', $conditions );
+
+		return self::get_results( $sql );
+	}
+
 }

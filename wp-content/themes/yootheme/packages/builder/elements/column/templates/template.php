@@ -2,7 +2,6 @@
 
 // Initialize prop if not set
 $props += [
-    'media_overlay_gradient' => null,
     'background_parallax_background' => null,
 ];
 
@@ -15,12 +14,12 @@ if (str_starts_with($props['style'] ?? '', 'card-')) {
         $props['padding'] = 'large';
     }
 }
-if ($props['row_height'] != 'viewport' || $props['row_height_viewport'] > 100) { $props['row_height_offset_top'] = false; }
+if ($props['row_height'] != 'viewport' || $props['row_height_viewport'] > 100) { $props['row_height_viewport_offset'] = false; }
 
 if ($props['image']) { $props['video'] = false; }
 
 // New logic shortcuts
-$props['has_panel'] = $props['style'] || $props['background_color'] || $props['background_parallax_background'] || $props['image'] || $props['video'] || in_array($props['position_sticky'], ['row', 'section']) || $props['row_height'];
+$props['has_panel'] = $props['style'] || $props['background_color'] || $props['background_color_gradient'] || $props['background_parallax_background'] || $props['image'] || $props['video'] || in_array($props['position_sticky'], ['row', 'section']) || $props['row_height'];
 $props['has_overlay'] = ($props['image'] || $props['video']) && ($props['media_overlay'] || $props['media_overlay_gradient']);
 
 // Cell
@@ -29,13 +28,13 @@ $el = $this->el($props['html_element'] ?: 'div', [
     'class' => [
 
         // Match child height
-        'uk-grid-item-match' => ($props['vertical_align'] || $props['style'] || $props['background_color'] || $props['background_parallax_background'] || $props['image'] || $props['video'] || !empty($props['element_absolute'])) && !in_array($props['position_sticky'], ['row', 'section']) && !$props['row_height'],
+        'uk-grid-item-match' => ($props['vertical_align'] || $props['style'] || $props['background_color'] || $props['background_color_gradient'] || $props['background_parallax_background'] || $props['image'] || $props['video'] || !empty($props['element_absolute'])) && !in_array($props['position_sticky'], ['row', 'section']) && !$props['row_height'],
 
         // Vertical alignment
         'uk-flex-{vertical_align} {@!has_panel}',
 
         // Child expand to column height
-        'uk-flex uk-flex-column {@child_height_expand} {@!has_panel}',
+        'uk-flex uk-flex-column {@flex_column} {@!has_panel}',
 
         // Sticky
         'js-sticky {@position_sticky: column} {@!has_panel}',
@@ -62,7 +61,6 @@ $el = $this->el($props['html_element'] ?: 'div', [
         'align-self: stretch; {@row_parallax} {@position_sticky}',
     ],
 
-
 ]);
 
 // Panel: Style / Background / Image / Video / Sticky / Row Height
@@ -74,33 +72,35 @@ $panel = $props['has_panel'] ? $this->el('div', [
         // Match child height
         'uk-flex {@image}',
 
-        // Clip video
-        'uk-position-relative {@video} {@!image}' => !$this->iframeVideo($props['video']),
-        'uk-cover-container {@video} {@!image}' => $this->iframeVideo($props['video']),
+        // Clip media for cards and border radius if image or video
+        'uk-cover-container' => ($props['image'] || $props['video']) && (($props['border'] && !$props['style']) || (str_starts_with($props['style'] ?? '', 'card-'))),
 
         // Preserve color
         'uk-preserve-color {@style: tile-.*}' => $props['preserve_color'] || ($props['text_color'] && ($props['image'] || $props['video'])),
 
         // Height Viewport
-        'uk-height-viewport {@row_height: viewport} {@!row_height_offset_top} {@row_height_viewport: |100}',
-        'uk-height-viewport-{0} {@row_height: viewport} {@!row_height_offset_top} {@row_height_viewport: 200|300|400}' => (int) $props['row_height_viewport'] / 100,
+        'uk-height-viewport {@row_height: viewport} {@!row_height_viewport_offset} {@row_height_viewport: |100}',
+        'uk-height-viewport-{0} {@row_height: viewport} {@!row_height_viewport_offset} {@row_height_viewport: 200|300|400}' => (int) $props['row_height_viewport'] / 100,
+
+        // Border Radius
+        'uk-border-rounded {@border} {@!style}' => $props['background_color'] || $props['background_color_gradient'] || $props['background_parallax_background'] || $props['image'] || $props['video'],
     ],
 
     'style' => [
-        // Video Background
         'background-color: {media_background}; {@video}',
         'background-color: {background_color}; {@!media_background} {@!video} {@!style}',
+        'background-image: {background_color_gradient}; {@!media_background} {@!video} {@!style}',
 
         // Height Viewport
-        'min-height: {!row_height_viewport: |100|200|300|400}vh {@row_height: viewport} {@!row_height_offset_top}',
+        'min-height: {!row_height_viewport: |100|200|300|400}vh {@row_height: viewport} {@!row_height_viewport_offset}',
         'min-height: {0}px {@row_height: pixels}' => $props['row_height_viewport'] ?: 100,
     ],
 
     // Height Viewport
-    'uk-height-viewport' => $props['row_height'] == 'viewport' && $props['row_height_offset_top'] ? [
+    'uk-height-viewport' => $props['row_height'] == 'viewport' && $props['row_height_viewport_offset'] ? [
         'offset-top: {0};' => in_array($props['position_sticky'], ['row', 'section']) ? '!*' : 'true',
         'offset-bottom: {0};' => $props['row_height_viewport'] && $props['row_height_viewport'] < 100 ? 100 - (int) $props['row_height_viewport'] : false,
-    ] : false,
+    ] : ($attrs['uk-height-viewport'] ?? false), // Allow to set uk-height-viewport in attributes
 
 ]) : null;
 
@@ -150,7 +150,7 @@ if ($image && $props['image_effect'] == 'parallax' && $imageParallax = $this->pa
 }
 
 // `has_panel` with padding
-if ($props['style'] || $props['background_color'] || $props['background_parallax_background'] || $props['image'] || $props['video']) {
+if ($props['style'] || $props['background_color'] || $props['background_color_gradient'] || $props['background_parallax_background'] || $props['image'] || $props['video']) {
 
     ($props['image'] ? $image : $panel)->attr('class', [
         // Padding and position context for the overlay
@@ -184,7 +184,7 @@ if ($props['has_panel']) {
         'uk-flex uk-flex-{vertical_align}',
 
         // Child expand to column height
-        'uk-flex uk-flex-column {@child_height_expand}',
+        'uk-flex uk-flex-column {@flex_column}',
     ]);
 }
 
@@ -217,7 +217,7 @@ $container = $props['vertical_align'] || $props['has_overlay'] || $props['video'
         'uk-panel uk-width-1-1',
 
         // Child expand to column height
-        'uk-flex-1 uk-flex uk-flex-column {@child_height_expand}',
+        'uk-flex-1 uk-flex uk-flex-column {@flex_column}',
     ],
 
 ]) : null;

@@ -4,9 +4,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+		?>
 	<script>
 		var wcasThemeSearch = document.querySelector('.below-header #search-box');
 		if (wcasThemeSearch !== null) {
@@ -57,10 +59,10 @@ add_action( 'wp_footer', function () {
 			padding-left: 18px;
 		}
 	</style>
-	<?php
-	if ( get_theme_mod( 'open_shop_sticky_header', false ) === true ) {
-		echo '<div id="wcas-theme-search-sticky" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-		?>
+		<?php
+		if ( get_theme_mod( 'open_shop_sticky_header', false ) === true ) {
+			echo '<div id="wcas-theme-search-sticky" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+			?>
 		<script>
 			var wcasThemeSearchInStickyHeader = document.querySelector('.search-wrapper #search-box');
 			if (wcasThemeSearchInStickyHeader !== null) {
@@ -106,6 +108,7 @@ add_action( 'wp_footer', function () {
 				max-width: none;
 			}
 		</style>
-		<?php
+			<?php
+		}
 	}
-} );
+);

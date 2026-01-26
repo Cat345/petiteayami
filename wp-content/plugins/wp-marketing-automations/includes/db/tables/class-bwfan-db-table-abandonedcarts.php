@@ -33,6 +33,26 @@ class BWFAN_DB_Table_AbandonedCarts extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'status'        => [ 'status' ],
+				'user_id'       => [ 'user_id' ],
+				'email'         => [ 'email' ],
+				'last_modified' => [ 'last_modified' ],
+				'token'         => [ 'token' ],
+				'cookie_key'    => [ 'cookie_key' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -62,7 +82,6 @@ class BWFAN_DB_Table_AbandonedCarts extends BWFAN_DB_Tables_Base {
 		  `order_id` bigint(20) NOT NULL,
 		  `checkout_page_id` bigint(20) NOT NULL,
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `status` (`status`),
 		  KEY `user_id` (`user_id`),
 		  KEY `email` (`email`),

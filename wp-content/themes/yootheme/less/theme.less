@@ -34,6 +34,8 @@
 @theme-toolbar-padding-top:                     10px;
 @theme-toolbar-padding-bottom:                  10px;
 @theme-toolbar-background:                      @global-secondary-background;
+@theme-toolbar-border-width:                    0;
+@theme-toolbar-border:                          transparent;
 @theme-toolbar-font-size:                       @global-small-font-size;
 @theme-toolbar-font-family:                     inherit;
 
@@ -180,16 +182,6 @@ body {
 }
 
 
-/* Cookie Banner
- ========================================================================== */
-
-/*
- * Let cookie notification appear above any page content.
- */
-
-.tm-cookie-banner { z-index: @notification-z-index; }
-
-
 /* Toolbar
  ========================================================================== */
 
@@ -203,8 +195,13 @@ body {
 
 .tm-toolbar .uk-subnav > * > :first-child { font-size: @theme-toolbar-font-size; }
 
+.tm-toolbar when not (@theme-toolbar-font-family = inherit) {
+    font-family: @theme-toolbar-font-family;
+}
+
 // Not transparent
 .tm-toolbar-default { background: @theme-toolbar-background; }
+.tm-toolbar-default when not (@theme-toolbar-border-width = 0) { border-bottom: @theme-toolbar-border-width solid @theme-toolbar-border; }
 
 .tm-toolbar-default:extend(.uk-light all) when (@theme-toolbar-color-mode = light) {}
 .tm-toolbar-default:extend(.uk-dark all) when (@theme-toolbar-color-mode = dark) {}

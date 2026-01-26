@@ -6,10 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="dgwt-wcas-analytics-module-critical">
 	<h3><?php _e( 'Critical searches without result', 'ajax-search-for-woocommerce' ); ?></h3>
-	<?php if ( ! empty( $vars['critical-searches'] ) ): ?>
+	<?php if ( ! empty( $vars['critical-searches'] ) ) : ?>
 		<p class="dgwt-wcas-analytics-subtitle">
-			<?php printf( _n( 'The FiboSearch analyzer found <b>1 critical search phrase</b>.', 'The FiboSearch analyzer found <b>%d critical search phrases</b>.', $vars['critical-searches-total'], 'ajax-search-for-woocommerce' ), $vars['critical-searches-total'] );
+			<?php
+			// TODO
+			//phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder,WordPress.WP.I18n.MismatchedPlaceholders
+			printf( _n( 'The FiboSearch analyzer found <b>1 critical search phrase</b>.', 'The FiboSearch analyzer found <b>%d critical search phrases</b>.', $vars['critical-searches-total'], 'ajax-search-for-woocommerce' ), $vars['critical-searches-total'] );
 			echo ' ';
+			//phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder,WordPress.WP.I18n.MismatchedPlaceholders
 			printf( _n( 'These phrases have been typed by users over the last 1 day.', 'These phrases have been typed by users over the last %d days.', $vars['days'], 'ajax-search-for-woocommerce' ), $vars['days'] );
 			echo ' ';
 			_e( "These phrases don`t return any search results. It's time to fix it.", 'ajax-search-for-woocommerce' );
@@ -34,7 +38,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$i ++;
 					}
 
-					if ( $vars['critical-searches-more'] > 0 ): ?>
+					if ( $vars['critical-searches-more'] > 0 ) :
+						?>
 						<tr class="dgwt-wcas-analytics-load-more-row">
 							<td colspan="4">
 								<div>
@@ -63,22 +68,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<li><p><?php _e( "<b>Adding the phrase to the product name</b> - just add the phrase to the product name, description, SKU, custom field, tag or anything else that's in your current search scope", 'ajax-search-for-woocommerce' ); ?></p></li>
 						<li><p><?php printf( __( '<b>Synonyms</b> - if the phrase is an alternate version of any other words, add it as a synonym. Learn more about <a href="%s" target="_blank">the synonyms feature.', 'ajax-search-for-woocommerce' ), $vars['links']['synonyms'] ); ?></a></p></li>
 						<li>
-							<p><?php printf( __( '<b>Varied naming convention</b> - this issue occurs when users may type a phrase in several different way – eg. you have SKU "CB-978-8-7290", but users might type it in a different way: "CB978 8 7290", "CB/978/8/7290", "CB97887290" and so on. To solve such problems, contact our <a href="%s" target="_blank">technical support</a>, because the solution may be different for each case.',
-									'ajax-search-for-woocommerce' ), $vars['links']['support'] ); ?></p></li>
+							<p>
+							<?php
+							printf(
+								__(
+									'<b>Varied naming convention</b> - this issue occurs when users may type a phrase in several different way – eg. you have SKU "CB-978-8-7290", but users might type it in a different way: "CB978 8 7290", "CB/978/8/7290", "CB97887290" and so on. To solve such problems, contact our <a href="%s" target="_blank">technical support</a>, because the solution may be different for each case.',
+									'ajax-search-for-woocommerce'
+								),
+								$vars['links']['support']
+							);
+							?>
+									</p></li>
 					</ol>
 				</div>
 			</div>
 		</div>
 
 
-	<?php else: ?>
+	<?php else : ?>
 		<p class="dgwt-wcas-analytics-subtitle"><?php printf( __( "Fantastic! The FiboSearch analyzer hasn't found any critical search phrases for the last %d days.", 'ajax-search-for-woocommerce' ), $vars['days'] ); ?></p>
 	<?php endif; ?>
 
 
 </div>
 
-<?php if ( ! defined( 'DGWT_WCAS_ANALYTICS_ONLY_CRITICAL' ) || ! DGWT_WCAS_ANALYTICS_ONLY_CRITICAL ): ?>
+<?php if ( ! defined( 'DGWT_WCAS_ANALYTICS_ONLY_CRITICAL' ) || ! DGWT_WCAS_ANALYTICS_ONLY_CRITICAL ) : ?>
 	<div class="dgwt-wcas-analytics-module-tiles">
 		<h3><?php printf( __( 'Searches stats (last %d days)', 'ajax-search-for-woocommerce' ), $vars['days'] ); ?></h3>
 
@@ -90,7 +104,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span><?php echo esc_html( $vars['autocomplete']['total-results'] ); ?></span>
 				</div>
 				<div class="dgwt-wcas-analytics-tile__icon">
-					<?php echo \DgoraWcas\Helpers::getIcon( 'magnifier-pirx' ) ?>
+					<?php echo \DgoraWcas\Helpers::getIcon( 'magnifier-pirx' ); ?>
 				</div>
 			</div>
 
@@ -101,7 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span><?php echo esc_html( $vars['search-page']['total-results'] ); ?></span>
 				</div>
 				<div class="dgwt-wcas-analytics-tile__icon">
-					<?php echo \DgoraWcas\Helpers::getIcon( 'magnifier-pirx' ) ?>
+					<?php echo \DgoraWcas\Helpers::getIcon( 'magnifier-pirx' ); ?>
 				</div>
 			</div>
 
@@ -143,7 +157,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				</thead>
 				<tbody>
-				<?php if ( ! empty( $vars['autocomplete']['with-results'] ) ): ?>
+				<?php if ( ! empty( $vars['autocomplete']['with-results'] ) ) : ?>
 
 					<?php
 					$i = 1;
@@ -152,7 +166,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$i ++;
 					}
 
-					if ( $vars['autocomplete']['total-with-results-uniq'] > count( $vars['autocomplete']['with-results'] ) ): ?>
+					if ( $vars['autocomplete']['total-with-results-uniq'] > count( $vars['autocomplete']['with-results'] ) ) :
+						?>
 						<tr class="dgwt-wcas-analytics-load-more-row">
 							<td colspan="3">
 								<div>
@@ -165,7 +180,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 					<?php endif; ?>
 
-				<?php else: ?>
+				<?php else : ?>
 					<tr>
 						<td colspan="3">
 							<?php _e( '0 searches with results', 'ajax-search-for-woocommerce' ); ?>
@@ -197,7 +212,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				</thead>
 				<tbody>
-				<?php if ( ! empty( $vars['search-page']['with-results'] ) ): ?>
+				<?php if ( ! empty( $vars['search-page']['with-results'] ) ) : ?>
 
 					<?php
 					$i = 1;
@@ -206,7 +221,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$i ++;
 					}
 
-					if ( $vars['search-page']['total-with-results-uniq'] > count( $vars['search-page']['with-results'] ) ): ?>
+					if ( $vars['search-page']['total-with-results-uniq'] > count( $vars['search-page']['with-results'] ) ) :
+						?>
 						<tr class="dgwt-wcas-analytics-load-more-row">
 							<td colspan="3">
 								<div>
@@ -219,7 +235,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 					<?php endif; ?>
 
-				<?php else: ?>
+				<?php else : ?>
 					<tr>
 						<td colspan="3">
 							<?php _e( '0 searches with results', 'ajax-search-for-woocommerce' ); ?>
@@ -240,13 +256,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 <div class="dgwt-wcas-analytics-module-reset">
-	<h3><?php _e( 'Maintenance', 'ajax-search-for-woocommerce' ) ?></h3>
-	<?php if ( defined( 'DGWT_WCAS_ANALYTICS_ONLY_CRITICAL' ) && DGWT_WCAS_ANALYTICS_ONLY_CRITICAL ): ?>
+	<h3><?php _e( 'Maintenance', 'ajax-search-for-woocommerce' ); ?></h3>
+	<?php if ( defined( 'DGWT_WCAS_ANALYTICS_ONLY_CRITICAL' ) && DGWT_WCAS_ANALYTICS_ONLY_CRITICAL ) : ?>
 		<p class="dgwt-wcas-analytics-subtitle">
 			<span class="dgwt-wcas-analytics-red-color"><b><?php _e( 'Warning:', 'ajax-search-for-woocommerce' ); ?></b> </span>
 			<?php
 			/* Translators: %s PHP constant name. */
-			printf( __( "You have defined %s constant and it's set to <code>true</code>. It means only critical searches will be stored in the database. Other modules than Critical Searches are not visible in this mode.", 'ajax-search-for-woocommerce' ), '<code>DGWT_WCAS_ANALYTICS_ONLY_CRITICAL</code>' ) ?>
+			printf( __( "You have defined %s constant and it's set to <code>true</code>. It means only critical searches will be stored in the database. Other modules than Critical Searches are not visible in this mode.", 'ajax-search-for-woocommerce' ), '<code>DGWT_WCAS_ANALYTICS_ONLY_CRITICAL</code>' )
+			?>
 		</p>
 	<?php endif; ?>
 	<p class="dgwt-wcas-analytics-subtitle">
@@ -254,7 +271,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$reset = sprintf( '<a class="js-dgwt-wcas-analytics-reset" href="#">%s</a>', __( 'reset your stats', 'ajax-search-for-woocommerce' ) ) . '<span class="dgwt-wcas-ajax-loader"></span>';
 		$size  = $vars['autocomplete']['total-results'] > 0 ? $vars['table-info']['data'] + $vars['table-info']['index'] : 0;
 		?>
-		<?php printf( _x( 'The stats older than %d days are removed from your database on a daily basis. Now you have %d records in the DB that weigh %.2fMB. You can %s now and start collecting them all over again.', 'The last placeholder is a button with text "reset your stats"', 'ajax-search-for-woocommerce' ),
-			$vars['days'], esc_html( $vars['autocomplete']['total-results'] ), $size, $reset ); ?>
+		<?php
+		printf(
+			_x( 'The stats older than %1$d days are removed from your database on a daily basis. Now you have %2$d records in the DB that weigh %3$.2fMB. You can %4$s now and start collecting them all over again.', 'The last placeholder is a button with text "reset your stats"', 'ajax-search-for-woocommerce' ),
+			$vars['days'],
+			esc_html( $vars['autocomplete']['total-results'] ),
+			$size,
+			$reset
+		);
+		?>
 	</p>
 </div>

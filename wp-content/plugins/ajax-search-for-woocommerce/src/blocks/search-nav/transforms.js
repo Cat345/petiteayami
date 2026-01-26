@@ -7,42 +7,42 @@ const transforms = {
 	from: [
 		{
 			type: 'block',
-			blocks: ['core/navigation-link'],
+			blocks: [ 'core/navigation-link' ],
 			transform: () => {
-				return createBlock('fibosearch/search-nav', {
+				return createBlock( 'fibosearch/search-nav', {
 					inheritPluginSettings: false,
 					layout: 'icon',
-				});
+				} );
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['core/search'],
+			blocks: [ 'core/search' ],
 			transform: () => {
-				return createBlock('fibosearch/search-nav', {
+				return createBlock( 'fibosearch/search-nav', {
 					inheritPluginSettings: false,
 					layout: 'icon',
-				});
+				} );
 			},
 		},
 	],
 	to: [
 		{
 			type: 'block',
-			blocks: ['core/search'],
+			blocks: [ 'core/search' ],
 			transform: () => {
-				return createBlock('core/search', {
+				return createBlock( 'core/search', {
 					showLabel: false,
 					buttonUseIcon: true,
 					buttonPosition: 'button-inside',
-				});
+				} );
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['core/navigation-link'],
+			blocks: [ 'core/navigation-link' ],
 			transform: () => {
-				return createBlock('core/navigation-link');
+				return createBlock( 'core/navigation-link' );
 			},
 		},
 	],

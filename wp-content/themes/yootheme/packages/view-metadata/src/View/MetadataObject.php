@@ -6,19 +6,12 @@ namespace YOOtheme\View;
  * @property string $href
  * @property string $src
  * @property string $defer
- * @property string $version
+ * @property string|null $version
  */
 class MetadataObject
 {
-    /**
-     * @var string
-     */
-    public $tag;
-
-    /**
-     * @var string
-     */
-    public $name;
+    public string $tag;
+    public string $name;
 
     /**
      * @var mixed
@@ -26,18 +19,17 @@ class MetadataObject
     public $value;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    public $attributes;
+    public array $attributes;
 
     /**
      * Constructor.
      *
-     * @param string $name
      * @param mixed  $value
-     * @param array  $attributes
+     * @param array<string, mixed>  $attributes
      */
-    public function __construct($name, $value, array $attributes = [])
+    public function __construct(string $name, $value, array $attributes = [])
     {
         $tag = substr($name, 0, strpos($name, ':'));
 
@@ -50,43 +42,33 @@ class MetadataObject
     /**
      * Gets an attribute value.
      *
-     * @param string $name
-     *
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->attributes[$name] ?? null;
     }
 
     /**
      * Checks if an attribute value exists.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return isset($this->attributes[$name]);
     }
 
     /**
      * Gets the rendered tag as string.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->render();
     }
 
     /**
      * Renders the tag.
-     *
-     * @return string
      */
-    public function render()
+    public function render(): string
     {
         $metadata = $this;
 
@@ -99,10 +81,8 @@ class MetadataObject
 
     /**
      * Gets the tag.
-     *
-     * @return string
      */
-    public function getTag()
+    public function getTag(): string
     {
         return $this->tag;
     }
@@ -110,11 +90,9 @@ class MetadataObject
     /**
      * Sets the tag.
      *
-     * @param string $tag
-     *
      * @return static
      */
-    public function withTag($tag)
+    public function withTag(string $tag): self
     {
         $clone = clone $this;
         $clone->tag = $tag;
@@ -124,10 +102,8 @@ class MetadataObject
 
     /**
      * Gets the name.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -135,11 +111,9 @@ class MetadataObject
     /**
      * Sets the name.
      *
-     * @param string $name
-     *
      * @return static
      */
-    public function withName($name)
+    public function withName(string $name): self
     {
         $clone = clone $this;
         $clone->name = $name;
@@ -150,7 +124,7 @@ class MetadataObject
     /**
      * Gets the value.
      *
-     * @return string
+     * @return mixed
      */
     public function getValue()
     {
@@ -160,11 +134,11 @@ class MetadataObject
     /**
      * Sets the value.
      *
-     * @param string $value
+     * @param mixed $value
      *
      * @return static
      */
-    public function withValue($value)
+    public function withValue($value): self
     {
         $clone = clone $this;
         $clone->value = $value;
@@ -175,12 +149,11 @@ class MetadataObject
     /**
      * Gets an attribute.
      *
-     * @param string $name
-     * @param mixed  $default
+     * @param mixed $default
      *
-     * @return array
+     * @return mixed
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, $default = null)
     {
         return $this->$name ?? $default;
     }
@@ -188,12 +161,11 @@ class MetadataObject
     /**
      * Adds an attribute.
      *
-     * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute(string $name, $value): self
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -204,9 +176,9 @@ class MetadataObject
     /**
      * Gets attributes.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -214,11 +186,11 @@ class MetadataObject
     /**
      * Merges multiple attributes.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return static
      */
-    public function withAttributes(array $attributes)
+    public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
         $clone->attributes = array_merge($this->attributes, $attributes);

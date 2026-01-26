@@ -16,7 +16,7 @@ require __DIR__ . '/src/BuilderWidget.php';
 /**
  * Helper functions.
  */
-function get_current_sidebar()
+function get_current_sidebar(): ?string
 {
     return app(WidgetsListener::class)->sidebar;
 }

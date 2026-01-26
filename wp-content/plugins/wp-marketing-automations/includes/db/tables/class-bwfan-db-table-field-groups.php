@@ -21,12 +21,25 @@ if ( ! class_exists( 'BWFAN_DB_Table_Field_Groups' ) && BWFAN_Common::is_pro_3_0
 			];
 		}
 
-		/**
-		 * Get query for create table
-		 *
-		 * @return string
-		 */
-		public function get_create_table_query() {
+	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
+	 * Get query for create table
+	 *
+	 * @return string
+	 */
+	public function get_create_table_query() {
 			global $wpdb;
 			$collate = $this->get_collation();
 

@@ -56,22 +56,47 @@ abstract class BWFAN_Action {
 	protected $missing_field = array();
 	protected $integration_type = 'wp';
 
+	/**
+	 * Get Random Api Error
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_random_api_error() {
 		return __( 'Api Error: No response from API', 'wp-marketing-automations' );
 	}
 
+	/**
+	 * Register Action
+	 *
+	 * @since 1.0.0
+	 */
 	public function register_action() {
 
 	}
 
+	/**
+	 * Get Action Priority
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_action_priority() {
 		return $this->action_priority;
 	}
 
+	/**
+	 * Load Hooks
+	 *
+	 * @since 1.0.0
+	 */
 	public function load_hooks() {
 		//
 	}
 
+	/**
+	 * Get View
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_view() {
 		?>
         <script type="text/html" id="tmpl-action-<?php echo esc_js( $this->get_slug() ); ?>">
@@ -79,10 +104,20 @@ abstract class BWFAN_Action {
 		<?php
 	}
 
+	/**
+	 * Get Slug
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_slug() {
 		return str_replace( array( 'bwfan_' ), '', sanitize_title( get_class( $this ) ) );
 	}
 
+	/**
+	 * Add Description
+	 *
+	 * @since 1.0.0
+	 */
 	public function add_description( $desc, $size = 'm', $position = 'top', $esc = true ) {
 		if ( empty( $desc ) ) {
 			return '';
@@ -99,6 +134,11 @@ abstract class BWFAN_Action {
 		return $return;
 	}
 
+	/**
+	 * Inline Template Mergetags Selector Invoke
+	 *
+	 * @since 1.0.0
+	 */
 	public function inline_template_mergetags_selector_invoke() {
 		ob_start();
 		?>
@@ -143,6 +183,11 @@ abstract class BWFAN_Action {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Inline Merge Tag Invoke
+	 *
+	 * @since 1.0.0
+	 */
 	public function inline_merge_tag_invoke() {
 		ob_start();
 		?>
@@ -310,6 +355,11 @@ abstract class BWFAN_Action {
 		return ( json_last_error() == JSON_ERROR_NONE );//phpcs:ignore WordPress.PHP.StrictComparisons
 	}
 
+	/**
+	 * Parse Unsubscribe Link
+	 *
+	 * @since 1.0.0
+	 */
 	public function parse_unsubscribe_link() {
 		if ( false === $this->automation_id ) {
 			return;
@@ -318,7 +368,15 @@ abstract class BWFAN_Action {
 		add_filter( 'bwfan_unsubscribe_link', [ $this, 'bwfan_unsubscribe_link_add_aid' ] );
 	}
 
+	/**
+	 * Bwfan Unsubscribe Link Add Aid
+	 *
+	 * @since 1.0.0
+	 */
 	public function bwfan_unsubscribe_link_add_aid( $link ) {
+		if ( empty( $this->automation_id ) ) {
+			return $link;
+		}
 		$link = add_query_arg( array(
 			'automation_id' => $this->automation_id,
 		), $link );
@@ -348,10 +406,20 @@ abstract class BWFAN_Action {
 		return array();
 	}
 
+	/**
+	 * Process V2
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_v2() {
 		return $this->success_message();
 	}
 
+	/**
+	 * Success Message
+	 *
+	 * @since 1.0.0
+	 */
 	public function success_message( $message = '' ) {
 		if ( empty( $message ) ) {
 			$message = __( 'Action Executed Successfully!', 'wp-marketing-automations' );
@@ -363,6 +431,11 @@ abstract class BWFAN_Action {
 		);
 	}
 
+	/**
+	 * Error Response
+	 *
+	 * @since 1.0.0
+	 */
 	public function error_response( $message = '' ) {
 		if ( empty( $message ) ) {
 			$message = __( 'Unknown error occurred', 'wp-marketing-automations' );
@@ -374,6 +447,11 @@ abstract class BWFAN_Action {
 		);
 	}
 
+	/**
+	 * Skipped Response
+	 *
+	 * @since 1.0.0
+	 */
 	public function skipped_response( $message = '' ) {
 		if ( empty( $message ) ) {
 			$message = __( 'Unknown error occurred', 'wp-marketing-automations' );
@@ -437,6 +515,11 @@ abstract class BWFAN_Action {
 		return $response;
 	}
 
+	/**
+	 * Process
+	 *
+	 * @since 1.0.0
+	 */
 	public function process() {
 		return '';
 	}
@@ -463,6 +546,11 @@ abstract class BWFAN_Action {
 		return $result;
 	}
 
+	/**
+	 * Parse Tags Fields
+	 *
+	 * @since 1.0.0
+	 */
 	public function parse_tags_fields( $dynamic_array, $integration_data ) {
 		$result         = array();
 		$new_merge_tags = array();
@@ -512,6 +600,11 @@ abstract class BWFAN_Action {
 		return $result;
 	}
 
+	/**
+	 * Set Data For Merge Tags
+	 *
+	 * @since 1.0.0
+	 */
 	public function set_data_for_merge_tags( $task_meta ) {
 		$event_slug = $task_meta['event_data']['event_slug'];
 		BWFAN_Merge_Tag_Loader::set_data( array(
@@ -523,30 +616,65 @@ abstract class BWFAN_Action {
 		}
 	}
 
+	/**
+	 * Get Class Slug
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_class_slug() {
 		return str_replace( 'bwfan_', '', strtolower( get_class( $this ) ) );
 	}
 
+	/**
+	 * Before Executing Task
+	 *
+	 * @since 1.0.0
+	 */
 	public function before_executing_task() {
 
 	}
 
+	/**
+	 * After Executing Task
+	 *
+	 * @since 1.0.0
+	 */
 	public function after_executing_task() {
 
 	}
 
+	/**
+	 * Get Integration Type
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_integration_type() {
 		return $this->integration_type;
 	}
 
+	/**
+	 * Set Integration Type
+	 *
+	 * @since 1.0.0
+	 */
 	public function set_integration_type( $type ) {
 		$this->integration_type = $type;
 	}
 
+	/**
+	 * Get Included Events
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_included_events() {
 		return $this->included_events;
 	}
 
+	/**
+	 * Get Excluded Events
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_excluded_events() {
 		return $this->excluded_events;
 	}
@@ -599,10 +727,20 @@ abstract class BWFAN_Action {
 		return array();
 	}
 
+	/**
+	 * Is Editor Supported
+	 *
+	 * @since 1.0.0
+	 */
 	public function is_editor_supported() {
 		return $this->is_editor_supported;
 	}
 
+	/**
+	 * Get Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_data() {
 		return $this->data;
 	}
@@ -616,14 +754,29 @@ abstract class BWFAN_Action {
 		$this->data = $data;
 	}
 
+	/**
+	 * Get Name
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_name() {
 		return $this->action_name;
 	}
 
+	/**
+	 * Check Required Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function check_required_data( $data ) {
 		return true;
 	}
 
+	/**
+	 * Get Action Retry Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_action_retry_data() {
 		return array(
 			HOUR_IN_SECONDS, // 1 hr
@@ -632,6 +785,11 @@ abstract class BWFAN_Action {
 		);
 	}
 
+	/**
+	 *   Get
+	 *
+	 * @since 1.0.0
+	 */
 	public function __get( $key ) {
 		if ( 'call' === $key ) {
 			return 'wfco_' . $this->get_slug();

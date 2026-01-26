@@ -92,33 +92,22 @@ class Xoo_Wl_Table_Core{
 		
 		try {
 
-			if( !isset( $_POST['productID'] ) ){
-				throw new Xoo_Exception( 'Product ID not found' );
-			}
-
-			if( $_POST['remove'] === 'user' && !isset( $_POST['rowID'] ) ){
-				throw new Xoo_Exception( 'Row ID not found' );
-			}
-
-			$row_id 	= (int) $_POST['rowID'];
-			$product_id = (int) $_POST['productID'];
-
-			if( $_POST['remove'] === 'user' ){
-				$delete = xoo_wl_db()->delete_waitlist_row_by_id( $row_id );
-			}
-			else{
-				$delete = xoo_wl_db()->delete_waitlist_by_product( $product_id );
-			}
+			$delete = xoo_wl_db()->delete_waitlist_row_by_id( (int) $_POST['rowID'] );
 
 			if( is_wp_error( $delete ) ){
 				throw new Xoo_Exception( $delete->get_error_message() );
 			}
 
-			wp_send_json(array(
+			$return = array(
 				'error' 	=> 0,
 				'notice' 	=> xoo_wl_add_notice( 'Deleted successfully', 'success'  ),
-				'count' 	=> xoo_wl_db()->get_waitlisted_count( $product_id )
-			));
+			);
+
+			if( isset( $_POST['productID'] ) && $_POST['productID'] ){
+				$return['count'] =  xoo_wl_db()->get_product_waitlist_count( (int) $_POST['productID'] );
+			}
+
+			wp_send_json($return);
 			
 		} catch (Xoo_Exception $e) {
 			wp_send_json(array(

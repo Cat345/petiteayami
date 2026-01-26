@@ -26,24 +26,24 @@ return [
 
     'extend' => [
         Builder::class => function (Builder $builder) {
-            $builder->addTypePath(__DIR__ . '/elements/*/element.json');
+            $builder->addType('newsletter', __DIR__ . '/elements/newsletter/element.php');
         },
     ],
 
     'services' => [
-        MailChimpProvider::class => function (Config $config, HttpClientInterface $client) {
-            return new MailChimpProvider($config('~theme.mailchimp_api', ''), $client);
-        },
+        MailChimpProvider::class => fn(
+            Config $config,
+            HttpClientInterface $client
+        ) => new MailChimpProvider($config('~theme.mailchimp_api', ''), $client),
 
-        CampaignMonitorProvider::class => function (Config $config, HttpClientInterface $client) {
-            return new CampaignMonitorProvider($config('~theme.cmonitor_api'), $client);
-        },
+        CampaignMonitorProvider::class => fn(
+            Config $config,
+            HttpClientInterface $client
+        ) => new CampaignMonitorProvider($config('~theme.cmonitor_api'), $client),
 
-        NewsletterController::class => function (Config $config) {
-            return new NewsletterController(
-                $config('theme.newsletterProvider'),
-                $config('app.secret'),
-            );
-        },
+        NewsletterController::class => fn(Config $config) => new NewsletterController(
+            $config('theme.newsletterProvider'),
+            $config('app.secret'),
+        ),
     ],
 ];

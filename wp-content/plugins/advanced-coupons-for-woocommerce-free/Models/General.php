@@ -6,6 +6,7 @@ use ACFWF\Abstracts\Base_Model;
 use ACFWF\Helpers\Helper_Functions;
 use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Model_Interface;
+use ACFWF\Models\Objects\BOGO\Calculation;
 
 use function Crontrol\Event\add;
 
@@ -125,6 +126,18 @@ class General extends Base_Model implements Model_Interface {
         // Don't proceed when the \WC_Discounts object is not yet set or when the setting is not enabled or not in cart/checkout.
         if ( ! WC()->cart || 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) || ( ! $this->_helper_functions->is_cart() && ! $this->_helper_functions->is_checkout_fragments() && ! $this->_helper_functions->is_current_page_using_cart_checkout_block() && ! $this->_helper_functions->is_current_request_using_wpjson_wc_api() ) ) {
             return $price;
+        }
+
+        // Don't proceed when the product is discounted via the BOGO Deals feature.
+        foreach ( WC()->cart->get_cart_contents() as $cart_item ) {
+            if ( $cart_item['data'] === $product ) {
+                $key         = $cart_item['key'];
+                $calculation = Calculation::get_instance();
+                $deals       = $calculation->get_entries_by_cart_item( $key, 'deal' );
+                if ( ! empty( $deals ) ) {
+                    return $price;
+                }
+            }
         }
 
         // Don't proceed when the product is discounted via the "Add Products" feature.

@@ -14,7 +14,7 @@ import './assets/styles/index.scss';
 declare var jQuery: any;
 declare var acfw_edit_coupon: any;
 
-const { modules, upsell, affiliate_discount_upsell } = acfw_edit_coupon;
+const { modules, upsell, affiliate_discount_upsell, create_new_coupon_popup } = acfw_edit_coupon;
 
 jQuery(document).ready(($: any) => {
   if (modules.indexOf('acfw_cart_conditions_module') > -1) cart_conditions_module_events();
@@ -27,6 +27,7 @@ jQuery(document).ready(($: any) => {
 
   if (upsell) upsell_events();
   if (affiliate_discount_upsell) affiliate_discount_upsell_events();
+  if (create_new_coupon_popup) create_new_coupon_popup_events();
 
   toggle_fields_events();
 
@@ -35,7 +36,6 @@ jQuery(document).ready(($: any) => {
   preSelectCouponTypeFromUrl();
   sendCouponEvents();
   usage_restriction_events();
-  create_new_coupon_popup_events();
 });
 
 /**

@@ -1,11 +1,21 @@
 <?php
 
+/**
+ * Bwfan Wc Order Review
+ *
+ * @since 1.0.0
+ */
 class BWFAN_WC_Order_Review extends Merge_Tag_Abstract_Product_Display {
 
 	private static $instance = null;
 
 	public $supports_order_table = true;
 
+	/**
+	 *   Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		$this->tag_name        = 'order_review';
 		$this->tag_description = __( 'Order Review', 'wp-marketing-automations' );
@@ -67,6 +77,11 @@ class BWFAN_WC_Order_Review extends Merge_Tag_Abstract_Product_Display {
 		return $this->parse_shortcode_output( $output, $attr );
 	}
 
+	/**
+	 * Process Shortcode
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_shortcode( $attr ) {
 		$products          = [];
 		$products_quantity = [];
@@ -128,6 +143,17 @@ class BWFAN_WC_Order_Review extends Merge_Tag_Abstract_Product_Display {
 				'class'    => '',
 				'hint'     => '<p>' . __( 'Using multiple languages? Use the filter below to translate this text based on the selected language.', 'wp-marketing-automations' ) . ' <a href="https://funnelkit.com/docs/autonami-2/troubleshooting/request-reviews-in-the-customers-language/" target="_blank">' . __( 'Learn more', 'wp-marketing-automations' ) . '</a></p>',
 				'required' => false,
+				'toggler'  => array(),
+			],
+			[
+				'id'       => 'cu_notice',
+				'type'     => 'notice',
+				'class'    => '',
+				'status'   => 'info',
+				'message'  => sprintf( __( 'The review button is hidden for products where reviews are disabled at the product level. %s', 'wp-marketing-automations' ), '<a href="https://funnelkit.com/docs/autonami-2/troubleshooting/request-reviews-in-the-customers-language/" target="_blank">' . __( 'Learn more', 'wp-marketing-automations' ) . '</a>' ),
+				'dismiss'  => true,
+				'required' => false,
+				'isHtml'   => true,
 				'toggler'  => array(),
 			],
 		];

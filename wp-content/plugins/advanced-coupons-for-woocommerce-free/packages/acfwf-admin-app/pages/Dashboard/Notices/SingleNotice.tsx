@@ -7,6 +7,9 @@ import { CloseOutlined } from '@ant-design/icons';
 // Types
 import { ISingleNotice } from '../../../types/notices';
 
+// Helpers
+import { sanitizeHtml } from '../../../../shared/utils';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -50,7 +53,7 @@ const SingleNotice = (props: IProps) => {
       )}
       <div className="notice-content">
         {content.map((text, i) => (
-          <p key={i} dangerouslySetInnerHTML={{ __html: text }} />
+          <p key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(text) }} />
         ))}
       </div>
       <div className="notice-actions">

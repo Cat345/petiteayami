@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class CSVExporter extends WC_CSV_Exporter {
 
 	private $context = '';
-	private $lang = '';
+	private $lang    = '';
 
 	public function set_context( $context = '' ) {
 		$this->context = $context;
@@ -30,17 +30,18 @@ class CSVExporter extends WC_CSV_Exporter {
 
 		$dateSuffix = date( 'Ymd-His', time() );
 
-		if ( in_array( $this->context, array( 'autocomplete', 'search-results-page' ) ) ) {
+		if ( in_array( $this->context, [ 'autocomplete', 'search-results-page' ] ) ) {
 			$data->setContext( $this->context );
 			$this->set_filename( 'fibosearch-analytics_' . $this->context . '_' . ( empty( $this->lang ) ? '' : $this->lang . '_' ) . $dateSuffix );
 		} else {
+			//phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 			$this->set_filename( 'fibosearch-analytics_critical' . '_' . ( empty( $this->lang ) ? '' : $this->lang . '_' ) . $dateSuffix );
 		}
 
 		$this->set_column_names(
 			[
-				"phrase" => "Phrase",
-				"qty"    => "Repetitions",
+				'phrase' => 'Phrase',
+				'qty'    => 'Repetitions',
 			]
 		);
 

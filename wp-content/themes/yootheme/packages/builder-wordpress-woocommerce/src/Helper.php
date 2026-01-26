@@ -3,11 +3,19 @@
 namespace YOOtheme\Builder\Wordpress\Woocommerce;
 
 use Automattic\Jetpack\Constants;
+use Closure;
+use WC_Product;
+use WP_Taxonomy;
+use WP_Widget;
 
 class Helper
 {
-    public static function addFilter($name, $fn, $priority = 10, $args = 1)
-    {
+    public static function addFilter(
+        string $name,
+        callable $fn,
+        int $priority = 10,
+        int $args = 1
+    ): Closure {
         add_filter($name, $fn, $priority, $args);
 
         return function () use ($name, $fn, $priority) {
@@ -15,7 +23,12 @@ class Helper
         };
     }
 
-    public static function removeFilter($name, $priority = false)
+    /**
+     * @param string $name
+     * @param int|false $priority
+     * @return Closure
+     */
+    public static function removeFilter(string $name, $priority = false): Closure
     {
         global $wp_filter;
 
@@ -29,6 +42,10 @@ class Helper
         };
     }
 
+    /**
+     * @param list<mixed> $args
+     * @return false|string
+     */
     public static function renderTemplate(callable $function, array $args = [])
     {
         ob_start();
@@ -38,14 +55,22 @@ class Helper
         return ob_get_clean();
     }
 
-    public static function isPageSource($product)
+    /**
+     * @param WC_Product $product
+     * @return bool
+     */
+    public static function isPageSource($product): bool
     {
         return absint(get_the_ID()) === $product->get_id();
     }
 
-    public static function renderWidget($type, $options = [])
+    /**
+     * @param string|WP_Widget $type
+     * @param array<string, mixed> $options
+     */
+    public static function renderWidget($type, array $options = []): string
     {
-        if ($type instanceof \WP_Widget) {
+        if ($type instanceof WP_Widget) {
             $widget = $type;
         } else {
             global $wp_widget_factory;
@@ -72,19 +97,29 @@ class Helper
         return ob_get_clean();
     }
 
-    public static function renderLayeredNavWidget($options = [])
+    /**
+     * @param array<string, mixed> $options
+     */
+    public static function renderLayeredNavWidget(array $options = []): string
     {
         // @see https://github.com/woocommerce/woocommerce/issues/17355
         $filter = 'woocommerce_layered_nav_count_maybe_cache';
         $removeFilter = static::addFilter($filter, fn() => false);
 
-        $result = static::renderWidget(new WidgetLayeredNav(), $options);
+        if ($options['attribute'] === 'product_brand') {
+            $result = static::renderWidget(new WidgetBrandsLayeredNav(), $options);
+        } else {
+            $result = static::renderWidget(new WidgetLayeredNav(), $options);
+        }
 
         $removeFilter();
 
         return $result;
     }
 
+    /**
+     * @return list<WP_Taxonomy>
+     */
     public static function getAttributeTaxonomies(): array
     {
         $taxonomies = [];
@@ -131,7 +166,7 @@ class Helper
         return static::addProductTagToCurrentPageUrl($link);
     }
 
-    public static function addProductTagToCurrentPageUrl($url): string
+    public static function addProductTagToCurrentPageUrl(string $url): string
     {
         // Preserve `product_tag` query var, when on product category page.
         if (is_product_category() && ($value = get_query_var('product_tag'))) {

@@ -2,18 +2,22 @@
 
 namespace YOOtheme;
 
+use ArrayAccess;
+
 /**
  * A static class which provides utilities for working with arrays.
+ *
+ * @phpstan-type Accessible array<mixed>|ArrayAccess<int|string, mixed>
+ * @phpstan-type Predicate callable|array<mixed>
+ * @phpstan-type Key int|string|null
  */
 abstract class Arr
 {
     /**
      * Checks if the given key exists.
      *
-     * @param array|\ArrayAccess $array
-     * @param string|null        $key
-     *
-     * @return bool
+     * @param Accessible $array
+     * @param Key $key
      *
      * @example
      * $array = ['a' => ['b' => 2]];
@@ -24,7 +28,7 @@ abstract class Arr
      * Arr::has($array, 'a.b');
      * // => true
      */
-    public static function has($array, $key)
+    public static function has($array, $key): bool
     {
         if (!$array || is_null($key)) {
             return false;
@@ -34,7 +38,7 @@ abstract class Arr
             return true;
         }
 
-        if (!strpos($key, '.')) {
+        if (!str_contains($key, '.')) {
             return false;
         }
 
@@ -52,9 +56,9 @@ abstract class Arr
     /**
      * Gets a value by key.
      *
-     * @param array|\ArrayAccess $array
-     * @param string|null        $key
-     * @param mixed              $default
+     * @param Accessible $array
+     * @param Key $key
+     * @param mixed $default
      *
      * @return mixed
      *
@@ -81,7 +85,7 @@ abstract class Arr
             return $array[$key];
         }
 
-        if (!strpos($key, '.')) {
+        if (!str_contains($key, '.')) {
             return $default;
         }
 
@@ -99,11 +103,11 @@ abstract class Arr
     /**
      * Sets a value.
      *
-     * @param array|\ArrayAccess $array
-     * @param string|null        $key
-     * @param mixed              $value
+     * @param Accessible $array
+     * @param Key $key
+     * @param mixed $value
      *
-     * @return array|\ArrayAccess
+     * @return Accessible
      *
      * @example
      * $array = ['a' => [['b' => ['c' => 3]]]];
@@ -119,18 +123,20 @@ abstract class Arr
 
         $arr = &$array;
         $parts = explode('.', $key);
+        $last = array_key_last($parts);
 
-        while (count($parts) > 1) {
-            $part = array_shift($parts);
+        foreach ($parts as $key => $part) {
+            if ($key === $last) {
+                $arr[$part] = $value;
+                break;
+            }
 
-            if (!isset($arr[$part]) || !is_array($arr[$part])) {
+            if (!is_array($arr[$part] ?? null)) {
                 $arr[$part] = [];
             }
 
             $arr = &$arr[$part];
         }
-
-        $arr[array_shift($parts)] = $value;
 
         return $array;
     }
@@ -138,8 +144,8 @@ abstract class Arr
     /**
      * Deletes a value from array by key.
      *
-     * @param array|\ArrayAccess $array
-     * @param string             $key
+     * @param Accessible $array
+     * @param int|string $key
      *
      * @example
      * $array = ['a' => [['b' => ['c' => 3]]]];
@@ -149,7 +155,7 @@ abstract class Arr
      * print_r($array);
      * // => ['a' => [['b' => []]]]
      */
-    public static function del(&$array, $key)
+    public static function del(&$array, $key): void
     {
         // if the exact key exists in the top-level, delete it
         if (static::exists($array, $key)) {
@@ -158,26 +164,28 @@ abstract class Arr
         }
 
         $parts = explode('.', $key);
+        $last = array_key_last($parts);
 
-        while (count($parts) > 1) {
-            $part = array_shift($parts);
+        foreach ($parts as $key => $part) {
+            if ($key === $last) {
+                unset($array[$part]);
+                break;
+            }
 
-            if (isset($array[$part]) && is_array($array[$part])) {
+            if (is_array($array[$part] ?? null)) {
                 $array = &$array[$part];
             } else {
                 return;
             }
         }
-
-        unset($array[array_shift($parts)]);
     }
 
     /**
      * Get a value from the array, and delete it.
      *
-     * @param array|\ArrayAccess $array
-     * @param string             $key
-     * @param mixed              $default
+     * @param Accessible $array
+     * @param int|string $key
+     * @param mixed $default
      *
      * @return mixed
      *
@@ -202,11 +210,11 @@ abstract class Arr
     /**
      * Set a value using an update callback.
      *
-     * @param array|\ArrayAccess $array
-     * @param string             $key
-     * @param callable           $callback
+     * @param Accessible $array
+     * @param Key $key
+     * @param callable $callback
      *
-     * @return array
+     * @return Accessible
      *
      * @example
      * $array = ['a' => [['b' => ['c' => 3]]]];
@@ -224,10 +232,8 @@ abstract class Arr
     /**
      * Checks if all values pass the predicate truth test.
      *
-     * @param array          $array
-     * @param array|callable $predicate
-     *
-     * @return bool
+     * @param Accessible $array
+     * @param Predicate $predicate
      *
      * @example
      * $collection = [
@@ -241,7 +247,7 @@ abstract class Arr
      * Arr::every($collection, function($v) { return $v['active']; });
      * // false
      */
-    public static function every($array, $predicate)
+    public static function every($array, $predicate): bool
     {
         $callback = is_callable($predicate) ? $predicate : static::matches($predicate);
 
@@ -257,10 +263,8 @@ abstract class Arr
     /**
      * Checks if some values pass the predicate truth test.
      *
-     * @param array|\ArrayAccess $array
-     * @param array|callable     $predicate
-     *
-     * @return bool
+     * @param Accessible $array
+     * @param Predicate $predicate
      *
      * @example
      * $collection = [
@@ -274,7 +278,7 @@ abstract class Arr
      * Arr::some($collection, function($v) { return $v['active']; });
      * // true
      */
-    public static function some($array, $predicate)
+    public static function some($array, $predicate): bool
     {
         $callback = is_callable($predicate) ? $predicate : static::matches($predicate);
 
@@ -290,10 +294,10 @@ abstract class Arr
     /**
      * Gets the picked values from the given array.
      *
-     * @param array                 $array
-     * @param string|array|callable $predicate
+     * @param array<mixed> $array
+     * @param string|Predicate $predicate
      *
-     * @return array
+     * @return array<mixed>
      *
      * @example
      * $array = ['a' => 1, 'b' => 2, 'c' => 3];
@@ -301,7 +305,7 @@ abstract class Arr
      * Arr::pick($array, ['a', 'c']);
      * // ['a' => 1, 'c' => 3];
      */
-    public static function pick($array, $predicate)
+    public static function pick(array $array, $predicate): array
     {
         if (is_callable($predicate)) {
             return array_filter($array, $predicate, ARRAY_FILTER_USE_BOTH);
@@ -313,10 +317,10 @@ abstract class Arr
     /**
      * Gets an array composed of the properties of the given array that are not omitted.
      *
-     * @param array                 $array
-     * @param string|array|callable $predicate
+     * @param array<mixed> $array
+     * @param string|Predicate $predicate
      *
-     * @return array
+     * @return array<mixed>
      *
      * @example
      * $array = ['a' => 1, 'b' => 2, 'c' => 3];
@@ -324,7 +328,7 @@ abstract class Arr
      * Arr::omit($array, ['b']);
      * // ['a' => 1, 'c' => 3];
      */
-    public static function omit($array, $predicate)
+    public static function omit(array $array, $predicate): array
     {
         if (is_callable($predicate)) {
             return array_diff_key($array, array_filter($array, $predicate, ARRAY_FILTER_USE_BOTH));
@@ -336,8 +340,8 @@ abstract class Arr
     /**
      * Gets the first value in an array passing the predicate truth test.
      *
-     * @param array|\ArrayAccess $array
-     * @param array|callable     $predicate
+     * @param Accessible $array
+     * @param Predicate $predicate
      *
      * @return mixed
      *
@@ -362,15 +366,17 @@ abstract class Arr
                 return $value;
             }
         }
+
+        return null;
     }
 
     /**
      * Gets all values in an array passing the predicate truth test.
      *
-     * @param array          $array
-     * @param array|callable $predicate
+     * @param array<mixed> $array
+     * @param Predicate $predicate
      *
-     * @return array
+     * @return array<mixed>
      *
      * @example
      * $collection = [
@@ -385,7 +391,7 @@ abstract class Arr
      * Arr::filter($collection, function($v) { return $v['age'] > 30; });
      * // [$collection[0], $collection[2]]
      */
-    public static function filter($array, $predicate = null)
+    public static function filter(array $array, $predicate = null): array
     {
         if (is_null($predicate)) {
             return array_filter($array);
@@ -399,10 +405,10 @@ abstract class Arr
     /**
      * Merges two arrays recursively.
      *
-     * @param array|\ArrayAccess $array1
-     * @param array|\ArrayAccess $array2
+     * @param Accessible $array1
+     * @param Accessible $array2
      *
-     * @return array|\ArrayAccess
+     * @return Accessible
      *
      * @example
      * $array = ['a' => [['b' => 2], ['d' => 4]]];
@@ -433,10 +439,9 @@ abstract class Arr
     /**
      * Flatten a multi-dimensional array into a single level.
      *
-     * @param array $array
-     * @param int $depth
+     * @param array<mixed> $array
      *
-     * @return array
+     * @return array<mixed>
      *
      * @example
      * $array = [1, [2, [3, [4]], 5]];
@@ -447,7 +452,7 @@ abstract class Arr
      * Arr::flatten($array, 1);
      * // => [1, 2, [3, [4]], 5]
      */
-    public static function flatten($array, $depth = 0)
+    public static function flatten(array $array, int $depth = 0): array
     {
         $result = [];
 
@@ -467,10 +472,10 @@ abstract class Arr
     /**
      * Chunks an array evenly into columns.
      *
-     * @param array $array
-     * @param int   $columns
+     * @param array<mixed> $array
+     * @param int $columns
      *
-     * @return array
+     * @return list<mixed>
      *
      * @example
      * $array = [1, 2, 3, 4, 5];
@@ -481,7 +486,7 @@ abstract class Arr
      * Arr::columns($array, 4);
      * // => [[1, 2], [3], [4], [5]]
      */
-    public static function columns($array, $columns)
+    public static function columns(array $array, int $columns): array
     {
         $count = count($array);
         $columns = min($count, $columns);
@@ -507,18 +512,16 @@ abstract class Arr
     /**
      * Checks if the given key exists.
      *
-     * @param array|\ArrayAccess $array
-     * @param string             $key
-     *
-     * @return bool
+     * @param Accessible $array
+     * @param int|string $key
      */
-    public static function exists($array, $key)
+    public static function exists($array, $key): bool
     {
         if (!static::accessible($array)) {
             return false;
         }
 
-        if ($array instanceof \ArrayAccess) {
+        if ($array instanceof ArrayAccess) {
             return $array->offsetExists($key);
         }
 
@@ -530,9 +533,9 @@ abstract class Arr
      *
      * @param mixed $value
      *
-     * @return array
+     * @return array<mixed>
      */
-    public static function wrap($value)
+    public static function wrap($value): array
     {
         if (is_null($value)) {
             return [];
@@ -548,20 +551,20 @@ abstract class Arr
      *
      * @return bool
      */
-    public static function accessible($value)
+    public static function accessible($value): bool
     {
-        return is_array($value) || $value instanceof \ArrayAccess;
+        return is_array($value) || $value instanceof ArrayAccess;
     }
 
     /**
      * Removes a portion of the array and replaces it with something else, preserving keys.
      *
-     * @param array    $array
+     * @param array<mixed> $array
      * @param int|null $offset
      * @param int|null $length
-     * @param mixed    $replacement
+     * @param array<mixed> $replacement
      *
-     * @return array
+     * @return array<mixed>
      *
      * @example
      * $array = ['a' => 1, 'b' => 2, 'c' => 3];
@@ -572,8 +575,12 @@ abstract class Arr
      * Arr::splice($array, 1, 2, ['d' => 4]);
      * // => ['a' => 1, 'd' => 4]
      */
-    public static function splice(&$array, $offset, $length, $replacement)
-    {
+    public static function splice(
+        array &$array,
+        ?int $offset = null,
+        ?int $length = null,
+        array $replacement = []
+    ): array {
         $result = $offset !== null && $length ? array_slice($array, $offset, $length, true) : [];
 
         $array = array_merge(
@@ -588,23 +595,22 @@ abstract class Arr
     /**
      * Renames keys in an array. It does not preserve key order.
      *
-     * @param array $array
-     * @param array $keys
+     * @param Accessible $array
+     * @param array<int|string|callable> $keys
      *
-     * @return array
+     * @return Accessible
      *
      * @example
      * $array = ['a' => 1, 'b' => 2, 'c' => 3];
      *
-     * Arr::rename($array, ['b' => 'd']);
+     * Arr::updateKeys($array, ['b' => 'd']);
      * // => ['a' => 1, 'c' => 3, 'd' => 2]
      */
-    public static function updateKeys(&$array, $keys)
+    public static function updateKeys(&$array, array $keys)
     {
         foreach ($keys as $oldKey => $newKey) {
             if (static::has($array, $oldKey)) {
-                $value = static::get($array, $oldKey);
-                static::del($array, $oldKey);
+                $value = static::pull($array, $oldKey);
 
                 if (is_callable($newKey)) {
                     foreach ($newKey($value) ?: [] as $key => $value) {
@@ -622,13 +628,11 @@ abstract class Arr
     /**
      * Creates a callback function to match array values.
      *
-     * @param array $predicate
-     *
-     * @return callable
+     * @param array<mixed> $predicate
      */
-    protected static function matches(array $predicate)
+    protected static function matches(array $predicate): callable
     {
-        return function ($array) use ($predicate) {
+        return function ($array) use ($predicate): bool {
             if (!static::accessible($array)) {
                 return false;
             }

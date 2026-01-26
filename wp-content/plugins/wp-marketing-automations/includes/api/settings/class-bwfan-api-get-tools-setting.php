@@ -31,15 +31,21 @@ class BWFAN_API_Get_Tools_Setting extends BWFAN_API_Base {
 				"task"           => "delete_engagement_tracking_meta",
 				"task_text"      => __( "Optimize", "wp-marketing-automations" ),
 				"processingText" => __( "We are optimizing the engagement tracking meta table", "wp-marketing-automations" ),
-			]
-		];
-
-		$tool_settings[] = [
-			"title"          => __( "Verify Database Tables", "wp-marketing-automations" ),
-			"description"    => __( "This will verify FunnelKit Automations all the base tables which are required for smooth functioning.", "wp-marketing-automations" ),
-			"task"           => "bwfan_validate_db_tables",
-			"task_text"      => __( "Verify", "wp-marketing-automations" ),
-			"processingText" => __( "Validate required tables in database", "wp-marketing-automations" ),
+			],
+			[
+				"title"          => __( "Verify Database Tables", "wp-marketing-automations" ),
+				"description"    => __( "This will verify FunnelKit Automations all the base tables which are required for smooth functioning.", "wp-marketing-automations" ),
+				"task"           => "bwfan_validate_db_tables",
+				"task_text"      => __( "Verify", "wp-marketing-automations" ),
+				"processingText" => __( "Validate required tables in database", "wp-marketing-automations" ),
+			],
+			[
+				"title"          => __( "Verify Table Collations and columns", "wp-marketing-automations" ),
+				"description"    => __( "Verifies the collation of all tables and columns and updates it to utf8mb4. Also verifies and fixes primary keys and auto-increment settings.", "wp-marketing-automations" ),
+				"task"           => "bwfan_check_collation",
+				"task_text"      => __( "Verify", "wp-marketing-automations" ),
+				"processingText" => __( "We are verifying and fixing table collations, primary keys, and indexes", "wp-marketing-automations" ),
+			],
 		];
 
 		if ( bwfan_is_woocommerce_active() ) {

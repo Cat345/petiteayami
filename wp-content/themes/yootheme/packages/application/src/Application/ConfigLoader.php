@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Application;
 
+use Closure;
 use YOOtheme\Config;
 use YOOtheme\ConfigObject;
 use YOOtheme\Container;
@@ -16,9 +17,9 @@ class ConfigLoader
     protected $config;
 
     /**
-     * @var array
+     * @var array<string, list<string|array<string, mixed>>>
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
      * Constructor.
@@ -32,26 +33,26 @@ class ConfigLoader
 
     /**
      * Load configuration.
+     *
+     * @param list<Closure|array<string, mixed>> $configs
      */
-    public function __invoke(Container $container, array $configs)
+    public function __invoke(Container $container, array $configs): void
     {
         foreach ($configs as $config) {
-            if ($config instanceof \Closure) {
+            if ($config instanceof Closure) {
                 $config = $config($this->config, $container);
-            } elseif (is_array($config)) {
-                $config = $this->loadArray($config);
+            } else {
+                $config = $this->loadArray((array) $config);
             }
 
-            $this->config->add('', (array) $config);
+            $this->config->add('', $config);
         }
     }
 
     /**
      * After resolve service.
-     *
-     * @param mixed $service
      */
-    public function loadConfig($service, string $id)
+    public function loadConfig(?object $service, string $id): void
     {
         if (!$service instanceof ConfigObject) {
             return;
@@ -64,7 +65,11 @@ class ConfigLoader
         Event::emit($id, $service);
     }
 
-    protected function loadArray(array $config)
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    protected function loadArray(array $config): array
     {
         foreach ($config as $key => $value) {
             if (str_contains($key, '\\') && str_ends_with($key, 'Config')) {
@@ -76,22 +81,26 @@ class ConfigLoader
         return $config;
     }
 
-    protected static function loadFile(string $file)
+    /**
+     * @return array<string, mixed>
+     * @throws \RuntimeException
+     */
+    protected static function loadFile(string $file): array
     {
         $type = pathinfo($file, PATHINFO_EXTENSION);
 
-        if ($type === 'php') {
-            return require $file;
+        if ($type == 'php') {
+            $result = require $file;
+        } elseif ($type == 'ini') {
+            $result = parse_ini_file($file, true, INI_SCANNER_TYPED);
+        } elseif ($type == 'json') {
+            $result = json_decode(file_get_contents($file) ?: '', true);
         }
 
-        if ($type === 'ini') {
-            return parse_ini_file($file, true, INI_SCANNER_TYPED);
+        if (!is_array($result ?? null)) {
+            throw new \RuntimeException("Unable to load config file '{$file}'");
         }
 
-        if ($type === 'json') {
-            return json_decode(file_get_contents($file), true);
-        }
-
-        throw new \RuntimeException("Unable to load config file '{$file}'");
+        return $result;
     }
 }

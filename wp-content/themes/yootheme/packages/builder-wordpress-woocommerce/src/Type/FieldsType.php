@@ -2,15 +2,24 @@
 
 namespace YOOtheme\Builder\Wordpress\Woocommerce\Type;
 
+use WC_Product;
+use WP_Post;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper as PostsHelper;
 use YOOtheme\Builder\Wordpress\Woocommerce\Helper;
 use YOOtheme\Str;
-use function YOOtheme\trans;
 use YOOtheme\View\HtmlElement;
+use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class FieldsType
 {
-    public static function config()
+    /**
+     * @return ObjectConfig
+     */
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -26,9 +35,29 @@ class FieldsType
                 ],
                 'price' => [
                     'type' => 'String',
+                    'args' => [
+                        'type' => [
+                            'type' => 'String',
+                        ],
+                    ],
                     'metadata' => [
                         'label' => __('Price', 'woocommerce'),
                         'group' => 'WooCommerce',
+                        'arguments' => [
+                            'type' => [
+                                'label' => trans('Price Type'),
+                                'description' => trans(
+                                    'Show the active price, or only the sale or regular price.',
+                                ),
+                                'type' => 'select',
+                                'default' => '',
+                                'options' => [
+                                    trans('Default') => '',
+                                    trans('Sale price only') => 'sale',
+                                    trans('Regular price only') => 'regular',
+                                ],
+                            ],
+                        ],
                     ],
                     'extensions' => [
                         'call' => __CLASS__ . '::price',
@@ -413,22 +442,52 @@ class FieldsType
         ];
     }
 
+    /**
+     * @param WC_Product $product
+     * @return int
+     */
     public static function totalSales($product)
     {
         return $product->get_total_sales();
     }
 
+    /**
+     * @param WC_Product $product
+     * @return string
+     */
     public static function sku($product)
     {
         return $product->get_sku();
     }
 
-    public static function price($product)
+    /**
+     * @param WC_Product $product
+     * @param array<string, mixed> $args
+     * @return ?string
+     */
+    public static function price($product, $args)
     {
-        $price = $product->get_price_html();
+        $args += ['type' => ''];
+
+        if ($args['type']) {
+            $price =
+                $args['type'] === 'regular'
+                    ? $product->get_regular_price()
+                    : $product->get_sale_price();
+
+            if (empty($price)) {
+                return null;
+            }
+
+            $price =
+                wc_price(wc_get_price_to_display($product, ['price' => $price])) .
+                $product->get_price_suffix();
+        } else {
+            $price = $product->get_price_html();
+        }
 
         if (empty($price)) {
-            return;
+            return null;
         }
 
         return HtmlElement::tag(
@@ -444,12 +503,16 @@ class FieldsType
         );
     }
 
+    /**
+     * @param WC_Product $product
+     * @return ?string
+     */
     public static function stock($product)
     {
         $stock = wc_get_stock_html($product);
 
         if (empty($stock)) {
-            return;
+            return null;
         }
 
         return HtmlElement::tag(
@@ -464,72 +527,94 @@ class FieldsType
         );
     }
 
+    /**
+     * @param WC_Product $product
+     * @param array<string, mixed> $args
+     * @return ?string
+     */
     public static function rating($product, $args)
     {
         $args += ['link' => true];
         $count = $product->get_rating_count();
         $average = $product->get_average_rating();
 
-        if (wc_review_ratings_enabled() && $count > 0) {
-            $rating = wc_get_rating_html($average, $count);
+        if (!wc_review_ratings_enabled() || !$count) {
+            return null;
+        }
+        $rating = wc_get_rating_html($average, $count);
 
-            if ($args['link'] && comments_open($product->get_id())) {
-                $review_count = $product->get_review_count();
-                $review_msg = _n(
-                    '%s customer review',
-                    '%s customer reviews',
-                    $review_count,
-                    'woocommerce',
-                );
-                $review = sprintf(
-                    $review_msg,
-                    '<span class="count">' . esc_html($review_count) . '</span>',
-                );
+        if ($args['link'] && comments_open($product->get_id())) {
+            $review_count = $product->get_review_count();
+            $review_msg = _n(
+                '%s customer review',
+                '%s customer reviews',
+                $review_count,
+                'woocommerce',
+            );
+            $review = sprintf(
+                $review_msg,
+                '<span class="count">' . esc_html((string) $review_count) . '</span>',
+            );
 
-                $link = '#reviews';
-                if (!Helper::isPageSource($product)) {
-                    $link = get_permalink($product->get_id()) . $link;
-                }
-
-                $rating .= sprintf(
-                    ' <a href="%s" class="woocommerce-review-link" rel="nofollow">(%s)</a>',
-                    $link,
-                    $review,
-                );
+            $link = '#reviews';
+            if (!Helper::isPageSource($product)) {
+                $link = get_permalink($product->get_id()) . $link;
             }
 
-            if (empty($rating)) {
-                return;
-            }
-
-            return HtmlElement::tag(
-                'div',
-                [
-                    'class' => [
-                        'tm-source-woo-rating',
-                        'tm-source-page' => Helper::isPageSource($product),
-                    ],
-                ],
-                $rating,
+            $rating .= sprintf(
+                ' <a href="%s" class="woocommerce-review-link" rel="nofollow">(%s)</a>',
+                $link,
+                $review,
             );
         }
+
+        if (empty($rating)) {
+            return null;
+        }
+
+        return HtmlElement::tag(
+            'div',
+            [
+                'class' => [
+                    'tm-source-woo-rating',
+                    'tm-source-page' => Helper::isPageSource($product),
+                ],
+            ],
+            $rating,
+        );
     }
 
+    /**
+     * @param WC_Product $product
+     * @return bool
+     */
     public static function isOnSale($product)
     {
         return $product->is_on_sale();
     }
 
+    /**
+     * @param WC_Product $product
+     * @return string
+     */
     public static function addToCartUrl($product)
     {
         return $product->add_to_cart_url();
     }
 
+    /**
+     * @param WC_Product $product
+     * @return ?string
+     */
     public static function addToCartText($product)
     {
         return $product->add_to_cart_text();
     }
 
+    /**
+     * @param WC_Product $product
+     * @return ?string
+     */
     public static function additionalInformation($product)
     {
         return Helper::renderTemplate('do_action', [
@@ -540,11 +625,12 @@ class FieldsType
     }
 
     /**
-     * @param mixed $product
-     * @see wc_display_product_attributes
+     * @param WC_Product $product
+     * @return array<string, array{name: string, value: string}|object>
      *
+     * @see wc_display_product_attributes
      */
-    public static function attributes($product)
+    public static function attributes($product): array
     {
         $attributes = [];
 
@@ -558,6 +644,7 @@ class FieldsType
             if ($product->has_weight()) {
                 $attributes['weight'] = [
                     'name' => __('Weight', 'woocommerce'),
+                    // @phpstan-ignore argument.type
                     'value' => wc_format_weight($product->get_weight()),
                 ];
             }
@@ -577,26 +664,50 @@ class FieldsType
             );
     }
 
+    /**
+     * @param WC_Product $product
+     * @return array<int>
+     */
     public static function galleryImageIds($product)
     {
         return $product->get_gallery_image_ids();
     }
 
+    /**
+     * @param WC_Product $product
+     * @param array<string, mixed> $args
+     * @return ?list<WP_Post>
+     */
     public static function upsellProducts($product, $args): ?array
     {
         return static::getProducts($product->get_upsell_ids(), $args);
     }
 
+    /**
+     * @param WC_Product $product
+     * @param array<string, mixed> $args
+     * @return ?list<WP_Post>
+     */
     public static function crossSellProducts($product, $args): ?array
     {
         return static::getProducts($product->get_cross_sell_ids(), $args);
     }
 
+    /**
+     * @param WC_Product $product
+     * @param array<string, mixed> $args
+     * @return ?list<WP_Post>
+     */
     public static function groupedProducts($product, $args): ?array
     {
         return static::getProducts($product->get_children(), $args);
     }
 
+    /**
+     * @param array<int> $ids
+     * @param array<string, mixed> $args
+     * @return ?list<WP_Post>
+     */
     protected static function getProducts($ids, $args): ?array
     {
         if (empty($ids)) {
@@ -611,6 +722,11 @@ class FieldsType
         );
     }
 
+    /**
+     * @param WC_Product $productObj
+     * @param mixed ...$args
+     * @return mixed
+     */
     protected static function applyFilters($productObj, ...$args)
     {
         global $product;
@@ -626,10 +742,16 @@ class FieldsType
     }
 
     /* Legacy fix for backwards compatibility. */
+    /**
+     * @param string $name
+     * @param list<mixed> $arguments
+     * @return mixed
+     */
     public static function __callStatic($name, $arguments)
     {
         if (is_callable($fn = [static::class, Str::camelCase($name)])) {
             return $fn(...$arguments);
         }
+        return null;
     }
 }

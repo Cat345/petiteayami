@@ -5,52 +5,69 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 }
 
 // Change mobile breakpoint
-add_filter( 'dgwt/wcas/scripts/mobile_overlay_breakpoint', function () {
-	$mobile_menu_breakpoint        = get_theme_mod( 'ocean_mobile_menu_breakpoints', '959' );
-	$mobile_menu_custom_breakpoint = get_theme_mod( 'ocean_mobile_menu_custom_breakpoint' );
+add_filter(
+	'dgwt/wcas/scripts/mobile_overlay_breakpoint',
+	function () {
+		$mobile_menu_breakpoint        = get_theme_mod( 'ocean_mobile_menu_breakpoints', '959' );
+		$mobile_menu_custom_breakpoint = get_theme_mod( 'ocean_mobile_menu_custom_breakpoint' );
 
-	if ( $mobile_menu_breakpoint === 'custom' && ! empty( $mobile_menu_custom_breakpoint ) ) {
-		$mobile_menu_breakpoint = $mobile_menu_custom_breakpoint;
+		if ( $mobile_menu_breakpoint === 'custom' && ! empty( $mobile_menu_custom_breakpoint ) ) {
+			$mobile_menu_breakpoint = $mobile_menu_custom_breakpoint;
+		}
+
+		return $mobile_menu_breakpoint;
 	}
+);
 
-	return $mobile_menu_breakpoint;
-} );
+add_filter(
+	'get_search_form',
+	function ( $form, $args ) {
+		// Used when search style is "Drop down" and on 404 page.
+		return do_shortcode( '[fibosearch]' );
+	},
+	10,
+	2
+);
 
-add_filter( 'get_search_form', function ( $form, $args ) {
-	// Used when search style is "Drop down" and on 404 page.
-	return do_shortcode( '[fibosearch]' );
-}, 10, 2 );
-
-add_action( 'wp', function () {
-	// Mobile search - icon in menu.
-	if (
+add_action(
+	'wp',
+	function () {
+		// Mobile search - icon in menu.
+		if (
 		! function_exists( 'oceanwp_mobile_menu_search_style' ) ||
 		! function_exists( 'oceanwp_header_style' )
-	) {
-		return;
-	}
+		) {
+			return;
+		}
 
-	$search_style = oceanwp_mobile_menu_search_style(); // Search Icon Style.
-	$search_style = $search_style ?: 'disabled';
-	$header_style = oceanwp_header_style();
+		$search_style = oceanwp_mobile_menu_search_style(); // Search Icon Style.
+		// TODO
+		// phpcs:ignore WordPress.PHP.DisallowShortTernary.Found
+		$search_style = $search_style ?: 'disabled';
+		$header_style = oceanwp_header_style();
 
-	if ( $search_style === 'disabled' || $header_style === 'vertical' ) {
-		return;
-	}
+		if ( $search_style === 'disabled' || $header_style === 'vertical' ) {
+			return;
+		}
 
-	remove_action( 'ocean_after_mobile_icon', 'oceanwp_mobile_search_icon' );
-	remove_action( 'ocean_mobile_menu_icon_after', 'oceanwp_mobile_search_form_html' );
+		remove_action( 'ocean_after_mobile_icon', 'oceanwp_mobile_search_icon' );
+		remove_action( 'ocean_mobile_menu_icon_after', 'oceanwp_mobile_search_form_html' );
 
-	add_action( 'ocean_after_mobile_icon', function () {
-		// Placeholders to prevent JS errors.
-		echo '<span class="search-icon-dropdown"></span>';
-		echo '<span class="search-style-dropdown"></span>';
-		echo do_shortcode( '[fibosearch layout="icon"]' );
-	} );
+		add_action(
+			'ocean_after_mobile_icon',
+			function () {
+				// Placeholders to prevent JS errors.
+				echo '<span class="search-icon-dropdown"></span>';
+				echo '<span class="search-style-dropdown"></span>';
+				echo do_shortcode( '[fibosearch layout="icon"]' );
+			}
+		);
 
-	add_action( 'wp_footer', function () {
-		$headerHeight = get_theme_mod( 'ocean_header_height', '74' );
-		?>
+		add_action(
+			'wp_footer',
+			function () {
+				$headerHeight = get_theme_mod( 'ocean_header_height', '74' );
+				?>
 		<style>
 			.oceanwp-mobile-menu-icon .dgwt-wcas-search-wrapp {
 				display: inline-block;
@@ -60,70 +77,83 @@ add_action( 'wp', function () {
 			.oceanwp-mobile-menu-icon .dgwt-wcas-search-wrapp .icon-magnifier {
 				color: #555;
 				font-size: 13px;
-				line-height: <?php echo esc_attr($headerHeight); ?>px;
+					line-height: <?php echo esc_attr( $headerHeight ); ?>px;
 			}
 
 			.oceanwp-mobile-menu-icon .dgwt-wcas-search-wrapp:hover .icon-magnifier {
 				color: #13aff0;
 			}
 		</style>
-		<?php
-	} );
+				<?php
+			}
+		);
 
-	add_filter( 'dgwt/wcas/form/magnifier_ico', function ( $html, $class ) {
-		if ( $class === 'dgwt-wcas-ico-magnifier-handler' ) {
-			$html = '<i class=" icon-magnifier" aria-hidden="true" role="img"></i>';
+		add_filter(
+			'dgwt/wcas/form/magnifier_ico',
+			function ( $html, $class ) {
+				if ( $class === 'dgwt-wcas-ico-magnifier-handler' ) {
+					$html = '<i class=" icon-magnifier" aria-hidden="true" role="img"></i>';
+				}
+
+				return $html;
+			},
+			10,
+			2
+		);
+	},
+	20
+);
+
+add_action(
+	'wp_head',
+	function () {
+		if ( ! function_exists( 'oceanwp_header_style' ) ) {
+			return;
 		}
+		$headerStyle = oceanwp_header_style();
 
-		return $html;
-	}, 10, 2 );
-}, 20 );
-
-add_action( 'wp_head', function () {
-	if ( ! function_exists( 'oceanwp_header_style' ) ) {
-		return;
-	}
-	$headerStyle = oceanwp_header_style();
-
-	// Hide default search before overwrite.
-	if ( $headerStyle === 'medium' ) {
-		?>
+		// Hide default search before overwrite.
+		if ( $headerStyle === 'medium' ) {
+			?>
 		<style>
 			#site-header.medium-header #medium-searchform > form {
 				display: none;
 			}
 		</style>
-		<?php
-	} else if ( $headerStyle === 'vertical' ) {
-		?>
+			<?php
+		} elseif ( $headerStyle === 'vertical' ) {
+			?>
 		<style>
 			#vertical-searchform > form {
 				display: none;
 			}
 		</style>
-		<?php
+			<?php
+		}
 	}
-} );
+);
 
-add_action( 'wp_footer', function () {
-	if (
+add_action(
+	'wp_footer',
+	function () {
+		if (
 		! function_exists( 'oceanwp_menu_search_style' ) ||
 		! function_exists( 'oceanwp_header_style' ) ||
 		! function_exists( 'oceanwp_mobile_menu_style' )
-	) {
-		return;
-	}
+		) {
+			return;
+		}
 
-	$menuSearchStyle = oceanwp_menu_search_style();
-	$headerStyle     = oceanwp_header_style();
+		$menuSearchStyle = oceanwp_menu_search_style();
+		$headerStyle     = oceanwp_header_style();
 
-	$mobileMenuStyle       = oceanwp_mobile_menu_style(); // Mobile Menu Style.
-	$mobileMenuSearch      = get_theme_mod( 'ocean_mobile_menu_search', true ); // MOBILE MENU SEARCH.
+		$mobileMenuStyle  = oceanwp_mobile_menu_style(); // Mobile Menu Style.
+		$mobileMenuSearch = get_theme_mod( 'ocean_mobile_menu_search', true ); // MOBILE MENU SEARCH.
 
-	// Search styles - desktop.
-	if ( $menuSearchStyle === 'drop_down' ) {
-		// Drop down.
-		?>
+		// Search styles - desktop.
+		if ( $menuSearchStyle === 'drop_down' ) {
+			// Drop down.
+			?>
 		<script>
 			var desktopSearchInput = document.querySelector('#searchform-dropdown .dgwt-wcas-search-input');
 			if (desktopSearchInput !== null) {
@@ -131,11 +161,11 @@ add_action( 'wp_footer', function () {
 				desktopSearchInput.classList.add('field');
 			}
 		</script>
-		<?php
-	} else if ( $menuSearchStyle === 'overlay' ) {
-		// Overlay.
-		echo '<div id="dgwt-wcas-desktop-search" style="display: none;"><div>' . do_shortcode( '[fibosearch]' ) . '<a href="#" class="search-overlay-close"><span></span></a></div></div>';
-		?>
+			<?php
+		} elseif ( $menuSearchStyle === 'overlay' ) {
+			// Overlay.
+			echo '<div id="dgwt-wcas-desktop-search" style="display: none;"><div>' . do_shortcode( '[fibosearch]' ) . '<a href="#" class="search-overlay-close"><span></span></a></div></div>';
+			?>
 		<script>
 			var desktopSearch = document.querySelector('#searchform-overlay > div > form');
 			if (desktopSearch !== null) {
@@ -176,11 +206,11 @@ add_action( 'wp_footer', function () {
 				fill: #fff;
 			}
 		</style>
-		<?php
-	} else if ( $menuSearchStyle === 'header_replace' ) {
-		// Header replace.
-		echo '<div id="dgwt-wcas-desktop-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-		?>
+			<?php
+		} elseif ( $menuSearchStyle === 'header_replace' ) {
+			// Header replace.
+			echo '<div id="dgwt-wcas-desktop-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+			?>
 		<script>
 			var desktopSearch = document.querySelector('#searchform-header-replace > form');
 			if (desktopSearch !== null) {
@@ -204,15 +234,15 @@ add_action( 'wp_footer', function () {
 				margin-right: 40px;
 			}
 		</style>
-		<?php
-	}
+			<?php
+		}
 
-	// Mobile menu.
-	if ( $mobileMenuSearch ) {
-		// Menu style - dropdown.
-		if ( $mobileMenuStyle === 'dropdown' ) {
-			echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-			?>
+		// Mobile menu.
+		if ( $mobileMenuSearch ) {
+			// Menu style - dropdown.
+			if ( $mobileMenuStyle === 'dropdown' ) {
+				echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+				?>
 			<script>
 				var mobileSearch = document.querySelector('#mobile-menu-search > form');
 				if (mobileSearch !== null) {
@@ -225,11 +255,11 @@ add_action( 'wp_footer', function () {
 					padding: 10px 15px 10px 40px !important;
 				}
 			</style>
-			<?php
-		} else if ( $mobileMenuStyle === 'sidebar' ) {
-			// Menu style - sidebar.
-			echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-			?>
+				<?php
+			} elseif ( $mobileMenuStyle === 'sidebar' ) {
+				// Menu style - sidebar.
+				echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+				?>
 			<script>
 				(function ($) {
 					$(window).on('load', function () {
@@ -251,11 +281,11 @@ add_action( 'wp_footer', function () {
 					margin-top: 20px;
 				}
 			</style>
-			<?php
-		} else if ( $mobileMenuStyle === 'fullscreen' ) {
-			// Menu style - full screen.
-			echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-			?>
+				<?php
+			} elseif ( $mobileMenuStyle === 'fullscreen' ) {
+				// Menu style - full screen.
+				echo '<div id="dgwt-wcas-mobile-search" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+				?>
 			<script>
 				var mobileSearch = document.querySelector('#mobile-fullscreen #mobile-search > form');
 				if (mobileSearch !== null) {
@@ -282,14 +312,14 @@ add_action( 'wp_footer', function () {
 					fill: #fff;
 				}
 			</style>
-			<?php
+				<?php
+			}
 		}
-	}
 
-	// Header styles.
-	if ( $headerStyle === 'medium' ) {
-		echo '<div id="dgwt-wcas-desktop-search-medium" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-		?>
+		// Header styles.
+		if ( $headerStyle === 'medium' ) {
+			echo '<div id="dgwt-wcas-desktop-search-medium" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+			?>
 		<script>
 			var desktopSearch = document.querySelector('#medium-searchform form');
 			if (desktopSearch !== null) {
@@ -312,10 +342,10 @@ add_action( 'wp_footer', function () {
 				max-width: 200px;
 			}
 		</style>
-		<?php
-	} else if ( $headerStyle === 'vertical' ) {
-		echo '<div id="dgwt-wcas-desktop-search-vertical" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-		?>
+			<?php
+		} elseif ( $headerStyle === 'vertical' ) {
+			echo '<div id="dgwt-wcas-desktop-search-vertical" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+			?>
 		<script>
 			var desktopSearch = document.querySelector('#vertical-searchform form');
 			if (desktopSearch !== null) {
@@ -331,10 +361,10 @@ add_action( 'wp_footer', function () {
 				z-index: inherit;
 			}
 		</style>
-		<?php
-	} else if ( $headerStyle === 'full_screen' ) {
-		echo '<div id="dgwt-wcas-desktop-search-full-screen" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-		?>
+			<?php
+		} elseif ( $headerStyle === 'full_screen' ) {
+			echo '<div id="dgwt-wcas-desktop-search-full-screen" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+			?>
 		<script>
 			var desktopSearch = document.querySelector('#full-screen-menu .search-toggle-li > form');
 			if (desktopSearch !== null) {
@@ -360,6 +390,7 @@ add_action( 'wp_footer', function () {
 				fill: #fff;
 			}
 		</style>
-		<?php
+			<?php
+		}
 	}
-} );
+);

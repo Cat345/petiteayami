@@ -2,9 +2,9 @@
 
 namespace YOOtheme\Theme\Widgets;
 
+use WP_Widget;
 use YOOtheme\Arr;
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Theme\Wordpress\FilterHelper;
 use YOOtheme\View;
 use function YOOtheme\app;
@@ -12,13 +12,39 @@ use function YOOtheme\app;
 class WidgetsListener
 {
     public ?string $sidebar = null;
+
+    /**
+     * @var ?array<string, mixed>
+     */
     public ?array $position = null;
+
+    /**
+     * @var array<string, list<object>>
+     */
     public array $widgets = [];
 
+    protected Config $config;
     protected ?string $style = null;
+
+    /**
+     * @var array<string, string>
+     */
     protected array $logos = [];
 
-    public function isActiveSidebar($active, $sidebar): bool
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @param bool  $active
+     * @param int|string $sidebar
+     *
+     * @return bool
+     *
+     * @link https://developer.wordpress.org/reference/hooks/is_active_sidebar/
+     */
+    public function isActiveSidebar($active, $sidebar)
     {
         // Ensure sidebar is registered (Yoast SEO plugin prevents registering sidebars on /wp-sitemap.xml)
         if (
@@ -46,7 +72,12 @@ class WidgetsListener
             $this->hasToggle($sidebar);
     }
 
-    public function beforeSidebar(Config $config, $sidebar)
+    /**
+     * @param int|string $sidebar
+     *
+     * @link https://developer.wordpress.org/reference/hooks/dynamic_sidebar_before/
+     */
+    public function beforeSidebar($sidebar): void
     {
         $this->sidebar = $sidebar;
         if (
@@ -62,24 +93,32 @@ class WidgetsListener
 
         // Reset section transparent header
         if ($sidebar === 'top') {
-            $config->set(
+            $this->config->set(
                 'header.section.prevTransparent',
-                $config->get('header.section.transparent'),
+                $this->config->get('header.section.transparent'),
             );
-            $config->del('header.section.transparent');
+            $this->config->del('header.section.transparent');
         }
     }
 
-    public function afterSidebar(Config $config, View $view, $sidebar)
+    /**
+     * @param int|string $sidebar
+     *
+     * @link https://developer.wordpress.org/reference/hooks/dynamic_sidebar_after/
+     */
+    public function afterSidebar($sidebar): void
     {
         global $wp_registered_widgets;
 
-        if ($sidebar === 'top' && null === $config->get('header.section.transparent')) {
-            $config->set(
+        /** @var View $view */
+        $view = app(View::class);
+
+        if ($sidebar === 'top' && null === $this->config->get('header.section.transparent')) {
+            $this->config->set(
                 'header.section.transparent',
-                $config->get('header.section.prevTransparent'),
+                $this->config->get('header.section.prevTransparent'),
             );
-            $config->del('header.section.prevTransparent');
+            $this->config->del('header.section.prevTransparent');
         }
 
         $items = $this->widgets[$sidebar];
@@ -95,7 +134,7 @@ class WidgetsListener
         if ($sidebar === 'navbar-split') {
             if (
                 has_nav_menu('navbar') &&
-                in_array($config('~theme.menu.positions.navbar.type'), ['', 'nav'])
+                in_array($this->config->get('~theme.menu.positions.navbar.type'), ['', 'nav'])
             ) {
                 array_unshift(
                     $items,
@@ -106,12 +145,9 @@ class WidgetsListener
             foreach ($this->getMenuWidgets('navbar') as $id) {
                 $widget = $wp_registered_widgets[$id];
                 $settings = $widget['callback'][0]->get_settings();
-                $params = Arr::get($settings, Arr::get($widget, 'params.0.number', 0), []);
-                $menu = Arr::get($params, 'nav_menu');
-                $type = Arr::get(
-                    json_decode(Arr::get($params, '_theme', '{}'), true) ?: [],
-                    'menu_type',
-                );
+                $params = $settings[$widget['params'][0]['number'] ?? 0] ?? [];
+                $menu = $params['nav_menu'] ?? null;
+                $type = json_decode($params['_theme'] ?? '{}', true)['menu_type'] ?? '';
 
                 if ($menu && in_array($type, ['', 'nav'])) {
                     array_unshift($items, $this->createMenuWidget($sidebar, 'navbar', $menu));
@@ -131,7 +167,7 @@ class WidgetsListener
 
         // Search Widget
         foreach (['~theme.header.search', '~theme.mobile.header.search'] as $key) {
-            $position = explode(':', $config($key, ''), 2);
+            $position = explode(':', $this->config->get($key, ''), 2);
             if ($sidebar == $position[0]) {
                 $widget = $this->getWidget($sidebar, 'WP_Widget_Search');
                 $position[1] == 'start'
@@ -142,10 +178,12 @@ class WidgetsListener
 
         // Social Widget
         foreach (['~theme.header.social', '~theme.mobile.header.social'] as $key) {
-            $position = explode(':', $config($key, ''), 2);
+            $position = explode(':', $this->config->get($key, ''), 2);
             if (
                 $sidebar == $position[0] &&
-                ($content = trim($view('~theme/templates/socials', ['position' => $sidebar])))
+                ($content = trim(
+                    $view->render('~theme/templates/socials', ['position' => $sidebar]),
+                ))
             ) {
                 $widget = $this->createWidget([
                     'id' => 'social',
@@ -161,10 +199,12 @@ class WidgetsListener
 
         // Dialog Toggle Widget
         foreach (['~theme.dialog.toggle', '~theme.mobile.dialog.toggle'] as $key) {
-            $position = explode(':', $config($key, ''), 2);
+            $position = explode(':', $this->config->get($key, ''), 2);
             if (
                 $sidebar == $position[0] &&
-                ($content = trim($view('~theme/templates/header-dialog', ['position' => $sidebar])))
+                ($content = trim(
+                    $view->render('~theme/templates/header-dialog', ['position' => $sidebar]),
+                ))
             ) {
                 $widget = $this->createWidget([
                     'id' => 'dialog-toggle',
@@ -179,9 +219,12 @@ class WidgetsListener
         }
 
         // Split Header Area
-        if ($sidebar == 'header' && $config('~theme.header.layout') == 'stacked-center-c') {
+        if (
+            $sidebar == 'header' &&
+            $this->config->get('~theme.header.layout') == 'stacked-center-c'
+        ) {
             // Split Auto
-            $index = $config('~theme.header.split_index') ?: ceil(count($items) / 2);
+            $index = $this->config->get('~theme.header.split_index') ?: ceil(count($items) / 2);
 
             if (!is_registered_sidebar('header-split')) {
                 Sidebar::register('header-split', 'Header Split');
@@ -193,8 +236,8 @@ class WidgetsListener
         // Push Navbar Area
         if (
             $sidebar == 'navbar' &&
-            $config('~theme.header.layout') == 'stacked-left' &&
-            ($index = $config('~theme.header.push_index'))
+            $this->config->get('~theme.header.layout') == 'stacked-left' &&
+            ($index = $this->config->get('~theme.header.push_index'))
         ) {
             if (!is_registered_sidebar('navbar-push')) {
                 Sidebar::register('navbar-push', 'Navbar Push');
@@ -211,7 +254,7 @@ class WidgetsListener
             ]
             as $key => $value
         ) {
-            if ($sidebar == $key && ($index = $config($value))) {
+            if ($sidebar == $key && ($index = $this->config->get($value))) {
                 if (!is_registered_sidebar("{$key}-push")) {
                     Sidebar::register("{$key}-push", ucfirst($key) . ' Push');
                     $this->widgets["{$key}-push"] = array_slice($items, $index);
@@ -220,7 +263,7 @@ class WidgetsListener
             }
         }
 
-        echo $view('~theme/templates/position', [
+        echo $view->render('~theme/templates/position', [
             'name' => $sidebar,
             'items' => $items,
             'style' => $this->style,
@@ -232,6 +275,14 @@ class WidgetsListener
         $this->position = null;
     }
 
+    /**
+     * @param string $title
+     * @param string $raw
+     *
+     * @return string
+     *
+     * @link https://developer.wordpress.org/reference/hooks/sanitize_title/
+     */
     public function parseSidebarStyle($title, $raw)
     {
         if (strpos($raw, ':')) {
@@ -247,14 +298,15 @@ class WidgetsListener
     }
 
     /**
-     * @param Config      $config
-     * @param array|false $instance
-     * @param \WP_Widget  $widget
-     * @param array       $args
+     * @param array<string, mixed>|false $instance
+     * @param WP_Widget $widget
+     * @param array<string, mixed> $args
      *
-     * @return array|false
+     * @return array<string, mixed>|false
+     *
+     * @link https://developer.wordpress.org/reference/hooks/widget_display_callback/
      */
-    public function displayWidget(Config $config, $instance, $widget, $args)
+    public function displayWidget($instance, $widget, $args)
     {
         // store sidebar in case another sidebar is rendered within this widget
         $sidebar = $this->sidebar;
@@ -266,7 +318,7 @@ class WidgetsListener
         $type = strtr(str_replace('nav_menu', 'menu', $widget->id_base), '_', '-');
 
         // Replace widget settings with temporary customizer widget settings
-        if (($temp = $config->get('req.customizer.widget')) && $temp['id'] === $widget->id) {
+        if (($temp = $this->config->get('req.customizer.widget')) && $temp['id'] === $widget->id) {
             $instance = array_replace($instance, Arr::omit($temp, ['id']));
         }
 
@@ -277,7 +329,7 @@ class WidgetsListener
             $this->getThemeDefaults();
 
         // Set settings in config for rendering chrome (templates/position.php and templates/module.php)
-        $config->update(
+        $this->config->update(
             "~theme.modules.{$widget->id}",
             fn($values) => ['is_list' => $this->isListWidget($type)] +
                 $instance['_theme'] +
@@ -349,11 +401,11 @@ class WidgetsListener
         if (
             $sidebar === 'top' &&
             $type !== 'builderwidget' &&
-            null === $config->get('header.section.transparent')
+            null === $this->config->get('header.section.transparent')
         ) {
-            $config->set(
+            $this->config->set(
                 'header.section.transparent',
-                (bool) $config('~theme.top.header_transparent'),
+                (bool) $this->config->get('~theme.top.header_transparent'),
             );
         }
 
@@ -374,6 +426,11 @@ class WidgetsListener
         return false;
     }
 
+    /**
+     * @param array<string, mixed>|object $widget
+     *
+     * @return object
+     */
     protected function createWidget($widget): object
     {
         static $id = 0;
@@ -389,7 +446,7 @@ class WidgetsListener
         );
     }
 
-    protected function isListWidget($type): bool
+    protected function isListWidget(string $type): bool
     {
         return in_array($type, [
             'recent-posts',
@@ -401,7 +458,7 @@ class WidgetsListener
         ]);
     }
 
-    protected function getLogo($sidebar, $check = false): string
+    protected function getLogo(string $sidebar, bool $check = false): string
     {
         if (
             !in_array($sidebar, ['logo', 'logo-mobile', 'dialog', 'dialog-mobile']) ||
@@ -410,24 +467,18 @@ class WidgetsListener
             return '';
         }
 
-        if (!isset($this->logos[$sidebar])) {
-            $this->logos[$sidebar] = trim(
-                app(View::class)('~theme/templates/header-logo', ['position' => $sidebar]),
-            );
-        }
-
-        return $this->logos[$sidebar];
+        return $this->logos[$sidebar] ??= trim(
+            app(View::class)('~theme/templates/header-logo', ['position' => $sidebar]),
+        );
     }
 
-    protected function hasToggle($sidebar): bool
+    protected function hasToggle(string $sidebar): bool
     {
-        $config = app(Config::class);
-
         foreach (
             ['~theme.dialog.toggle' => '', '~theme.mobile.dialog.toggle' => '-mobile']
             as $key => $suffix
         ) {
-            $position = explode(':', $config($key, ''), 2);
+            $position = explode(':', $this->config->get($key, ''), 2);
             if ($position[0] === $sidebar && is_active_sidebar("dialog{$suffix}")) {
                 return true;
             }
@@ -435,27 +486,28 @@ class WidgetsListener
         return false;
     }
 
-    protected function hasHeaderSearchOrSocial($sidebar): bool
+    protected function hasHeaderSearchOrSocial(string $sidebar): bool
     {
-        $config = app(Config::class);
-
         return array_any(
             ['header.search', 'header.social', 'mobile.header.search', 'mobile.header.social'],
-            fn($key) => str_starts_with($config("~theme.{$key}", ''), "{$sidebar}:"),
+            fn($key) => str_starts_with($this->config->get("~theme.{$key}", ''), "{$sidebar}:"),
         );
     }
 
-    protected function getMenuWidgets($sidebar): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getMenuWidgets(string $sidebar): array
     {
         return array_filter(wp_get_sidebars_widgets()[$sidebar] ?? [], function ($widget) {
             global $wp_registered_widgets;
-            return Arr::get($wp_registered_widgets, "{$widget}.classname") === 'widget_nav_menu';
+            return ($wp_registered_widgets[$widget]['classname'] ?? '') === 'widget_nav_menu';
         });
     }
 
-    protected function createMenuWidget($sidebar, $location, $menu)
+    protected function createMenuWidget(string $sidebar, string $location, ?int $menu): object
     {
-        $config = app(Config::class)("~theme.menu.positions.{$location}", []);
+        $config = $this->config->get("~theme.menu.positions.{$location}", []);
 
         return $this->getWidget(
             $sidebar,
@@ -474,8 +526,17 @@ class WidgetsListener
         );
     }
 
-    protected function getWidget($sidebar, $type, $instance = [], $sidebarSettings = null)
-    {
+    /**
+     * @param array<string, mixed> $instance
+     *
+     * @return object
+     */
+    protected function getWidget(
+        string $sidebar,
+        string $type,
+        array $instance = [],
+        ?string $sidebarSettings = null
+    ): object {
         global $wp_widget_factory, $wp_registered_widgets;
 
         static $i = 1;
@@ -487,22 +548,20 @@ class WidgetsListener
 
         $widget->_set($number + $i++);
 
-        $this->displayWidget(
-            app(Config::class),
-            $instance,
-            $widget,
-            wp_get_sidebar($sidebarSettings ?? $sidebar),
-        );
+        $this->displayWidget($instance, $widget, wp_get_sidebar($sidebarSettings ?? $sidebar));
 
         return end($this->widgets[$sidebar]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getThemeDefaults(): array
     {
         static $defaults;
 
         if (is_null($defaults)) {
-            $config = app(Config::class)->loadFile(Path::get('../config/widgets.json', __DIR__));
+            $config = $this->config->loadFile(__DIR__ . '/../config/widgets.php');
             $defaults = array_map(fn($field) => $field['default'] ?? '', $config['fields'] ?? []);
         }
 

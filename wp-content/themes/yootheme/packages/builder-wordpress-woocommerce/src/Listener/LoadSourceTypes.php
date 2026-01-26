@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Builder\Wordpress\Woocommerce\Listener;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Type\TaxonomyQueryType;
 use YOOtheme\Builder\Wordpress\Source\Type\TaxonomyType;
 use YOOtheme\Builder\Wordpress\Woocommerce\Helper;
@@ -11,14 +12,17 @@ use function YOOtheme\trans;
 
 class LoadSourceTypes
 {
+    /**
+     * @param Source $source
+     */
     public static function handle($source): void
     {
-        $source->objectType('Product', Type\ProductType::config());
-        $source->objectType('ProductBrand', Type\ProductBrandType::config());
-        $source->objectType('ProductCat', Type\ProductCategoryType::config());
-        $source->objectType('ProductsQuery', Type\CustomProductQueryType::config());
-        $source->objectType('AttributeField', Type\AttributeFieldType::config());
-        $source->objectType('WoocommerceFields', Type\FieldsType::config());
+        $source->objectType('Product', [Type\ProductType::class, 'config']);
+        $source->objectType('ProductBrand', [Type\ProductTaxonomyType::class, 'config']);
+        $source->objectType('ProductCat', [Type\ProductTaxonomyType::class, 'config']);
+        $source->objectType('ProductsQuery', [Type\CustomProductQueryType::class, 'config']);
+        $source->objectType('AttributeField', [Type\AttributeFieldType::class, 'config']);
+        $source->objectType('WoocommerceFields', [Type\FieldsType::class, 'config']);
 
         foreach (
             [
@@ -27,7 +31,7 @@ class LoadSourceTypes
             ]
             as [$name, $field, $label]
         ) {
-            static::renameLabel($source, $name, $field, $label);
+            $source->objectType($name, fn() => static::renameLabel($field, $label));
         }
 
         foreach (Helper::getAttributeTaxonomies() as $taxonomy) {
@@ -35,20 +39,23 @@ class LoadSourceTypes
                 $source->queryType(TaxonomyQueryType::config($source, $taxonomy, false));
                 $source->objectType(
                     Str::camelCase($taxonomy->name, true),
-                    TaxonomyType::config($taxonomy),
+                    fn() => TaxonomyType::config($taxonomy),
                 );
             }
         }
 
-        $source->objectType('Site', Type\SiteType::config($source));
+        $source->objectType('Site', fn() => Type\SiteType::config($source));
     }
 
-    protected static function renameLabel($source, $name, $field, $label): void
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function renameLabel(string $field, string $label): array
     {
-        $source->objectType($name, [
+        return [
             'fields' => [
                 $field => ['metadata' => compact('label')],
             ],
-        ]);
+        ];
     }
 }

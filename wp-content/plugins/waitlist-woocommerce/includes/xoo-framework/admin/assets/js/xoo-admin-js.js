@@ -405,12 +405,11 @@ jQuery(document).ready(function($){
 
 		if( $form.innerWidth() <= 700 ){
 			$form.addClass('xoo-as-break');
-			$('.xoo-as-sidebar').addClass('xoo-as-sbar-collapsed');
 		}
 		else{
 			$form.removeClass('xoo-as-break');
 		}
-	}).trigger('resize');
+	}).trigger('change');
 
 	$('img.xoo-as-patimg').on('click', function(){
 
@@ -451,6 +450,86 @@ jQuery(document).ready(function($){
 		}
 	);
 
+
+	$('.xoo-as-form').on('change', ':input', function() {
+
+		//Value based description
+		let $fieldCont 		= $(this).closest('.xoo-as-field'),
+			$settingCont 	= $(this).closest( '.xoo-as-setting' ),
+			fieldVal 		= $(this).val(),
+			fieldId 		= $settingCont.data('field_id');
+
+		if( $(this).is(':checkbox') && !$(this).is(':checked') ){
+			fieldVal = 'unchecked';
+		}
+
+		if( $fieldCont.length && $fieldCont.find('.xoo-as-val-desc').length ){
+
+
+			let $valueDesc 	= $fieldCont.find('.xoo-as-val-desc'),
+				descData 	= $valueDesc.data('desc');
+
+			$valueDesc.text('');
+
+			if( descData[ $(this).val() ] ){
+				$valueDesc.text( descData[ $(this).val() ] );
+			}
+
+		}
+
+		//Toggle settings
+
+		let toggleSettings = $settingCont.data('togglesettings');
+
+		if( toggleSettings ){
+			$.each( toggleSettings, function( settingID, settingValues ){
+
+				let $setting = $('.xoo-as-setting[data-field_id="'+settingID+'"]');
+
+				if( !$setting.length  ) return;
+
+				let hiddenby = $setting.data('hiddenby' ) || {};
+
+				if( settingValues.includes(fieldVal) ){
+					hiddenby[ fieldId ] = 1;
+				}
+				else{
+					delete hiddenby[ fieldId ];
+				}
+				
+
+				$setting.attr('data-hiddenby', JSON.stringify(hiddenby));
+
+				if( Object.keys(hiddenby).length ){
+					$setting.hide();
+				}
+				else{
+					$setting.show();
+				}
+
+				
+				
+			} )
+		}
+
+	});
+
+	$('.xoo-as-setting[data-togglesettings] :input').trigger('change');
+
+
+	$(window).resize(function(){
+
+		$form = $('form.xoo-as-form');
+		if( !$form.length ) return
+
+		if( $form.innerWidth() <= 700 ){
+			$('.xoo-as-sidebar').addClass('xoo-as-sbar-collapsed');
+			$form.addClass('xoo-as-break');
+		}
+		else{
+			$form.removeClass('xoo-as-break');
+		}
+	}).trigger('resize');
 
 
 	$('.xoo-as-sbar-close').on( 'click', function(){

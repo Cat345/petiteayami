@@ -40,7 +40,7 @@ class Xoo_Wl_Core{
 			$error = new WP_Error();
 
 			if( !$product_id ){
-				$error->add( 'no-id', __( 'Product ID not found, please contact support.', 'wailist-woocommerce' ) );
+				$error->add( 'no-id', 'Something went wrong. please contact support.' );
 			}
 
 			if( !$email ){
@@ -48,7 +48,7 @@ class Xoo_Wl_Core{
 			}
 			
 			if( !xoo_wl_should_show_waitlist( $product_id ) ){
-				$error->add( 'in-stock', __( 'Product is already in stock, Please add to cart', 'waitlist-woocommerce' ) );
+				$error->add( 'in-stock', __( 'You cannot currently join this waitlist.', 'waitlist-woocommerce' ) );
 			}
 
 			$error = apply_filters( 'xoo_wl_process_errors', $error, $product_id, $email );
@@ -81,6 +81,7 @@ class Xoo_Wl_Core{
 				'product_id' 	=> $product_id,
 				'email' 		=> $email,
 				'quantity' 		=> $quantity ? $quantity : 1,
+				'product_name' 	=> xoo_wl_get_product_name(wc_get_product($product_id)),
 				'meta' 			=> $waitlist_meta_data
 			);
 

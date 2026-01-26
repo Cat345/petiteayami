@@ -4,17 +4,27 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_filter( 'blocksy:header:item-view-path:search', function ( $path ) {
-	return DGWT_WCAS_DIR . 'partials/themes/blocksy/search.php';
-} );
+add_filter(
+	'blocksy:header:item-view-path:search',
+	function ( $path ) {
+		return DGWT_WCAS_DIR . 'partials/themes/blocksy/search.php';
+	}
+);
 
-add_filter( 'get_search_form', function ( $form, $args ) {
-	// Used on 404 page.
-	return do_shortcode( '[fibosearch layout="classic"]' );
-}, 10, 2 );
+add_filter(
+	'get_search_form',
+	function ( $form, $args ) {
+		// Used on 404 page.
+		return do_shortcode( '[fibosearch layout="classic"]' );
+	},
+	10,
+	2
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.dgwt-wcas-ico-magnifier, .dgwt-wcas-ico-magnifier-handler {
 			max-width: none;
@@ -30,5 +40,6 @@ add_action( 'wp_head', function () {
 			transition: none;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

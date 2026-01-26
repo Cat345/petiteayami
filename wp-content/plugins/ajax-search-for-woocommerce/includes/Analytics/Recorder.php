@@ -13,7 +13,7 @@ class Recorder {
         Database::registerTables();
         add_action(
             'dgwt/wcas/analytics/after_searching',
-            array($this, 'listener'),
+            [$this, 'listener'],
             10,
             3
         );
@@ -43,13 +43,13 @@ class Recorder {
         }
         // Allow to exclude critical phrases.
         if ( $hits === 0 ) {
-            $excludedPhrases = apply_filters( 'dgwt/wcas/analytics/excluded_critical_phrases', array() );
+            $excludedPhrases = apply_filters( 'dgwt/wcas/analytics/excluded_critical_phrases', [] );
             if ( is_array( $excludedPhrases ) && in_array( $phrase, $excludedPhrases, true ) ) {
                 return;
             }
         }
         // Break early when a user has specific roles.
-        $roles = apply_filters( 'dgwt/wcas/analytics/exclude_roles', array() );
+        $roles = apply_filters( 'dgwt/wcas/analytics/exclude_roles', [] );
         if ( !empty( $roles ) ) {
             foreach ( $roles as $role ) {
                 if ( current_user_can( $role ) ) {
@@ -62,12 +62,12 @@ class Recorder {
         }
         $phrase = strtolower( substr( $phrase, 0, 255 ) );
         $lang = ( !empty( $lang ) && Multilingual::isLangCode( $lang ) ? $lang : '' );
-        $shouldRecord = apply_filters( 'dgwt/wcas/analytics/should_record', true, array(
+        $shouldRecord = apply_filters( 'dgwt/wcas/analytics/should_record', true, [
             'phrase'       => $phrase,
             'hits'         => $hits,
             'lang'         => $lang,
             'autocomplete' => $autocomplete,
-        ) );
+        ] );
         if ( !$shouldRecord ) {
             return;
         }
@@ -96,18 +96,18 @@ class Recorder {
         $lang
     ) {
         global $wpdb;
-        $data = array(
+        $data = [
             'phrase'       => $phrase,
             'hits'         => $hits,
             'created_at'   => date( 'Y-m-d H:i:s', current_time( 'timestamp', true ) ),
             'autocomplete' => $autocomplete,
-        );
-        $format = array(
+        ];
+        $format = [
             '%s',
             '%d',
             '%s',
             '%d'
-        );
+        ];
         if ( !empty( $lang ) ) {
             $data['lang'] = $lang;
             $format[] = '%s';

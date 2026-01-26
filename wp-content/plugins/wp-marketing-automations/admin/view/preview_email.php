@@ -30,6 +30,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		$email_data['event_data']['event_slug'] = $email_data['event'];
 		$action_object                          = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
+		if ( null === $action_object && class_exists( 'BWFAN_Wp_Sendemail' ) ) {
+			/** Try to get the instance directly */
+			$action_object = BWFAN_Wp_Sendemail::get_instance();
+		}
+		if ( null === $action_object ) {
+			echo __( 'Email action not found', 'wp-marketing-automations' );
+
+			return;
+		}
 		$action_object->is_preview              = true;
 		$data_to_set                            = $action_object->make_data( '', $email_data );
 

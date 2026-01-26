@@ -2,8 +2,13 @@
 
 namespace YOOtheme\Theme\Wordpress\WPML\Listener;
 
+use YOOtheme\Builder\BuilderConfig;
+
 class LoadBuilderConfig
 {
+    /**
+     * @param BuilderConfig $config
+     */
     public static function handle($config): void
     {
         if (!class_exists('SitePress', false)) {

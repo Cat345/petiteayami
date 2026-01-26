@@ -8,14 +8,14 @@ use YOOtheme\Str;
 trait SourceFilter
 {
     /**
-     * @var array
+     * @var array<string, callable>
      */
-    public $filters;
+    public array $filters;
 
     /**
      * Constructor.
      *
-     * @param array $filters
+     * @param array<string, callable> $filters
      */
     public function __construct(array $filters = [])
     {
@@ -24,6 +24,7 @@ trait SourceFilter
                 'date' => [$this, 'applyDate'],
                 'limit' => [$this, 'applyLimit'],
                 'search' => [$this, 'applySearch'],
+                'transform' => [$this, 'applyTransform'],
                 'before' => [$this, 'applyBefore'],
                 'after' => [$this, 'applyAfter'],
                 'condition' => [$this, 'applyCondition'],
@@ -34,12 +35,8 @@ trait SourceFilter
 
     /**
      * Adds a filter.
-     *
-     * @param string   $name
-     * @param callable $filter
-     * @param int      $offset
      */
-    public function addFilter($name, callable $filter, $offset = null)
+    public function addFilter(string $name, callable $filter, ?int $offset = null): void
     {
         Arr::splice($this->filters, $offset, 0, [$name => $filter]);
     }
@@ -75,7 +72,7 @@ trait SourceFilter
      *
      * @param mixed $value
      * @param mixed $limit
-     * @param array $filters
+     * @param array<string, mixed> $filters
      *
      * @return string
      */
@@ -86,7 +83,7 @@ trait SourceFilter
             $value = Str::limit(
                 strip_tags($value),
                 intval($limit),
-                '…',
+                $limit > 1 ? '…' : '',
                 !($filters['preserve'] ?? false),
             );
         }
@@ -100,7 +97,7 @@ trait SourceFilter
      * @param mixed $value
      * @param mixed $format
      *
-     * @return false|string
+     * @return string|false
      */
     public function applyDate($value, $format)
     {
@@ -120,9 +117,9 @@ trait SourceFilter
      *
      * @param mixed $value
      * @param mixed $search
-     * @param array $filters
+     * @param array<string, mixed> $filters
      *
-     * @return false|string
+     * @return string|false
      */
     public function applySearch($value, $search, array $filters)
     {
@@ -136,15 +133,29 @@ trait SourceFilter
     }
 
     /**
+     * Apply "transform" filter.
+     *
+     * @param mixed $value
+     * @param mixed $transform
+     *
+     * @return string|false
+     */
+    public function applyTransform($value, $transform)
+    {
+        if (is_int($transform)) {
+            return mb_convert_case($value, $transform, 'UTF-8');
+        }
+        return $value;
+    }
+
+    /**
      * Apply "condition" filter.
      *
      * @param mixed $value
      * @param mixed $operator
-     * @param array $filters
-     *
-     * @return bool
+     * @param array<string, mixed> $filters
      */
-    public function applyCondition($value, $operator, array $filters)
+    public function applyCondition($value, $operator, array $filters): bool
     {
         $propertyValue = html_entity_decode($value);
         $conditionValue = $filters['condition_value'] ?? '';

@@ -10,31 +10,17 @@ use YOOtheme\Path;
 class StyleFontLoader
 {
     public const VERSION = '2';
-
     public const PREFIX = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 ';
 
-    /**
-     * @var string
-     */
-    public $cache;
+    public HttpClientInterface $client;
+    public string $cache;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    public $formats;
+    public array $formats;
 
-    /**
-     * @var HttpClientInterface
-     */
-    public $client;
-
-    /**
-     * Constructor.
-     *
-     * @param HttpClientInterface $client
-     * @param string              $cache
-     */
-    public function __construct(HttpClientInterface $client, $cache)
+    public function __construct(HttpClientInterface $client, string $cache)
     {
         File::makeDir($cache, 0777, true);
 
@@ -47,13 +33,8 @@ class StyleFontLoader
 
     /**
      * Creates CSS markup.
-     *
-     * @param string $url
-     * @param string $basePath
-     *
-     * @return string|void
      */
-    public function css($url, $basePath)
+    public function css(string $url, string $basePath): ?string
     {
         $date = date(DATE_W3C);
         $hash = hash('crc32b', join(',', [$url, $basePath, static::VERSION]));
@@ -70,11 +51,10 @@ class StyleFontLoader
 
         // load font url
         $fonts = $this->load($url);
-        $relative = fn($path) => Path::relative($basePath, $path);
 
         // relative font path
         foreach ($fonts as &$font) {
-            $font['src'] = array_map($relative, $font['src']);
+            $font['src'] = array_map(fn($path) => Path::relative($basePath, $path), $font['src']);
         }
 
         // generate fonts css
@@ -85,16 +65,16 @@ class StyleFontLoader
         if ($fonts && @file_put_contents($file, $info . $data)) {
             return $data;
         }
+
+        return null;
     }
 
     /**
      * Creates a single @font-face CSS markup.
      *
-     * @param array $font
-     *
-     * @return string
+     * @param array<string, string|list<string>> $font
      */
-    public function cssFontFace(array $font)
+    public function cssFontFace(array $font): string
     {
         $output = '@font-face {';
 
@@ -118,11 +98,9 @@ class StyleFontLoader
     /**
      * Loads fonts from url.
      *
-     * @param string $url
-     *
-     * @return array[]
+     * @return list<array<string, string|list<string>>>
      */
-    public function load($url)
+    public function load(string $url): array
     {
         $fonts = [];
 
@@ -155,13 +133,9 @@ class StyleFontLoader
     /**
      * Load font file from url.
      *
-     * @param string $url
-     * @param string $name
-     * @param array  $options
-     *
-     * @return string|void
+     * @param array<string, string> $options
      */
-    public function loadFont($url, $name, array $options = [])
+    public function loadFont(string $url, string $name, array $options = []): ?string
     {
         $hash = hash('crc32b', $url);
         $type = pathinfo($url, PATHINFO_EXTENSION);
@@ -179,16 +153,16 @@ class StyleFontLoader
         if (@file_put_contents($file, $data->getBody())) {
             return $file;
         }
+
+        return null;
     }
 
     /**
      * Parses font @import from source.
      *
-     * @param string $source
-     *
-     * @return array
+     * @return list<string>
      */
-    public function parse($source)
+    public function parse(string $source): array
     {
         return preg_match(
             '/@import\s+url\((https?:\/\/fonts\.googleapis\.com[^)]+)\)\s*;?/i',
@@ -202,16 +176,14 @@ class StyleFontLoader
     /**
      * Parses fonts url from source.
      *
-     * @param string $source
-     *
-     * @return array
+     * @return array<string, array<string, string>>
      */
-    public function parseFonts($source)
+    public function parseFonts(string $source): array
     {
         $fonts = [];
 
         foreach ($this->parseFontFaces($source) as $fontface) {
-            $font = $src = [];
+            $font = [];
 
             foreach ($this->parseFontProperties($fontface) as $name => $value) {
                 if ($name == 'src') {
@@ -221,9 +193,9 @@ class StyleFontLoader
                 }
             }
 
-            if ($src) {
+            if (!empty($src)) {
                 $hash = hash('crc32b', json_encode($font));
-                $fonts[$hash] = array_merge($font, compact('src'));
+                $fonts[$hash] = array_merge($font, ['src' => $src]);
             }
         }
 
@@ -233,11 +205,9 @@ class StyleFontLoader
     /**
      * Parses font url from source.
      *
-     * @param string $source
-     *
-     * @return array
+     * @return array<string, string>
      */
-    public function parseFontSrc($source)
+    public function parseFontSrc(string $source): array
     {
         return preg_match('/url\((https?:\/\/.+?)\)\s*format\(\'?(\w+)/', $source, $matches)
             ? [$matches[2] => $matches[1]]
@@ -247,11 +217,9 @@ class StyleFontLoader
     /**
      * Parses @font-face from source.
      *
-     * @param string $source
-     *
-     * @return array
+     * @return list<string>
      */
-    public function parseFontFaces($source)
+    public function parseFontFaces(string $source): array
     {
         return preg_match_all('/@font-face\s*{\s*([^}]+)/', $source, $matches) ? $matches[1] : [];
     }
@@ -261,9 +229,9 @@ class StyleFontLoader
      *
      * @param string $source
      *
-     * @return array
+     * @return array<string, string>
      */
-    public function parseFontProperties($source)
+    public function parseFontProperties(string $source): array
     {
         return preg_match_all('/([\w-]+)\s*:\s*([^;]+)/', $source, $matches)
             ? array_combine($matches[1], $matches[2])
@@ -273,11 +241,9 @@ class StyleFontLoader
     /**
      * Split url into separate urls, one per font family.
      *
-     * @param string $url
-     *
-     * @return array
+     * @return list<string>
      */
-    protected function parseFontFamilies($url)
+    protected function parseFontFamilies(string $url): array
     {
         $uri = new Uri($url);
         $query = $uri->getQueryParams();

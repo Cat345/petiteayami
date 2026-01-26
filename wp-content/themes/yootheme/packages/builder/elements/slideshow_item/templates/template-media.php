@@ -1,6 +1,5 @@
 <?php
 
-
 if ($props['video']) {
     $src = $props['video'];
     $focal = $props['image_focal_point'];
@@ -18,7 +17,7 @@ $media->attr([
 
     'class' => [
         'el-image',
-        'uk-blend-{0} {@!slideshow_animation: push|pull} {@!slideshow_kenburns}' => $props['media_blend_mode'],
+        'uk-blend-{media_blend_mode} {@!slideshow_animation: push|pull} {@!slideshow_kenburns}',
     ],
 
     'uk-cover' => true,
@@ -26,6 +25,4 @@ $media->attr([
 
 ]);
 
-?>
-
-<?= $media($element, '') ?>
+echo $media($element, '');

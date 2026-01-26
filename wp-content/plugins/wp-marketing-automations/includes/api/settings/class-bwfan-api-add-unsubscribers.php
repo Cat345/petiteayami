@@ -36,13 +36,14 @@ class BWFAN_API_Add_Unsubscribers extends BWFAN_API_Base {
 
 		$already_unsubscribe = array();
 		foreach ( $unsubscribers as $email ) {
+			$email            = sanitize_email( $email );
 			$unsubscribe_data = BWFAN_Model_Message_Unsubscribe::get_specific_rows( 'recipient', $email );
 			if ( ! empty( $unsubscribe_data[0] ) ) {
 				$already_unsubscribe[] = $email;
 				continue;
 			}
 			$insert_data = array(
-				'recipient' => sanitize_email( $email ),
+				'recipient' => $email,
 				'c_date'    => current_time( 'mysql' ),
 				'c_type'    => 3,
 			);

@@ -71,8 +71,10 @@ class BWFAN_API_Import_Automation_Recipe extends BWFAN_API_Base {
 	 * @return void
 	 */
 	public function get_selected_recipe( $slug ) {
+		// Sanitize slug to prevent path traversal
+		$slug    = sanitize_key( $slug );
 		$request = wp_remote_get( "https://app.getautonami.com/recipe/$slug" );
-		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) != 200 ) {
+		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) !== 200 ) {
 			return false;
 		}
 		$data = json_decode( wp_remote_retrieve_body( $request ), true );

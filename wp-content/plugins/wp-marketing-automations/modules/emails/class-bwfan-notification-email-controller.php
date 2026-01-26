@@ -70,8 +70,8 @@ class BWFAN_Notification_Email_Controller {
 
 		if ( false === bwfan_is_autonami_pro_active() && ! empty( $notification ) ) {
 			$theme['theme']    = 'dark';
-			$title             = ! empty( $notification['title'] ) ? $notification['title'] : __( 'Black Friday', 'wp-marketing-autoations' );
-			$theme['subtitle'] = '💰 ' . $title . __( ' is HERE - Subscribe Now for Upto 55% Off 💰', 'wp-marketing-automations' );
+			$title             = ! empty( $notification['title'] ) ? $notification['title'] : __( 'Black Friday', 'wp-marketing-automations' );
+			$theme['subtitle'] = sprintf( __( '💰 %s is HERE - Subscribe Now for Upto 55%% Off 💰', 'wp-marketing-automations' ), $title );
 			if ( ! empty( $notification['campaign'] ) ) {
 				$theme['button_url'] = add_query_arg( [
 					'utm_campaign' => 'FKA+Lite+Notification+' . $notification['campaign'],

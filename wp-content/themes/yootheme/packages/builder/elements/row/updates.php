@@ -3,16 +3,24 @@
 namespace YOOtheme;
 
 return [
-    // Remove obsolete props
+    '5.0.0-beta.0.15' => function ($node) {
+        Arr::updateKeys($node->props, [
+            'height_offset_top' => 'height_viewport_offset',
+        ]);
+    },
+
+    '5.0.0-beta.0.1' => function ($node) {
+        if (($node->props['width'] ?? '') && ($node->props['css'] ?? '')) {
+            $node->props['css'] = str_replace('.el-row', '.el-row > *', $node->props['css']);
+        }
+    },
     '4.5.0-beta.0.4' => function ($node) {
-        unset(
-            $node->props['match'],
-            $node->props['vertical_align']
-        );
+        // Remove obsolete props
+        unset($node->props['match'], $node->props['vertical_align']);
     },
 
     '4.3.0-beta.0.5' => function ($node, $params) {
-        if ($height = Arr::get($node->props, 'height')) {
+        if ($height = $node->props['height'] ?? '') {
             $node->props['height'] = 'viewport';
 
             if (
@@ -31,7 +39,7 @@ return [
     },
 
     '4.3.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'match')) {
+        if ($node->props['match'] ?? '') {
             $panels = [];
             $columns = [];
             foreach ($node->children as $column) {
@@ -67,7 +75,7 @@ return [
         [$style] = explode(':', $config('~theme.style'));
 
         if ($style == 'fjord') {
-            if (Arr::get($node->props, 'width') === 'default') {
+            if (($node->props['width'] ?? '') === 'default') {
                 $node->props['width'] = 'large';
             }
         }
@@ -142,8 +150,7 @@ return [
                     }
 
                     if (is_array($node->children[$index]->props)) {
-                        $node->children[$index]->props =
-                            (object) $node->children[$index]->props;
+                        $node->children[$index]->props = (object) $node->children[$index]->props;
                     }
 
                     $node->children[$index]->props->$prop =
@@ -152,22 +159,17 @@ return [
             }
         }
 
-        $count = count($node->children);
-        if (!empty($node->props['order_last']) && $count > 1) {
-            if (is_array($node->children[$count - 1]->props)) {
-                $node->children[$count - 1]->props =
-                    (object) $node->children[$count - 1]->props;
+        if (!empty($node->props['order_last']) && count($node->children) > 1) {
+            $lastChild = array_last($node->children);
+
+            if (is_array($lastChild->props)) {
+                $lastChild->props = (object) $lastChild->props;
             }
 
-            $node->children[$count - 1]->props->order_first =
-                $node->props['breakpoint'] ?: 'xs';
+            $lastChild->props->order_first = $node->props['breakpoint'] ?: 'xs';
         }
 
-        unset(
-            $node->props['breakpoint'],
-            $node->props['fixed_width'],
-            $node->props['order_last'],
-        );
+        unset($node->props['breakpoint'], $node->props['fixed_width'], $node->props['order_last']);
     },
 
     '2.0.0-beta.5.1' => function ($node) {
@@ -177,7 +179,7 @@ return [
         [$style] = explode(':', $config('~theme.style'));
 
         if (!in_array($style, ['jack-baker', 'morgan-consulting', 'vibe'])) {
-            if (Arr::get($node->props, 'width') === 'large') {
+            if (($node->props['width'] ?? '') === 'large') {
                 $node->props['width'] = 'xlarge';
             }
         }
@@ -197,7 +199,7 @@ return [
                 'yard',
             ])
         ) {
-            if (Arr::get($node->props, 'width') === 'default') {
+            if (($node->props['width'] ?? '') === 'default') {
                 $node->props['width'] = 'large';
             }
         }

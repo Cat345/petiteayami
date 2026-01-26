@@ -1,0 +1,11 @@
+<svg width="130" height="90" viewBox="0 0 130 90" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" stroke="#444" stroke-width="2" d="M1,1h128v88H1V1Z" />
+    <rect class="uk-preserve" width="72" height="38" fill="#fff" x="29" y="26" />
+    <rect width="73" height="39" fill="none" stroke="#444" x="28.5" y="25.5" />
+    <rect width="31" height="2" fill="#444" x="40" y="44" />
+    <rect width="26" height="2" fill="#444" x="40" y="51" />
+    <rect width="26" height="2" fill="#444" x="40" y="37" />
+    <polyline fill="none" stroke="#444" stroke-width="1.5" points="85 36.61 87.8 39.4 90.59 36.61" />
+    <polyline fill="none" stroke="#444" stroke-width="1.5" points="85 43.67 87.8 46.46 90.59 43.67" />
+    <polyline fill="none" stroke="#444" stroke-width="1.5" points="85 50.63 87.8 53.43 90.59 50.63" />
+</svg>

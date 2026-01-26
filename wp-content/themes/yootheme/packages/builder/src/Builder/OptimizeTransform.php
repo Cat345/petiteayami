@@ -7,10 +7,9 @@ class OptimizeTransform
     /**
      * Transform callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      */
-    public function __invoke($node, array $params)
+    public function __invoke(object $node, array $params): void
     {
         // remove empty name
         if (isset($node->name) && $node->name == '') {

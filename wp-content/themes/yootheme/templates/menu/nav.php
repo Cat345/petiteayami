@@ -67,16 +67,22 @@ foreach ($items as $item) {
         if ($item->divider && !$children) {
             $title = '';
             $attrs['class'][] = 'uk-nav-divider';
-        } elseif ($config('~menu.accordion') && $children) {
+        } elseif ($children && $level === 1 && $config('~menu.accordion')) {
             $title = "<a href>{$title}</a>";
-            if ($level === 1) {
-                $attrs['class'][] = 'js-accordion';
-                if ($hasActiveChild($item)) {
-                    $attrs['class'][] = 'uk-open';
-                }
+            $attrs['class'][] = 'js-accordion';
+            if ($hasActiveChild($item)) {
+                $attrs['class'][] = 'uk-open';
             }
+
         } else {
             $attrs['class'][] = 'uk-nav-header';
+
+            echo "{$indention}<li{$this->attrs($attrs)}>{$title}</li>";
+
+            if ($children) {
+                echo $this->self(['items' => $item->children, 'level' => $level]);
+            }
+            continue;
         }
 
     // Link
@@ -102,6 +108,10 @@ foreach ($items as $item) {
 
         if (!empty($item->anchor_css)) {
             $link['class'][] = $item->anchor_css;
+        }
+
+        if ($config('~menu.text_align') == 'right') {
+            $link['class'][] = 'uk-flex-right';
         }
 
         $title = "<a{$this->attrs($link)}>{$title}</a>";

@@ -33,7 +33,7 @@ class BWFAN_API_Get_Automation_Recipe extends BWFAN_API_Base {
 
 		$this->response_code = 200;
 
-		return $this->success_response( $recipe_data, ! empty( $automation_data['message'] ) ? $automation_data['message'] : __( 'Recipes found', 'wp-marketing-automations' ) );
+		return $this->success_response( $recipe_data, ! empty( $recipe_data['message'] ) ? $recipe_data['message'] : __( 'Recipes found', 'wp-marketing-automations' ) );
 	}
 
 	/**
@@ -42,9 +42,11 @@ class BWFAN_API_Get_Automation_Recipe extends BWFAN_API_Base {
 	 * @return void
 	 */
 	public function get_selected_recipe( $slug ) {
+		// Sanitize slug to prevent path traversal
+		$slug    = sanitize_key( $slug );
 		$request = wp_remote_get( "https://app.getautonami.com/recipe/$slug" );
 
-		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) != 200 ) {
+		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) !== 200 ) {
 			return false;
 		}
 		$data = wp_remote_retrieve_body( $request );

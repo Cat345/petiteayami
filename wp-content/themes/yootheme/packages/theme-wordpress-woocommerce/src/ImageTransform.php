@@ -7,7 +7,7 @@ use YOOtheme\View\HtmlElement;
 
 class ImageTransform
 {
-    public static function handle(HtmlElement $element)
+    public static function handle(HtmlElement $element): void
     {
         global $product;
 
@@ -20,7 +20,7 @@ class ImageTransform
         }
     }
 
-    protected static function getProductImage()
+    protected static function getProductImage(): string
     {
         static $url;
 

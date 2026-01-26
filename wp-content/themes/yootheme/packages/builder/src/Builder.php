@@ -4,44 +4,47 @@ namespace YOOtheme;
 
 use YOOtheme\Builder\ElementType;
 
+/**
+ * @phpstan-type Node object{type: string, props: array<string, mixed>, children: list<self>}
+ */
 class Builder
 {
     /**
      * @var callable
      */
-    public $renderer;
+    protected $renderer;
 
     /**
      * @var callable
      */
-    public $loader;
+    protected $loader;
 
     /**
-     * @var array
+     * @var array<string, object>
      */
-    public $params;
+    protected array $params;
 
     /**
-     * @var array
+     * @var array<string, string|array{name: string}|ElementType>
      */
-    public $types = [];
+    protected array $types = [];
 
     /**
-     * @var array
+     * @var array<string, list<callable>>
      */
-    public $resolved = [];
+    protected array $resolved = [];
 
     /**
-     * @var array
+     * @var array<string, list<callable>>
      */
-    public $transforms = [];
+    protected array $transforms = [];
 
     /**
      * Constructor.
      *
      * @param callable $loader
      * @param callable $renderer
-     * @param array    $params
+     * @param array<string, object> $params
      */
     public function __construct(callable $loader, callable $renderer, array $params = [])
     {
@@ -63,11 +66,11 @@ class Builder
     /**
      * Returns an instance with given parameters.
      *
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return static
      */
-    public function withParams(array $params = [])
+    public function withParams(array $params = []): self
     {
         $clone = clone $this;
         $clone->params = array_merge($clone->params, $params);
@@ -78,42 +81,41 @@ class Builder
     /**
      * Loads nodes from data.
      *
-     * @param string $data
-     * @param array  $params
-     *
-     * @return object|void
+     * @param array<string, mixed> $params
      */
-    public function load($data, array $params = [])
+    public function load(string $data, array $params = []): ?object
     {
         $params += $this->params + ['context' => null];
 
-        if (is_object($node = json_decode($data))) {
-            // Workaround for layouts with {type: ""}
-            if (empty($node->type)) {
-                $node->type = 'layout';
-            }
+        $node = json_decode($data);
 
-            // Apply (pre)load transforms
-            $node = $this->applyTransforms('load', $node, $params);
-
-            // Apply (pre)context transforms
-            if ($params['context']) {
-                $node = $this->applyTransforms($params['context'], $node, $params);
-            }
-
-            return $node;
+        if (!is_object($node)) {
+            return null;
         }
+
+        // Workaround for layouts with {type: ""}
+        if (empty($node->type)) {
+            $node->type = 'layout';
+        }
+
+        // Apply (pre)load transforms
+        $node = $this->applyTransforms('load', $node, $params);
+
+        // Apply (pre)context transforms
+        if ($params['context']) {
+            $node = $this->applyTransforms($params['context'], $node, $params);
+        }
+
+        return $node;
     }
 
     /**
      * Renders a node.
      *
-     * @param mixed $node
-     * @param array $params
-     *
-     * @return string|void
+     * @param string|array<string, mixed>|object $node
+     * @param array<string, mixed> $params
      */
-    public function render($node, array $params = [])
+    public function render($node, array $params = []): ?string
     {
         $params += $this->params + ['context' => 'render'];
 
@@ -131,24 +133,26 @@ class Builder
             return $result;
         }
 
-        if (isset($node, $this->types[$node->type]->templates[$params['context']])) {
-            $templ = $this->types[$node->type]->templates[$params['context']];
+        if (
+            ($type = $this->getType($node->type ?? '')) &&
+            ($template = $type->templates[$params['context']] ?? '')
+        ) {
             $params = array_merge($params, (array) $node, compact('node'));
 
-            return call_user_func($this->renderer, $templ, $params);
+            return ($this->renderer)($template, $params);
         }
+
+        return null;
     }
 
     /**
      * Finds a parent node in path.
      *
-     * @param array  $path
-     * @param string $type
-     * @param string $prop
+     * @param list<Node> $path
      *
-     * @return mixed|null|void
+     * @return mixed
      */
-    public function parent(array $path, $type, $prop = null)
+    public function parent(array $path, string $type, ?string $prop = null)
     {
         foreach ($path as $node) {
             if ($node->type !== $type) {
@@ -161,21 +165,55 @@ class Builder
 
             return $node;
         }
+
+        return null;
+    }
+
+    /**
+     * Gets a node type.
+     */
+    public function getType(string $name): ?ElementType
+    {
+        $type = $this->types[$name] ?? null;
+
+        if (is_string($type)) {
+            $type = ($this->loader)($type);
+        }
+
+        if (is_array($type)) {
+            $type = $this->types[$name] = new ElementType($type);
+        }
+
+        return $type;
+    }
+
+    /**
+     * Gets all node types.
+     *
+     * @return array<string, ElementType>
+     */
+    public function getTypes(): array
+    {
+        return array_combine(
+            $keys = array_keys($this->types),
+            array_map([$this, 'getType'], $keys),
+        );
     }
 
     /**
      * Adds a node type.
      *
-     * @param array $type
+     * @param string|array{name: string}|mixed $name
+     * @param ?(string|array{name: string})    $type
      *
      * @return $this
      */
-    public function addType(array $type)
+    public function addType($name, $type = null): self
     {
-        $type = Event::emit('builder.type|filter', $type);
-
-        if (isset($type['name'])) {
-            $this->types[$type['name']] = new ElementType($type);
+        if (is_string($name) && isset($type)) {
+            $this->types[$name] = $type;
+        } elseif (isset($name['name'])) {
+            $this->types[$name['name']] = $name;
         }
 
         return $this;
@@ -185,14 +223,13 @@ class Builder
      * Adds node types from path.
      *
      * @param string|string[] $paths
-     * @param string          $basePath
      *
      * @return $this
      */
-    public function addTypePath($paths, $basePath = null)
+    public function addTypePath($paths, ?string $basePath = null): self
     {
         foreach ((array) $paths as $path) {
-            $files = glob(Path::resolve($basePath, $path));
+            $files = glob(Path::resolve($basePath ?? '', $path));
             $types = array_map($this->loader, $files ?: []);
 
             foreach ($types as $type) {
@@ -206,17 +243,11 @@ class Builder
     /**
      * Adds a node transform.
      *
-     * @param string   $context
-     * @param callable $transform
-     * @param int|null $offset
-     *
      * @return $this
      */
-    public function addTransform($context, callable $transform, $offset = null)
+    public function addTransform(string $context, callable $transform, ?int $offset = null): self
     {
-        if (!isset($this->transforms[$context])) {
-            $this->transforms[$context] = [];
-        }
+        $this->transforms[$context] ??= [];
 
         Arr::splice($this->transforms[$context], $offset, 0, [$transform]);
 
@@ -228,59 +259,48 @@ class Builder
     /**
      * Applies node transforms.
      *
-     * @param string $context
-     * @param object $node
-     * @param array  $params
-     *
-     * @return object|void
+     * @param array<string, mixed> $params
      */
-    protected function applyTransforms($context, $node, array $params)
+    protected function applyTransforms(string $context, object $node, array $params): ?object
     {
         $node->props = (array) ($node->props ?? []);
+        $params['type'] = $this->getType($node->type ?? '');
 
-        if (isset($node->type, $this->types[$node->type])) {
-            $params['type'] = $this->types[$node->type];
+        if (!$params['type']) {
+            return $node;
+        }
 
-            if (empty($params['path'])) {
-                $params['path'] = [];
+        $params['path'] ??= [];
+        $params['parent'] ??= null;
+
+        foreach ($this->resolveTransforms($params['type'], "pre{$context}") as $transform) {
+            if ($transform($node, $params) === false) {
+                return null;
             }
+        }
 
-            if (empty($params['parent'])) {
-                $params['parent'] = null;
-            }
+        if (!empty($node->children)) {
+            $childParams = $params;
 
-            foreach ($this->resolveTransforms($params['type'], "pre{$context}") as $transform) {
-                if ($transform($node, $params) === false) {
-                    return;
+            array_unshift($childParams['path'], $childParams['parent'] = $node);
+
+            // use for-loop to allow adding nodes in transform
+            for ($i = 0; $i < count($node->children); $i++) {
+                if (
+                    !$this->applyTransforms(
+                        $context,
+                        $node->children[$i],
+                        ['i' => $i] + $childParams,
+                    )
+                ) {
+                    array_splice($node->children, $i--, 1);
                 }
             }
+        }
 
-            if (!empty($node->children)) {
-                $children = [];
-                $childParams = $params;
-
-                array_unshift($childParams['path'], $childParams['parent'] = $node);
-
-                // use for-loop to allow adding nodes in transform
-                for ($i = 0; $i < count($node->children); $i++) {
-                    if (
-                        $child = $this->applyTransforms(
-                            $context,
-                            $node->children[$i],
-                            ['i' => $i] + $childParams,
-                        )
-                    ) {
-                        $children[] = $child;
-                    }
-                }
-
-                $node->children = $children;
-            }
-
-            foreach ($this->resolveTransforms($params['type'], $context) as $transform) {
-                if ($transform($node, $params) === false) {
-                    return;
-                }
+        foreach ($this->resolveTransforms($params['type'], $context) as $transform) {
+            if ($transform($node, $params) === false) {
+                return null;
             }
         }
 
@@ -290,12 +310,9 @@ class Builder
     /**
      * Resolves transforms for a type and context.
      *
-     * @param object $type
-     * @param string $context
-     *
-     * @return array
+     * @return callable[]
      */
-    protected function resolveTransforms($type, $context)
+    protected function resolveTransforms(ElementType $type, string $context): array
     {
         $key = "{$type->name}:{$context}";
 

@@ -8,18 +8,18 @@
     }
 </style>
 
-<div>
+<div class="js-navbar-1">
     <div uk-sticky="show-on-up: true; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #dropdown">
         <nav class="uk-navbar-container">
             <div class="uk-container">
-                <div uk-navbar>
+                <div uk-navbar="container: body">
                     <div class="uk-navbar-left">
 
                         <a class="uk-navbar-item uk-logo" href="#">Dropdown</a>
 
                         <ul class="uk-navbar-nav">
                             <li class="uk-active">
-                                <a href="">Active <span uk-navbar-parent-icon></span></a>
+                                <a href>Active <span uk-navbar-parent-icon></span></a>
                                 <div class="uk-navbar-dropdown">
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
                                         <li class="uk-active"><a href="#">Active</a></li>
@@ -31,10 +31,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -47,10 +47,10 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -58,18 +58,18 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </li>
                             <li>
-                                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: home"></span> Stretch <span uk-navbar-parent-icon></span></a>
-                                <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                                <a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: home"></span> Stretch <span uk-navbar-parent-icon></span></a>
+                                <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="container: body; boundary: .js-navbar-1 .uk-navbar; stretch: x; flip: false">
                                     <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                         <div>
                                             <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -82,10 +82,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -99,10 +99,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -123,10 +123,10 @@
                     </div>
                     <div class="uk-navbar-right">
 
-                        <a class="uk-navbar-toggle uk-navbar-toggle-animate" href="#">
-                            <span class="uk-margin-small-right">Menu</span> <span uk-navbar-toggle-icon></span>
+                        <a class="uk-navbar-toggle" href="#">
+                            <span class="uk-margin-xsmall-right">Menu</span> <span uk-navbar-toggle-icon></span>
                         </a>
-                        <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                        <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="container: body; boundary: .js-navbar-1 .uk-navbar; stretch: x; flip: false">
                             <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                 <div>
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -139,10 +139,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>
@@ -156,10 +156,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -205,10 +205,10 @@
                             </ul>
                         </li>
                         <li class="uk-nav-header">Header</li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                         <li class="uk-nav-divider"></li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                     </ul>
 
                 </div>
@@ -255,10 +255,10 @@
                                 </ul>
                             </li>
                             <li class="uk-nav-header">Header</li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                             <li class="uk-nav-divider"></li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                         </ul>
 
                     </div>
@@ -270,18 +270,18 @@
     </div>
 </div>
 
-<div>
+<div class="js-navbar-2">
     <div uk-sticky="show-on-up: true; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #dropbar">
         <nav class="uk-navbar-container">
             <div class="uk-container">
-                <div uk-navbar="target-y: !.uk-navbar-container; dropbar: true; dropbar-anchor: !.uk-navbar-container">
+                <div uk-navbar="container: body; target-y: .js-navbar-2 .uk-navbar-container; dropbar: true; dropbar-anchor: .js-navbar-2 .uk-navbar-container">
                     <div class="uk-navbar-left">
 
                         <a class="uk-navbar-item uk-logo" href="#">Dropbar</a>
 
                         <ul class="uk-navbar-nav">
                             <li class="uk-active">
-                                <a href="">Active</a>
+                                <a href>Active</a>
                                 <div class="uk-navbar-dropdown">
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
                                         <li class="uk-active"><a href="#">Active</a></li>
@@ -293,10 +293,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -309,10 +309,10 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -320,18 +320,18 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </li>
                             <li>
-                                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: home"></span> Stretch</a>
-                                <div class="uk-navbar-dropdown uk-navbar-dropdown-dropbar-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                                <a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: home"></span> Stretch</a>
+                                <div class="uk-navbar-dropdown uk-navbar-dropdown-dropbar-large" uk-drop="container: body; boundary: .js-navbar-2 .uk-navbar; stretch: x; flip: false">
                                     <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                         <div>
                                             <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -344,10 +344,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -361,10 +361,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -385,10 +385,10 @@
                     </div>
                     <div class="uk-navbar-right">
 
-                        <a class="uk-navbar-toggle uk-navbar-toggle-animate" href="#">
-                            <span class="uk-margin-small-right">Menu</span> <span uk-navbar-toggle-icon></span>
+                        <a class="uk-navbar-toggle" href="#">
+                            <span class="uk-margin-xsmall-right">Menu</span> <span uk-navbar-toggle-icon></span>
                         </a>
-                        <div class="uk-navbar-dropdown uk-navbar-dropdown-dropbar-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                        <div class="uk-navbar-dropdown uk-navbar-dropdown-dropbar-large" uk-drop="container: body; boundary: .js-navbar-2 .uk-navbar; stretch: x; flip: false">
                             <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                 <div>
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -401,10 +401,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>
@@ -418,10 +418,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -467,10 +467,10 @@
                             </ul>
                         </li>
                         <li class="uk-nav-header">Header</li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                         <li class="uk-nav-divider"></li>
-                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                     </ul>
 
                 </div>
@@ -517,10 +517,10 @@
                                 </ul>
                             </li>
                             <li class="uk-nav-header">Header</li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                             <li class="uk-nav-divider"></li>
-                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                            <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                         </ul>
 
                     </div>
@@ -532,18 +532,18 @@
     </div>
 </div>
 
-<div>
+<div class="js-navbar-3">
     <div uk-sticky="show-on-up: true; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #dropdown">
         <nav class="uk-navbar-container uk-navbar-primary">
             <div class="uk-container">
-                <div uk-navbar>
+                <div uk-navbar="container: body">
                     <div class="uk-navbar-left">
 
                         <a class="uk-navbar-item uk-logo" href="#">Primary</a>
 
                         <ul class="uk-navbar-nav">
                             <li class="uk-active">
-                                <a href="">Active</a>
+                                <a href>Active</a>
                                 <div class="uk-navbar-dropdown">
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
                                         <li class="uk-active"><a href="#">Active</a></li>
@@ -555,10 +555,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -571,10 +571,10 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -582,18 +582,18 @@
                                                 <li class="uk-active"><a href="#">Active</a></li>
                                                 <li class="uk-parent"><a href="#">Parent</a></li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </li>
                             <li>
-                                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: home"></span> Stretch</a>
-                                <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                                <a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: home"></span> Stretch</a>
+                                <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="container: body; boundary: .js-navbar-3 .uk-navbar; stretch: x; flip: false">
                                     <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                         <div>
                                             <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -606,10 +606,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -623,10 +623,10 @@
                                                     </ul>
                                                 </li>
                                                 <li class="uk-nav-header">Header</li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                                 <li class="uk-nav-divider"></li>
-                                                <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                                <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                             </ul>
                                         </div>
                                         <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -647,10 +647,10 @@
                     </div>
                     <div class="uk-navbar-right">
 
-                        <a class="uk-navbar-toggle uk-navbar-toggle-animate" href="#">
-                            <span class="uk-margin-small-right">Menu</span> <span uk-navbar-toggle-icon></span>
+                        <a class="uk-navbar-toggle" href="#">
+                            <span class="uk-margin-xsmall-right">Menu</span> <span uk-navbar-toggle-icon></span>
                         </a>
-                        <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="cls-drop: uk-navbar-dropdown; boundary: !.uk-navbar; stretch: x; flip: false">
+                        <div class="uk-navbar-dropdown uk-navbar-dropdown-large" uk-drop="container: body; boundary: .js-navbar-3 .uk-navbar; stretch: x; flip: false">
                             <div class="uk-drop-grid uk-child-width-1-3@m" uk-grid>
                                 <div>
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -663,10 +663,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>
@@ -680,10 +680,10 @@
                                             </ul>
                                         </li>
                                         <li class="uk-nav-header">Header</li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: table"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: thumbnails"></span> Item</a></li>
                                         <li class="uk-nav-divider"></li>
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                                        <li><a href="#"><span class="uk-margin-xsmall-right" uk-icon="icon: trash"></span> Item</a></li>
                                     </ul>
                                 </div>
                                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
@@ -699,24 +699,24 @@
 
 <div class="uk-section uk-section-default">
     <div class="uk-container">
-    
+
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
-    
+
         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-    
+
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
-    
+
         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-    
+
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
-    
+
         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-    
+
         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-    
+
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</p>
-    
+
         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-    
+
     </div>
 </div>

@@ -1,4 +1,4 @@
-<li class="xoo-aff-fs-display xoo-aff-fsd-{{data.type_data.type}} {{{ ( data.type_data.can_delete !== 'yes'  ) ? 'xoo-aff-locked-field' : '' }}} {{{ ( data.type_data.is_sortable !== 'yes'  ) ? 'xoo-aff-no-sort' : '' }}}" id="{{data.field_id}}" data-type="{{data.type_data.type}}">
+<li class="xoo-aff-fs-display xoo-aff-fsd-{{data.type_data.type}} {{{ ( data.type_data.can_delete !== 'yes'  ) ? 'xoo-aff-locked-field' : '' }}} {{{ ( data.type_data.is_sortable !== 'yes'  ) ? 'xoo-aff-no-sort' : '' }}}" id="{{data.field_id}}" data-type="{{data.type_data.type}}" data-group="{{data.group}}" data-active="{{data.settings.active}}">
 	<div class="xoo-aff-label xoo-aff-label-{{data.type_data.type}}">
 		<span class="xoo-aff-type-icon {{data.type_data.icon}}"></span>
 		<div class="xoo-aff-fs-title">

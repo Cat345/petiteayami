@@ -10,11 +10,6 @@ use function YOOtheme\trans;
 class SystemCheck extends BaseSystemCheck
 {
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor.
      */
     public function __construct(Config $config)
@@ -25,7 +20,7 @@ class SystemCheck extends BaseSystemCheck
     /**
      * @inheritdoc
      */
-    public function getRecommendations()
+    public function getRecommendations(): array
     {
         $res = [];
 
@@ -38,8 +33,8 @@ class SystemCheck extends BaseSystemCheck
         return array_merge($res, parent::getRecommendations());
     }
 
-    protected function hasApiKey()
+    protected function hasApiKey(): bool
     {
-        return $this->config->get('~theme.yootheme_apikey');
+        return (bool) $this->config->get('~theme.yootheme_apikey');
     }
 }

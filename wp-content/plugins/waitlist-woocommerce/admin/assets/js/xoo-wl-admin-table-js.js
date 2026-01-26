@@ -1,24 +1,5 @@
 jQuery(document).ready(function($){
 
-	var productsTable = $('#xoo-wl-products-table').DataTable({
-		"order": [],
-		"columnDefs": [ {
-			"targets"  : 'no-sort',
-	      	"orderable": false,
-	    }]
-	});
-
-
-	var usersTable = $('#xoo-wl-users-table').DataTable({
-		"order": [
-			[0, 'desc']
-		],
-		"columnDefs": [ {
-			"targets"  : 'no-sort',
-	      	"orderable": false,
-	    }]
-	});
-
 	var historyTable = $('#xoo-wl-history-table').DataTable({
 		"order": [
 			[0, 'desc']
@@ -31,24 +12,13 @@ jQuery(document).ready(function($){
 
 
 	$('body').on('click', '.xoo-wl-remove-row', function(e){
+
 		e.preventDefault();
 
-		var remove 		= $(this).parents('table').attr('id') === "xoo-wl-users-table" ? 'user' : 'product',
-			$tr 		= $(this).parents('tr'),
+		var $tr 		= $(this).closest('tr'),
 			trNotice 	= new TableRowNotice( $tr ),
-			dataTable 	= remove === 'user' ? usersTable : productsTable,
-			rowID 		= null,
+			rowID 		= $(this).attr('data-row_id'),
 			productID 	= null;
-
-		if( remove === 'product' ){
-			var confirmUser = confirm( "Are you sure? This is irreversible" );
-			if( !confirmUser ) return;
-			productID 	= $tr.attr('data-product_id');
-		}
-		else{
-			rowID = $tr.attr('data-row_id');
-			productID 	= $tr.parents('table').attr('data-product_id');
-		}
 
 
 		trNotice.addNotice( xoo_wl_admin_table_localize.strings.deleting );
@@ -60,7 +30,6 @@ jQuery(document).ready(function($){
 				'action': 'xoo_wl_table_remove_row',
 				'rowID': rowID,
 				'productID': productID,
-				'remove': remove,
 				'xoo_wl_nonce': xoo_wl_admin_table_localize.nonce
 			},
 			success: function(response){
@@ -93,7 +62,7 @@ jQuery(document).ready(function($){
 
 		this.$tr 		= $tr;
 		this.$trClone 	= $tr.html();
-		this.colspan 	= $tr.parents('table').find('th').length;
+		this.colspan 	= $tr.closest('table').find('tr').first().children('th, td').length;
 
 		this.addNotice = function( notice ){
 			this.$tr.html( '<td class="xoo-wl-tr-notice" colspan="'+this.colspan+'">'+ notice +'</td>' );
@@ -117,18 +86,15 @@ jQuery(document).ready(function($){
 			'xoo_wl_nonce': xoo_wl_admin_table_localize.nonce
 		};
 
-		var $tr 		= $(this).parents('tr'),
-			trNotice 	= new TableRowNotice( $tr ),
-			dataTable 	= '';
+		var $tr 		= $(this).closest('tr'),
+			trNotice 	= new TableRowNotice( $tr )
 
-		if( $tr.attr('data-row_id') ){
-			formData['rowID'] 	= $tr.attr('data-row_id');
-			dataTable 			= usersTable;
+		if( $(this).attr('data-row_id') ){
+			formData['rowID'] 	= $(this).attr('data-row_id');
 		}
 
-		if( $tr.attr('data-product_id') ){
-			formData['productID'] 	= $tr.attr('data-product_id');
-			dataTable 				= productsTable;
+		if( $(this).attr('data-product_id') ){
+			formData['productID'] 	= $(this).attr('data-product_id');
 		}
 
 		trNotice.addNotice(xoo_wl_admin_table_localize.strings.sending);
@@ -145,13 +111,12 @@ jQuery(document).ready(function($){
 
 				setTimeout( function(){
 					if( response.delete_row ){
-						console.log($tr);
-						dataTable.row( $tr ).remove().draw();
+						$tr.remove();
 					}
 					else{
 						$tr.html( trNotice.$trClone );
 						if( response.sent_count && $tr.find( '.xoo-wl-sent-count' ) ){
-							$tr.find('.xoo-wl-sent-count').html( '( '+ response.sent_count +' )' );
+							$tr.find('.xoo-wl-sent-count').html( '('+ response.sent_count +')' );
 						}
 					}
 				}, response.notice ? 10000 : 0 )
@@ -192,5 +157,20 @@ jQuery(document).ready(function($){
 		$('.xoo-wl-imp-form').show();
 		$(this).closest('.xoo-wl-exim-cont').addClass('xoo-wl-active');
 	})
+
+
+
+	$('#doaction, #doaction2').on('click', function(e){
+
+		var action = $(this).closest('form').find('select[name^=\"action\"]').val();
+
+		if ( action === 'delete' ) {
+
+			if ( ! confirm('Are you sure you want to delete the selected waitlist entries? This cannot be undone.') ) {
+				e.preventDefault();
+				return false;
+			}
+		}
+	});
 
 })

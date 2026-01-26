@@ -23,7 +23,7 @@ class LoadThemeHead
      *
      * @link https://developer.wordpress.org/reference/hooks/get_header/
      */
-    public function handle()
+    public function handle(): void
     {
         $this->config->add('~theme', [
             'site_url' => trailingslashit(home_url()), // eventually update site_url with language parameter (Polylang)

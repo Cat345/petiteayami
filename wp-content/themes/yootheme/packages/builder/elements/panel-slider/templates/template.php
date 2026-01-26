@@ -13,11 +13,18 @@ if ($props['slider_parallax']) {
 if (!$props['slider_width']) {
     $props['height_expand'] = '';
     $props['panel_match'] = true;
-    $props['panel_expand'] = 'image';
+    $props['image_expand'] = true;
 }
 if ($props['height_expand']) {
     $props['panel_match'] = true;
 }
+if (!$props['panel_match'] && !in_array($props['image_align'], ['left', 'right'])) {
+    $props['image_expand'] = '';
+}
+
+// New logic shortcuts
+$props['content_expand'] = $props['title_margin_auto'] ?: $props['meta_margin_auto'] ?: $props['content_margin_auto'];
+$props['panel_expand'] = $props['image_expand'] || $props['content_expand'];
 
 $el = $this->el('div', [
 

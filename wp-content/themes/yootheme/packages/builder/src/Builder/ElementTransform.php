@@ -7,10 +7,7 @@ use YOOtheme\View;
 
 class ElementTransform
 {
-    /**
-     * @var View
-     */
-    protected $view;
+    protected View $view;
 
     public function __construct(View $view)
     {
@@ -20,14 +17,13 @@ class ElementTransform
     /**
      * Transform callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      */
-    public function __invoke($node, array $params)
+    public function __invoke(object $node, array $params): void
     {
         $type = $params['type'];
 
-        if (empty($params['parent']) || !($type->element || $type->container)) {
+        if (empty($params['parent'])) {
             return;
         }
 
@@ -36,13 +32,18 @@ class ElementTransform
             'class' => !empty($node->props['class']) ? [$node->props['class']] : [],
         ];
 
+        $this->customAttributes($node);
+
+        if (!($type->element || $type->container)) {
+            return;
+        }
+
         $this->parallax($node);
         $this->position($node, $params);
         $this->blend($node, $params);
-        $this->margin($node);
+        $this->margin($node, $params);
         $this->maxWidth($node);
         $this->textAlign($node);
-        $this->customAttributes($node);
         $this->customCSS($node, $params);
 
         if ($type->element) {
@@ -52,10 +53,9 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      */
-    public function animation($node, array $params)
+    public function animation(object $node, array $params): void
     {
         /** @var Builder $builder */
         $builder = $params['builder'];
@@ -96,10 +96,7 @@ class ElementTransform
         }
     }
 
-    /**
-     * @param object $node
-     */
-    public function parallax($node)
+    public function parallax(object $node): void
     {
         if (empty($node->props['animation']) || $node->props['animation'] !== 'parallax') {
             return;
@@ -114,10 +111,9 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed>  $params
      */
-    public function position($node, array $params)
+    public function position(object $node, array $params): void
     {
         if (empty($node->props['position'])) {
             return;
@@ -145,15 +141,15 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
+     * @param array<string, mixed> $params
      */
-    public function blend($node, array $params)
+    public function blend(object $node, array $params): void
     {
         if (empty($node->props['blend'])) {
             return;
         }
 
-        if ($params['parent']->props['position_sticky']) {
+        if (!empty($params['parent']->props['position_sticky'])) {
             $node->attrs['class'][] = 'uk-blend-overlay';
         } else {
             $node->attrs['class'][] = 'uk-blend-difference';
@@ -161,29 +157,43 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
+     * @param array<string, mixed> $params
      */
-    public function margin($node)
+    public function margin(object $node, array $params): void
     {
         if (($node->props['position'] ?? '') === 'absolute') {
             return;
         }
 
-        if ($node->type !== 'row') {
-            $node->attrs['class'][] = 'uk-margin {@margin: default}';
-            $node->attrs['class'][] = 'uk-margin-{!margin: |default}';
+        // Same
+        if (($node->props['margin_top'] ?? '') === ($node->props['margin_bottom'] ?? '')) {
+            $node->attrs['class'][] = 'uk-margin {@margin_top: default}';
 
-            if (empty($node->props['margin']) || $node->props['margin'] !== 'remove-vertical') {
-                $node->attrs['class'][] = 'uk-margin-remove-top {@margin_remove_top}';
-                $node->attrs['class'][] = 'uk-margin-remove-bottom {@margin_remove_bottom}';
+            if (($node->props['margin_top'] ?? '') == 'auto' && $params['i'] === 0) {
+                $node->attrs['class'][] = 'uk-margin-auto-bottom';
+            } else {
+                $node->attrs['class'][] =
+                    'uk-margin-{!margin_top: |default}[-vertical {@margin_top: remove|auto}]';
+            }
+
+            // Different
+        } else {
+            if (($node->props['margin_top'] ?? '') && $params['i'] !== 0) {
+                $node->attrs['class'][] = 'uk-margin-top {@margin_top: default}';
+                $node->attrs['class'][] = 'uk-margin-{!margin_top: |default}-top';
+            }
+
+            if (
+                ($node->props['margin_bottom'] ?? '') &&
+                $node !== end($params['parent']->children)
+            ) {
+                $node->attrs['class'][] = 'uk-margin-bottom {@margin_bottom: default}';
+                $node->attrs['class'][] = 'uk-margin-{!margin_bottom: |default}-bottom';
             }
         }
     }
 
-    /**
-     * @param object $node
-     */
-    public function maxWidth($node)
+    public function maxWidth(object $node): void
     {
         if (empty($node->props['maxwidth'])) {
             return;
@@ -216,25 +226,47 @@ class ElementTransform
         }
     }
 
-    /**
-     * @param object $node
-     */
-    public function textAlign($node)
+    public function textAlign(object $node): void
     {
         if (empty($node->props['text_align'])) {
             return;
         }
 
-        $node->attrs['class'][] =
-            $node->props['text_align'] === 'justify'
-                ? 'uk-text-{text_align}'
-                : 'uk-text-{text_align}[@{text_align_breakpoint} [uk-text-{text_align_fallback}]]';
+        if (
+            !empty($node->props['height_expand']) &&
+            in_array($node->type, ['image', 'video']) &&
+            empty($node->props['maxwidth'])
+        ) {
+            // Left
+            $node->attrs['class'][] =
+                'uk-margin-auto-right{@!text_align}{@text_align_fallback}[@{text_align_breakpoint}]';
+            $node->attrs['class'][] =
+                'uk-margin-remove-left{@!text_align}{@text_align_fallback}@{text_align_breakpoint}';
+
+            // Right
+            $node->attrs['class'][] =
+                'uk-margin-auto-left{@text_align: right}[@{text_align_breakpoint}]';
+            $node->attrs['class'][] =
+                'uk-margin-remove-right{@text_align: right}{@text_align_fallback: center}@{text_align_breakpoint}';
+
+            // Center
+            $node->attrs['class'][] =
+                'uk-margin-auto{@text_align: center}[@{text_align_breakpoint}]';
+
+            // Fallback
+            $node->attrs['class'][] =
+                'uk-margin-auto-left{@text_align_fallback: right} {@text_align_breakpoint}';
+            $node->attrs['class'][] =
+                'uk-margin-auto{@text_align_fallback: center} {@text_align_breakpoint}';
+        } else {
+            $node->attrs['class'][] =
+                $node->props['text_align'] === 'justify'
+                    ? 'uk-text-{text_align}'
+                    : 'uk-text-{text_align}[@{text_align_breakpoint} [uk-text-{text_align_fallback}]]';
+        }
     }
 
-    /**
-     * @param object $node
-     */
-    public function customAttributes($node)
+    public function customAttributes(object $node): void
     {
         if (empty($node->props['attributes'])) {
             return;
@@ -254,17 +286,16 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed>  $params
      */
-    public function customCSS($node, array $params)
+    public function customCSS(object $node, array $params): void
     {
         if (empty($node->props['css'])) {
             return;
         }
 
         if (empty($node->attrs['id'])) {
-            $node->attrs['id'] = $this->getUniqueId($params['prefix']);
+            $node->attrs['id'] = $this->getUniqueId($params['prefix'] ?? '');
         }
 
         $css = static::prefixCSS($node->props['css'], '#' . addcslashes($node->attrs['id'], '#'));
@@ -276,10 +307,9 @@ class ElementTransform
     }
 
     /**
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed>  $params
      */
-    public function containerPadding($node, array $params)
+    public function containerPadding(object $node, array $params): void
     {
         if (
             empty($node->props['container_padding_remove']) ||
@@ -306,11 +336,12 @@ class ElementTransform
             fn($column) => empty($column->props['order_first'] ?? null),
         );
 
-        $index = array_search($parent, $row->children);
-        $first = $parent === $orderFirstColumn || (!$orderFirstColumn && $index === 0);
+        $first =
+            $parent === $orderFirstColumn ||
+            (!$orderFirstColumn && array_first($row->children) === $parent);
         $last =
             $parent === $orderLastColumn ||
-            (!$orderLastColumn && $index + 1 === count($row->children));
+            (!$orderLastColumn && array_last($row->children) === $parent);
 
         foreach (['row', 'section'] as $type) {
             if (
@@ -336,15 +367,11 @@ class ElementTransform
 
     /**
      * Prefix CSS classes.
-     *
-     * @param string $css
-     * @param string $prefix
-     *
-     * @return string
      */
-    protected static function prefixCSS($css, $prefix = '')
+    protected static function prefixCSS(string $css, string $prefix = ''): string
     {
-        $pattern = '/([@#:.\w[\]][\\\\@#:,>~="\'+\-^$.()\w\s[\]*]*)({(?:[^{}]+|(?R))*})/';
+        // The atomic group `(?\>...)` is used to match nested CSS rules
+        $pattern = '/([@#:.\w[\]][\\\\@#:,<>~="\'+\-^$.()\w\s[\]*]*)({(?>[^{}]+|(?R))*})/';
 
         if (preg_match_all($pattern, $css, $matches, PREG_SET_ORDER)) {
             $keys = [];
@@ -356,14 +383,28 @@ class ElementTransform
                     continue;
                 }
 
-                if ($selector[0] != '@') {
-                    $selector = preg_replace('/(^|,)\s*/', "$0{$prefix} ", $selector);
-                    $selector = preg_replace(
-                        '/\s\.el-(element|section|row|column)/',
-                        '',
-                        $selector,
+                $selectors = preg_split('/,(?![^(]*\))/', $selector);
+                foreach ($selectors as &$sel) {
+                    $sel = preg_replace(
+                        '/(\([^)]*?)\.el-(?:element|section|row|column)(?=[^)]*?\))/',
+                        "$1{$prefix}",
+                        $sel,
+                        -1,
+                        $count,
                     );
+
+                    if (!$count) {
+                        $sel = ltrim(
+                            preg_replace('/\.el-(element|section|row|column)/', $prefix, $sel),
+                        );
+                        if (!str_contains($sel, $prefix)) {
+                            $sel = "{$prefix} {$sel}";
+                        }
+                    }
+
+                    $sel = trim($sel);
                 }
+                $selector = implode(',', $selectors);
 
                 $css = str_replace($match, $selector . static::prefixCSS($content, $prefix), $css);
                 $keys[] = $key;
@@ -373,13 +414,11 @@ class ElementTransform
         return $css;
     }
 
-    protected function getUniqueId($prefix)
+    protected function getUniqueId(string $prefix): string
     {
         static $prefixes = [];
 
-        if (!isset($prefixes[$prefix])) {
-            $prefixes[$prefix] = 0;
-        }
+        $prefixes[$prefix] ??= 0;
 
         return "{$prefix}#" . $prefixes[$prefix]++;
     }

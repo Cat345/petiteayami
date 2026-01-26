@@ -2,13 +2,20 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Listener;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper as SourceHelper;
 use YOOtheme\Builder\Wordpress\Toolset\Helper;
 use YOOtheme\Builder\Wordpress\Toolset\Type;
 use YOOtheme\Str;
 
+/**
+ * @phpstan-import-type Field from Helper
+ */
 class LoadSourceTypes
 {
+    /**
+     * @param Source $source
+     */
     public static function handle($source): void
     {
         if (!Helper::isActive()) {
@@ -46,7 +53,10 @@ class LoadSourceTypes
         }
     }
 
-    protected static function configFields($source, string $name, array $fields): void
+    /**
+     * @param array<Field> $fields
+     */
+    protected static function configFields(Source $source, string $name, array $fields): void
     {
         $type = Str::camelCase([$name, 'Toolset'], true);
 
@@ -65,8 +75,11 @@ class LoadSourceTypes
         $source->objectType($type, Type\FieldsType::config($source, $fields));
     }
 
+    /**
+     * @param array<string, mixed>  $relationships
+     */
     protected static function configRelationshipFields(
-        $source,
+        Source $source,
         string $name,
         array $relationships
     ): void {

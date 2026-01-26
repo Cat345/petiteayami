@@ -156,13 +156,13 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = $wpdb->prepare( "SELECT `ID` FROM {$table_name} WHERE `status` = %d AND `v` = %d AND `benchmark` LIKE %s", 1, 2, "%$event_slug%" );
+		$query = $wpdb->prepare( "SELECT `ID`,`benchmark` FROM {$table_name} WHERE `status` = %d AND `v` = %d AND `benchmark` LIKE %s", 1, 2, "%$event_slug%" );
 
 		$core_cache_obj = WooFunnels_Cache::get_instance();
 
 		$result = $core_cache_obj->get_cache( md5( $query ), 'fka-automation' );
 		if ( false === $result ) {
-			$result = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$core_cache_obj->set_cache( md5( $query ), $result, 'fka-automation' );
 		}
 
@@ -334,9 +334,10 @@ class BWFAN_Model_Automations_V2 extends BWFAN_Model {
 			$ids = [ $ids ];
 		}
 
-		$ids = implode( ',', array_map( 'absint', $ids ) );
+		$ids         = array_map( 'absint', $ids );
+		$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
-		return $wpdb->query( "DELETE FROM $table_name WHERE `ID` IN( $ids )" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->query( $wpdb->prepare( "DELETE FROM $table_name WHERE `ID` IN( $placeholder )", $ids ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**

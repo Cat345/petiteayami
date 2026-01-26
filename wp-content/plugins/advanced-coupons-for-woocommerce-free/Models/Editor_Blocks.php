@@ -272,7 +272,11 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
 
         $defaults   = $this->_get_single_coupon_atts( true );
         $attributes = $this->_sanitize_parse_atts( $attributes, $defaults );
-        extract( $attributes ); // phpcs:ignore
+
+        // Replace extract() with explicit variable assignment for security.
+        $coupon_id         = isset( $attributes['coupon_id'] ) ? $attributes['coupon_id'] : 0;
+        $contentVisibility = isset( $attributes['contentVisibility'] ) ? $attributes['contentVisibility'] : array();
+        $className         = isset( $attributes['className'] ) ? $attributes['className'] : '';
 
         $is_premium = $this->_helper_functions->is_plugin_active( Plugin_Constants::PREMIUM_PLUGIN );
         $coupon     = $is_premium ? new \ACFWP\Models\Objects\Advanced_Coupon( absint( $coupon_id ) ) : new Advanced_Coupon( absint( $coupon_id ) );
@@ -316,7 +320,9 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
      * @param array $attributes  Block attributes.
      */
     public function load_coupons_list_template( $coupons, $block_class, $attributes ) {
-        extract( $attributes ); // phpcs:ignore
+        // Replace extract() with explicit variable assignment for security.
+        $columns           = isset( $attributes['columns'] ) ? $attributes['columns'] : 1;
+        $contentVisibility = isset( $attributes['contentVisibility'] ) ? $attributes['contentVisibility'] : array();
 
         $classnames     = array( 'acfw-coupons-list-block' );
         $classnames[]   = $block_class;
@@ -327,8 +333,9 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         );
 
         // add custom class value from "Advanced" panel.
-        if ( isset( $className ) ) {
-            $classnames[] = $className;
+        // Check if className key exists in attributes to match original extract() behavior.
+        if ( isset( $attributes['className'] ) && ! empty( $attributes['className'] ) ) {
+            $classnames[] = $attributes['className'];
         }
 
         $this->_helper_functions->load_template(

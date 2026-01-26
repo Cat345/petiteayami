@@ -5,17 +5,27 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 }
 
 // Default search form
-add_filter( 'get_search_form', function ( $form, $args ) {
-	return do_shortcode( '[wcas-search-form layout="classic"]' );
-}, 10, 2 );
+add_filter(
+	'get_search_form',
+	function ( $form, $args ) {
+		return do_shortcode( '[wcas-search-form layout="classic"]' );
+	},
+	10,
+	2
+);
 
 // WooCommerce search form
-add_filter( 'get_product_search_form', function ( $form ) {
-	return do_shortcode( '[wcas-search-form layout="classic"]' );
-} );
+add_filter(
+	'get_product_search_form',
+	function ( $form ) {
+		return do_shortcode( '[wcas-search-form layout="classic"]' );
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 			$(window).on('load', function () {
@@ -40,5 +50,7 @@ add_action( 'wp_footer', function () {
 			margin-top: -32px !important;
 		}
 	</style>
-	<?php
-}, 100 );
+		<?php
+	},
+	100
+);

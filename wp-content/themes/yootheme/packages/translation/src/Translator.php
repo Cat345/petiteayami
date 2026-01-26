@@ -6,55 +6,44 @@ interface Translator
 {
     /**
      * Returns the current locale.
-     *
-     * @return string
      */
-    public function getLocale();
+    public function getLocale(): string;
 
     /**
      * Sets the current locale.
-     *
-     * @param string $locale
      */
-    public function setLocale($locale);
+    public function setLocale(string $locale): void;
 
     /**
      * Gets all Resources.
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
     public function getResources();
 
     /**
      * Adds a Resource.
      *
-     * @param mixed  $resource
-     * @param string $locale
-     *
-     * @return $this
+     * @param string|array<string, string>  $resource
      */
-    public function addResource($resource, $locale = null);
+    public function addResource($resource, ?string $locale = null): self;
 
     /**
      * Translates the given message.
      *
-     * @param string $id
-     * @param array  $parameters
-     * @param string $locale
-     *
-     * @return string
+     * @param array<string, string>  $parameters
      */
-    public function trans($id, array $parameters = [], $locale = null);
+    public function trans(string $id, array $parameters = [], ?string $locale = null): string;
 
     /**
      * Translates the given choice message by choosing a translation according to a number.
      *
-     * @param string      $id         The message id (may also be an object that can be cast to string)
-     * @param int         $number     The number to use to find the indice of the message
-     * @param array       $parameters An array of parameters for the message
-     * @param string|null $locale     The locale or null to use the default
-     *
-     * @return string The translated string
+     * @param array<string, string> $parameters An array of parameters for the message
      */
-    public function transChoice($id, $number, array $parameters = [], $locale = null);
+    public function transChoice(
+        string $id,
+        int $number,
+        array $parameters = [],
+        ?string $locale = null
+    ): string;
 }

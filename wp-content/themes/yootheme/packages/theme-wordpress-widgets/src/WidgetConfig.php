@@ -6,9 +6,9 @@ use YOOtheme\Config;
 use YOOtheme\ConfigObject;
 
 /**
- * @property array $types
- * @property array $widgets
- * @property array $positions
+ * @property array<string, object> $types
+ * @property list<array<string, mixed>> $widgets
+ * @property list<string> $positions
  * @property bool  $canCreate
  */
 class WidgetConfig extends ConfigObject
@@ -29,7 +29,10 @@ class WidgetConfig extends ConfigObject
         ]);
     }
 
-    protected function getTypes()
+    /**
+     * @return array<string, object>
+     */
+    protected function getTypes(): array
     {
         global $wp_widget_factory;
 
@@ -42,7 +45,10 @@ class WidgetConfig extends ConfigObject
         return $widgets;
     }
 
-    protected function getWidgets()
+    /**
+     * @return list<array<string, mixed>>
+     */
+    protected function getWidgets(): array
     {
         $widgets = [];
 
@@ -69,12 +75,18 @@ class WidgetConfig extends ConfigObject
         return $widgets;
     }
 
-    protected function getPositions()
+    /**
+     * @return list<string>
+     */
+    protected function getPositions(): array
     {
         return array_keys($this->config->get('theme.positions', []));
     }
 
-    protected function getInstance($id)
+    /**
+     * @return ?array<string, mixed>
+     */
+    protected function getInstance(string $id): ?array
     {
         $parts = explode('-', $id);
         $index = array_pop($parts);

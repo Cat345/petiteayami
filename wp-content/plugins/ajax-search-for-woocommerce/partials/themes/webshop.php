@@ -16,8 +16,10 @@ if ( ! function_exists( 'webshop_header_search_markup' ) ) {
 	add_action( 'webshop_header_search', 'webshop_header_search_markup' );
 }
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.ws-header-search .dgwt-wcas-search-wrapp {
 			max-width: 100%;
@@ -28,5 +30,6 @@ add_action( 'wp_head', function () {
 			height: 50px;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

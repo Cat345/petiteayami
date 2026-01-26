@@ -242,6 +242,7 @@ class BWFAN_Load_Sources {
 		self::$dynamic_register_events['list'][ $event_slug ] = [
 			'event_name' => $event->get_name(),
 			'lock'       => true,
+			'isLite'     => isset( self::lite_events()[ $event_slug ] ),
 		];
 
 		self::$dynamic_register_events['subgroup'][ $temp_source ][ $optgroup ][] = $event_slug;
@@ -469,6 +470,7 @@ class BWFAN_Load_Sources {
 					$all_events_array[ $event_slug ] = [
 						'event_name' => $event_label,
 						'lock'       => true,
+						'isLite'     => isset( self::lite_events()[ $event_slug ] ),
 					];
 				}
 				unset( $final_event_arr[ $event_slug ] );
@@ -799,6 +801,22 @@ class BWFAN_Load_Sources {
 	 */
 	public function get_events_to_add_contact_manually() {
 		return self::$events_to_add_contact_manually;
+	}
+
+	public static function lite_events() {
+		return [
+			'cf7_form_submit'               => __( 'Form Submits', 'wp-marketing-automations' ),
+			'wc_comment_post'               => __( 'Review Received', 'wp-marketing-automations' ),
+			'wc_new_order'                  => __( 'Order Created', 'wp-marketing-automations' ),
+			'wc_order_note_added'           => __( 'Order Note Added', 'wp-marketing-automations' ),
+			'wc_order_status_change'        => __( 'Order Status Changed', 'wp-marketing-automations' ),
+			'wc_product_purchased'          => __( 'Order Created', 'wp-marketing-automations' ),
+			'wc_product_refunded'           => __( 'Order Item Refunded', 'wp-marketing-automations' ),
+			'wc_product_stock_reduced'      => __( 'Order Item Stock', 'wp-marketing-automations' ),
+			'ab_cart_abandoned'             => __( 'Cart Abandoned', 'wp-marketing-automations' ),
+			'ab_cart_recovered'             => __( 'Cart Recovered', 'wp-marketing-automations' ),
+			'funnel_optin_form_submit'      => __( 'Form Submits', 'wp-marketing-automations' ),
+		];
 	}
 }
 

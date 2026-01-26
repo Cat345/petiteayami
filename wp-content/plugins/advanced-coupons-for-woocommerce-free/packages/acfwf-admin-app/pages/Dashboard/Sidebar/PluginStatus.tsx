@@ -3,6 +3,9 @@
 // Components
 import SidebarIcon from './SidebarIcon';
 
+// Helpers
+import { sanitizeHtml } from '../../../../shared/helpers/sanitize';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -60,7 +63,7 @@ const PluginStatus = (props: IPluginStatus & { itemKey: string }) => {
   return (
     <>
       <SidebarIcon iconKey={status} />
-      <span className="plugin-name" dangerouslySetInnerHTML={{ __html: `${name} (${statusHtml})` }} />
+      <span className="plugin-name" dangerouslySetInnerHTML={{ __html: sanitizeHtml(`${name} (${statusHtml})`) }} />
     </>
   );
 };

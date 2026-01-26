@@ -26,14 +26,14 @@ return [
 
                     [$slug] = array_slice($parts, $index + 1, 1);
 
-                    $fields = Helper::fields($domain, [$slug, strtr($slug, '_', '-')], false);
-
-                    $field = array_pop($fields);
-                    if (Arr::get($field, 'type') === 'image') {
+                    $field = array_last(
+                        Helper::fields($domain, [$slug, strtr($slug, '_', '-')], false),
+                    );
+                    if (($field['type'] ?? '') === 'image') {
                         $prop->name .= '.url';
                     }
 
-                    if (Arr::get($field, 'type') === 'google_address') {
+                    if (($field['type'] ?? '') === 'google_address') {
                         $prop->name .= '.coordinates';
                     }
                 }
@@ -46,10 +46,10 @@ return [
                 if ($index === count($parts) - 2 && ($domain = Helper::getDomainFromNode($node))) {
                     [$slug] = array_slice($parts, $index + 1, 1);
 
-                    $fields = Helper::fields($domain, [$slug, strtr($slug, '_', '-')], false);
-
-                    $field = array_pop($fields);
-                    if (Arr::get($field, 'type') === 'image') {
+                    $field = array_last(
+                        Helper::fields($domain, [$slug, strtr($slug, '_', '-')], false),
+                    );
+                    if (($field['type'] ?? '') === 'image') {
                         foreach ($node->source->props ?? [] as $prop) {
                             if ($prop->name === 'value') {
                                 $prop->name = 'url';

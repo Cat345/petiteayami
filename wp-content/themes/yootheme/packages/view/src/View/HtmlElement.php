@@ -6,15 +6,12 @@ use YOOtheme\Arr;
 
 class HtmlElement implements HtmlElementInterface
 {
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    public $attrs;
+    public array $attrs;
 
     /**
      * @var mixed
@@ -22,20 +19,18 @@ class HtmlElement implements HtmlElementInterface
     public $contents;
 
     /**
-     * @var callable|null
+     * @var ?callable
      */
     protected $transform;
 
     /**
      * Constructor.
      *
-     * @param string $name
-     * @param array $attrs
-     * @param mixed $contents
-     * @param callable|null $transform
+     * @param array<string, mixed> $attrs
+     * @param string|string[]|false $contents
      */
     public function __construct(
-        $name,
+        string $name,
         array $attrs = [],
         $contents = '',
         ?callable $transform = null
@@ -49,9 +44,9 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Renders element shortcut.
      *
-     * @see render()
+     * @see self::render()
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->render();
     }
@@ -59,32 +54,34 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Render element shortcut.
      *
-     * @param array      $params
-     * @param null|mixed $attrs
-     * @param null|mixed $contents
-     * @param null|mixed $name
+     * @param array<string, mixed> $params
+     * @param string|array<string, mixed>|null $attrs
+     * @param string|string[]|false|null $contents
      *
-     * @return string
-     *
-     * @see render()
+     * @see self::render()
      */
-    public function __invoke(array $params = [], $attrs = null, $contents = null, $name = null)
-    {
+    public function __invoke(
+        array $params = [],
+        $attrs = null,
+        $contents = null,
+        ?string $name = null
+    ): string {
         return $this->render($params, $attrs, $contents, $name);
     }
 
     /**
      * Renders the element tag.
      *
-     * @param array  $params
-     * @param array  $attrs
-     * @param string $contents
-     * @param string $name
-     *
-     * @return string
+     * @param array<string, mixed> $params
+     * @param string|array<string, mixed>|null $attrs
+     * @param string|string[]|false|null $contents
      */
-    public function render(array $params = [], $attrs = null, $contents = null, $name = null)
-    {
+    public function render(
+        array $params = [],
+        $attrs = null,
+        $contents = null,
+        ?string $name = null
+    ): string {
         $element = isset($attrs) ? $this->copy($attrs, $contents, $name) : $this;
 
         if (($transform = $this->transform) && ($result = $transform($element, $params))) {
@@ -96,10 +93,8 @@ class HtmlElement implements HtmlElementInterface
 
     /**
      * Renders element closing tag.
-     *
-     * @return string
      */
-    public function end()
+    public function end(): string
     {
         return self::isSelfClosing($this->name) ? '' : "</{$this->name}>";
     }
@@ -107,12 +102,12 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Adds an attribute.
      *
-     * @param string|array $name
-     * @param mixed|null   $value
+     * @param string|array<string, mixed> $name
+     * @param mixed $value
      *
      * @return $this
      */
-    public function attr($name, $value = null)
+    public function attr($name, $value = null): self
     {
         $attrs = is_array($name) ? $name : [$name => $value];
 
@@ -124,13 +119,12 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Copy instance.
      *
-     * @param array|string $attrs
-     * @param string       $contents
-     * @param string       $name
+     * @param string|array<string, mixed>|null $attrs
+     * @param string|string[]|false|null $contents
      *
      * @return static
      */
-    public function copy($attrs = null, $contents = null, $name = null)
+    public function copy($attrs = null, $contents = null, ?string $name = null)
     {
         $clone = clone $this;
 
@@ -154,8 +148,12 @@ class HtmlElement implements HtmlElementInterface
     /**
      * @inheritdoc
      */
-    public static function tag($name, $attrs = null, $contents = null, array $params = [])
-    {
+    public static function tag(
+        string $name,
+        ?array $attrs = null,
+        $contents = null,
+        array $params = []
+    ): string {
         $tag = $contents === false || self::isSelfClosing($name);
 
         if (is_array($attrs)) {
@@ -172,12 +170,10 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Renders tag attributes.
      *
-     * @param array $attrs
-     * @param array $params
-     *
-     * @return string
+     * @param array<string, mixed> $attrs
+     * @param array<string, mixed> $params
      */
-    public static function attrs(array $attrs, array $params = [])
+    public static function attrs(array $attrs, array $params = []): string
     {
         $output = [];
 
@@ -209,12 +205,12 @@ class HtmlElement implements HtmlElementInterface
     /**
      * @inheritdoc
      */
-    public static function expr($expressions, array $params = [])
+    public static function expr($expressions, array $params = []): ?string
     {
         $output = [];
 
         if (func_num_args() > 2) {
-            $params = call_user_func_array('array_replace', array_slice(func_get_args(), 1));
+            $params = array_replace(...array_slice(func_get_args(), 1));
         }
 
         foreach ((array) $expressions as $expression => $condition) {
@@ -241,12 +237,8 @@ class HtmlElement implements HtmlElementInterface
 
     /**
      * Checks if tag name is self-closing.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public static function isSelfClosing($name)
+    public static function isSelfClosing(string $name): bool
     {
         static $tags;
 
@@ -277,11 +269,9 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Parse expression string.
      *
-     * @param string $expression
-     *
-     * @return array
+     * @return array{string,list<list<string>>,list<string>}
      */
-    protected static function parseExpression($expression)
+    protected static function parseExpression(string $expression): array
     {
         static $expressions;
 
@@ -293,7 +283,7 @@ class HtmlElement implements HtmlElementInterface
 
         // match all optionals
         $output = preg_replace_callback(
-            '/\[((?:[^\[\]]+|(?R))*)\]/',
+            '/\[((?>[^\[\]]+|(?R))*)]/',
             function ($matches) use (&$optionals) {
                 return '%' . array_push($optionals, $matches[1]) . '$s';
             },
@@ -302,7 +292,7 @@ class HtmlElement implements HtmlElementInterface
 
         // match all parameters
         preg_match_all(
-            '/\{\s*(@?)(!?)(\w+)\s*(?::\s*([^{}]*(?:\{(?-1)\}[^{}]*)*))?\}/',
+            '/\{\s*(@?)(!?)(\w+)\s*(?::\s*([^{}]*(?:\{(?-1)\}[^{}]*)*))?}/',
             $output,
             $parameters,
             PREG_SET_ORDER,
@@ -314,12 +304,9 @@ class HtmlElement implements HtmlElementInterface
     /**
      * Evaluate expression string.
      *
-     * @param string $expression
-     * @param array  $params
-     *
-     * @return string
+     * @param array<string, mixed> $params
      */
-    protected static function evaluateExpression($expression, array $params = [])
+    protected static function evaluateExpression(string $expression, array $params = []): string
     {
         if (!str_contains($expression, '{')) {
             return trim($expression);
@@ -350,7 +337,7 @@ class HtmlElement implements HtmlElementInterface
                 $args[] = self::evaluateExpression($match, $params);
             }
 
-            $output = call_user_func_array('sprintf', $args);
+            $output = sprintf(...$args);
         }
 
         return trim($output);

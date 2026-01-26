@@ -2,16 +2,29 @@
 
 namespace YOOtheme\Builder\Wordpress\Source;
 
+use Closure;
+use WP_Post;
+use WP_Post_Type;
+use WP_Query;
+use WP_Taxonomy;
+use WP_Term;
+use YOOtheme\Builder\DateHelper;
 use YOOtheme\Event;
 
 class Helper
 {
+    /**
+     * @var array<string, bool>
+     */
     protected static array $arguments = [
         'public' => true,
         'show_ui' => true,
         'show_in_nav_menus' => true,
     ];
 
+    /**
+     * @param WP_Taxonomy|WP_Post_Type $type
+     */
     public static function getBase($type): string
     {
         if (!$type->rest_base || $type->rest_base === $type->name) {
@@ -21,17 +34,30 @@ class Helper
         return strtr($type->rest_base, '-', '_');
     }
 
+    /**
+     * @param array<string, mixed> $arguments
+     *
+     * @return array<string, WP_Post_Type>
+     */
     public static function getPostTypes(array $arguments = []): array
     {
         return get_post_types($arguments + static::$arguments, 'objects');
     }
 
-    public static function getTaxonomies(array $arguments = [])
+    /**
+     * @param array<string, mixed> $arguments
+     *
+     * @return array<string, WP_Taxonomy>
+     */
+    public static function getTaxonomies(array $arguments = []): array
     {
         return get_taxonomies($arguments + static::$arguments, 'objects');
     }
 
-    public static function getTaxonomyPostTypes(\WP_Taxonomy $taxonomy): array
+    /**
+     * @return array<string, WP_Post_Type>
+     */
+    public static function getTaxonomyPostTypes(WP_Taxonomy $taxonomy): array
     {
         return array_filter(
             static::getPostTypes(),
@@ -39,7 +65,12 @@ class Helper
         );
     }
 
-    public static function getObjectTaxonomies($object, array $arguments = [])
+    /**
+     * @param array<string, mixed> $arguments
+     *
+     * @return array<string, WP_Taxonomy>
+     */
+    public static function getObjectTaxonomies(string $object, array $arguments = []): array
     {
         $taxonomies = get_object_taxonomies($object, 'objects');
         $taxonomies = wp_filter_object_list($taxonomies, $arguments + static::$arguments);
@@ -47,7 +78,10 @@ class Helper
         return Event::emit('source.object.taxonomies|filter', $taxonomies, $object);
     }
 
-    public static function orderAlphanum(array $query): \Closure
+    /**
+     * @param array<string, string> $query
+     */
+    public static function orderAlphanum(array $query): Closure
     {
         return function ($orderby) use ($query) {
             if (!str_contains((string) $orderby, ',')) {
@@ -63,7 +97,7 @@ class Helper
         };
     }
 
-    public static function filterOnce($tag, $callback)
+    public static function filterOnce(string $tag, callable $callback): void
     {
         add_filter(
             $tag,
@@ -74,11 +108,16 @@ class Helper
         );
     }
 
-    public static function isPageSource($post): bool
+    public static function isPageSource(WP_Post $post): bool
     {
         return get_the_ID() === $post->ID;
     }
 
+    /**
+     * @param array<string, mixed> $args
+     *
+     * @return list<WP_Post>
+     */
     public static function getPosts($args): array
     {
         $args += [
@@ -104,7 +143,7 @@ class Helper
             $query['include'] = $args['include'];
 
             // Reset `posts_per_page` - `get_posts()` overrides the limit if ids are queried directly.
-            static::filterOnce('pre_get_posts', function (\WP_Query $query) use ($args) {
+            static::filterOnce('pre_get_posts', function (WP_Query $query) use ($args) {
                 $query->set('posts_per_page', $args['limit']);
             });
         }
@@ -117,7 +156,7 @@ class Helper
             $taxonomies = [];
 
             foreach ($args['terms'] as $id) {
-                if (($term = get_term($id)) && $term instanceof \WP_Term) {
+                if (($term = get_term($id)) && $term instanceof WP_Term) {
                     $taxonomies[$term->taxonomy][] = $id;
                 }
             }
@@ -161,8 +200,54 @@ class Helper
             static::filterOnce('posts_orderby', static::orderAlphanum($query));
         }
 
+        if (!empty($args['date_column'])) {
+            $timezone = wp_timezone();
+            $args = DateHelper::parseStartEndArguments($args, $timezone);
+
+            $args['date_start'] = DateHelper::toSql($args['date_start'] ?? null, $timezone);
+            $args['date_end'] = DateHelper::toSql($args['date_end'] ?? null, $timezone);
+
+            if ($args['date_start'] || $args['date_end']) {
+                if (str_starts_with($args['date_column'], 'field:')) {
+                    $type = 'DATETIME';
+                    $key = substr($args['date_column'], 6);
+
+                    // Toolset
+                    if (str_starts_with($key, 'wpcf-')) {
+                        $args['date_start'] = DateHelper::toTimestamp($args['date_start']);
+                        $args['date_end'] = DateHelper::toTimestamp($args['date_end']);
+                        $type = 'NUMERIC';
+                    }
+
+                    if (!empty($args['date_start']) && !empty($args['date_end'])) {
+                        $value = [$args['date_start'], $args['date_end']];
+                        $compare = 'BETWEEN';
+                    } elseif (!empty($args['date_start'])) {
+                        $value = $args['date_start'];
+                        $compare = '>=';
+                    } else {
+                        $value = $args['date_end'];
+                        $compare = '<=';
+                    }
+
+                    $query['meta_query'] = [compact('key', 'value', 'compare', 'type')];
+                } else {
+                    $query['date_query'] = [
+                        [
+                            'after' => $args['date_start'],
+                            'before' => $args['date_end'],
+                            'inclusive' => true,
+                            'column' => $args['date_column'],
+                        ],
+                    ];
+                }
+            }
+        }
+
         Event::emit('source.resolve.posts', $query);
 
-        return get_posts($query);
+        $posts = get_posts($query);
+
+        return empty($args['order_reverse']) ? $posts : array_reverse($posts);
     }
 }

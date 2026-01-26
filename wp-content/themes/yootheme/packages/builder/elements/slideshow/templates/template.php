@@ -2,19 +2,22 @@
 
 // Resets
 if ($props['overlay_link']) { $props['title_link'] = ''; }
-if ($props['slideshow_height']) {
+if ($props['height_viewport']) {
     $props['height_expand'] = '';
 }
-if ($props['slideshow_height'] == 'viewport') {
-    if ($props['slideshow_height_viewport'] > 100) {
-        $props['slideshow_height_offset_top'] = false;
-    } elseif (!$props['slideshow_height_viewport']) {
-        $props['slideshow_height_viewport'] = 100;
+if ($props['height_viewport'] == 'viewport') {
+    if ($props['height_viewport_height'] > 100) {
+        $props['height_viewport_offset'] = false;
+    } elseif (!$props['height_viewport_height']) {
+        $props['height_viewport_height'] = 100;
     }
 }
 if ($props['slideshow_parallax']) {
     $props['slidenav'] = '';
 }
+
+// New logic shortcuts
+$props['content_expand'] = $props['title_margin_auto'] ?: $props['meta_margin_auto'] ?: $props['content_margin_auto'];
 
 $el = $this->el('div', [
 
@@ -24,9 +27,9 @@ $el = $this->el('div', [
     ],
 
     'uk-slideshow' => $this->expr([
-        'ratio: {0};' => $props['slideshow_height'] ? 'false' : $props['slideshow_ratio'],
-        'minHeight: {slideshow_min_height}; {@!slideshow_height} {@!height_expand}',
-        'maxHeight: {slideshow_max_height}; {@!slideshow_height} {@!height_expand}',
+        'ratio: {0};' => $props['height_viewport'] ? 'false' : $props['slideshow_ratio'],
+        'minHeight: {slideshow_min_height}; {@!height_viewport} {@!height_expand}',
+        'maxHeight: {slideshow_max_height}; {@!height_viewport} {@!height_expand}',
         'animation: {slideshow_animation};',
         'velocity: {slideshow_velocity}; {@!slideshow_parallax}',
         'autoplay: {slideshow_autoplay}; [pauseOnHover: false; {!slideshow_autoplay_pause}; ] [autoplayInterval: {slideshow_autoplay_interval}000;] {@!slideshow_parallax}',
@@ -54,7 +57,7 @@ $container = $this->el('div', [
 ]);
 
 // Box decoration
-$decoration = $this->el('div', [
+$decoration = $props['slideshow_box_decoration'] ? $this->el('div', [
 
     'class' => [
         'uk-box-shadow-bottom [uk-display-block {@!height_expand}] {@slideshow_box_decoration: shadow}',
@@ -64,26 +67,27 @@ $decoration = $this->el('div', [
         'uk-flex-1 uk-flex uk-flex-column {@height_expand}',
     ],
 
-]);
+]) : null;
 
 // Items
 $items = $this->el($props['link'] ? 'a' : 'div', [
 
     'class' => [
         'uk-slideshow-items',
+        'uk-border-{slideshow_border} {@!slideshow_box_decoration}',
         'uk-box-shadow-{slideshow_box_shadow}',
         'uk-flex-1 {@height_expand}',
     ],
 
     'style' => [
-        'min-height: max({0}px, {slideshow_height_viewport}vh); {@slideshow_height: viewport} {@!slideshow_height_offset_top}' => [$props['slideshow_min_height'] ?: '0'],
+        'min-height: max({0}px, {height_viewport_height}vh); {@height_viewport: viewport} {@!height_viewport_offset}' => [$props['slideshow_min_height'] ?: '0'],
     ],
 
-    'uk-height-viewport' => ($props['slideshow_height'] == 'viewport' && $props['slideshow_height_offset_top']) || $props['slideshow_height'] == 'section' ? [
-        'offset-top: true; {@slideshow_height_offset_top}',
+    'uk-height-viewport' => ($props['height_viewport'] == 'viewport' && $props['height_viewport_offset']) || $props['height_viewport'] == 'section' ? [
+        'offset-top: true; {@height_viewport_offset}',
         'min: {slideshow_min_height};',
-        'offset-bottom: {0}; {@slideshow_height: viewport}' => $props['slideshow_height_viewport'] && $props['slideshow_height_viewport'] < 100 ? 100 - (int) $props['slideshow_height_viewport'] : false,
-        'offset-bottom: !:is(.uk-section-default,.uk-section-muted,.uk-section-primary,.uk-section-secondary) +; {@slideshow_height: section}',
+        'offset-bottom: {0}; {@height_viewport: viewport}' => $props['height_viewport_height'] && $props['height_viewport_height'] < 100 ? 100 - (int) $props['height_viewport_height'] : false,
+        'offset-bottom: !:is(.uk-section-default,.uk-section-muted,.uk-section-primary,.uk-section-secondary) +; {@height_viewport: section}',
     ] : false,
 
 ]);
@@ -108,7 +112,7 @@ if ($props['link']) {
 
     <?= $container($props) ?>
 
-        <?php if ($props['slideshow_box_decoration']) : ?>
+        <?php if ($decoration) : ?>
         <?= $decoration($props) ?>
         <?php endif ?>
 
@@ -123,7 +127,7 @@ if ($props['link']) {
                         ],
 
                         'style' => [
-                            'background-color: {0};' => $child->props['media_background'] ?: false,
+                            'background-color: {0};' => $child->props['media_background'] ?: $props['media_background'],
                         ],
 
                     ]);
@@ -135,7 +139,7 @@ if ($props['link']) {
                 <?php endforeach ?>
             <?= $items->end() ?>
 
-        <?php if ($props['slideshow_box_decoration']) : ?>
+        <?php if ($decoration) : ?>
         <?= $decoration->end() ?>
         <?php endif ?>
 

@@ -11,7 +11,7 @@ use YOOtheme\Url;
 
 class FinderController
 {
-    public static function index(Request $request, Response $response, Config $config)
+    public static function index(Request $request, Response $response, Config $config): Response
     {
         $root = $config('app.uploadDir');
         $path = Path::join($root, $request->getQueryParam('folder'));

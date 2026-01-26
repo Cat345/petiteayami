@@ -7,24 +7,23 @@ use YOOtheme\Arr;
 class Repository
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $values = [];
+    protected array $values = [];
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * Gets a value (shortcut).
      *
-     * @param string $index
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function __invoke($index, $default = null)
+    public function __invoke(string $index, $default = null)
     {
         return $this->get($index, $default);
     }
@@ -32,12 +31,11 @@ class Repository
     /**
      * Gets a value.
      *
-     * @param string $index
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function get($index, $default = null)
+    public function get(string $index, $default = null)
     {
         $index = strtr($index, $this->aliases);
 
@@ -47,12 +45,11 @@ class Repository
     /**
      * Sets a value.
      *
-     * @param string $index
      * @param mixed  $value
      *
      * @return $this
      */
-    public function set($index, $value)
+    public function set(string $index, $value)
     {
         $index = strtr($index, $this->aliases);
 
@@ -64,11 +61,9 @@ class Repository
     /**
      * Deletes a value.
      *
-     * @param string $index
-     *
      * @return $this
      */
-    public function del($index)
+    public function del(string $index)
     {
         $index = strtr($index, $this->aliases);
 
@@ -80,13 +75,11 @@ class Repository
     /**
      * Adds a value array.
      *
-     * @param string $index
-     * @param array  $values
-     * @param bool   $replace
+     * @param array<string, mixed> $values
      *
      * @return $this
      */
-    public function add($index, array $values = [], $replace = true)
+    public function add(string $index, array $values = [], bool $replace = true)
     {
         $value = $index ? $this->get($index) : $this->values;
 
@@ -107,12 +100,9 @@ class Repository
     /**
      * Sets a value using a update callback.
      *
-     * @param string   $index
-     * @param callable $callback
-     *
      * @return $this
      */
-    public function update($index, callable $callback)
+    public function update(string $index, callable $callback)
     {
         $index = strtr($index, $this->aliases);
 
@@ -124,12 +114,9 @@ class Repository
     /**
      * Adds an alias.
      *
-     * @param string $name
-     * @param string $index
-     *
      * @return $this
      */
-    public function addAlias($name, $index)
+    public function addAlias(string $name, string $index)
     {
         $this->aliases[$name] = $index;
 
@@ -139,17 +126,17 @@ class Repository
     /**
      * Gets a value from array or object.
      *
-     * @param mixed            $object
-     * @param string|array|int $index
-     * @param mixed            $default
+     * @param mixed                $object
+     * @param string|array<string> $index
+     * @param mixed                $default
      *
      * @return mixed
      */
-    public static function getValue($object, $index, $default = null)
+    protected static function getValue($object, $index, $default = null)
     {
         $index = is_array($index) ? $index : explode('.', $index);
 
-        while (!is_null($key = array_shift($index))) {
+        foreach ($index as $key) {
             if ((is_array($object) || $object instanceof \ArrayAccess) && isset($object[$key])) {
                 $object = $object[$key];
             } elseif (is_object($object) && isset($object->$key)) {

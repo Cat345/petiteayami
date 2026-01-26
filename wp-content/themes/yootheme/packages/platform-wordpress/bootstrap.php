@@ -30,9 +30,10 @@ return [
                 'adminDir' => Path::resolve(ABSPATH, 'wp-admin'),
                 'pluginDir' => strtr(WP_PLUGIN_DIR, '\\', '/'),
                 'contentDir' => strtr(WP_CONTENT_DIR, '\\', '/'),
-                'uploadDir' => strtr(wp_upload_dir()['basedir'], '\\', '/'),
+                'uploadDir' => strtr(wp_get_upload_dir()['basedir'], '\\', '/'),
                 'isSite' => !is_admin(),
                 'isAdmin' => is_admin(),
+                'sef' => (bool) get_option('permalink_structure'),
             ],
 
             // TODO
@@ -45,6 +46,7 @@ return [
             'locale' => [
                 'rtl' => is_rtl(),
                 'code' => determine_locale(),
+                'timezone' => wp_timezone_string(),
             ],
 
             'session' => [
@@ -59,13 +61,18 @@ return [
     ],
 
     'actions' => [
-        'rest_api_init' => [Router::class => 'register'],
-        'wp_ajax_kernel' => [Platform::class => 'handleRoute'],
-        'wp_ajax_nopriv_kernel' => [Platform::class => 'handleRoute'],
+        'init' => [Router::class => 'rewrite'],
+        'parse_request' => [Router::class => 'parse'],
+        'wp_ajax_yootheme' => [Platform::class => 'handleRoute'],
+        'wp_ajax_nopriv_yootheme' => [Platform::class => 'handleRoute'],
         'wp_footer' => [Platform::class => 'printFooterScripts'],
         'wp_head' => [Platform::class => [['printStyles', 8], ['printScripts', 20]]],
         'admin_print_scripts' => [Platform::class => [['printStyles', 8], ['printScripts', 21]]],
         'admin_print_footer_scripts' => [Platform::class => 'printFooterScripts'],
+    ],
+
+    'filters' => [
+        'query_vars' => [Router::class => 'addQueryVars'],
     ],
 
     'loaders' => [
@@ -74,23 +81,22 @@ return [
     ],
 
     'services' => [
-        CsrfMiddleware::class => function (Config $config) {
-            return new CsrfMiddleware($config('session.token'), 'wp_verify_nonce');
-        },
+        CsrfMiddleware::class => fn(Config $config) => new CsrfMiddleware(
+            $config('session.token'),
+            'wp_verify_nonce',
+        ),
 
-        Request::class => function (Config $config) {
-            return (new HttpFactory())->createServerRequestFromGlobals(
-                $config('req.href'),
-                stripslashes_deep($_GET),
-                stripslashes_deep($_POST),
+        Request::class => fn(Config $config) => (new HttpFactory())->createServerRequestFromGlobals(
+            $config('req.href'),
+            stripslashes_deep($_GET),
+            stripslashes_deep($_POST),
 
-                // Ensure $_FILES has not been unset
-                // https://wordpress.org/plugins/acf-extended/
-                empty($_FILES) ? [] : $_FILES,
-                stripslashes_deep($_COOKIE),
-                stripslashes_deep($_SERVER),
-            );
-        },
+            // Ensure $_FILES has not been unset
+            // https://wordpress.org/plugins/acf-extended/
+            empty($_FILES) ? [] : $_FILES,
+            stripslashes_deep($_COOKIE),
+            stripslashes_deep($_SERVER),
+        ),
 
         Storage::class => Wordpress\Storage::class,
 

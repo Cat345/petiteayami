@@ -5,10 +5,13 @@ namespace YOOtheme\Builder\Wordpress\Acf\Type;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class GoogleMapsFieldType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
     public static function config()
     {
@@ -43,11 +46,19 @@ class GoogleMapsFieldType
             }
         }
 
-        return compact('fields');
+        return [
+            'fields' => $fields,
+            'metadata' => [
+                'type' => true,
+            ],
+        ];
     }
 
-    public static function coordinates($field)
+    /**
+     * @param array{lat?: string, lng?: string} $field
+     */
+    public static function coordinates(array $field): ?string
     {
-        return isset($field['lat'], $field['lng']) ? "{$field['lat']},{$field['lng']}" : '';
+        return isset($field['lat'], $field['lng']) ? "{$field['lat']},{$field['lng']}" : null;
     }
 }

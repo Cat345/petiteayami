@@ -8,10 +8,7 @@ use YOOtheme\GraphQL\Type\Definition\Type;
 
 class BindDirective extends Directive
 {
-    /**
-     * @var Container
-     */
-    protected $container;
+    protected Container $container;
 
     /**
      * Constructor.
@@ -45,9 +42,9 @@ class BindDirective extends Directive
     /**
      * Register service on container.
      *
-     * @param array $params
+     * @param array{id: string, class?: string, args?: string} $params
      */
-    public function __invoke(array $params)
+    public function __invoke(array $params): void
     {
         if (!$this->container->has($params['id'])) {
             $service = $this->container->add($params['id']);

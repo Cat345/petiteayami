@@ -4,6 +4,7 @@ namespace YOOtheme\Wordpress;
 
 use YOOtheme\Application\EventLoader;
 use YOOtheme\Container;
+use YOOtheme\Container\ParameterResolver;
 
 class FilterLoader extends EventLoader
 {
@@ -17,12 +18,14 @@ class FilterLoader extends EventLoader
         string $method,
         ...$params
     ): void {
+        $isStatic = $method[0] !== '@';
+        $listener = $isStatic ? [$class, $method] : $class . $method;
+
         add_filter(
             $event,
-            fn(...$arguments) => $container->call(
-                $method[0] === '@' ? $class . $method : [$class, $method],
-                $arguments,
-            ),
+            fn(...$arguments) => $isStatic && !ParameterResolver::needsResolving($listener)
+                ? $listener(...$arguments)
+                : $container->call($listener, $arguments),
             ...$params,
         );
     }

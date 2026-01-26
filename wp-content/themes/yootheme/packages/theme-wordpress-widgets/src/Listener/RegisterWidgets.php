@@ -16,7 +16,10 @@ class RegisterWidgets
         $this->config = $config;
     }
 
-    public function handle()
+    /**
+     * @link https://developer.wordpress.org/reference/hooks/widgets_init/
+     */
+    public function handle(): void
     {
         register_widget(BuilderWidget::class);
         register_widget(BreadcrumbsWidget::class);

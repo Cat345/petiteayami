@@ -150,7 +150,7 @@ class BWFAN_Action_Controller extends BWFAN_Base_Step_Controller {
 		$this->maybe_populate_event_instance();
 
 		/** Set language for decode */
-		if ( ! $this->event_ins->support_lang ) {
+		if ( ! $this->event_ins instanceof BWFAN_Event || ! $this->event_ins->support_lang ) {
 			return false;
 		}
 

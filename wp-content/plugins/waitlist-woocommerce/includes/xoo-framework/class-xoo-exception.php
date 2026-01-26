@@ -8,7 +8,11 @@ class Xoo_Exception extends Exception{
 
 	public $wpErrorCode = null;
 
-	public function __construct($error, $code = 0, Exception $previous = null){
+	protected string $errorCode;
+
+	public function __construct($error, $errorCode = '', $code = 0, Exception $previous = null){
+
+		$this->errorCode = $errorCode;
 
 		if(is_wp_error( $error )){
 			$message = $error->get_error_message();
@@ -23,6 +27,11 @@ class Xoo_Exception extends Exception{
 
 	public function getWpErrorCode(){
 		return $this->wpErrorCode;	
+	}
+
+
+	public function getErrorCode(){
+		return $this->getWpErrorCode() ? $this->getWpErrorCode() : $this->errorCode;
 	}
 
 

@@ -20,15 +20,22 @@ $image = $this->el('image', [
         'uk-box-shadow-{image_box_shadow}',
         'uk-box-shadow-hover-{image_hover_box_shadow}',
         'uk-text-{image_svg_color} {@image_svg_inline}' => $this->isImage($props['image']) == 'svg',
-        'uk-object-cover [uk-object-{image_focal_point}]' => $props['image_viewport_height'] || $props['height_expand'],
+        'uk-object-{image_focal_point}' => $props['height_viewport'] || $props['height_expand'],
         'uk-inverse-{text_color}',
     ],
 
     'style' => [
-        'height: 100vh; {@image_viewport_height} {@!height_expand}',
+        'height: 100vh; {@!height_viewport_height} {@height_viewport} {@!height_viewport_offset} {@!height_expand}',
+        'height: {height_viewport_height}vh; {@height_viewport} {@!height_viewport_offset} {@!height_expand}',
         // Fix bug in Safari not stretching an image beyond its intrinsic height
         'aspect-ratio: auto; {@height_expand}',
     ],
+
+    'uk-height-viewport' => $props['height_viewport'] && $props['height_viewport_offset'] && !$props['height_expand'] ? [
+        'property: height;',
+        'offset-top: true; {@height_viewport_offset}',
+        'offset-bottom: {0}; {@height_viewport}' => $props['height_viewport_height'] && $props['height_viewport_height'] < 100 ? 100 - (int) $props['height_viewport_height'] : false,
+    ] : false,
 
     'src' => $props['image'],
     'alt' => $props['image_alt'],
@@ -55,7 +62,7 @@ $decoration = $this->el('div', [
 ]);
 
 // Link and Lightbox
-$link = $this->el('a', [
+$link = $props['link'] ? $this->el('a', [
 
     'class' => [
         'el-link',
@@ -70,14 +77,14 @@ $link = $this->el('a', [
 
     'href' => ['{link}'],
     'aria-label' => ['{link_aria_label}'],
-    'target' => ['_blank {@link_target: blank}'],
-    'uk-scroll' => str_contains((string) $props['link'], '#'),
 
-    // Target Modal?
-    'uk-toggle' => $props['link_target'] === 'modal',
-]);
+]) : null;
 
-if ($props['link'] && $props['link_target'] === 'modal') {
+if ($link && $props['lightbox']) {
+
+    $link->attr([
+        'uk-toggle',
+    ]);
 
     $target = $this->el('image', [
         'src' => $props['link'],
@@ -117,6 +124,19 @@ if ($props['link'] && $props['link_target'] === 'modal') {
 
     $connect_id = "js-{$this->uid()}";
     $props['link'] = "#{$connect_id}";
+
+} elseif ($link) {
+
+    $link->attr([
+        'target' => ['_blank {@link_target}'],
+        'download' => $props['link_download'],
+        'rel' => [
+            'nofollow {@link_rel_nofollow}',
+            'noreferrer {@link_rel_noreferrer}'
+        ],
+        'uk-scroll' => str_contains((string) $props['link'], '#'),
+    ]);
+
 }
 
 ?>
@@ -131,7 +151,7 @@ if ($props['link'] && $props['link_target'] === 'modal') {
     <?= $image($props) ?>
     <?php endif ?>
 
-    <?php if ($props['link'] && $props['link_target'] === 'modal') : ?>
+    <?php if ($link && $props['lightbox']) : ?>
     <?php // uk-flex-top is needed to make vertical margin work for IE11 ?>
     <div id="<?= $connect_id ?>" class="uk-flex-top uk-modal" uk-modal>
         <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">

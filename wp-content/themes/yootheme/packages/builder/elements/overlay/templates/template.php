@@ -2,7 +2,7 @@
 
 // Resets
 if ($props['overlay_link']) { $props['title_link'] = ''; }
-if ($props['content_expand']) {
+if ($props['content_expand'] = $props['title_margin_auto'] ?: $props['meta_margin_auto'] ?: $props['content_margin_auto']) {
     if (in_array($props['overlay_position'], ['top', 'bottom'])) {
         $props['overlay_position'] = 'cover';
     }
@@ -43,7 +43,9 @@ $el = $this->el($props['html_element'] ?: 'div', [
         // Needs to be parent of `uk-link-toggle`
         'uk-{text_color}' => !$props['overlay_style'] || $props['overlay_cover'],
         // Only for transparent navbar
-        'uk-inverse-{text_color}' => $props['overlay_style'] && !$props['overlay_cover'],
+        'uk-inverse-{text_color} {@overlay_style}',
+
+        'tm-video-toggle {@video_autoplay: hover}' => $props['video'] || $props['hover_video'],
     ],
 
 ]);
@@ -140,6 +142,19 @@ if (!$props['overlay_cover']) {
 // Link
 $link = include "{$__dir}/template-link.php";
 
+// Media Overlay
+$media_overlay = ($props['image'] || $props['video']) && ($props['media_overlay'] || $props['media_overlay_gradient']) ? $this->el('div', [
+
+    'class' => ['uk-position-cover'],
+
+    'style' => [
+        'background-color: {media_overlay};',
+        // `background-clip` fixes sub-pixel issue
+        'background-image: {media_overlay_gradient}; background-clip: padding-box;',
+    ],
+
+]) : null;
+
 ?>
 
 <?= $el($props, $attrs) ?>
@@ -152,8 +167,8 @@ $link = include "{$__dir}/template-link.php";
 
             <?= $this->render("{$__dir}/template-media", compact('props')) ?>
 
-            <?php if ($props['media_overlay']) : ?>
-            <div class="uk-position-cover" style="background-color:<?= $props['media_overlay'] ?>"></div>
+            <?php if ($media_overlay) : ?>
+            <?= $media_overlay($props, '') ?>
             <?php endif ?>
 
             <?php if ($props['overlay_cover']) : ?>

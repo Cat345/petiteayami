@@ -9,16 +9,8 @@ use YOOtheme\GraphQL\Utils\Middleware;
 
 class CallDirective extends Directive
 {
-    /**
-     * @var Container
-     */
-    protected $container;
+    protected Container $container;
 
-    /**
-     * Constructor.
-     *
-     * @param Container $container
-     */
     public function __construct(Container $container)
     {
         parent::__construct([
@@ -42,12 +34,9 @@ class CallDirective extends Directive
     /**
      * Resolve value from function callback.
      *
-     * @param array      $params
-     * @param Middleware $resolver
-     *
-     * @return \Closure|void
+     * @param array{func: string|callable, args?: string} $params
      */
-    public function __invoke(array $params, Middleware $resolver)
+    public function __invoke(array $params, Middleware $resolver): ?\Closure
     {
         // override default resolver
         $resolver->setHandler($this->container->callback($params['func']));
@@ -61,5 +50,7 @@ class CallDirective extends Directive
                 $info,
             );
         }
+
+        return null;
     }
 }

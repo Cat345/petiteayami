@@ -201,7 +201,6 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 		$data_to_set['body'] = stripslashes( $data_to_set['body'] );
 		if ( true === $this->is_preview ) {
 			$this->preview_body  = $data_to_set['body'];
-			$data_to_set['body'] = BWFAN_Common::decode_merge_tags( $data_to_set['body'] );
 			$data_to_set['body'] = apply_filters( 'bwfan_before_send_email_body', $data_to_set['body'], $data_to_set );
 			$data_to_set['body'] = $this->email_content_v2( $data_to_set );
 			$data_to_set['body'] = BWFAN_Common::bwfan_correct_protocol_url( $data_to_set['body'] );
@@ -301,10 +300,16 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 			return '<html><head></head><body><div id="body_content" class="' . $preview_class . '">' . $content . '</div></body></html>';
 		}
 
-		$pattern     = "/<body(.*?)>(.*?)<\/body>/is";
+		$pattern     = "/<body([^>]*)>(.*?)<\/body>/is";
 		$replacement = '<body$1><div id="body_content" class="' . $preview_class . '">$2</div></body>';
+		$result      = preg_replace( $pattern, $replacement, $content );
 
-		return preg_replace( $pattern, $replacement, $content );
+		// Only return result if preg_replace succeeded
+		if ( !empty( $result ) ) {
+			return $result;
+		}
+
+		return $content;
 	}
 
 	protected function emogrifier_parsed_output( $css, $email_body ) {
@@ -586,9 +591,9 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 		/** this function will remove all wp_mail from_name and from_email filters  */
 		if ( ! isset( $global_settings['bwfan_email_service'] ) || 'wp' === $global_settings['bwfan_email_service'] ) {
 			foreach ( $emails as $email ) {
+				BWFAN_Merge_Tag_Loader::set_data( [ 'conditional_set' => [] ] );
 				$this->data['email'] = $email;
 
-				$this->data['body'] = BWFAN_Common::correct_shortcode_string( $this->data['body'], $this->data['template'] );
 				/** Modify email body for engagement tracking */
 				$data_for_engagement            = $this->data;
 				$data_for_engagement['subject'] = isset( $this->data['subject_raw'] ) && ! empty( $this->data['subject_raw'] ) ? $this->data['subject_raw'] : $this->data['subject'];
@@ -615,19 +620,27 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 				$conversations[ $email ]['conversation_id']   = isset( $this->data['conversation_id'] ) ? $this->data['conversation_id'] : '';
 				$conversations[ $email ]['hash_code']         = isset( $this->data['hash_code'] ) ? $this->data['hash_code'] : '';
 				$conversations[ $email ]['subject_merge_tag'] = isset( $this->data['subject_merge_tag'] ) ? $this->data['subject_merge_tag'] : '';
-
+				$ruleData = BWFAN_Merge_Tag_Loader::get_data( 'conditional_set' );
+				if ( ! empty( $ruleData ) ) {
+					$conversations[ $email ]['conditional_set']     = $ruleData;
+				}
 			}
 		} else {
 			// Every connector which registers itself for email service must have send_email() in its integration class.
 			foreach ( $emails as $email ) {
+				BWFAN_Merge_Tag_Loader::set_data( [ 'conditional_set' => [] ] );
 				$this->data['email'] = $email;
 				/** Modify email body for engagement tracking */
-				$this->data['body'] = html_entity_decode( $this->data['body'] );
-				$this->data['body'] = BWFAN_Core()->conversations->bwfan_modify_email_body_data( $this->data['body'], $this->data );
+				$data_for_engagement            = $this->data;
+				$data_for_engagement['subject'] = isset( $this->data['subject_raw'] ) && ! empty( $this->data['subject_raw'] ) ? $this->data['subject_raw'] : $this->data['subject'];
 
-				$this->data['body']     = apply_filters( 'bwfan_before_send_email_body', $this->data['body'], $this->data );
-				$this->data['body']     = $this->email_content( $this->data );
-				$this->data['body']     = BWFAN_Common::bwfan_correct_protocol_url( $this->data['body'] );
+				$this->data['body'] = html_entity_decode( $this->data['body'] );
+				$this->data['body'] = BWFAN_Core()->conversations->bwfan_modify_email_body_data( $this->data['body'], $data_for_engagement );
+
+				$this->data['body'] = apply_filters( 'bwfan_before_send_email_body', $this->data['body'], $this->data );
+				$this->data['body'] = $this->email_content( $this->data );
+				$this->data['body'] = BWFAN_Common::bwfan_correct_protocol_url( $this->data['body'] );
+				$this->data['body'] = $this->append_to_email_body( $this->data['body'], $this->data['preheading'] );
 				$autonami_integrations  = BWFAN_Core()->integration->get_integrations();
 				$selected_email_service = $global_settings['bwfan_email_service'];
 				$this->set_log( 'before_email: ' . $email );
@@ -642,11 +655,14 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 				}
 				$this->set_log( 'after_email: ' . $email );
 				$this->data['body']                           = $body; // Set the original body to use correct body in email.
-				$this->data['body']                           = $this->append_to_email_body( $this->data['body'], $this->data['preheading'] );
 				$conversations[ $email ]['res']               = $res;
 				$conversations[ $email ]['conversation_id']   = isset( $this->data['conversation_id'] ) ? $this->data['conversation_id'] : '';
 				$conversations[ $email ]['hash_code']         = isset( $this->data['hash_code'] ) ? $this->data['hash_code'] : '';
 				$conversations[ $email ]['subject_merge_tag'] = isset( $this->data['subject_merge_tag'] ) ? $this->data['subject_merge_tag'] : '';
+				$ruleData = BWFAN_Merge_Tag_Loader::get_data( 'conditional_set' );
+				if ( ! empty( $ruleData ) ) {
+					$conversations[ $email ]['conditional_set'] = $ruleData;
+				}
 
 			}
 		}
@@ -690,10 +706,15 @@ final class BWFAN_Wp_Sendemail extends BWFAN_Action {
 		}
 
 		$appended_body = $pre_header . ' ' . $body;
-		if ( strpos( $body, '</body>' ) ) {
-			$pattern       = '/<body(.*?)>(.*?)<\/body>/is';
-			$replacement   = '<body$1>' . $pre_header . '$2</body>';
-			$appended_body = preg_replace( $pattern, $replacement, $body );
+		if ( false !== strpos( $body, '</body>' ) ) {
+			$pattern     = '/<body([^>]*)>/is';
+			$replacement = '<body$1>' . $pre_header;
+			$result      = preg_replace($pattern, $replacement, $body);
+
+			// Only update if preg_replace succeeded
+			if ( !empty( $result ) ) {
+				$appended_body = $result;
+			}
 		}
 
 		return $appended_body;

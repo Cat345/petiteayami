@@ -137,11 +137,9 @@ class Frontend extends Base_Model implements Model_Interface {
 
         // check if calculation is available in session and is still valid.
         if ( ! $this->_calculation->is_calculated_from_session() ) {
-
             // clear previous session data.
             Calculation::clear_session_data();
 
-            // Loop through each applied coupon and implement BOGO Deal.
             foreach ( $this->_calculation->get_all_bogo_deals() as $bogo_deal ) {
                 $this->_implement_bogo_deal( $bogo_deal );
             }
@@ -179,7 +177,6 @@ class Frontend extends Base_Model implements Model_Interface {
      * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
      */
     private function _implement_bogo_deal( Abstract_BOGO_Deal $bogo_deal ) {
-
         // skip if the re are no triggers or deals data.
         if ( 0 >= count( $bogo_deal->triggers ) || 0 >= count( $bogo_deal->deals ) ) {
             return;
@@ -200,14 +197,19 @@ class Frontend extends Base_Model implements Model_Interface {
             $bogo_deal->reset_counters();
 
             // verify triggers with cart items eligible only for triggers.
-            $this->_calculation->verify_triggers( true );
+            // For same-products, don't use trigger_only mode because trigger and deal are the same products.
+            $trigger_only = 'same-products' !== $bogo_deal->deal_type;
+            $this->_calculation->verify_triggers( $trigger_only );
 
             /**
              * Verify deal items and then verify triggers again with shared items.
              * If deal items are valid, but triggers are not, then clear the temporarily matched deal items.
              * Then reverify triggers first, and then verify deal items again.
+             *
+             * Note: For same-products, we skip this double verification because each product is independent.
+             * The trigger and deal for each product should be evaluated separately.
              */
-            if ( $this->_calculation->verify_deals() && ! $this->_calculation->verify_triggers() ) {
+            if ( 'same-products' !== $bogo_deal->deal_type && $this->_calculation->verify_deals() && ! $this->_calculation->verify_triggers() ) {
 
                 // reset counters and temp matched.
                 $bogo_deal->reset_counters( 'deal' );
@@ -217,13 +219,22 @@ class Frontend extends Base_Model implements Model_Interface {
                 if ( $this->_calculation->verify_triggers() ) {
                     $this->_calculation->verify_deals();
                 }
+            } elseif ( 'same-products' === $bogo_deal->deal_type ) {
+                // For same-products, simply verify deals after triggers without double verification.
+                $this->_calculation->verify_deals();
             }
 
             // hook to run after verifying items (auto-add).
             do_action( 'acfw_bogo_after_verify_trigger_deals', $bogo_deal );
 
             // verify BOGO trigger conditions.
-            if ( $bogo_deal->is_trigger_verified() ) {
+            // For same-products, we check if at least one trigger-deal pair is verified.
+            // For other types, we check if all triggers are verified.
+            $is_trigger_verified = ( 'same-products' === $bogo_deal->deal_type )
+                ? $this->_is_same_products_trigger_verified( $bogo_deal )
+                : $bogo_deal->is_trigger_verified();
+
+            if ( $is_trigger_verified ) {
 
                 // check if all deal items for this instance were all fulfilled.
                 $deals_fulfilled = $bogo_deal->is_deal_fulfilled();
@@ -247,6 +258,12 @@ class Frontend extends Base_Model implements Model_Interface {
             // Increment run counter for the BOGO Deal.
             $bogo_deal->increment_run_counter();
 
+            // For same-products with repeat, check if any product still has spare quantity.
+            // This prevents infinite loops when some products are exhausted but others have allowed_deals > 0.
+            if ( 'same-products' === $bogo_deal->deal_type && $bogo_deal->is_repeat ) {
+                $has_spare       = $this->_same_products_has_spare_quantity( $bogo_deal );
+                $deals_fulfilled = $deals_fulfilled && $has_spare;
+            }
         } while (
             $bogo_deal->is_repeat && $deals_fulfilled
         );
@@ -402,6 +419,67 @@ class Frontend extends Base_Model implements Model_Interface {
             $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
             $cart_item['data']->set_price( apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item ) );
         }
+    }
+
+    /**
+     * Check if same-products trigger is verified.
+     * For same-products, we check if at least one product has its trigger verified.
+     * This is different from regular BOGO where ALL triggers must be verified.
+     *
+     * @since 4.6.9
+     * @access private
+     *
+     * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
+     * @return bool True if at least one trigger is verified, false otherwise.
+     */
+    private function _is_same_products_trigger_verified( $bogo_deal ) {
+        if ( 0 >= count( $bogo_deal->needed_triggers ) ) {
+            return false;
+        }
+
+        // For same-products, check if at least one trigger is fully verified (needed_quantity === 0).
+        foreach ( $bogo_deal->needed_triggers as $entry_id => $needed_qty ) {
+            if ( 0 >= $needed_qty ) {
+                return true; // At least one trigger is verified.
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if any product in same-products BOGO still has spare quantity for repeat.
+     * This checks if any cart item matching the triggers still has enough quantity for another trigger+deal.
+     *
+     * @since 4.6.9
+     * @access private
+     *
+     * @param Abstract_BOGO_Deal $bogo_deal BOGO Deal object.
+     * @return bool True if at least one product has spare quantity, false otherwise.
+     */
+    private function _same_products_has_spare_quantity( $bogo_deal ) {
+        $cart_items = \WC()->cart->get_cart_contents();
+
+        foreach ( $bogo_deal->triggers as $trigger ) {
+            $trigger_qty = isset( $trigger['quantity'] ) ? absint( $trigger['quantity'] ) : 1;
+
+            // Find matching cart items for this trigger.
+            foreach ( $cart_items as $cart_item ) {
+                if ( $bogo_deal->is_cart_item_match_entries( $cart_item, $trigger ) ) {
+                    // Calculate spare quantity after current matched entries.
+                    $spare_qty = $this->_calculation->calculate_cart_item_spare_quantity( $cart_item );
+
+                    // Check if spare quantity is enough for at least one more trigger+deal cycle.
+                    // For same-products, we need trigger_qty + deal_qty spare.
+                    // Since trigger and deal quantities are usually the same, we need at least 2 * trigger_qty.
+                    if ( $spare_qty > $trigger_qty ) {
+                        return true; // At least one product has spare quantity for another cycle.
+                    }
+                }
+            }
+        }
+
+        return false; // No product has spare quantity for another cycle.
     }
 
     /**

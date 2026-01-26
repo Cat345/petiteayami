@@ -14,11 +14,11 @@ import fibosearchIcon from '../../icons/fibosearch';
 /**
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockType('fibosearch/search', {
+registerBlockType( 'fibosearch/search', {
 	edit: Edit,
 	icon: {
-		src: <Icon icon={fibosearchIcon} />,
+		src: <Icon icon={ fibosearchIcon } />,
 	},
 	save: () => {},
 	transforms,
-});
+} );

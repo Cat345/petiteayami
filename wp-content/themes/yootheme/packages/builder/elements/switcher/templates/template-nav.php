@@ -4,8 +4,7 @@ $nav = $this->el('ul', [
 
     'class' => [
         'el-nav',
-        'uk-margin[-{nav_margin}] {@nav_position: top|bottom}',
-        'uk-{nav: thumbnav} [uk-flex-nowrap {@thumbnav_nowrap}]',
+        'uk-{nav: thumbnav}',
     ],
 
     'hidden' => !$props['nav'],
@@ -17,7 +16,7 @@ $nav = $this->el('ul', [
         'media: @{nav_grid_breakpoint} {@nav_position: left|right} {@nav: tab};',
     ],
 
-    'uk-margin' => $props['nav'] === 'thumbnav' && !$props['thumbnav_nowrap'],
+    'uk-margin' => $props['nav'] === 'thumbnav'  && !$props['thumbnav_shrink'] && !$props['nav_wrap'],
 ]);
 
 $nav_horizontal = [
@@ -26,12 +25,14 @@ $nav_horizontal = [
     'uk-tab-{nav_position: bottom} {@nav: tab}',
     'uk-flex-{nav_align: right|center}',
     'uk-child-width-expand {@nav_align: justify}',
+    'uk-flex-nowrap' => $props['nav_wrap'] || (($props['nav'] == 'thumbnav') && $props['thumbnav_shrink']),
 ];
 
 $nav_vertical = [
     'uk-nav uk-nav-[primary {@nav_style_primary}][default {@!nav_style_primary}] [uk-text-left {@text_align}] {@nav: subnav.*}',
     'uk-tab-{nav_position} {@nav: tab}',
     'uk-thumbnav-vertical {@nav: thumbnav}',
+    'uk-flex-nowrap' => $props['nav_wrap'], // For horizontal aligned nav after breakpoint
 ];
 
 $nav_switcher = in_array($props['nav_position'], ['top', 'bottom'])
@@ -44,7 +45,26 @@ $nav_switcher = in_array($props['nav_position'], ['top', 'bottom'])
         ] : false,
     ];
 
+// Container
+$container = $props['nav_wrap'] && !(($props['nav'] == 'thumbnav') && $props['thumbnav_shrink']) ? $this->el('div', [
+
+    'class' => [
+        'uk-panel',
+    ],
+
+    'uk-overflow-fade' => true,
+
+]) : null;
+
+($container ?: $nav)->attr('class', [
+    'uk-margin[-{nav_margin}] {@nav_position: top|bottom}',
+]);
+
 ?>
+
+<?php if ($container) : ?>
+<?= $container($props) ?>
+<?php endif ?>
 
 <?= $nav($props, $nav_switcher) ?>
     <?php foreach ($children as $child) :
@@ -53,6 +73,7 @@ $nav_switcher = in_array($props['nav_position'], ['top', 'bottom'])
         $image = $this->el('image', [
             'class' => [
                 'uk-text-{thumbnav_svg_color}' => $props['thumbnav_svg_inline'] && $props['thumbnav_svg_color'] && $this->isImage($child->props['thumbnail'] ?: $child->props['image']) == 'svg',
+                'uk-preserve-width {@nav_wrap} {@!thumbnav_shrink}'
             ],
             'src' => $child->props['thumbnail'] ?: $child->props['image'],
             'alt' => $child->props['label'] ?: $child->props['title'],
@@ -71,3 +92,7 @@ $nav_switcher = in_array($props['nav_position'], ['top', 'bottom'])
     </li>
     <?php endforeach ?>
 <?= $nav->end() ?>
+
+<?php if ($container) : ?>
+<?= $container->end() ?>
+<?php endif ?>

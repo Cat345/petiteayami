@@ -9,8 +9,8 @@ if ($props['filter_toggle_icon'] || ($props['filter_dropdown_parent_icon'] && ($
 
         $icon->attr([
             'class' => [
-                'uk-margin-small-right {@filter_toggle_icon_align: left}',
-                'uk-margin-small-left {@filter_toggle_icon_align: right}',
+                'uk-margin-xsmall-right {@filter_toggle_icon_align: left}',
+                'uk-margin-xsmall-left {@filter_toggle_icon_align: right}',
             ],
 
             'uk-icon' => $props['filter_toggle_icon'],

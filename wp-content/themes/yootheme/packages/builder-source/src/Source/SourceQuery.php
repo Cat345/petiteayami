@@ -8,10 +8,7 @@ class SourceQuery
 {
     public const PARENT = '#parent';
 
-    /**
-     * @var Node
-     */
-    public $document;
+    public Node $document;
 
     /**
      * Constructor.
@@ -23,25 +20,16 @@ class SourceQuery
 
     /**
      * Creates a source query.
-     *
-     * @param object $node
-     *
-     * @return Node
      */
-    public function create($node)
+    public function create(object $node): Node
     {
         return $this->querySource($node->source, $this->document->query());
     }
 
     /**
      * Query source definition.
-     *
-     * @param object $source
-     * @param Node   $node
-     *
-     * @return Node
      */
-    public function querySource($source, Node $node)
+    public function querySource(object $source, Node $node): Node
     {
         $field = $node;
 
@@ -67,13 +55,8 @@ class SourceQuery
 
     /**
      * Create nested field nodes.
-     *
-     * @param object $field
-     * @param Node   $node
-     *
-     * @return Node
      */
-    public function queryField($field, Node $node)
+    public function queryField(object $field, Node $node): Node
     {
         $parts = explode('.', $field->name);
         $name = array_pop($parts);

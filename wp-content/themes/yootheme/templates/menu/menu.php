@@ -12,65 +12,76 @@ $navbar = '~theme.navbar';
 // Menu ID
 $attrs['id'] = $config('~menu.tag_id');
 
+$type = $config('~menu.type', '');
+$position = $config('~menu.position', '');
+
 $hasHeaderParent = fn($items) =>
     array_any($items, fn($item) =>
         $item->type == 'heading' &&
         !empty($item->children) &&
-        isset($item->url) &&
-        ($item->url === '#' || $item->url === '')
+        in_array($item->url ?? null, ['#', ''], true)
     );
 
 // Set `nav` menu_type to default in header positions
-if ($config('~menu.type') == 'nav' && preg_match('/^(toolbar-(left|right)|logo(-mobile)?|navbar(-split|-push|-mobile)?|header(-split|-mobile)?)$/', $config('~menu.position', ''))) {
-    $config->set('~menu.type', '');
+if ($type == 'nav' && preg_match('/^(toolbar-(left|right)|logo(-mobile)?|navbar(-split|-push|-mobile)?|header(-split|-mobile)?)$/', $position)) {
+    $type = '';
 }
 
-if (in_array($config('~menu.type'), ['iconnav', 'subnav', 'nav'])) {
+// Use Scrollspy Nav component
+$scrollspyNav = true;
 
-    $type = $config('~menu.type');
+if (in_array($type, ['iconnav', 'subnav', 'nav'])) {
+
+    // Type is already set
 
 // Default on Navbar
-} elseif (in_array($config('~menu.position'), ['navbar', 'navbar-split', 'navbar-push', 'navbar-mobile'])) {
+} elseif (in_array($position, ['navbar', 'navbar-split', 'navbar-push', 'navbar-mobile'])) {
 
     $type = 'navbar';
+    $scrollspyNav = $config(($config('~menu.position') === 'navbar-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
 
-    if (in_array($config('~menu.position'), ['navbar', 'navbar-split', 'navbar-push']) && in_array($config("$header.layout"), ['stacked-center-split-a', 'stacked-center-split-b'])) {
+    if (in_array($position, ['navbar', 'navbar-split', 'navbar-push']) && in_array($config("$header.layout"), ['stacked-center-split-a', 'stacked-center-split-b'])) {
 
         $isSplitMenu = true;
 
         // Split Auto
         $index = $config("$header.split_index") ?: ceil(count($items) / 2);
 
-        if ($config('~menu.position') == 'navbar-split') {
+        if ($position == 'navbar-split') {
             $items = array_slice($items, 0, $index);
         } else {
+            $scrollspyNav = false;
             $items = array_slice($items, $index);
         }
     }
 
 // Default on Header
-} elseif (in_array($config('~menu.position'), ['header', 'header-split', 'header-mobile'])) {
+} elseif (in_array($position, ['header', 'header-split', 'header-mobile'])) {
 
-    if (in_array($config('~menu.position'), ['header', 'header-split']) && str_starts_with($config("$header.layout"), 'stacked')) {
+    if (in_array($position, ['header', 'header-split']) && str_starts_with($config("$header.layout"), 'stacked')) {
 
         $type = 'subnav';
+        $scrollspyNav = false;
 
     // Render in navbar
     } else {
 
         $type = 'navbar';
+        $scrollspyNav = $config(($config('~menu.position') === 'header-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
 
     }
 
 // Default on Toolbar and Logo
-} elseif (in_array($config('~menu.position'), ['toolbar-left', 'toolbar-right', 'logo', 'logo-mobile'])) {
+} elseif (in_array($position, ['toolbar-left', 'toolbar-right', 'logo', 'logo-mobile'])) {
 
     $type = 'subnav';
+    $scrollspyNav = false;
 
 // Default on Dialog
-} elseif (in_array($config('~menu.position'), ['dialog', 'dialog-push', 'dialog-mobile', 'dialog-mobile-push'])) {
+} elseif (in_array($position, ['dialog', 'dialog-push', 'dialog-mobile', 'dialog-mobile-push'])) {
 
     $type = 'nav';
+    $scrollspyNav = in_array($config('~menu.position'), ['dialog', 'dialog-push']) && !$config("$dialog.offcanvas.overlay");
 
 // Default on Sidebar, Top, Bottom, Builder 1-6
 } else {
@@ -118,13 +129,20 @@ if ($type == 'nav') {
 
 }
 
-// Dialog Center
-if ((in_array($config('~menu.position'), ['dialog', 'dialog-push']) && $config("$dialog.text_center")) ||
-    (in_array($config('~menu.position'), ['dialog-mobile', 'dialog-mobile-push']) && $config("$mobile.dialog.text_center"))) {
+// Override alignment
+if ((in_array($position, ['dialog', 'dialog-push']) && $config("$dialog.text_center")) ||
+    (in_array($position, ['dialog-mobile', 'dialog-mobile-push']) && $config("$mobile.dialog.text_center"))) {
 
-    if (in_array($type, ['subnav', 'iconnav'])) {
-        $attrs['class'][] = 'uk-flex-center';
-    } elseif ($type == 'nav') {
+    $config->set('~menu.text_align', 'center');
+
+}
+
+// Alignment
+if ($config('~menu.text_align') && $config('~menu.text_align') != 'justify') {
+    if (in_array($type, ['iconnav', 'subnav'])) {
+        $attrs['class'][] = 'uk-flex-' . $config('~menu.text_align') . ($config('~menu.text_align_breakpoint') ? '@' . $config('~menu.text_align_breakpoint') : '');
+        $attrs['class'][] = 'uk-flex-' . $config('~menu.text_align_fallback');
+    } elseif ($type == 'nav' && $config('~menu.text_align') == 'center') {
         $attrs['class'][] = 'uk-nav-center';
     }
 }
@@ -160,14 +178,15 @@ if ($type !== 'nav') {
 if (in_array($type, ['subnav', 'iconnav'])) {
     $dropnav_attrs = [
         'boundary' => 'false', // Has to be a string
-        'container' => $config("$navbar.sticky") && in_array($config('~menu.position'), ['navbar', 'navbar-split']) ? '.tm-header > [uk-sticky]' : 'body',
+        'container' => $config("$navbar.sticky") && in_array($position, ['navbar', 'navbar-split']) ? '.tm-header > [uk-sticky]' : 'body',
     ];
 
     $attrs['uk-dropnav'] = json_encode(array_filter($dropnav_attrs));
 }
 
 // Scrollspy nav
-if (array_any($items, fn($item) => str_contains((string) $item->url, '#')) && (empty($isSplitMenu) || $config('~menu.position') == 'navbar-split')) {
+if ($scrollspyNav && array_any($items, fn($item) => str_contains((string) $item->url, '#'))) {
+    $config->set('~menu.scrollspyNav', true);
     $attrs['uk-scrollspy-nav'] = 'closest: li; scroll: true;';
 
     if ($type !== 'nav') {

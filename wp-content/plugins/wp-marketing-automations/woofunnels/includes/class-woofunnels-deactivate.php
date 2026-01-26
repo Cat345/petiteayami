@@ -165,16 +165,16 @@ if ( ! class_exists( 'WooFunnels_Deactivate' ) ) {
 					wp_send_json_error();
 				}
 
-				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( stripslashes( bwf_clean( $_POST['reason_info'] ) ) ) : '';
+				$reason_info = isset( $_POST['reason_info'] ) ? sanitize_textarea_field( bwf_clean( wp_unslash( $_POST['reason_info'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
 
 				$reason = array(
-					'id'   => sanitize_text_field( $_POST['reason_id'] ),
+					'id'   => sanitize_text_field( wp_unslash( $_POST['reason_id'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
 					'info' => substr( $reason_info, 0, 128 ),
 				);
 
 				$licenses        = WooFunnels_addons::get_installed_plugins();
 				$version         = 'NA';
-				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( $_POST['plugin_basename'] ) : '';
+				$plugin_basename = isset( $_POST['plugin_basename'] ) ? bwf_clean( wp_unslash( $_POST['plugin_basename'] ) ) : '';
 
 				if ( $licenses && count( $licenses ) > 0 ) {
 					foreach ( $licenses as $key => $license ) {

@@ -129,6 +129,7 @@ class BWFAN_Load_Integrations {
 				self::$dynamic_register_actions['list'][ $slug ]                                               = [
 					'action_name' => $action_obj->get_name(),
 					'lock'        => true,
+					'isLite'      => isset( self::lite_actions()[ $slug ] ),
 				];
 				self::$dynamic_register_actions['subgroup'][ $integration_type ][ $integration->get_name() ][] = $slug;
 				if ( isset( self::$dynamic_register_actions['group'][ $integration_type ] ) ) {
@@ -281,6 +282,7 @@ class BWFAN_Load_Integrations {
 				$all_actions_array[ $action_slug ] = [
 					'action_name' => $action_label,
 					'lock'        => true,
+					'isLite'      => isset( self::lite_actions()[ $action_slug ] ),
 				];
 			}
 			unset( $filtered_action[ $action_slug ] );
@@ -746,6 +748,12 @@ class BWFAN_Load_Integrations {
 
 	public function get_dynamic_action_data() {
 		return self::$dynamic_register_actions;
+	}
+
+	public static function lite_actions() {
+		return [
+			'wp_sendemail' => __( 'Send Email', 'wp-marketing-automations' ),
+		];
 	}
 }
 

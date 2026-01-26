@@ -64,7 +64,8 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
 <div class='bwfan-email-cart-table bwfan-email-table-wrap'>
     <table cellspacing="0" cellpadding="6" border="1" width="100%">
         <thead>
-        <th class="td" scope="col" <?php echo esc_html( $colspan ); //phpcs:ignore WordPress.Security.EscapeOutput ?> style="<?php echo esc_html( $text_align ); ?> white-space: nowrap;"><?php echo esc_html( 'Product', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></th>
+        <th class="td" scope="col" <?php echo esc_html( $colspan ); //phpcs:ignore WordPress.Security.EscapeOutput ?> style="<?php echo esc_html( $text_align ); ?> white-space: nowrap;">
+            <?php esc_html_e( 'Product', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></th>
         <th class="td" scope="col" style="width:90px;text-align:center;white-space: nowrap;"><?php esc_html_e( 'Quantity', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></th>
         <th class="td" scope="col" style="width:90px;text-align:center;white-space: nowrap;"><?php esc_html_e( 'Price', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></th>
         </thead>
@@ -130,7 +131,7 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
                         </td>
 					<?php endif; ?>
                     <td>
-                        <h4 style="vertical-align:middle; <?php echo esc_html( $text_align ); ?> white-space: nowrap;"><?php esc_html_e( 'Test Product', 'wp-marketing-automations' ); ?></h4>
+                        <h4 style="vertical-align:middle; <?php echo esc_html( $text_align ); ?> white-space: nowrap;"><?php esc_html_e( 'Test Product', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?></h4>
                     </td>
                     <td style="vertical-align:middle; <?php echo esc_html( $text_align ); ?> white-space: nowrap;">1</td>
                     <td style="vertical-align:middle; white-space: nowrap;"><?php echo wp_kses_post( BWFAN_Common::price( 0, $currency ) ); ?></td>
@@ -184,28 +185,31 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
 		<?php endif; ?>
 
 		<?php if ( is_array( $data ) && isset( $data['fees'] ) && ! empty( $data['fees'] ) ) :
+			$fees_total = 0;
 			foreach ( $data['fees'] as $fee ) {
 				if ( ! isset( $fee->name ) || empty( $fee->total ) ) {
 					continue;
 				}
 				$fee_total = ( $tax_display === 'excl' ) ? $fee->total : $fee->total + ( $fee->tax ?? 0 );
+				$fees_total += $fee_total;
 				if ( ! empty( $fee->tax ) ) {
 					$subtotal_tax += floatval( $fee->tax );
 				}
 				?>
                 <tr>
                     <th scope="row" <?php echo esc_html( $colspan_foot ); ?> style="<?php echo esc_html( $text_align ); ?>">
-						<?php echo esc_html( $fee->name ?: __( 'Fee', 'wp-marketing-automations' ) ); ?>
+                        <?php echo esc_html( $fee->name) ?: esc_html__( 'Fee', 'woocommerce' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
                     </th>
                     <td><?php echo BWFAN_Common::price( $fee_total, $currency ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
                 </tr>
 			<?php }
+
 		endif; ?>
 
 		<?php if ( wc_tax_enabled() && $tax_display === 'excl' && $subtotal_tax ) : ?>
             <tr>
                 <th scope="row" <?php echo $colspan_foot; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> style="<?php echo esc_html( $text_align ); ?>">
-					<?php echo esc_html( $tax_string ); ?>
+				<?php echo esc_html( $tax_string ); ?>
                 </th>
                 <td><?php echo wp_kses_post( BWFAN_Common::price( $subtotal_tax, $currency ) ); ?></td>
             </tr>
@@ -215,7 +219,7 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
             <th scope="row" <?php echo $colspan_foot; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> style="<?php echo esc_html( $text_align ); ?>">
 				<?php esc_html_e( 'Total', 'woocommerce' );// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch ?>
 				<?php if ( false === BWFAN_Merge_Tag_Loader::get_data( 'is_preview' ) && wc_tax_enabled() && $tax_display !== 'excl' ) : ?>
-                    <small><?php printf( __( '(includes %s Tax)', 'woocommerce' ), BWFAN_Common::price( $subtotal_tax, $currency ) );// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.Security.EscapeOutput.OutputNotEscaped ?></small>
+                    <small><?php printf( __( '(includes %s)', 'woocommerce' ), BWFAN_Common::price( $subtotal_tax, $currency ) );// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.MissingTranslatorsComment, WordPress.Security.EscapeOutput.OutputNotEscaped ?></small>
 				<?php endif; ?>
             </th>
             <td>
@@ -224,8 +228,8 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
 				if ( isset( $shipping_total ) ) {
 					$final_total += $shipping_total;
 				}
-				if ( ! empty( $data['fees'] ) ) {
-					$final_total += $fee_total;
+				if ( ! empty( $data['fees'] ) && isset( $fees_total ) ) {
+					$final_total += $fees_total;
 				}
 				if ( $tax_display === 'excl' ) {
 					$final_total += $subtotal_tax;

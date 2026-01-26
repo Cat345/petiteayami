@@ -5,7 +5,6 @@ namespace YOOtheme\Theme\Listener;
 use YOOtheme\Config;
 use YOOtheme\File;
 use YOOtheme\Metadata;
-use YOOtheme\Path;
 
 class LoadThemeHead
 {
@@ -25,7 +24,7 @@ class LoadThemeHead
         $debug = $this->config->get('app.debug') ? '' : '.min';
         $version = filectime($href);
 
-        [$style] = explode(':', $this->config->get('~theme.style'));
+        [$style] = explode(':', $this->config->get('~theme.style'), 2);
 
         $this->metadata->set(
             'style:theme',
@@ -45,11 +44,11 @@ class LoadThemeHead
             'src' => File::find("~assets/uikit/dist/js/uikit-icons{-{$style},}.min.js"),
         ]);
 
-        $this->metadata->set('script:theme', ['src' => '~theme/js/theme.js']);
+        $this->metadata->set('script:theme', ['src' => '~assets/site/js/theme.js']);
         $this->metadata->set(
             'script:theme-data',
             sprintf(
-                'window.yootheme ||= {}; var $theme = yootheme.theme = %s;',
+                'window.yootheme ||= {}; yootheme.theme = %s;',
                 json_encode($this->config->get('theme.data', (object) [])),
             ),
             $this->config->get('app.isCustomizer') ? ['data-preview' => 'diff'] : [],
@@ -57,7 +56,10 @@ class LoadThemeHead
 
         if ($this->config->get('app.isCustomizer')) {
             $this->metadata->set('script:customizer-site', [
-                'src' => Path::get('../../assets/js/customizer.min.js', __DIR__),
+                'src' => '~assets/site/js/customizer.js',
+            ]);
+            $this->metadata->set('style:customizer-site', [
+                'href' => '~assets/site/css/customizer.css',
             ]);
         }
 

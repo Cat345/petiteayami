@@ -4,6 +4,7 @@ namespace YOOtheme\Builder\Source;
 
 use YOOtheme\Arr;
 use YOOtheme\Builder\Source;
+use YOOtheme\Builder\Source\Query\Node;
 use YOOtheme\Config;
 use YOOtheme\Event;
 use function YOOtheme\app;
@@ -15,12 +16,9 @@ class SourceTransform
     /**
      * Transform callback "preload".
      *
-     * @param object $node
-     * @param array  $params
-     *
-     * @return void
+     * @param array<string, mixed> $params
      */
-    public function preload($node, array &$params)
+    public function preload(object $node, array &$params): void
     {
         if ($params['context'] !== 'render') {
             return;
@@ -45,12 +43,11 @@ class SourceTransform
     /**
      * Transform callback "prerender".
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      *
      * @return bool|void
      */
-    public function prerender($node, array &$params)
+    public function prerender(object $node, array &$params)
     {
         if (isset($node->source->data)) {
             $params['data'] = $node->source->data;
@@ -77,12 +74,8 @@ class SourceTransform
 
     /**
      * Create source query.
-     *
-     * @param object $node
-     *
-     * @return ?Query\Node
      */
-    public function createQuery($node)
+    public function createQuery(object $node): ?Node
     {
         $query = new SourceQuery();
         $parent = $query->create($node);
@@ -98,35 +91,30 @@ class SourceTransform
 
     /**
      * Add child queries
-     *
-     * @param SourceQuery $query
-     * @param Query\Node  $parent
-     * @param object      $node
-     *
-     * @return bool
      */
-    protected function createChildQuery($query, $parent, $node)
+    protected function createChildQuery(SourceQuery $query, Node $parent, object $node): bool
     {
         $p = $query->querySource($node->source, $parent);
         $props = !empty($node->source->props);
+
         foreach ($node->source->children ?? [] as $child) {
             $props = $this->createChildQuery($query, $p, $child) || $props;
         }
+
         return $props;
     }
 
     /**
      * Query source data.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      *
-     * @return array|void
+     * @return ?array<mixed>
      */
-    public function querySource($node, array $params)
+    public function querySource(object $node, array $params): ?array
     {
         if (!($query = $this->createQuery($node))) {
-            return;
+            return null;
         }
 
         // execute query without validation rules
@@ -150,15 +138,12 @@ class SourceTransform
     /**
      * Map source properties.
      *
-     * @param object $node
-     * @param array  $params
-     *
-     * @return ?object
+     * @param array<string, mixed> $params
      */
-    public function mapSource($node, array $params)
+    public function mapSource(object $node, array $params): ?object
     {
         foreach ($node->source->props ?? [] as $name => $prop) {
-            $value = trim($this->toString(Arr::get($params, "data.{$prop->name}")));
+            $value = trim($this->toString(Arr::get($params['data'] ?? null, $prop->name)));
             $filters = (array) ($prop->filters ?? []);
 
             // apply value filters
@@ -181,12 +166,11 @@ class SourceTransform
     /**
      * Repeat node for each source item.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      *
-     * @return array
+     * @return list<object>
      */
-    public function repeatSource($node, array $params)
+    public function repeatSource(object $node, array $params): array
     {
         $nodes = [];
 
@@ -212,12 +196,9 @@ class SourceTransform
     /**
      * Resolve source data.
      *
-     * @param object $node
-     * @param array  $params
-     *
-     * @return bool
+     * @param array<string, mixed> $params
      */
-    public function resolveSource($node, array &$params)
+    public function resolveSource(object $node, array &$params): bool
     {
         $name = 'data';
 
@@ -251,12 +232,8 @@ class SourceTransform
 
     /**
      * Clone node recursively.
-     *
-     * @param object $node
-     *
-     * @return object
      */
-    protected function cloneNode($node)
+    protected function cloneNode(object $node): object
     {
         $clone = clone $node;
 
@@ -268,7 +245,10 @@ class SourceTransform
         return $clone;
     }
 
-    protected function toString($value)
+    /**
+     * @param mixed $value
+     */
+    protected function toString($value): string
     {
         if (is_scalar($value) || is_callable([$value, '__toString'])) {
             return (string) $value;

@@ -3,13 +3,13 @@
 $icon = $this->el('span', [
 
     'class' => [
-        'uk-text-{icon_color}',
+        'uk-text-{image_svg_color}',
     ],
 
     'uk-icon' => [
         'icon: {0};' => $props['icon'],
-        'width: {icon_width};',
-        'height: {icon_width};',
+        'width: {image_width};',
+        'height: {image_width};',
     ],
 
 ]);

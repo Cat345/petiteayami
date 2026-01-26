@@ -7,22 +7,22 @@ interface HtmlElementInterface
     /**
      * Renders element tag.
      *
-     * @param string $name
-     * @param array $attrs
-     * @param false|string|string[] $contents
-     * @param array $params
-     *
-     * @return string
+     * @param ?array<string, mixed> $attrs
+     * @param string|string[]|false $contents
+     * @param array<string, mixed> $params
      */
-    public static function tag($name, $attrs = null, $contents = null, array $params = []);
+    public static function tag(
+        string $name,
+        ?array $attrs = null,
+        $contents = null,
+        array $params = []
+    ): string;
 
     /**
      * Evaluate expression attribute.
      *
-     * @param array $expressions
-     * @param array $params
-     *
-     * @return string|null
+     * @param array<mixed>|string $expressions
+     * @param array<string, mixed> $params
      */
-    public static function expr($expressions, array $params = []);
+    public static function expr($expressions, array $params = []): ?string;
 }

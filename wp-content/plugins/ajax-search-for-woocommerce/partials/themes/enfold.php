@@ -10,26 +10,30 @@ if ( ! function_exists( 'avia_append_search_nav' ) ) {
 	add_filter( 'avf_fallback_menu_items', 'avia_append_search_nav', 9997, 2 );
 
 	function avia_append_search_nav( $items, $args ) {
-		if ( avia_get_option( 'header_searchicon', 'header_searchicon' ) != "header_searchicon" ) {
+		if ( avia_get_option( 'header_searchicon', 'header_searchicon' ) != 'header_searchicon' ) {
 			return $items;
 		}
-		if ( avia_get_option( 'header_position', 'header_top' ) != "header_top" ) {
+		if ( avia_get_option( 'header_position', 'header_top' ) != 'header_top' ) {
 			return $items;
 		}
 
-		if ( ( is_object( $args ) && $args->theme_location == 'avia' ) || ( is_string( $args ) && $args = "fallback_menu" ) ) {
+		// TODO
+		// phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure,WordPress.CodeAnalysis.AssignmentInCondition.Found
+		if ( ( is_object( $args ) && $args->theme_location == 'avia' ) || ( is_string( $args ) && $args = 'fallback_menu' ) ) {
 			ob_start();
 			echo do_shortcode( '[wcas-search-form layout="icon"]' );
 			$search = ob_get_clean();
-			$items  .= '<li class="noMobile menu-item menu-item-search-dropdown menu-item-avia-special"><a class="dgwt-wcas-search-enfold-wrapper" href="#">' . $search . '</a></li>';
+			$items .= '<li class="noMobile menu-item menu-item-search-dropdown menu-item-avia-special"><a class="dgwt-wcas-search-enfold-wrapper" href="#">' . $search . '</a></li>';
 		}
 
 		return $items;
 	}
 }
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		<?php // Mark the menu item to be ignored by the MegaMenu script that causes our search div to be hidden. ?>
 		document.querySelectorAll('.dgwt-wcas-search-enfold-wrapper').forEach((wrapper) => {
@@ -90,11 +94,14 @@ add_action( 'wp_footer', function () {
 
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		#top .dgwt-wcas-no-submit .dgwt-wcas-sf-wrapp input[type="search"].dgwt-wcas-search-input {
 			padding: 10px 15px 10px 40px;
@@ -145,27 +152,27 @@ add_action( 'wp_head', function () {
 			top: calc(100% + 11px);
 		}
 
-        #top .dgwt-wcas-search-wrapp .dgwt-wcas-search-form .dgwt-wcas-sf-wrapp input[type="search"].dgwt-wcas-search-input {
-            padding-left: 40px;
-        }
+		#top .dgwt-wcas-search-wrapp .dgwt-wcas-search-form .dgwt-wcas-sf-wrapp input[type="search"].dgwt-wcas-search-input {
+			padding-left: 40px;
+		}
 
-        .dgwt-wcas-style-pirx .dgwt-wcas-search-form .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
-            top: 11px;
-            left: 16px
-        }
+		.dgwt-wcas-style-pirx .dgwt-wcas-search-form .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
+			top: 11px;
+			left: 16px
+		}
 
-        .dgwt-wcas-style-pirx.dgwt-wcas-style-pirx-compact .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
-            top: 5px;
-            left: 13px;
-        }
+		.dgwt-wcas-style-pirx.dgwt-wcas-style-pirx-compact .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
+			top: 5px;
+			left: 13px;
+		}
 
-        .dgwt-wcas-style-solaris .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
-            min-height: auto;
-        }
+		.dgwt-wcas-style-solaris .dgwt-wcas-sf-wrapp button.dgwt-wcas-search-submit {
+			min-height: auto;
+		}
 
-        .dgwt-wcas-preloader.dgwt-wcas-close, .dgwt-wcas-voice-search {
-            height: calc(100% - 20px);
-        }
+		.dgwt-wcas-preloader.dgwt-wcas-close, .dgwt-wcas-voice-search {
+			height: calc(100% - 20px);
+		}
 
 		@media (max-width: 767px) {
 			.menu-item-search-dropdown {
@@ -178,5 +185,6 @@ add_action( 'wp_head', function () {
 			}
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

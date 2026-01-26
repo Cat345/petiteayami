@@ -40,10 +40,18 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
     // Config
     $layout = $config("$header.layout");
     $search_layout = $config("$header.search_layout");
-    $navbar_position = in_array($position, ['navbar', 'navbar-split', 'navbar-push', 'navbar-mobile', 'header-mobile']) ||
-                        (in_array($position, ['header', 'header-split']) && str_starts_with($layout, 'horizontal')) ||
-                        ($position == 'logo' && preg_match('/^(horizontal|stacked-center-split-[ab])/', $layout)) ||
-                        $position == 'logo-mobile';
+    if(in_array($position, ['navbar', 'navbar-split', 'navbar-push', 'navbar-mobile', 'header-mobile']) ||
+        (in_array($position, ['header', 'header-split']) && str_starts_with($layout, 'horizontal')) ||
+        ($position == 'logo' && preg_match('/^(horizontal|stacked-center-split-[ab])/', $layout)) ||
+        $position == 'logo-mobile') {
+        $area = 'navbar';
+    } elseif(preg_match('/^(stacked-center-[ac]|stacked-left|stacked-justify)/', $layout)) {
+        $area = 'headerbar-top';
+    } else {
+        // preg_match('/^(stacked-center-split-[ab])/', $layout) ||
+        // ($position == 'header' && $layout == 'stacked-center-b')
+        $area = 'headerbar-bottom';
+    }
 
     // Expand input width || Search Toggle
     if ((str_starts_with($search_layout, 'input') && preg_match('/^horizontal-(left|center|right|justify)|stacked-(left|justify)$/', $layout) && $config("$header.search_expand")) ||
@@ -76,14 +84,14 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
 
         $attrs_livesearch = ['class' => ['uk-margin uk-hidden-empty']];
 
-        app(Metadata::class)->set('script:theme-search', ['src' => '~theme/js/theme-search.js', 'defer' => true]);
+        app(Metadata::class)->set('script:theme-search', ['src' => '~assets/site/js/search.js', 'defer' => true]);
     }
 
     if (!str_starts_with($search_layout, 'input')) {
 
         $toggle = [
-            'class' => [($navbar_position ? 'uk-navbar-toggle' : 'uk-search-toggle uk-display-block')],
-            'id' => $navbar_position && !empty($tag['id']) ? $tag['id'] : null,
+            'class' => [($area == 'navbar' ? 'uk-navbar-toggle' : 'uk-search-toggle uk-display-block')],
+            'id' => $area == 'navbar' && !empty($tag['id']) ? $tag['id'] : null,
             'href' => in_array($search_layout, ['dropbar', 'modal']) ? "#{$attrs['id']}-search" : true,
         ];
 
@@ -104,11 +112,11 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
 
         // From `navbar.php`
         $attrs_dropdown = [
-            'class' => [($navbar_position ? 'uk-drop uk-navbar-dropdown' : 'uk-drop uk-dropdown')],
+            'class' => [($area == 'navbar' ? 'uk-drop uk-navbar-dropdown' : 'uk-drop uk-dropdown')],
         ];
 
         if ($config("$header.search_dropdown.size")) {
-            $attrs_dropdown['class'][] = $navbar_position ? ($config("$navbar.dropbar") ? 'uk-navbar-dropdown-dropbar-large' : 'uk-navbar-dropdown-large') : 'uk-dropdown-large';
+            $attrs_dropdown['class'][] = $area == 'navbar' ? ($config("$navbar.dropbar") ? 'uk-navbar-dropdown-dropbar-large' : 'uk-navbar-dropdown-large') : 'uk-dropdown-large';
         }
         $attrs_dropdown['class'][] = $config("$navbar.dropbar") && $config("$header.transparent") ? 'uk-dropbar-inset' : '';
 
@@ -121,7 +129,7 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
             'toggle' => $search_layout == 'input-dropdown' ? 'false' : false,
             'pos' => "bottom-{$align}",
             'stretch' => $stretch ? 'x' : null,
-            'boundary' => $stretch ? (str_ends_with($position, '-mobile') ? '.tm-header-mobile' : '.tm-header') . " .uk-{$stretch}" : null,
+            'boundary-x' => $stretch ? (str_ends_with($position, '-mobile') ? '.tm-header-mobile' : '.tm-header') . " .uk-{$stretch}" : null,
         ];
 
         if (!$stretch) {
@@ -140,7 +148,7 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
             $attrs_dropdown['class'][] = 'uk-padding-remove-vertical';
         }
 
-        if ($navbar_position) {
+        if ($area == 'navbar') {
             $dropdown += $attrs_dropdown;
         } else {
             // From `header.php`
@@ -180,12 +188,10 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
             $attrs_dropbar['class'][] = $config("$header.search_dropbar.width") ? "uk-width-{$config("$header.search_dropbar.width")}" : '';
         }
 
-        // If no navbar present
-        $container = str_starts_with($layout, 'stacked') && !is_active_sidebar('navbar') ? '.tm-headerbar' : '.uk-navbar-container';
+        $container = $area == 'navbar' ? '.uk-navbar-container' : ".tm-{$area}";
 
         $attrs_dropbar['uk-drop'] = [
             // Default
-            'clsDrop' => 'uk-dropbar',
             'flip' => 'false', // Has to be a string
             'container' => $config("$navbar.sticky") ? "{$header_cls} > [uk-sticky]" : $header_cls,
             'target-y' => "{$header_cls} {$container}",
@@ -318,7 +324,7 @@ if ($search_icon) {
         <?= $this->form($fields, $attrs) ?>
 
         <?php if ($liveSearch) : ?>
-        <div <?= $this->attrs($attrs_livesearch + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
+        <div<?= $this->attrs($attrs_livesearch + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
         <?php endif ?>
 
     </div>
@@ -337,7 +343,7 @@ if ($search_icon) {
             <?= $this->form($fields, $attrs) ?>
 
             <?php if ($liveSearch) : ?>
-            <div <?= $this->attrs($attrs_livesearch + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
+            <div<?= $this->attrs($attrs_livesearch + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
             <?php endif ?>
 
         </div>
@@ -377,14 +383,14 @@ if ($search_icon) {
 
     <?php if ($liveSearch) : ?>
         <?php if ($search_layout == 'input-dropdown') : ?>
-            <div <?= $this->attrs($dropdown + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
+            <div<?= $this->attrs($dropdown + ['id' => $id]) ?>><?= $liveSearchOutput ?></div>
         <?php elseif ($search_layout == 'input-dropbar') : ?>
             <div<?= $this->attrs($attrs_dropbar) ?>>
                 <div<?= $this->attrs($attrs_dropbar_content) ?>>
                     <?php if ($config("$header.transparent")) : ?>
                     <div uk-height-placeholder="<?= $header_cls ?> .uk-navbar-container"></div>
                     <?php endif ?>
-                    <div <?= $this->attrs(['id' => $id]) ?>><?= $liveSearchOutput ?></div>
+                    <div<?= $this->attrs(['id' => $id]) ?>><?= $liveSearchOutput ?></div>
                 </div>
             </div>
         <?php endif ?>

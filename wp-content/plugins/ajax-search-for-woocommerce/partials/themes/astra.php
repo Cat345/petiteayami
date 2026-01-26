@@ -20,31 +20,37 @@ if ( defined( 'ASTRA_EXT_VER' ) && version_compare( ASTRA_EXT_VER, '4.1.0' ) < 0
 
 // From version 4.1.0 Astra has a filters that can be used to indicate allowed tags and attributes in the search form.
 if ( defined( 'ASTRA_EXT_VER' ) && version_compare( ASTRA_EXT_VER, '4.1.0' ) >= 0 ) {
-	add_filter( 'astra_addon_form_post_kses_protocols', function ( $args ) {
-		$args['input']['id']    = array();
-		$args['input']['style'] = array();
-		$args['label']          = array(
-			'class'  => array(),
-			'id'     => array(),
-			'style'  => array(),
-			'data-*' => true,
-			'align'  => array(),
-			'for'    => array(),
-		);
-		$args['button']         = array(
-			'class'      => array(),
-			'aria-label' => array(),
-			'type'       => array(),
-		);
+	add_filter(
+		'astra_addon_form_post_kses_protocols',
+		function ( $args ) {
+			$args['input']['id']    = [];
+			$args['input']['style'] = [];
+			$args['label']          = [
+				'class'  => [],
+				'id'     => [],
+				'style'  => [],
+				'data-*' => true,
+				'align'  => [],
+				'for'    => [],
+			];
+			$args['button']         = [
+				'class'      => [],
+				'aria-label' => [],
+				'type'       => [],
+			];
 
-		return $args;
-	} );
+			return $args;
+		}
+	);
 
-	add_filter( 'safe_style_css', function ( $styles ) {
-		$styles[] = 'display';
+	add_filter(
+		'safe_style_css',
+		function ( $styles ) {
+			$styles[] = 'display';
 
-		return $styles;
-	} );
+			return $styles;
+		}
+	);
 }
 
 $astra_settings           = get_option( 'astra-settings' );

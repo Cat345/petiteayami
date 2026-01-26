@@ -1,5 +1,8 @@
 <?php
 
+// Item
+$el = ($props['id'] || $props['class'] || $props['attributes']) ? $this->el('div') : null;
+
 // Layout
 $grid = $this->el('div', [
 
@@ -26,6 +29,10 @@ $cell = $this->el('div', [
 ]);
 
 ?>
+
+<?php if ($el) : ?>
+<?= $el($element, $attrs) ?>
+<?php endif ?>
 
 <?php if ($element['layout'] == 'stacked') : ?>
 
@@ -87,4 +94,8 @@ $cell = $this->el('div', [
 
     <?= $this->render("{$__dir}/template-content", compact('props')) ?>
 
+<?php endif ?>
+
+<?php if ($el) : ?>
+<?= $el->end() ?>
 <?php endif ?>

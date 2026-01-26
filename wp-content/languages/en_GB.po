@@ -7672,7 +7672,7 @@ msgstr "This theme does not work with your version of WordPress."
 #: wp-admin/includes/class-wp-plugins-list-table.php:1457
 #: wp-admin/includes/plugin.php:1153 wp-admin/includes/theme.php:928
 #: wp-admin/includes/theme.php:959 wp-admin/includes/theme.php:1005
-#: wp-admin/includes/theme.php:1028 wp-admin/includes/update-core.php:1152
+#: wp-admin/includes/theme.php:1028 wp-admin/includes/update-core.php:1153
 #: wp-admin/includes/update.php:786 wp-admin/includes/update.php:813
 #: wp-admin/install.php:248 wp-admin/theme-install.php:358
 #: wp-admin/theme-install.php:381 wp-admin/theme-install.php:563
@@ -14633,7 +14633,7 @@ msgstr "Mission complete. Message %s deleted."
 msgid "Posted title:"
 msgstr "Posted title:"
 
-#: wp-mail.php:256 wp-admin/includes/plugin-install.php:660
+#: wp-mail.php:256 wp-admin/includes/plugin-install.php:658
 msgid "Author:"
 msgstr "Author:"
 
@@ -22681,7 +22681,7 @@ msgstr "Search Results for &#8220;%s&#8221;"
 #: wp-admin/includes/class-wp-media-list-table.php:554
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:710
 #: wp-admin/includes/class-wp-privacy-requests-table.php:487
-#: wp-admin/includes/plugin-install.php:665 wp-admin/includes/revision.php:254
+#: wp-admin/includes/plugin-install.php:663 wp-admin/includes/revision.php:254
 #: wp-admin/includes/revision.php:297
 msgid "%s ago"
 msgstr "%s ago"

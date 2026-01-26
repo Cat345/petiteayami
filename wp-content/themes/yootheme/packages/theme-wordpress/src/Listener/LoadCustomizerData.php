@@ -22,7 +22,7 @@ class LoadCustomizerData
             $this->metadata->set(
                 'script:customizer-data',
                 sprintf(
-                    'window.yootheme = window.yootheme || {}; var $customizer = yootheme.customizer = JSON.parse(atob("%s"));',
+                    'window.yootheme ||= {}; yootheme.customizer = JSON.parse(atob("%s"));',
                     base64_encode(json_encode($data)),
                 ),
                 ['id' => 'customizer-data'],

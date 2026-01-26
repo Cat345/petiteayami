@@ -39,7 +39,7 @@ class FilterNode extends Node
     /**
      * @inheritdoc
      */
-    public function compile(array $params)
+    public function compile(array $params): string
     {
         $arguments = $this->compileArgs([$this->filters, $this->value], $params);
 

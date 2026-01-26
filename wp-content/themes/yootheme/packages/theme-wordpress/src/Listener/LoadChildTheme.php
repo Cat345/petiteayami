@@ -18,7 +18,7 @@ class LoadChildTheme
     /**
      * @link https://developer.wordpress.org/reference/hooks/init/
      */
-    public function handle()
+    public function handle(): void
     {
         if (!is_child_theme()) {
             return;

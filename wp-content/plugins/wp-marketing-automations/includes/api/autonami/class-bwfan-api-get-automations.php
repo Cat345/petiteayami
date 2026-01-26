@@ -21,47 +21,57 @@ class BWFAN_API_Get_Automations extends BWFAN_API_Base {
 		$this->pagination->offset = 0;
 		$this->pagination->limit  = 25;
 		$this->request_args       = array(
-			'search' => array(
+			'search'   => array(
 				'description' => __( 'Autonami Search', 'wp-marketing-automations' ),
 				'type'        => 'string',
 			),
-			'status' => array(
+			'status'   => array(
 				'description' => __( 'Autonami Status', 'wp-marketing-automations' ),
 				'type'        => 'string',
 			),
-			'offset' => array(
+			'offset'   => array(
 				'description' => __( 'Autonami list Offset', 'wp-marketing-automations' ),
 				'type'        => 'integer',
 			),
-			'limit'  => array(
+			'limit'    => array(
 				'description' => __( 'Per page limit', 'wp-marketing-automations' ),
 				'type'        => 'integer',
+			),
+			'category' => array(
+				'description' => __( 'Autonami list Category', 'wp-marketing-automations' ),
+				'type'        => 'string',
 			)
 		);
 	}
 
 	public function default_args_values() {
 		$args = [
-			'search' => '',
-			'status' => 'all',
-			'offset' => 0,
-			'limit'  => 25
+			'search'   => '',
+			'status'   => 'all',
+			'offset'   => 0,
+			'limit'    => 25,
+			'category' => ''
 		];
 
 		return $args;
 	}
 
 	public function process_api_call() {
-		$status  = $this->get_sanitized_arg( 'status', 'text_field' );
-		$search  = $this->get_sanitized_arg( 'search', 'text_field' );
-		$offset  = ! empty( $this->get_sanitized_arg( 'offset', 'text_field' ) ) ? $this->get_sanitized_arg( 'offset', 'text_field' ) : 0;
-		$limit   = ! empty( $this->get_sanitized_arg( 'limit', 'text_field' ) ) ? $this->get_sanitized_arg( 'limit', 'text_field' ) : 25;
-		$version = isset( $this->args['version'] ) ? $this->args['version'] : 1;
+		$status          = $this->get_sanitized_arg( 'status', 'text_field' );
+		$search          = $this->get_sanitized_arg( 'search', 'text_field' );
+		$offset_arg   = $this->get_sanitized_arg( 'offset', 'text_field' );
+		$offset       = ! empty( $offset_arg ) ? absint( $offset_arg ) : 0;
+		$limit_arg    = $this->get_sanitized_arg( 'limit', 'text_field' );
+		$limit        = ! empty( $limit_arg ) ? absint( $limit_arg ) : 25;
+		$version      = isset( $this->args['version'] ) ? $this->args['version'] : 1;
+		$category_arg = $this->get_sanitized_arg( 'category', 'text_field' );
+		$category     = ! empty( $category_arg ) ? $category_arg : '';
+		$get_automations = BWFAN_Common::get_all_automations( $search, $status, $offset, $limit, false, $version, $category );
 
-		$get_automations = BWFAN_Common::get_all_automations( $search, $status, $offset, $limit, false, $version );
 		if ( ! is_array( $get_automations ) || ! isset( $get_automations['automations'] ) || ! is_array( $get_automations['automations'] ) ) {
 			return $this->error_response( __( 'Unable to fetch automations', 'wp-marketing-automations' ), null, 500 );
 		}
+
 		/** Check if worker call is late */
 		$last_run = bwf_options_get( 'fk_core_worker_let' );
 		if ( '' !== $last_run && ( ( time() - $last_run ) > BWFAN_Common::get_worker_delay_timestamp() ) ) {

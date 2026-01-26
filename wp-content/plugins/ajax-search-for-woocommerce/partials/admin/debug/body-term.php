@@ -21,25 +21,37 @@ if ( ! empty( $termID ) && ! empty( $taxonomy ) ) {
 <form action="<?php echo admin_url( 'admin.php' ); ?>" method="get">
 	<input type="hidden" name="page" value="dgwt_wcas_debug">
 	<?php wp_nonce_field( 'dgwt_wcas_debug_term', '_wpnonce', false ); ?>
-	<input type="text" class="regular-text" id="dgwt-wcas-debug-term" name="term_id"
-		   value="<?php echo esc_html( $termID ); ?>" placeholder="Term ID">
+	<input
+		type="text"
+		class="regular-text"
+		id="dgwt-wcas-debug-term"
+		name="term_id"
+		value="<?php echo esc_html( $termID ); ?>"
+		placeholder="Term ID">
 	<select id="dgwt-wcas-debug-term-taxonomy" placeholder="Taxonomy" name="taxonomy" style="margin-top: -3px">
 		<?php
-		foreach ($activeTaxonomies as $taxonomy) {
+		// phpcs:ignore  WordPress.WP.GlobalVariablesOverride.Prohibited
+		foreach ( $activeTaxonomies as $taxonomy ) {
 			echo '<option value="' . esc_attr( $taxonomy->name ) . '">' . esc_html( $taxonomy->label ) . '</option>';
 		}
 		?>
 	</select>
-	<input type="text" class="small-text" id="dgwt-wcas-debug-search-lang" name="lang"
-		   value="<?php echo esc_html( $lang ); ?>" placeholder="lang">
+	<input
+		type="text"
+		class="small-text"
+		id="dgwt-wcas-debug-search-lang"
+		name="lang"
+		value="<?php echo esc_html( $lang ); ?>"
+		placeholder="lang">
 	<button class="button" type="submit">Debug</button>
 </form>
 
-<?php if ( ! empty( $termID ) && ! empty( $taxonomy ) && ! $t->term->isValid() ): ?>
+<?php if ( ! empty( $termID ) && ! empty( $taxonomy ) && ! $t->term->isValid() ) : ?>
 	<p>Wrong term ID</p>
 <?php endif; ?>
 
-<?php if ( ! empty( $termID ) && ! empty( $taxonomy ) && $t->term->isValid() ):
+<?php
+if ( ! empty( $termID ) && ! empty( $taxonomy ) && $t->term->isValid() ) :
 	?>
 	<table class="wc_status_table widefat" cellspacing="0">
 		<thead>
@@ -51,12 +63,13 @@ if ( ! empty( $termID ) && ! empty( $taxonomy ) ) {
 
 		<?php
 		if ( ! empty( $readableIndexData ) && is_array( $readableIndexData ) ) {
-			foreach ( $readableIndexData as $key => $data ): ?>
+			foreach ( $readableIndexData as $key => $data ) :
+				?>
 				<tr>
 					<td><b><?php echo $key; ?>: </b></td>
 					<td><?php echo esc_html( $data ); ?></td>
 				</tr>
-			<?php
+				<?php
 			endforeach;
 		}
 		?>
@@ -80,7 +93,7 @@ if ( ! empty( $termID ) && ! empty( $taxonomy ) ) {
 			<td><b>Wordlist: </b></td>
 			<td class="dgwt-wcas-table-wordlist">
 				<p>
-					<?php foreach ( $wordlist as $term ): ?>
+					<?php foreach ( $wordlist as $term ) : ?>
 						<?php echo $term . '<br />'; ?>
 					<?php endforeach; ?>
 				</p>

@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Translator;
 use YOOtheme\Url;
 
@@ -21,7 +20,7 @@ class LoadCustomizerData
     public function handle(): void
     {
         // add config
-        $this->config->addFile('customizer', Path::get('../../config/customizer.json', __DIR__));
+        $this->config->addFile('customizer', __DIR__ . '/../../config/customizer.php');
 
         $this->config->add('customizer', [
             'base' => Url::to($this->config->get('theme.rootDir')),
@@ -38,6 +37,6 @@ class LoadCustomizerData
             'ja_JP' => 'ja',
         ]);
 
-        $this->translator->addResource(Path::get("../../languages/{$locale}.json", __DIR__));
+        $this->translator->addResource(__DIR__ . "/../../languages/{$locale}.json");
     }
 }

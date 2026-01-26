@@ -6,7 +6,7 @@ return [
     'theme' => fn() => [
         'name' => 'YOOtheme',
 
-        'version' => '4.5.32',
+        'version' => '5.0.7',
 
         'rootDir' => __DIR__,
 
@@ -48,12 +48,6 @@ return [
                 __DIR__ . '/vendor/assets/uikit/src/images/backgrounds/*.svg',
                 __DIR__ . '/vendor/assets/uikit-themes/master/images/*.svg',
             ],
-        ],
-    ],
-
-    'config' => [
-        'image' => [
-            'cacheDir' => __DIR__ . '/cache',
         ],
     ],
 ];

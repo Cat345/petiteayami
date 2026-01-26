@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-10 20:28:46+0000\n"
+"PO-Revision-Date: 2026-01-14 22:14:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,10 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: ru\n"
 "Project-Id-Version: Plugins - WooCommerce - Stable (latest release)\n"
+
+#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:76
+msgid "No billing email provided."
+msgstr "Email для выставления счёта не предоставлен."
 
 #: assets/client/blocks/category-title/block.json
 msgctxt "block description"
@@ -1014,7 +1018,7 @@ msgstr "Аккаунт PayPal ограничен"
 #. translators: 1: opening <a> tag, 2: closing </a> tag
 #: includes/gateways/paypal/includes/class-wc-gateway-paypal-notices.php:190
 msgid "Your PayPal account has been restricted by PayPal. This may prevent customers from completing payments. Please %1$scontact PayPal support%2$s to resolve this issue and restore full functionality to your account."
-msgstr "Ваш PayPal аккаунт был ограничен PayPal. Это может помешать клиентам завершать платежи. Пожалуйста, %1$sобратитесь в службу поддержки PayPal%2$s, чтобы решить эту проблему и восстановить полную функциональность вашего аккаунта."
+msgstr "Ваш PayPal аккаунт был ограничен администрацией. Это может помешать клиентам завершать платежи. %1$sОбратитесь в службу поддержки PayPal%2$s, чтобы решить эту проблему и восстановить полную функциональность своего аккаунта."
 
 #. translators: %s: Link to PayPal sandbox testing guide page
 #: includes/gateways/paypal/class-wc-gateway-paypal.php:181
@@ -6012,7 +6016,7 @@ msgid ""
 msgstr ""
 "Это примечание клиента. Клиенты могут добавлять примечание к своему заказу при его оформлении. \n"
 "\n"
-"Оно может содержать нескольких строк. Если примечание отсутствует, этот раздел будет скрыт."
+"Оно может содержать несколько строк. Если примечание отсутствует, этот раздел будет скрыт."
 
 #. translators: {{label}} is the status filter item label.
 #: src/Blocks/BlockTypes/ProductFilterStatus.php:136
@@ -8077,7 +8081,7 @@ msgstr[2] ""
 "Найдено совместимых плагинов: %%C%1$d%%n %2$s"
 
 #. translators: %s is a generated error message.
-#: src/Blocks/Patterns/PTKPatternsStore.php:232
+#: src/Blocks/Patterns/PTKPatternsStore.php:247
 msgid "Failed to get WooCommerce patterns from the PTK: \"%s\""
 msgstr "Не удалось получить паттерны WooCommerce из PTK: «%s»."
 
@@ -9321,12 +9325,12 @@ msgid "Per your %1$sstore settings%2$s, taxes are not enabled."
 msgstr "В %1$sнастройках вашего магазина%2$s не включены налоги."
 
 #. translators: %d is an order ID.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:674
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:681
 msgid "Unable to create backup post for order %d."
 msgstr "Не удалось создать резервную запись к заказу %d."
 
 #. translators: %s is a list of order property names.
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:567
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:560
 msgid "%s is not a valid order property."
 msgid_plural "%s are not valid order properties."
 msgstr[0] "%s не является допустимым свойством заказа."
@@ -9334,14 +9338,14 @@ msgstr[1] "%s не являются допустимыми свойствами 
 msgstr[2] "%s не являются допустимыми свойствами заказа."
 
 #. translators: %s is a comma separated list of metakey names.
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:541
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:534
 msgid "%s is an internal meta key. Use --props to set it."
 msgid_plural "%s are internal meta keys. Use --props to set them."
 msgstr[0] "%s — внутренний метаключ. Используйте --props, чтобы установить это."
 msgstr[1] "%s — внутренние метаключи. Используйте --props, чтобы установить их."
 msgstr[2] "%s — внутренние метаключи. Используйте --props, чтобы установить их."
 
-#: src/Internal/DataStores/Orders/LegacyDataHandler.php:390
+#: src/Internal/DataStores/Orders/LegacyDataHandler.php:383
 msgid "The backup datastore does not support updating orders."
 msgstr "Резервное хранилище данных не поддерживает обновление заказов."
 
@@ -12193,11 +12197,11 @@ msgstr "Настроить магазин "
 msgid "Invalid order ID or key provided."
 msgstr "Недопустимый идентификатор или ключ заказа."
 
-#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:59
+#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:83
 msgid "Invalid billing email provided."
 msgstr "Недопустимый адрес электронной почты для выставления счетов."
 
-#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:31
+#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:40
 msgid "This order belongs to a different customer."
 msgstr "Этот заказ относится к другому покупателю."
 
@@ -12456,8 +12460,8 @@ msgstr "Подтверждение заказа."
 
 #. translators: %1$s = order ID, %2$s = order id, %3$s = error message.
 #. translators: %1$d = peoperty name, %2$d = order ID, %3$s = error message.
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:199
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1780
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:198
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1783
 msgid "Error when setting property '%1$s' for order %2$d: %3$s"
 msgstr "Ошибка при установке свойства '%1$s' для заказа %2$d: %3$s"
 
@@ -12532,7 +12536,7 @@ msgid "Please enter a valid email address."
 msgstr "Введите действительный адрес электронной почты."
 
 #. translators: %s: Taxonomy name.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2272
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2275
 msgid "Invalid taxonomy: %s."
 msgstr "Неверная таксономия: %s."
 
@@ -14339,7 +14343,7 @@ msgid "Thanks for your order. It’s on-hold until we confirm that payment has b
 msgstr "Спасибо за ваш заказ. Он находится в режиме ожидания до тех пор, пока не будет получено подтверждение получения платёжа."
 
 #. translators: %1$d order ID.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1597
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1606
 msgid "Unable to load the post record for order %1$d"
 msgstr "Не удаётся загрузить запись post для заказа %1$d"
 
@@ -14914,22 +14918,22 @@ msgid "%1$sCollect payments easily%2$s from your customers anywhere with our mob
 msgstr "%1$sПолучайте платежи без проблем%2$s от своих клиентов где угодно с помощью нашего мобильного приложения."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2765
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2768
 msgid "Something went wrong when trying to restore order %d from the trash. It could not be restored."
 msgstr "Что-то пошло не так при попытке восстановить заказ %d из мусорной корзины. Его восстановить невозможно."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2729
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2732
 msgid "The previous status of order %1$d (\"%2$s\") is invalid. It could not be restored."
 msgstr "Предыдущий статус заказа %1$d (\"%2$s\") недействителен. Его восстановить невозможно."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2717
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2720
 msgid "The previous status of order %1$d (\"%2$s\") is invalid. It has been restored to \"pending\" status instead."
 msgstr "Предыдущий статус заказа %1$d (\"%2$s\") недействителен. Он был переведён в статус \"на утверждении\"."
 
 #. translators: 1: order ID, 2: order status
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2699
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2702
 msgid "Order %1$d cannot be restored from the trash: it has already been restored to status \"%2$s\"."
 msgstr "Заказ %1$d нельзя восстановить из мусорной корзины: он уже был переведен в статус \"%2$s\"."
 
@@ -15012,7 +15016,6 @@ msgid "Summarize this product in 1-2 short sentences. We’ll show it at the top
 msgstr "Опишите этот товар с помощью 1–2 коротких предложений. Это описание будет отображаться в верхней части страницы."
 
 #: includes/admin/class-wc-admin-assets.php:647
-#: assets/client/admin/product-editor/index.js:2
 msgid "Describe this product. What makes it unique? What are its most important features?"
 msgstr "Опишите этот товар. Что делает его уникальным? Каковы его наиболее важные особенности?"
 
@@ -15124,7 +15127,7 @@ msgstr "Невозможно использовать повторно псев�
 msgid "%s can not be used as a table alias in OrdersTableQuery"
 msgstr "Невозможно использовать \"%s\" в качестве псевдонима таблицы в OrdersTableQuery"
 
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1350
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:1357
 msgid "Invalid order IDs in call to read_multiple()"
 msgstr "Недопустимый ID заказа в вызове read_multiple()"
 
@@ -15299,11 +15302,11 @@ msgid "Buy postage when you need it"
 msgstr "Оплачивайте почтовые сборы по мере необходимости"
 
 #. translators: %s is a table name.
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2124
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2127
 msgid "Could not persist order to database table \"%s\"."
 msgstr "Не удалось сохранить заказ в таблице базы данных \"%s\"."
 
-#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2105
+#: src/Internal/DataStores/Orders/OrdersTableDataStore.php:2108
 msgid "Could not create order in posts table."
 msgstr "Не удалось создать заказ в таблице записей."
 
@@ -15382,7 +15385,7 @@ msgstr "Необходимо указать допустимое названи�
 
 #. translators: %s: Order date
 #: includes/class-wc-order-refund.php:85
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:402
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:401
 #: includes/data-stores/class-wc-order-refund-data-store-cpt.php:152
 #: src/Internal/DataStores/Orders/OrdersTableRefundDataStore.php:207
 msgctxt "Order date parsed by DateTime::format"
@@ -37042,6 +37045,8 @@ msgstr "Неверный ID возмещения заказа."
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:593
 #: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:140
 #: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:171
+#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:29
+#: src/StoreApi/Utilities/OrderAuthorizationTrait.php:69
 msgid "Invalid order ID."
 msgstr "Неверный ID заказа."
 
@@ -40014,7 +40019,7 @@ msgid "United Arab Emirates dirham"
 msgstr "Дирхам ОАЭ"
 
 #. translators: %s: Order date
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:402
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:401
 msgid "Order &ndash; %s"
 msgstr "Заказ &ndash; %s"
 
@@ -41660,7 +41665,7 @@ msgstr "Вы достигли лимита на скачивание этого 
 
 #: includes/class-wc-download-handler.php:164
 #: includes/class-wc-form-handler.php:805
-#: includes/data-stores/abstract-wc-order-data-store-cpt.php:150
+#: includes/data-stores/abstract-wc-order-data-store-cpt.php:149
 #: includes/shortcodes/class-wc-shortcode-checkout.php:253
 #: includes/shortcodes/class-wc-shortcode-my-account.php:140
 #: includes/wc-order-functions.php:767
@@ -44703,7 +44708,6 @@ msgstr "Значения форм по умолчанию"
 #: assets/client/admin/components/index.js:2
 #: assets/client/admin/email-editor/index.js:2
 #: assets/client/admin/onboarding/index.js:1
-#: assets/client/admin/product-editor/index.js:2
 #: assets/client/admin/wp-admin-scripts/email-editor-integration.js:2
 #: assets/client/admin/wp-admin-scripts/settings-embed.js:2
 #: assets/client/blocks/all-products.js:13
@@ -46413,7 +46417,7 @@ msgstr "Вариативный товар"
 
 #: includes/wc-product-functions.php:702
 msgid "External/Affiliate product"
-msgstr "Внешний/Партнерский товар"
+msgstr "Внешний/Партнёрский товар"
 
 #: includes/wc-product-functions.php:701
 #: src/Admin/Features/ProductBlockEditor/Init.php:297

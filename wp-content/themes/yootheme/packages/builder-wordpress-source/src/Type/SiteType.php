@@ -2,14 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
-class SiteType extends \YOOtheme\Builder\Source\Type\SiteType
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
+class SiteType extends Source\Type\SiteType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         $config = parent::config();
 

@@ -2,13 +2,35 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset;
 
-use YOOtheme\Arr;
+use Toolset_Field_Group;
+use Types_Field_Abstract;
+use Types_Field_Type_Checkbox;
+use Types_Field_Type_Checkboxes;
+use Types_Field_Type_Post;
+use Types_Field_Type_Radio;
+use Types_Field_Type_Select;
+use WP_Post_Type;
 use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper as SourceHelper;
 use YOOtheme\Builder\Wordpress\Toolset\Type\FieldsType;
 use YOOtheme\Str;
 use function YOOtheme\app;
 
+/**
+ * @phpstan-import-type FieldConfig from Source
+ *
+ * @phpstan-type Field array{
+ *     id: string,
+ *     slug: string,
+ *     type:string,
+ *     name:string,
+ *     description:string,
+ *     data:array<string, mixed>,
+ *     meta_key: string,
+ *     meta_type: string,
+ *     group: string
+ * }
+ */
 class Helper
 {
     public static function isActive(): bool
@@ -20,6 +42,9 @@ class Helper
         return is_plugin_active('types/wpcf.php');
     }
 
+    /**
+     * @return array<Toolset_Field_Group>
+     */
     public static function groups(string $domain, ?string $name = null): array
     {
         $fieldGroups = [];
@@ -42,6 +67,10 @@ class Helper
         );
     }
 
+    /**
+     * @param list<string> $fieldSlugs
+     * @return array<string, Field>
+     */
     public static function fields(string $domain, array $fieldSlugs, bool $loadRFG = true): array
     {
         $rfg_service = new \Types_Field_Group_Repeatable_Service();
@@ -73,6 +102,11 @@ class Helper
         return $fields;
     }
 
+    /**
+     * @param string $domain
+     * @param ?string $name
+     * @return array<string, Field>
+     */
     public static function fieldsGroups(string $domain, ?string $name = null): array
     {
         $fields = [];
@@ -86,7 +120,10 @@ class Helper
         return $fields;
     }
 
-    public static function getRelationships($name, $origin = 'standard')
+    /**
+     * @return array<array<string, mixed>>
+     */
+    public static function getRelationships(string $name, string $origin = 'standard'): array
     {
         return toolset_get_relationships([
             'type_constraints' => [
@@ -104,7 +141,12 @@ class Helper
         ]);
     }
 
-    public static function loadFields($field, array $config): array
+    /**
+     * @param Field $field
+     * @param array<string, mixed> $config
+     * @return array<string, FieldConfig>
+     */
+    public static function loadFields(array $field, array $config): array
     {
         $fields = [];
 
@@ -118,32 +160,19 @@ class Helper
             $type = Str::camelCase($post->name, true);
 
             $fields[] =
-                [
-                    'type' => self::isMultiple($field) ? ['listOf' => $type] : $type,
-                ] + $config;
+                ['type' => self::isMultiple($field) ? ['listOf' => $type] : $type] + $config;
         } elseif ($field['type'] === 'image') {
             $fields[] =
-                [
-                    'type' => self::isMultiple($field) ? ['listOf' => 'Attachment'] : 'Attachment',
-                ] + $config;
+                ['type' => self::isMultiple($field) ? ['listOf' => 'Attachment'] : 'Attachment'] +
+                $config;
         } elseif ($field['type'] === 'date') {
             if (self::isMultiple($field)) {
-                $fields[] =
-                    [
-                        'type' => [
-                            'listOf' => 'ToolsetDateField',
-                        ],
-                    ] + $config;
+                $fields[] = ['type' => ['listOf' => 'ToolsetDateField']] + $config;
             } else {
                 $fields[] = array_merge_recursive($config, ['metadata' => ['filters' => ['date']]]);
             }
         } elseif (self::isMultiple($field)) {
-            $fields[] =
-                [
-                    'type' => [
-                        'listOf' => 'ToolsetValueField',
-                    ],
-                ] + $config;
+            $fields[] = ['type' => ['listOf' => 'ToolsetValueField']] + $config;
 
             // add concat field
             if ($field['type'] === 'checkboxes') {
@@ -168,6 +197,10 @@ class Helper
         return array_combine(array_column($fields, 'name'), $fields);
     }
 
+    /**
+     * @param Types_Field_Abstract $fieldInstance
+     * @return mixed
+     */
     public static function getFieldValue($fieldInstance)
     {
         $field = $fieldInstance->to_array();
@@ -180,15 +213,18 @@ class Helper
         $fieldType = $fieldInstance->get_type();
 
         if (in_array($fieldType, ['checkboxes', 'radio', 'select'])) {
+            /** @var Types_Field_Type_Checkboxes|Types_Field_Type_Select|Types_Field_Type_Radio $fieldInstance */
             $options = $fieldInstance->get_options();
             $value = array_map(fn($option) => $option->get_value(), $options);
 
             // filter unchecked radio, select options
             $value = array_values(array_filter($value));
         } elseif ($fieldType === 'checkbox') {
+            /** @var Types_Field_Type_Checkbox $fieldInstance */
             $option = $fieldInstance->get_option();
             $value = [$option->get_value()];
         } elseif ($fieldType === 'post') {
+            /** @var Types_Field_Type_Post $fieldInstance */
             return $fieldInstance->get_post();
         } elseif ($fieldType === 'date') {
             $value = $fieldInstance->get_value();
@@ -216,33 +252,36 @@ class Helper
         return $value[0] ?? null;
     }
 
-    public static function getPostType($post_type)
+    public static function getPostType(string $post_type): ?WP_Post_Type
     {
         $postTypes = SourceHelper::getPostTypes();
 
         return $postTypes[$post_type] ?? null;
     }
 
-    public static function isMultiple($field): bool
+    /**
+     * @param Field $field
+     */
+    public static function isMultiple(array $field): bool
     {
         if (in_array($field['type'], ['checkboxes', 'relationship'])) {
-            return count(Arr::get($field, 'data.options', [])) > 1;
+            return count($field['data']['options'] ?? []) > 1;
         }
 
-        return Arr::get($field, 'data.repetitive') === '1';
+        return ($field['data']['repetitive'] ?? '') === '1';
     }
 
-    public static function getDomainFromNode($node)
+    public static function getDomainFromNode(object $node): ?string
     {
         if (empty($node->source->query->name)) {
-            return;
+            return null;
         }
 
         $type = app(Source::class)->getSchema()->getType('Query');
 
         foreach (explode('.', $node->source->query->name) as $part) {
             if (!$type->hasField($part)) {
-                return;
+                return null;
             }
 
             $type = $type->getField($part)->getType();
@@ -256,5 +295,7 @@ class Helper
         } elseif (taxonomy_exists($name)) {
             return \Toolset_Element_Domain::TERMS;
         }
+
+        return null;
     }
 }

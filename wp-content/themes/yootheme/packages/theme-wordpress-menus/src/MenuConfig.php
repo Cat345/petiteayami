@@ -5,9 +5,10 @@ namespace YOOtheme\Theme\Wordpress;
 use YOOtheme\ConfigObject;
 
 /**
- * @property array $menus
- * @property array $items
- * @property array $positions
+ * @phpstan-type Item array{id: string, level: int, menu: int, parent: string, title: string, type: string, object: string, object_id: int}
+ * @property list<array{id: int, name: string}> $menus
+ * @property list<Item> $items
+ * @property array<string, string> $positions
  * @property bool  $canEdit
  * @property bool  $canCreate
  * @property bool  $canDelete
@@ -28,7 +29,10 @@ class MenuConfig extends ConfigObject
         ]);
     }
 
-    protected function getMenus()
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    protected function getMenus(): array
     {
         return array_map(
             fn($menu) => [
@@ -39,7 +43,10 @@ class MenuConfig extends ConfigObject
         );
     }
 
-    protected function getItems()
+    /**
+     * @return list<Item>
+     */
+    protected function getItems(): array
     {
         $results = [];
 
@@ -53,7 +60,7 @@ class MenuConfig extends ConfigObject
                         'level' => $this->getLevel($item, $items),
                         'menu' => $menu->term_id,
                         'parent' => (string) intval($item->menu_item_parent),
-                        'title' => $item->title,
+                        'title' => strip_tags($item->title), // Polylang adds HTML tags (language flags)
                         'type' =>
                             $item->type === 'custom' && $item->url === '#'
                                 ? 'heading'
@@ -69,7 +76,10 @@ class MenuConfig extends ConfigObject
         return $results;
     }
 
-    protected function getLevel($item, array $items)
+    /**
+     * @param list<object> $items
+     */
+    protected function getLevel(object $item, array $items): int
     {
         $level = 0;
 

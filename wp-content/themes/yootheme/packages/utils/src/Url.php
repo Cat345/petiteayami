@@ -11,12 +11,8 @@ abstract class Url
 
     /**
      * Gets the base URL.
-     *
-     * @param bool $secure
-     *
-     * @return string
      */
-    public static function base($secure = null)
+    public static function base(?bool $secure = null): string
     {
         if (is_null($secure)) {
             return static::getBase()->getPath();
@@ -27,25 +23,21 @@ abstract class Url
 
     /**
      * Sets the base URL.
-     *
-     * @param string|Uri $base
      */
-    public static function setBase($base)
+    public static function setBase(string $base): void
     {
         static::$baseUri = null;
-        static::$base = (string) $base;
+        static::$base = $base;
     }
 
     /**
      * Generates a URL to a path.
      *
-     * @param string $path
-     * @param array  $parameters
-     * @param bool   $secure
+     * @param array<string, mixed>  $parameters
      *
      * @return string|false
      */
-    public static function to($path, array $parameters = [], $secure = null)
+    public static function to(string $path, array $parameters = [], ?bool $secure = null)
     {
         try {
             if (empty($parameters) && is_null($secure) && static::isValid($path)) {
@@ -67,32 +59,27 @@ abstract class Url
     /**
      * Generates a URL to a route.
      *
-     * @param string $pattern
-     * @param array  $parameters
-     * @param bool   $secure
-     *
-     * @return string
+     * @param array<string, mixed>  $parameters
      */
-    public static function route($pattern = '', array $parameters = [], $secure = null)
-    {
+    public static function route(
+        string $pattern = '',
+        array $parameters = [],
+        ?bool $secure = null
+    ): string {
         return (string) Event::emit('url.route', $pattern, $parameters, $secure);
     }
 
     /**
      * Generates a URL to a path.
      *
-     * @param string $path
-     * @param array  $parameters
-     * @param bool   $secure
-     *
-     * @return Uri
+     * @param array<string, mixed>  $parameters
      */
-    public static function generate($path, array $parameters = [], $secure = null)
+    public static function generate(string $path, array $parameters = [], ?bool $secure = null): Uri
     {
         $url = new Uri($path);
         $base = static::getBase();
 
-        if (!$url->getHost() && !str_starts_with($url->getPath(), '/')) {
+        if (!$url->getScheme() && !$url->getHost() && !str_starts_with($url->getPath(), '/')) {
             $url = $url->withPath(Path::join($base->getPath(), $url->getPath()));
         }
 
@@ -111,7 +98,7 @@ abstract class Url
         return $url;
     }
 
-    public static function relative($url, $baseUrl = null)
+    public static function relative(string $url, ?string $baseUrl = null): string
     {
         $baseUrl ??= static::base();
         return Path::relative($baseUrl ?: '/', $url);
@@ -119,12 +106,8 @@ abstract class Url
 
     /**
      * Checks if the given path is a valid URL.
-     *
-     * @param string $path
-     *
-     * @return bool
      */
-    public static function isValid($path)
+    public static function isValid(string $path): bool
     {
         $valid = ['http://', 'https://', 'mailto:', 'tel:', '//', '#'];
 
@@ -133,11 +116,9 @@ abstract class Url
 
     /**
      * Gets the base URL.
-     *
-     * @return Uri
      */
-    protected static function getBase()
+    protected static function getBase(): Uri
     {
-        return static::$baseUri ?? (static::$baseUri = new Uri(static::$base));
+        return static::$baseUri ??= new Uri(static::$base);
     }
 }

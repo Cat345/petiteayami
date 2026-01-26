@@ -5,9 +5,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-block-shop-search" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1200" ]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-block-shop-search" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1200" ]' ) . '</div>';
+		?>
 	<script>
 		(function ($) {
 			//Autofocus
@@ -52,5 +54,6 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);

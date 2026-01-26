@@ -1,0 +1,50 @@
+<?php
+
+return [
+    'sections' => [
+        'builder-templates' => [
+            'title' => 'Templates',
+            'heading' => false,
+            'priority' => 25,
+            'fieldset' => [
+                'default' => [
+                    'fields' => [
+                        'name' => [
+                            'label' => 'Name',
+                            'description' => 'Define a name to easily identify the template.',
+                            'attrs' => [
+                                'required' => true,
+                                'autofocus' => true,
+                            ],
+                        ],
+                        'status' => [
+                            'label' => 'Status',
+                            'description' => 'Disable the template and publish it later.',
+                            'type' => 'checkbox',
+                            'text' => 'Disable template',
+                            'attrs' => [
+                                'true-value' => 'disabled',
+                                'false-value' => '',
+                            ],
+                        ],
+                        'type' => [
+                            'label' => 'Page',
+                            'description' => 'Choose the page to which the template is assigned.',
+                            'type' => 'select',
+                            'default' => '',
+                            'options' => [
+                                [
+                                    'text' => 'None',
+                                    'value' => '',
+                                ],
+                                [
+                                    'evaluate' => 'yootheme.builder.templateOptions',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

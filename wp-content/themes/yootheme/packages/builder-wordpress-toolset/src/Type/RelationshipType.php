@@ -2,13 +2,23 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Type;
 
+use WP_Post;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Toolset\Helper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class RelationshipType
 {
-    public static function config($name, $relationship)
+    /**
+     * @param array<string, mixed> $relationship
+     *
+     * @return ObjectConfig
+     */
+    public static function config(string $name, array $relationship): array
     {
         $intermediary = isset($relationship['roles']['intermediary'])
             ? Helper::fieldsGroups('posts', $relationship['roles']['intermediary']['types'])
@@ -52,15 +62,24 @@ class RelationshipType
         ];
     }
 
+    /**
+     * @param array<string, mixed> $item
+     * @return ?WP_Post
+     */
     public static function resolvePost($item)
     {
         return get_post($item['post']);
     }
 
+    /**
+     * @param array<string, mixed> $item
+     * @param array<string, mixed> $args
+     * @return mixed
+     */
     public static function resolveIntermediaryField($item, $args)
     {
         if (!isset($item['intermediary'])) {
-            return;
+            return null;
         }
 
         $post = get_post($item['intermediary']);
@@ -74,5 +93,7 @@ class RelationshipType
         if ($fieldInstance) {
             return Helper::getFieldValue($fieldInstance);
         }
+
+        return null;
     }
 }

@@ -2,17 +2,19 @@
 
 namespace YOOtheme\Builder;
 
+/**
+ * @phpstan-type Bounds array{string, string}
+ */
 class VisibilityTransform
 {
-    protected static array $bounds = [['', 's', 'm', 'l', 'xl'], ['s', 'm', 'l', 'xl', '']];
+    protected const BOUNDS = [['', 's', 'm', 'l', 'xl'], ['s', 'm', 'l', 'xl', '']];
 
     /**
      * Transform callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed>  $params
      */
-    public function __invoke($node, array $params)
+    public function __invoke(object $node, array $params): void
     {
         $type = $params['type'];
         $parent = $params['parent'];
@@ -23,7 +25,7 @@ class VisibilityTransform
 
         $visibility = $this->intersect(
             $this->toRange($node->props['visibility'] ?? ''),
-            $node->props['child_visibility'] ?? false,
+            $node->props['child_visibility'] ?? null,
         );
 
         // Column may prevent collapsing and should not be visible while stacking than
@@ -33,7 +35,7 @@ class VisibilityTransform
                 if ($value && $value !== '1-1') {
                     $visibility = $this->intersect(
                         $visibility,
-                        $this->toRange(static::$bounds[0][$i]),
+                        $this->toRange(static::BOUNDS[0][$i]),
                     );
                     break;
                 }
@@ -45,16 +47,16 @@ class VisibilityTransform
 
         $parent->props['child_visibility'] = $this->merge(
             $visibility,
-            $parent->props['child_visibility'] ?? false,
+            $parent->props['child_visibility'] ?? null,
         );
     }
 
     /**
      * Convert to visibility range.
      *
-     * @param string|array $visibility
+     * @param string|Bounds $visibility
      *
-     * @return string[]
+     * @return Bounds
      */
     protected function toRange($visibility): array
     {
@@ -69,18 +71,18 @@ class VisibilityTransform
     /**
      * Returns intersection of two visibility ranges.
      *
-     * @param string[] $rangeA
-     * @param string[] $rangeB
+     * @param Bounds $rangeA
+     * @param ?Bounds $rangeB
      *
-     * @return string[]
+     * @return Bounds
      */
-    protected function intersect($rangeA, $rangeB): array
+    protected function intersect(array $rangeA, ?array $rangeB = null): array
     {
         if (!$rangeB) {
             return $rangeA;
         }
 
-        [$lower, $upper] = static::$bounds;
+        [$lower, $upper] = static::BOUNDS;
 
         return [
             $lower[max(array_search($rangeA[0], $lower), array_search($rangeB[0], $lower))],
@@ -91,18 +93,18 @@ class VisibilityTransform
     /**
      * Returns union of two visibility ranges.
      *
-     * @param string[] $rangeA
-     * @param string[] $rangeB
+     * @param Bounds $rangeA
+     * @param ?Bounds $rangeB
      *
-     * @return string[]
+     * @return Bounds
      */
-    protected function merge($rangeA, $rangeB): array
+    protected function merge(array $rangeA, ?array $rangeB = null): array
     {
         if (!$rangeB) {
             return $rangeA;
         }
 
-        [$lower, $upper] = static::$bounds;
+        [$lower, $upper] = static::BOUNDS;
 
         return [
             $lower[min(array_search($rangeA[0], $lower), array_search($rangeB[0], $lower))],

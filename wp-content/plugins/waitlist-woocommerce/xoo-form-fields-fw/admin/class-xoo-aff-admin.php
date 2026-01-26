@@ -82,8 +82,9 @@ class Xoo_Aff_Admin{
 		$args = array(
 			'sidebar_template' => xoo_aff_get_template( 'xoo-aff-field-selector.php',  XOO_AFF_DIR.'/admin/templates/', array(
 				'field_types' 	=> $this->aff->fields->get_field_types(),
-				'aff' 			=> $this->aff
+				'aff' 			=> $this->aff,
 			), true ),
+			'groups' 		=> $this->aff->fields->get_field_groups()
 		);
 		xoo_aff_get_template( 'xoo-aff-page-markup.php',  XOO_AFF_DIR.'/admin/templates/', $args );
 	}

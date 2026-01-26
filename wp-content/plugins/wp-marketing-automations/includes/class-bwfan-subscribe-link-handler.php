@@ -44,22 +44,21 @@ class BWFAN_Subscribe_Link_Handler {
 		$dbcontact    = $bwf_contacts->get_contact_by( 'uid', $uid );
 
 		$link = filter_input( INPUT_GET, 'bwfan-link' );
-		if ( empty( $dbcontact->db_contact ) ) {
-			if ( ! empty( $link ) ) {
-				// redirecting to bwfan-link if there
-				$url = BWFAN_Common::bwfan_correct_protocol_url( $link );
-				$url = BWFAN_Common::validate_target_link( $url );
-				$url = BWFAN_Common::append_extra_url_arguments( $url );
-				if ( false !== wp_http_validate_url( $url ) ) {
-					BWFAN_Email_Conversations::validate_link( $url );
-					BWFAN_Common::wp_redirect( urldecode( $url ) );
-					exit;
-				}
-			}
 
-			// when no contact found with the uid then redirect to the home url
-			wp_safe_redirect( home_url() );
-			exit();
+		$url = '';
+		if ( ! empty( $link ) ) {
+			// redirecting to bwfan-link if there
+			$link = BWFAN_Common::bwfan_correct_protocol_url( $link );
+			$link = BWFAN_Common::validate_target_link( $link );
+			$link = BWFAN_Common::append_extra_url_arguments( $link );
+			if ( false !== wp_http_validate_url( $link ) ) {
+				$url = BWFAN_Email_Conversations::validate_link( $link );
+			}
+		}
+
+		if ( empty( $dbcontact->db_contact ) ) {
+			BWFAN_Common::wp_redirect( ! empty( $url ) ? urldecode( $url ) : home_url() );
+			exit;
 		}
 
 		$contact = new BWFCRM_Contact( $dbcontact->db_contact->id );
@@ -71,29 +70,57 @@ class BWFAN_Subscribe_Link_Handler {
 		/** Hook after subscribe link clicked */
 		do_action( 'bwfcrm_confirmation_link_clicked', $contact );
 
-		if ( ! empty( $link ) ) {
-			$url = BWFAN_Common::bwfan_correct_protocol_url( $link );
-			$url = BWFAN_Common::validate_target_link( $url );
-			$url = BWFAN_Common::append_extra_url_arguments( $url );
-			if ( false !== wp_http_validate_url( $url ) ) {
-				BWFAN_Email_Conversations::validate_link( $url );
-				BWFAN_Common::wp_redirect( urldecode( $url ) );
-				exit;
-			}
+		if ( ! empty( $url ) ) {
+			BWFAN_Common::wp_redirect( urldecode( $url ) );
+			exit;
 		}
 
 		self::display_confirmation_message();
 	}
 
 	public static function display_confirmation_message() {
-		$show_message = filter_input( INPUT_GET, 'show_message' );
-		if ( is_null( $show_message ) || 1 !== intval( $show_message ) ) {
-			return;
-		}
-
 		$settings = BWFAN_Common::get_global_settings();
 
-		echo isset( $settings['bwfan_confirmation_message'] ) && ! empty( $settings['bwfan_confirmation_message'] ) ? $settings['bwfan_confirmation_message'] : ''; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		add_filter( 'bwfan_public_scripts_include', '__return_true' );
+
+		$header_logo = isset( $settings['bwfan_setting_business_logo'] ) ? $settings['bwfan_setting_business_logo'] : '';
+
+		$common_shortcodes = BWFAN_Common_Shortcodes::get_instance();
+
+		// Enqueue the styles and scripts early
+		BWFAN_Public::get_instance()->enqueue_assets( $settings );
+		ob_start();
+		?>
+		<!DOCTYPE html>
+		<html <?php language_attributes(); ?>>
+		<head>
+			<meta charset="<?php bloginfo( 'charset' ); ?>"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="robots" content="noindex, nofollow">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			<?php wp_print_styles(); ?>
+			<title><?php esc_html_e( 'Subscribe', 'wp-marketing-automations' ); ?></title>
+			<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+		</head>
+		<body class="bwfan-manage-profile-page-body <?php echo is_rtl() ? 'is-rtl' : ''; ?>">
+			<div class="bwfan-manage-profile-page-wrapper">
+				<div class="bwfan-manage-profile-wrapper bwf-distraction-free-mode">
+					<?php $common_shortcodes->print_header(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<div class="bwfan-manage-profile-contact-details">
+						<div class="bwfan-subscribe-page-details">
+							<?php
+							// Output page content
+							echo ! empty( $settings['bwfan_confirmation_message'] ) ? wp_kses_post( $settings['bwfan_confirmation_message'] ) : '';
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php wp_print_scripts(); ?>
+		</body>
+		</html>
+		<?php
+		echo ob_get_clean();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		exit;
 	}
 

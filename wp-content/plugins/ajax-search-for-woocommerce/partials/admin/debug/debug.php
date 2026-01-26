@@ -44,17 +44,17 @@ echo esc_attr( $active );
 
 		<div id="dgwt_wcas_deb_anatytics" class="fibosearch-debug_page-group">
 			<?php 
-include_once DGWT_WCAS_DIR . 'partials/admin/debug/body-analytics.php';
+require_once DGWT_WCAS_DIR . 'partials/admin/debug/body-analytics.php';
 ?>
 		</div>
 		<div id="dgwt_wcas_deb_maintenance" class="fibosearch-debug_page-group">
 			<?php 
-include_once DGWT_WCAS_DIR . 'partials/admin/debug/body-maintenance.php';
+require_once DGWT_WCAS_DIR . 'partials/admin/debug/body-maintenance.php';
 ?>
 		</div>
 		<div id="dgwt_wcas_deb_active_integrations" class="fibosearch-debug_page-group">
 			<?php 
-include_once DGWT_WCAS_DIR . 'partials/admin/debug/active-integrations.php';
+require_once DGWT_WCAS_DIR . 'partials/admin/debug/active-integrations.php';
 ?>
 		</div>
 	</div>

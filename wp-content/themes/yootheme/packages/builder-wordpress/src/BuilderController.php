@@ -10,7 +10,7 @@ use YOOtheme\Url;
 
 class BuilderController
 {
-    public static function loadImage(Request $request, Response $response, Config $config)
+    public static function loadImage(Request $request, Response $response, Config $config): Response
     {
         $src = $request->getParam('src');
         $md5 = $request->getParam('md5');

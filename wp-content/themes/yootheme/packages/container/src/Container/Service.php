@@ -6,33 +6,20 @@ use YOOtheme\Container;
 
 class Service
 {
-    /**
-     * @var string
-     */
-    public $class;
+    public string $class;
+    public bool $shared;
 
     /**
-     * @var bool
-     */
-    public $shared;
-
-    /**
-     * @var callable|null
+     * @var ?callable
      */
     protected $factory;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
-    protected $arguments = [];
+    protected array $arguments = [];
 
-    /**
-     * Constructor.
-     *
-     * @param string $class
-     * @param bool   $shared
-     */
-    public function __construct($class, $shared = false)
+    public function __construct(string $class, bool $shared = false)
     {
         $this->class = $class;
         $this->shared = $shared;
@@ -41,11 +28,9 @@ class Service
     /**
      * Sets service class.
      *
-     * @param string $class
-     *
      * @return $this
      */
-    public function setClass($class)
+    public function setClass(string $class)
     {
         $this->class = $class;
 
@@ -54,10 +39,8 @@ class Service
 
     /**
      * Checks if service is shared.
-     *
-     * @return bool
      */
-    public function isShared()
+    public function isShared(): bool
     {
         return $this->shared;
     }
@@ -65,23 +48,19 @@ class Service
     /**
      * Sets service as shared.
      *
-     * @param bool $shared
-     *
      * @return $this
      */
-    public function setShared($shared = true)
+    public function setShared(bool $shared = true)
     {
-        $this->shared = (bool) $shared;
+        $this->shared = $shared;
 
         return $this;
     }
 
     /**
      * Gets a service factory.
-     *
-     * @return callable
      */
-    public function getFactory()
+    public function getFactory(): ?callable
     {
         return $this->factory;
     }
@@ -89,11 +68,11 @@ class Service
     /**
      * Sets a service factory.
      *
-     * @param callable|string $factory
+     * @param callable $factory
      *
      * @return $this
      */
-    public function setFactory($factory)
+    public function setFactory(callable $factory)
     {
         $this->factory = $factory;
 
@@ -103,12 +82,11 @@ class Service
     /**
      * Sets an argument value.
      *
-     * @param string $name
      * @param mixed  $value
      *
      * @return $this
      */
-    public function setArgument($name, $value)
+    public function setArgument(string $name, $value)
     {
         $this->arguments[$name] = $value;
 
@@ -118,9 +96,9 @@ class Service
     /**
      * Gets arguments for given function.
      *
-     * @return array
+     * @return array< mixed>
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
@@ -128,11 +106,11 @@ class Service
     /**
      * Sets an array of arguments.
      *
-     * @param array $arguments
+     * @param array<mixed> $arguments
      *
      * @return $this
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): self
     {
         $this->arguments = $arguments;
 
@@ -146,10 +124,8 @@ class Service
      *
      * @throws LogicException
      * @throws \ReflectionException
-     *
-     * @return object
      */
-    public function resolveInstance(Container $container)
+    public function resolveInstance(Container $container): ?object
     {
         return $this->factory
             ? $container->call($this->factory, $this->arguments)
@@ -159,14 +135,10 @@ class Service
     /**
      * Resolves an instance from class.
      *
-     * @param Container $container
-     *
      * @throws LogicException
      * @throws \ReflectionException
-     *
-     * @return object
      */
-    protected function resolveClass(Container $container)
+    protected function resolveClass(Container $container): object
     {
         $class = new \ReflectionClass($this->class);
 

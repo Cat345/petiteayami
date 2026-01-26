@@ -507,6 +507,498 @@ var BWFAN_Public;
         });
     };
 
+    /**
+     * Selected profile tags
+     * */
+    BWFAN_Public.get_profile_tags = function () {
+        const enabled = $('#bwfan-profile-tags').length > 0;
+        if (!enabled) {
+            return [];
+        }
+
+        var tags = [];
+        $('.bwfan-profile-tag-checkbox input:checked').each(function () {
+            tags.push($(this).val());
+        });
+        return tags;
+    };
+
+    /**
+     * selected profile lists
+     *
+     * */
+    BWFAN_Public.get_profile_lists = function () {
+        const enabled = $('#bwfan-profile-lists').length > 0;
+        if (!enabled) {
+            return [];
+        }
+
+        const lists = [];
+        $('.bwfan-profile-list-checkbox input:checked').each(function () {
+            lists.push(parseInt($(this).val()));
+        });
+
+        return lists;
+    }
+
+    /**
+     * Selected profile fields
+     *
+     * */
+    BWFAN_Public.get_profile_fields = function () {
+        const enabled = $('#bwfan-profile-fields').length > 0;
+        if (!enabled) {
+            return [];
+        }
+
+        const fields = [];
+        const dobParts = { day: '', month: '', year: '' };
+        let hasDobField = false;
+
+        $('.bwfan-profile-field input, .bwfan-profile-field textarea, .bwfan-profile-field select').each(function () {
+            const fieldSlug = $(this).data('slug');
+            const dobPart = $(this).data('dob-part');
+
+            // Handle DOB parts separately
+            if (fieldSlug === 'dob' && dobPart) {
+                hasDobField = true;
+                dobParts[dobPart] = $(this).val();
+                return; // Skip adding to fields array
+            }
+
+            if ($(this).is(':radio') || $(this).is(':checkbox')) {
+                if ($(this).is(':checked')) {
+                    if (!fields[fieldSlug]) {
+                        fields[fieldSlug] = [];
+                    }
+                    fields[fieldSlug].push($(this).val());
+                }
+            } else if (fieldSlug === 'timezone') {
+                fields[fieldSlug] = $(this).val();
+            } else {
+                fields[fieldSlug] = $(this).val();
+            }
+        });
+
+        for (const slug in fields) {
+            if (Array.isArray(fields[slug])) {
+                fields[slug] = fields[slug].join(', ');
+            }
+        }
+
+        const result = [];
+
+        // Add DOB parts if present
+        if (hasDobField) {
+            result.push({ slug: 'dob', value: dobParts.day, dob_part: 'day' });
+            result.push({ slug: 'dob', value: dobParts.month, dob_part: 'month' });
+            result.push({ slug: 'dob', value: dobParts.year, dob_part: 'year' });
+        }
+
+        for (const slug in fields) {
+            const value = Array.isArray(fields[slug]) ? fields[slug].join(', ') : fields[slug];
+            result.push({slug: slug, value: value});
+        }
+
+        return result;
+    }
+
+    BWFAN_Public.update_profile = function () {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        $('#bwfan_manage_profile_update').on('click', function (event) {
+            event.preventDefault();
+            var $this = $(this);
+
+            // Clear previous DOB errors (errors are added as siblings with .after())
+            $('.bwfan-dob-wrapper').next('.bwfan_error').remove();
+            $('.bwfan-dob-field').removeClass('bwfan_error');
+
+            // Validate DOB fields if present
+            const dobFields = $('.bwfan-dob-field[data-slug="dob"]');
+            if (dobFields.length > 0) {
+                let dobDay = '';
+                let dobMonth = '';
+                let dobYear = '';
+                let dobWrapper = null;
+
+                dobFields.each(function() {
+                    const dobPart = $(this).data('dob-part');
+                    if (!dobWrapper) {
+                        dobWrapper = $(this).closest('.bwfan-dob-wrapper');
+                    }
+
+                    if (dobPart === 'day') dobDay = $(this).val();
+                    if (dobPart === 'month') dobMonth = $(this).val();
+                    if (dobPart === 'year') dobYear = $(this).val();
+                });
+
+                // Check if all parts are selected or all are empty
+                const hasAnyValue = dobDay || dobMonth || dobYear;
+                const hasAllValues = dobDay && dobMonth && dobYear;
+                const allEmpty = !dobDay && !dobMonth && !dobYear;
+
+                // If all empty, it's valid (optional field)
+                if (allEmpty) {
+                    // DOB is optional, all empty is valid
+                } else if (hasAnyValue && !hasAllValues) {
+                    // Some parts selected but not all
+                    dobFields.addClass('bwfan_error');
+                    dobWrapper.after("<p class='bwfan_response bwfan_error'>"+bwfanParamspublic.dob_not_all_parts+"</p>");
+                    return;
+                } else if (hasAllValues) {
+                    // If all values present, validate date is valid
+                    const day = parseInt(dobDay, 10);
+                    const month = parseInt(dobMonth, 10);
+                    const year = parseInt(dobYear, 10);
+
+                    // Check if date is valid
+                    const date = new Date(year, month - 1, day);
+                    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+                        dobFields.addClass('bwfan_error');
+                        dobWrapper.after("<p class='bwfan_response bwfan_error'>"+bwfanParamspublic.dob_not_valid+"</p>");
+                        return;
+                    }
+
+                    // Check if date is not in the future
+                    const today = new Date();
+                    if (date > today) {
+                        dobFields.addClass('bwfan_error');
+                        dobWrapper.after("<p class='bwfan_response bwfan_error'>"+bwfanParamspublic.dob_not_in_future+"</p>");
+                        return;
+                    }
+                }
+            }
+
+            var emailField = $('input[data-slug="email"]');
+            if( emailField.length > 0 ) {
+                if (emailField.val() === '') {
+                    // Check if error message already exists
+                    if (emailField.next('.bwfan_error').length === 0) {
+                        $('#bwfan-field-email').addClass('bwfan_error');
+                        emailField.after("<p class='bwfan_response bwfan_error'>"+bwfanParamspublic.email_not_fill+"</p>");
+                    } else {
+                        emailField.next('.bwfan_error').fadeIn().html( bwfanParamspublic.email_not_fill );
+                    }
+                    return; // Stop the process if email is empty
+                } else if( ! emailRegex.test(emailField.val()) ) {
+                    if (emailField.next('.bwfan_error').length === 0) {
+                        $('#bwfan-field-email').addClass('bwfan_error');
+                        emailField.after("<p class='bwfan_response bwfan_error'>"+bwfanParamspublic.email_not_valid+"</p>");
+                    } else {
+                        emailField.next('.bwfan_error').fadeIn().html(bwfanParamspublic.email_not_valid);
+                    }
+                    return;
+                } else{
+                    emailField.next('.bwfan_error').remove();
+                    $('#bwfan-field-email').removeClass('bwfan_error');
+                }
+            }
+
+            var errorExists = $('#bwfan_manage_profile_fields' ).find('.bwfan_response.bwfan_error').length > 0;
+            if( errorExists ) {
+                // Get the first error element
+                var firstError = $('#bwfan_manage_profile_fields' ).find('.bwfan_response.bwfan_error')[0];
+                setTimeout( () => {
+                    var distractionMode = $( '.bwfan-manage-profile-wrapper.bwf-distraction-free-mode' ).length > 0;
+                    if( distractionMode ) {
+                        firstError.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                            inline: 'nearest'
+                        });
+                        return;
+                    }
+
+                    // Scroll to the position of the first error element
+                    window.scrollTo({
+                        top: firstError.getBoundingClientRect().top + window.scrollY - 100,
+                        behavior: 'smooth'
+                    });
+                }, 300 );
+            }
+
+            if ($this.hasClass('bwfan_loading')) {
+                return;
+            }
+
+
+            var bwfan_nonce = $('#bwfan_manage_profile_nonce');
+
+            var lists = BWFAN_Public.get_profile_lists();
+            lists = JSON.stringify(lists);
+
+            var tags = BWFAN_Public.get_profile_tags();
+            tags = JSON.stringify(tags);
+
+            var fields = BWFAN_Public.get_profile_fields();
+            fields = JSON.stringify(fields);
+
+            var uid = $('#bwfan_form_uid_id');
+            uid = (0 === uid.length) ? urlParams.get('bwfan_form_uid_id') : uid.val();
+
+            $this.addClass('bwfan_loading');
+
+            $.ajax({
+                method: 'post',
+                dataType: 'json',
+                url: bwfanParamspublic.ajax_url,
+                data: $('#bwfan_manage_profile_update').serialize() + "&action=bwfan_manage_profile" + "&uid=" + uid + "&profile_lists=" + lists + "&profile_tags=" + tags + "&profile_fields=" + fields + "&_nonce=" + bwfan_nonce.val(),
+                success: function (result) {
+                    $this.removeClass('bwfan_loading');
+                    var response_generated = $this.parent().find('.bwfan_response').html();
+                    if ('undefined' === typeof response_generated) {
+                        $this.after("<div class='bwfan_response api-response'></div>");
+                    }
+                    let message = result.hasOwnProperty( 'message' ) ? result.message : bwfanParamspublic.profile_success;
+                    switch (parseInt(result.success)) {
+                        case 10:
+                            if (emailField.next('.bwfan_error').length === 0) {
+                                $('#bwfan-field-email').addClass('bwfan_error');
+                                emailField.after(`<p class='bwfan_response bwfan_error'>${message}</p>`);
+                            }
+                            break;
+                        case 0:
+                            $('.bwfan_response.api-response').addClass('bwfan_error');
+                            $('.bwfan_response.api-response').fadeIn().html(message);
+                            break;
+                        default:
+                            if ($('.bwfan_response.api-response').length > 0) {
+                                $('.bwfan_response.api-response').removeClass('bwfan_error');
+                            }
+                            $('.bwfan_response.api-response').addClass('bwfan_success');
+                            $('.bwfan_response.api-response').fadeIn().html(message);
+                            break;
+                    }
+                    setTimeout(function () {
+                        $('.bwfan_response.api-response').fadeOut("slow");
+                    }, 3000);
+                }
+            });
+        });
+        $(document).ready(function () {
+            // Datetime fields
+            const dateTimeFields = document.querySelectorAll('#bwfan-profile-fields .bwfan-profile-field input[type="text"][data-type="date-time"]');
+            dateTimeFields.forEach(field => {
+                field.addEventListener('input', function () {
+                    let value = $(this).val().trim().replace(/\D/g, ''); // Strip non-digits
+                    let formatted = '';
+                    if (value.length > 0) formatted += value.substring(0, 4);           // YYYY
+                    if (value.length > 4) formatted += '-' + value.substring(4, 6);     // MM
+                    if (value.length > 6) formatted += '-' + value.substring(6, 8);     // DD
+                    if (value.length > 8) formatted += ' ' + value.substring(8, 10);    // HH
+                    if (value.length > 10) formatted += ':' + value.substring(10, 12);  // mm
+                    if (value.length > 12) formatted += ':' + value.substring(12, 14);  // ss
+
+                    $(this).val(formatted);
+                });
+
+                field.addEventListener('blur', function () {
+                    const val = $(this).val().trim();
+
+                    if( val == '' ) {
+                        $(this).next('.bwfan_error').remove();
+                        $(this).removeClass('bwfan_error');
+                        return;
+                    }
+
+                    if (val.length !== 19) {
+                        let error = 'Invalid date-time format. Please use YYYY-MM-DD HH:MM:SS';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+
+                    const regex = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+                    const match = val.match(regex);
+
+                    if (!match) {
+                        let error = 'Invalid format. Please use YYYY-MM-DD HH:MM:SS';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+
+                    const [_, year, month, day, hour, minute, second] = match.map(Number);
+
+                    const isValidDate = (y, m, d, h, min, s) => {
+                        if (m < 1 || m > 12) return false;
+                        if (d < 1 || d > 31) return false;
+                        if (h < 0 || h > 23) return false;
+                        if (min < 0 || min > 59) return false;
+                        if (s < 0 || s > 59) return false;
+
+                        const date = new Date(y, m - 1, d);
+                        return date.getFullYear() === y &&
+                            date.getMonth() === m - 1 &&
+                            date.getDate() === d;
+                    };
+                    if (!isValidDate(year, month, day, hour, minute, second)) {
+                        let error = 'Invalid date or time entered.';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+                    $(this).next('.bwfan_error').remove();
+                    $(this).removeClass('bwfan_error');
+                });
+            });
+
+            // Date field
+            const dateFields = document.querySelectorAll('#bwfan-profile-fields .bwfan-profile-field input[type="text"][data-type="date"]');
+            dateFields.forEach(field => {
+                field.addEventListener('input', function () {
+                    let value = $(this).val().trim().replace(/\D/g, ''); // Strip non-digits
+                    let formatted = '';
+                    if (value.length > 0) formatted += value.substring(0, 4);           // YYYY
+                    if (value.length > 4) formatted += '-' + value.substring(4, 6);     // MM
+                    if (value.length > 6) formatted += '-' + value.substring(6, 8);     // DD
+
+                    $(this).val(formatted);
+                });
+
+                field.addEventListener('blur', function () {
+                    const val = $(this).val().trim();
+                    if( val == '' ) {
+                        $(this).next('.bwfan_error').remove();
+                        $(this).removeClass('bwfan_error');
+                        return;
+                    }
+                    if (val.length !== 10) {
+                        let error = 'Invalid date format. Please use YYYY-MM-DD';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+
+                    const regex = /^(\d{4})-(\d{2})-(\d{2})$/;
+                    const match = val.match(regex);
+
+                    if (!match) {
+                        let error = 'Invalid format. Please use YYYY-MM-DD';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+
+                    const [_, year, month, day] = match.map(Number);
+
+                    const isValidDate = (y, m, d) => {
+                        if (m < 1 || m > 12) return false;
+                        if (d < 1 || d > 31) return false;
+
+                        const date = new Date(y, m - 1, d);
+                        return date.getFullYear() === y &&
+                            date.getMonth() === m - 1 &&
+                            date.getDate() === d;
+                    };
+                    if (!isValidDate(year, month, day)) {
+                        let error = 'Invalid date  entered.';
+                        if ($(this).next('.bwfan_error').length === 0) {
+                            $(this).addClass('bwfan_error');
+                            $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                        } else {
+                            $(this).next('.bwfan_error').fadeIn().html(error);
+                        }
+                        return;
+                    }
+                    $(this).next('.bwfan_error').remove();
+                    $(this).removeClass('bwfan_error');
+                });
+            });
+        });
+
+        // Time field
+        const timeFields = document.querySelectorAll('#bwfan-profile-fields .bwfan-profile-field input[type="text"][data-type="time"]');
+        timeFields.forEach(field => {
+            field.addEventListener('input', function () {
+                let value = $(this).val().trim().replace(/\D/g, ''); // Strip non-digits
+                let formatted = '';
+                if (value.length > 0) formatted += value.substring(0, 2);           // HH
+                if (value.length > 2) formatted += ':' + value.substring(2, 4);     // MM
+                if (value.length > 4) formatted += ':' + value.substring(4, 6);     // SS
+
+                $(this).val(formatted);
+            });
+
+            field.addEventListener('blur', function () {
+                const val = $(this).val().trim();
+
+                if( val == '' ) {
+                    $(this).next('.bwfan_error').remove();
+                    $(this).removeClass('bwfan_error');
+                    return;
+                }
+
+                if (val.length !== 8) {
+                    let error = 'Invalid time format. Please use HH:MM:SS';
+                    if ($(this).next('.bwfan_error').length === 0) {
+                        $(this).addClass('bwfan_error');
+                        $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                    } else {
+                        $(this).next('.bwfan_error').fadeIn().html(error);
+                    }
+                    return;
+                }
+
+                const regex = /^(\d{2}):(\d{2}):(\d{2})$/;
+                const match = val.match(regex);
+
+                if (!match) {
+                    let error = 'Invalid format. Please use HH:MM:SS';
+                    if ($(this).next('.bwfan_error').length === 0) {
+                        $(this).addClass('bwfan_error');
+                        $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                    } else {
+                        $(this).next('.bwfan_error').fadeIn().html(error);
+                    }
+                    return;
+                }
+
+                const [_, hour, minute, second] = match.map(Number);
+
+                const isValidDate = (h, min, s) => {
+                    if (h < 0 || h > 23) return false;
+                    if (min < 0 || min > 59) return false;
+                    if (s < 0 || s > 59) return false;
+
+                    return true;
+                };
+                if (!isValidDate(hour, minute, second)) {
+                    let error = 'Invalid time entered.';
+                    if ($(this).next('.bwfan_error').length === 0) {
+                        $(this).addClass('bwfan_error');
+                        $(this).after("<p class='bwfan_response bwfan_error'>"+error+"</p>");
+                    } else {
+                        $(this).next('.bwfan_error').fadeIn().html(error);
+                    }
+                    return;
+                }
+                $(this).next('.bwfan_error').remove();
+                $(this).removeClass('bwfan_error');
+            });
+        });
+    }
+
     /* Initialize */
     BWFAN_Public.init();
 
@@ -563,6 +1055,7 @@ var BWFAN_Public;
     $(window).on('load', function () {
         BWFAN_Public.abandoned_cart();
         BWFAN_Public.unsubscribe_event();
+        BWFAN_Public.update_profile();
         BWFAN_Public.bwfan_check_for_checkout_fields();
         BWFAN_Public.bwfan_capture_data_on_page_load();
         $(document.body).on('wfacp_step_switching', function (e, v) {

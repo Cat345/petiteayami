@@ -6,16 +6,8 @@ use YOOtheme\Http\Request;
 
 class Router
 {
-    /**
-     * @var Routes
-     */
-    protected $routes;
+    protected Routes $routes;
 
-    /**
-     * Constructor.
-     *
-     * @param Routes $routes
-     */
     public function __construct(Routes $routes)
     {
         $this->routes = $routes;
@@ -23,14 +15,10 @@ class Router
 
     /**
      * Dispatches router for a request.
-     *
-     * @param Request $request
-     *
-     * @return Request
      */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request): Request
     {
-        $path = '/' . trim($request->getQueryParam('p', ''), '/');
+        $path = '/' . trim($request->getAttribute('routePath', ''), '/');
 
         foreach ($this->routes->getIndex() as $route) {
             if ($route->getMethods() && !in_array($request->getMethod(), $route->getMethods())) {
@@ -62,17 +50,13 @@ class Router
 
     /**
      * Gets the route regex pattern.
-     *
-     * @param Route $route
-     *
-     * @return string
      */
-    protected function getPattern(Route $route)
+    protected function getPattern(Route $route): string
     {
         return '#^' .
             preg_replace_callback(
-                '#\{(\w+)\}#',
-                fn($matches) => '(?P<' . $matches[1] . '>[^/]+)',
+                '#\{(\w+)(?::([^}]+?))?}#',
+                fn($matches) => '(?P<' . $matches[1] . '>' . ($matches[2] ?? '[^/]+') . ')',
                 $route->getPath(),
             ) .
             '$#';

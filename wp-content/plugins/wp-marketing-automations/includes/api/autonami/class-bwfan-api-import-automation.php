@@ -33,16 +33,31 @@ class BWFAN_API_Import_Automations extends BWFAN_API_Base {
 		$files   = $this->args['files'];
 		$version = isset( $this->args['version'] ) ? $this->args['version'] : 1;
 
-		if ( empty( $files ) ) {
+		if ( empty( $files ) || ! isset( $files['files'] ) || ! is_uploaded_file( $files['files']['tmp_name'] ) ) {
 			return $this->error_response( __( 'Import File missing.', 'wp-marketing-automations' ) );
 		}
 
-		$file_data = file_get_contents( $files['files']['tmp_name'] );
+		$file = $files['files'];
+
+		// Validate file extension
+		$ext = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+		if ( 'json' !== $ext ) {
+			return $this->error_response( __( 'Invalid file type. Only JSON files allowed.', 'wp-marketing-automations' ) );
+		}
+
+		$file_data = file_get_contents( $file['tmp_name'] );
+
+		if ( false === $file_data ) {
+			return $this->error_response( __( 'Unable to read import file', 'wp-marketing-automations' ) );
+		}
 
 		$import_file_data = json_decode( $file_data, true );
 
-		if ( empty( $import_file_data ) && ! is_array( $import_file_data ) ) {
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return $this->error_response( __( 'Invalid JSON file format', 'wp-marketing-automations' ) );
+		}
 
+		if ( empty( $import_file_data ) || ! is_array( $import_file_data ) ) {
 			return $this->error_response( __( 'Import file data missing', 'wp-marketing-automations' ) );
 		}
 		/** Importing Automation */

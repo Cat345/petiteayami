@@ -20,8 +20,38 @@ $settings = array(
 
 
 	array(
+		'callback' 		=> 'checkbox_list',
+		'title' 		=> 'Show Waitlist Button For',
+		'id' 			=> 'm-btn-show',
+		'section_id' 	=> 'gl_main',
+		'args' 			=> array(
+			'options' 	=> array(
+				'outofstock' 	=> 'Out-of-stock items',
+				'instock' 	 	=> 'In-stock items',
+				'backorder'  	=> 'Backorder',
+				'backorder_out' => 'Backorder but out of stock',
+			)
+		),
+		'default' 	=> array(
+			'outofstock', 'backorder_out'
+		),
+		'desc' 	=> 'You can also manage each product individually from the "edit product -> inventory" section'
+	),
+
+	array(
+		'callback' 		=> 'checkbox',
+		'title' 		=> 'Show on Archive/Shop Page',
+		'id' 			=> 'm-en-shop',
+		'section_id' 	=> 'gl_main',
+		'default' 		=> 'yes'
+	),
+
+
+
+
+	array(
 		'callback' 		=> 'select',
-		'title' 		=> 'Waitlist Form Type',
+		'title' 		=> 'Waitlist Form UI',
 		'id' 			=> 'm-form-type',
 		'section_id' 	=> 'gl_main',
 		'args'			=> array(
@@ -34,33 +64,17 @@ $settings = array(
 		'default' 		=> 'popup'
 	),
 
+
 	array(
 		'callback' 		=> 'checkbox',
-		'title' 		=> 'Enable Guest',
+		'title' 		=> 'Allow Guest users',
 		'id' 			=> 'm-en-guest',
 		'section_id' 	=> 'gl_main',
 		'default' 		=> 'yes',
 		'desc' 			=> 'Allow guest users to join the waitlist'
 	),
 
-
-	array(
-		'callback' 		=> 'checkbox',
-		'title' 		=> 'Show on Archive/Shop',
-		'id' 			=> 'm-en-shop',
-		'section_id' 	=> 'gl_main',
-		'default' 		=> 'yes'
-	),
-
-	array(
-		'callback' 		=> 'checkbox',
-		'title' 		=> 'Show on Backorders',
-		'id' 			=> 'm-en-bod',
-		'section_id' 	=> 'gl_main',
-		'default' 		=> 'no',
-		'desc' 			=> 'If you are also managing the stock quantity, then the quantity should be set to 0 for the button to appear.'
-	),
-
+	
 	array(
 		'callback' 		=> 'text',
 		'section_id' 	=> 'gl_texts',

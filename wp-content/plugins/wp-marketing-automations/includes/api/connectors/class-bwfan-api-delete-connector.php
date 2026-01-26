@@ -43,12 +43,14 @@ class BWFAN_API_Delete_Connector extends BWFAN_API_Base {
 			$connector->disconnect();
 		}
 
-		$connector_ids = implode( ',', array_map( function ( $connector ) {
-			return $connector['ID'];
-		}, $connector_details ) );
+		global $wpdb;
+		$connector_ids = array_map( function ( $connector ) {
+			return absint( $connector['ID'] );
+		}, $connector_details );
+		$placeholder = implode( ',', array_fill( 0, count( $connector_ids ), '%d' ) );
 
-		$connector_sql      = "DELETE from {table_name} where ID IN ($connector_ids)";
-		$connector_meta_sql = "DELETE from {table_name} where connector_id IN ($connector_ids)";
+		$connector_sql      = $wpdb->prepare( "DELETE from {table_name} where ID IN ($placeholder)", $connector_ids );
+		$connector_meta_sql = $wpdb->prepare( "DELETE from {table_name} where connector_id IN ($placeholder)", $connector_ids );
 		WFCO_Model_ConnectorMeta::delete_multiple( $connector_meta_sql );
 		WFCO_Model_Connectors::delete_multiple( $connector_sql );
 		do_action( 'bwfan_connector_disconnected', $slug );

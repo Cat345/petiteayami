@@ -24,7 +24,7 @@ class FilterEverything extends AbstractPluginIntegration {
 	}
 
 	public function init(): void {
-		add_filter( 'dgwt/wcas/helpers/is_search_query', array( $this, 'allow_to_process_search_query' ), 10, 2 );
+		add_filter( 'dgwt/wcas/helpers/is_search_query', [ $this, 'allow_to_process_search_query' ], 10, 2 );
 	}
 
 	/**
@@ -32,7 +32,6 @@ class FilterEverything extends AbstractPluginIntegration {
 	 *
 	 * @param bool $enable
 	 * @param \WP_Query $query
-	 *
 	 */
 	public function allow_to_process_search_query( $enable, $query ) {
 		if (

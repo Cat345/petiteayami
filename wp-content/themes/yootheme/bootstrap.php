@@ -11,8 +11,7 @@ if (!is_dir($cache)) {
 }
 
 Path::setAlias('~theme', $root);
-Path::setAlias('~yootheme', "{$root}/packages");
-Path::setAlias('~assets/leaflet', "{$root}/vendor/assets/leaflet");
+Path::setAlias('~assets', "{$root}/assets");
 Path::setAlias('~assets/uikit', "{$root}/vendor/assets/uikit");
 
 $app = Application::getInstance($cache);

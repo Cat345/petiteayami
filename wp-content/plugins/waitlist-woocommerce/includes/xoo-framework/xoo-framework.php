@@ -55,3 +55,53 @@ if( !function_exists( 'xoo_clean' ) ){
 	}
 
 }
+
+if( !function_exists( 'xoo_wp_kses_email' ) ){
+	function xoo_wp_kses_email( $content ) {
+
+	    // Start with WordPress's built-in 'post' context.
+	    $allowed_html = wp_kses_allowed_html( 'post' );
+
+	    // Extend with email-specific attributes and tags.
+	    $extra_tags = array(
+	        'table' => array(
+	            'width'       => true,
+	            'border'      => true,
+	            'cellpadding' => true,
+	            'cellspacing' => true,
+	            'bgcolor'     => true,
+	            'align'       => true,
+	            'style'       => true,
+	        ),
+	        'tr' => array(
+	            'align'   => true,
+	            'valign'  => true,
+	            'bgcolor' => true,
+	            'style'   => true,
+	        ),
+	        'td' => array(
+	            'align'   => true,
+	            'valign'  => true,
+	            'bgcolor' => true,
+	            'width'   => true,
+	            'height'  => true,
+	            'style'   => true,
+	        ),
+	        'th' => array(
+	            'align'   => true,
+	            'valign'  => true,
+	            'bgcolor' => true,
+	            'style'   => true,
+	        ),
+	        'tbody' => array(),
+	        'thead' => array(),
+	        'tfoot' => array(),
+	    );
+
+	    // Merge the defaults with the extra tags.
+	    $allowed_html = array_replace_recursive( $allowed_html, $extra_tags );
+
+	    // Now sanitize using wp_kses().
+	    return wp_kses( $content, $allowed_html );
+	}
+}

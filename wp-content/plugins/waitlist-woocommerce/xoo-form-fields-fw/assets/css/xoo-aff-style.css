@@ -212,14 +212,7 @@ select.xoo-aff-states{
     display: none;
 }
 
-@media only screen and (max-width: 450px) {
-    .xoo-aff-group.onehalf , .xoo-aff-group.onefourth, .xoo-aff-group.onethird , .xoo-aff-group, .xoo-aff-group.twothird {
-        width: calc(100% - 20px);
-    }
-    .xoo-aff-group {
-        margin-right: 0;
-    }
-}
+
 
 .xoo-aff-flag-cont {
     display: flex;
@@ -392,4 +385,17 @@ body.rtl .xoo-aff-input-icon + input, body.rtl .xoo-aff-input-icon + select {
 
 body.rtl .xoo-aff-input-group .xoo-aff-input-icon {
     border-left: 0;
+}
+
+@media only screen and (max-width: 450px) {
+    .xoo-aff-group.onehalf , .xoo-aff-group.onefourth, .xoo-aff-group.onethird , .xoo-aff-group, .xoo-aff-group.twothird {
+        width: 100%;
+        margin-right: 0;
+    }
+    .xoo-aff-group {
+        margin-right: 0;
+    }
+    body.rtl .xoo-aff-group:not(.one){
+        margin-left: 0;
+    }
 }

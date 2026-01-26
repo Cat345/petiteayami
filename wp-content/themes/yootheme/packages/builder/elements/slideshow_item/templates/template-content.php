@@ -10,10 +10,9 @@ $title = $this->el($element['title_element'], [
         'uk-font-{title_font_family}',
         'uk-text-{title_color} {@!title_color: background}',
         'uk-link-{title_hover_style} {@title_link}', // Set here to style links which already come with dynamic content (WP taxonomy links)
-        'uk-margin[-{title_margin}]-top {@!title_margin: remove}',
-        'uk-margin-remove-top {@title_margin: remove}',
-        'uk-margin-remove-bottom',
-        'uk-flex-1 {@content_expand}' => !$props['content'] && (!$props['meta'] || $element['meta_align'] == 'above-title'),
+        'uk-margin[-{title_margin}]-top',
+        'uk-margin-remove-bottom {@!title_margin_auto}',
+        'uk-margin-auto-bottom {@title_margin_auto}',
     ],
 
     'uk-slideshow-parallax' => $this->parallaxOptions($element, 'title_'),
@@ -26,9 +25,9 @@ $meta = $this->el($element['meta_element'], [
         'el-meta',
         'uk-{meta_style}',
         'uk-text-{meta_color}',
-        'uk-margin[-{meta_margin}]-top {@!meta_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{meta_margin: remove}-top]' => !in_array($element['meta_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']) || $element['meta_element'] != 'div',
-        'uk-flex-1 {@content_expand}' => $element['meta_align'] == 'below-content' || (!$props['content'] && ($element['meta_align'] == 'above-content' || ($element['meta_align'] == 'below-title' ))),
+        'uk-margin[-{meta_margin}]-top',
+        'uk-margin-remove-bottom {@!meta_margin_auto}' => str_starts_with($element['meta_style'] ?? '', 'h') || $element['meta_element'] != 'div',
+        'uk-margin-auto-bottom {@meta_margin_auto}',
     ],
 
     'uk-slideshow-parallax' => $this->parallaxOptions($element, 'meta_'),
@@ -40,9 +39,9 @@ $content = $this->el('div', [
     'class' => [
         'el-content uk-panel',
         'uk-{content_style}',
-        'uk-margin[-{content_margin}]-top {@!content_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{content_margin: remove}-top]' => !in_array($element['content_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']),
-        'uk-flex-1 {@content_expand}' => !($props['meta'] && $element['meta_align'] == 'below-content'),
+        'uk-margin[-{content_margin}]-top',
+        'uk-margin-remove-bottom {@!content_margin_auto}' => str_starts_with($element['content_style'] ?? '', 'h'),
+        'uk-margin-auto-bottom {@content_margin_auto}',
     ],
 
     'uk-slideshow-parallax' => $this->parallaxOptions($element, 'content_'),

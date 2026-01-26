@@ -2,8 +2,10 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Listener;
 
+use WP_Query;
 use YOOtheme\Builder;
 use YOOtheme\Builder\Templates\TemplateHelper;
+use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Config;
 use YOOtheme\Event;
 use YOOtheme\View;
@@ -11,24 +13,24 @@ use function YOOtheme\app;
 
 class LoadTemplate
 {
-    public const MAX_POSTS_PER_PAGE = 100;
+    public const MAX_POSTS_PER_PAGE = 500;
 
     public Config $config;
 
     /**
-     * @var ?array
+     * @var ?array<string, mixed>
      */
-    protected $currentView;
+    protected ?array $currentView = null;
 
     /**
-     * @var ?array
+     * @var ?array<string, mixed>
      */
-    protected $templateFromRequest;
+    protected ?array $templateFromRequest = null;
 
     /**
-     * @var ?array
+     * @var ?array<string, mixed>
      */
-    protected $matchedTemplate;
+    protected ?array $matchedTemplate = null;
 
     public function __construct(Config $config)
     {
@@ -38,7 +40,7 @@ class LoadTemplate
     /**
      * Match template.
      *
-     * @param \WP_Query $query
+     * @param WP_Query $query
      */
     public function match($query): void
     {
@@ -49,11 +51,30 @@ class LoadTemplate
         $this->matchTemplate($query);
 
         $template = $this->getTemplate();
+
         if ($posts = (int) ($template['params']['posts_per_page'] ?? 0)) {
             $query->set('posts_per_page', min($posts, static::MAX_POSTS_PER_PAGE));
         }
+
+        if ($ordering = (string) ($template['params']['order_by'] ?? '')) {
+            [$order_by, $order] = explode(',', $ordering);
+
+            $query->set('orderby', $order_by);
+            $query->set('order', $order);
+        }
+
+        if (!($template['params']['include_children'] ?? true)) {
+            Helper::filterOnce('parse_tax_query', function ($query) {
+                $query->tax_query->queries[0]['include_children'] = false;
+            });
+        }
     }
 
+    /**
+     * @param string $tpl
+     *
+     * @return string
+     */
     public function include($tpl)
     {
         $this->matchTemplate();
@@ -94,7 +115,7 @@ class LoadTemplate
         return $tpl;
     }
 
-    protected function matchTemplate($query = null)
+    protected function matchTemplate(?WP_Query $query = null): void
     {
         if ($this->currentView) {
             return;
@@ -114,6 +135,9 @@ class LoadTemplate
         $this->matchedTemplate = app(TemplateHelper::class)->match($this->currentView);
     }
 
+    /**
+     * @return ?array<string, mixed>
+     */
     protected function getTemplate(): ?array
     {
         return $this->templateFromRequest ?? $this->matchedTemplate;

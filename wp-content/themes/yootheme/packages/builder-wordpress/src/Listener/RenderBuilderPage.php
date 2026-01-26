@@ -20,6 +20,10 @@ class RenderBuilderPage
         $this->builder = $builder;
     }
 
+    /**
+     * @param string $template
+     * @return string
+     */
     public function handle($template)
     {
         if (!is_singular() || post_password_required()) {
@@ -28,9 +32,7 @@ class RenderBuilderPage
 
         global $post;
 
-        $content = isset($post->post_content)
-            ? PostHelper::matchContent($post->post_content)
-            : false;
+        $content = PostHelper::matchContent($post->post_content ?? '');
 
         if ($this->config->get('app.isCustomizer')) {
             if ($page = $this->config->get('req.customizer.page')) {

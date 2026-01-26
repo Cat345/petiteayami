@@ -25,8 +25,10 @@ if ( ! function_exists( 'supro_extra_search' ) ) {
 	}
 }
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<style>
 		.header-layout-1 .site-header .menu-extra.menu-extra-au .menu-item-search {
 			display: none;
@@ -35,5 +37,6 @@ add_action( 'wp_footer', function () {
 			margin-top: -3px;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

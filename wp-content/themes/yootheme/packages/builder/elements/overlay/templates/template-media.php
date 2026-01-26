@@ -41,7 +41,6 @@ if ($props['image_expand'] || $props['image_min_height'] || ($media->name == 'vi
     $media->attr([
 
         'class' =>  [
-            'uk-object-cover',
             'uk-object-{0}' => $focal,
         ],
 
@@ -61,10 +60,31 @@ if (($props['hover_image'] || $props['hover_video']) && ($props['image'] || $pro
     if ($props['hover_video']) {
         $src = $props['hover_video'];
         $hover_media = include "{$__dir}/template-video.php";
+
+        // Resets
+        if ($hover_media->name == 'video') {
+            $hover_media->attr('preload', 'none');
+        } else {
+            $hover_media->attr('loading', 'lazy');
+        }
+
+        $hover_media->attr([
+            'uk-video' => false,
+            'uk-cover' => $hover_media->attrs['uk-video'],
+        ]);
+
     } elseif ($props['hover_image']) {
         $src = $props['hover_image'];
         $focal = $props['hover_image_focal_point'];
         $hover_media = include "{$__dir}/template-image.php";
+
+        // Resets
+        $hover_media->attr([
+            'alt' => true,
+            'loading' => 'lazy',
+            'uk-svg' => false,
+            'uk-cover' => true,
+        ]);
     }
 
     $hover_media->attr([
@@ -74,15 +94,6 @@ if (($props['hover_image'] || $props['hover_video']) && ($props['image'] || $pro
             'uk-transition-fade {@!image_transition}',
             'uk-object-{hover_image_focal_point}', // `uk-cover` already sets object-fit to cover
         ],
-
-        'uk-cover' => true,
-        'uk-video' => false,
-
-        // Resets
-        'alt' => true, // Image
-        'loading' => false, // Image + Iframe
-        'preload' => false, // Video
-
     ]);
 
 }

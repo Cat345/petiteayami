@@ -3,6 +3,120 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.9.1' => function ($config) {
+        Arr::updateKeys($config, [
+            'less.@form-padding-vertical' => 'less.@form-multi-line-padding-vertical',
+        ]);
+
+        return $config;
+    },
+
+    '5.0.0-beta.8.2' => function ($config) {
+        foreach ($config['less'] ?? [] as $key => $value) {
+            $newKey = preg_replace('/^@(inverse-)?accordion-/', '$0default-', $key);
+            if ($newKey !== $key) {
+                $config['less'][$newKey] = $config['less'][$key];
+                unset($config['less'][$key]);
+            }
+        }
+
+        return $config;
+    },
+    '5.0.0-beta.0.14' => function ($config) {
+        // Menu Positions
+        if (Arr::has($config, 'menu.positions')) {
+            $positions = Arr::get($config, 'menu.positions', []);
+            foreach ($positions as &$position) {
+                // Workaround for invalid configs (it seems update '3.0.0-beta.1.3' has not run properly everywhere)
+                if (is_string($position)) {
+                    continue;
+                }
+
+                if (($position['icon_width'] ?? '') && !($position['image_width'] ?? '')) {
+                    $position['image_width'] = $position['icon_width'];
+                }
+                unset($position['icon_width']);
+            }
+            Arr::set($config, 'menu.positions', $positions);
+        }
+
+        return $config;
+    },
+
+    '5.0.0-beta.0.12' => function ($config) {
+        foreach (
+            [
+                'less.@countdown-number-line-height',
+                'less.@countdown-number-font-size',
+                'less.@countdown-number-font-size-s',
+                'less.@countdown-number-font-size-m',
+                'less.@countdown-separator-line-height',
+                'less.@countdown-separator-font-size',
+                'less.@countdown-separator-font-size-s',
+                'less.@countdown-separator-font-size-m',
+
+                'less.@countdown-item-color',
+                'less.@countdown-item-font-family',
+                'less.@countdown-item-font-weight',
+                'less.@countdown-item-text-transform',
+                'less.@countdown-item-letter-spacing',
+                'less.@countdown-item-font-style',
+                'less.@countdown-label-font-size',
+                'less.@countdown-label-font-size-s',
+                'less.@countdown-label-font-size-m',
+                'less.@countdown-label-color',
+                'less.@countdown-label-font-family',
+                'less.@countdown-label-font-weight',
+                'less.@countdown-label-text-transform',
+                'less.@countdown-label-letter-spacing',
+                'less.@countdown-label-letter-spacing-s',
+                'less.@countdown-label-font-style',
+
+                'less.@inverse-countdown-item-color',
+                'less.@inverse-countdown-label-color',
+            ]
+            as $key
+        ) {
+            Arr::del($config, $key);
+        }
+
+        return $config;
+    },
+
+    '5.0.0-beta.0.6' => function ($config) {
+        Arr::del($config, 'navbar.dropdown_hide');
+
+        return $config;
+    },
+    '5.0.0-beta.0.5' => function ($config) {
+        // Less
+        if (Arr::get($config, 'less.@navbar-mode') === 'border') {
+            Arr::del($config, 'less.@navbar-mode');
+        }
+        if (Arr::get($config, 'less.@navbar-mode') === 'border-always') {
+            Arr::set($config, 'less.@navbar-mode', 'bottom');
+        }
+        if (Arr::get($config, 'less.@navbar-mode') === 'rail') {
+            Arr::set($config, 'less.@navbar-mode', 'top-bottom');
+        }
+        if (Arr::get($config, 'less.@navbar-mode') === 'frame') {
+            Arr::set($config, 'less.@navbar-mode', 'full');
+        }
+        Arr::updateKeys($config, [
+            'less.@navbar-mode' => 'less.@navbar-border-mode',
+            'less.@navbar-mode-border-vertical' => 'less.@navbar-border-vertical-mode',
+        ]);
+
+        return $config;
+    },
+    '5.0.0-beta.0.1' => function ($config) {
+        Arr::updateKeys($config, [
+            'less.@accordion-title-background' => 'less.@accordion-item-background',
+            'less.@tab-item-mode' => 'less.@tab-mode',
+        ]);
+
+        return $config;
+    },
     '4.5.5' => function ($config) {
         Arr::del($config, 'post.content_length');
 
@@ -15,13 +129,12 @@ return [
     },
     '4.5.0-beta.0.5' => function ($config) {
         foreach (['header.', 'mobile.header.'] as $header) {
-            $layout = Arr::get($config, $header . 'search_mode') ?: (
+            $layout = Arr::pull($config, $header . 'search_mode') ?: (
                 Arr::get($config, $header . 'search_results_dropbar')
                     ? 'input-dropbar'
                     : 'input-dropdown'
             );
             Arr::set($config, $header . 'search_layout', $layout);
-            Arr::del($config, $header . 'search_mode');
             Arr::del($config, $header . 'search_results_dropbar');
         }
 
@@ -61,10 +174,9 @@ return [
     },
     '4.5.0-beta.0.1' => function ($config) {
         foreach (['header.', 'mobile.header.'] as $header) {
-            if (Arr::get($config, $header . 'search_style') == 'modal') {
+            if (Arr::pull($config, $header . 'search_style') == 'modal') {
                 Arr::set($config, $header . 'search_mode', 'modal');
             }
-            Arr::del($config, $header . 'search_style');
         }
 
         return $config;
@@ -162,12 +274,9 @@ return [
             !Arr::get($config, 'site.boxed.media') &&
             Arr::get($config, 'site.boxed.header_transparent')
         ) {
-            Arr::set(
-                $config,
-                'less.@theme-page-container-color-mode',
-                Arr::get($config, 'site.boxed.header_transparent'),
-            );
-            Arr::del($config, 'site.boxed.header_transparent');
+            Arr::updateKeys($config, [
+                'site.boxed.header_transparent' => 'less.@theme-page-container-color-mode'
+            ]);
         }
 
         if (Arr::get($config, 'site.boxed.header_transparent')) {
@@ -206,12 +315,9 @@ return [
         return $config;
     },
     '4.1.0-beta.0.3' => function ($config) {
-        if (str_ends_with(Arr::get($config, 'less.@pagination-item-line-height', ''), 'px')) {
-            Arr::updateKeys($config, [
-                'less.@pagination-item-line-height' => 'less.@pagination-item-height',
-            ]);
-        } else {
-            Arr::del($config, 'less.@pagination-item-line-height');
+        $height = Arr::pull($config, 'less.@pagination-item-line-height', '');
+        if (str_ends_with($height, 'px')) {
+            Arr::set($config, 'less.@pagination-item-height', $height);
         }
 
         return $config;
@@ -249,15 +355,11 @@ return [
     },
     '3.1.0-beta.0.2' => function ($config) {
         foreach (['mobile.header', 'header'] as $header) {
-            $links = [];
-            foreach (
-                Arr::filter((array) Arr::get($config, "{$header}.social_links", []))
-                as $link
-            ) {
-                if ($link) {
-                    $links[] = ['link' => $link];
-                }
-            }
+            $links = array_map(
+                fn($link) => ['link' => $link],
+                array_filter((array) Arr::get($config, "{$header}.social_links", []))
+            );
+
             if ($links) {
                 Arr::set($config, "{$header}.social_links", $links);
             } else {
@@ -331,8 +433,8 @@ return [
         if (Arr::has($config, 'menu.positions')) {
             $positions = Arr::get($config, 'menu.positions', []);
             foreach ($positions as &$position) {
-                if (empty(Arr::get($position, 'style'))) {
-                    Arr::set($position, 'style', 'default');
+                if (empty($position['style'])) {
+                    $position['style'] = 'default';
                 }
             }
             Arr::set($config, 'menu.positions', $positions);
@@ -355,11 +457,11 @@ return [
         if (Arr::has($config, 'menu.items')) {
             $items = Arr::get($config, 'menu.items', []);
             foreach ($items as &$item) {
-                Arr::del($item, 'image_width');
-                Arr::del($item, 'image_height');
-                Arr::del($item, 'image_svg_inline');
-                Arr::del($item, 'icon_width');
-                Arr::del($item, 'image_margin');
+                unset($item['image_width']);
+                unset($item['image_height']);
+                unset($item['image_svg_inline']);
+                unset($item['icon_width']);
+                unset($item['image_margin']);
             }
             Arr::set($config, 'menu.items', $items);
         }
@@ -476,32 +578,26 @@ return [
     },
     '2.8.0-beta.0.4' => function ($config) {
         // Mobile Header
-        if (Arr::get($config, 'mobile.logo') == 'left') {
-            if (Arr::get($config, 'mobile.toggle') == 'left') {
-                Arr::set($config, 'mobile.header.layout', 'horizontal-left');
-            } else {
-                Arr::set($config, 'mobile.header.layout', 'horizontal-right');
-            }
-        } else {
-            Arr::set($config, 'mobile.header.layout', 'horizontal-center-logo');
-        }
-        Arr::del($config, 'mobile.logo');
-        if (Arr::get($config, 'mobile.toggle') == 'left') {
-            Arr::set($config, 'mobile.dialog.toggle', 'navbar-mobile:start');
-        } else {
-            Arr::set($config, 'mobile.dialog.toggle', 'header-mobile:end');
-        }
-        Arr::del($config, 'mobile.toggle');
-        if (Arr::get($config, 'mobile.offcanvas.flip')) {
-            Arr::set(
-                $config,
-                'mobile.dialog.offcanvas.flip',
-                Arr::get($config, 'mobile.offcanvas.flip'),
-            );
-        } else {
-            Arr::set($config, 'mobile.dialog.offcanvas.flip', false);
-        }
-        Arr::del($config, 'mobile.offcanvas.flip');
+        Arr::set($config, 'mobile.header.layout',
+            Arr::pull($config, 'mobile.logo') == 'left'
+                ? (Arr::get($config, 'mobile.toggle') == 'left'
+                    ? 'horizontal-left'
+                    : 'horizontal-right'
+                ) : 'horizontal-center-logo'
+        );
+
+        Arr::set($config, 'mobile.dialog.toggle',
+            Arr::pull($config, 'mobile.toggle') == 'left'
+                ? 'navbar-mobile:start'
+                : 'header-mobile:end'
+        );
+
+        Arr::set(
+            $config,
+            'mobile.dialog.offcanvas.flip',
+            Arr::pull($config, 'mobile.offcanvas.flip', false),
+        );
+
         Arr::updateKeys($config, [
             // Mobile Header
             'mobile.logo_padding_remove' => 'mobile.header.logo_padding_remove',
@@ -509,8 +605,7 @@ return [
             'mobile.sticky' => 'mobile.navbar.sticky',
             // Mobile Dialog
             'mobile.animation' => function ($value) use (&$config) {
-                $menu_center_vertical = Arr::get($config, 'mobile.menu_center_vertical');
-                Arr::del($config, 'mobile.menu_center_vertical');
+                $menu_center_vertical = Arr::pull($config, 'mobile.menu_center_vertical');
                 switch ($value) {
                     case 'offcanvas':
                         return [
@@ -559,19 +654,14 @@ return [
     '2.8.0-beta.0.3' => function ($config) {
         foreach (['bgx', 'bgy'] as $prop) {
             $key = "site.image_parallax_{$prop}";
-            $start = implode(
-                ',',
-                array_map('trim', explode(',', Arr::get($config, "{$key}_start", ''))),
-            );
-            $end = implode(
-                ',',
-                array_map('trim', explode(',', Arr::get($config, "{$key}_end", ''))),
-            );
+            $start = preg_replace('/\s*,\s*/', ',', Arr::get($config, "{$key}_start", ''));
+            $end = preg_replace('/\s*,\s*/', ',', Arr::get($config, "{$key}_end", ''));
+
             if ($start !== '' || $end !== '') {
                 Arr::set(
                     $config,
                     $key,
-                    implode(',', [$start !== '' ? $start : 0, $end !== '' ? $end : 0]),
+                    implode(',', [$start !== '' ? $start : '0', $end !== '' ? $end : '0']),
                 );
             }
             Arr::del($config, "{$key}_start");
@@ -616,12 +706,11 @@ return [
             Arr::set($config, 'dialog.layout', 'modal-center');
         }
         if (preg_match('/(offcanvas|modal)/', Arr::get($config, 'header.layout'))) {
-            if (Arr::get($config, 'header.logo_center')) {
-                Arr::set($config, 'header.layout', 'horizontal-center-logo');
-                Arr::del($config, 'header.logo_center');
-            } else {
-                Arr::set($config, 'header.layout', 'horizontal-left');
-            }
+            Arr::set($config, 'header.layout',
+                Arr::pull($config, 'header.logo_center')
+                    ? 'horizontal-center-logo'
+                    : 'horizontal-left'
+            );
         }
         // Dialog Options
         Arr::updateKeys($config, [
@@ -644,19 +733,17 @@ return [
         if (Arr::get($config, 'header.social') == 'toolbar-left') {
             Arr::set($config, 'header.social', 'toolbar-right:start');
         } elseif (Arr::get($config, 'header.social')) {
-            Arr::set($config, 'header.social', Arr::get($config, 'header.social') . ':end');
+            Arr::update($config, 'header.social', fn($value) => "{$value}:end");
         }
         // Menu Items
         if (Arr::has($config, 'menu.items')) {
             $items = Arr::get($config, 'menu.items', []);
             foreach ($items as &$item) {
-                if (Arr::get($item, 'justify')) {
+                if (Arr::pull($item, 'justify')) {
                     Arr::set($item, 'dropdown.justify', 'navbar');
-                    Arr::del($item, 'justify');
                 }
-                if (Arr::get($item, 'columns')) {
-                    Arr::set($item, 'dropdown.columns', Arr::get($item, 'columns'));
-                    Arr::del($item, 'columns');
+                if ($columns = Arr::pull($item, 'columns')) {
+                    Arr::set($item, 'dropdown.columns', $columns);
                 }
             }
             Arr::set($config, 'menu.items', $items);
@@ -830,35 +917,23 @@ return [
     '1.22.0-beta.0.1' => function ($config) {
         // Rename Top and Bottom options
         foreach (['top', 'bottom'] as $position) {
-            Arr::set(
-                $config,
-                "{$position}.column_gap",
-                Arr::get($config, "{$position}.grid_gutter", ''),
-            );
-            Arr::set(
-                $config,
-                "{$position}.row_gap",
-                Arr::get($config, "{$position}.grid_gutter", ''),
-            );
-            Arr::del($config, "{$position}.grid_gutter");
+            $gutter = Arr::pull($config, "{$position}.grid_gutter");
+            Arr::set($config, "{$position}.column_gap", $gutter);
+            Arr::set($config, "{$position}.row_gap", $gutter);
 
             Arr::set(
                 $config,
                 "{$position}.divider",
-                Arr::get($config, "{$position}.grid_divider", ''),
+                Arr::pull($config, "{$position}.grid_divider", ''),
             );
-            Arr::del($config, "{$position}.grid_divider");
         }
 
         // Rename Blog options
-        if (Arr::get($config, 'blog.column_gutter')) {
+        if (Arr::pull($config, 'blog.column_gutter')) {
             Arr::set($config, 'blog.grid_column_gap', 'large');
         }
         Arr::set($config, 'blog.grid_row_gap', 'large');
-        Arr::del($config, 'blog.column_gutter');
-
-        Arr::set($config, 'blog.grid_breakpoint', Arr::get($config, 'blog.column_breakpoint', 'm'));
-        Arr::del($config, 'blog.column_breakpoint');
+        Arr::set($config, 'blog.grid_breakpoint', Arr::pull($config, 'blog.column_breakpoint', 'm'));
 
         // Rename Sidebar options
         foreach (['width', 'breakpoint', 'first', 'gutter', 'divider'] as $prop) {

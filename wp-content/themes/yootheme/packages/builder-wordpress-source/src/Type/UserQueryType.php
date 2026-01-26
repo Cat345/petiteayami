@@ -2,14 +2,19 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_User;
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class UserQueryType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -30,6 +35,9 @@ class UserQueryType
         ];
     }
 
+    /**
+     * @return ?WP_User
+     */
     public static function resolve()
     {
         return get_queried_object();

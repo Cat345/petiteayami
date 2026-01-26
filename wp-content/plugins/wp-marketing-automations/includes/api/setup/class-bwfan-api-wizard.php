@@ -59,7 +59,7 @@ class BWFAN_API_Wizard extends BWFAN_API_Base {
 
 	public function optin_track() {
 		WooFunnels_optIn_Manager::Allow_optin( true, 'FKA' );
-
+		bwf_options_update( 'bwf_usage_tracking_opted_on', current_time( 'timestamp' ) );
 		return array(
 			'status' => true,
 			'msg'    => __( 'Optin tracking enabled', 'wp-marketing-automations' ),

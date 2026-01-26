@@ -105,6 +105,9 @@ class Coupon_Tab extends Base_Model implements Initiable_Interface, Model_Interf
      * @access public
      */
     public function my_coupons_page() {
+        // Enqueue blocks frontend styles (needed after WP version 6.9.0).
+        wp_enqueue_style( 'acfw-blocks-frontend' );
+
         \ACFWP()->Helper_Functions->load_template(
             'acfw-my-coupons.php',
             array(

@@ -7,11 +7,8 @@ use YOOtheme\ConfigObject;
 
 class BuilderConfig extends ConfigObject
 {
-    /**
-     * Constructor.
-     */
     public function __construct(Builder $builder)
     {
-        parent::__construct(['elements' => $builder->types]);
+        parent::__construct(['elements' => $builder->getTypes()]);
     }
 }

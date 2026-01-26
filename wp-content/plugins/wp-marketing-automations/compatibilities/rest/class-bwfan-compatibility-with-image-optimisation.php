@@ -6,8 +6,18 @@
  * https://wordpress.org/plugins/image-optimization/
  */
 if ( ! class_exists( 'BWFAN_Compatibility_With_Image_Optimization' ) ) {
+	/**
+	 * Bwfan Compatibility With Image Optimization
+	 *
+	 * @since 1.0.0
+	 */
 	class BWFAN_Compatibility_With_Image_Optimization {
 
+		/**
+		 *   Construct
+		 *
+		 * @since 1.0.0
+		 */
 		public function __construct() {
 			add_action( 'action_scheduler_init', [ $this, 'remove_image_optimization_hook' ], 9 );
 		}
@@ -20,7 +30,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Image_Optimization' ) ) {
 		public function remove_image_optimization_hook() {
 			$rest_route = filter_input( INPUT_GET, 'rest_route' );
 			if ( empty( $rest_route ) ) {
-				$rest_route = $_SERVER['REQUEST_URI'] ?? '';
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
 			}
 			if ( empty( $rest_route ) ) {
 				return;
@@ -29,6 +39,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Image_Optimization' ) ) {
 
 			if ( false !== strpos( $rest_route, '/woofunnels/v1/worker' ) || false !== strpos( $rest_route, '/autonami/v2/worker' ) || false !== strpos( $rest_route, '/autonami/v1/worker' ) ) {
 				BWFAN_Common::remove_actions( 'action_scheduler_init', 'ImageOptimization\Modules\Optimization\Components\Actions_Cleanup', 'schedule_cleanup' );
+				BWFAN_Common::remove_actions( 'action_scheduler_failed_execution', 'ImageOptimization\Modules\Optimization\Components\Retry', 'retry_failed_optimizations' );
 			}
 		}
 	}

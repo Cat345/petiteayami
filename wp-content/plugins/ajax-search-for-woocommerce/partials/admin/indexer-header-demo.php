@@ -1,6 +1,8 @@
 <?php
+/**
+ * Exit if accessed directly
+ */
 
-// Exit if accessed directly
 if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }

@@ -59,7 +59,7 @@ foreach ($items as $item) {
         if ($level > 1 && $item->divider && !$children) {
             $title = '';
             $attrs['class'][] = 'uk-nav-divider';
-        } elseif ($children) {
+        } elseif ($children && $level == 1) {
             $link = ['role' => 'button'];
             if (!empty($item->anchor_css)) {
                 $link['class'][] = $item->anchor_css;
@@ -77,7 +77,7 @@ foreach ($items as $item) {
         if (isset($item->url)) {
             $link['href'] = $item->url;
 
-            if ($level > 1 && str_contains((string) $item->url, '#')) {
+            if (($level > 1 || !$config('~menu.scrollspyNav')) && str_contains((string) $item->url, '#')) {
                 $link['uk-scroll'] = true;
             }
         }
@@ -154,6 +154,14 @@ foreach ($items as $item) {
                 $children = "{$indention}<div{$this->attrs($attrs_children)}><div{$this->attrs($wrapper)}>{$columnsStr}</div></div>";
             }
 
+        } elseif ($item->type === 'heading') {
+            echo "{$indention}<li{$this->attrs($attrs)}>{$title}</li>";
+
+            if ($children) {
+                echo $this->self(['items' => $item->children, 'level' => $level]);
+            }
+
+            continue;
         } else {
 
             $attrs_children = [];

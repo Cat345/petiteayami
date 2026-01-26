@@ -61,6 +61,12 @@ abstract class BWFAN_API_Base {
 		$this->args               = wp_parse_args( $params, $this->default_args_values() );
 
 		try {
+
+			/**
+			 * Include necessary classes so that can run admin rest endpoints.
+			 */
+			do_action( 'bwfan_rest_call' );
+
 			return $this->process_api_call();
 		} catch ( Error $e ) {
 			$this->response_code = 500;
@@ -170,6 +176,12 @@ abstract class BWFAN_API_Base {
 	 * @return bool
 	 */
 	public function rest_permission_callback( WP_REST_Request $request ) {
+		if ( 0 === get_current_user_id() ) {
+			$query_params = $request->get_query_params();
+			if ( isset( $query_params['bwf-nonce'] ) && $query_params['bwf-nonce'] === get_option( 'bwfan_unique_secret', '' ) ) {
+				return true;
+			}
+		}
 		$permissions = BWFAN_Common::access_capabilities();
 		foreach ( $permissions as $permission ) {
 			if ( current_user_can( $permission ) ) {

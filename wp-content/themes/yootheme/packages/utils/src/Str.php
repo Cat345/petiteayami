@@ -7,10 +7,7 @@ namespace YOOtheme;
  */
 abstract class Str
 {
-    /**
-     * @var string
-     */
-    public static $encoding = 'UTF-8';
+    public static string $encoding = 'UTF-8';
 
     /**
      * Checks if string matches a given pattern.
@@ -18,18 +15,13 @@ abstract class Str
      * @param string $pattern
      * @param string $string
      *
-     * @return bool
-     *
      * @example
      * Str::is('foo/*', 'foo/bar/baz');
      * // => true
      */
-    public static function is($pattern, $string)
+    public static function is(string $pattern, string $string): bool
     {
         static $cache;
-
-        $string = (string) $string;
-        $pattern = (string) $pattern;
 
         if ($pattern === $string) {
             return true;
@@ -49,16 +41,13 @@ abstract class Str
     /**
      * Checks if string contains a given substring.
      *
-     * @param string       $haystack
-     * @param string|array $needles
-     *
-     * @return bool
+     * @param string|string[] $needles
      *
      * @example
      * Str::contains('taylor', 'ylo');
      * // => true
      */
-    public static function contains($haystack, $needles)
+    public static function contains(string $haystack, $needles): bool
     {
         foreach ((array) $needles as $needle) {
             if ($needle !== '' && mb_strpos($haystack, $needle, 0, static::$encoding) !== false) {
@@ -72,19 +61,16 @@ abstract class Str
     /**
      * Checks if string starts with a given substring.
      *
-     * @param string       $haystack
-     * @param string|array $needles
-     *
-     * @return bool
+     * @param string|string[] $needles
      *
      * @example
      * Str::startsWith('jason', 'jas');
      * // => true
      */
-    public static function startsWith($haystack, $needles)
+    public static function startsWith(string $haystack, $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if (str_starts_with((string) $haystack, (string) $needle)) {
+            if (str_starts_with($haystack, (string) $needle)) {
                 return true;
             }
         }
@@ -95,19 +81,16 @@ abstract class Str
     /**
      * Checks if string ends with a given substring.
      *
-     * @param string       $haystack
-     * @param string|array $needles
-     *
-     * @return bool
+     * @param string|string[] $needles
      *
      * @example
      * Str::endsWith('jason', 'on');
      * // => true
      */
-    public static function endsWith($haystack, $needles)
+    public static function endsWith(string $haystack, $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if (str_ends_with((string) $haystack, (string) $needle)) {
+            if (str_ends_with($haystack, (string) $needle)) {
                 return true;
             }
         }
@@ -118,31 +101,23 @@ abstract class Str
     /**
      * Returns the string length.
      *
-     * @param string $string
-     *
-     * @return int
-     *
      * @example
      * Str::length('foo bar baz');
      * // => 11
      */
-    public static function length($string)
+    public static function length(string $string): int
     {
-        return mb_strlen(strval($string), static::$encoding);
+        return mb_strlen($string, static::$encoding);
     }
 
     /**
      * Convert string to lower case.
      *
-     * @param string $string
-     *
-     * @return string
-     *
      * @example
      * Str::lower('fOo Bar bAz');
      * // => foo bar baz
      */
-    public static function lower($string)
+    public static function lower(string $string): string
     {
         return mb_strtolower($string, static::$encoding);
     }
@@ -150,15 +125,11 @@ abstract class Str
     /**
      * Converts the first character of string to lower case.
      *
-     * @param string $string
-     *
-     * @return string
-     *
      * @example
      * Str::lowerFirst('FOO BAR BAZ');
      * // => fOO BAR BAZ
      */
-    public static function lowerFirst($string)
+    public static function lowerFirst(string $string): string
     {
         return static::lower(static::substr($string, 0, 1)) . static::substr($string, 1);
     }
@@ -166,15 +137,11 @@ abstract class Str
     /**
      * Converts string to upper case.
      *
-     * @param string $string
-     *
-     * @return string
-     *
      * @example
      * Str::upper('fOo Bar bAz');
      * // => FOO BAR BAZ
      */
-    public static function upper($string)
+    public static function upper(string $string): string
     {
         return mb_strtoupper($string, static::$encoding);
     }
@@ -182,15 +149,11 @@ abstract class Str
     /**
      * Converts the first character of string to upper case.
      *
-     * @param string $string
-     *
-     * @return string
-     *
      * @example
      * Str::upperFirst('foo bar baz');
      * // => Foo bar baz
      */
-    public static function upperFirst($string)
+    public static function upperFirst(string $string): string
     {
         return static::upper(static::substr($string, 0, 1)) . static::substr($string, 1);
     }
@@ -200,13 +163,11 @@ abstract class Str
      *
      * @param string|string[] $string
      *
-     * @return string
-     *
      * @example
      * Str::titleCase('jefferson costella');
      * // => Jefferson Costella
      */
-    public static function titleCase($string)
+    public static function titleCase($string): string
     {
         return mb_convert_case(join(' ', (array) $string), MB_CASE_TITLE, static::$encoding);
     }
@@ -215,15 +176,12 @@ abstract class Str
      * Converts string to camel case (https://en.wikipedia.org/wiki/Camel_case).
      *
      * @param string|string[] $string
-     * @param bool            $upper
-     *
-     * @return string
      *
      * @example
      * Str::camelCase('Yootheme Framework');
      * // => yoothemeFramework
      */
-    public static function camelCase($string, $upper = false)
+    public static function camelCase($string, bool $upper = false): string
     {
         $string = join(' ', (array) $string);
         $string = str_replace(['-', '_'], ' ', $string);
@@ -236,15 +194,12 @@ abstract class Str
      * Converts string to snake case (https://en.wikipedia.org/wiki/Snake_case).
      *
      * @param string|string[] $string
-     * @param string          $delimiter
-     *
-     * @return string
      *
      * @example
      * Str::snakeCase('Yootheme Framework');
      * // => yootheme_framework
      */
-    public static function snakeCase($string, $delimiter = '_')
+    public static function snakeCase($string, string $delimiter = '_'): string
     {
         $string = join(' ', (array) $string);
 
@@ -266,17 +221,11 @@ abstract class Str
     /**
      * Returns part of a string.
      *
-     * @param string   $string
-     * @param int      $start
-     * @param int|null $length
-     *
-     * @return string
-     *
      * @example
      * Str::substr('Yootheme Framework', 3, 5);
      * // => theme
      */
-    public static function substr($string, $start, $length = null)
+    public static function substr(string $string, int $start, ?int $length = null): string
     {
         return mb_substr($string, $start, $length, static::$encoding);
     }
@@ -284,19 +233,16 @@ abstract class Str
     /**
      * Limit the number of characters in a string.
      *
-     * @param string $string
-     * @param int    $length
-     * @param string $omission
-     * @param bool   $exact
-     *
-     * @return string
-     *
      * @example
      * Str::limit('hi-diddly-ho there, neighborino', 24);
      * // => hi-diddly-ho there, n...
      */
-    public static function limit($string, $length = 100, $omission = '...', $exact = true)
-    {
+    public static function limit(
+        string $string,
+        int $length = 100,
+        string $omission = '...',
+        bool $exact = true
+    ): string {
         $strLength = mb_strwidth($string, static::$encoding);
         $omitLength = $length - mb_strwidth($omission, static::$encoding);
 
@@ -321,43 +267,13 @@ abstract class Str
     }
 
     /**
-     * Limit the number of words in a string.
-     *
-     * @param string $string
-     * @param int    $words
-     * @param string $omission
-     *
-     * @return string
-     *
-     * @example
-     * Str::words('Taylor Otwell', 1);
-     * // => Taylor...
-     */
-    public static function words($string, $words = 100, $omission = '...')
-    {
-        preg_match('/^\s*+(?:\S++\s*+){1,' . $words . '}/u', $string, $matches);
-
-        if (!isset($matches[0]) || strlen($string) === strlen($matches[0])) {
-            return $string;
-        }
-
-        return rtrim($matches[0]) . $omission;
-    }
-
-    /**
      * Generates a "random" alphanumeric string.
-     *
-     * @param int $length
-     *
-     * @throws \Exception
-     *
-     * @return string
      *
      * @example
      * Str::random();
      * // => X2wvU09F1j4ZCzKD
      */
-    public static function random($length = 16)
+    public static function random(int $length = 16): string
     {
         $string = '';
 
@@ -372,15 +288,13 @@ abstract class Str
     /**
      * Expands glob braces to array.
      *
-     * @param string $pattern
-     *
-     * @return array
+     * @return list<string>
      *
      * @example
      * Str::expandBraces('foo/{2,3}/bar');
      * // => ['foo/2/bar', 'foo/3/bar']
      */
-    public static function expandBraces($pattern)
+    public static function expandBraces(string $pattern): array
     {
         $braces = [];
         $expanded = [];
@@ -416,15 +330,11 @@ abstract class Str
     /**
      * Converts glob braces to a regex.
      *
-     * @param string $pattern
-     *
-     * @return string
-     *
      * @example
      * Str::convertBraces('foo/{2,3}/bar');
      * // => foo/(2|3)/bar
      */
-    public static function convertBraces($pattern)
+    public static function convertBraces(string $pattern): string
     {
         if (preg_match_all('/{((?:[^{}]+|(?R))*)}/', $pattern, $matches, PREG_OFFSET_CAPTURE)) {
             [$matches, $replaces] = $matches;

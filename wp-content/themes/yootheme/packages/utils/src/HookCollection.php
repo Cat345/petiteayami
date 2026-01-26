@@ -9,12 +9,16 @@ class HookCollection
     protected const AFTER = 'after';
     protected const FILTER = 'filter';
     protected const ERROR = 'error';
+    /**
+     * @var array<string, list<callable>> $hooks
+     */
     protected array $hooks = [];
 
     /**
      * Call hooks for given name.
      *
      * @param  string|string[] $name
+     * @param  list<mixed> $arguments
      * @return mixed
      */
     public function call($name, callable $callback, ...$arguments)
@@ -83,6 +87,8 @@ class HookCollection
 
     /**
      * Builds a function from given hook array.
+     *
+     * @param array<callable> $hooks
      */
     protected function build(callable $method, array $hooks): callable
     {
@@ -100,15 +106,15 @@ class HookCollection
 
     /**
      * Returns a function for given hook.
+     *
+     * @param array<callable> $hook
      */
     protected function reduce(callable $method, array $hook): \Closure
     {
         [$kind, $callback] = $hook;
 
         if ($kind === static::WRAP) {
-            return function (...$arguments) use ($method, $callback) {
-                return $callback($method, ...$arguments);
-            };
+            return fn(...$arguments) => $callback($method, ...$arguments);
         }
 
         if ($kind === static::BEFORE) {
@@ -128,9 +134,7 @@ class HookCollection
         }
 
         if ($kind === static::FILTER) {
-            return function (...$arguments) use ($method, $callback) {
-                return $callback($method(...$arguments), ...$arguments);
-            };
+            return fn(...$arguments) => $callback($method(...$arguments), ...$arguments);
         }
 
         return function (...$arguments) use ($method, $callback) {

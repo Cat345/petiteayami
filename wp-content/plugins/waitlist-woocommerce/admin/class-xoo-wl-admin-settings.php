@@ -29,6 +29,7 @@ class Xoo_Wl_Admin_Settings{
 			add_action( 'init', array( $this, 'generate_settings' ), 0 );
 			add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 			add_action( 'init', array( $this, 'clear_email_log' ) );
+			add_action( 'init', array( $this, 'save_list_view_preference' ) );
 		}
 
 		add_filter( 'plugin_action_links_' . XOO_WL_PLUGIN_BASENAME, array( $this, 'plugin_action_links' ) );
@@ -58,6 +59,23 @@ class Xoo_Wl_Admin_Settings{
 		add_action('xoo_tab_page_start', array( $this, 'addon_html' ), 10, 2 );
 
 		add_action( 'xoo_as_setting_sidebar_waitlist-woocommerce', array( $this, 'sidebar_html' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'old_version_import_export_addon_compatibility' ) );
+
+	}
+
+
+	public function save_list_view_preference(){
+
+		if( !isset( $_GET['page'] ) || $_GET['page'] !== 'xoo-wl-view-waitlist' || !isset( $_GET['list'] ) ) return;
+ 
+		
+		$allowed = array( 'products', 'waitlist' );
+		if( in_array( $_GET['list'], $allowed ) ){
+			update_option( 'xoo-wl-list-view', sanitize_text_field( $_GET['list'] ) );
+			wp_safe_redirect( remove_query_arg( 'list' ) );
+		} 
+		
 
 	}
 
@@ -199,45 +217,49 @@ class Xoo_Wl_Admin_Settings{
 
 
 
-	public function add_menu_pages(){
+	public function add_menu_pages() {
 
 		$args = array(
-			'menu_title' 	=> 'WC Waitlist',
-			'icon' 			=> 'dashicons-editor-ul',
-			'has_submenu' 	=> true
+			'title'        => 'Waitlist',
+			'menu_title'   => 'Waitlist',
+			'capability'   => $this->capability,
+			'slug'         => 'xoo-wl-view-waitlist',
+			'callback'     => array( $this, 'view_waitlist_page' ),
+			'icon'         => 'dashicons-editor-ul',
+			'has_submenu'  => false,
 		);
 
 		xoo_wl_helper()->admin->register_menu_page( $args );
 
 		add_submenu_page(
-			'waitlist-woocommerce-settings',
-			'Users',
-			'Users',
-    		$this->capability,
-    		'xoo-wl-view-waitlist',
-    		array( $this, 'view_waitlist_page' )
-    	);
+			'xoo-wl-view-waitlist',
+			'Settings',
+			'Settings',
+			$this->capability,
+			xoo_wl_helper()->admin->settings_slug,
+			array( xoo_wl_helper()->admin, 'settings_page_markup' )
+		);
+
+		// Other pages ONLY
+		add_submenu_page(
+			'xoo-wl-view-waitlist',
+			'Form Fields',
+			'Form Fields',
+			$this->capability,
+			'xoo-wl-fields',
+			array( $this, 'admin_fields_page' )
+		);
 
 		add_submenu_page(
-			'waitlist-woocommerce-settings',
-			'Form Fields',
-			'Form Fields',
-    		$this->capability,
-    		'xoo-wl-fields',
-    		array( $this, 'admin_fields_page' )
-    	);
-
-
-    	add_submenu_page(
-			'waitlist-woocommerce-settings',
+			'xoo-wl-view-waitlist',
 			'Email Log',
 			'Email Log',
-    		$this->capability,
-    		'xoo-wl-email-history',
-    		array( $this, 'view_email_history_page' )
-    	);
-
+			$this->capability,
+			'xoo-wl-email-history',
+			array( $this, 'view_email_history_page' )
+		);
 	}
+
 
 
 
@@ -276,7 +298,7 @@ class Xoo_Wl_Admin_Settings{
 		woocommerce_wp_checkbox(
 			array(
 				'id'          	=> '_xoo_waitlist_force_show',
-				'label'       	=> __( 'Always show waitlist button irrespective of the stock status.', 'waitlist-woocommerce' ),
+				'label'       	=> 'Always show waitlist button irrespective of the stock status.',
 				'cbvalue' 		=> 'yes',
 				'value' 		=> $waitlist_forceshow
 			)
@@ -310,7 +332,6 @@ class Xoo_Wl_Admin_Settings{
 
 	public function enqueue_scripts($hook) {
 
-
 		wp_enqueue_style( 'xoo-wl-admin-style', XOO_WL_URL . '/admin/assets/css/xoo-wl-admin-style.css', array(), XOO_WL_VERSION, 'all' );
 
 		//Enqueue Styles only on plugin settings page
@@ -326,7 +347,7 @@ class Xoo_Wl_Admin_Settings{
 		}
 
 
-		if( $hook === 'wc-waitlist_page_xoo-wl-view-waitlist' || $hook === 'wc-waitlist_page_xoo-wl-email-history' ){
+		if( $hook === 'toplevel_page_xoo-wl-view-waitlist' || $hook === 'waitlist_page_xoo-wl-email-history' ){
 
 			wp_enqueue_style( 'dataTables-css', XOO_WL_URL.'/admin/assets/css/datatables.css' );
 
@@ -356,32 +377,153 @@ class Xoo_Wl_Admin_Settings{
 	}
 
 
+	public function waitlist_list_view_html( $count ){
+
+		$current_list = xoo_wl_admin_settings()->get_waitlist_view();
+		$base_url     = admin_url( 'admin.php?page=xoo-wl-view-waitlist' );
+
+		?>
+
+		<div class="xoo-wl-users-stats">
+
+			<a href="<?php echo esc_url( add_query_arg( 'list', 'waitlist', $base_url ) ); ?>" class="<?php echo $current_list === 'waitlist' ? 'xoo-wlview-active' : ''; ?>">
+
+				<div class="xoo-wlusst-left">
+					<div class="xoo-wl-icon"><?php include XOO_WL_PATH.'/admin/assets/icons/user.svg' ?></div>
+					<label>Users</label>
+				</div>
+				<div class="xoo-wlusset-right">
+					<span><?php echo $count['rowsCount'] ?></span>
+				</div>
+				
+			</a>
+
+			<a href="<?php echo esc_url( add_query_arg( 'list', 'products', $base_url ) ); ?>" class="<?php echo $current_list === 'products' ? 'xoo-wlview-active' : ''; ?>">
+
+				<div class="xoo-wlusst-left">
+					<div class="xoo-wl-icon"><?php include XOO_WL_PATH.'/admin/assets/icons/bag.svg' ?></div>
+					<label>Products</label>
+					
+				</div>
+				<div class="xoo-wlusset-right">
+					<span><?php echo $count['productsCount'] ?></span>
+				</div>
+				
+			</a>
+
+		</div>
+		<?php
+	}
+
+	public function get_export_import_html( $list_view = 'waitlist' ){
+
+		$all_fields = (array) include XOO_WL_PATH.'/admin/views/export-fields.php';
+
+		switch ($list_view) {
+			case 'waitlist':
+				$table_type = 'waitlist_table';
+				break;
+
+			case 'products':
+				$table_type = 'products_table';
+				break;
+			
+			case 'product_users':
+				$table_type = 'users_table';
+				break;
+		}
+
+		$export_fields = $all_fields[$table_type];
+
+		if( defined('XOO_WLEXIM_VERSION') && version_compare(XOO_WLEXIM_VERSION, '1.3', '<') && $list_view === 'waitlist' ){
+			return;
+		}
+
+		?>
+		<div class="xoo-wl-exim-cont <?php echo !function_exists('xoo_wl_exim') ? 'xoo-wl-exim-no' : '' ?>">
+
+			<?php
+
+			$args = array(
+				'fields' 		=> $export_fields,
+				'table_type' 	=> $table_type
+			);
+
+			if( isset( $_GET['product'] ) ){
+				$args['product_id'] = (int) $_GET['product'];
+			}
+
+			xoo_wl_helper()->get_template( "xoo-wl-export-form.php", $args, XOO_WL_PATH.'/admin/templates/' );
+
+			xoo_wl_helper()->get_template( "xoo-wl-import-form.php", array(), XOO_WL_PATH.'/admin/templates/' );
+
+			if( !function_exists('xoo_wl_exim') ){
+
+				?>
+
+				<div class="xoo-wl-exim-no-notice">
+					Export and Import waitlist is a separate add-on. <a href="https://xootix.com/waitlist-for-woocommerce#sp-addons" target="__blank">BUY</a>
+				</div>
+
+				<?php
+
+			}
+
+			?>
+
+		</div>
+		<?php
+	}
+
+
+	public function get_waitlist_view(){
+		if( !isset( $_GET['page'] ) || $_GET['page'] !== 'xoo-wl-view-waitlist' ) return;
+
+		if( isset( $_GET['product'] ) ){
+			return 'product_users';
+		}
+		else{
+			$saved = get_option('xoo-wl-list-view');
+
+			if( !$saved ){
+
+				$saved = 'waitlist';
+				update_option('xoo-wl-list-view', $saved );
+			}
+			return $saved;
+		}
+	}
+
+
 	public function view_waitlist_page(){
 
 		$args = array();
-		$args['fieldsData'] = xoo_wl()->aff->fields->get_fields_data();
 
-		$export_fields = (array) include XOO_WL_PATH.'/admin/views/export-fields.php';
-		
-		if( isset( $_GET['product'] ) && $_GET['product'] ){
+		$list_view = $this->get_waitlist_view();
 
-			$product_id = (int) $_GET['product'];
+		$this->cron_not_working_html();
 
-			$args['count'] 			= xoo_wl_db()->get_waitlisted_count( $product_id );
-			$args['rows'] 			= xoo_wl_db()->get_waitlist_rows_by_product( $product_id );
-			$args['product_id'] 	= $product_id;
-			$args['export_fields'] 	= $export_fields['users_table'];
 
-			xoo_wl_helper()->get_template( "xoo-wl-table-product-users.php", $args, XOO_WL_PATH.'/admin/templates/' );
+		$this->get_export_import_html( $list_view );
+
+		if( isset( $_GET['product'] ) ){
+			xoo_wl_helper()->get_template( "xoo-wl-table-product-users.php", array(), XOO_WL_PATH.'/admin/templates/' );
 		}
 		else{
 
-			$args['count'] 			= xoo_wl_db()->get_waitlisted_count();
-			$args['rows'] 			= xoo_wl_db()->get_products_waitlist();
-			$args['export_fields'] 	= $export_fields['products_table'];
+			if( $list_view === 'products' ){
+				xoo_wl_helper()->get_template( "xoo-wl-table-products.php", array(), XOO_WL_PATH.'/admin/templates/' );
+				
+			}
+			else{
+				xoo_wl_helper()->get_template( "xoo-wl-table-users.php", array(), XOO_WL_PATH.'/admin/templates/' );
+			}
 
-			xoo_wl_helper()->get_template( "xoo-wl-table-products-list.php", $args, XOO_WL_PATH.'/admin/templates/' );
 		}
+
+
+		return;
+
 		
 		
 	}
@@ -451,6 +593,90 @@ class Xoo_Wl_Admin_Settings{
 	}
 
 
+	public function waitlist_table_product_column( $product, $args = array() ){
+
+		if( !$product || !is_object( $product ) ) return;
+
+		$args = wp_parse_args( $args, array(
+			'info_html' => ''
+		) );
+
+		$product_id = $product->get_id();
+
+		$product 	= wc_get_product( $product_id );
+
+		$title 		= xoo_wl_get_product_name( $product );
+
+		$image_id 	= $product->get_image_id();
+
+		if ( !$image_id && $product->is_type( 'variation' ) ) {
+		    $image_id = get_post_thumbnail_id( $product->get_parent_id() );
+		}
+
+		$thumb = $product->get_image();
+
+
+		$edit_link 	= $product->is_type('variation') ? get_edit_post_link( $product->get_parent_id() ) : get_edit_post_link( $product_id );
+		$permalink 	= $product->get_permalink();
+
+		$stock_status 	= $product->get_stock_status(); 
+
+	    $stock_label 	= wc_get_product_stock_status_options()[ $stock_status ];
+
+		ob_start();
+
+		?>
+
+		<div class="xoo-wl-product-col">
+			<div class="xoo-wl-prod-left">
+				<?php echo wp_kses_post( $thumb ); ?>
+			</div>
+
+			<div class="xoo-wl-prod-right">
+				<div class="xoo-wl-prodr-top">
+					<span><?php echo $title ?></span>
+					
+				</div>
+
+				<div class="xoo-wl-prorigh-links">
+					<a href="<?php echo $edit_link ?>" target="_blank">Edit</a>
+					<a href="<?php echo $permalink ?>" target="_blank">View</a>
+					<div class="xoo-wl-prod-stockstatus xoo-wl-prod-stock-<?php echo esc_html( $stock_status ) ?>"><?php echo esc_html( $stock_label ); ?></div>
+				</div>
+				<?php echo $args['info_html']; ?>
+
+			</div>
+
+			
+		</div>
+		
+
+		<?php
+
+
+		return ob_get_clean();
+
+		
+	}
+
+	public function waitlist_product_not_exist( $name = '' ){
+		ob_start();
+		?>
+		<div class="xoo-wl-product-notavailb">
+			<span><?php echo $name; ?></span>
+			<span class="xoo-wl-prod-deleted">Product not found [deleted]</span>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+
+	public function old_version_import_export_addon_compatibility($hook){
+		if( defined('XOO_WLEXIM_VERSION') && version_compare(XOO_WLEXIM_VERSION, '1.4', '<') && isset( $_GET['page'] ) && $_GET['page'] === 'xoo-wl-view-waitlist' ){
+			wp_enqueue_script( 'xoo-wlexim-admin-js', XOO_WLEXIM_URL.'/assets/xoo-wl-exim-admin-js.js', array( 'jquery'), XOO_WLEXIM_VERSION, false );
+		}
+	}
+
 
 }
 
@@ -459,5 +685,6 @@ function xoo_wl_admin_settings(){
 }
 
 xoo_wl_admin_settings();
+
 
 ?>

@@ -2,13 +2,23 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Type;
 
+use WP_Post;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Toolset\Helper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class RelationshipFieldsType
 {
-    public static function config($source, $name, $relationships)
+    /**
+     * @param array<string, mixed> $relationships
+     *
+     * @return ObjectConfig
+     */
+    public static function config(Source $source, string $name, array $relationships): array
     {
         return [
             'fields' => array_filter(
@@ -68,7 +78,12 @@ class RelationshipFieldsType
         ];
     }
 
-    public static function resolve($post, $args, $context, $info)
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return ?WP_Post
+     */
+    public static function resolve($post, $args)
     {
         $related = toolset_get_related_post(
             $post,
@@ -76,15 +91,21 @@ class RelationshipFieldsType
             $args['isParent'] ? 'child' : 'parent',
         );
 
-        if ($related !== 0) {
-            return get_post($related);
-        }
+        return $related !== 0 ? get_post($related) : null;
     }
 
-    public static function resolveManyToMany($post, $args, $context, $info)
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return array<mixed>
+     */
+    public static function resolveManyToMany($post, $args)
     {
         $isParent = $args['isParent'];
 
+        /**
+         * @var list<array{parent?: int, child?: int, intermediary: int}> $roles
+         */
         $roles = toolset_get_related_posts($post, $args['slug'], [
             'query_by_role' => $isParent ? 'parent' : 'child',
             'role_to_return' => [$isParent ? 'child' : 'parent', 'intermediary'],

@@ -44,12 +44,23 @@ class BWFAN_Conversation {
 			return '<html><head></head><body><div id="body_content" >' . $content . '</div></body></html>';
 		}
 
-		$pattern     = "/<body(.*?)>(.*?)<\/body>/is";
+		$pattern     = "/<body([^>]*)>(.*?)<\/body>/is";
 		$replacement = '<body$1><div id="body_content" >$2</div></body>';
+		$result      = preg_replace( $pattern, $replacement, $content );
 
-		return preg_replace( $pattern, $replacement, $content );
+		// Only return result if preg_replace succeeded
+		if ( !empty( $result ) ) {
+			return $result;
+		}
+
+		return $content;
 	}
 
+	/**
+	 * Emogrify Email
+	 *
+	 * @since 1.0.0
+	 */
 	public function emogrify_email( $data ) {
 		$data = $this->prepare_email_content( $data );
 		ob_start();
@@ -81,6 +92,11 @@ class BWFAN_Conversation {
 		return $data;
 	}
 
+	/**
+	 * Emogrify Email Html
+	 *
+	 * @since 1.0.0
+	 */
 	public function emogrify_email_html( $email_body ) {
 		$data = $this->prepare_email_content( $email_body );
 		ob_start();
@@ -112,6 +128,11 @@ class BWFAN_Conversation {
 		return $data;
 	}
 
+	/**
+	 * Woocommercify Email
+	 *
+	 * @since 1.0.0
+	 */
 	public function woocommercify_email( $email_body, $email_heading ) {
 		$mailer = WC()->mailer();
 
@@ -135,6 +156,11 @@ class BWFAN_Conversation {
 		return apply_filters( 'woocommerce_mail_content', $email_abstract_object->style_inline( wptexturize( $email_body ) ) );
 	}
 
+	/**
+	 * Apply Template By Type
+	 *
+	 * @since 1.0.0
+	 */
 	public function apply_template_by_type( $email_body, $type = 'rich', $heading = '' ) {
 		switch ( $type ) {
 			case 'rich':
@@ -173,17 +199,24 @@ class BWFAN_Conversation {
 			$pre_header .= '<div style="display: none; max-height: 0; overflow: hidden;">' . str_repeat( '&#847;&zwnj;&nbsp;', apply_filters( 'bwfan_email_pre_header_space', 100 ) ) . '</div>'; // Adding 70 instances to create enough hidden space
 		}
 
-		if ( strpos( $body, '</body>' ) ) {
-			$pattern       = '/<body(.*?)>(.*?)<\/body>/is';
-			$replacement   = '<body$1>' . $pre_header . $pixel . '$2</body>';
-			$appended_body = preg_replace( $pattern, $replacement, $body );
-		} else {
-			$appended_body = $body . $pixel;
+		$appended_body = $pre_header . $pixel . $body;
+		if ( false !== strpos( $body, '</body>' ) ) {
+			$pattern     = '/<body([^>]*)>/is';
+			$replacement = '<body$1>' . $pre_header . $pixel;
+			$result      = preg_replace($pattern, $replacement, $body);
+
+			// Only update if preg_replace succeeded
+			$appended_body = ! empty( $result ) ? $result : $appended_body;
 		}
 
 		return $appended_body;
 	}
 
+	/**
+	 * Get Email Pixel Html
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_email_pixel_html( $pixel_id ) {
 		$pixel_url = add_query_arg( array(
 			'bwfan-track-action' => 'open',
@@ -193,6 +226,11 @@ class BWFAN_Conversation {
 		return '<img src="' . $pixel_url . '" height="1" width="1" alt="" style="height:0;display:inherit"/>';
 	}
 
+	/**
+	 * Append To Email Body Links
+	 *
+	 * @since 1.0.0
+	 */
 	public function append_to_email_body_links( $body, $utm_data, $track_id, $uid, $mode = 'email' ) {
 		$url_args = self::transform_utm_data( $utm_data );
 
@@ -204,7 +242,7 @@ class BWFAN_Conversation {
 
 			/** return body without adding tracking detail in url if disabled and mode not email */
 			if ( $disable_click_tracking || true === apply_filters( 'bwfan_skip_broadcast_tracking_url', false, $body, $mode, $track_id ) ) {
-				return $body;
+				$track_id = '';
 			}
 
 			$link_regex = BWFAN_Common::get_regex_pattern( 3 );
@@ -264,44 +302,41 @@ class BWFAN_Conversation {
 	 * @return array|string|string[]|null
 	 */
 	public function modify_message_body_urls( $string, $utm_data, $track_id, $uid ) {
-		if ( empty( $string ) ) {
-			return $string;
-		}
-
-		/** Check url needs to exclude from click track */
-		if ( BWFAN_Common::is_exclude_url( $string ) ) {
+		/** Check string not empty & needs to exclude from click track */
+		if ( empty( $string ) || BWFAN_Common::is_exclude_url( $string ) ) {
 			return $string;
 		}
 
 		$url_args = ! is_array( $utm_data ) ? array() : $utm_data;
 		$url_args = apply_filters( 'bwfan_modify_url_args', $url_args, $this->contact );
 
-		/** Exclude click tracking for unsubscribe link */
-		if ( false === strpos( $string, 'bwfan-action=unsubscribe' ) && false === strpos( $string, 'bwfan-action=view_in_browser' ) ) {
-			$l_hash = $this->get_link_hash( $string );
-			$string = $this->convert_link_to_track_link( $string, $track_id, $uid, $l_hash );
+		/**
+		 * SKIP TRACKING LOGIC when empty track_id is passed
+		 * This happens when SMS tracking is disabled
+		 */
+		if ( ! empty( $track_id ) ) {
+			/** Exclude click tracking for unsubscribe link */
+			if ( false === strpos( $string, 'bwfan-action=unsubscribe' ) && false === strpos( $string, 'bwfan-action=view_in_browser' ) ) {
+				$l_hash = $this->get_link_hash( $string );
+				$string = $this->convert_link_to_track_link( $string, $track_id, $uid, $l_hash );
+			}
+
+			/** Add track id if view email browser link */
+			if ( false !== strpos( $string, 'bwfan-action=view_in_browser' ) ) {
+				$string = add_query_arg( array(
+					'bwfan-ehash' => $track_id
+				), $string );
+			}
 		}
 
-		//* Add UTM data to the URL */
-		$url = add_query_arg( $url_args, $string );
-
-		/** Add track id if view email browser link */
-		if ( false !== strpos( $url, 'bwfan-action=view_in_browser' ) ) {
-			$url = add_query_arg( array(
-				'bwfan-ehash' => $track_id
-			), $url );
-		}
-		$url = ! empty( $url ) ? $url : $string;
-
-		if ( false === $this->do_shorten_links ) {
-			return $url;
-		}
+		/** Add UTM data to the URL */
+		$url = ! empty( $url_args ) ? add_query_arg( $url_args, $string ) : $string;
 
 		/**
 		 * Checking any shortener service provider is available or not
 		 * if not then return the same url.
 		 */
-		if ( method_exists( 'BWFAN_Common', 'get_default_shortener_provider' ) && empty( BWFAN_Common::get_default_shortener_provider() ) ) {
+		if ( false === $this->do_shorten_links || method_exists( 'BWFAN_Common', 'get_default_shortener_provider' ) && empty( BWFAN_Common::get_default_shortener_provider() ) ) {
 			return $url;
 		}
 
@@ -321,6 +356,11 @@ class BWFAN_Conversation {
 		return do_shortcode( '[bwfan_bitly_shorten]' . $url . '[/bwfan_bitly_shorten]' );
 	}
 
+	/**
+	 * Hold Broadcast For Shorten Url
+	 *
+	 * @since 1.0.0
+	 */
 	public function hold_broadcast_for_shorten_url( $shorten_url, $url ) {
 		if ( $shorten_url !== $url ) {
 			return;
@@ -339,6 +379,11 @@ class BWFAN_Conversation {
 		$broadcast_processing->stop_broadcast_required        = true;
 	}
 
+	/**
+	 * Convert Link To Track Link
+	 *
+	 * @since 1.0.0
+	 */
 	public function convert_link_to_track_link( $url, $track_id, $uid, $l_hash = '' ) {
 		$args = [
 			'bwfan-uid'      => $uid,
@@ -350,7 +395,7 @@ class BWFAN_Conversation {
 			if ( ! empty( $l_hash ) ) {
 				$args['l_hash'] = $l_hash;
 			}
-			$args['bwfan-link'] = urlencode( html_entity_decode( $url ) );
+			$args['bwfan-link'] = rawurlencode( html_entity_decode( $url ) );
 			$url                = home_url();
 		} else if ( bwfan_is_autonami_pro_active() && ! is_null( $this->contact ) ) {
 			/** Add the Auth Hash */
@@ -363,6 +408,11 @@ class BWFAN_Conversation {
 		return add_query_arg( $args, $url );
 	}
 
+	/**
+	 * Get Or Create Template
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_or_create_template( $type, $subject, $body, $return = 'id', $data = array() ) {
 		$template_id = BWFAN_Email_Conversations::check_already_exists_template( $subject, $body, $type, $data );
 		if ( 'id' === $return ) {
@@ -472,6 +522,11 @@ class BWFAN_Conversation {
 		);
 	}
 
+	/**
+	 * Prepare Email Body
+	 *
+	 * @since 1.0.0
+	 */
 	public function prepare_email_body( $conversation_id, $contact_id, $hash_code = '', $template_type = 'rich', $template = '', $pre_header = '', $utm_data = array(), $broadcast_id = 0 ) {
 		if ( empty( $conversation_id ) ) {
 			return BWFAN_Common::crm_error( __( 'Conversation not found', 'wp-marketing-automations' ) );
@@ -515,7 +570,6 @@ class BWFAN_Conversation {
 				'contact_mode' => 1
 			) );
 			$template = BWFAN_Common::decode_merge_tags( html_entity_decode( $template ) );
-			// $template = $this->fit_merge_tags_into_template( $template, $merge_tags );
 
 			$contact = new BWFCRM_Contact( $contact_id );
 			if ( $contact->is_contact_exists() ) {
@@ -532,6 +586,11 @@ class BWFAN_Conversation {
 		return $this->append_to_email_body( $template, $pre_header, $hash_code );
 	}
 
+	/**
+	 * Prepare Email Subject
+	 *
+	 * @since 1.0.0
+	 */
 	public function prepare_email_subject( $subject, $contact_id ) {
 		BWFAN_Merge_Tag_Loader::set_data( array(
 			'contact_id'   => $contact_id,
@@ -541,6 +600,11 @@ class BWFAN_Conversation {
 		return BWFAN_Common::decode_merge_tags( $subject );
 	}
 
+	/**
+	 * Prepare Sms Body
+	 *
+	 * @since 1.0.0
+	 */
 	public function prepare_sms_body( $conversation_id, $contact_id, $hash_code = '', $template = '', $utm_data = array(), $broadcast_id = 0 ) {
 		if ( empty( $conversation_id ) ) {
 			return BWFAN_Common::crm_error( __( 'Conversation not found', 'wp-marketing-automations' ) );
@@ -581,7 +645,6 @@ class BWFAN_Conversation {
 				'contact_mode' => 2
 			) );
 			$template = BWFAN_Common::decode_merge_tags( $template );
-			// $template = $this->fit_merge_tags_into_template( $template, $merge_tags );
 
 			$contact = new BWFCRM_Contact( $contact_id );
 			if ( $contact->is_contact_exists() ) {
@@ -593,6 +656,11 @@ class BWFAN_Conversation {
 		return $this->append_to_email_body_links( $template, $utm_data, $hash_code, $uid, 'sms' );
 	}
 
+	/**
+	 * Fit Merge Tags Into Template
+	 *
+	 * @since 1.0.0
+	 */
 	public function fit_merge_tags_into_template( $template, $merge_tags ) {
 		foreach ( $merge_tags as $merge_tag => $value ) {
 			$template = str_replace( $merge_tag, $value, $template );
@@ -601,6 +669,11 @@ class BWFAN_Conversation {
 		return $template;
 	}
 
+	/**
+	 * Fail The Conversation
+	 *
+	 * @since 1.0.0
+	 */
 	public function fail_the_conversation( $conversation_id, $error_message ) {
 		if ( empty( $conversation_id ) ) {
 			return false;
@@ -624,6 +697,11 @@ class BWFAN_Conversation {
 		return true;
 	}
 
+	/**
+	 * Update Conversation Status
+	 *
+	 * @since 1.0.0
+	 */
 	public function update_conversation_status( $conversation_id, $status = 1 ) {
 		if ( empty( $conversation_id ) ) {
 			return false;
@@ -639,6 +717,11 @@ class BWFAN_Conversation {
 		return true;
 	}
 
+	/**
+	 * Prepare Notification Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function prepare_notification_data( $conversation_id, $contact_id, $hash_code = '', $template = '', $utm_data = array(), $broadcast_id = 0 ) {
 		if ( empty( $conversation_id ) ) {
 			return BWFAN_Common::crm_error( __( 'Conversation not found', 'wp-marketing-automations' ) );
@@ -689,6 +772,11 @@ class BWFAN_Conversation {
 		return $this->append_to_email_body_links( $template, $utm_data, $hash_code, $uid, 'push-notification' );
 	}
 
+	/**
+	 * Is Twilio Connected
+	 *
+	 * @since 1.0.0
+	 */
 	public function is_twilio_connected() {
 		if ( ! class_exists( 'WFCO_Autonami_Connectors_Core' ) || ! class_exists( 'WFCO_Load_Connectors' ) ) {
 			return false;
@@ -700,6 +788,11 @@ class BWFAN_Conversation {
 		return ! empty( $twilio_connector ) ? 1 : 0;
 	}
 
+	/**
+	 * Get Twilio Settings
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_twilio_settings() {
 		if ( ! class_exists( 'WFCO_Autonami_Connectors_Core' ) || ! class_exists( 'WFCO_Load_Connectors' ) ) {
 			return false;
@@ -719,6 +812,11 @@ class BWFAN_Conversation {
 		return $settings;
 	}
 
+	/**
+	 * Get Conversation Template Array
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_conversation_template_array( $template_id ) {
 		if ( ! class_exists( 'BWFAN_Model_Templates' ) || empty( $template_id ) ) {
 			return array();
@@ -736,6 +834,11 @@ class BWFAN_Conversation {
 		);
 	}
 
+	/**
+	 * Send Test Email
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_test_email( $args ) {
 		if ( empty( $args ) || ! is_email( $args['email'] ) || empty( $args['body'] ) ) {
 			return false;
@@ -793,9 +896,9 @@ class BWFAN_Conversation {
 		/** Removed wp mail filters */
 		BWFAN_Common::bwf_remove_filter_before_wp_mail();
 
-		$header = apply_filters( 'bwfan_email_headers', $header );
-
-		$subject = __( 'TEST: ', 'wp-marketing-automations' ) . $subject;
+		$header       = apply_filters( 'bwfan_email_headers', $header );
+		$default_text = apply_filters( 'bwfan_email_default_test_text', true );
+		$subject      = ( true === $default_text ? __( 'TEST: ', 'wp-marketing-automations' ) : '' ) . $subject;
 
 		return wp_mail( $args['email'], $subject, $body, $header );
 	}
@@ -808,11 +911,18 @@ class BWFAN_Conversation {
 	 * @return mixed
 	 */
 	public static function get_popular_emails() {
+		$popular_emails = [];
+
 		$popular_emails['popular_emails'] = BWFAN_Model_Engagement_Tracking::get_popular_emails();
 
 		return $popular_emails;
 	}
 
+	/**
+	 * Send Test Sms
+	 *
+	 * @since 1.0.0
+	 */
 	public function send_test_sms( $args ) {
 		$sms_body = BWFAN_Common::decode_merge_tags( $args['sms_body'] );
 		$sms_body = preg_replace_callback( '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', function ( $matches ) {
@@ -873,11 +983,19 @@ class BWFAN_Conversation {
 	 * @return bool
 	 */
 	public function is_whatsapp_service_available() {
-		if ( class_exists( 'BWFCO_Wabot' ) || class_exists( 'BWFCO_Waapi' ) ) {
-			return true;
+		$return = false;
+		if ( BWFAN_Core()->connectors->is_connected( 'bwfco_wabot' ) ) {
+			$return = true;
+		}
+		if ( BWFAN_Core()->connectors->is_connected( 'bwfco_waapi' ) ) {
+			$return = true;
+		}
+		if ( BWFAN_Core()->connectors->is_connected( 'bwfco_whatsapp' ) ) {
+			add_filter( 'bwfan_disabled_whatsapp_broadcast', '__return_true' );
+			$return = true;
 		}
 
-		return apply_filters( 'bwfan_is_whatsapp_service_available', false );
+		return apply_filters( 'bwfan_is_whatsapp_service_available', $return );
 	}
 
 	/**
@@ -919,7 +1037,7 @@ class BWFAN_Conversation {
 		];
 		$whatsapp_service = self::get_whatsapp_services();
 
-		if ( empty( $whatsapp_service ) ) {
+		if ( empty( $whatsapp_service ) || ! is_array( $whatsapp_service ) ) {
 			return [
 				'status'  => false,
 				'message' => __( 'No WhatsApp service Found', 'wp-marketing-automations' )
@@ -928,15 +1046,25 @@ class BWFAN_Conversation {
 		$service = '';
 		if ( count( $whatsapp_service ) > 1 ) {
 			$global_settings = BWFAN_Common::get_global_settings();
-			if ( isset( $global_settings['bwfan_primary_whats_app_service'] ) && ! empty( $global_settings['bwfan_primary_whats_app_service'] ) ) {
-				if ( BWFAN_Core()->connectors->is_connected( $global_settings['bwfan_primary_whats_app_service'] ) ) {
-					$service = $global_settings['bwfan_primary_whats_app_service'];
+			if ( is_array( $global_settings ) && isset( $global_settings['bwfan_primary_whats_app_service'] ) ) {
+				$primary_service = $global_settings['bwfan_primary_whats_app_service'];
+				if ( ! empty( $primary_service ) && is_string( $primary_service ) ) {
+					if ( BWFAN_Core()->connectors->is_connected( $primary_service ) ) {
+						$service = $primary_service;
+					}
 				}
 			}
 		}
 
 		if ( empty( $service ) ) {
-			$service = $whatsapp_service[0]['value'];
+			if ( isset( $whatsapp_service[0] ) && is_array( $whatsapp_service[0] ) && isset( $whatsapp_service[0]['value'] ) ) {
+				$service = $whatsapp_service[0]['value'];
+			} else {
+				return [
+					'status'  => false,
+					'message' => __( 'Invalid WhatsApp service configuration', 'wp-marketing-automations' )
+				];
+			}
 		}
 
 		switch ( $service ) {
@@ -989,6 +1117,11 @@ class BWFAN_Conversation {
 		$contact->save_fields();
 	}
 
+	/**
+	 * Include Email Merge Tags Templates
+	 *
+	 * @since 1.0.0
+	 */
 	public function include_email_merge_tags_templates() {
 		$products = [];
 		$cart     = false;
@@ -1064,10 +1197,11 @@ class BWFAN_Conversation {
 	 *
 	 * @param $url
 	 * @param $data
+	 * @param bool $update_template Whether to update template in DB (false for batch processing)
 	 *
 	 * @return mixed|string
 	 */
-	public function get_link_hash( $url, $data = [] ) {
+	public function get_link_hash( $url, $data = [], $update_template = true ) {
 		$url = BWFAN_Common::bwfan_correct_protocol_url( $url );
 		if ( empty( $this->template ) ) {
 			return BWFAN_Core()->conversation->maybe_insert_link( $url, $data );
@@ -1086,9 +1220,12 @@ class BWFAN_Conversation {
 		$link_hash              = $this->maybe_insert_link( $url, $data );
 		$links[ $url ]          = $link_hash;
 		$template_data['links'] = $links;
-		BWFAN_Model_Templates::bwfan_update_template( $this->template['ID'], [
-			'data' => wp_json_encode( $template_data ),
-		] );
+		// Only update template if explicitly requested (for batch processing optimization)
+		if ( $update_template ) {
+			BWFAN_Model_Templates::bwfan_update_template( $this->template['ID'], [
+				'data' => wp_json_encode( $template_data ),
+			] );
+		}
 
 		return $link_hash;
 	}
@@ -1147,7 +1284,7 @@ class BWFAN_Conversation {
 	 * @return mixed|string
 	 */
 	public function get_cleaned_url( $link ) {
-		$parsed_url = parse_url( $link );
+		$parsed_url = wp_parse_url( $link );
 		$url_host   = $parsed_url['host'] ?? '';
 		$url_path   = $parsed_url['path'] ?? '';
 		$port       = $parsed_url['port'] ?? '';

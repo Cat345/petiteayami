@@ -3,11 +3,7 @@
 <?php endif ?>
 
 <?php if ($props['video']) : ?>
-    <?php if ($this->iframeVideo($props['video'], [], false)) : ?>
-    <iframe src="<?= $props['video'] ?>"></iframe>
-    <?php else : ?>
-    <video src="<?= $props['video'] ?>"></video>
-    <?php endif ?>
+<video src="<?= $props['video'] ?>"></video>
 <?php endif ?>
 
 <?php if ($props['title'] != '') : ?>

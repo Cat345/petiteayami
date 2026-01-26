@@ -11,10 +11,9 @@ $title = $this->el($props['title_element'], [
         'uk-font-{title_font_family}',
         'uk-text-{title_color} {@!title_color: background}',
         'uk-link-{title_hover_style} {@title_link}', // Set here to style links which already come with dynamic content (WP taxonomy links)
-        'uk-margin[-{title_margin}]-top {@!title_margin: remove}',
-        'uk-margin-remove-top {@title_margin: remove}',
-        'uk-margin-remove-bottom',
-        'uk-flex-1 {@panel_expand: content|both}' => !$props['content'] && (!$props['meta'] || $props['meta_align'] == 'above-title') && (!$props['image'] || $props['image_align'] != 'between'),
+        'uk-margin[-{title_margin}]-top',
+        'uk-margin-remove-bottom {@!title_margin_auto}',
+        'uk-margin-auto-bottom {@title_margin_auto}',
     ],
 
 ]);
@@ -26,9 +25,9 @@ $meta = $this->el($props['meta_element'], [
         'el-meta',
         'uk-{meta_style}',
         'uk-text-{meta_color}',
-        'uk-margin[-{meta_margin}]-top {@!meta_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{meta_margin: remove}-top]' => !in_array($props['meta_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']) || $props['meta_element'] != 'div',
-        'uk-flex-1 {@panel_expand: content|both}' => $props['meta_align'] == 'below-content' || (!$props['content'] && ($props['meta_align'] == 'above-content' || ($props['meta_align'] == 'below-title' && (!$props['image'] || $props['image_align'] != 'between')))),
+        'uk-margin[-{meta_margin}]-top',
+        'uk-margin-remove-bottom {@!meta_margin_auto}' => str_starts_with($props['meta_style'] ?? '', 'h') || $props['meta_element'] != 'div',
+        'uk-margin-auto-bottom {@meta_margin_auto}',
     ],
 ]);
 
@@ -42,9 +41,9 @@ $content = $this->el('div', [
         'uk-dropcap {@content_dropcap}',
         'uk-column-{content_column}[@{content_column_breakpoint}]',
         'uk-column-divider {@content_column} {@content_column_divider}',
-        'uk-margin[-{content_margin}]-top {@!content_margin: remove}',
-        'uk-margin-remove-bottom [uk-margin-{content_margin: remove}-top]' => !in_array($props['content_style'], ['', 'text-meta', 'text-lead', 'text-small', 'text-large']),
-        'uk-flex-1 {@panel_expand: content|both}' => !($props['meta'] && $props['meta_align'] == 'below-content'),
+        'uk-margin[-{content_margin}]-top',
+        'uk-margin-remove-bottom {@!content_margin_auto}' => str_starts_with($props['content_style'] ?? '', 'h'),
+        'uk-margin-auto-bottom {@content_margin_auto}',
     ],
 
 ]);
@@ -67,7 +66,7 @@ $grid = $this->el('div', [
         $props['title_grid_column_gap'] == $props['title_grid_row_gap'] ? 'uk-grid-{title_grid_column_gap}' : '[uk-grid-column-{title_grid_column_gap}] [uk-grid-row-{title_grid_row_gap}]',
         'uk-margin[-{title_margin}]-top {@!title_margin: remove} {@image_align: top}' => !$props['meta'] || $props['meta_align'] != 'above-title',
         'uk-margin[-{meta_margin}]-top {@!meta_margin: remove} {@image_align: top} {@meta} {@meta_align: above-title}',
-        'uk-flex-1 {@panel_expand: content|both}',
+        'uk-flex-1 {@content_expand}',
     ],
 
     'uk-grid' => true,
@@ -78,6 +77,7 @@ $cell_title = $this->el('div', [
     'class' => [
         'uk-width-{!title_grid_width: expand}[@{title_grid_breakpoint}]',
         'uk-margin-remove-first-child',
+        'uk-flex uk-flex-column {@content_expand}',
     ],
 
 ]);
@@ -87,7 +87,7 @@ $cell_content = $this->el('div', [
     'class' => [
         'uk-width-auto[@{title_grid_breakpoint}] {@title_grid_width: expand}',
         'uk-margin-remove-first-child',
-        'uk-flex uk-flex-column {@panel_expand: content|both}',
+        'uk-flex uk-flex-column {@content_expand}',
     ],
 
 ]);

@@ -2,23 +2,29 @@
 
 namespace YOOtheme\Builder\Wordpress\Acf\Type;
 
+use WP_Post;
 use YOOtheme\Builder\Source;
+use YOOtheme\Builder\Wordpress\Acf\AcfHelper;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Event;
 use YOOtheme\Str;
+use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type FieldConfig from Source
+ * @phpstan-import-type ObjectConfig from Source
+ * @phpstan-import-type Field from AcfHelper
+ */
 class FieldsType
 {
     /**
-     * @param Source $source
-     * @param array  $fields
-     * @param string $type
+     * @param array<string, Field> $fields
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(Source $source, array $fields, string $type)
+    public static function config(Source $source, object $type, array $fields)
     {
-        $isType = $source->objectType($type)->config['metadata']['type'] ?? false;
+        $isType = $type->config['metadata']['type'] ?? false;
 
         return [
             'fields' => array_filter(
@@ -48,35 +54,39 @@ class FieldsType
         ];
     }
 
-    protected static function configFields($field, array $config, Source $source)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return array<string, FieldConfig>
+     */
+    protected static function configFields(array $field, array $config, Source $source): array
     {
-        $type = Str::camelCase($field['type'], true);
-        $fields = [];
+        $config += ['name' => Str::snakeCase($field['name'])];
+        $config = is_callable($callback = [__CLASS__, Str::camelCase(['config', $field['type']])])
+            ? $callback($field, $config, $source)
+            : static::configGenericField($field, $config, $source);
 
-        if (is_callable($callback = [__CLASS__, "config{$type}"])) {
-            $fields[Str::snakeCase($field['name'])] = $callback($field, $config, $source);
-        } else {
-            $fields += static::configGenericField($field, $config, $source);
+        $config = Event::emit('source.acf.field|filter', $config, $field, $source);
+
+        if ($config) {
+            return array_is_list($config)
+                ? array_combine(array_column($config, 'name'), $config)
+                : [$config['name'] => $config];
         }
 
-        return array_map(
-            fn($config) => Event::emit('source.acf.field|filter', $config, $field, $source),
-            $fields,
-        );
+        return [];
     }
 
-    protected static function configGenericField($field, array $config, Source $source)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return array<string, FieldConfig>
+     */
+    protected static function configGenericField(array $field, array $config, Source $source): array
     {
-        $name = Str::snakeCase($field['name']);
-
         if (isset($field['choices'])) {
-            return [
-                $name => static::configChoices($field, $config),
-                "{$name}String" => static::configChoicesString($field, $config),
-            ];
-        }
-
-        if ($field['type'] === 'image') {
+            $config = static::configChoices($field, $config);
+        } elseif ($field['type'] === 'image') {
             $config = static::configAttachment($field, $config);
         } elseif ($field['type'] === 'file') {
             $config = static::configFileField($field, $config);
@@ -86,7 +96,7 @@ class FieldsType
             $config = static::configPostObject($field, $config);
         } elseif (isset($field['sub_fields'])) {
             $config = static::configSubfields($field, $config, $source);
-        } elseif (in_array($field['type'], ['text', 'text_area', 'wysiwyg'])) {
+        } elseif (in_array($field['type'], ['text', 'textarea', 'wysiwyg'])) {
             $config = array_merge_recursive($config, [
                 'metadata' => ['filters' => ['limit', 'preserve']],
             ]);
@@ -96,35 +106,142 @@ class FieldsType
             }
         }
 
-        return [$name => $config];
+        return $config ?? [];
     }
 
-    protected static function configDatePicker($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configDatePicker(array $field, array $config): array
     {
         return array_merge_recursive($config, ['metadata' => ['filters' => ['date']]]);
     }
 
-    protected static function configPostObject($field, $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return ?list<FieldConfig>
+     */
+    protected static function configPostObject(array $field, array $config): ?array
     {
-        if (empty($field['post_type']) || count($field['post_type']) > 1) {
-            return;
+        if (empty($field['post_type'])) {
+            return null;
         }
 
-        if (!($type = static::getPostType(array_pop($field['post_type'])))) {
-            return;
+        $fields = [];
+        foreach ($field['post_type'] as $postType) {
+            $type = static::getPostType($postType);
+
+            if (!$type) {
+                continue;
+            }
+
+            $fields[] = array_replace_recursive(
+                $config,
+                count($field['post_type']) > 1
+                    ? [
+                        'name' => Str::snakeCase([$config['name'], $type->name]),
+                        'metadata' => [
+                            'label' => trans('%label% (%post_type% fields)', [
+                                '%label%' => $config['metadata']['label'],
+                                '%post_type%' => $type->labels->singular_name,
+                            ]),
+                        ],
+                    ]
+                    : [],
+                static::configPostObjectSingle($field, $type),
+            );
         }
 
-        $type = Str::camelCase($type->name, true);
-
-        return ['type' => static::isMultiple($field) ? ['listOf' => $type] : $type] + $config;
+        return $fields;
     }
 
-    protected static function configTaxonomy($field, $config)
+    /**
+     * @param Field $field
+     * @param \WP_Post_Type $type
+     *
+     * @return FieldConfig
+     */
+    protected static function configPostObjectSingle($field, $type): array
+    {
+        $typeName = Str::camelCase($type->name, true);
+
+        return static::isMultiple($field)
+            ? [
+                'type' => ['listOf' => $typeName],
+                'args' => [
+                    'order' => [
+                        'type' => 'String',
+                    ],
+                    'order_direction' => [
+                        'type' => 'String',
+                    ],
+                    'order_alphanum' => [
+                        'type' => 'Boolean',
+                    ],
+                ],
+                'metadata' => [
+                    'arguments' => [
+                        '_order' => [
+                            'type' => 'grid',
+                            'width' => '1-2',
+                            'fields' => [
+                                'order' => [
+                                    'label' => trans('Order'),
+                                    'type' => 'select',
+                                    'options' => [
+                                        ['value' => '', 'text' => trans('Default')],
+                                        [
+                                            'evaluate' =>
+                                                'yootheme.builder.sources.postTypeOrderOptions',
+                                        ],
+                                        [
+                                            'evaluate' => "yootheme.builder.sources['{$type->name}OrderOptions']",
+                                        ],
+                                    ],
+                                ],
+                                'order_direction' => [
+                                    'label' => trans('Direction'),
+                                    'type' => 'select',
+                                    'default' => 'ASC',
+                                    'options' => [
+                                        ['text' => trans('Ascending'), 'value' => 'ASC'],
+                                        ['text' => trans('Descending'), 'value' => 'DESC'],
+                                        [
+                                            'evaluate' => "yootheme.builder.sources['{$type->name}OrderDirectionOptions']",
+                                        ],
+                                    ],
+                                    'enable' => 'order',
+                                ],
+                            ],
+                            '@order' => 60,
+                        ],
+
+                        'order_alphanum' => [
+                            'text' => trans('Alphanumeric Ordering'),
+                            'type' => 'checkbox',
+                            'enable' => 'order',
+                            '@order' => 70,
+                        ],
+                    ],
+                ],
+            ]
+            : ['type' => $typeName];
+    }
+
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return ?FieldConfig
+     */
+    protected static function configTaxonomy(array $field, array $config): ?array
     {
         $taxonomy = !empty($field['taxonomy']) ? static::getTaxonomy($field['taxonomy']) : false;
 
         if (!$taxonomy) {
-            return;
+            return null;
         }
 
         $taxonomy = Str::camelCase($taxonomy->name, true);
@@ -133,53 +250,94 @@ class FieldsType
             $config;
     }
 
-    protected static function configUser($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configUser(array $field, array $config): array
     {
         return ['type' => static::isMultiple($field) ? ['listOf' => 'User'] : 'User'] + $config;
     }
 
-    protected static function configChoices($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig|list<FieldConfig>
+     */
+    protected static function configChoices(array $field, array $config): array
     {
-        return [
-            'type' => static::isMultiple($field) ? ['listOf' => 'ChoiceField'] : 'ChoiceField',
-        ] + $config;
-    }
-
-    protected static function configChoicesString($field, array $config)
-    {
-        if (!static::isMultiple($field)) {
-            return;
+        if (static::isMultiple($field)) {
+            return [
+                [
+                    'type' => ['listOf' => 'ChoiceField'],
+                ] + $config,
+                [
+                    'name' => "{$config['name']}String",
+                    'type' => 'ChoiceFieldString',
+                ] + $config,
+            ];
         }
 
-        return ['type' => 'ChoiceFieldString'] + $config;
+        return ['type' => 'ChoiceField'] + $config;
     }
 
-    protected static function configLink($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configLink(array $field, array $config): array
     {
         return ['type' => 'LinkField'] + $config;
     }
 
-    protected static function configGoogleMap($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configGoogleMap(array $field, array $config): array
     {
         return ['type' => 'GoogleMapsField'] + $config;
     }
 
-    protected static function configAttachment($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configAttachment(array $field, array $config): array
     {
         return ['type' => 'Attachment'] + $config;
     }
 
-    protected static function configFileField($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configFileField(array $field, array $config): array
     {
         return ['type' => 'FileField'] + $config;
     }
 
-    protected static function configGallery($field, array $config)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return FieldConfig
+     */
+    protected static function configGallery(array $field, array $config): array
     {
         return ['type' => ['listOf' => 'Attachment']] + $config;
     }
 
-    protected static function configSubfields($field, array $config, Source $source)
+    /**
+     * @param Field $field
+     * @param FieldConfig $config
+     * @return ?FieldConfig
+     */
+    protected static function configSubfields($field, array $config, Source $source): ?array
     {
         $fields = [];
 
@@ -202,27 +360,39 @@ class FieldsType
             );
         }
 
-        if ($fields = array_filter($fields)) {
-            $name = Str::camelCase(['Field', $field['name']], true);
-            $source->objectType($name, compact('fields'));
+        if ($fields) {
+            $type = Str::camelCase(['Field', $field['name']], true);
+            $source->objectType($type, compact('fields'));
 
             return (static::isMultiple($field)
-                ? ['type' => ['listOf' => $name]]
+                ? ['type' => ['listOf' => $type]]
                 : [
-                    'type' => $name,
+                    'type' => $type,
                     'metadata' => array_merge($config['metadata'], [
                         'label' => $field['label'],
                     ]),
                 ]) + $config;
         }
+
+        return null;
     }
 
-    public static function field($post, $args, $context, $info)
+    /**
+     * @param WP_Post $post
+     * @return WP_Post
+     */
+    public static function field($post)
     {
         return $post;
     }
 
-    public static function resolve($post, $args, $context, $info)
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     *
+     * @return mixed
+     */
+    public static function resolve($post, $args)
     {
         if ($field = acf_get_field($args['field'])) {
             if (
@@ -233,59 +403,46 @@ class FieldsType
                 $field = $parent;
             }
 
-            return static::getField($post, $field);
+            return static::getField($post, $field, $args);
         }
+
+        return null;
     }
 
-    public static function resolveSubfield($config, $args, $context, $info)
+    /**
+     * @param list<mixed> $config
+     * @param array<string, mixed> $args
+     *
+     * @return mixed
+     */
+    public static function resolveSubfield($config, $args)
     {
         [$post, $fields] = $config;
 
         if (!empty($fields[$args['field']])) {
-            return static::getField($post, $fields[$args['field']]);
+            return static::getField($post, $fields[$args['field']], $args);
         }
+
+        return null;
     }
 
-    protected static function getField($post, array $field)
+    /**
+     * @param WP_Post $post
+     * @param Field $field
+     * @param array<string, mixed> $args
+     * @return mixed
+     */
+    protected static function getField($post, array $field, $args)
     {
-        $postId = acf_get_valid_post_id($post);
-
         // Subfields field
         if (array_key_exists('sub_fields', $field)) {
-            if (empty($field['sub_fields'])) {
-                return;
-            }
-
-            if (!static::isMultiple($field)) {
-                $subfields = [];
-
-                foreach ($field['sub_fields'] as $subfield) {
-                    $subfields[$subfield['name']] =
-                        ['name' => "{$field['name']}_{$subfield['name']}"] + $subfield;
-                }
-
-                return [$post, $subfields];
-            }
-
-            $values = [];
-
-            for ($i = 0; $i < acf_get_metadata($postId, $field['name']); $i++) {
-                $subfields = [];
-
-                foreach ($field['sub_fields'] as $subfield) {
-                    $subfields[$subfield['name']] =
-                        ['name' => "{$field['name']}_{$i}_{$subfield['name']}"] + $subfield;
-                }
-
-                $values[] = [$post, $subfields];
-            }
-
-            return $values;
+            return static::getSubField($post, $field);
         }
 
         switch ($field['type']) {
             case 'post_object':
             case 'relationship':
+                Helper::filterOnce('acf/acf_get_posts/args', static::filterOrderOptions($args));
             case 'taxonomy':
             case 'user':
                 $field['return_format'] = 'object';
@@ -309,14 +466,16 @@ class FieldsType
                 break;
         }
 
+        $postId = acf_get_valid_post_id($post);
+
         // reset cached values
         if (function_exists('acf_flush_value_cache')) {
             acf_flush_value_cache($postId, $field['name']);
         }
 
         // get value for field
-        if (is_null($value = acf_get_value($postId, $field))) {
-            return;
+        if (is_null($value = acf_get_value($postId, $field)) || $value === false) {
+            return null;
         }
 
         $value = acf_format_value($value, $postId, $field);
@@ -332,18 +491,59 @@ class FieldsType
         return $value;
     }
 
-    protected static function getTaxonomy($taxonomy)
+    /**
+     * @param WP_Post $post
+     * @param Field $field
+     * @return mixed
+     */
+    protected static function getSubField($post, array $field)
     {
-        $taxonomies = Helper::getTaxonomies(['name' => $taxonomy]);
-        return array_pop($taxonomies);
+        if (empty($field['sub_fields'])) {
+            return null;
+        }
+
+        if (!static::isMultiple($field)) {
+            $subfields = [];
+
+            foreach ($field['sub_fields'] as $subfield) {
+                $subfields[$subfield['name']] =
+                    ['name' => "{$field['name']}_{$subfield['name']}"] + $subfield;
+            }
+
+            return [$post, $subfields];
+        }
+
+        $values = [];
+
+        $postId = acf_get_valid_post_id($post);
+
+        for ($i = 0; $i < acf_get_metadata($postId, $field['name']); $i++) {
+            $subfields = [];
+
+            foreach ($field['sub_fields'] as $subfield) {
+                $subfields[$subfield['name']] =
+                    ['name' => "{$field['name']}_{$i}_{$subfield['name']}"] + $subfield;
+            }
+
+            $values[] = [$post, $subfields];
+        }
+
+        return $values;
     }
 
-    protected static function getPostType($postType)
+    protected static function getTaxonomy(string $taxonomy): ?\WP_Taxonomy
     {
-        $postTypes = Helper::getPostTypes(['name' => $postType]);
-        return array_pop($postTypes);
+        return array_last(Helper::getTaxonomies(['name' => $taxonomy]));
     }
 
+    protected static function getPostType(string $postType): ?\WP_Post_Type
+    {
+        return array_last(Helper::getPostTypes(['name' => $postType]));
+    }
+
+    /**
+     * @param Field $field
+     */
     protected static function isMultiple(array $field): bool
     {
         return !empty($field['multiple']) ||
@@ -351,5 +551,41 @@ class FieldsType
             (!empty($field['field_type']) &&
                 !in_array($field['field_type'], ['select', 'radio'])) ||
             isset($field['sub_fields'], $field['max']);
+    }
+
+    /**
+     * @param array<string, mixed> $args
+     */
+    protected static function filterOrderOptions($args): callable
+    {
+        return function ($query) use ($args) {
+            if (empty($args['order'])) {
+                return $query;
+            }
+
+            $query =
+                [
+                    'orderby' => $args['order'],
+                    'order' => $args['order_direction'] ?? 'ASC',
+                ] + $query;
+
+            if (str_starts_with($query['orderby'], 'field:')) {
+                $query['meta_key'] = substr($query['orderby'], 6);
+                $query['orderby'] = 'meta_value';
+            }
+
+            if (!empty($args['order_alphanum']) && $args['order'] !== 'rand') {
+                $query['suppress_filters'] = false;
+                Helper::filterOnce('posts_orderby', Helper::orderAlphanum($query));
+            }
+
+            $ids = $query['post__in'] ?? [];
+            if (!empty($ids)) {
+                $query['post__in'] = [];
+                Helper::filterOnce('pre_get_posts', fn($query) => $query->set('post__in', $ids));
+            }
+
+            return $query;
+        };
     }
 }

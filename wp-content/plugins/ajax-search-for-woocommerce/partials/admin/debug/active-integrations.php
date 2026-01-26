@@ -7,7 +7,7 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-$plugins        = new \DgoraWcas\Integrations\Plugins\PluginsCompatibility;
+$plugins        = new \DgoraWcas\Integrations\Plugins\PluginsCompatibility();
 $pluginsClasses = $plugins->getIntegrationClasses();
 ?>
 

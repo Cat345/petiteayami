@@ -15,6 +15,7 @@ if( class_exists( 'Xoo_Aff_fields' ) ){
 			$this->fields = xoo_wl()->aff->fields;
 			$this->predefined_field_useremail();
 			$this->predefined_field_quantity();
+			$this->fields->field_groups['others']['title'] = 'Fields';
 		}
 
 

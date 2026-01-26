@@ -99,6 +99,11 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return array Prepared trigger data.
      */
     public function prepare_advanced_bogo_trigger_data( $triggers, $raw_triggers, $trigger_type, $bogo_deal ) {
+        // If deal type is same products, the trigger data is already prepared in the Same_Products class.
+        if ( 'same-products' === $bogo_deal->deal_type ) {
+            return $triggers;
+        }
+
         switch ( $trigger_type ) {
 
             case 'combination-products':
@@ -239,6 +244,10 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return int|boolean The cart item compare value if matched, false otherwise.
      */
     public function advanced_bogo_is_cart_item_match_entries( $matched, $cart_item, $entry, $is_deal, $type, $bogo_deal ) {
+        if ( 'same-products' === $type ) {
+            return $matched;
+        }
+
         switch ( $type ) {
             case 'combination-products':
                 $product_id   = apply_filters( 'acfw_filter_cart_item_product_id', $cart_item['product_id'] ); // filter for WPML support.
@@ -381,8 +390,6 @@ class Frontend extends Base_Model implements Model_Interface {
         // re-add implementation hook.
         add_action( 'woocommerce_before_calculate_totals', array( \ACFWF()->BOGO_Frontend, 'implement_bogo_deals' ), apply_filters( 'acfw_bogo_implementation_priority', 11 ) );
     }
-
-
 
     /*
     |--------------------------------------------------------------------------

@@ -4,6 +4,11 @@ $link = $props['link'] ? $this->el('a', [
     'href' => ['{link}'],
     'aria-label' => ['{link_aria_label}'],
     'target' => ['_blank {@link_target}'],
+    'download' => $props['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
     'uk-scroll' => str_contains((string) $props['link'], '#'),
 ]) : null;
 

@@ -8,29 +8,24 @@ namespace YOOtheme;
 abstract class Path
 {
     /**
-     * @var array
+     * @var array<string, array<string, string>>
      */
-    protected static $aliases = [];
+    protected static array $aliases = [];
 
     /**
      * Gets an absolute path by resolving aliases and current directory.
-     *
-     * @param string $path
-     * @param ?string $base
-     *
-     * @return string
      *
      * @example
      * Path::get('~app/dir');
      * // => /app/dir
      */
-    public static function get($path, $base = null)
+    public static function get(string $path, ?string $base = null): string
     {
         $path = static::resolveAlias($path);
 
         // path is `.`, `..` or starts with `./`, `../`
         if (str_starts_with($path, '.') && preg_match('/^\.\.?(?=\/|$)/', $path)) {
-            return static::join($base ?? dirname(Reflection::getCaller('file')), $path);
+            return static::join($base ?? dirname(Reflection::getCaller()['file']), $path);
         }
 
         return $path;
@@ -39,16 +34,13 @@ abstract class Path
     /**
      * Sets a path alias.
      *
-     * @param string $alias
-     * @param string $path
-     *
      * @example
      * Path::setAlias('~app', '/app');
      *
      * Path::resolveAlias('~app/resource');
      * // => /app/resource
      */
-    public static function setAlias($alias, $path)
+    public static function setAlias(string $alias, string $path): void
     {
         if (!str_starts_with($alias, '~')) {
             throw new \InvalidArgumentException("The alias '{$alias}' must start with ~");
@@ -65,25 +57,21 @@ abstract class Path
     /**
      * Resolve a path with alias.
      *
-     * @param string $path
-     *
-     * @return string
-     *
      * @example
      * Path::setAlias('~app', '/app');
      *
      * Path::resolveAlias('~app/resource');
      * // => /app/resource
      */
-    public static function resolveAlias($path)
+    public static function resolveAlias(string $path): string
     {
         $path = strtr($path, '\\', '/');
 
-        [$name] = explode('/', $path, 2);
-
-        if (!str_starts_with($name, '~')) {
+        if (!str_starts_with($path, '~')) {
             return $path;
         }
+
+        [$name] = explode('/', $path, 2);
 
         $trim = !str_ends_with($path, '/');
 
@@ -99,15 +87,11 @@ abstract class Path
     /**
      * Resolves a sequence of paths or path segments into an absolute path. All path segments are processed from right to left.
      *
-     * @param string $paths
-     *
-     * @return string
-     *
      * @example
      * Path::resolve('~app/dir/dir', '../resource');
      * // => /app/dir/resource
      */
-    public static function resolve(...$paths)
+    public static function resolve(string ...$paths): string
     {
         $parts = [];
 
@@ -129,16 +113,11 @@ abstract class Path
     /**
      * Returns trailing name component of path.
      *
-     * @param string $path
-     * @param string $suffix
-     *
-     * @return string
-     *
      * @example
      * Path::basename('~app/dir/file.php');
      * // => file.php
      */
-    public static function basename($path, $suffix = '')
+    public static function basename(string $path, string $suffix = ''): string
     {
         return basename(static::resolveAlias($path), $suffix);
     }
@@ -146,34 +125,24 @@ abstract class Path
     /**
      * Returns the extension of the path.
      *
-     * @param string $path
-     *
-     * @return string
-     *
      * @example
      * Path::extname('~app/dir/file.php');
-     * // => .php
+     * // => php
      */
-    public static function extname($path)
+    public static function extname(string $path): string
     {
-        $basename = static::basename($path);
-        $position = strrpos($basename, '.');
-
-        return $position ? substr($basename, $position) : '';
+        $extension = pathinfo(static::resolveAlias($path), PATHINFO_EXTENSION);
+        return $extension ? ".{$extension}" : '';
     }
 
     /**
      * Returns a parent directory's path.
      *
-     * @param string $path
-     *
-     * @return string
-     *
      * @example
      * Path::dirname('~app/dir/file.php');
      * // => /app/dir
      */
-    public static function dirname($path)
+    public static function dirname(string $path): string
     {
         return dirname(static::resolveAlias($path));
     }
@@ -181,16 +150,11 @@ abstract class Path
     /**
      * Gets the relative path to a given base path.
      *
-     * @param string $from
-     * @param string $to
-     *
-     * @return string
-     *
      * @example
      * Path::relative('/path/dir/test/aaa', '/path/dir/impl/bbb');
      * // => ../../impl/bbb
      */
-    public static function relative($from, $to)
+    public static function relative(string $from, string $to): string
     {
         $from = static::resolveAlias($from);
         $to = static::resolveAlias($to);
@@ -234,15 +198,11 @@ abstract class Path
     /**
      * Normalizes a path, resolving '..' and '.' segments.
      *
-     * @param string $path
-     *
-     * @return string
-     *
      * @example
      * Path::normalize('/path1/.././file.txt');
      * // => /file.txt
      */
-    public static function normalize($path)
+    public static function normalize(string $path): string
     {
         static $cache;
 
@@ -283,15 +243,11 @@ abstract class Path
     /**
      * Joins all given path segments together.
      *
-     * @param string $parts
-     *
-     * @return string
-     *
      * @example
      * Path::join('/foo', '/bar', 'baz/asdf', 'quux', '..');
      * // => /foo/bar/baz/asdf
      */
-    public static function join(...$parts)
+    public static function join(string ...$parts): string
     {
         return static::normalize(join('/', $parts));
     }
@@ -299,15 +255,13 @@ abstract class Path
     /**
      * Returns information about a path.
      *
-     * @param string $path
-     *
-     * @return array
+     * @return array{root: string, pathname: string, dirname: string, basename: string, filename: string, extension: string}
      *
      * @example
      * Path::parse('/foo/file.txt');
      * // => ['root' => '/', 'pathname' => 'foo/file.txt', 'dirname' => '/foo', 'basename' => 'file.txt', 'filename' => 'file', 'extension' => 'txt']
      */
-    public static function parse($path)
+    public static function parse(string $path): array
     {
         $path = strtr($path, '\\', '/');
         $root = static::root($path) ?: '';
@@ -323,15 +277,11 @@ abstract class Path
     /**
      * Checks if path is absolute.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * Path::isAbsolute('/foo/file.txt');
      * // => true
      */
-    public static function isAbsolute($path)
+    public static function isAbsolute(string $path): bool
     {
         return (bool) static::root($path);
     }
@@ -339,26 +289,17 @@ abstract class Path
     /**
      * Checks if path is relative.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * Path::isRelative('foo/file.txt');
      * // => true
      */
-    public static function isRelative($path)
+    public static function isRelative(string $path): bool
     {
         return !static::root($path);
     }
 
     /**
      * Checks if path is a base path of another path.
-     *
-     * @param string $basePath
-     * @param string $path
-     *
-     * @return bool
      *
      * @example
      * Path::isBasePath('/foo/', '/foo/file.txt');
@@ -368,7 +309,7 @@ abstract class Path
      * Path::isBasePath('/foo', '/foo/..');
      * // => false
      */
-    public static function isBasePath($basePath, $path)
+    public static function isBasePath(string $basePath, string $path): bool
     {
         $basePath = static::normalize(static::resolveAlias($basePath));
         $path = static::normalize(static::resolveAlias($path));
@@ -378,12 +319,8 @@ abstract class Path
 
     /**
      * Returns path root.
-     *
-     * @param string $path
-     *
-     * @return mixed
      */
-    public static function root($path)
+    public static function root(string $path): ?string
     {
         $path = strtr($path, '\\', '/');
 
@@ -394,5 +331,7 @@ abstract class Path
         if (strpos($path, ':') && preg_match('/^([a-z]*:)?(\/\/|\/)/i', $path, $matches)) {
             return $matches[0];
         }
+
+        return null;
     }
 }

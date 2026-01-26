@@ -7,7 +7,7 @@ class FilterCommentHtml
     /**
      * Remove "novalidate" attribute from comment form.
      */
-    public static function form()
+    public static function form(): void
     {
         if (is_singular() && comments_open()) {
             echo '<script>if (window.commentform) {commentform.removeAttribute("novalidate")}</script>';
@@ -19,7 +19,7 @@ class FilterCommentHtml
      *
      * @link https://developer.wordpress.org/reference/hooks/wp_enqueue_scripts/
      */
-    public static function script()
+    public static function script(): void
     {
         if (is_singular() && comments_open()) {
             wp_enqueue_script('comment-reply');

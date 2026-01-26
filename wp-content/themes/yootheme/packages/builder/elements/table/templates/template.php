@@ -101,7 +101,7 @@ $table = $this->el('table', [
 
         <tbody>
         <?php foreach ($children as $i => $child) : ?>
-        <tr class="el-item"><?= $builder->render($child, ['i' => $i, 'element' => $props, 'fields' => $fields, 'text_fields' => $text_fields, 'filtered' => $filtered]) ?></tr>
+        <tr<?= $this->attrs($child->attrs, ['class' => 'el-item']) ?>><?= $builder->render($child, ['i' => $i, 'element' => $props, 'fields' => $fields, 'text_fields' => $text_fields, 'filtered' => $filtered]) ?></tr>
         <?php endforeach ?>
         </tbody>
 

@@ -19,6 +19,22 @@ class BWFAN_DB_Table_Automations extends BWFAN_DB_Tables_Base {
 			"v",
 			"benchmark",
 			"title",
+			"category",
+		];
+	}
+
+	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'status' => [ 'status' ],
+			],
+			'unique_keys' => [],
 		];
 	}
 
@@ -41,8 +57,8 @@ class BWFAN_DB_Table_Automations extends BWFAN_DB_Tables_Base {
  		  `v` tinyint(1) UNSIGNED NOT NULL default 1,
  		  `benchmark` longtext,
  		  `title` varchar(255) NULL,
+ 		  `category` longtext,
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `status` (`status`)
 		) $collate;";
 	}

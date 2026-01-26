@@ -22,7 +22,7 @@ class WooCommerceProductTable extends AbstractPluginIntegration {
 	protected const MIN_VERSION   = '2.6.2';
 
 	public function init(): void {
-		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
+		add_action( 'pre_get_posts', [ $this, 'pre_get_posts' ] );
 	}
 
 	/**
@@ -37,7 +37,7 @@ class WooCommerceProductTable extends AbstractPluginIntegration {
 		if ( ! Helpers::is_running_inside_class( 'Barn2\Plugin\WC_Product_Table\Table_Query', 10 ) && ! Helpers::is_running_inside_class( 'WC_Product_Table_Query' ) ) {
 			return;
 		}
-		$post_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', array() );
+		$post_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', [] );
 
 		if ( $post_ids ) {
 			// We set a variable to make our filters work for WP_Query
@@ -46,7 +46,7 @@ class WooCommerceProductTable extends AbstractPluginIntegration {
 			$query->set( 'post__in', $post_ids );
 			$query->set( 'orderby', 'post__in' );
 
-			add_action( 'wp_footer', array( $this, 'add_js' ), 5 );
+			add_action( 'wp_footer', [ $this, 'add_js' ], 5 );
 		}
 	}
 

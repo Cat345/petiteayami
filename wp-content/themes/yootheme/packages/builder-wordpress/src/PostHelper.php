@@ -2,11 +2,13 @@
 
 namespace YOOtheme\Builder\Wordpress;
 
+use WP_Post;
+
 class PostHelper
 {
     public const PATTERN = '/<!--\s?(\{.*})\s?-->/';
 
-    public static function matchContent($content)
+    public static function matchContent(?string $content): ?string
     {
         return str_contains((string) $content, '<!--') &&
             preg_match(static::PATTERN, $content, $matches)
@@ -14,7 +16,10 @@ class PostHelper
             : null;
     }
 
-    public static function getCollision($post)
+    /**
+     * @return array{contentHash: string, modifiedBy: string}
+     */
+    public static function getCollision(WP_Post $post): array
     {
         $userData = get_userdata(
             get_post_meta($post->ID, '_edit_last', true) ?:
@@ -27,11 +32,12 @@ class PostHelper
         ];
     }
 
-    protected static function getUserIdFromPostRevisions($post)
+    /**
+     * @return void|int|string
+     */
+    protected static function getUserIdFromPostRevisions(WP_Post $post)
     {
-        $revs = wp_get_post_revisions($post->ID);
-
-        if ($lastRev = end($revs)) {
+        if ($lastRev = array_last(wp_get_post_revisions($post->ID))) {
             return $lastRev->post_author;
         }
     }

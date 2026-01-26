@@ -18,6 +18,22 @@ class BWFAN_DB_Table_Taskmeta extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'bwfan_task_id' => [ 'bwfan_task_id' ],
+				'meta_key'       => [ 'meta_key' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string

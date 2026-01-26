@@ -29,7 +29,7 @@ $media->attr([
     'class' => [
         'el-dialog',
 
-        'uk-object-cover [uk-object-{image_focal_point}] {@link_target: offcanvas}' => $this->isImage($src),
+        'uk-object-{image_focal_point} {@link_target: offcanvas}' => $this->isImage($src),
     ],
 
     'style' => [

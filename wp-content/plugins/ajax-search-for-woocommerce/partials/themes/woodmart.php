@@ -4,12 +4,14 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-desktop-search-form" style="display: none;"><div class="wd-header-search-form">' . do_shortcode( '[fibosearch]' ) . '</div></div>';
-	echo '<div id="wcas-desktop-search-icon" style="display: none;"><div class="wd-tools-element">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div></div>';
-	echo '<div id="wcas-mobile-search-form" style="display: none;"><div class="wd-search-form wd-header-search-form-mobile">' . do_shortcode( '[fibosearch]' ) . '</div></div>';
-	echo '<div id="wcas-mobile-search-nav" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-desktop-search-form" style="display: none;"><div class="wd-header-search-form">' . do_shortcode( '[fibosearch]' ) . '</div></div>';
+		echo '<div id="wcas-desktop-search-icon" style="display: none;"><div class="wd-tools-element">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div></div>';
+		echo '<div id="wcas-mobile-search-form" style="display: none;"><div class="wd-search-form wd-header-search-form-mobile">' . do_shortcode( '[fibosearch]' ) . '</div></div>';
+		echo '<div id="wcas-mobile-search-nav" style="display: none;">' . do_shortcode( '[fibosearch]' ) . '</div>';
+		?>
 	<script>
 		var desktopSearchForm = document.querySelector('.whb-main-header .wd-header-search-form');
 		if (desktopSearchForm !== null) {
@@ -73,5 +75,6 @@ add_action( 'wp_footer', function () {
 			}
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

@@ -5,17 +5,19 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	if ( ! class_exists( 'Dfd_Theme_Helpers' ) || ! method_exists( 'Dfd_Theme_Helpers', 'getHeaderStyleOption' ) ) {
-		return;
-	}
-	$header_style_option = Dfd_Theme_Helpers::getHeaderStyleOption();
-	if ( $header_style_option !== '10' ) {
-		return;
-	}
-	echo '<div id="wcas-search-instance" style="display: block;"><div>' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="500" ]' ) . '<i class="header-search-switcher close-search active"></i></div></div>';
-	echo '<div id="wcas-search-instance-mobile" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="500" ]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		if ( ! class_exists( 'Dfd_Theme_Helpers' ) || ! method_exists( 'Dfd_Theme_Helpers', 'getHeaderStyleOption' ) ) {
+			return;
+		}
+		$header_style_option = Dfd_Theme_Helpers::getHeaderStyleOption();
+		if ( $header_style_option !== '10' ) {
+			return;
+		}
+		echo '<div id="wcas-search-instance" style="display: block;"><div>' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="500" ]' ) . '<i class="header-search-switcher close-search active"></i></div></div>';
+		echo '<div id="wcas-search-instance-mobile" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="500" ]' ) . '</div>';
+		?>
 	<script>
 		(function ($) {
 			// Autofocus
@@ -51,11 +53,14 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		/** Desktop search */
 		.form-search-section .row {
@@ -110,6 +115,7 @@ add_action( 'wp_head', function () {
 			min-width: 200px;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 

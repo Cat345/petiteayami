@@ -31,11 +31,9 @@ class SliceDirective extends Directive
     /**
      * Directive callback.
      *
-     * @param array $params
-     *
-     * @return \Closure
+     * @param array{offset?: int, limit?: int} $params
      */
-    public function __invoke(array $params)
+    public function __invoke(array $params): \Closure
     {
         return function ($root, $args, $context, $info, callable $next) use ($params) {
             $offset = $params['offset'] ?? 0;

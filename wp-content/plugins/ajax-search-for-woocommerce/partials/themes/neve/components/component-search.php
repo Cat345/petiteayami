@@ -6,6 +6,6 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 ?>
 <div class="component-wrap search-field">
 	<div class="widget widget-search">
-		<?php echo do_shortcode('[fibosearch]'); ?>
+		<?php echo do_shortcode( '[fibosearch]' ); ?>
 	</div>
 </div>

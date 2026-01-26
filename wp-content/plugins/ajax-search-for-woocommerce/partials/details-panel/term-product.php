@@ -20,8 +20,8 @@ do_action( 'dgwt/wcas/details_panel/term_products/product/container_before', $va
 		<div class="dgwt-wcas-tpd-image">
 			<img
 				src="<?php echo esc_url( $vars->imageSrc ); ?>"
-				<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : '' ?>
-				<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : '' ?>
+				<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : ''; ?>
+				<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : ''; ?>
 				alt="<?php echo esc_attr( wp_strip_all_tags( $vars->name ) ); ?>"
 			>
 		</div>
@@ -31,7 +31,7 @@ do_action( 'dgwt/wcas/details_panel/term_products/product/container_before', $va
 
 			<span class="dgwt-wcas-tpd-rest-title"><?php echo Helpers::secureHtmlOutput( $vars->name, 'name' ); ?></span>
 
-			<?php if ( $vars->reviewCount > 0 ): ?>
+			<?php if ( $vars->reviewCount > 0 ) : ?>
 				<div class="dgwt-wcas-pd-rating">
 					<?php echo Helpers::secureHtmlOutput( $vars->ratingHtml . ' <span class="dgwt-wcas-pd-review">(' . $vars->reviewCount . ')</span>', 'rating' ); ?>
 				</div>
@@ -46,4 +46,5 @@ do_action( 'dgwt/wcas/details_panel/term_products/product/container_before', $va
 		</div>
 	</a>
 
-<?php do_action( 'dgwt/wcas/details_panel/term_products/product/container_after', $vars );
+<?php
+do_action( 'dgwt/wcas/details_panel/term_products/product/container_after', $vars );

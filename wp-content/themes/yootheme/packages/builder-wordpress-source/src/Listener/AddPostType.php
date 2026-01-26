@@ -16,6 +16,10 @@ class AddPostType
     /**
      * Filters the link query arguments.
      *
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
+     *
      * @link https://developer.wordpress.org/reference/hooks/wp_link_query_args/
      */
     public function handle(array $query): array

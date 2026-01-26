@@ -9,15 +9,15 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 class Bacola extends ThemeIntegration {
-    private $post_ids = array();
+    private $post_ids = [];
 
     public function init() : void {
         if ( !$this->canReplaceSearch() ) {
             return;
         }
-        add_action( 'pre_get_posts', array($this, 'pre_get_posts') );
-        add_action( 'wp_ajax_load_more', array($this, 'set_search_post_ids_from_ajax'), 5 );
-        add_action( 'wp_ajax_nopriv_load_more', array($this, 'set_search_post_ids_from_ajax'), 5 );
+        add_action( 'pre_get_posts', [$this, 'pre_get_posts'] );
+        add_action( 'wp_ajax_load_more', [$this, 'set_search_post_ids_from_ajax'], 5 );
+        add_action( 'wp_ajax_nopriv_load_more', [$this, 'set_search_post_ids_from_ajax'], 5 );
         add_filter( 'dgwt/wcas/override_search_results_page', '__return_true', 100 );
     }
 
@@ -25,6 +25,7 @@ class Bacola extends ThemeIntegration {
         if ( !$this->is_relevant_product_ajax_query() ) {
             return;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification
         $search_term = $_POST['s'] ?? '';
         if ( empty( $search_term ) ) {
             return;
@@ -63,6 +64,7 @@ class Bacola extends ThemeIntegration {
         if ( !defined( 'DOING_AJAX' ) ) {
             return false;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification
         if ( !isset( $_POST['action'] ) || $_POST['action'] !== 'load_more' ) {
             return false;
         }

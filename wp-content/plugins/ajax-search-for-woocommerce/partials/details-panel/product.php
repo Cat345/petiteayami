@@ -24,8 +24,8 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 			<div class="dgwt-wcas-details-main-image">
 				<img
 					src="<?php echo esc_url( $vars->imageSrc ); ?>"
-					<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : '' ?>
-					<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : '' ?>
+					<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : ''; ?>
+					<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : ''; ?>
 					alt="<?php echo esc_attr( wp_strip_all_tags( $vars->name ) ); ?>"
 				>
 			</div>
@@ -36,11 +36,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 			<a class="dgwt-wcas-details-product-title" href="<?php echo esc_url( $vars->link ); ?>" title="<?php echo esc_attr( wp_strip_all_tags( $vars->name ) ); ?>">
 				<?php echo Helpers::secureHtmlOutput( $vars->name, 'name' ); ?>
 			</a>
-			<?php if ( ! empty( $vars->sku ) ): ?>
+			<?php if ( ! empty( $vars->sku ) ) : ?>
 				<span class="dgwt-wcas-details-product-sku"><?php echo Helpers::secureHtmlOutput( $vars->sku, 'sku' ); ?></span>
 			<?php endif; ?>
 
-			<?php if ( $vars->reviewCount > 0 ): ?>
+			<?php if ( $vars->reviewCount > 0 ) : ?>
 
 				<div class="dgwt-wcas-pd-rating">
 					<?php echo Helpers::secureHtmlOutput( $vars->ratingHtml . ' <span class="dgwt-wcas-pd-review">(' . $vars->reviewCount . ')</span>', 'rating' ); ?>
@@ -54,7 +54,7 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 			</div>
 			<?php do_action( 'dgwt/wcas/details_panel/product/price_after', $vars ); ?>
 
-			<?php if ( ! empty( $vars->desc ) ): ?>
+			<?php if ( ! empty( $vars->desc ) ) : ?>
 				<div class="dgwt-wcas-details-hr"></div>
 				<div class="dgwt-wcas-details-desc">
 					<?php echo Helpers::secureHtmlOutput( $vars->desc, 'description' ); ?>
@@ -63,9 +63,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 
 			<div class="dgwt-wcas-details-hr"></div>
 
-			<?php if ( ! empty( $vars->stockAvailability ) ) {
+			<?php
+			if ( ! empty( $vars->stockAvailability ) ) {
 				echo Helpers::secureHtmlOutput( $vars->stockAvailability, 'stock_status' );
-			}; ?>
+			};
+			?>
 
 			<?php do_action( 'dgwt/wcas/details_panel/product/add_to_cart_before', $vars ); ?>
 			<div class="dgwt-wcas-pd-addtc js-dgwt-wcas-pd-addtc">
@@ -73,16 +75,22 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 					<?php
 
 					if ( $vars->showQuantity ) {
-						woocommerce_quantity_input( array(
-							'input_name' => 'js-dgwt-wcas-quantity',
-						), $vars->wooObject, true );
+						woocommerce_quantity_input(
+							[
+								'input_name' => 'js-dgwt-wcas-quantity',
+							],
+							$vars->wooObject,
+							true
+						);
 					}
 
-					echo WC_Shortcodes::product_add_to_cart( array(
-						'id'         => $vars->ID,
-						'show_price' => false,
-						'style'      => '',
-					) );
+					echo WC_Shortcodes::product_add_to_cart(
+						[
+							'id'         => $vars->ID,
+							'show_price' => false,
+							'style'      => '',
+						]
+					);
 					?>
 				</form>
 			</div>

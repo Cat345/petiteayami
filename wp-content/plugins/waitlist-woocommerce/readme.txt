@@ -3,8 +3,9 @@ Contributors: XootiX
 Donate link: https://www.paypal.me/xootix
 Tags: back in stock, email notification, out of stock, waiting list
 Requires at least: 3.0.1
-Tested up to: 6.8
-Stable tag: 2.8.4
+Tested up to: 6.9
+Stable tag: 2.8.5
+Requires Plugins: woocommerce
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +70,10 @@ Everything is already setup.Just activate the plugin & you are done.
 4. The Waitlist admin settings page.
 
 == Changelog ==
+
+= 2.8.5 =
+* New waitlist design and filters
+* Improved email options
 
 = 2.8.4 =
 * Fix - "Auto send back in stock emails" triggering for empty waitlist.

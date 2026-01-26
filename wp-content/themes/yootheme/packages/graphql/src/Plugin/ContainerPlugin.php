@@ -10,16 +10,8 @@ use YOOtheme\GraphQL\Type\Definition\Type;
 
 class ContainerPlugin
 {
-    /**
-     * @var Container
-     */
-    protected $container;
+    protected Container $container;
 
-    /**
-     * Constructor.
-     *
-     * @param Container $container
-     */
     public function __construct(Container $container)
     {
         $this->container = $container;
@@ -27,10 +19,8 @@ class ContainerPlugin
 
     /**
      * Register directives.
-     *
-     * @param SchemaBuilder $schema
      */
-    public function onLoad(SchemaBuilder $schema)
+    public function onLoad(SchemaBuilder $schema): void
     {
         $schema->setDirective(new BindDirective($this->container));
         $schema->setDirective(new CallDirective($this->container));
@@ -38,10 +28,8 @@ class ContainerPlugin
 
     /**
      * Add directives on type.
-     *
-     * @param Type $type
      */
-    public function onLoadType(Type $type)
+    public function onLoadType(Type $type): void
     {
         if (
             property_exists($type, 'config') &&
@@ -58,21 +46,16 @@ class ContainerPlugin
     /**
      * Add directives on field.
      *
-     * @param Type  $type
-     * @param array $field
+     * @param array<string, mixed> $field
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function onLoadField(Type $type, array $field)
+    public function onLoadField(Type $type, array $field): array
     {
         $extensions = $field['extensions'] ?? [];
 
         if ($extensions && ($directives = $this->getDirectives($extensions))) {
-            if (!isset($field['directives'])) {
-                $field['directives'] = [];
-            }
-
-            $field['directives'] = array_merge($field['directives'], $directives);
+            $field['directives'] = array_merge($field['directives'] ?? [], $directives);
         }
 
         return $field;
@@ -81,18 +64,16 @@ class ContainerPlugin
     /**
      * Get directives.
      *
-     * @param array $extensions
+     * @param array<array<string, mixed>> $extensions
      *
-     * @return array
+     * @return array<array{name: 'bind', args: array<string, mixed>}|array{name: 'call', args: array<string, mixed>}>
      */
-    protected function getDirectives(array $extensions)
+    protected function getDirectives(array $extensions): array
     {
         $directives = [];
 
-        if (isset($extensions['bind'])) {
-            foreach ($extensions['bind'] as $id => $params) {
-                $directives[] = $this->bindDirective($id, $params);
-            }
+        foreach ($extensions['bind'] ?? [] as $id => $params) {
+            $directives[] = $this->bindDirective($id, $params);
         }
 
         if (isset($extensions['call'])) {
@@ -105,12 +86,11 @@ class ContainerPlugin
     /**
      * Get @bind directive.
      *
-     * @param string       $id
-     * @param string|array $params
+     * @param string|array<string, mixed> $params
      *
-     * @return array
+     * @return array{name: 'bind', args: array<string, mixed>}
      */
-    protected function bindDirective($id, $params)
+    protected function bindDirective(string $id, $params): array
     {
         if (is_string($params)) {
             $params = ['class' => $params];
@@ -122,20 +102,20 @@ class ContainerPlugin
 
         return [
             'name' => 'bind',
-            'args' => array_filter(compact('id') + $params),
+            'args' => array_filter(['id' => $id] + $params),
         ];
     }
 
     /**
      * Get @call directive.
      *
-     * @param string|array $params
+     * @param string|array<string, mixed> $params
      *
-     * @return array
+     * @return array{name: 'call', args: array<string, mixed>}
      */
-    protected function callDirective($params)
+    protected function callDirective($params): array
     {
-        if (is_string($params)) {
+        if (is_string($params) || is_callable($params)) {
             $params = ['func' => $params];
         }
 

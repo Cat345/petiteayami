@@ -21,6 +21,26 @@ class BWFAN_DB_Table_Message_Unsubscribe extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'recipient'    => [ 'recipient' ],
+				'mode'         => [ 'mode' ],
+				'c_date'       => [ 'c_date' ],
+				'automation_id' => [ 'automation_id' ],
+				'c_type'       => [ 'c_type' ],
+				'sid'          => [ 'sid' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -38,7 +58,6 @@ class BWFAN_DB_Table_Message_Unsubscribe extends BWFAN_DB_Tables_Base {
 			`c_type` tinyint(1) NOT NULL default '1'  COMMENT '1 - Automation 2 - Broadcast 3 - Manual 4 - Form',
 			`sid` bigint(20) unsigned NOT NULL default 0 COMMENT 'Step ID',
 			PRIMARY KEY (`ID`),
-			KEY `ID` (`ID`),
 			KEY `recipient` (`recipient`($this->max_index_length)),
 			KEY `mode` (`mode`),
 			KEY `c_date` (`c_date`),

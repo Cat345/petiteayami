@@ -40,7 +40,7 @@ class BWFAN_API_Delete_Abandoned_Carts extends BWFAN_API_Base {
 		}
 		$result = BWFAN_Recoverable_Carts::delete_abandoned_cart( $abandoned_ids );
 		if ( true !== $result && is_array( $result ) ) {
-			$message = 'Unable to delete cart with ID: ' . implode( ',', $result );
+			$message = __( 'Unable to delete cart with ID: ', 'wp-marketing-automations' ) . implode( ',', $result );
 
 			return $this->success_response( [], $message );
 		}

@@ -10,15 +10,11 @@ abstract class File
     /**
      * Gets an existing file or directory.
      *
-     * @param string $path
-     *
-     * @return string|null
-     *
      * @example
      * File::get('/path/file.php');
      * // => '/path/file.php'
      */
-    public static function get($path)
+    public static function get(string $path): ?string
     {
         $path = Path::resolveAlias($path);
 
@@ -28,10 +24,6 @@ abstract class File
     /**
      * Checks whether file or directory exists.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::exists('/path/resource');
      * // => true
@@ -39,23 +31,19 @@ abstract class File
      * File::exists('/path/with/no/resource');
      * // => false
      */
-    public static function exists($path)
+    public static function exists(string $path): bool
     {
-        return !is_null(static::get($path));
+        return static::get($path) !== null;
     }
 
     /**
      * Find file with glob pattern.
      *
-     * @param string $path
-     *
-     * @return string|null
-     *
      * @example
      * File::find('/path/*.php');
      * // => '/path/file.php'
      */
-    public static function find($path)
+    public static function find(string $path): ?string
     {
         return ($files = static::glob($path, GLOB_NOSORT)) ? $files[0] : null;
     }
@@ -63,16 +51,13 @@ abstract class File
     /**
      * Glob files with braces support.
      *
-     * @param string $pattern
-     * @param int    $flags
-     *
-     * @return array<string>
+     * @return list<string>
      *
      * @example
      * File::glob('/path/{*.ext,*.php}');
      * // => ['/path/file.ext', '/path/file.php']
      */
-    public static function glob($pattern, $flags = 0)
+    public static function glob(string $pattern, int $flags = 0): array
     {
         $pattern = Path::resolveAlias($pattern);
 
@@ -86,16 +71,11 @@ abstract class File
     /**
      * Copies file.
      *
-     * @param string $from
-     * @param string $to
-     *
-     * @return bool
-     *
      * @example
      * File::copy('/path/file.ext', '/path/dest/file.ext');
      * // => true
      */
-    public static function copy($from, $to)
+    public static function copy(string $from, string $to): bool
     {
         $from = Path::resolveAlias($from);
         $to = Path::resolve(dirname($from), $to);
@@ -106,16 +86,11 @@ abstract class File
     /**
      * Renames a file or directory.
      *
-     * @param string $from
-     * @param string $to
-     *
-     * @return bool
-     *
      * @example
      * File::rename('/path/resource', '/path/renamed');
      * // => true
      */
-    public static function rename($from, $to)
+    public static function rename(string $from, string $to): bool
     {
         $from = Path::resolveAlias($from);
         $to = Path::resolve(dirname($from), $to);
@@ -126,25 +101,19 @@ abstract class File
     /**
      * Deletes a file.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::delete('/path/file.ext');
      * // => true
      */
-    public static function delete($path)
+    public static function delete(string $path): bool
     {
-        $path = Path::resolveAlias($path);
-
-        return unlink($path);
+        return unlink(Path::resolveAlias($path));
     }
 
     /**
      * List files and directories inside the specified path.
      *
-     * @param string      $path
+     * @param string $path
      * @param bool|string $prefix
      *
      * @return string[]|false
@@ -156,7 +125,7 @@ abstract class File
      * File::listDir('/path/dir', true);
      * // => ['/path/dir/Dir1', '/path/dir/Dir2', '/path/dir/File.txt']
      */
-    public static function listDir($path, $prefix = false)
+    public static function listDir(string $path, $prefix = false)
     {
         $path = Path::resolveAlias($path);
 
@@ -164,17 +133,13 @@ abstract class File
             return false;
         }
 
-        if ($prefix === true) {
-            $prefix = $path;
-        }
-
         if ($files = scandir($path)) {
             $files = array_values(array_diff($files, ['.', '..']));
-        }
 
-        if ($files && $prefix) {
-            foreach ($files as &$file) {
-                $file = Path::join($prefix, $file);
+            if ($prefix) {
+                foreach ($files as &$file) {
+                    $file = Path::join($path, $file);
+                }
             }
         }
 
@@ -184,17 +149,11 @@ abstract class File
     /**
      * Makes directory.
      *
-     * @param string $path
-     * @param int    $mode
-     * @param bool   $recursive
-     *
-     * @return bool
-     *
      * @example
      * File::makeDir('/path/dir/to/make');
      * // => true
      */
-    public static function makeDir($path, $mode = 0777, $recursive = false)
+    public static function makeDir(string $path, int $mode = 0777, bool $recursive = false): bool
     {
         $path = Path::resolveAlias($path);
 
@@ -204,21 +163,17 @@ abstract class File
     /**
      * Removes directory recursively.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::deleteDir('/path/dir/to/delete');
      * // => true
      */
-    public static function deleteDir($path)
+    public static function deleteDir(string $path): bool
     {
         $path = Path::resolveAlias($path);
         $files = static::listDir($path, true);
 
-        if (is_bool($files)) {
-            return $files;
+        if (false === $files) {
+            return false;
         }
 
         foreach ($files as $file) {
@@ -239,18 +194,13 @@ abstract class File
     /**
      * Gets the last access time of file.
      *
-     * @param string $path
-     *
-     * @return int|null
-     *
      * @example
      * File::getATime('/path/file.ext');
      * // => 1551693515
      */
-    public static function getATime($path)
+    public static function getATime(string $path): ?int
     {
-        $path = Path::resolveAlias($path);
-        $time = fileatime($path);
+        $time = fileatime(Path::resolveAlias($path));
 
         return is_int($time) ? $time : null;
     }
@@ -258,18 +208,13 @@ abstract class File
     /**
      * Gets the inode change time of file.
      *
-     * @param string $path
-     *
-     * @return int|null
-     *
      * @example
      * File::getCTime('/path/file.ext');
      * // => 1551693515
      */
-    public static function getCTime($path)
+    public static function getCTime(string $path): ?int
     {
-        $path = Path::resolveAlias($path);
-        $time = filectime($path);
+        $time = filectime(Path::resolveAlias($path));
 
         return is_int($time) ? $time : null;
     }
@@ -277,18 +222,13 @@ abstract class File
     /**
      * Gets the last modified time of file.
      *
-     * @param string $path
-     *
-     * @return int|null
-     *
      * @example
      * File::getMTime('/path/file.ext');
      * // => 1551693515
      */
-    public static function getMTime($path)
+    public static function getMTime(string $path): ?int
     {
-        $path = Path::resolveAlias($path);
-        $time = filemtime($path);
+        $time = filemtime(Path::resolveAlias($path));
 
         return is_int($time) ? $time : null;
     }
@@ -296,18 +236,13 @@ abstract class File
     /**
      * Gets the file size.
      *
-     * @param string $path
-     *
-     * @return int|null
-     *
      * @example
      * File::getSize('/path/file.ext');
      * // => 4
      */
-    public static function getSize($path)
+    public static function getSize(string $path): ?int
     {
-        $path = Path::resolveAlias($path);
-        $size = filesize($path);
+        $size = filesize(Path::resolveAlias($path));
 
         return is_int($size) ? $size : null;
     }
@@ -315,15 +250,13 @@ abstract class File
     /**
      * Gets the file mime content type.
      *
-     * @param string $path
-     *
      * @return false|string
      *
      * @example
      * File::getMimetype('/path/file.ext');
      * // => text/plain
      */
-    public static function getMimetype($path)
+    public static function getMimetype(string $path)
     {
         $path = Path::resolveAlias($path);
 
@@ -335,36 +268,25 @@ abstract class File
     /**
      * Gets the file extension.
      *
-     * @param string $path
-     *
-     * @return string
-     *
      * @example
      * File::getExtension('/path/file.ext');
      * // => ext
      */
-    public static function getExtension($path)
+    public static function getExtension(string $path): string
     {
-        $path = Path::resolveAlias($path);
-
-        return pathinfo($path, PATHINFO_EXTENSION);
+        return pathinfo(Path::resolveAlias($path), PATHINFO_EXTENSION);
     }
 
     /**
      * Gets the contents from file.
      *
-     * @param string $path
-     *
-     * @return string|null
-     *
      * @example
      * File::getContents('/path/file.ext');
      * // => filecontent
      */
-    public static function getContents($path)
+    public static function getContents(string $path): ?string
     {
-        $path = Path::resolveAlias($path);
-        $data = file_get_contents($path);
+        $data = file_get_contents(Path::resolveAlias($path));
 
         return is_string($data) ? $data : null;
     }
@@ -372,20 +294,15 @@ abstract class File
     /**
      * Writes the contents to file.
      *
-     * @param string $path
      * @param mixed  $data
-     * @param int    $flags
-     *
-     * @return int|null
      *
      * @example
      * File::putContents('/path/file.ext', 'content');
      * // => true
      */
-    public static function putContents($path, $data, $flags = 0)
+    public static function putContents(string $path, $data, int $flags = 0): ?int
     {
-        $path = Path::resolveAlias($path);
-        $bytes = file_put_contents($path, $data, $flags);
+        $bytes = file_put_contents(Path::resolveAlias($path), $data, $flags);
 
         return is_int($bytes) ? $bytes : null;
     }
@@ -393,66 +310,45 @@ abstract class File
     /**
      * Checks if is a directory.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::isDir('/path/dir');
      * // => true
      */
-    public static function isDir($path)
+    public static function isDir(string $path): bool
     {
-        $path = Path::resolveAlias($path);
-
-        return is_dir($path);
+        return is_dir(Path::resolveAlias($path));
     }
 
     /**
      * Checks if is a file.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::isFile('/path/file.ext');
      * // => true
      */
-    public static function isFile($path)
+    public static function isFile(string $path): bool
     {
-        $path = Path::resolveAlias($path);
-
-        return is_file($path);
+        return is_file(Path::resolveAlias($path));
     }
 
     /**
      * Checks if is a link.
      *
-     * @param string $path
-     *
-     * @return bool
-     *
      * @example
      * File::isLink('/path/link');
      * // => true
      */
-    public static function isLink($path)
+    public static function isLink(string $path): bool
     {
-        $path = Path::resolveAlias($path);
-
-        return is_link($path);
+        return is_link(Path::resolveAlias($path));
     }
 
     /**
      * Glob files with braces support (Polyfill).
      *
-     * @param string $pattern
-     * @param int    $flags
-     *
-     * @return array
+     * @return list<string>
      */
-    protected static function _glob($pattern, $flags = 0)
+    protected static function _glob(string $pattern, int $flags = 0): array
     {
         $files = [];
 

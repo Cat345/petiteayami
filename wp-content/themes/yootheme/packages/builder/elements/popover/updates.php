@@ -8,15 +8,15 @@ return [
     },
 
     '4.0.0-beta.9' => function ($node) {
-        if (Arr::get($node->props, 'panel_link') && Arr::get($node->props, 'css')) {
+        if (($node->props['panel_link'] ?? '') && ($node->props['css'] ?? '')) {
             $node->props['css'] = str_replace('.el-item', '.el-item > *', $node->props['css']);
         }
     },
 
     '2.8.0-beta.0.13' => function ($node) {
         foreach (['title_style', 'meta_style', 'content_style'] as $prop) {
-            if (in_array(Arr::get($node->props, $prop), ['meta', 'lead'])) {
-                $node->props[$prop] = 'text-' . Arr::get($node->props, $prop);
+            if (in_array($node->props[$prop] ?? '', ['meta', 'lead'])) {
+                $node->props[$prop] = "text-{$node->props[$prop]}";
             }
         }
     },
@@ -66,33 +66,33 @@ return [
             ])
         ) {
             if (
-                Arr::get($node->props, 'title_style') === 'h1' ||
+                ($node->props['title_style'] ?? '') === 'h1' ||
                 (empty($node->props['title_style']) &&
-                    Arr::get($node->props, 'title_element') === 'h1')
+                    ($node->props['title_element'] ?? '') === 'h1')
             ) {
                 $node->props['title_style'] = 'heading-small';
             }
         }
 
         if (in_array($style, ['florence', 'max', 'nioh-studio', 'sonic', 'summit', 'trek'])) {
-            if (Arr::get($node->props, 'title_style') === 'h2') {
+            if (($node->props['title_style'] ?? '') === 'h2') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
+                    ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h2'
+                ($node->props['title_element'] ?? '') === 'h2'
             ) {
                 $node->props['title_style'] = 'h1';
             }
         }
 
         if ($style == 'copper-hill') {
-            if (Arr::get($node->props, 'title_style') === 'h1') {
+            if (($node->props['title_style'] ?? '') === 'h1') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h2' ? '' : 'h2';
+                    ($node->props['title_element'] ?? '') === 'h2' ? '' : 'h2';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h1'
+                ($node->props['title_element'] ?? '') === 'h1'
             ) {
                 $node->props['title_style'] = 'h2';
             }
@@ -100,15 +100,15 @@ return [
     },
 
     '1.19.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'meta_align') === 'top') {
+        if (($node->props['meta_align'] ?? '') === 'top') {
             $node->props['meta_align'] = 'above-title';
         }
 
-        if (Arr::get($node->props, 'meta_align') === 'bottom') {
+        if (($node->props['meta_align'] ?? '') === 'bottom') {
             $node->props['meta_align'] = 'below-title';
         }
 
-        if (Arr::get($node->props, 'link_style') === 'card') {
+        if (($node->props['link_style'] ?? '') === 'card') {
             $node->props['link_type'] = 'element';
             $node->props['link_style'] = 'default';
         }
@@ -117,7 +117,7 @@ return [
     },
 
     '1.18.10.3' => function ($node) {
-        if (Arr::get($node->props, 'meta_align') === 'top') {
+        if (($node->props['meta_align'] ?? '') === 'top') {
             if (!empty($node->props['meta_margin'])) {
                 $node->props['title_margin'] = $node->props['meta_margin'];
             }
@@ -133,10 +133,7 @@ return [
     },
 
     '1.18.0' => function ($node) {
-        if (
-            !isset($node->props['meta_color']) &&
-            Arr::get($node->props, 'meta_style') === 'muted'
-        ) {
+        if (!isset($node->props['meta_color']) && ($node->props['meta_style'] ?? '') === 'muted') {
             $node->props['meta_color'] = 'muted';
             $node->props['meta_style'] = '';
         }

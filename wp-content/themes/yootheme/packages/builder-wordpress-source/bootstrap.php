@@ -4,8 +4,10 @@ namespace YOOtheme\Builder\Wordpress\Source;
 
 use YOOtheme\Builder;
 use YOOtheme\Builder\BuilderConfig;
+use YOOtheme\Builder\Source\Filesystem\FileHelper;
 use YOOtheme\Builder\Source\SourceTransform;
 use YOOtheme\Builder\UpdateTransform;
+use YOOtheme\Config;
 
 return [
     'config' => [
@@ -13,7 +15,7 @@ return [
             'id' => get_current_blog_id(),
         ],
 
-        BuilderConfig::class => __DIR__ . '/config/customizer.json',
+        BuilderConfig::class => __DIR__ . '/config/customizer.php',
     ],
 
     'routes' => [
@@ -39,7 +41,11 @@ return [
 
     'extend' => [
         Builder::class => function (Builder $builder) {
-            $builder->addTypePath(__DIR__ . '/elements/*/element.json');
+            $elements = ['comments', 'pagination'];
+
+            foreach ($elements as $element) {
+                $builder->addType($element, __DIR__ . "/elements/{$element}/element.php");
+            }
         },
 
         UpdateTransform::class => function (UpdateTransform $update) {
@@ -76,6 +82,9 @@ return [
 
     'services' => [
         Listener\LoadTemplate::class => '',
+
         Listener\MatchTemplate::class => '',
+
+        FileHelper::class => fn(Config $config) => new FileHelper($config('app.uploadDir')),
     ],
 ];

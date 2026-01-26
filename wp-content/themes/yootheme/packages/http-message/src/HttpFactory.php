@@ -2,21 +2,15 @@
 
 namespace YOOtheme\Http;
 
-use Psr\Http\Message\ServerRequestInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use YOOtheme\Http\Message\Factory\Psr17Factory;
 
 class HttpFactory
 {
-    /**
-     * @var Psr17Factory
-     */
-    protected $factory;
+    protected Psr17Factory $factory;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->factory = new Psr17Factory();
@@ -26,8 +20,11 @@ class HttpFactory
      * Creates an instance from server globals.
      *
      * @param string|UriInterface $uri
-     *
-     * @return ServerRequestInterface
+     * @param array<string, mixed> $get
+     * @param array<string, mixed> $post
+     * @param array<string, mixed> $files
+     * @param array<string, mixed> $cookie
+     * @param array<string, mixed> $server
      */
     public function createServerRequestFromGlobals(
         $uri,
@@ -36,7 +33,7 @@ class HttpFactory
         array $files = [],
         array $cookie = [],
         array $server = []
-    ) {
+    ): Request {
         $body = fopen('php://input', 'r') ?: null;
         $method = strtoupper($server['REQUEST_METHOD'] ?? 'GET');
         $version = str_replace('HTTP/', '', $server['SERVER_PROTOCOL'] ?? '1.1');
@@ -59,8 +56,12 @@ class HttpFactory
 
     /**
      * Implementation from Laminas\Diactoros\marshalHeadersFromSapi().
+     *
+     * @param array<string, mixed> $server
+     *
+     * @return array<string, string>
      */
-    public function getHeadersFromServer(array $server)
+    public function getHeadersFromServer(array $server): array
     {
         $headers = [];
 
@@ -98,13 +99,13 @@ class HttpFactory
     /**
      * Return an UploadedFile instance array.
      *
-     * @param array $files An array which respect $_FILES structure
+     * @param array<string, mixed> $files An array which respect $_FILES structure
      *
-     * @return UploadedFileInterface[]
+     * @return array<string, UploadedFileInterface|list<UploadedFileInterface>>
      *
-     * @throws \InvalidArgumentException for unrecognized values
+     * @throws InvalidArgumentException for unrecognized values
      */
-    protected function normalizeFiles(array $files)
+    protected function normalizeFiles(array $files): array
     {
         $normalized = [];
 
@@ -116,7 +117,7 @@ class HttpFactory
             } elseif (is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
             } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
+                throw new InvalidArgumentException('Invalid value in files specification');
             }
         }
 
@@ -129,9 +130,9 @@ class HttpFactory
      * If the specification represents an array of values, this method will
      * delegate to normalizeNestedFileSpec() and return that return value.
      *
-     * @param array $value $_FILES struct
+     * @param array<string, mixed> $value $_FILES struct
      *
-     * @return array|UploadedFileInterface
+     * @return UploadedFileInterface|list<UploadedFileInterface>
      */
     protected function createUploadedFileFromSpec(array $value)
     {
@@ -164,9 +165,11 @@ class HttpFactory
      * Loops through all nested files and returns a normalized array of
      * UploadedFileInterface instances.
      *
-     * @return UploadedFileInterface[]
+     * @param array<string, mixed> $files
+     *
+     * @return list<UploadedFileInterface>
      */
-    protected function normalizeNestedFileSpec(array $files = [])
+    protected function normalizeNestedFileSpec(array $files = []): array
     {
         $normalizedFiles = [];
 

@@ -7,7 +7,7 @@ class LoadEditor
     /**
      * Enqueue classic editor.
      */
-    public static function handle()
+    public static function handle(): void
     {
         wp_enqueue_editor();
     }

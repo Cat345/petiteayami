@@ -2,18 +2,27 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Post;
+use WP_Post_Type;
+use WP_Taxonomy;
+use WP_Term;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ * @phpstan-import-type FieldConfig from Source
+ */
 class TaxonomyType
 {
     /**
-     * @param \WP_Taxonomy $taxonomy
+     * @param WP_Taxonomy $taxonomy
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Taxonomy $taxonomy)
+    public static function config(WP_Taxonomy $taxonomy): array
     {
         return [
             'fields' => array_merge(
@@ -52,6 +61,17 @@ class TaxonomyType
                             'label' => trans('Item Count'),
                         ],
                     ],
+
+                    'active' => [
+                        'type' => 'Boolean',
+                        'metadata' => [
+                            'label' => trans('Active'),
+                        ],
+                        'extensions' => [
+                            'call' => __CLASS__ . '::active',
+                        ],
+                    ],
+
                     'slug' => [
                         'type' => 'String',
                         'metadata' => [
@@ -75,12 +95,16 @@ class TaxonomyType
 
             'metadata' => [
                 'type' => true,
-                'label' => $taxonomy->labels->singular_name,
             ],
         ];
     }
 
-    public static function configHierarchicalFields($taxonomy)
+    /**
+     * @param WP_Taxonomy $taxonomy
+     *
+     * @return array<string, FieldConfig>
+     */
+    public static function configHierarchicalFields(WP_Taxonomy $taxonomy): array
     {
         if (!$taxonomy->hierarchical) {
             return [];
@@ -157,7 +181,10 @@ class TaxonomyType
         ];
     }
 
-    public static function configPostType($type, $taxonomy)
+    /**
+     * @return array<string, FieldConfig>
+     */
+    public static function configPostType(WP_Post_Type $type, WP_Taxonomy $taxonomy): array
     {
         return [
             Helper::getBase($type) => [
@@ -166,6 +193,39 @@ class TaxonomyType
                 ],
 
                 'args' => [
+                    'date_column' => [
+                        'type' => 'String',
+                    ],
+                    'date_range' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_value' => [
+                        'type' => 'Int',
+                    ],
+                    'date_relative_unit' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_unit_this' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_start_today' => [
+                        'type' => 'Boolean',
+                    ],
+                    'date_start' => [
+                        'type' => 'String',
+                    ],
+                    'date_end' => [
+                        'type' => 'String',
+                    ],
+                    'date_start_custom' => [
+                        'type' => 'String',
+                    ],
+                    'date_end_custom' => [
+                        'type' => 'String',
+                    ],
                     'offset' => [
                         'type' => 'Int',
                     ],
@@ -179,6 +239,9 @@ class TaxonomyType
                         'type' => 'String',
                     ],
                     'order_alphanum' => [
+                        'type' => 'Boolean',
+                    ],
+                    'order_reverse' => [
                         'type' => 'Boolean',
                     ],
                     'include_children' => [
@@ -197,6 +260,142 @@ class TaxonomyType
                             ]),
                             'type' => 'checkbox',
                             'show' => $taxonomy->hierarchical,
+                        ],
+                        '_date' => [
+                            'label' => trans('Filter by Date'),
+                            'description' =>
+                                'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                            'type' => 'grid',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_column' => [
+                                    'type' => 'select',
+                                    'options' => [
+                                        ['value' => '', 'text' => trans('None')],
+                                        [
+                                            'evaluate' =>
+                                                'yootheme.builder.sources.postTypeDateFilterOptions',
+                                        ],
+                                        [
+                                            'evaluate' => "yootheme.builder.sources['{$type->name}DateFilterOptions']",
+                                        ],
+                                    ],
+                                ],
+                                'date_range' => [
+                                    'type' => 'select',
+                                    'default' => 'relative',
+                                    'options' => [
+                                        trans('Relative Range') => 'relative',
+                                        trans('Fixed Range') => 'fixed',
+                                        trans('Custom Format Range') => 'custom',
+                                    ],
+                                    'enable' => 'date_column',
+                                ],
+                            ],
+                        ],
+                        '_date_range_relative' => [
+                            'label' => trans('Date Range'),
+                            'type' => 'grid',
+                            'width' => 'expand,auto,expand',
+                            'fields' => [
+                                'date_relative' => [
+                                    'type' => 'select',
+                                    'default' => 'next',
+                                    'options' => [
+                                        trans('Is in the next') => 'next',
+                                        trans('Is in this') => 'this',
+                                        trans('Is in the last') => 'last',
+                                    ],
+                                ],
+                                'date_relative_value' => [
+                                    'type' => 'limit',
+                                    'attrs' => [
+                                        'min' => 0,
+                                        'class' => 'uk-form-width-xsmall',
+                                        'placeholder' => '∞',
+                                    ],
+                                    'show' => 'date_relative !== \'this\'',
+                                ],
+                                'date_relative_unit' => [
+                                    'type' => 'select',
+                                    'default' => 'day',
+                                    'options' => [
+                                        trans('Days') => 'day',
+                                        trans('Weeks') => 'week',
+                                        trans('Months') => 'month',
+                                        trans('Years') => 'year',
+                                        trans('Calendar Weeks') => 'week_calendar',
+                                        trans('Calendar Months') => 'month_calendar',
+                                        trans('Calendar Years') => 'year_calendar',
+                                    ],
+                                    'show' => 'date_relative !== \'this\'',
+                                ],
+                                'date_relative_unit_this' => [
+                                    'type' => 'select',
+                                    'default' => 'day',
+                                    'options' => [
+                                        trans('Day') => 'day',
+                                        trans('Week') => 'week',
+                                        trans('Month') => 'month',
+                                        trans('Year') => 'year',
+                                    ],
+                                    'show' => 'date_relative === \'this\'',
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'relative\'',
+                        ],
+                        'date_relative_start_today' => [
+                            'type' => 'checkbox',
+                            'text' => trans('Start today'),
+                            'description' =>
+                                'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
+                            'enable' => 'date_relative !== \'this\'',
+                            'show' => 'date_column && date_range === \'relative\'',
+                        ],
+                        '_date_range_fixed' => [
+                            'type' => 'grid',
+                            'description' =>
+                                'Set only one date to load all posts either before or after that date.',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_start' => [
+                                    'label' => trans('Start Date'),
+                                    'type' => 'datetime',
+                                ],
+                                'date_end' => [
+                                    'label' => trans('End Date'),
+                                    'type' => 'datetime',
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'fixed\'',
+                        ],
+                        '_date_range_custom' => [
+                            'type' => 'grid',
+                            'description' =>
+                                'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_start_custom' => [
+                                    'label' => trans('Start Date'),
+                                    'type' => 'data-list',
+                                    'options' => [
+                                        'This month' => 'first day of +0 month 00:00:00',
+                                        'Next month' => 'first day of +1 month 00:00:00',
+                                        'Month after next month' =>
+                                            'first day of +2 month 00:00:00',
+                                    ],
+                                ],
+                                'date_end_custom' => [
+                                    'label' => trans('End Date'),
+                                    'type' => 'data-list',
+                                    'options' => [
+                                        'This month' => 'last day of +0 month 23:59:59',
+                                        'Next month' => 'last day of +1 month 23:59:59',
+                                        'Month after next month' => 'last day of +2 month 23:59:59',
+                                    ],
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'custom\'',
                         ],
                         '_offset' => [
                             'description' => trans(
@@ -265,6 +464,11 @@ class TaxonomyType
                             'type' => 'checkbox',
                             '@order' => 70,
                         ],
+                        'order_reverse' => [
+                            'text' => trans('Reverse Results'),
+                            'type' => 'checkbox',
+                            '@order' => 80,
+                        ],
                     ],
                     'directives' => [],
                 ],
@@ -279,19 +483,30 @@ class TaxonomyType
         ];
     }
 
-    public static function resolveLink(\WP_Term $term)
+    /**
+     * @return string
+     */
+    public static function resolveLink(WP_Term $term)
     {
         return get_term_link($term);
     }
 
-    public static function resolveParent(\WP_Term $term, array $args)
+    /**
+     * @param array<string, mixed> $args
+     * @return ?WP_Term
+     */
+    public static function resolveParent(WP_Term $term, array $args)
     {
         return $term->parent
             ? get_term($term->parent)
-            : new \WP_Term((object) (['id' => 0] + $args));
+            : new WP_Term((object) (['id' => 0] + $args));
     }
 
-    public static function resolveChildren(\WP_Term $term, array $args)
+    /**
+     * @param array<string, mixed> $args
+     * @return array<WP_Term>
+     */
+    public static function resolveChildren(WP_Term $term, array $args)
     {
         $args += [
             'order' => 'term_order',
@@ -308,7 +523,11 @@ class TaxonomyType
         return get_terms($query);
     }
 
-    public static function resolvePosts(\WP_Term $term, array $args)
+    /**
+     * @param array<string, mixed> $args
+     * @return array<WP_Post>
+     */
+    public static function resolvePosts(WP_Term $term, array $args)
     {
         $args['terms'] = [$term->term_id];
         $args[strtr($term->taxonomy, '-', '_') . '_include_children'] =
@@ -316,5 +535,28 @@ class TaxonomyType
         unset($args['include_children']);
 
         return Helper::getPosts($args);
+    }
+
+    public static function active(WP_Term $term): bool
+    {
+        $object = get_queried_object();
+
+        if ($object instanceof WP_Post && in_array($term->taxonomy, get_post_taxonomies($object))) {
+            foreach (
+                wp_get_post_terms($object->ID, $term->taxonomy, ['fields' => 'ids'])
+                as $term_id
+            ) {
+                if (
+                    $term_id === $term->term_id ||
+                    term_is_ancestor_of($term, $term_id, $term->taxonomy)
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return $object instanceof WP_Term &&
+            ($object->term_id === $term->term_id ||
+                term_is_ancestor_of($term, $object, $term->taxonomy));
     }
 }

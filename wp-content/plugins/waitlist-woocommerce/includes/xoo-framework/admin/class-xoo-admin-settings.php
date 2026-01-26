@@ -24,7 +24,7 @@ class Xoo_Admin{
 
 	public $capability = 'manage_options';
 
-	public $usageURL 	= 'https://xootix.com/wp-json/usage/v1/data';
+	public $usageURL 	= 'https://xootix.com/wp-json/usage/v2/data';
 
 	public function __construct( $helper ){
 		$this->helper 			= $helper;
@@ -71,7 +71,7 @@ class Xoo_Admin{
 
 			add_action( 'admin_notices', array( $this, 'usage_data_notice' ) );
 			add_action( 'admin_init', array( $this, 'handle_usage_click_response' ) );
-			add_action( 'admin_init', array( $this, 'send_usage_data_timely' ) );
+			add_action( 'admin_init', array( $this, 'on_plugin_reactivate' ) );
 
 			if( $this->helper->helperArgs['pluginFile'] ){
 				register_deactivation_hook( $this->helper->helperArgs['pluginFile'] , array( $this, 'on_plugin_deactivate' ) );
@@ -126,9 +126,12 @@ class Xoo_Admin{
 
 		update_option( 'xoo_tracking_consent_'.$this->helper->slug, $response );
 
+		$this->usage_data_http_request();
+
 		wp_redirect( remove_query_arg( 'xooisrandom' ) );
 
 	}
+
 
 
 	public function is_usage_allowed(){
@@ -136,45 +139,67 @@ class Xoo_Admin{
 	}
 
 
-	public function send_usage_data_timely(){
-
-		if( !$this->is_usage_allowed() ) return; //permission not given
-
-		if( get_transient( 'xoo_tracking_consent_last_sent_'.$this->helper->slug ) !== false ) return; //date not expired.
-
-		$response = $this->usage_data_http_request();
-
-		$fetchAgain = DAY_IN_SECONDS * 365;
-
-		set_transient( 'xoo_tracking_consent_last_sent_'.$this->helper->slug, 'yes', $fetchAgain  );
-		
+	public function on_plugin_reactivate(){
+		if( $this->is_usage_allowed() && get_option('xoo_plugin_deactivated_'.$this->helper->slug) === "yes" ){
+			delete_option('xoo_plugin_deactivated_'.$this->helper->slug);
+			$this->usage_data_http_request(array(
+				'active' => 1
+			) );
+		}
 	}
 
 
-	public function usage_data_http_request( $passed_data = array() ){
+	public function usage_data_http_request( $passed_data = array() ) {
 
 		$helperdata = $this->helper->get_usage_data();
 
-		$defaults 	= array(
-			'slug' 			=> $this->helper->slug,
-			'site_url' 		=> get_site_url(),
-			'wp_version' 	=> get_bloginfo( 'version' ),
-			'active' 		=> 1,
+		$defaults = array(
+			'slug'       => $this->helper->slug,
+			'site_url'   => get_site_url(),
+			'wp_version' => get_bloginfo( 'version' ),
+			'active'     => 1,
 		);
 
 		$data = array_merge( $defaults, $passed_data, $helperdata );
 
-		$httprequest = wp_remote_post(
+		$response = wp_remote_post(
 			$this->usageURL,
 			array(
-				'body' => $data
+				'timeout' => 15,
+				'body' => $data,
 			)
 		);
 
-		$response = json_decode(wp_remote_retrieve_body($httprequest), true);
+		// Handle request failure
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'success' => false,
+				'error'   => $response->get_error_message(),
+			);
+		}
 
-		return $response;
+		$body = wp_remote_retrieve_body( $response );
+
+		if ( empty( $body ) ) {
+			return array(
+				'success' => false,
+				'error'   => 'Empty response body',
+			);
+		}
+
+		$decoded = json_decode( $body, true );
+
+		// Handle invalid JSON
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return array(
+				'success' => false,
+				'error'   => 'Invalid JSON response',
+			);
+		}
+
+		return $decoded;
 	}
+
 
 
 	public function on_plugin_deactivate(){
@@ -182,9 +207,8 @@ class Xoo_Admin{
 		$this->usage_data_http_request( array(
 			'active' => 0
 		) );
-		delete_transient( 'xoo_tracking_consent_last_sent_'.$this->helper->slug );
+		update_option( 'xoo_plugin_deactivated_'.$this->helper->slug, 'yes' );
 	}
-
 
 	public function export_settings(){
 
@@ -359,21 +383,48 @@ class Xoo_Admin{
 					$sanitized = true;
 				}
 
+
+				if( isset( $setting['args']['group'] ) ){
+
+					$group = $setting['args']['group'];
+
+					if( $group === 'email_content' ){
+						$value = xoo_wp_kses_email( $value );
+						$sanitized = true;
+					}
+
+				}
+
+
+				if( isset( $setting['args']['sanitize'] ) && function_exists( $setting['args']['sanitize'] ) ){
+					$value 		= call_user_func( $setting['args']['sanitize'], $value );
+					$sanitized 	= true;
+				}
+
 				
 				if( !$sanitized ){
 					
 					switch ( $setting['callback'] ) {
 						case 'textarea':
 							$value = xoo_clean( $value, 'wp_kses_post' );
+							break;
+
+						case 'wp_editor':
+							$value = wp_kses_post( $value );
+							break;
 						
 						default:
 							$value = xoo_clean($value);
 							break;
 					}
 
+					$sanitized = true;
+
 				}
 
+
 				$option_data[ $setting_id ] = $value;
+
 
 			}
 
@@ -397,8 +448,8 @@ class Xoo_Admin{
 		wp_enqueue_media(); // media gallery
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_style( 'xoo-admin-style', XOO_FW_URL . '/admin/assets/css/xoo-admin-style.css', array(), XOO_FW_VERSION, 'all' );
-		wp_enqueue_script( 'xoo-admin-js', XOO_FW_URL . '/admin/assets/js/xoo-admin-js.js', array( 'jquery','wp-color-picker'), XOO_FW_VERSION, false );
-		wp_enqueue_script( 'jquery-ui-sortable' );
+		wp_enqueue_script( 'xoo-admin-js', XOO_FW_URL . '/admin/assets/js/xoo-admin-js.js', array( 'jquery','wp-color-picker', 'jquery-ui-sortable' ), XOO_FW_VERSION, false );
+		
 
 		wp_localize_script( 'xoo-admin-js', 'xoo_admin_params', array(
 			'adminurl'  => admin_url().'admin-ajax.php',
@@ -706,10 +757,10 @@ class Xoo_Admin{
 		$this->sort();
 
 		$args = array(
-			'adminObj' 		=> $this,
-			'settings' 		=> $this->settings,
-			'tabs' 			=> $this->tabs,
-			'hasPRO' 		=> $this->hasPRO,
+			'adminObj' 	=> $this,
+			'settings' 	=> $this->settings,
+			'tabs' 		=> $this->tabs,
+			'hasPRO' 	=> $this->hasPRO,
 			'hasSidebar' 	=> isset( $this->helper->helperArgs['sidebar'] ) && $this->helper->helperArgs['sidebar']
 		);
 
@@ -819,7 +870,6 @@ class Xoo_Admin{
 			$container_class[] = 'xoo-as-select2box';
 		}
 
-
 		$custom_attributes_html = array();
 
 		if ( ! empty( $custom_attributes ) && is_array( $custom_attributes ) ) {
@@ -848,11 +898,73 @@ class Xoo_Admin{
 		) );
 
 
+		if ( $callback === 'wp_editor' ) {
 
-		$field_container = '<div class="%1$s" data-setting="%3$s" data-field_id="'.$field_id.'">%2$s</div>';
+	$editor_settings = isset( $args['editor_settings'] ) ? $args['editor_settings'] : array();
+	$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
+		'textarea_name' => $field_id,
+		'wpautop'       => false,
+	) );
+
+	if ( isset( $args['group'] ) && $args['group'] === 'email_content' ) {
+
+		$editor_settings = xoo_recursive_parse_args( $editor_settings, array(
+			'teeny'   => false,
+			'tinymce' => array(
+
+				/* Toolbar */
+				'toolbar1' => 'formatselect,styleselect,fontsizeselect,bold,italic,underline,forecolor,backcolor,alignleft,aligncenter,alignright,undo,redo,removeformat,code,hr',
+
+				/* Font sizes */
+				'fontsize_formats' => '12px 14px 16px 18px 20px 24px 28px 32px',
+
+				/* Valid styles (JSON REQUIRED) */
+				'valid_styles' => wp_json_encode( array(
+					'*' => 'color,font-size,font-weight,font-style,text-decoration,background-color,text-align,margin,padding',
+				) ),
+
+				'extended_valid_elements' => 'span[style],a[href|style],p[style],div[style],br',
+
+				/* Protect placeholders (JSON REQUIRED) */
+				'protect' => wp_json_encode( array(
+					'/{[^}]+}/g',
+				) ),
+
+				/* Clean & predictable output */
+				'verify_html'        => false,
+				'cleanup'            => false,
+				'convert_urls'       => false,
+				'remove_script_host' => false,
+
+				/* Paragraph handling */
+				'forced_root_block' => 'p',
+
+				'init_instance_callback' => 'function(editor) {
+					editor.settings.forced_root_block_attrs = {
+						style: "margin:0 0 16px 0;"
+					};
+				}',
+			),
+		));
+	}
+}
+
+
+
+
+		
+		$toggleDataHTML = isset( $args['toggleSettings'] )  ? "data-togglesettings=".esc_attr( wp_json_encode( $args['toggleSettings'] ) ) : '';
+
+		$field_container = '<div class="%1$s" data-setting="%3$s" data-field_id="'.$field_id.'" '.$toggleDataHTML.'>%2$s</div>';
 
 		$field = '';
 		switch ( $callback ) {
+
+			case 'wp_editor':
+				ob_start();
+				wp_editor( $value, sanitize_title_with_dashes( $field_id ), $editor_settings );
+				$field .=  ob_get_clean();
+				break;
 
 			case 'text':
 			case 'number':
@@ -1058,8 +1170,25 @@ class Xoo_Admin{
 
 		$field = apply_filters( 'xoo_admin_setting_field_callback_html', $field, $field_id, $value, $args );
 
+		if( isset( $args['value_desc'] ) && !empty( $args['value_desc'] ) ){
+			$defaultValueDesc = isset( $args['value_desc'][$value] ) ? $args['value_desc'][$value] : '';
+			$field .= '<div class="xoo-as-val-desc" data-desc="'.esc_attr( wp_json_encode( $args['value_desc'] ) ).'">'.$defaultValueDesc.'</div>';
+		}
+
 		if( $desc ){
 			$field .= '<span class="xoo-as-desc">'.$desc.'</span>';
+		}
+
+		if( isset( $args['placeholders'] ) && !empty( $args['placeholders'] ) ){
+			$field .= '<div class="xoo-as-placeholders">';
+			$field .= '<span>Placeholders</span>';
+			$field .= '<ul>';
+			foreach ($args['placeholders'] as $placeholder_code => $placeholder_title ) {
+				$field .= '<li><span>'.$placeholder_code.' :</span><span>'.$placeholder_title.'</span></li>';
+			}
+			$field .= '</ul>';
+			$field .= '</div>';
+			
 		}
 
 		$label = '<div class="xoo-as-label">'.$title.'</div>';

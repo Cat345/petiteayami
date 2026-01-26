@@ -268,10 +268,11 @@ class BWFAN_Logs {
 		global $wpdb;
 		if ( is_array( $log_ids ) && count( $log_ids ) > 0 ) {
 			$automationCount        = count( $log_ids );
-			$stringPlaceholders     = array_fill( 0, $automationCount, '%s' );
+			$stringPlaceholders     = array_fill( 0, $automationCount, '%d' );
 			$placeholdersautomation = implode( ', ', $stringPlaceholders );
-			$sql_query              = "Update {table_name} SET meta_value = '$metavalue' WHERE meta_key = '$metakey' AND bwfan_log_id IN ($placeholdersautomation)";
-			$sql_query              = $wpdb->prepare( $sql_query, $log_ids ); // WPCS: unprepared SQL OK
+			$metakey                = sanitize_key( $metakey );
+			$log_ids                = array_map( 'absint', $log_ids );
+			$sql_query              = $wpdb->prepare( "Update {table_name} SET meta_value = %s WHERE meta_key = %s AND bwfan_log_id IN ($placeholdersautomation)", array_merge( array( $metavalue, $metakey ), $log_ids ) ); // WPCS: unprepared SQL OK
 			BWFAN_Model_Logmeta::update_multiple( $sql_query );
 		}
 	}

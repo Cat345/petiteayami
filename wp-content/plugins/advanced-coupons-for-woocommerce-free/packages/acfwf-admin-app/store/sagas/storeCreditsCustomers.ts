@@ -113,7 +113,7 @@ export function* adjustCustomerStoreCreditsSaga(action: {
   type: string;
   payload: IAdjustCustomerStoreCreditsPayload;
 }): any {
-  const { id, type, amount, note, processingCB, successCB, failCB } = action.payload;
+  const { id, type, amount, note, send_email_notification, processingCB, successCB, failCB } = action.payload;
 
   try {
     if (typeof processingCB === 'function') processingCB();
@@ -126,6 +126,7 @@ export function* adjustCustomerStoreCreditsSaga(action: {
         type,
         amount,
         note: note ?? '',
+        send_email_notification,
         action: `admin_${type}`,
       })
     );

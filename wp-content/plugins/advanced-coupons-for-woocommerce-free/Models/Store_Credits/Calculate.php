@@ -540,7 +540,16 @@ class Calculate implements Model_Interface, Deactivatable_Interface {
                 'decimals'     => wc_get_price_decimals(),
             )
         );
-        extract( $params ); // phpcs:ignore
+
+        // Replace extract() with explicit variable assignment for security.
+        $user_id      = isset( $params['user_id'] ) ? $params['user_id'] : 0;
+        $type         = isset( $params['type'] ) ? $params['type'] : '';
+        $action       = isset( $params['action'] ) ? $params['action'] : '';
+        $object_id    = isset( $params['object_id'] ) ? $params['object_id'] : 0;
+        $start_period = isset( $params['start_period'] ) ? $params['start_period'] : '';
+        $end_period   = isset( $params['end_period'] ) ? $params['end_period'] : '';
+        $precision    = isset( $params['precision'] ) ? $params['precision'] : $this->get_decimal_precision();
+        $decimals     = isset( $params['decimals'] ) ? $params['decimals'] : wc_get_price_decimals();
 
         $user_query    = $user_id ? $wpdb->prepare( 'AND user_id = %d', $user_id ) : '';
         $type_query    = $type ? $wpdb->prepare( 'AND entry_type = %s', $type ) : '';

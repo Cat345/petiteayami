@@ -24,8 +24,8 @@ if ( ! class_exists( 'WooFunnels_Licenses' ) ) {
 		 * Pass to submission
 		 */
 		public function maybe_submit() {
-			if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( bwf_clean( $_POST['_wpnonce'] ), 'woofunnels-activate-license' ) ) {
-				if ( isset( $_POST['action'] ) && $_POST['action'] === 'woofunnels_activate-products' ) {
+			if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_POST['_wpnonce'] ) ), 'woofunnels-activate-license' ) ) {
+				if ( isset( $_POST['action'] ) && 'woofunnels_activate-products' === sanitize_text_field( wp_unslash( $_POST['action'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce already verified above
 					do_action( 'woofunnels_licenses_submitted', $_POST );
 				}
 			}
@@ -35,8 +35,8 @@ if ( ! class_exists( 'WooFunnels_Licenses' ) ) {
 		 * Pass to deactivate hook
 		 */
 		public function maybe_deactivate() {
-			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( bwf_clean( $_GET['_wpnonce'] ), 'bwf-deactivate-product' ) ) {
-				if ( isset( $_GET['action'] ) && 'woofunnels_deactivate-product' === sanitize_text_field( $_GET['action'] ) ) {
+			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( bwf_clean( wp_unslash( $_GET['_wpnonce'] ) ), 'bwf-deactivate-product' ) ) {
+				if ( isset( $_GET['action'] ) && 'woofunnels_deactivate-product' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce already verified above
 					do_action( 'woofunnels_deactivate_request', $_GET );
 				}
 			}

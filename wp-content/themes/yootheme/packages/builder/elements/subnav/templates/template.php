@@ -10,19 +10,33 @@ $subnav = $this->el('ul', [
         'uk-subnav {@subnav_style: |divider|pill} [uk-subnav-{subnav_style: divider|pill}]',
         'uk-tab {@subnav_style: tab}',
         'uk-flex-{text_align}[@{text_align_breakpoint} [uk-flex-{text_align_fallback}]]',
+        'uk-flex-nowrap {@subnav_wrap}',
     ],
 
     'uk-margin' => count($children) > 1,
 ]);
 
+// Container
+$container = $props['subnav_wrap'] ? $this->el('div', [
+    'uk-overflow-fade' => true,
+]) : null;
+
 ?>
 
 <?= $el($props, $attrs) ?>
 
-    <?= $subnav($props) ?>
-    <?php foreach ($children as $child) : ?>
-    <li class="el-item <?= $child->props['active'] ? 'uk-active' : '' ?>"><?= $builder->render($child, ['element' => $props]) ?></li>
-    <?php endforeach ?>
-    <?= $subnav->end() ?>
+    <?php if ($container) : ?>
+    <?= $container($props) ?>
+    <?php endif ?>
+
+        <?= $subnav($props) ?>
+        <?php foreach ($children as $child) : ?>
+        <li class="el-item <?= $child->props['active'] ? 'uk-active' : '' ?>"><?= $builder->render($child, ['element' => $props]) ?></li>
+        <?php endforeach ?>
+        <?= $subnav->end() ?>
+
+    <?php if ($container) : ?>
+    <?= $container->end() ?>
+    <?php endif ?>
 
 <?= $el->end() ?>

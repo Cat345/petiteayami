@@ -2,56 +2,56 @@
 
 namespace YOOtheme\Builder\Wordpress\Acf\Listener;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Acf\AcfHelper;
 use YOOtheme\Builder\Wordpress\Acf\Type;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Str;
 
+/**
+ * @phpstan-import-type Field from AcfHelper
+ */
 class LoadSourceTypes
 {
+    /**
+     * @param Source $source
+     */
     public static function handle($source): void
     {
         if (!AcfHelper::isActive()) {
             return;
         }
 
-        $ignore = ['clone', 'flexible_content'];
-
-        $source->objectType('LinkField', Type\LinkFieldType::config());
-        $source->objectType('ValueField', Type\ValueFieldType::config());
-        $source->objectType('ChoiceField', Type\ChoiceFieldType::config());
-        $source->objectType('ChoiceFieldString', Type\ChoiceFieldStringType::config());
-        $source->objectType('GoogleMapsField', Type\GoogleMapsFieldType::config());
-        $source->objectType('FileField', Type\FileFieldType::config());
+        $source->objectType('LinkField', [Type\LinkFieldType::class, 'config']);
+        $source->objectType('ValueField', [Type\ValueFieldType::class, 'config']);
+        $source->objectType('ChoiceField', [Type\ChoiceFieldType::class, 'config']);
+        $source->objectType('ChoiceFieldString', [Type\ChoiceFieldStringType::class, 'config']);
+        $source->objectType('GoogleMapsField', [Type\GoogleMapsFieldType::class, 'config']);
+        $source->objectType('FileField', [Type\FileFieldType::class, 'config']);
 
         foreach (['attachment', 'user'] as $type) {
-            if ($fields = AcfHelper::fields($type, '', $ignore)) {
-                static::configFields($source, $type, $fields);
-            }
+            static::configFields($source, $type, $type, '');
         }
 
         foreach (Helper::getPostTypes() as $type) {
-            if ($fields = AcfHelper::fields('post', $type->name, $ignore)) {
-                static::configFields($source, $type->name, $fields);
-            }
+            static::configFields($source, $type->name, 'post', $type->name);
         }
 
         foreach (Helper::getTaxonomies() as $taxonomy) {
-            if ($fields = AcfHelper::fields('term', $taxonomy->name, $ignore)) {
-                static::configFields($source, $taxonomy->name, $fields);
-            }
+            static::configFields($source, $taxonomy->name, 'term', $taxonomy->name);
         }
     }
 
-    protected static function configFields($source, string $name, array $fields): void
+    protected static function configFields(Source $source, string $type, string ...$args): void
     {
-        $type = Str::camelCase([$name, 'Fields'], true);
+        $type = Str::camelCase($type, true);
+        $fieldType = "{$type}Fields";
 
         // add field on type
-        $source->objectType(Str::camelCase($name, true), [
+        $source->objectType($type, [
             'fields' => [
                 'field' => [
-                    'type' => $type,
+                    'type' => $fieldType,
                     'extensions' => [
                         'call' => Type\FieldsType::class . '::field',
                     ],
@@ -61,8 +61,12 @@ class LoadSourceTypes
 
         // configure field type
         $source->objectType(
-            $type,
-            Type\FieldsType::config($source, $fields, Str::camelCase($name, true)),
+            $fieldType,
+            fn() => Type\FieldsType::config(
+                $source,
+                $source->getType($type),
+                AcfHelper::fields(...array_merge($args, [['clone', 'flexible_content']])),
+            ),
         );
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use function YOOtheme\app;
 use YOOtheme\Theme\Widgets\WidgetsListener;
+use function YOOtheme\app;
 
 app(WidgetsListener::class)->position = $props;
 

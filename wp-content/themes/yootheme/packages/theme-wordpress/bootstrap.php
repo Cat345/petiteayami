@@ -3,6 +3,8 @@
 namespace YOOtheme\Theme\Wordpress;
 
 use YOOtheme\Config;
+use YOOtheme\Theme\Highlight\Listener\LoadHighlightScript;
+use YOOtheme\Theme\I18nConfig;
 use YOOtheme\Theme\SystemCheck as BaseSystemCheck;
 use YOOtheme\Theme\Updater;
 use YOOtheme\View;
@@ -10,10 +12,14 @@ use YOOtheme\View;
 require __DIR__ . '/supports.php';
 require __DIR__ . '/functions.php';
 
+$upload = wp_get_upload_dir();
+
 return [
-    'theme' => function (Config $config) {
-        return $config->loadFile(__DIR__ . '/config/theme.json');
-    },
+    'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.php'),
+
+    'config' => [
+        'image' => ['cacheDir' => "{$upload['basedir']}/yootheme/cache"],
+    ],
 
     'routes' => [
         ['get', '/customizer', [CustomizerController::class, 'index'], ['customizer' => true]],
@@ -27,12 +33,14 @@ return [
 
         'customizer.init' => [
             Listener\LoadCustomizer::class => ['@handle', 10],
-            Listener\LoadCustomizerScript::class => ['@handle', 30],
         ],
 
         'theme.head' => [
+            Listener\LoadConsent::class => '@handle',
             Listener\LoadThemeI18n::class => '@handle',
         ],
+
+        I18nConfig::class => [Listener\LoadThemeI18n::class => 'handleConfig'],
     ],
 
     'actions' =>
@@ -45,8 +53,14 @@ return [
             'get_header' => [Listener\LoadThemeHead::class => '@handle'],
             'init' => [Listener\LoadChildTheme::class => '@handle'],
             'template_include' => [Listener\AddPageLayout::class => '@handle'],
-            'wp_head' => [Listener\LoadCustomScript::class => ['@handle', 20]],
-            'wp_footer' => [Listener\LoadCustomizerData::class => ['@handle', 5]],
+            'wp_head' => [
+                Listener\LoadIconMetaTags::class => 'handle',
+                Listener\LoadConsent::class => ['@handleHead', 20],
+            ],
+            'wp_footer' => [
+                Listener\LoadConsent::class => ['@handleBody', 20],
+                Listener\LoadCustomizerData::class => ['@handle', 5],
+            ],
 
             'wp_loaded' => [
                 ThemeLoader::class => 'initTheme',
@@ -72,32 +86,31 @@ return [
             'upload_mimes' => [Listener\AddSvgMimeType::class => 'handle'],
             'wp_check_filetype_and_ext' => [Listener\AddSvgFileType::class => ['handle', 10, 4]],
             'wp_prepare_themes_for_js' => [Listener\DisableAutoUpdate::class => 'handle'],
+            'site_icon_meta_tags' => [Listener\FilterIconMetaTags::class => '@handle'],
         ] +
-        (is_admin()
+        (!is_admin() && !wp_doing_cron()
             ? [
-                'site_icon_meta_tags' => [Listener\FilterIconMetaTags::class => '@handle'],
+                'post_gallery' => [Listener\FilterPostGallery::class => ['handle', 10, 3]],
+
+                'cancel_comment_reply_link' => [
+                    Listener\FilterCommentHtml::class => 'cancelReplyLink',
+                ],
+
+                'comment_reply_link' => [
+                    Listener\FilterCommentHtml::class => 'replyLink',
+                ],
+
+                'get_comment_author_link' => [
+                    Listener\FilterCommentHtml::class => 'authorLink',
+                ],
+
+                'builder_content' => [LoadHighlightScript::class => '@handle'],
+
+                'wp_img_tag_add_auto_sizes' => [
+                    Listener\DisableImageTagAddAutoSizes::class => 'handle',
+                ],
             ]
-            : (!wp_doing_cron()
-                ? [
-                    'post_gallery' => [Listener\FilterPostGallery::class => ['handle', 10, 3]],
-
-                    'cancel_comment_reply_link' => [
-                        Listener\FilterCommentHtml::class => 'cancelReplyLink',
-                    ],
-
-                    'comment_reply_link' => [
-                        Listener\FilterCommentHtml::class => 'replyLink',
-                    ],
-
-                    'get_comment_author_link' => [
-                        Listener\FilterCommentHtml::class => 'authorLink',
-                    ],
-
-                    'wp_img_tag_add_auto_sizes' => [
-                        Listener\DisableImageTagAddAutoSizes::class => 'handle',
-                    ],
-                ]
-                : [])),
+            : []),
     'extend' => [
         View::class => function (View $view) {
             $view->addLoader([UrlLoader::class, 'resolveRelativeUrl']);

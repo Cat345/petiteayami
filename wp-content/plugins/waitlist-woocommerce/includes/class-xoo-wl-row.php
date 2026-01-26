@@ -12,6 +12,10 @@ class Xoo_Wl_Row{
 
 	public $product_id = 0;
 
+	public $email;
+
+	public $product;
+
 	public function __construct( $row_id ){
 
 		if( is_a( $row_id, 'Xoo_Wl_Row' ) ){
@@ -62,6 +66,7 @@ class Xoo_Wl_Row{
 	}
 
 	public function get_product_image_src(){
+		
 		if ( $this->product->get_image_id() ) {
 			return wp_get_attachment_url( $this->product->get_image_id() );
 		}

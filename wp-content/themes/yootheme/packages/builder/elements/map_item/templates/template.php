@@ -33,7 +33,7 @@ $link = include "{$__dir}/template-link.php";
 
 ?>
 
-<?= $el($element) ?>
+<?= $el($element, $attrs) ?>
 
     <?= $props['image'] ?>
 

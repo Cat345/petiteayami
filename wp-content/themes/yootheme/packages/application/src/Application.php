@@ -2,7 +2,9 @@
 
 namespace YOOtheme;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use YOOtheme\Configuration\Configuration;
 use YOOtheme\Http\Request;
 use YOOtheme\Http\Response;
@@ -13,27 +15,22 @@ use YOOtheme\Http\Response;
  */
 class Application extends Container
 {
-    /**
-     * @var Config
-     */
-    protected $config;
+    protected Config $config;
 
     /**
-     * @var array
+     * @var array<string,string|callable>
      */
-    protected $loaders = [];
+    protected array $loaders = [];
 
     /**
-     * @var static|null
+     * @var ?static
      */
     protected static $instance;
 
     /**
      * Constructor.
-     *
-     * @param string $cache
      */
-    public function __construct($cache = null)
+    public function __construct(?string $cache = null)
     {
         $this->config = new Configuration($cache);
 
@@ -47,28 +44,27 @@ class Application extends Container
     /**
      * Gets global application.
      *
-     * @param null|mixed $cache
-     *
      * @return static
      */
-    public static function getInstance($cache = null)
+    public static function getInstance(?string $cache = null): self
     {
+        /** @phpstan-ignore new.static */
         return static::$instance ??= new static($cache);
     }
 
     /**
      * Run application.
      *
-     * @param bool $send
-     *
-     * @return ResponseInterface
+     * @return Response
      */
-    public function run($send = true)
+    public function run(bool $send = true, string $route = ''): ResponseInterface
     {
+        $request = $this->get('request')->withAttribute('routePath', $route);
+
         try {
-            $response = Event::emit('app.request|middleware', [$this, 'handle'], $this->request);
-        } catch (\Exception $exception) {
-            $response = Event::emit('app.error|filter', $this->response, $exception);
+            $response = Event::emit('app.request|middleware', [$this, 'handle'], $request);
+        } catch (Exception $exception) {
+            $response = Event::emit('app.error|filter', $this->get('response'), $exception);
         }
 
         return $send ? $response->send() : $response;
@@ -77,16 +73,13 @@ class Application extends Container
     /**
      * Handles a request.
      *
-     * @param Request $request
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @throws Exception
      */
-    public function handle(Request $request)
+    public function handle(Request $request): Response
     {
         $this->set(Request::class, $request);
 
+        /** @var Route $route */
         $route = $request->getAttribute('route');
         $result = $this->call($route->getCallable());
 
@@ -104,11 +97,9 @@ class Application extends Container
     /**
      * Loads a bootstrap file.
      *
-     * @param string $files
-     *
      * @return $this
      */
-    public function load($files)
+    public function load(string $files): self
     {
         $configs = [];
 
@@ -133,15 +124,8 @@ class Application extends Container
 
     /**
      * Resolves a service instance.
-     *
-     * @param string $id
-     *
-     * @throws \Exception
-     * @throws \ReflectionException
-     *
-     * @return mixed
      */
-    protected function resolveService($id)
+    protected function resolveService(string $id): ?object
     {
         return Hook::call([$id, 'app.resolve'], fn($id) => parent::resolveService($id), $id, $this);
     }
@@ -156,13 +140,18 @@ class Application extends Container
 
     /**
      * Loads a bootstrap config.
+     *
+     * @param array<string,list<mixed>> $configs
+     * @param array<string,mixed> $parameters
+     *
+     * @return array<string,list<mixed>>
      */
     protected static function loadFile(string $file, array $configs, array $parameters = []): array
     {
         extract($parameters, EXTR_SKIP);
 
         if (!is_array($config = require $file)) {
-            throw new \RuntimeException("Unable to load file '{$file}'");
+            throw new RuntimeException("Unable to load file '{$file}'");
         }
 
         foreach ($config as $key => $value) {

@@ -15,6 +15,9 @@ class FilterPriceHtml
 
     /**
      * Show sale price after regular price.
+     *
+     * @param string|int $regular_price
+     * @param string|int $sale_price
      */
     public function sale(string $price, $regular_price, $sale_price): string
     {
@@ -33,6 +36,7 @@ class FilterPriceHtml
      * Show the lowest price for grouped product.
      *
      * @param \WC_Product_Variable $product
+     * @param array<mixed> $childPrices
      */
     public function grouped(string $price, $product, $childPrices): string
     {
@@ -71,6 +75,12 @@ class FilterPriceHtml
         );
     }
 
+    /**
+     * @param string $price
+     * @param string|int $minPrice
+     * @param string|int $maxPrice
+     * @return string
+     */
     protected function fromPrice(string $price, $minPrice, $maxPrice): string
     {
         return $minPrice !== $maxPrice

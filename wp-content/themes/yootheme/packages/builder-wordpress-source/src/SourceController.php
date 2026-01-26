@@ -10,12 +10,8 @@ class SourceController
     /**
      * @param Request  $request
      * @param Response $response
-     *
-     * @throws \Exception
-     *
-     * @return Response
      */
-    public static function posts(Request $request, Response $response)
+    public static function posts(Request $request, Response $response): Response
     {
         $ids = $request->getQueryParam('ids');
 
@@ -38,12 +34,8 @@ class SourceController
     /**
      * @param Request  $request
      * @param Response $response
-     *
-     * @throws \Exception
-     *
-     * @return Response
      */
-    public static function users(Request $request, Response $response)
+    public static function users(Request $request, Response $response): Response
     {
         $ids = $request->getQueryParam('ids');
         $search = $request->getQueryParam('search');

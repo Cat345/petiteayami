@@ -3,19 +3,20 @@
 namespace YOOtheme\Theme\Listener;
 
 use YOOtheme\Config;
+use YOOtheme\View\MetadataObject;
+use function YOOtheme\app;
 
 class LoadThemeVersion
 {
-    public Config $config;
+    protected static Config $config;
 
-    public function __construct(Config $config)
+    /**
+     * @param MetadataObject $meta
+     */
+    public static function handle($meta): MetadataObject
     {
-        $this->config = $config;
-    }
-
-    public function handle($meta)
-    {
-        $version = $this->config->get('theme.version');
+        static::$config ??= app(Config::class);
+        $version = static::$config->get('theme.version');
 
         if ($version && is_null($meta->version)) {
             $meta = $meta->withAttribute('version', $version);

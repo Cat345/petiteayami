@@ -7,10 +7,13 @@ use YOOtheme\Http\Request;
 use function YOOtheme\app;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class SiteType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
     public static function config()
     {
@@ -93,24 +96,27 @@ class SiteType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('Site'),
             ],
         ];
     }
 
-    public static function resolveRequest()
+    public static function resolveRequest(): Request
     {
         return app(Request::class);
     }
 
-    public static function resolvePageUrl($obj, array $args)
+    /**
+     * @param array<string, mixed> $obj
+     * @param array<string, mixed> $args
+     */
+    public static function resolvePageUrl($obj, array $args): string
     {
         $uri = static::resolveRequest()->getUri();
 
         return $uri->getPath() . ($args['query'] ? "?{$uri->getQuery()}" : '');
     }
 
-    public static function resolvePageLocale()
+    public static function resolvePageLocale(): string
     {
         return app(Config::class)('locale.code');
     }

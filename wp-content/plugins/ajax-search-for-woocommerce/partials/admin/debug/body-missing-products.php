@@ -26,10 +26,12 @@ if (
 	$lang = Multilingual::isMultilingual() ? Multilingual::getDefaultLanguage() : '';
 
 	$readableTableName = \DgoraWcas\Engines\TNTSearchMySQL\Indexer\Utils::getTableName( 'readable', $lang );
-	$readableIds       = $wpdb->get_col( "SELECT post_id FROM {$readableTableName} WHERE type = 'product'" );
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$readableIds = $wpdb->get_col( "SELECT post_id FROM {$readableTableName} WHERE type = 'product'" );
 
 	$doclistTableName = \DgoraWcas\Engines\TNTSearchMySQL\Indexer\Utils::getTableName( 'searchable_doclist', $lang );
-	$doclistIds       = $wpdb->get_col( "SELECT DISTINCT doc_id FROM {$doclistTableName}" );
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$doclistIds = $wpdb->get_col( "SELECT DISTINCT doc_id FROM {$doclistTableName}" );
 
 	$missingIds = array_diff( $readableIds, $doclistIds );
 }
@@ -45,7 +47,8 @@ if ( ! empty( $missingIds ) ) {
 		foreach ( $missingIds as $missingId ) {
 			?>
 			<li>
-				<a href="<?php echo esc_attr( get_edit_post_link( $missingId ) ) ?>"
+				<a href="<?php echo esc_attr( get_edit_post_link( $missingId ) ); ?>"
+				   <?php // phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found ?>
 				   target="_blank"><?php echo esc_html( get_the_title( $missingId ) ); ?>
 					(#<?php echo esc_html( $missingId ); ?>)</a>
 			</li>
@@ -54,7 +57,8 @@ if ( ! empty( $missingIds ) ) {
 		?>
 	</ol>
 	<?php
-} else { ?>
+} else {
+	?>
 	<p>No missing products found. All products in the readable index are also present in the searchable index.</p>
 	<?php
 }

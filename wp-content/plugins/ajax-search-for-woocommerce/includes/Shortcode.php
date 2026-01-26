@@ -8,8 +8,8 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 class Shortcode {
     public static function register() {
-        add_shortcode( 'wcas-search-form', array(__CLASS__, 'addBody') );
-        add_shortcode( 'fibosearch', array(__CLASS__, 'addBody') );
+        add_shortcode( 'wcas-search-form', [__CLASS__, 'addBody'] );
+        add_shortcode( 'fibosearch', [__CLASS__, 'addBody'] );
     }
 
     /**
@@ -31,7 +31,7 @@ class Shortcode {
                 unset($atts[$key]);
             }
         }
-        $searchArgs = shortcode_atts( array(
+        $searchArgs = shortcode_atts( [
             'class'                     => '',
             'style'                     => $layout->style,
             'icon'                      => $layout->icon,
@@ -43,7 +43,7 @@ class Shortcode {
             'submit_btn'                => null,
             'submit_text'               => null,
             'icon_color'                => '',
-        ), $atts, $tag );
+        ], $atts, $tag );
         $searchArgs['class'] .= ( empty( $searchArgs['class'] ) ? 'woocommerce' : ' woocommerce' );
         $args = apply_filters( 'dgwt/wcas/shortcode/args', $searchArgs );
         return self::getForm( $args );
@@ -81,34 +81,34 @@ class Shortcode {
     public static function mapAlternativeFormArgs( $args ) {
         // Show submit button
         if ( isset( $args['submit_btn'] ) ) {
-            if ( in_array( $args['submit_btn'], array('1', 'yes', 'show') ) ) {
+            if ( in_array( $args['submit_btn'], ['1', 'yes', 'show'] ) ) {
                 $args['submit_btn'] = 'on';
             }
-            if ( in_array( $args['submit_btn'], array('0', 'no', 'hide') ) ) {
+            if ( in_array( $args['submit_btn'], ['0', 'no', 'hide'] ) ) {
                 $args['submit_btn'] = 'off';
             }
         }
         // Style: solaris, pirx, pirx-compact
         if ( !empty( $args['style'] ) ) {
-            if ( in_array( $args['style'], array('default', 'classic') ) ) {
+            if ( in_array( $args['style'], ['default', 'classic'] ) ) {
                 $args['style'] = 'solaris';
             }
-            if ( in_array( $args['style'], array('bean', 'rounded') ) ) {
+            if ( in_array( $args['style'], ['bean', 'rounded'] ) ) {
                 $args['style'] = 'pirx';
             }
-            if ( in_array( $args['style'], array('pirx-compact', 'compact') ) ) {
+            if ( in_array( $args['style'], ['pirx-compact', 'compact'] ) ) {
                 $args['style'] = 'pirx-compact';
             }
         }
         // Layout: classic, icon, icon-flexible, icon-flexible-inv
         if ( !empty( $args['layout'] ) ) {
-            if ( in_array( $args['layout'], array('search-bar', 'default') ) ) {
+            if ( in_array( $args['layout'], ['search-bar', 'default'] ) ) {
                 $args['layout'] = 'classic';
             }
-            if ( in_array( $args['layout'], array('flex-icon-on-mobile', 'flex-icon-mob') ) ) {
+            if ( in_array( $args['layout'], ['flex-icon-on-mobile', 'flex-icon-mob'] ) ) {
                 $args['layout'] = 'icon-flexible';
             }
-            if ( in_array( $args['layout'], array('flex-icon-on-desktop', 'flex-icon-desktop') ) ) {
+            if ( in_array( $args['layout'], ['flex-icon-on-desktop', 'flex-icon-desktop'] ) ) {
                 $args['layout'] = 'icon-flexible-inv';
             }
         }
@@ -124,7 +124,7 @@ class Shortcode {
      */
     public static function applyCondtitionalFormArgs( $args ) {
         // Force requires options for Pirx or Pirx Compact style
-        if ( !empty( $args['style'] ) && in_array( $args['style'], array('pirx', 'pirx-compact') ) ) {
+        if ( !empty( $args['style'] ) && in_array( $args['style'], ['pirx', 'pirx-compact'] ) ) {
             $args['submit_btn'] = 'on';
             $args['submit_text'] = '';
         }

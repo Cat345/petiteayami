@@ -739,8 +739,13 @@ class Notices implements Model_Interface, Initializable_Interface, Activatable_I
             return $args;
         }
 
-        // Ignored for phpcs as the variables extracted are defined above.
-        extract( $args ); // phpcs:ignore
+        // Replace extract() with explicit variable assignment for security.
+        $classname    = isset( $args['classname'] ) ? $args['classname'] : '';
+        $title        = isset( $args['title'] ) ? $args['title'] : '';
+        $description  = isset( $args['description'] ) ? $args['description'] : '';
+        $button_link  = isset( $args['button_link'] ) ? $args['button_link'] : '';
+        $button_text  = isset( $args['button_text'] ) ? $args['button_text'] : '';
+        $button_class = isset( $args['button_class'] ) ? $args['button_class'] : '';
 
         include $this->_constants->VIEWS_ROOT_PATH . 'notices/view-did-you-know-notice.php';
     }

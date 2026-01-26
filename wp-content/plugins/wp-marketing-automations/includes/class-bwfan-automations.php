@@ -385,6 +385,13 @@ class BWFAN_Automations {
 		$prepared_placeholders = implode( ', ', $string_placeholders );
 		$sql_query             = "Delete FROM {table_name} WHERE ID IN ($prepared_placeholders)";
 		$sql_query             = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
+
+		if ( class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'handle_category_count_decrease' ) ) {
+			if ( isset( BWFCRM_Category::$AUTOMATION ) && is_array( $automation_ids ) && ! empty( $automation_ids ) ) {
+				BWFCRM_Category::handle_category_count_decrease( $automation_ids, BWFCRM_Category::$AUTOMATION );
+			}
+		}
+
 		BWFAN_Model_Automations::delete_multiple( $sql_query );
 	}
 
@@ -400,6 +407,7 @@ class BWFAN_Automations {
 		$prepared_placeholders = implode( ', ', $string_placeholders );
 		$sql_query             = "Delete FROM {table_name} WHERE bwfan_automation_id IN ($prepared_placeholders)";
 		$sql_query             = $wpdb->prepare( $sql_query, $automation_ids ); // WPCS: unprepared SQL OK
+
 		BWFAN_Model_Automationmeta::delete_multiple( $sql_query );
 	}
 
@@ -522,17 +530,6 @@ class BWFAN_Automations {
 
 		return $date->getTimestamp();
 	}
-
-	/**
-	 * Returns all the migration's status of the automations.
-	 * sync_status = 1 denotes active migrations
-	 * sync_status = 2 denotes completed migrations
-	 *
-	 * @param $status
-	 * @param $all_automations
-	 *
-	 * @return array
-	 */
 
 	/**
 	 * Removing unnecessary html from the db saved data so that it doesn't break the json.
@@ -668,6 +665,14 @@ class BWFAN_Automations {
 		$post['v']         = isset( $automation_meta['v'] ) ? $automation_meta['v'] : 1;
 		$post['title']     = isset( $automation_meta['title'] ) ? $automation_meta['title'] . ' (Copy) ' : '';
 		$post['benchmark'] = isset( $automation_meta['benchmark'] ) ? $automation_meta['benchmark'] : '';
+		$post['category']  = isset( $automation_meta['category'] ) ? $automation_meta['category'] : '';
+
+		$existing_category = isset( $post['category'] ) ? json_decode( $post['category'], true ) : [];
+		if ( ! empty( $existing_category ) && class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'update_term_counts' ) ) {
+			if ( isset( BWFCRM_Category::$AUTOMATION ) ) {
+				BWFCRM_Category::update_term_counts( array_fill_keys( $existing_category, 1 ), $existing_category, BWFCRM_Category::$AUTOMATION );
+			}
+		}
 
 		BWFAN_Model_Automations::insert( $post );
 		$automation_id = BWFAN_Model_Automations::insert_id();

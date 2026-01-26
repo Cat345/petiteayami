@@ -7,6 +7,7 @@ use ACFWF\Helpers\Plugin_Constants;
 use ACFWF\Interfaces\Model_Interface;
 use ACFWF\Models\Objects\Store_Credit_Entry;
 use ACFWF\Models\Store_Credits\Queries;
+use ACFWF\Models\Objects\Emails\Store_Credit_Adjustment as Store_Credit_Adjustment_Email;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -388,8 +389,9 @@ class API_Store_Credit_Entry implements Model_Interface {
     public function create_store_credit_entry( $request ) {
         do_action( 'acfw_rest_api_context', $request );
 
-        $params      = $this->_sanitize_params( $request->get_params() );
-        $date_format = isset( $params['date_format'] ) ? $params['date_format'] : Plugin_Constants::DB_DATE_FORMAT;
+        $params                  = $this->_sanitize_params( $request->get_params() );
+        $date_format             = isset( $params['date_format'] ) ? $params['date_format'] : Plugin_Constants::DB_DATE_FORMAT;
+        $send_email_notification = isset( $params['send_email_notification'] ) ? rest_sanitize_boolean( $params['send_email_notification'] ) : false;
 
         // create store credit entry object.
         $store_credit_entry = new Store_Credit_Entry();
@@ -397,7 +399,7 @@ class API_Store_Credit_Entry implements Model_Interface {
         foreach ( $params as $prop => $value ) {
             if ( $value && 'date' === $prop ) {
                 $store_credit_entry->set_date_prop( $prop, $value, $date_format );
-            } else {
+            } elseif ( 'send_email_notification' !== $prop ) {
                 $store_credit_entry->set_prop( $prop, $value );
             }
 
@@ -413,6 +415,15 @@ class API_Store_Credit_Entry implements Model_Interface {
         }
 
         $balance = \ACFWF()->Store_Credits_Calculate->get_customer_balance( $store_credit_entry->get_prop( 'user_id', 'edit' ), true );
+
+        // Send email notification to customer after successful save.
+        if ( $send_email_notification ) {
+            $customer = $store_credit_entry->get_customer();
+            if ( $customer && $customer->get_email() ) {
+                // Trigger the store credit adjustment email.
+                do_action( 'acfwf_send_store_credit_adjustment_email', $store_credit_entry, $customer );
+            }
+        }
 
         return \rest_ensure_response(
             array(

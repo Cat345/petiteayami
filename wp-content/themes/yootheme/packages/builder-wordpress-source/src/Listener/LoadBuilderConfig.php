@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Listener;
 
+use WP_Taxonomy;
 use YOOtheme\Builder\BuilderConfig;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use function YOOtheme\trans;
@@ -16,7 +17,9 @@ class LoadBuilderConfig
         $archives = [];
         $templates = [];
 
-        require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+        if (!function_exists('wp_get_available_translations')) {
+            require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+        }
 
         $translations = wp_get_available_translations();
         $languages = [['text' => 'English (United States)', 'value' => 'en_US']];
@@ -111,6 +114,7 @@ class LoadBuilderConfig
                         'params' => [
                             'fields' => [
                                 'posts_per_page' => static::getPostsPerPageField(),
+                                'order_by' => static::getOrderByField(),
                             ],
                         ],
                     ],
@@ -131,6 +135,7 @@ class LoadBuilderConfig
                 'params' => [
                     'fields' => [
                         'posts_per_page' => static::getPostsPerPageField(),
+                        'order_by' => static::getOrderByField(),
                     ],
                 ],
             ],
@@ -163,6 +168,7 @@ class LoadBuilderConfig
                 'params' => [
                     'fields' => [
                         'posts_per_page' => static::getPostsPerPageField(),
+                        'order_by' => static::getOrderByField(),
                     ],
                 ],
             ],
@@ -171,7 +177,7 @@ class LoadBuilderConfig
         $templates += $archives;
 
         $taxonomies = [];
-        $allTaxonomies = [['text' => trans('None'), 'value' => '']];
+        $allTaxonomies = [];
 
         foreach (Helper::getTaxonomies() as $name => $taxonomy) {
             $templates["taxonomy-{$name}"] = static::getTaxonomyArchive($taxonomy);
@@ -273,7 +279,10 @@ class LoadBuilderConfig
         ]);
     }
 
-    public static function getTaxonomyArchive($taxonomy): array
+    /**
+     * @return array{label: string, group: string, fieldset: array<string, mixed>}
+     */
+    public static function getTaxonomyArchive(WP_Taxonomy $taxonomy): array
     {
         $label_lower = mb_strtolower($taxonomy->labels->name);
 
@@ -350,15 +359,28 @@ class LoadBuilderConfig
                     ),
                 ],
                 'params' => [
-                    'fields' => [
-                        'posts_per_page' => static::getPostsPerPageField(),
-                    ],
+                    'fields' => array_merge(
+                        $taxonomy->hierarchical
+                            ? [
+                                'include_children' => static::getIncludeChildTaxonomyField(
+                                    $taxonomy,
+                                ),
+                            ]
+                            : [],
+                        [
+                            'posts_per_page' => static::getPostsPerPageField(),
+                            'order_by' => static::getOrderByField(),
+                        ],
+                    ),
                 ],
             ],
         ];
     }
 
-    public static function getTaxonomyTerms($taxonomy): array
+    /**
+     * @return list<array{value: int, text: string}>
+     */
+    public static function getTaxonomyTerms(WP_Taxonomy $taxonomy): array
     {
         $terms = get_terms([
             'taxonomy' => $taxonomy->name,
@@ -376,7 +398,10 @@ class LoadBuilderConfig
         );
     }
 
-    protected static function getIncludeChildTermsField($taxonomy): array
+    /**
+     * @return array{type: string, options: string[]}
+     */
+    protected static function getIncludeChildTermsField(WP_Taxonomy $taxonomy): array
     {
         return [
             'type' => 'select',
@@ -394,6 +419,9 @@ class LoadBuilderConfig
         ];
     }
 
+    /**
+     * @return array{label: string, description: string, type: string, options: string[]}
+     */
     protected static function getPageField(): array
     {
         return [
@@ -408,6 +436,9 @@ class LoadBuilderConfig
         ];
     }
 
+    /**
+     * @return array{label: string, description: string, type: string, defaultIndex: int, options: array{0: array{text: null|string, value: string}, 1: array{evaluate: string}}, show: string}
+     */
     protected static function getLocaleField(): array
     {
         return [
@@ -423,6 +454,9 @@ class LoadBuilderConfig
         ];
     }
 
+    /**
+     * @return array{label: string, type: string, description: string, attrs: array{placeholder: string, min: string, max: int}}
+     */
     protected static function getPostsPerPageField(): array
     {
         return [
@@ -434,6 +468,39 @@ class LoadBuilderConfig
                 'min' => '1',
                 'max' => LoadTemplate::MAX_POSTS_PER_PAGE,
             ],
+        ];
+    }
+
+    /**
+     * @return array{label: string, type: string, options: array<string, string>}
+     */
+    protected static function getOrderByField(): array
+    {
+        return [
+            'label' => trans('Post Order'),
+            'type' => 'select',
+            'options' => [
+                trans('Default') => '',
+                trans('Title') => 'post_title,asc',
+                trans('Title Reverse') => 'post_title,desc',
+            ],
+        ];
+    }
+
+    /**
+     * @return array{label: string, type: string, text: string, default: bool}
+     */
+    protected static function getIncludeChildTaxonomyField(WP_Taxonomy $taxonomy): array
+    {
+        return [
+            'label' => trans('Posts from Child %taxonomies%', [
+                '%taxonomies%' => mb_strtolower($taxonomy->label),
+            ]),
+            'type' => 'checkbox',
+            'text' => trans('Include posts from child %taxonomies%', [
+                '%taxonomies%' => mb_strtolower($taxonomy->label),
+            ]),
+            'default' => true,
         ];
     }
 }

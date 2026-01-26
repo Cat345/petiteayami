@@ -1,9 +1,19 @@
 <?php
 
+/**
+ * Bwfan Mail Footer
+ *
+ * @since 1.0.0
+ */
 class BWFAN_Mail_Footer extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
 
+	/**
+	 *   Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		$this->tag_name        = 'mail_footer';
 		$this->tag_description = __( 'Mail Footer', 'wp-marketing-automations' );
@@ -32,8 +42,30 @@ class BWFAN_Mail_Footer extends BWFAN_Merge_Tag {
 		if ( ! isset( $global_settings['bwfan_email_footer_setting'] ) ) {
 			return '';
 		}
+		$data = BWFAN_Merge_Tag_Loader::get_data();
+		if ( ! empty( $data['is_preview'] ) ) {
+			$footer = BWFAN_Common::decode_merge_tags( $global_settings['bwfan_email_footer_setting'] );
 
-		$footer = BWFAN_Common::decode_merge_tags( $global_settings['bwfan_email_footer_setting'] );
+			return $this->parse_shortcode_output( $footer, $attr );
+		}
+		$merge_tags       = BWFAN_Common::fetch_merge_tags( $global_settings['bwfan_email_footer_setting'] );
+		$business_address = array_search( '{{business_address}}', $merge_tags, true );
+		if ( false !== $business_address && isset( $merge_tags[ $business_address ] ) ) {
+			unset( $merge_tags[ $business_address ] );
+		}
+		$business_name = array_search( '{{business_name}}', $merge_tags, true );
+		if ( false !== $business_name && isset( $merge_tags[ $business_name ] ) ) {
+			unset( $merge_tags[ $business_name ] );
+		}
+		$footer = $global_settings['bwfan_email_footer_setting'];
+		/** Temporarily replace merge tags to prevent recursive processing */
+		foreach ( $merge_tags as $tag ) {
+			$new_tag = str_replace( '{{', '{_{', $tag );
+			$new_tag = str_replace( '}}', '}_}', $new_tag );
+			$footer  = str_replace( $tag, $new_tag, $footer );
+		}
+
+		$footer = BWFAN_Common::decode_merge_tags( $footer );
 
 		return $this->parse_shortcode_output( $footer, $attr );
 	}

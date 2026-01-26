@@ -20,10 +20,7 @@ class LoadStylerData
     {
         $this->metadata->set(
             'script:styler-data',
-            sprintf(
-                'window.yootheme ||= {}; var $styler = yootheme.styler = %s;',
-                json_encode($this->config),
-            ),
+            sprintf('window.yootheme ||= {}; yootheme.styler = %s;', json_encode($this->config)),
         );
     }
 }

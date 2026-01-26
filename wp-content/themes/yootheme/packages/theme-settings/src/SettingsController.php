@@ -7,7 +7,7 @@ use YOOtheme\Http\Response;
 
 class SettingsController
 {
-    public static function import(Request $request, Response $response, Updater $updater)
+    public static function import(Request $request, Response $response, Updater $updater): Response
     {
         $config = $request->getParam('config');
         $config = $updater->update($config, []);

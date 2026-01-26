@@ -30,7 +30,7 @@ class AddAdminMenuButton
             $this->config->get('theme.name', ''),
             'edit_theme_options',
             $menu_slug,
-            '',
+            '', // @phpstan-ignore argument.type
             '',
             59,
         );
@@ -39,7 +39,7 @@ class AddAdminMenuButton
     protected function getStyle(string $menu_slug): void
     {
         $id = preg_replace('/[^\w:.]/', '-', get_plugin_page_hookname($menu_slug, ''));
-        $font = get_template_directory_uri() . '/packages/theme-wordpress/assets/icon.ttf';
+        $font = get_template_directory_uri() . '/packages/theme-wordpress/fonts/icon.ttf';
         $style = <<<CSS
             @font-face {
                 font-family: YOOtheme;

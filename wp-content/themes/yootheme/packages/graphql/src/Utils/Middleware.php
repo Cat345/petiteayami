@@ -5,20 +5,15 @@ namespace YOOtheme\GraphQL\Utils;
 class Middleware
 {
     /**
-     * @var callable|null
+     * @var ?callable
      */
     protected $handler;
 
     /**
-     * @var array
+     * @var list<callable>
      */
-    protected $stack = [];
+    protected array $stack = [];
 
-    /**
-     * Constructor.
-     *
-     * @param callable $handler
-     */
     public function __construct(?callable $handler = null)
     {
         $this->handler = $handler;
@@ -45,7 +40,7 @@ class Middleware
     /**
      * Returns true if handler exists.
      */
-    public function hasHandler()
+    public function hasHandler(): bool
     {
         return isset($this->handler);
     }
@@ -55,7 +50,7 @@ class Middleware
      *
      * @param callable $handler
      */
-    public function setHandler(callable $handler)
+    public function setHandler(callable $handler): void
     {
         $this->handler = $handler;
     }
@@ -65,7 +60,7 @@ class Middleware
      *
      * @param callable $middleware
      */
-    public function unshift(callable $middleware)
+    public function unshift(callable $middleware): void
     {
         array_unshift($this->stack, $middleware);
     }
@@ -75,7 +70,7 @@ class Middleware
      *
      * @param callable $middleware
      */
-    public function push(callable $middleware)
+    public function push(callable $middleware): void
     {
         $this->stack[] = $middleware;
     }

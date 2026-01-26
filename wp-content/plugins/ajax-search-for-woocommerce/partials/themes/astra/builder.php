@@ -23,20 +23,26 @@ function dgwt_wcas_astra_search_box_type() {
 }
 
 // Force mobile overlay breakpoint.
-add_filter( 'dgwt/wcas/settings/load_value/key=mobile_overlay_breakpoint', function () {
-	return dgwt_wcas_astra_header_break_point();
-} );
+add_filter(
+	'dgwt/wcas/settings/load_value/key=mobile_overlay_breakpoint',
+	function () {
+		return dgwt_wcas_astra_header_break_point();
+	}
+);
 
 // Force mobile breakpoint.
-add_filter( 'dgwt/wcas/settings/load_value/key=mobile_breakpoint', function () {
-	return dgwt_wcas_astra_header_break_point();
-} );
+add_filter(
+	'dgwt/wcas/settings/load_value/key=mobile_breakpoint',
+	function () {
+		return dgwt_wcas_astra_header_break_point();
+	}
+);
 
 function dgwt_wcas_astra_search_form() {
 	$header_break_point = dgwt_wcas_astra_header_break_point();
 	$form               = '<div class="search-form"><span class="search-field"></span>';
-	$form               .= do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '"]' );
-	$form               .= '</div>';
+	$form              .= do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '"]' );
+	$form              .= '</div>';
 
 	return $form;
 }
@@ -54,28 +60,38 @@ if ( ! function_exists( 'astra_get_search_form' ) ) {
 	}
 }
 
-add_filter( 'astra_get_search_form', function ( $form ) {
-	return dgwt_wcas_astra_search_form();
-} );
+add_filter(
+	'astra_get_search_form',
+	function ( $form ) {
+		return dgwt_wcas_astra_search_form();
+	}
+);
 
 // Template for Header Cover
-add_filter( 'astra_addon_get_template', function ( $located, $template_name, $args, $template_path, $default_path ) {
-	if ( $template_name === 'advanced-search/template/header-cover.php' ) {
-		$located = __DIR__ . '/template/header-cover.php';
-	}
+add_filter(
+	'astra_addon_get_template',
+	function ( $located, $template_name, $args, $template_path, $default_path ) {
+		if ( $template_name === 'advanced-search/template/header-cover.php' ) {
+			$located = __DIR__ . '/template/header-cover.php';
+		}
 
-	return $located;
-}, 100, 5 );
+		return $located;
+	},
+	100,
+	5
+);
 
-add_action( 'wp_footer', function () {
-	$header_break_point = dgwt_wcas_astra_header_break_point();
-	$search_box_type    = dgwt_wcas_astra_search_box_type();
+add_action(
+	'wp_footer',
+	function () {
+		$header_break_point = dgwt_wcas_astra_header_break_point();
+		$search_box_type    = dgwt_wcas_astra_search_box_type();
 
-	// Full Screen Search
-	if ( $search_box_type === 'full-screen' ) {
-		echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[fibosearch layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div></div>';
-	}
-	?>
+		// Full Screen Search
+		if ( $search_box_type === 'full-screen' ) {
+			echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[fibosearch layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div></div>';
+		}
+		?>
 	<script>
 		(function ($) {
 			<?php if ( $search_box_type === 'full-screen' ) { ?>
@@ -93,7 +109,7 @@ add_action( 'wp_footer', function () {
 
 			// Autofocus
 			$(document).on('click', '.astra-search-icon', function (event) {
-				if ($(window).width() > <?php echo $header_break_point ?>) {
+				if ($(window).width() > <?php echo $header_break_point; ?>) {
 					setTimeout(function () {
 						// Slide Search, Search Box
 						$input = $(event.target).closest('.ast-search-menu-icon').find('.dgwt-wcas-search-input');
@@ -134,11 +150,14 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_filter( 'wp_head', function () {
-	?>
+add_filter(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		/* Slide Search */
 		.ast-dropdown-active .search-form {
@@ -194,5 +213,6 @@ add_filter( 'wp_head', function () {
 			display: block;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

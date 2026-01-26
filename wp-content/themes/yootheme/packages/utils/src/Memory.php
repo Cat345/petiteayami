@@ -6,12 +6,10 @@ abstract class Memory
 {
     /**
      * Try to raise memory_limit.
-     *
-     * @param string $memory
      */
-    public static function raise($memory = '512M')
+    public static function raise(string $memory = '512M'): void
     {
-        $limit = static::toBytes(@ini_get('memory_limit'));
+        $limit = static::toBytes((string) ini_get('memory_limit'));
 
         if ($limit !== -1 && $limit < static::toBytes($memory)) {
             @ini_set('memory_limit', $memory);
@@ -20,12 +18,8 @@ abstract class Memory
 
     /**
      * Converts a shorthand byte value to an integer byte value.
-     *
-     * @param string|int $value
-     *
-     * @return int
      */
-    public static function toBytes($value)
+    public static function toBytes(string $value): int
     {
         $bytes = (int) $value;
         $value = substr(strtolower(trim($value)), -1);

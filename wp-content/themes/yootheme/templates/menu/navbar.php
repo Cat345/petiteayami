@@ -7,7 +7,7 @@ foreach ($items as $item) {
     // Config
     $menuposition = '~menu';
     $navbar = '~theme.navbar';
-    $header = $config("{$menuposition}.position") == 'navbar' ? '~theme.header' : '~theme.mobile.header';
+    $header = str_ends_with($config("{$menuposition}.position"), '-mobile') ? '~theme.mobile.header' : '~theme.header';
     $menuitem = "~theme.menu.items.{$item->id}";
 
     // Children
@@ -65,7 +65,7 @@ foreach ($items as $item) {
         if ($level > 1 && $item->divider && !$children) {
             $title = '';
             $attrs['class'][] = 'uk-nav-divider';
-        } elseif ($children) {
+        } elseif ($children && $level == 1) {
             $link = ['role' => 'button'];
             if (!empty($item->anchor_css)) {
                 $link['class'][] = $item->anchor_css;
@@ -83,7 +83,7 @@ foreach ($items as $item) {
         if (isset($item->url)) {
             $link['href'] = $item->url;
 
-            if ($level > 1 && str_contains((string) $item->url, '#')) {
+            if (($level > 1 || !$config('~menu.scrollspyNav')) && str_contains((string) $item->url, '#')) {
                 $link['uk-scroll'] = true;
             }
         }
@@ -128,6 +128,8 @@ foreach ($items as $item) {
             }
             $attrs_children['class'][] = $config("$navbar.dropbar") && $config("$header.transparent") ? 'uk-dropbar-inset' : '';
 
+            $attrs_children['class'][] = $config("$navbar.dropdown_preserve_color") ? 'uk-preserve-color' : '';
+
             // Use `hover` instead of `hover, click` so dropdown can't be closed on click if in hover mode
             $mode = $item->type === 'heading' ? ($config("$navbar.dropdown_click") ? 'click' : 'hover') : false;
 
@@ -141,7 +143,7 @@ foreach ($items as $item) {
                     'mode' => $mode,
                     'pos' => "bottom-{$align}",
                     'stretch' => $stretch ? 'x' : null,
-                    'boundary' => $stretch ? (in_array($config("{$menuposition}.position"), ['navbar', 'navbar-split']) ? '.tm-header' : '.tm-header-mobile') . " .uk-{$stretch}" : null,
+                    'boundary-x' => $stretch ? (str_ends_with($config("{$menuposition}.position"), '-mobile') ? '.tm-header-mobile' : '.tm-header') . " .uk-{$stretch}" : null,
                 ];
             }
 
@@ -198,6 +200,14 @@ foreach ($items as $item) {
                 $children = "{$indention}<div{$this->attrs($attrs_children)}>{$columnsStr}</div>";
             }
 
+        } elseif ($item->type === 'heading') {
+            echo "{$indention}<li{$this->attrs($attrs)}>{$title}</li>";
+
+            if ($children) {
+                echo $this->self(['items' => $item->children, 'level' => $level]);
+            }
+
+            continue;
         } else {
 
             $attrs_children = [];

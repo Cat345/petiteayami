@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-11-08 00:32:53+0000\n"
+"PO-Revision-Date: 2025-12-28 22:40:39+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1029,11 +1029,6 @@ msgstr "https://www.metaphorcreations.com"
 msgid "Ticker"
 msgstr "Ticker"
 
-#: includes/post-types.php:22 includes/post-types.php:55
-#: includes/post-types.php:87 legacy/inc/post-types.php:16
-msgid "Add New"
-msgstr "Erstellen"
-
 #: legacy/inc/settings.php:132
 msgid "Custom CSS"
 msgstr "Individuelles CSS"
@@ -1152,3 +1147,8 @@ msgstr "Ausblenden"
 #: includes/admin/columns.php:185 legacy/inc/admin/edit-columns.php:138
 msgid "Show all Types"
 msgstr "Alle Typen anzeigen"
+
+#: includes/post-types.php:22 includes/post-types.php:55
+#: includes/post-types.php:87 legacy/inc/post-types.php:16
+msgid "Add New"
+msgstr "Hinzufügen"

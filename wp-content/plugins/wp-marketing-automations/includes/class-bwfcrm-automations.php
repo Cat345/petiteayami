@@ -453,6 +453,11 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 		public static function get_split_preview_data( $automation_id, $split_id, $automation_obj = null ) {
 			$automation_obj   = ! $automation_obj instanceof BWFAN_Automation_V2 ? BWFAN_Automation_V2::get_instance( $automation_id ) : $automation_obj;
 			$automation_steps = $automation_obj->get_steps();
+
+			if ( empty($automation_steps ) || ! isset( $automation_steps[ $split_id ] ) ) {
+				return [];
+			}
+
 			/** Get all split steps */
 			$split_steps = BWFAN_Model_Automationmeta::get_meta( $automation_id, 'split_steps' );
 			/** Get single split step by id */
@@ -541,7 +546,7 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 					$action_name = '';
 					if ( ! empty( $action_slug ) ) {
 						$action_ins  = $inte_ins->get_action( $action_slug );
-						$action_name = $action_ins->get_name();
+						$action_name = $action_ins instanceof BWFAN_Action ? $action_ins->get_name() : '-';
 					}
 					$source_name = '';
 					if ( ! empty( $integration ) ) {
@@ -572,7 +577,13 @@ if ( ! class_exists( 'BWFCRM_Automations' ) && BWFAN_Common::is_pro_3_0() ) {
 				'hasMultiParents' => true
 			];
 
-			return array_merge( $finale_data, self::get_split_links( $split_node_ids, $automation_id ) );
+			$split_preview_data = array_merge( $finale_data, self::get_split_links( $split_node_ids, $automation_id ) );
+			foreach ( $split_preview_data as $key => $data ) {
+				if ( isset( $data['position'] ) ) {
+					unset($split_preview_data[$key]['position']);
+				}
+			}
+			return $split_preview_data;
 		}
 
 		/**

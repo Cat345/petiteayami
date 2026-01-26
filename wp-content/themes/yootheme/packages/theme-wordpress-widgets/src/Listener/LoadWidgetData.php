@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Widgets\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Theme\Widgets\WidgetConfig;
 
 class LoadWidgetData
@@ -20,7 +19,7 @@ class LoadWidgetData
     public function handle(): void
     {
         $this->config->add('customizer', ['widget' => $this->widget->getArrayCopy()]);
-        $this->config->addFile('customizer', Path::get('../../config/customizer.json'));
-        $this->config->addFile('customizer.panels.widget', Path::get('../../config/widgets.json'));
+        $this->config->addFile('customizer', __DIR__ . '/../../config/customizer.php');
+        $this->config->addFile('customizer.panels.widget', __DIR__ . '/../../config/widgets.php');
     }
 }

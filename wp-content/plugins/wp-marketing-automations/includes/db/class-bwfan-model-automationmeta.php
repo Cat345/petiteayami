@@ -47,7 +47,6 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		if ( empty( $automation_id ) || empty( $data ) ) {
 			return false;
 		}
-
 		global $wpdb;
 		$table = self::_table();
 		foreach ( $data as $key => $value ) {
@@ -67,7 +66,6 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		if ( empty( $automation_id ) || empty( $data ) ) {
 			return false;
 		}
-
 		global $wpdb;
 		$table = self::_table();
 		foreach ( $data as $key => $value ) {
@@ -86,10 +84,11 @@ class BWFAN_Model_Automationmeta extends BWFAN_Model {
 		if ( empty( $aids ) || ! is_array( $aids ) ) {
 			return [];
 		}
-		$aids = implode( ', ', $aids );
 		global $wpdb;
-		$table     = self::_table();
-		$sql_query = "SELECT bwfan_automation_id, meta_key, meta_value FROM {$table} WHERE bwfan_automation_id IN ($aids)";
+		$table       = self::_table();
+		$aids        = array_map( 'absint', $aids );
+		$placeholder = implode( ', ', array_fill( 0, count( $aids ), '%d' ) );
+		$sql_query   = $wpdb->prepare( "SELECT bwfan_automation_id, meta_key, meta_value FROM {$table} WHERE bwfan_automation_id IN ($placeholder)", $aids );
 
 		if ( ! empty( $meta_key ) ) {
 			$sql_query .= " AND meta_key= 'event_meta'";

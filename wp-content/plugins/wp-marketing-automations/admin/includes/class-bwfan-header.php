@@ -189,10 +189,10 @@ final class BWFAN_Header {
 			unset( $left_nav_data['carts'] );
 		}
 
-		/** Remove the keys which are not present in menudata */
+		/** Remove the keys which are not present in menu data */
 		if ( ! empty( $menu_data ) && is_array( $menu_data ) ) {
 			$left_nav_data = array_filter( $left_nav_data, function ( $key ) use ( $menu_data ) {
-				return $key === 'tools' || in_array( $key, $menu_data );
+				return $key === 'tools' || in_array( $key, $menu_data, true );
 			}, ARRAY_FILTER_USE_KEY );
 			if ( isset( $left_nav_data['tools'] ) && empty( $left_nav_data['tools']['items'] ) ) {
 				unset( $left_nav_data['tools'] );
@@ -235,7 +235,7 @@ final class BWFAN_Header {
 		/** Remove the keys which are not present in menudata */
 		if ( ! empty( $menu_data ) && is_array( $menu_data ) ) {
 			return array_filter( $tool_menu, function ( $key ) use ( $menu_data ) {
-				return in_array( $key, $menu_data );
+				return in_array( $key, $menu_data, true );
 			}, ARRAY_FILTER_USE_KEY );
 		}
 
@@ -351,7 +351,7 @@ final class BWFAN_Header {
 			),
 		);
 
-		if ( bwfan_is_autonami_pro_active() && BWFAN_Core()->conversation->is_whatsapp_service_available() && ! apply_filters( 'bwfan_disabled_whatsapp_broadcast', true ) ) {
+		if ( bwfan_is_autonami_pro_active() && BWFAN_Core()->conversation->is_whatsapp_service_available() && ! apply_filters( 'bwfan_disabled_whatsapp_broadcast', false ) ) {
 			$broadcast_nav['whatsapp'] = array(
 				'name' => __( 'WhatsApp', 'wp-marketing-automations' ),
 				'link' => admin_url( 'admin.php?page=autonami&path=/broadcasts/whatsapp' ),
@@ -468,7 +468,6 @@ final class BWFAN_Header {
 		if ( BWFAN_Common::is_automation_v1_active() ) {
 			$tabs['automations-v1'] = array(
 				'name' => __( 'Automations Legacy', 'wp-marketing-automations' ),
-//                'tag' => 'Legacy',
 				'link' => admin_url( 'admin.php?page=autonami&path=/automations-v1' ),
 			);
 		}
@@ -632,7 +631,7 @@ final class BWFAN_Header {
                         </a>
 						<?php
 						$navigation = self::right_navigation();
-						$this->outputEllipsisMenu( $navigation, $this->data['level_1_navigation_active'] );
+						$this->outputEllipsisMenu( $navigation );
 						?>
                     </div>
                 </div>
@@ -712,16 +711,16 @@ final class BWFAN_Header {
 			return;
 		}
 		foreach ( $navigation as $key => $item ) {
-			if ( isset( $item['isExpandable'] ) && $item['isExpandable'] == true ) {
+			if ( isset( $item['isExpandable'] ) && $item['isExpandable'] === true ) {
 				$dropdown_data = '';
 				$active        = false;
 				if ( isset( $item['items'] ) && ! empty( $item['items'] ) ) {
 					$dropdown_data = '<span class="bwf-hover-suheader-menu">';
 					foreach ( $item['items'] as $ikey => $data ) {
-						$class         = $active_slug == $ikey ? 'bwfan_navigation_active' : '';
+						$class         = $active_slug === $ikey ? 'bwfan_navigation_active' : '';
 						$dropdown_data .= '<a href="' . esc_url( $data['link'] ) . '" class="' . $class . '" data-link-type="bwf-crm">' . $data['name'] . '</a>';
 
-						if ( $active_slug == $ikey ) {
+						if ( $active_slug === $ikey ) {
 							$active = true;
 						}
 					}
@@ -730,16 +729,14 @@ final class BWFAN_Header {
 				$mainclass = $active ? 'bwfan_navigation_active' : '';
 
 				echo '<span class="bwf-hover-submenu bwf-hover-submenu-php">
-                    <span class="' . esc_attr( $mainclass ) . '">' .
-					 $item['name'] . // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					 '</span>
+                    <span class="' . esc_attr( $mainclass ) . '">' . esc_html( $item['name'] ) . '</span>
 						<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
 							<path d="M12,14.071L8.179,10.25c-0.414-0.414-1.086-0.414-1.5,0l0,0c-0.414,0.414-0.414,1.086,0,1.5l4.614,4.614 c0.391,0.391,1.024,0.391,1.414,0l4.614-4.614c0.414-0.414,0.414-1.086,0-1.5v0c-0.414-0.414-1.086-0.414-1.5,0L12,14.071z"></path>
 						</svg> ' . $dropdown_data . '</span>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} else {
 				$active = ( ! empty( $active_slug ) && $key === $active_slug ) ? 'bwfan_navigation_active' : '';
 
-				$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : '';
+				$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
 				$target = ( isset( $item['target'] ) && ! empty( $item['target'] ) ) ? ' target="' . $item['target'] . '"' : '';
 
@@ -751,7 +748,7 @@ final class BWFAN_Header {
 		}
 	}
 
-	public function outputEllipsisMenu( $navigation, $active_slug = '' ) {
+	public function outputEllipsisMenu( $navigation ) {
 		if ( ! is_array( $navigation ) || 0 === count( $navigation ) ) {
 			return;
 		}
@@ -778,13 +775,13 @@ final class BWFAN_Header {
                             <div style="position: relative;">
                                 <div role="menu" aria-orientation="vertical" class="bwf-ellipsis-menu__content">
 									<?php
-									foreach ( $navigation as $key => $item ) {
+									foreach ( $navigation as $item ) {
 										?>
                                         <a href="<?php echo esc_url( $item['link'] ); ?>" target="<?php echo esc_attr( $item['target'] ); ?>" role="menuitem" tabindex="0" class="bwf-ellipsis-menu__item">
                                             <div class="components-flex css-1ahbsz-Flex eboqfv50">
                                                 <div class="components-flex__item css-1s295sp-Item eboqfv51">
 													<?php
-													$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : '';
+													$icon = ( isset( $item['icon'] ) && ! empty( $item['icon'] ) ) ? wp_remote_retrieve_body( wp_remote_get( esc_url( plugin_dir_url( BWFAN_PLUGIN_FILE ) . 'admin/assets/img/menu/' . $item['icon'] . '.svg' ) ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 													echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													?>
                                                 </div>

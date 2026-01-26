@@ -90,7 +90,15 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 		static function get_specific_rows( $where_key, $where_value ) {
 			global $wpdb;
 			$table_name = self::_table();
-			$results    = $wpdb->get_results( "SELECT * FROM $table_name WHERE $where_key = '$where_value'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+
+			// Whitelist allowed column names to prevent column injection
+			$allowed_columns = array( 'ID', 'id', 'slug', 'connector_id' );
+			if ( ! in_array( $where_key, $allowed_columns, true ) ) {
+				return array();
+			}
+
+			$query   = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			return $results;
 		}

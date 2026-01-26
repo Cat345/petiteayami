@@ -38,15 +38,15 @@ class Helpers {
             return '';
         }
         $numWords = apply_filters( 'dgwt/wcas/description/words_limit', $numWords );
-        //Remove headings
-        $string = str_replace( array('<h1><h2><h3><h4><h5><h6>'), '<h3>', $string );
-        $string = str_replace( array('</h1></h2></h3></h4></h5></h6>'), '</h3>', $string );
+        // Remove headings
+        $string = str_replace( ['<h1><h2><h3><h4><h5><h6>'], '<h3>', $string );
+        $string = str_replace( ['</h1></h2></h3></h4></h5></h6>'], '</h3>', $string );
         $string = preg_replace( '/(<h3*?>).*?(<\\/h3>)/', '$1$2', $string );
         $string = self::stripAllTags( $string, $allowableTags, $removeBreaks );
         $hasHtml = strpos( $string, '<' ) !== false;
         if ( $hasHtml ) {
             // Remove attributes
-            $string = preg_replace( "/<([a-z][a-z0-9]*)[^>]*?(\\/?)>/i", '<$1$2>', $string );
+            $string = preg_replace( '/<([a-z][a-z0-9]*)[^>]*?(\\/?)>/i', '<$1$2>', $string );
             $string = ( strpos( $allowableTags, '<p>' ) !== false ? wpautop( $string ) : $string );
             $string = force_balance_tags( html_entity_decode( wp_trim_words( htmlentities( $string ), $numWords ) ) );
         } else {
@@ -62,8 +62,8 @@ class Helpers {
      *
      * @return string
      */
-    public static function searchWrappClasses( $args = array() ) {
-        $classes = array();
+    public static function searchWrappClasses( $args = [] ) {
+        $classes = [];
         if ( DGWT_WCAS()->settings->getOption( 'show_details_box' ) === 'on' ) {
             $classes[] = 'dgwt-wcas-is-detail-box';
         }
@@ -123,15 +123,16 @@ class Helpers {
             case 'magnifier-thin':
                 $style = ( empty( $color ) ? '' : 'style="fill: ' . esc_attr( $color ) . '"' );
                 ?>
-				<svg class="<?php 
+				<svg
+					class="<?php 
                 echo $class;
                 ?>" xmlns="http://www.w3.org/2000/svg"
-					 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-					 viewBox="0 0 51.539 51.361" xml:space="preserve">
-		             <path <?php 
+					xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+					viewBox="0 0 51.539 51.361" xml:space="preserve">
+					<path <?php 
                 echo $style;
                 ?>
-						 d="M51.539,49.356L37.247,35.065c3.273-3.74,5.272-8.623,5.272-13.983c0-11.742-9.518-21.26-21.26-21.26 S0,9.339,0,21.082s9.518,21.26,21.26,21.26c5.361,0,10.244-1.999,13.983-5.272l14.292,14.292L51.539,49.356z M2.835,21.082 c0-10.176,8.249-18.425,18.425-18.425s18.425,8.249,18.425,18.425S31.436,39.507,21.26,39.507S2.835,31.258,2.835,21.082z"/>
+						d="M51.539,49.356L37.247,35.065c3.273-3.74,5.272-8.623,5.272-13.983c0-11.742-9.518-21.26-21.26-21.26 S0,9.339,0,21.082s9.518,21.26,21.26,21.26c5.361,0,10.244-1.999,13.983-5.272l14.292,14.292L51.539,49.356z M2.835,21.082 c0-10.176,8.249-18.425,18.425-18.425s18.425,8.249,18.425,18.425S31.436,39.507,21.26,39.507S2.835,31.258,2.835,21.082z"/>
 				</svg>
 				<?php 
                 break;
@@ -141,7 +142,7 @@ class Helpers {
 				<svg class="<?php 
                 echo $class;
                 ?>" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
-					 width="24">
+					width="24">
 					<path <?php 
                 echo $style;
                 ?>
@@ -152,17 +153,18 @@ class Helpers {
             case 'magnifier-pirx':
                 $style = ( empty( $color ) ? '' : 'style="fill: ' . esc_attr( $color ) . '"' );
                 ?>
-				<svg class="<?php 
+				<svg
+					class="<?php 
                 echo $class;
                 ?>" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
 					<path <?php 
                 echo $style;
                 ?> d=" M 16.722523,17.901412 C 16.572585,17.825208 15.36088,16.670476 14.029846,15.33534 L 11.609782,12.907819 11.01926,13.29667 C 8.7613237,14.783493 5.6172703,14.768302 3.332423,13.259528 -0.07366363,11.010358 -1.0146502,6.5989684 1.1898146,3.2148776
-						  1.5505179,2.6611594 2.4056498,1.7447266 2.9644271,1.3130497 3.4423015,0.94387379 4.3921825,0.48568469 5.1732652,0.2475835 5.886299,0.03022609 6.1341883,0 7.2037391,0 8.2732897,0 8.521179,0.03022609 9.234213,0.2475835 c 0.781083,0.23810119 1.730962,0.69629029 2.208837,1.0654662
-						  0.532501,0.4113763 1.39922,1.3400096 1.760153,1.8858877 1.520655,2.2998531 1.599025,5.3023778 0.199549,7.6451086 -0.208076,0.348322 -0.393306,0.668209 -0.411622,0.710863 -0.01831,0.04265 1.065556,1.18264 2.408603,2.533307 1.343046,1.350666 2.486621,2.574792 2.541278,2.720279 0.282475,0.7519
-						  -0.503089,1.456506 -1.218488,1.092917 z M 8.4027892,12.475062 C 9.434946,12.25579 10.131043,11.855461 10.99416,10.984753 11.554519,10.419467 11.842507,10.042366 12.062078,9.5863882 12.794223,8.0659672 12.793657,6.2652398 12.060578,4.756293 11.680383,3.9737304 10.453587,2.7178427
-						  9.730569,2.3710306 8.6921295,1.8729196 8.3992147,1.807606 7.2037567,1.807606 6.0082984,1.807606 5.7153841,1.87292 4.6769446,2.3710306 3.9539263,2.7178427 2.7271301,3.9737304 2.3469352,4.756293 1.6138384,6.2652398 1.6132726,8.0659672 2.3454252,9.5863882 c 0.4167354,0.8654208 1.5978784,2.0575608
-						  2.4443766,2.4671358 1.0971012,0.530827 2.3890403,0.681561 3.6130134,0.421538 z
+					1.5505179,2.6611594 2.4056498,1.7447266 2.9644271,1.3130497 3.4423015,0.94387379 4.3921825,0.48568469 5.1732652,0.2475835 5.886299,0.03022609 6.1341883,0 7.2037391,0 8.2732897,0 8.521179,0.03022609 9.234213,0.2475835 c 0.781083,0.23810119 1.730962,0.69629029 2.208837,1.0654662
+					0.532501,0.4113763 1.39922,1.3400096 1.760153,1.8858877 1.520655,2.2998531 1.599025,5.3023778 0.199549,7.6451086 -0.208076,0.348322 -0.393306,0.668209 -0.411622,0.710863 -0.01831,0.04265 1.065556,1.18264 2.408603,2.533307 1.343046,1.350666 2.486621,2.574792 2.541278,2.720279 0.282475,0.7519
+					-0.503089,1.456506 -1.218488,1.092917 z M 8.4027892,12.475062 C 9.434946,12.25579 10.131043,11.855461 10.99416,10.984753 11.554519,10.419467 11.842507,10.042366 12.062078,9.5863882 12.794223,8.0659672 12.793657,6.2652398 12.060578,4.756293 11.680383,3.9737304 10.453587,2.7178427
+					9.730569,2.3710306 8.6921295,1.8729196 8.3992147,1.807606 7.2037567,1.807606 6.0082984,1.807606 5.7153841,1.87292 4.6769446,2.3710306 3.9539263,2.7178427 2.7271301,3.9737304 2.3469352,4.756293 1.6138384,6.2652398 1.6132726,8.0659672 2.3454252,9.5863882 c 0.4167354,0.8654208 1.5978784,2.0575608
+					2.4443766,2.4671358 1.0971012,0.530827 2.3890403,0.681561 3.6130134,0.421538 z
 					"/>
 				</svg>
 				<?php 
@@ -185,8 +187,7 @@ class Helpers {
                 ?>
 				<svg class="<?php 
                 echo $class;
-                ?>" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
-					 width="24">
+                ?>" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
 					<path <?php 
                 echo $style;
                 ?>
@@ -256,8 +257,7 @@ class Helpers {
                 ?>
 				<svg class="<?php 
                 echo $class;
-                ?>" xmlns="http://www.w3.org/2000/svg" height="24"
-					 width="24">
+                ?>" xmlns="http://www.w3.org/2000/svg" height="24" width="24">
 					<path <?php 
                 echo $style;
                 ?>
@@ -282,10 +282,11 @@ class Helpers {
             case 'voice-search-active':
                 $style = ( empty( $color ) ? '' : 'style="fill: ' . esc_attr( $color ) . '"' );
                 ?>
-				<svg class="<?php 
+				<svg
+					class="<?php 
                 echo $class;
                 ?>" xmlns="http://www.w3.org/2000/svg" height="24"
-					 width="24">
+					width="24">
 					<path <?php 
                 echo $style;
                 ?>
@@ -297,10 +298,11 @@ class Helpers {
                 // https://fonts.google.com/icons Icon: Mic Fill: 1 Weight: 400 Grade: 0 Optical size: 24
                 $style = ( empty( $color ) ? '' : 'style="fill: ' . esc_attr( $color ) . '"' );
                 ?>
-				<svg class="<?php 
+				<svg
+					class="<?php 
                 echo $class;
                 ?>" xmlns="http://www.w3.org/2000/svg" height="24"
-					 width="24">
+					width="24">
 					<path <?php 
                 echo $style;
                 ?>
@@ -423,10 +425,10 @@ class Helpers {
      * @return string
      */
     public static function minifyJS( $input ) {
-        if ( trim( $input ) === "" ) {
+        if ( trim( $input ) === '' ) {
             return $input;
         }
-        return preg_replace( array(
+        return preg_replace( [
             // Remove comment(s)
             '#\\s*("(?:[^"\\\\]++|\\\\.)*+"|\'(?:[^\'\\\\]++|\\\\.)*+\')\\s*|\\s*\\/\\*(?!\\!|@cc_on)(?>[\\s\\S]*?\\*\\/)\\s*|\\s*(?<![\\:\\=])\\/\\/.*(?=[\\n\\r]|$)|^\\s*|\\s*$#',
             // Remove white-space(s) outside the string and regex
@@ -443,7 +445,7 @@ class Helpers {
             '#(?<=return |[=:,\\(\\[])false\\b#',
             // Clean up ...
             '#\\s*(\\/\\*|\\*\\/)\\s*#',
-        ), array(
+        ], [
             '$1',
             '$1$2',
             '}',
@@ -452,7 +454,7 @@ class Helpers {
             '!0',
             '!1',
             '$1'
-        ), $input );
+        ], $input );
     }
 
     /**
@@ -465,7 +467,7 @@ class Helpers {
      * @return string
      */
     public static function minifyCSS( $input ) {
-        if ( trim( $input ) === "" ) {
+        if ( trim( $input ) === '' ) {
             return $input;
         }
         // Force white-space(s) in `calc()`
@@ -474,7 +476,7 @@ class Helpers {
                 return 'calc(' . preg_replace( '#\\s+#', "\x1a", $matches[1] ) . ')';
             }, $input );
         }
-        return preg_replace( array(
+        return preg_replace( [
             // Remove comment(s)
             '#("(?:[^"\\\\]++|\\\\.)*+"|\'(?:[^\'\\\\]++|\\\\.)*+\')|\\/\\*(?!\\!)(?>.*?\\*\\/)|^\\s*|\\s*$#s',
             // Remove unused white-space(s)
@@ -497,7 +499,7 @@ class Helpers {
             // Remove empty selector(s)
             '#(\\/\\*(?>.*?\\*\\/))|(^|[\\{\\}])(?:[^\\s\\{\\}]+)\\{\\}#s',
             '#\\x1A#',
-        ), array(
+        ], [
             '$1',
             '$1$2$3$4$5$6$7',
             '$1',
@@ -510,7 +512,7 @@ class Helpers {
             '$1:0',
             '$1$2',
             ' '
-        ), $input );
+        ], $input );
     }
 
     /**
@@ -530,9 +532,11 @@ class Helpers {
 
     /**
      * Check if is settings page
+     *
      * @return bool
      */
     public static function isSettingsPage() {
+        //phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( is_admin() && !empty( $_GET['page'] ) && $_GET['page'] === 'dgwt_wcas_settings' ) {
             return true;
         }
@@ -541,9 +545,11 @@ class Helpers {
 
     /**
      * Check if is debug page
+     *
      * @return bool
      */
     public static function isDebugPage() {
+        //phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( is_admin() && !empty( $_GET['page'] ) && $_GET['page'] === 'dgwt_wcas_debug' ) {
             return true;
         }
@@ -552,9 +558,11 @@ class Helpers {
 
     /**
      * Check if is Freemius checkout page
+     *
      * @return bool
      */
     public static function isCheckoutPage() {
+        //phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( is_admin() && !empty( $_GET['page'] ) && $_GET['page'] === 'dgwt_wcas_settings-pricing' ) {
             return true;
         }
@@ -578,20 +586,23 @@ class Helpers {
     public static function getTotalProducts() {
         global $wpdb;
         $sql = "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE  post_type = 'product' AND post_status = 'publish'";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $total = $wpdb->get_var( $sql );
         return absint( $total );
     }
 
     /**
      * Get all products IDs
+     *
      * @return array
      */
     public static function getProductsForIndex() {
         global $wpdb;
         $sql = "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'product' AND post_status = 'publish' ORDER BY ID ASC";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $ids = $wpdb->get_col( $sql );
         if ( !is_array( $ids ) || empty( $ids[0] ) || !is_numeric( $ids[0] ) ) {
-            $ids = array();
+            $ids = [];
         }
         return $ids;
     }
@@ -604,14 +615,15 @@ class Helpers {
      * @return string
      */
     public static function getReadableMemorySize( $bytes ) {
-        $unit = array(
+        $unit = [
             'b',
             'kb',
             'mb',
             'gb',
             'tb',
             'pb'
-        );
+        ];
+        // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found,WordPress.PHP.NoSilencedErrors.Discouraged
         return @round( $bytes / pow( 1024, $i = floor( log( $bytes, 1024 ) ) ), 2 ) . ' ' . $unit[$i];
     }
 
@@ -649,7 +661,7 @@ class Helpers {
      *
      * @return float
      */
-    public static function calcScore( string $phrase, string $haystack, array $args = array() ) : float {
+    public static function calcScore( string $phrase, string $haystack, array $args = [] ) : float {
         $score = 0;
         if ( empty( $phrase ) || empty( $haystack ) ) {
             return $score;
@@ -658,21 +670,25 @@ class Helpers {
         if ( strlen( $phrase ) <= 1 ) {
             return $score;
         }
-        $default = array(
+        $default = [
             'check_similarity' => true,
             'check_position'   => true,
             'score_containing' => 50,
-        );
+        ];
         $args = array_merge( $default, $args );
         $phrase = self::normalizePhrase( $phrase );
         $haystack = self::normalizePhrase( $haystack );
-        /* -------------------------------------- *
-         * Bonus for comparing the entire phrase  *
-         * -------------------------------------- */
+        /**
+         * ╭───────────────────────────────────────╮
+         * | Bonus for comparing the entire phrase |
+         * ╰───────────────────────────────────────╯
+         */
         $score += self::allocateScore( self::stringComparisonResult( $phrase, $haystack, $args ) );
-        /* ------------------------------------ *
-         * Bonus for comparing individual words *
-         * ------------------------------------ */
+        /**
+         * ╭──────────────────────────────────────╮
+         * | Bonus for comparing individual words |
+         * ╰──────────────────────────────────────╯
+         */
         $words = explode( ' ', $phrase ?? '' );
         if ( count( $words ) > 1 ) {
             $args['check_similarity'] = false;
@@ -693,7 +709,7 @@ class Helpers {
      * @return string
      */
     public static function normalizePhrase( string $phrase ) : string {
-        $string = trim( preg_replace( array('/\\s{2,}/', '/[\\t\\n]/'), ' ', $phrase ) );
+        $string = trim( preg_replace( ['/\\s{2,}/', '/[\\t\\n]/'], ' ', $phrase ) );
         return mb_strtolower( remove_accents( self::removeGreekAccents( $string ) ) );
     }
 
@@ -706,19 +722,19 @@ class Helpers {
      *
      * @return array
      */
-    public static function stringComparisonResult( string $needle = '', string $haystack = '', array $args = array() ) : array {
-        $results = array(
+    public static function stringComparisonResult( string $needle = '', string $haystack = '', array $args = [] ) : array {
+        $results = [
             'exact_match'         => false,
             'partial_exact_match' => false,
             'containing'          => false,
             'containing_pos'      => 0,
             'text_similarity'     => 0,
-        );
-        $default = array(
+        ];
+        $default = [
             'check_similarity' => true,
             'check_position'   => true,
             'score_containing' => 50,
-        );
+        ];
         $args = array_merge( $default, $args );
         $pos = strpos( $haystack, $needle );
         if ( $pos !== false ) {
@@ -750,7 +766,7 @@ class Helpers {
      *
      * @return float
      */
-    public static function allocateScore( array $comparison, array $args = array() ) : float {
+    public static function allocateScore( array $comparison, array $args = [] ) : float {
         $score = 0;
         $default = [
             'containing_score'               => 50,
@@ -863,9 +879,9 @@ class Helpers {
     public static function getTermBreadcrumbs(
         $termID,
         $taxonomy,
-        $visited = array(),
+        $visited = [],
         $lang = '',
-        $exclude = array()
+        $exclude = []
     ) {
         $chain = '';
         $separator = ' > ';
@@ -897,10 +913,9 @@ class Helpers {
      * Get taxonomies of products attributes
      *
      * @return array
-     *
      */
     public static function getAttributesTaxonomies() {
-        $taxonomies = array();
+        $taxonomies = [];
         $attributeTaxonomies = wc_get_attribute_taxonomies();
         if ( !empty( $attributeTaxonomies ) ) {
             foreach ( $attributeTaxonomies as $taxonomy ) {
@@ -910,10 +925,8 @@ class Helpers {
         return apply_filters( 'dgwt/wcas/attribute_taxonomies', $taxonomies );
     }
 
-    /**
-     *
-     */
     public static function canInstallPremium() {
+        // TODO
     }
 
     /**
@@ -976,6 +989,7 @@ class Helpers {
             $customFieldsTransient = ( $skipTransient ? false : get_transient( 'dgwt_wcas_searchable_custom_fields' ) );
             if ( !is_array( $customFieldsTransient ) ) {
                 $sql = "SELECT DISTINCT meta_key\n                FROM {$wpdb->postmeta} as pm\n                INNER JOIN {$wpdb->posts} as p ON p.ID = pm.post_id\n                WHERE p.post_type = 'product'\n                AND pm.meta_value NOT LIKE 'field_%'\n                AND pm.meta_value NOT LIKE 'a:%'\n                AND pm.meta_value NOT LIKE '%\\%\\%%'\n                AND pm.meta_value NOT LIKE '_oembed_%'\n                AND pm.meta_value NOT REGEXP '^1[0-9]{9}'\n                AND pm.meta_value NOT IN ('1','0','-1','no','yes','[]', '')\n               ";
+                //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
                 $metaKeys = $wpdb->get_col( $sql );
                 if ( is_array( $metaKeys ) && $skipTransient === false ) {
                     set_transient( 'dgwt_wcas_searchable_custom_fields', $metaKeys, HOUR_IN_SECONDS );
@@ -988,7 +1002,7 @@ class Helpers {
             foreach ( $metaKeys as $metaKey ) {
                 if ( !in_array( $metaKey, $excludedMetaKeys ) && self::keyIsValid( $metaKey ) ) {
                     $label = $metaKey;
-                    //@TODO Recognize labels based on meta key or public known as Yoast SEO etc.
+                    // @TODO Recognize labels based on meta key or public known as Yoast SEO etc.
                     $customFields[] = [
                         'label' => $label,
                         'key'   => $label,
@@ -1023,7 +1037,8 @@ class Helpers {
         if ( empty( $tableName ) ) {
             return false;
         }
-        $sql = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->prefix . 'dgwt_wcas_%' );
+        $sql = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . 'dgwt_wcas_%' );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $result = $wpdb->get_col( $sql );
         if ( is_array( $result ) && in_array( $tableName, $result ) ) {
             $exist = true;
@@ -1188,7 +1203,7 @@ class Helpers {
      * Get list of 24 hours
      */
     public static function getHours() {
-        $hours = array();
+        $hours = [];
         $cycle12 = ( get_option( 'time_format' ) === 'H:i' ? false : true );
         for ($i = 0; $i < 24; $i++) {
             $label = ( $cycle12 ? $i . ':00 am' : $i . ':00' );
@@ -1235,9 +1250,11 @@ class Helpers {
      */
     public static function getLabels() {
         $noResults = DGWT_WCAS()->settings->getOption( 'search_no_results_text', __( 'No results', 'ajax-search-for-woocommerce' ) );
-        $noResults = json_encode( Helpers::ksesNoResults( $noResults ), JSON_UNESCAPED_SLASHES );
+        // TODO
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+        $noResults = json_encode( self::ksesNoResults( $noResults ), JSON_UNESCAPED_SLASHES );
         $showMore = esc_html( DGWT_WCAS()->settings->getOption( 'search_see_all_results_text', __( 'See all products...', 'ajax-search-for-woocommerce' ) ) );
-        return apply_filters( 'dgwt/wcas/labels', array(
+        return apply_filters( 'dgwt/wcas/labels', [
             'product_plu'        => __( 'Products', 'woocommerce' ),
             'vendor'             => __( 'Vendor', 'ajax-search-for-woocommerce' ),
             'vendor_plu'         => __( 'Vendors', 'ajax-search-for-woocommerce' ),
@@ -1256,7 +1273,7 @@ class Helpers {
             'search_hist'        => __( 'Your search history', 'ajax-search-for-woocommerce' ),
             'search_hist_clear'  => __( 'Clear', 'ajax-search-for-woocommerce' ),
             'mob_overlay_label'  => __( 'Open search in the mobile overlay', 'ajax-search-for-woocommerce' ),
-        ) );
+        ] );
     }
 
     /**
@@ -1346,9 +1363,11 @@ class Helpers {
      * @return bool
      */
     public static function isProductSearchPage() {
+        //phpcs:disable WordPress.Security.NonceVerification.Recommended
         if ( isset( $_GET['dgwt_wcas'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] === 'product' && isset( $_GET['s'] ) ) {
             return true;
         }
+        // phpcs:enable
         return false;
     }
 
@@ -1398,7 +1417,7 @@ class Helpers {
         $layoutBreakpoint = apply_filters( 'dgwt/wcas/scripts/mobile_breakpoint', $layoutBreakpoint );
         // deprecated
         $mobileOverlayBreakpoint = DGWT_WCAS()->settings->getOption( 'mobile_overlay_breakpoint', 992 );
-        $layout = array(
+        $layout = [
             'style'                     => DGWT_WCAS()->settings->getOption( 'search_style', 'solaris' ),
             'icon'                      => 'magnifier-thin',
             'layout'                    => DGWT_WCAS()->settings->getOption( 'search_layout', 'classic' ),
@@ -1408,8 +1427,8 @@ class Helpers {
             'mobile_overlay_wrapper'    => apply_filters( 'dgwt/wcas/scripts/mobile_overlay_wrapper', 'body' ),
             'darken_background'         => ( DGWT_WCAS()->settings->getOption( 'darken_background', 'off' ) === 'on' ? true : false ),
             'icon_color'                => DGWT_WCAS()->settings->getOption( 'search_icon_color' ),
-        );
-        if ( in_array( $layout['style'], array('pirx', 'pirx-compact') ) ) {
+        ];
+        if ( in_array( $layout['style'], ['pirx', 'pirx-compact'] ) ) {
             $layout['icon'] = 'magnifier-pirx';
         }
         return (object) $layout;
@@ -1423,7 +1442,7 @@ class Helpers {
     public static function getScriptsSettings() {
         $layout = self::getLayoutSettings();
         // Localize
-        $localize = array(
+        $localize = [
             'labels'                          => self::getLabels(),
             'ajax_search_endpoint'            => self::getEndpointUrl( 'search' ),
             'ajax_details_endpoint'           => self::getEndpointUrl( 'details' ),
@@ -1442,7 +1461,7 @@ class Helpers {
             'dynamic_prices'                  => false,
             'is_rtl'                          => ( is_rtl() == true ? true : false ),
             'show_preloader'                  => false,
-            'show_headings'                   => Helpers::canGroupSuggestions(),
+            'show_headings'                   => self::canGroupSuggestions(),
             'preloader_url'                   => '',
             'taxonomy_brands'                 => '',
             'img_url'                         => DGWT_WCAS_URL . 'assets/img/',
@@ -1460,16 +1479,16 @@ class Helpers {
             'close_icon'                      => self::getIcon( 'close' ),
             'back_icon'                       => self::getIcon( 'arrow-left' ),
             'preloader_icon'                  => self::getIcon( 'preloader' ),
-            'voice_search_inactive_icon'      => self::getIcon( ( in_array( $layout->style, array('pirx', 'pirx-compact') ) ? 'voice-search-inactive-pirx' : 'voice-search-inactive' ), 'dgwt-wcas-voice-search-mic-inactive' ),
-            'voice_search_active_icon'        => self::getIcon( ( in_array( $layout->style, array('pirx', 'pirx-compact') ) ? 'voice-search-active-pirx' : 'voice-search-active' ), 'dgwt-wcas-voice-search-mic-active' ),
-            'voice_search_disabled_icon'      => self::getIcon( ( in_array( $layout->style, array('pirx', 'pirx-compact') ) ? 'voice-search-disabled-pirx' : 'voice-search-disabled' ), 'dgwt-wcas-voice-search-mic-disabled' ),
-            'custom_params'                   => (object) apply_filters( 'dgwt/wcas/scripts/custom_params', array() ),
+            'voice_search_inactive_icon'      => self::getIcon( ( in_array( $layout->style, ['pirx', 'pirx-compact'] ) ? 'voice-search-inactive-pirx' : 'voice-search-inactive' ), 'dgwt-wcas-voice-search-mic-inactive' ),
+            'voice_search_active_icon'        => self::getIcon( ( in_array( $layout->style, ['pirx', 'pirx-compact'] ) ? 'voice-search-active-pirx' : 'voice-search-active' ), 'dgwt-wcas-voice-search-mic-active' ),
+            'voice_search_disabled_icon'      => self::getIcon( ( in_array( $layout->style, ['pirx', 'pirx-compact'] ) ? 'voice-search-disabled-pirx' : 'voice-search-disabled' ), 'dgwt-wcas-voice-search-mic-disabled' ),
+            'custom_params'                   => (object) apply_filters( 'dgwt/wcas/scripts/custom_params', [] ),
             'convert_html'                    => true,
             'suggestions_wrapper'             => apply_filters( 'dgwt/wcas/scripts/suggestions_wrapper', 'body' ),
             'show_product_vendor'             => dgoraAsfwFs()->is_premium() && class_exists( 'DgoraWcas\\Integrations\\Marketplace\\Marketplace' ) && DGWT_WCAS()->marketplace->showProductVendor(),
             'disable_hits'                    => apply_filters( 'dgwt/wcas/scripts/disable_hits', false ),
             'disable_submit'                  => apply_filters( 'dgwt/wcas/scripts/disable_submit', false ),
-            'fixer'                           => apply_filters( 'dgwt/wcas/scripts/fixer', array(
+            'fixer'                           => apply_filters( 'dgwt/wcas/scripts/fixer', [
                 'broken_search_ui'                  => true,
                 'broken_search_ui_ajax'             => true,
                 'broken_search_ui_hard'             => false,
@@ -1477,13 +1496,13 @@ class Helpers {
                 'broken_search_jet_mobile_menu'     => true,
                 'broken_search_browsers_back_arrow' => true,
                 'force_refresh_checkout'            => true,
-            ) ),
+            ] ),
             'voice_search_enabled'            => defined( 'DGWT_WCAS_VOICE_SEARCH_ENABLE' ) && DGWT_WCAS_VOICE_SEARCH_ENABLE,
-            'voice_search_lang'               => apply_filters( 'dgwt/wcas/scripts/voice_search_lang', Helpers::getBCP47LangCode( get_bloginfo( 'language' ) ) ),
+            'voice_search_lang'               => apply_filters( 'dgwt/wcas/scripts/voice_search_lang', self::getBCP47LangCode( get_bloginfo( 'language' ) ) ),
             'show_recently_searched_products' => false,
             'show_recently_searched_phrases'  => false,
             'go_to_first_variation_on_submit' => false,
-        );
+        ];
         // User search history
         if ( DGWT_WCAS()->settings->getOption( 'show_user_history' ) === 'on' ) {
             $localize['show_recently_searched_products'] = apply_filters( 'dgwt/wcas/scripts/show_recently_searched_products', true );
@@ -1546,7 +1565,7 @@ class Helpers {
      */
     public static function getEndpointUrl( $type = '' ) {
         $url = '';
-        if ( !in_array( $type, array('search', 'details', 'prices') ) ) {
+        if ( !in_array( $type, ['search', 'details', 'prices'] ) ) {
             return $url;
         }
         switch ( $type ) {
@@ -1622,6 +1641,7 @@ class Helpers {
     }
 
     private static function debugBacktrace( $options, $limit ) {
+        //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
         return debug_backtrace( $options, $limit );
     }
 
@@ -1653,11 +1673,12 @@ class Helpers {
      * @return array
      */
     public static function getAllowedPostTypes( $filter = '' ) {
-        $types = array();
+        $types = [];
         if ( $filter !== 'no-products' ) {
             $types[] = 'product';
             $types[] = 'product-variation';
         }
+        // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
         if ( $filter !== 'only-products' ) {
             // Non-product post types will be added in via below filter.
         }
@@ -1671,11 +1692,13 @@ class Helpers {
      */
     public static function getBasicAuthHeader() {
         $authorization = '';
+        // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
         if ( defined( 'DGWT_WCAS_BA_USERNAME' ) && defined( 'DGWT_WCAS_BA_PASSWORD' ) ) {
             $authorization = 'Basic ' . base64_encode( wp_unslash( DGWT_WCAS_BA_USERNAME ) . ':' . wp_unslash( DGWT_WCAS_BA_PASSWORD ) );
         } elseif ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $_SERVER['PHP_AUTH_PW'] ) ) {
             $authorization = 'Basic ' . base64_encode( wp_unslash( $_SERVER['PHP_AUTH_USER'] ) . ':' . wp_unslash( $_SERVER['PHP_AUTH_PW'] ) );
         }
+        // phpcs:enable
         return $authorization;
     }
 
@@ -1736,10 +1759,10 @@ class Helpers {
      */
     public static function noResultsSuggestion( $output ) {
         if ( empty( $output['suggestions'] ) ) {
-            $output['suggestions'][] = array(
+            $output['suggestions'][] = [
                 'value' => '',
                 'type'  => 'no-results',
-            );
+            ];
         }
         return $output;
     }
@@ -1767,10 +1790,10 @@ class Helpers {
         $charset = apply_filters( 'dgwt/wcas/db/charset', $charset, $context );
         $collate = apply_filters( 'dgwt/wcas/db/collation', $collate, $context );
         if ( !empty( $charset ) ) {
-            $sql .= " DEFAULT CHARACTER SET " . $charset;
+            $sql .= ' DEFAULT CHARACTER SET ' . $charset;
         }
         if ( !empty( $collate ) ) {
-            $sql .= " COLLATE " . $collate;
+            $sql .= ' COLLATE ' . $collate;
         }
         return apply_filters( 'dgwt/wcas/db/collation/sql', $sql, $context );
     }
@@ -1796,17 +1819,17 @@ class Helpers {
     public static function getTableInfo( $table = '' ) {
         global $wpdb;
         if ( !defined( 'DB_NAME' ) || empty( $table ) ) {
-            return array(
+            return [
                 'data'  => 0.0,
                 'index' => 0.0,
-            );
+            ];
         }
         $info = $wpdb->get_row( $wpdb->prepare( "SELECT\n\t\t\t\t\t    round( ( data_length / 1024 / 1024 ), 2 ) 'data',\n\t\t\t\t\t    round( ( index_length / 1024 / 1024 ), 2 ) 'index'\n\t\t\t\t\tFROM information_schema.TABLES\n\t\t\t\t\tWHERE table_schema = %s\n\t\t\t\t\tAND table_name = %s;", DB_NAME, $table ), ARRAY_A );
         if ( !isset( $info['data'] ) || !isset( $info['index'] ) ) {
-            return array(
+            return [
                 'data'  => 0.0,
                 'index' => 0.0,
-            );
+            ];
         }
         $info['data'] = floatval( $info['data'] );
         $info['index'] = floatval( $info['index'] );
@@ -1820,7 +1843,7 @@ class Helpers {
      */
     public static function getAllOptionNames() {
         global $wpdb;
-        $options = array();
+        $options = [];
         $res = $wpdb->get_col( "SELECT SQL_NO_CACHE option_name FROM {$wpdb->options} WHERE option_name LIKE 'dgwt_wcas_%'" );
         if ( !empty( $res ) && is_array( $res ) ) {
             $options = $res;
@@ -1856,30 +1879,30 @@ class Helpers {
      * @return string
      */
     public static function ksesNoResults( $content ) {
-        $content = wp_kses( $content, array(
-            'div'  => array(
-                'class' => array(),
-            ),
-            'span' => array(
-                'class' => array(),
-            ),
-            'a'    => array(
-                'href' => array(),
-            ),
-            'br'   => array(),
-            'p'    => array(),
-            'em'   => array(),
-            'b'    => array(),
-            'ol'   => array(),
-            'ul'   => array(),
-            'li'   => array(),
-            'h1'   => array(),
-            'h2'   => array(),
-            'h3'   => array(),
-            'h4'   => array(),
-            'h5'   => array(),
-            'h6'   => array(),
-        ) );
+        $content = wp_kses( $content, [
+            'div'  => [
+                'class' => [],
+            ],
+            'span' => [
+                'class' => [],
+            ],
+            'a'    => [
+                'href' => [],
+            ],
+            'br'   => [],
+            'p'    => [],
+            'em'   => [],
+            'b'    => [],
+            'ol'   => [],
+            'ul'   => [],
+            'li'   => [],
+            'h1'   => [],
+            'h2'   => [],
+            'h3'   => [],
+            'h4'   => [],
+            'h5'   => [],
+            'h6'   => [],
+        ] );
         return $content;
     }
 
@@ -1891,7 +1914,7 @@ class Helpers {
      * @return string
      */
     public static function removeGreekAccents( $text ) {
-        $chars = array(
+        $chars = [
             'Ά' => 'Α',
             'ά' => 'α',
             'Έ' => 'Ε',
@@ -1908,7 +1931,7 @@ class Helpers {
             'ό' => 'ο',
             'Ώ' => 'Ω',
             'ώ' => 'ω',
-        );
+        ];
         return strtr( $text, $chars );
     }
 
@@ -1920,7 +1943,7 @@ class Helpers {
      * @return bool
      */
     public static function phraseContainsBlacklistedTerm( $phrase ) {
-        $blacklistedTerms = apply_filters( 'dgwt/wcas/blacklisted_terms', array() );
+        $blacklistedTerms = apply_filters( 'dgwt/wcas/blacklisted_terms', [] );
         if ( is_array( $blacklistedTerms ) ) {
             foreach ( $blacklistedTerms as $term ) {
                 if ( mb_stripos( $phrase, $term ) !== false ) {
@@ -2040,6 +2063,7 @@ class Helpers {
         global $wpdb;
         $productsIds = [];
         $sql = $wpdb->prepare( "\nSELECT ID\nFROM   {$wpdb->posts}\nWHERE  ID IN\n       (\n              SELECT object_id\n              FROM {$wpdb->term_relationships}\n              WHERE term_taxonomy_id IN ( %d )\n       )\nAND    post_type = 'product'\nAND    post_status = 'publish'\n\t\t ", $termID );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $res = $wpdb->get_col( $sql );
         if ( !empty( $res ) ) {
             $productsIds = $res;
@@ -2074,7 +2098,6 @@ class Helpers {
      *
      * @return bool
      * @since 1.30.0
-     *
      */
     public static function canGroupSuggestions() : bool {
         return apply_filters( 'dgwt/wcas/grouped_autocomplete_suggestions', true );
@@ -2159,10 +2182,12 @@ class Helpers {
      * @return bool
      */
     public static function isFiboDebugEnabled( string $key ) : bool {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         if ( !isset( $_GET['fibodebug'] ) ) {
             return false;
         }
         $debugFlags = array_map( 'trim', explode( ',', $_GET['fibodebug'] ) );
+        //phpcs:enable
         return in_array( $key, $debugFlags, true );
     }
 
@@ -2175,6 +2200,7 @@ class Helpers {
         if ( !self::isFiboDebugEnabled( $key ) ) {
             return;
         }
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
         add_action( 'dgwt/wcas/form', function () {
             printf( '<input type="hidden" name="fibodebug" value="%s"/>', esc_attr( $_GET['fibodebug'] ) );
         } );
@@ -2182,6 +2208,7 @@ class Helpers {
             $params['fibodebug'] = $_GET['fibodebug'];
             return $params;
         } );
+        // phpcs:enable
     }
 
     /**

@@ -386,10 +386,10 @@ if ( ! class_exists( 'WooFunnels_Notifications' ) ) {
 
 			check_ajax_referer( 'bwf_notice_dismiss', '_nonce' );
 
-			if ( ( isset( $_POST['noticeGroup'] ) && $_POST['noticeGroup'] !== '' ) && ( isset( $_POST['noticekey'] ) && $_POST['noticekey'] !== '' ) ) {
+			if ( ( isset( $_POST['noticeGroup'] ) && $_POST['noticeGroup'] !== '' ) && ( isset( $_POST['noticekey'] ) && $_POST['noticekey'] !== '' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by AJAX system
 
-				$noticeGroup     = sanitize_text_field( $_POST['noticeGroup'] );
-				$noticekey       = str_replace( 'wf-', '', sanitize_text_field( $_POST['noticekey'] ) );
+				$noticeGroup     = sanitize_text_field( wp_unslash( $_POST['noticeGroup'] ) );
+				$noticekey       = str_replace( 'wf-', '', sanitize_text_field( wp_unslash( $_POST['noticekey'] ) ) );
 				$notices_display = get_option( 'wf_notification_list_' . $noticeGroup, [] );
 				$notice          = $this->get_notification( $noticekey, $noticeGroup );
 

@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Theme\Wordpress\MenuConfig;
 
 class LoadMenuData
@@ -17,9 +16,9 @@ class LoadMenuData
         $this->config = $config;
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->config->add('customizer', ['menu' => $this->menu->getArrayCopy()]);
-        $this->config->addFile('customizer', Path::get('../../config/customizer.json'));
+        $this->config->addFile('customizer', __DIR__ . '/../../config/customizer.php');
     }
 }

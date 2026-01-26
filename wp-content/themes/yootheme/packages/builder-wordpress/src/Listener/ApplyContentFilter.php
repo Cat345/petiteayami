@@ -7,7 +7,10 @@ use YOOtheme\Theme\Wordpress\FilterHelper;
 
 class ApplyContentFilter
 {
-    public static function handle($content, $parameters)
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public static function handle(string $content, array $parameters): string
     {
         $parameters += ['prefix' => ''];
 

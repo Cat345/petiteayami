@@ -10,12 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class ThemesCompatibility {
-	private $themeSlug = '';
-	private $themeName = '';
-	private $themeVersion = '';
+	private $themeSlug       = '';
+	private $themeName       = '';
+	private $themeVersion    = '';
 	private $parentThemeName = '';
-	private $theme = null;
-	private $supportActive = false;
+	private $theme           = null;
+	private $supportActive   = false;
 
 	public function __construct() {
 		// Break early if the "nofibosearch" mode is active.
@@ -38,7 +38,7 @@ class ThemesCompatibility {
 
 			$this->theme           = $theme;
 			$this->themeName       = $theme->name;
-			$this->themeVersion    = $theme->offsetGet('Version');
+			$this->themeVersion    = $theme->offsetGet( 'Version' );
 			$this->parentThemeName = ! empty( $theme->parent_theme ) ? $theme->parent_theme : '';
 
 			if ( $isChildTheme ) {
@@ -60,350 +60,350 @@ class ThemesCompatibility {
 	 * @return array
 	 */
 	public function supportedThemes() {
-		return array(
-			'storefront'       => array(
+		return [
+			'storefront'       => [
 				'slug' => 'storefront',
 				'name' => 'Storefront',
-			),
-			'flatsome'         => array(
+			],
+			'flatsome'         => [
 				'slug' => 'flatsome',
 				'name' => 'Flatsome',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 850,
 					'forceLayoutBreakpoint'        => 850,
-				),
-			),
-			'astra'            => array(
+				],
+			],
+			'astra'            => [
 				'slug' => 'astra',
 				'name' => 'Astra',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => true,
 					'forceLayoutBreakpoint'        => true,
-				),
-			),
-			'thegem'           => array(
+				],
+			],
+			'thegem'           => [
 				'slug' => 'thegem',
 				'name' => 'TheGem',
-			),
-			'impreza'          => array(
+			],
+			'impreza'          => [
 				'slug' => 'impreza',
 				'name' => 'Impreza',
-				'args' => array(
+				'args' => [
 					'alwaysEnabled' => true,
-				),
-			),
-			'woodmart'         => array(
+				],
+			],
+			'woodmart'         => [
 				'slug' => 'woodmart',
 				'name' => 'Woodmart',
-			),
-			'enfold'           => array(
+			],
+			'enfold'           => [
 				'slug' => 'enfold',
 				'name' => 'Enfold',
-			),
-			'shopkeeper'       => array(
+			],
+			'shopkeeper'       => [
 				'slug' => 'shopkeeper',
 				'name' => 'Shopkeeper',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 767,
 					'forceLayoutBreakpoint'        => 767,
-				),
-			),
-			'the7'             => array(
+				],
+			],
+			'the7'             => [
 				'slug' => 'the7',
 				'name' => 'The7',
-			),
-			'dt-the7'          => array(
+			],
+			'dt-the7'          => [
 				'slug' => 'dt-the7',
 				'name' => 'The7',
-			),
-			'avada'            => array(
+			],
+			'avada'            => [
 				'slug' => 'avada',
 				'name' => 'Avada',
-			),
-			'shop-isle'        => array(
+			],
+			'shop-isle'        => [
 				'slug' => 'shop-isle',
 				'name' => 'Shop Isle',
-			),
-			'shopical'         => array(
+			],
+			'shopical'         => [
 				'slug' => 'shopical',
 				'name' => 'Shopical',
-			),
-			'shopical-pro'     => array(
+			],
+			'shopical-pro'     => [
 				'slug' => 'shopical-pro',
 				'name' => 'ShopicalPro',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'shopical.php',
-				)
-			),
-			'ekommart'         => array(
+				],
+			],
+			'ekommart'         => [
 				'slug' => 'ekommart',
 				'name' => 'Ekommart',
-			),
-			'savoy'            => array(
+			],
+			'savoy'            => [
 				'slug' => 'savoy',
 				'name' => 'Savoy',
-			),
-			'sober'            => array(
+			],
+			'sober'            => [
 				'slug' => 'sober',
 				'name' => 'Sober',
-			),
-			'bridge'           => array(
+			],
+			'bridge'           => [
 				'slug' => 'bridge',
 				'name' => 'Bridge',
-			),
-			'divi'             => array(
+			],
+			'divi'             => [
 				'slug' => 'divi',
 				'name' => 'Divi',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 980,
 					'forceLayoutBreakpoint'        => 980,
-				),
-			),
-			'block-shop'       => array(
+				],
+			],
+			'block-shop'       => [
 				'slug' => 'block-shop',
 				'name' => 'BlockShop',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 1200,
 					'forceLayoutBreakpoint'        => 1200,
-				),
-			),
-			'dfd-ronneby'      => array(
+				],
+			],
+			'dfd-ronneby'      => [
 				'slug' => 'dfd-ronneby',
 				'name' => 'DFDRonneby',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 500,
 					'forceLayoutBreakpoint'        => 500,
-				),
-			),
-			'restoration'      => array(
+				],
+			],
+			'restoration'      => [
 				'slug' => 'restoration',
 				'name' => 'Restoration',
-			),
-			'salient'          => array(
+			],
+			'salient'          => [
 				'slug' => 'salient',
 				'name' => 'Salient',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 1000,
 					'forceLayoutBreakpoint'        => 1000,
-				),
-			),
-			'konte'            => array(
+				],
+			],
+			'konte'            => [
 				'slug' => 'konte',
 				'name' => 'Konte',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 1024,
 					'forceLayoutBreakpoint'        => 1024,
-				),
-			),
-			'rehub-theme'      => array(
+				],
+			],
+			'rehub-theme'      => [
 				'slug' => 'rehub-theme',
 				'name' => 'Rehub',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 1200,
 					'forceLayoutBreakpoint'        => 1200,
-				),
-			),
-			'supro'            => array(
+				],
+			],
+			'supro'            => [
 				'slug' => 'supro',
 				'name' => 'Supro',
-			),
-			'open-shop'        => array(
+			],
+			'open-shop'        => [
 				'slug' => 'open-shop',
 				'name' => 'OpenShop',
-			),
-			'ciyashop'         => array(
+			],
+			'ciyashop'         => [
 				'slug' => 'ciyashop',
 				'name' => 'CiyaShop',
-			),
-			'bigcart'          => array(
+			],
+			'bigcart'          => [
 				'slug' => 'bigcart',
 				'name' => 'BigCart',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 782,
 					'forceLayoutBreakpoint'        => 782,
-				),
-			),
-			'top-store-pro'    => array(
+				],
+			],
+			'top-store-pro'    => [
 				'slug' => 'top-store-pro',
 				'name' => 'TopStorePro',
-			),
-			'top-store'        => array(
+			],
+			'top-store'        => [
 				'slug' => 'top-store',
 				'name' => 'TopStore',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'top-store-pro.php',
-				)
-			),
-			'goya'             => array(
+				],
+			],
+			'goya'             => [
 				'slug' => 'goya',
 				'name' => 'Goya',
-			),
-			'electro'          => array(
+			],
+			'electro'          => [
 				'slug' => 'electro',
 				'name' => 'Electro',
-			),
-			'shopisle-pro'     => array(
+			],
+			'shopisle-pro'     => [
 				'slug' => 'shopisle-pro',
 				'name' => 'ShopIsle PRO',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'shop-isle.php',
-				)
-			),
-			'estore'           => array(
+				],
+			],
+			'estore'           => [
 				'slug' => 'estore',
 				'name' => 'eStore',
-			),
-			'estore-pro'       => array(
+			],
+			'estore-pro'       => [
 				'slug' => 'estore-pro',
 				'name' => 'eStore Pro',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'estore.php',
-				)
-			),
-			'generatepress'    => array(
+				],
+			],
+			'generatepress'    => [
 				'slug' => 'generatepress',
 				'name' => 'GeneratePress',
-			),
-			'open-shop-pro'    => array(
+			],
+			'open-shop-pro'    => [
 				'slug' => 'open-shop-pro',
 				'name' => 'Open Shop Pro',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'open-shop.php',
-				)
-			),
-			'uncode'           => array(
+				],
+			],
+			'uncode'           => [
 				'slug' => 'uncode',
 				'name' => 'Uncode',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlayBreakpoint' => 960,
 					'forceLayoutBreakpoint'        => 960,
-				),
-			),
-			'xstore'           => array(
+				],
+			],
+			'xstore'           => [
 				'slug' => 'xstore',
 				'name' => 'XStore',
-			),
-			'kadence'          => array(
+			],
+			'kadence'          => [
 				'slug' => 'kadence',
 				'name' => 'Kadence',
-			),
-			'thegem-elementor' => array(
+			],
+			'thegem-elementor' => [
 				'slug' => 'thegem-elementor',
 				'name' => 'TheGem (Elementor)',
-			),
-			'thegem-wpbakery'  => array(
+			],
+			'thegem-wpbakery'  => [
 				'slug' => 'thegem-wpbakery',
 				'name' => 'TheGem (WPBakery)',
-				'args' => array(
+				'args' => [
 					'partialFilename' => 'thegem-elementor.php',
-				)
-			),
-			'neve'             => array(
+				],
+			],
+			'neve'             => [
 				'slug' => 'neve',
 				'name' => 'Neve',
-			),
-			'woostify'         => array(
+			],
+			'woostify'         => [
 				'slug' => 'woostify',
 				'name' => 'Woostify',
-			),
-			'oceanwp'          => array(
+			],
+			'oceanwp'          => [
 				'slug' => 'oceanwp',
 				'name' => 'OceanWP',
-			),
-			'webshop'          => array(
+			],
+			'webshop'          => [
 				'slug' => 'webshop',
 				'name' => 'WebShop',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 767,
-				),
-			),
-			'essentials'       => array(
+				],
+			],
+			'essentials'       => [
 				'slug' => 'essentials',
 				'name' => 'Essentials',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 991,
-				)
-			),
-			'blocksy'          => array(
+				],
+			],
+			'blocksy'          => [
 				'slug' => 'blocksy',
 				'name' => 'Blocksy',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 689,
-				),
-			),
-			'qwery'            => array(
+				],
+			],
+			'qwery'            => [
 				'slug' => 'qwery',
 				'name' => 'Qwery',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 767,
-				),
-			),
-			'storebiz'         => array(
+				],
+			],
+			'storebiz'         => [
 				'slug' => 'storebiz',
 				'name' => 'StoreBiz',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 767,
-				),
-			),
-			'minimog'          => array(
+				],
+			],
+			'minimog'          => [
 				'slug' => 'minimog',
 				'name' => 'Minimog',
-			),
-			'total'            => array(
+			],
+			'total'            => [
 				'slug' => 'total',
 				'name' => 'Total',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 959,
-				),
-			),
-			'bricks'           => array(
+				],
+			],
+			'bricks'           => [
 				'slug' => 'bricks',
 				'name' => 'Bricks',
-				'args' => array(
+				'args' => [
 					'alwaysEnabled'  => true,
 					'minimumVersion' => '1.11.1',
-				),
-			),
-			'bacola'           => array(
+				],
+			],
+			'bacola'           => [
 				'slug' => 'bacola',
 				'name' => 'Bacola',
-				'args' => array(
-					'minimumVersion' => '1.5.1.6',
+				'args' => [
+					'minimumVersion'               => '1.5.1.6',
 					'forceMobileOverlayBreakpoint' => 768,
-				),
-			),
-			'betheme'          => array(
+				],
+			],
+			'betheme'          => [
 				'slug' => 'betheme',
 				'name' => 'Betheme',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 767,
-				),
-			),
-			'rey'              => array(
+				],
+			],
+			'rey'              => [
 				'slug' => 'rey',
 				'name' => 'Rey',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 1024,
 					'forceLayoutBreakpoint'        => 1024,
-				),
-			),
-			'cartzilla'        => array(
+				],
+			],
+			'cartzilla'        => [
 				'slug' => 'cartzilla',
 				'name' => 'Cartzilla',
-				'args' => array(
+				'args' => [
 					'forceMobileOverlay'           => true,
 					'forceMobileOverlayBreakpoint' => 991,
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	/**
@@ -417,13 +417,16 @@ class ThemesCompatibility {
 				if ( isset( $theme['args']['minimumVersion'] ) && version_compare( $this->themeVersion, $theme['args']['minimumVersion'], '<' ) ) {
 					$currentVersion = $this->themeVersion;
 					// Break if theme version is lower than required.
-					add_filter( 'dgwt/wcas/troubleshooting/unsupported_theme_version', function () use ( $theme, $currentVersion ) {
-						return [
-							'name'           => $theme['name'],
-							'currentVersion' => $currentVersion,
-							'minimumVersion' => $theme['args']['minimumVersion'],
-						];
-					} );
+					add_filter(
+						'dgwt/wcas/troubleshooting/unsupported_theme_version',
+						function () use ( $theme, $currentVersion ) {
+							return [
+								'name'           => $theme['name'],
+								'currentVersion' => $currentVersion,
+								'minimumVersion' => $theme['args']['minimumVersion'],
+							];
+						}
+					);
 					break;
 				}
 
@@ -437,7 +440,7 @@ class ThemesCompatibility {
 					$class .= $theme['name'] . '\\' . $theme['name'];
 				}
 
-				$args = isset( $theme['args'] ) && is_array( $theme['args'] ) ? $theme['args'] : array();
+				$args = isset( $theme['args'] ) && is_array( $theme['args'] ) ? $theme['args'] : [];
 
 				if ( $this->isWhiteLabel() ) {
 					$args['whiteLabel'] = true;
@@ -518,13 +521,12 @@ class ThemesCompatibility {
 
 		if ( ! empty( $this->theme ) ) {
 
-			foreach ( array( 'png', 'jpg' ) as $ext ) {
+			foreach ( [ 'png', 'jpg' ] as $ext ) {
 				if ( empty( $src ) && file_exists( $this->theme->get_template_directory() . '/screenshot.' . $ext ) ) {
 					$src = $this->theme->get_template_directory_uri() . '/screenshot.' . $ext;
 					break;
 				}
 			}
-
 		}
 
 		return ! empty( $src ) ? esc_url( $src ) : '';

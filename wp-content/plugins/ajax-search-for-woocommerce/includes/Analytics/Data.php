@@ -17,30 +17,35 @@ class Data {
 
 	/**
 	 * Date start in format Y-m-d H:i:s
+	 *
 	 * @var string
 	 */
 	private $dateFrom;
 
 	/**
 	 * Date end in format Y-m-d H:i:s
+	 *
 	 * @var string
 	 */
 	private $dateTo;
 
 	/**
 	 * Available values: 'autocomplete', 'search-results-page'
+	 *
 	 * @var string
 	 */
 	private $context;
 
 	/**
 	 * Language
+	 *
 	 * @var string
 	 */
 	private $lang = '';
 
 	/**
 	 * Minimum number of phrase repetitions which must occur to be recognized as critical
+	 *
 	 * @var int
 	 */
 	private $minCriticalRep = 3;
@@ -49,13 +54,13 @@ class Data {
 	 * Percentage limit of searches returning results.
 	 * Above this limit searches will be marked as satisfying
 	 * Below this limit searches will be marked as not satisfying
+	 *
 	 * @var int
 	 */
 	private $searchesReturningResutlsGoodPercent = 70;
 
 	/**
 	 * Constructor
-	 *
 	 */
 	public function __construct() {
 		$this->setDefaultDateRange();
@@ -130,7 +135,7 @@ class Data {
 	 * @return void
 	 */
 	public function setContext( $context ) {
-		if ( ! in_array( $context, array( 'autocomplete', 'search-results-page' ) ) ) {
+		if ( ! in_array( $context, [ 'autocomplete', 'search-results-page' ] ) ) {
 			$context = 'autocomplete';
 		}
 
@@ -178,31 +183,36 @@ class Data {
 
 		// Context
 		if ( $this->context === 'autocomplete' ) {
-			$where .= " AND autocomplete = 1";
+			$where .= ' AND autocomplete = 1';
 		} else {
-			$where .= " AND autocomplete = 0";
+			$where .= ' AND autocomplete = 0';
 		}
 
-		//With results or with no results
+		// With results or with no results
 		if ( $hasResults ) {
-			$where .= " AND hits > 0";
+			$where .= ' AND hits > 0';
 		} else {
-			$where .= " AND hits = 0";
+			$where .= ' AND hits = 0';
 		}
 
 		// Language
 		$where .= $this->getLanguageSql();
-
-		$sql = $wpdb->prepare( "SELECT $select
+		//phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+		$sql = $wpdb->prepare(
+			"SELECT $select
                                      FROM $wpdb->dgwt_wcas_stats
                                      WHERE 1=1
                                      $where
-                                     AND created_at > %s AND created_at < %s", $this->dateFrom, $this->dateTo );
+                                     AND created_at > %s AND created_at < %s",
+			$this->dateFrom,
+			$this->dateTo
+		);
 
 		$res = $wpdb->get_var( $sql );
 		if ( ! empty( $res ) && is_numeric( $res ) ) {
 			$total = absint( $res );
 		}
+		//phpcs:enable
 
 		return $total;
 	}
@@ -225,9 +235,9 @@ class Data {
 			}
 
 			if ( Multilingual::getDefaultLanguage() === $lang ) {
-				$where .= $wpdb->prepare( " AND (lang = %s OR lang IS NULL)", $lang );
+				$where .= $wpdb->prepare( ' AND (lang = %s OR lang IS NULL)', $lang );
 			} else {
-				$where .= $wpdb->prepare( " AND lang = %s", $lang );
+				$where .= $wpdb->prepare( ' AND lang = %s', $lang );
 			}
 		}
 
@@ -247,8 +257,10 @@ class Data {
 
 		// Language
 		$where .= $this->getLanguageSql();
+		//phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
-		$sql = $wpdb->prepare( "SELECT COUNT(*) AS total FROM (
+		$sql = $wpdb->prepare(
+			"SELECT COUNT(*) AS total FROM (
                                      SELECT phrase, COUNT(id) AS qty
                                      FROM $wpdb->dgwt_wcas_stats
                                      WHERE 1=1
@@ -258,9 +270,14 @@ class Data {
                                      AND hits = 0
                                      $where
                                      GROUP BY phrase
-                                     HAVING qty >= %d) AS total", $this->dateFrom, $this->dateTo, $this->minCriticalRep );
+                                     HAVING qty >= %d) AS total",
+			$this->dateFrom,
+			$this->dateTo,
+			$this->minCriticalRep
+		);
 
 		$res = $wpdb->get_var( $sql );
+		//phpcs:enable
 		if ( ! empty( $res ) && is_numeric( $res ) ) {
 			$total = absint( $res );
 		}
@@ -278,13 +295,14 @@ class Data {
 	 */
 	public function getCriticalSearches( $limit = 10, $offset = 0 ) {
 		global $wpdb;
-		$phrases = array();
+		$phrases = [];
 		$where   = '';
 
 		// Language
 		$where .= $this->getLanguageSql();
-
-		$sql = $wpdb->prepare( "SELECT phrase, COUNT(id) AS qty
+		//phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+		$sql = $wpdb->prepare(
+			"SELECT phrase, COUNT(id) AS qty
                                      FROM $wpdb->dgwt_wcas_stats
                                      WHERE hits = 0
                                      AND created_at > %s AND created_at < %s
@@ -293,9 +311,16 @@ class Data {
                                      $where
                                      GROUP BY phrase
                                      HAVING qty >= %d
-                                     ORDER BY qty DESC, phrase ASC LIMIT %d,%d", $this->dateFrom, $this->dateTo, $this->minCriticalRep, $offset, $limit );
+                                     ORDER BY qty DESC, phrase ASC LIMIT %d,%d",
+			$this->dateFrom,
+			$this->dateTo,
+			$this->minCriticalRep,
+			$offset,
+			$limit
+		);
 
 		$res = $wpdb->get_results( $sql, ARRAY_A );
+		//phpcs:enable
 		if ( ! empty( $res ) && is_array( $res ) ) {
 			$phrases = $res;
 
@@ -306,7 +331,6 @@ class Data {
 
 		return $phrases;
 	}
-
 
 	/**
 	 *
@@ -325,46 +349,53 @@ class Data {
 	public function getPhrases( $dateFrom, $dateTo, $context, $hasResults, $solved = null, $limit = 10, $offset = 0 ) {
 		global $wpdb;
 
-		$output = array();
+		$output = [];
 		$where  = '';
 
 		// Context
 		if ( $context === 'autocomplete' ) {
-			$where .= " AND autocomplete = 1";
+			$where .= ' AND autocomplete = 1';
 		} else {
-			$where .= " AND autocomplete = 0";
+			$where .= ' AND autocomplete = 0';
 		}
 
-		//With results or with no results
+		// With results or with no results
 		if ( $hasResults ) {
-			$where .= " AND hits > 0";
+			$where .= ' AND hits > 0';
 		} else {
-			$where .= " AND hits = 0";
+			$where .= ' AND hits = 0';
 		}
 
 		if ( is_bool( $solved ) ) {
 			if ( $solved ) {
-				$where .= " AND solved = 1";
+				$where .= ' AND solved = 1';
 			} else {
-				$where .= " AND solved = 0";
+				$where .= ' AND solved = 0';
 			}
 		}
 
 		// Language
 		$where .= $this->getLanguageSql();
-
-		$sql = $wpdb->prepare( "SELECT phrase, COUNT(id) AS qty
+		//phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+		$sql = $wpdb->prepare(
+			"SELECT phrase, COUNT(id) AS qty
                                      FROM $wpdb->dgwt_wcas_stats
                                      WHERE 1=1
                                      AND created_at > %s AND created_at < %s
                                      $where
                                      GROUP BY phrase
-                                     ORDER BY qty DESC, phrase ASC LIMIT %d,%d", $dateFrom, $dateTo, $offset, $limit );
+                                     ORDER BY qty DESC, phrase ASC LIMIT %d,%d",
+			$dateFrom,
+			$dateTo,
+			$offset,
+			$limit
+		);
 
 		$res = $wpdb->get_results( $sql, ARRAY_A );
 		if ( ! empty( $res ) && is_array( $res ) ) {
 			$output = $res;
 		}
+		//phpcs:enable
 
 		return $output;
 	}
@@ -374,19 +405,19 @@ class Data {
 	 *
 	 * @return bool
 	 */
-	function markAsSolved( $phrase ) {
+	public function markAsSolved( $phrase ) {
 		global $wpdb;
 		$success = false;
 
-		$data = array(
-			'solved' => 1
-		);
+		$data = [
+			'solved' => 1,
+		];
 
-		$where = array(
-			'phrase' => $phrase
-		);
+		$where = [
+			'phrase' => $phrase,
+		];
 
-		$format = array( '%s' );
+		$format = [ '%s' ];
 
 		if ( ! empty( $this->lang ) ) {
 			$where['lang'] = $this->lang;
@@ -405,7 +436,7 @@ class Data {
 	 *
 	 * @return bool
 	 */
-	function validateDate( $date, $format = 'Y-m-d H:i:s' ) {
+	public function validateDate( $date, $format = 'Y-m-d H:i:s' ) {
 		$d = \DateTime::createFromFormat( $format, $date );
 
 		return $d && $d->format( $format ) === $date;
@@ -418,7 +449,7 @@ class Data {
 	 *
 	 * @return bool
 	 */
-	function isSearchesReturningResutlsSatisfying( $percentage ) {
+	public function isSearchesReturningResutlsSatisfying( $percentage ) {
 		return $percentage >= $this->searchesReturningResutlsGoodPercent;
 	}
 }

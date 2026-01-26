@@ -2,7 +2,6 @@
 
 // Initialize prop if not set
 $props += [
-    'media_overlay_gradient' => null,
     'background_parallax_background' => null,
 ];
 
@@ -12,7 +11,7 @@ if (!($props['image'] || $props['video'])) {
     $props['media_overlay_gradient'] = false;
 }
 if (!($props['height'] == 'viewport' && $props['height_viewport'] <= 100 || $props['height'] == 'section')) {
-    $props['height_offset_top'] = false;
+    $props['height_viewport_offset'] = false;
 }
 if (!$props['height']) {
     $props['vertical_align'] = false;
@@ -27,17 +26,19 @@ $el->attr([
     'class' => [
         'uk-section-{style}',
         'uk-section-overlap {@overlap}',
+        'uk-margin-remove {@html_element: address}',
+        'uk-overflow-hidden {@overlap}' => $props['image'] || $props['video'],
         'uk-position-z-index-negative {@sticky}',
         'uk-preserve-color {@style}' => $props['preserve_color'] || ($props['text_color'] && ($props['image'] || $props['video'])),
         'uk-{text_color}' => !$props['style'] || $props['image'] || $props['video'],
         'uk-inverse-{header_transparent_text_color}' => $props['header_transparent'] && ($props['text_color'] != $props['header_transparent_text_color'] || !($props['style'] || $props['image'] || $props['video'])),
-        'uk-position-relative {@!sticky}' => ($props['image'] && ($props['media_overlay'] || $props['media_overlay_gradient'])) || ($props['video'] && !$this->iframeVideo($props['video'])), // uk-sticky already sets a position context
-        'uk-cover-container {@video}' => $this->iframeVideo($props['video']),
+        'uk-position-relative {@!sticky}' => ($props['image'] && ($props['media_overlay'] || $props['media_overlay_gradient'])) || $props['video'], // uk-sticky already sets a position context
     ],
 
     'style' => [
         'background-color: {media_background}; {@video}',
-        'background-color: {background_color}; {@!media_background} {@!video} {@!style}'
+        'background-color: {background_color}; {@!media_background} {@!video} {@!style}',
+        'background-image: {background_color_gradient}; {@!media_background} {@!video} {@!style}',
     ],
 
     'tm-header-transparent-noplaceholder' => $props['header_transparent_noplaceholder'],
@@ -70,31 +71,54 @@ if ($props['animation']) {
 $attrs_section = [
     'class' => [
         'uk-section',
-        'uk-section-{!padding: |none}' ,
-        'uk-padding-remove-vertical {@padding: none}',
-        'uk-padding-remove-top {@!padding: none} {@padding_remove_top}',
-        'uk-padding-remove-bottom {@!padding: none} {@padding_remove_bottom}',
         'uk-flex [uk-flex-{vertical_align} {@!title}] {@vertical_align}',
 
         // Height Viewport
-        'uk-height-viewport {@height: viewport} {@!height_offset_top} {@height_viewport: |100}',
-        'uk-height-viewport-{0} {@height: viewport} {@!height_offset_top} {@height_viewport: 200|300|400}' => (int) $props['height_viewport'] / 100,
+        'uk-height-viewport {@height: viewport} {@!height_viewport_offset} {@height_viewport: |100}',
+        'uk-height-viewport-{0} {@height: viewport} {@!height_viewport_offset} {@height_viewport: 200|300|400}' => (int) $props['height_viewport'] / 100,
     ],
 
     'style' => [
         // Height Viewport
-        'min-height: {!height_viewport: |100|200|300|400}vh {@height: viewport} {@!height_offset_top}',
+        'min-height: {!height_viewport: |100|200|300|400}vh {@height: viewport} {@!height_viewport_offset}',
         'min-height: {0}px {@height: pixels}' => $props['height_viewport'] ?: 100,
     ],
 
     // Height Viewport
-    'uk-height-viewport' => $props['height'] !== 'pixels' ? [
-        'offset-top: true; {@height: viewport|section} {@height_offset_top}',
-        'offset-bottom: {0}; {@height: viewport} {@height_offset_top}' => $props['height_viewport'] && $props['height_viewport'] < 100 ? 100 - (int) $props['height_viewport'] : false,
+    'uk-height-viewport' => $props['height'] && $props['height'] !== 'pixels' ? [
+        'offset-top: true; {@height: viewport|section} {@height_viewport_offset}',
+        'offset-bottom: {0}; {@height: viewport} {@height_viewport_offset}' => $props['height_viewport'] && $props['height_viewport'] < 100 ? 100 - (int) $props['height_viewport'] : false,
         'offset-bottom: {0}; {@height: section}' => $props['image'] ? '! +' : 'true',
         'expand: true; {@height: page}',
-    ] : false,
+    ] : ($attrs['uk-height-viewport'] ?? false), // Allow to set uk-height-viewport in attributes
 ];
+
+if ($props['padding_top'] == $props['padding_bottom']) {
+
+    $attrs_section['class'] = array_merge(
+        $attrs_section['class'],
+        [
+            'uk-section-{!padding_top: |none}',
+            'uk-padding-remove-vertical {@padding_top: none}',
+        ]
+    );
+
+} else {
+
+    $attrs_section['class'] = array_merge(
+        $attrs_section['class'],
+        [
+        'uk-section-{!padding_top: |none}-top',
+        'uk-section-medium-top {@padding_top: }',
+        'uk-padding-remove-top {@padding_top: none}',
+
+        'uk-section-{!padding_bottom: |none}-bottom',
+        'uk-section-medium-bottom {@padding_bottom: }',
+        'uk-padding-remove-bottom {@padding_bottom: none}',
+        ]
+    );
+
+}
 
 // Image
 $image = $props['image'] ? $this->el('div', $this->bgImage($props['image'], [

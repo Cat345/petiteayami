@@ -2,25 +2,51 @@
 
 namespace YOOtheme;
 
-use YOOtheme\Image\ExifLoader;
+use YOOtheme\Image\Listener;
 
 return [
     'routes' => [
-        ['get', '/image', ImageController::class . '@get', ['allowed' => true, 'save' => true]],
+        [
+            ['get', 'head'],
+            '/cache/{file:.+}',
+            ImageController::class . '@get',
+            ['allowed' => true, 'save' => true],
+        ],
     ],
 
-    'aliases' => [
-        ImageProvider::class => 'image',
-    ],
+    'events' => [
+        'image.create' => [
+            Listener\LoadExifData::class => 'handle',
+            Listener\CreateImageQuery::class => 'handle',
+            Listener\CreateImageSvg::class => 'handle',
+            Listener\CreateImageGif::class => 'handle',
+            Listener\CreateImageStockPhoto::class => 'handle',
+            Listener\CreateImageYouTube::class => 'handle',
+        ],
 
-    'services' => [
-        ImageProvider::class => function (Config $config) {
-            $provider = new ImageProvider($config('image.cacheDir'), [
-                'route' => 'image',
-                'secret' => $config('app.secret'),
-            ]);
+        'html.image' => [
+            Listener\ParseFocalPoint::class => ['handle', 30],
+            Listener\LoadImageElement::class => ['handle', 25],
+            Listener\LoadImageSize::class => ['handle', 20],
+            Listener\LoadImageCover::class => ['handle', 15],
+            Listener\LoadThumbnail::class => ['handle', 10],
+            Listener\LoadSourceSet::class => ['handle', 5],
+            Listener\LoadImageStyle::class => 'handle',
+            Listener\LoadImageGif::class => 'handle',
+            Listener\LoadImageSvg::class => 'handle',
+            Listener\LoadImageLazy::class => 'handle',
+        ],
 
-            return $provider->addLoader(new ExifLoader());
-        },
+        'html.bgImage' => [
+            Listener\ParseFocalPoint::class => ['handle', 30],
+            Listener\LoadBackgroundImageElement::class => ['handle', 25],
+            Listener\LoadImageSize::class => ['handle', 20],
+            Listener\LoadThumbnail::class => ['handle', 15],
+            Listener\LoadBackgroundImageCover::class => ['handle', 10],
+            Listener\LoadSourceSet::class => ['handle', 5],
+            Listener\LoadBackgroundImageStyle::class => 'handle',
+        ],
+
+        'url.resolve' => [Listener\LoadImageUrl::class => 'resolve'],
     ],
 ];

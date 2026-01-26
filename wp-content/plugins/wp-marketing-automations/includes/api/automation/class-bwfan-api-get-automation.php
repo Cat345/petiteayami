@@ -1,10 +1,20 @@
 <?php
 
+/**
+ * Bwfan Api Get Automation
+ *
+ * @since 1.0.0
+ */
 class BWFAN_API_Get_Automation extends BWFAN_API_Base {
 
 	public static $ins;
 	private $aid = 0;
 
+	/**
+	 *   Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->method       = WP_REST_Server::READABLE;
@@ -26,6 +36,11 @@ class BWFAN_API_Get_Automation extends BWFAN_API_Base {
 		return self::$ins;
 	}
 
+	/**
+	 * Process Api Call
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_api_call() {
 		$automation_id = $this->get_sanitized_arg( 'automation_id' );
 		if ( empty( $automation_id ) ) {
@@ -37,7 +52,7 @@ class BWFAN_API_Get_Automation extends BWFAN_API_Base {
 
 		/** Check for automation exists */
 		if ( ! empty( $automation_obj->error ) ) {
-			return $this->error_response( [], $automation_obj->error );
+			return $this->error_response( $automation_obj->error, null, 400 );
 		}
 		$this->aid = $automation_id;
 

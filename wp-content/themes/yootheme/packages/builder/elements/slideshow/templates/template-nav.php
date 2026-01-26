@@ -4,7 +4,7 @@ $nav = $this->el('ul', [
 
     'class' => [
         'el-nav uk-slideshow-nav',
-        'uk-{nav} [uk-flex-nowrap {@nav: thumbnav} {@thumbnav_nowrap}]',
+        'uk-{nav} [uk-flex-nowrap {@nav: thumbnav} {@thumbnav_shrink}]',
 
         // Alignment
         'uk-flex-{nav_align} {@nav_below}',
@@ -17,7 +17,7 @@ $nav = $this->el('ul', [
         'uk-flex-center {@!nav_vertical} {@!nav_below} {@nav_position: bottom-center}',
     ],
 
-    'uk-margin' => !$props['nav_vertical'] && ($props['nav'] !== 'thumbnav' || !$props['thumbnav_nowrap']),
+    'uk-margin' => !$props['nav_vertical'] && ($props['nav'] !== 'thumbnav' || !$props['thumbnav_shrink']),
 ]);
 
 $nav_container = $this->el('div', [

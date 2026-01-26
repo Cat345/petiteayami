@@ -93,7 +93,7 @@ abstract class Xoo_Wl_Email{
 			}
 		}
 		else{
-			return new WP_Error( 'row-not-found', __( 'No row found', 'waitlist-woocommerce' ) );
+			return new WP_Error( 'row-not-found', 'No row found', 'waitlist-woocommerce' );
 		}
 
 	}
@@ -195,7 +195,6 @@ abstract class Xoo_Wl_Email{
 		if( defined('TRP_PLUGIN_VERSION') ){
 			trp_restore_language();
 		}
-
 
 		do_action( 'xoo_wl_email_'.$this->id.'_sent', $return, $this );
 

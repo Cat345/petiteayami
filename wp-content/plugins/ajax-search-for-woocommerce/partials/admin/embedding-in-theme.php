@@ -7,11 +7,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-if ( DGWT_WCAS()->themeCompatibility->isCurrentThemeSupported() ):
+if ( DGWT_WCAS()->themeCompatibility->isCurrentThemeSupported() ) :
 
-	if ( ! DGWT_WCAS()->themeCompatibility->isWhiteLabel() ):
+	if ( ! DGWT_WCAS()->themeCompatibility->isWhiteLabel() ) :
 
-		$name = DGWT_WCAS()->themeCompatibility->getThemeName();
+		$name        = DGWT_WCAS()->themeCompatibility->getThemeName();
 		$parentLabel = '';
 
 		if ( DGWT_WCAS()->themeCompatibility->isChildTheme() ) {
@@ -19,7 +19,7 @@ if ( DGWT_WCAS()->themeCompatibility->isCurrentThemeSupported() ):
 		}
 
 		?>
-		<h2><?php printf( __( 'You are using the <b>%s</b> theme%s. Fantastic!', 'ajax-search-for-woocommerce' ), $name, $parentLabel ); ?></h2>
+		<h2><?php printf( __( 'You are using the <b>%1$s</b> theme%2$s. Fantastic!', 'ajax-search-for-woocommerce' ), $name, $parentLabel ); ?></h2>
 		<p><?php _e( 'We support this theme so you can easily replace all default search bars.', 'ajax-search-for-woocommerce' ); ?></p>
 	<?php endif; ?>
 <?php endif; ?>

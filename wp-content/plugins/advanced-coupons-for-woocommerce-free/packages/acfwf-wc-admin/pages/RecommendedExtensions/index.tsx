@@ -4,6 +4,7 @@
 import {Card, CardHeader, CardBody} from "@wordpress/components"; 
 
 import {sharedProps, recommendExtensions} from "../../externals/acfw-wc-admin";
+import { sanitizeHtml } from "../../../shared/utils";
 import "./index.scss";
 
 // #endregion [Imports]
@@ -28,9 +29,9 @@ const RecommendedExtensions = () => {
           <h2 className="title">{title}</h2>
         </CardHeader>
         <CardBody>
-          <p className="description" dangerouslySetInnerHTML={{__html: description}} />
+          <p className="description" dangerouslySetInnerHTML={{__html: sanitizeHtml(description)}} />
           <a className="upgrade-btn" href={premiumLink}>{upgradePremium}</a>
-          <span className="sub-label" dangerouslySetInnerHTML={{__html: bonusText}} />
+          <span className="sub-label" dangerouslySetInnerHTML={{__html: sanitizeHtml(bonusText)}} />
         </CardBody>
       </Card>
     </div>

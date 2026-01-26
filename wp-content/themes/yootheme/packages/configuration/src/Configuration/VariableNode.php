@@ -4,17 +4,9 @@ namespace YOOtheme\Configuration;
 
 class VariableNode extends Node
 {
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
-    /**
-     * Constructor.
-     *
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -32,7 +24,7 @@ class VariableNode extends Node
     /**
      * @inheritdoc
      */
-    public function compile(array $params)
+    public function compile(array $params): string
     {
         $arguments = $this->compileArgs([$this->name], $params);
 

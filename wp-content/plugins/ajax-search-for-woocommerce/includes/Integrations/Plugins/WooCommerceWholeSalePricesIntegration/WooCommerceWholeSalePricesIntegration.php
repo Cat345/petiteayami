@@ -23,9 +23,9 @@ class WooCommerceWholeSalePricesIntegration extends AbstractPluginIntegration {
     protected const VERSION_CONST = 'WooCommerceWholeSalePricesPremium::VERSION';
 
     public function init() : void {
-        add_filter( 'dgwt/wcas/search_query/args', array($this, 'filterSearchQueryArgs') );
-        add_filter( 'dgwt/wcas/search/product_cat/args', array($this, 'filterProductCatArgs') );
-        add_filter( 'dgwt/wcas/troubleshooting/renamed_plugins', array($this, 'getFolderRenameInfo') );
+        add_filter( 'dgwt/wcas/search_query/args', [$this, 'filterSearchQueryArgs'] );
+        add_filter( 'dgwt/wcas/search/product_cat/args', [$this, 'filterProductCatArgs'] );
+        add_filter( 'dgwt/wcas/troubleshooting/renamed_plugins', [$this, 'getFolderRenameInfo'] );
     }
 
     /**
@@ -55,12 +55,12 @@ class WooCommerceWholeSalePricesIntegration extends AbstractPluginIntegration {
         if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' ) ) {
             return $args;
         }
-        $postsArgs = array(
-            'tax_query' => array(),
-        );
+        $postsArgs = [
+            'tax_query' => [],
+        ];
         $postsArgs = $wc_wholesale_prices_premium->wwpp_query->pre_get_posts_arg( $postsArgs );
         if ( !isset( $args['exclude'] ) ) {
-            $args['exclude'] = array();
+            $args['exclude'] = [];
         }
         $args['exclude'] = array_merge( $args['exclude'], $this->getExcludedCategoryIds( $postsArgs ) );
         return $args;
@@ -83,7 +83,7 @@ class WooCommerceWholeSalePricesIntegration extends AbstractPluginIntegration {
     }
 
     private function getExcludedCategoryIds( $postsArgs ) {
-        $categoryIds = array();
+        $categoryIds = [];
         if ( !empty( $postsArgs['tax_query'] ) ) {
             foreach ( $postsArgs['tax_query'] as $taxQuery ) {
                 if ( isset( $taxQuery['taxonomy'] ) && $taxQuery['taxonomy'] === 'product_cat' && isset( $taxQuery['operator'] ) && $taxQuery['operator'] === 'NOT IN' ) {

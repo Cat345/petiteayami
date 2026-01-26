@@ -2,17 +2,20 @@
 
 namespace YOOtheme\Theme;
 
+use YOOtheme\Config;
 use YOOtheme\Path;
 use function YOOtheme\trans;
 
 abstract class SystemCheck
 {
+    protected Config $config;
+
     /**
      * Gets the requirements.
      *
-     * @return array
+     * @return list<string>
      */
-    public function getRequirements()
+    public function getRequirements(): array
     {
         $res = [];
 
@@ -45,9 +48,9 @@ abstract class SystemCheck
     /**
      * Gets the recommendations.
      *
-     * @return array
+     * @return list<string>
      */
-    public function getRecommendations()
+    public function getRecommendations(): array
     {
         $res = [];
 
@@ -72,28 +75,42 @@ abstract class SystemCheck
 
         if (!is_writable(Path::get('~theme/cache'))) {
             $res[] = trans(
-                'Images can\'t be cached. <a href="https://yootheme.com/support/yootheme-pro/joomla/file-permission-issues" target="_blank">Change the permissions</a> of the <code>cache</code> folder in the <code>yootheme</code> theme directory, so that the web server can write into it.',
+                'Cache files can\'t be written. <a href="https://yootheme.com/support/yootheme-pro/joomla/file-permission-issues" target="_blank">Change the permissions</a> of the <code>%cache%</code> folder, so that the web server can write into it.',
+                ['%cache%' => Path::get('~theme/cache')],
             );
         }
 
-        $post_max_size = $this->parseSize(ini_get('post_max_size'));
+        if (!is_writable($this->config->get('image.cacheDir'))) {
+            $res[] = trans(
+                'Images can\'t be cached. <a href="https://yootheme.com/support/yootheme-pro/joomla/file-permission-issues" target="_blank">Change the permissions</a> of the <code>%cache%</code> folder, so that the web server can write into it.',
+                ['%cache%' => $this->config->get('image.cacheDir')],
+            );
+        }
+
+        $post_max_size = $this->parseSize((string) ini_get('post_max_size'));
         if ($post_max_size < $this->parseSize('8M')) {
             $res[] = trans(
                 'A higher upload limit is recommended. Set the <code>post_max_size</code> to 8M in the <a href="https://php.net/manual/en/ini.core.php" target="_blank">PHP configuration</a>.',
             );
         }
 
-        $upload_max_filesize = $this->parseSize(ini_get('upload_max_filesize'));
+        $upload_max_filesize = $this->parseSize((string) ini_get('upload_max_filesize'));
         if ($upload_max_filesize < $this->parseSize('8M')) {
             $res[] = trans(
                 'A higher upload limit is recommended. Set the <code>upload_max_filesize</code> to 8M in the <a href="https://php.net/manual/en/ini.core.php" target="_blank">PHP configuration</a>.',
             );
         }
 
-        $memory_limit = $this->parseSize(ini_get('memory_limit'));
+        $memory_limit = $this->parseSize((string) ini_get('memory_limit'));
         if ($memory_limit > 0 && $memory_limit < $this->parseSize('128M')) {
             $res[] = trans(
                 'A higher memory limit is recommended. Set the <code>memory_limit</code> to 128M in the <a href="https://php.net/manual/en/ini.core.php" target="_blank">PHP configuration</a>.',
+            );
+        }
+
+        if (!ini_get('allow_url_fopen')) {
+            $res[] = trans(
+                'YouTube poster images can not be fetched and stored locally. Set the <code>allow_url_fopen</code> directive to true in the <a href="https://php.net/manual/en/ini.core.php" target="_blank">PHP configuration</a>.',
             );
         }
 
@@ -109,11 +126,7 @@ abstract class SystemCheck
         return $res;
     }
 
-    /**
-     * @param  string $size
-     * @return float
-     */
-    protected function parseSize($size)
+    protected function parseSize(string $size): float
     {
         $unit = preg_replace('/[^bkmgtpezy]/i', '', $size);
         $size = (float) preg_replace('/[^0-9.\-]/', '', $size);
@@ -124,5 +137,5 @@ abstract class SystemCheck
         return round($size);
     }
 
-    abstract protected function hasApiKey();
+    abstract protected function hasApiKey(): bool;
 }

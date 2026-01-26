@@ -2,18 +2,27 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Post;
+use WP_Query;
+use WP_Taxonomy;
+use WP_Term;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ * @phpstan-import-type FieldConfig from Source
+ */
 class TaxonomyArchiveQueryType
 {
     /**
-     * @param \WP_Taxonomy $taxonomy
+     * @param WP_Taxonomy $taxonomy
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Taxonomy $taxonomy)
+    public static function config(WP_Taxonomy $taxonomy): array
     {
         $name = Str::camelCase($taxonomy->name, true);
         $field = Str::camelCase(['taxonomy', $taxonomy->name]);
@@ -41,7 +50,11 @@ class TaxonomyArchiveQueryType
         ];
     }
 
-    public static function configPostTypes($taxonomy, $metadata)
+    /**
+     * @param array<string, mixed> $metadata
+     * @return array<string, FieldConfig>
+     */
+    public static function configPostTypes(WP_Taxonomy $taxonomy, array $metadata): array
     {
         $fields = [];
         foreach (Helper::getTaxonomyPostTypes($taxonomy) as $name => $type) {
@@ -140,12 +153,21 @@ class TaxonomyArchiveQueryType
         return $fields;
     }
 
+    /**
+     * @return ?WP_Term
+     */
     public static function resolve()
     {
         return get_queried_object();
     }
 
-    public static function resolvePosts($root, array $args)
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     *
+     * @return array<WP_Post>
+     */
+    public static function resolvePosts($root, array $args): array
     {
         global $wp_query;
 
@@ -165,8 +187,13 @@ class TaxonomyArchiveQueryType
         return $wp_query->posts;
     }
 
-    public static function resolvePostsSingle($root, array $args)
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     */
+    public static function resolvePostsSingle($root, array $args): ?WP_Post
     {
+        /** @var WP_Query $wp_query */
         global $wp_query;
 
         return $wp_query->posts[$args['offset'] ?? 0] ?? null;

@@ -4,10 +4,13 @@ namespace YOOtheme\Builder\Wordpress\Acf\Type;
 
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class ChoiceFieldStringType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
     public static function config()
     {
@@ -49,7 +52,12 @@ class ChoiceFieldStringType
         ];
     }
 
-    public static function resolve($item, $args, $context, $info)
+    /**
+     * @param array<\stdClass> $item
+     * @param array<string>    $args
+     * @param mixed            $context
+     */
+    public static function resolve($item, $args, $context, object $info): string
     {
         $args += ['separator' => ', '];
 

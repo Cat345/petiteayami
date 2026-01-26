@@ -7,7 +7,7 @@ abstract class Node
     /**
      * Resolves node to their values.
      *
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return mixed
      */
@@ -16,21 +16,19 @@ abstract class Node
     /**
      * Compiles node as parsable string.
      *
-     * @param array $params
-     *
-     * @return string
+     * @param array<string, mixed> $params
      */
-    abstract public function compile(array $params);
+    abstract public function compile(array $params): string;
 
     /**
      * Resolves arguments to their values.
      *
-     * @param array $arguments
-     * @param array $params
+     * @param list<mixed> $arguments
+     * @param array<string, mixed> $params
      *
-     * @return array
+     * @return list<mixed>
      */
-    public function resolveArgs(array $arguments, array $params = [])
+    public function resolveArgs(array $arguments, array $params = []): array
     {
         $args = [];
 
@@ -44,12 +42,10 @@ abstract class Node
     /**
      * Compiles arguments as parsable string.
      *
-     * @param array $arguments
-     * @param array $params
-     *
-     * @return string
+     * @param list<mixed> $arguments
+     * @param array<string, mixed> $params
      */
-    public function compileArgs(array $arguments, array $params = [])
+    public function compileArgs(array $arguments, array $params = []): string
     {
         $args = [];
 

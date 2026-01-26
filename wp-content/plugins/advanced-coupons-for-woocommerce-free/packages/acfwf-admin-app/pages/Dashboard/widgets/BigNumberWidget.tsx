@@ -11,6 +11,9 @@ import Tooltip from "./Tooltip";
 // Types
 import { IDashboardWidget } from "../../../types/dashboard";
 
+// Helpers
+import { sanitizeHtml } from "../../../../shared/utils";
+
 // #endregion [Imports]
 
 // #region [Interfaces]=================================================================================================
@@ -31,11 +34,11 @@ const BigNumberWidget = (props: IProps) => {
   return (
     <Card className="widget big-number-widget">
       <p className="title">
-        <span className="widget-value" dangerouslySetInnerHTML={{__html: widget.title_html}} />
+        <span className="widget-value" dangerouslySetInnerHTML={{__html: sanitizeHtml(widget.title_html)}} />
         { widget?.tooltip_html ? <Tooltip content={widget.tooltip_html} /> : null}
       </p>
       <p className="description">
-        <span className="widget-name" dangerouslySetInnerHTML={{__html: widget.description_html}} />
+        <span className="widget-name" dangerouslySetInnerHTML={{__html: sanitizeHtml(widget.description_html)}} />
         {pageKey ? (
           <a onClick={() => onClickLink(pageKey)}  href="javascript:void(0);"><WidgetLinkIcon /></a>
         ) : null}

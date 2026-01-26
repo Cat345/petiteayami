@@ -4,7 +4,7 @@ Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 3.6.4.3
+Stable tag: 3.7.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -416,9 +416,56 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 
 == Change log ==
 
+= 3.7.0 (Jan 22, 2026) =
+* New: Manage Profile - a new page for contacts to update their fields and manage lists or tags. Fully configurable from the Settings page. (#3053)
+* New: Contact Imports redesigned with direct new autoresponder imports. (#3125)
+    - ActiveCampaign: Import contacts, tags & lists.
+    - Mailchimp: Import contacts, tags & lists.
+    - Kit (formerly ConvertKit): Import contacts & tags.
+    - Improved UX.
+* New: Pro: Categorize Automations, Broadcasts, Templates, Forms & Link triggers for better visibility. (#2689)
+* Security: Fixed an SQL injection vulnerability in recovered cart deletion, along with fixes on the Manage Subscribe page. (#4389, #4395, #4417, #4389)
+* Added: Compatibility with The Events Calendar plugin. (#4222)
+* Added: Compatibility with Hostinger Reach plugin. (#4367)
+* Added: Tool to check database table collation issues. (#4205)
+* Added: Product category option for automation goals and WooCommerce events. (#4397)
+* Added: Database validation for primary keys, indexes, and auto-increment. (#4360)
+* Added: Bricks theme compatibility for the Manage Subscribe and Profile pages. (#4237)
+* Added: Price formatting option in the Item Data merge tag. (#4419)
+* Improved: Fixed automation builder layout bugs, including a position-swap issue during auto-layout. (#4405)
+* Improved: API error messages are now included in the response with a 400 status code. (#4256)
+* Improved: Order Review merge tags UI improved. (#4254)
+* Improved: Added a notice and documentation link to the Abandoned Cart event. (#4265)
+* Improved: Improvements to the Order Data merge tag. (#4167)
+* Improved: Site URL function made dynamic for multisite support. (#4249)
+* Improved: URL tracking insertion logic. (#4387)
+* Improved: Category search results now display hierarchy. (#4330)
+* Improved: Log file detection and cleanup for files older than 30 days. (#4415, #4400)
+* Improved: Conditional node rule loading now uses caching to prevent redundant API calls. (#4385)
+* Improved: Preheader insertion logic in the email body. (#4422)
+* Improved: HPOS checking during contact deletion. (#4355)
+* Improved: FunnelKit Cart compatibility improved — handling for the “Special Add-on” feature when restoring abandoned carts. (#4299)
+* Fixed: Engagement meta table optimized — fixed incorrect saving of email footer values. (#4235)
+* Fixed: PHP warnings for undefined array keys. (#4192, #4332, #4347)
+* Fixed: Database table name prefix handling in the validation controller. (#4337)
+* Fixed: Template body static variable not resetting. (#4365)
+* Fixed: Test email issue with Gmail integration. (#4245)
+* Fixed: Cart wasn’t being deleted when an admin manually changed the order status (if it existed). (#4218)
+* Fixed: RTL layout issues in the app and block content. (#4182)
+* Fixed: AffiliateWP importer download log button not showing. (#4181)
+* Fixed: i18n sprintf import in the custom search component. (#4391)
+* Fixed: Added a cron schedule existence check before scheduling WP events. (#4382)
+* Fixed: Translation issue in the cart item table. (#4376)
+* Fixed: RTL issues across different components. (#4358)
+* Fixed: Rare scenario where a duplicate cart was created for a contact. (#4323)
+* Fixed: Rare scenario where cart items and totals were showing blank. (#4275)
+* Devs: Added a filter to modify the test email subject prefix. (#4216)
+* Devs: Added a filter to increase the product search limit. (#4351)
+* Devs: Added a filter hook to check a custom order status when validating an order. (#4408)
+
 = 3.6.4.3 (Nov 27, 2025) =
 * Compatible upto WordPress 6.9
-* Improved: Allowed FunnelKit rest endpoints to work with custom authentication methods by adding extra checks.
+* Improved: Enhanced REST API behavior to support compatibility with the Divi Ajax Filter plugin and custom authentication methods used in third-party implementations.
 
 = 3.6.4.2 (Nov 03, 2025) =
 * Improved: Optimized the Send Test Email API call by adding extra checks, including user role validation in addition to nonce verification. (#4302)

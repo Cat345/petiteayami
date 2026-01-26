@@ -31,7 +31,7 @@ class Xoo_Wl{
 		$this->define( "XOO_WL_PATH", plugin_dir_path( XOO_WL_PLUGIN_FILE ) ); // Plugin path
 		$this->define( "XOO_WL_PLUGIN_BASENAME",plugin_basename( XOO_WL_PLUGIN_FILE ) );
 		$this->define( "XOO_WL_URL", untrailingslashit( plugins_url( '/', XOO_WL_PLUGIN_FILE ) ) ); // plugin url
-		$this->define( "XOO_WL_VERSION", "2.8.4" ); //Plugin version
+		$this->define( "XOO_WL_VERSION", "2.8.5" ); //Plugin version
 		$this->define( "XOO_WL_LITE", true );
 	}
 
@@ -138,67 +138,93 @@ class Xoo_Wl{
 			
 		}
 
+		if( $db_version ){
 
-		if( $db_version &&version_compare( $db_version, '2.7', '<') ){
+			$syOptions 		= (array) xoo_wl_helper()->get_style_option();
+			$emailOptions 	= (array) xoo_wl_helper()->get_email_option();
+			$glOptions 		= (array) xoo_wl_helper()->get_general_option();
 
-			$options = array(
+			if( version_compare( $db_version, '2.7', '<') ){
 
-				'xoo-wl-email-options' 	 => array(
-					'gl-ft-content' => '',
-					'bis-keep-wl' 	=> 'no'
-				),
+				$options = array(
 
-				'xoo-wl-style-options' => array(
-					'popup-height-type' => 'custom'
-				),
+					'xoo-wl-email-options' 	 => array(
+						'gl-ft-content' => '',
+						'bis-keep-wl' 	=> 'no'
+					),
 
-				'xoo-wl-emStyle-options' => array(
-					'c-font-family' 	=> 'Tahoma',
-					'c-outbgcolor' 		=> '#f0f0f0',
-					'c-txtcolor' 		=> '#000000',
-					'c-inbgcolor' 		=> '#ffffff',
-					'c-bdcolor' 		=> '#f0f0f0',
-					'c-fsize' 			=> 17,
-					'c-cont-padding' 	=> '20px 30px',
-					'bis-heading-color' => '#000000',
-					'bis-heading-fsize' => 19,
-					'bis-pimg-width' 	=> 200,
-					'bis-pimg-height' 	=> 0,
-					'bis-en-buy' 		=> 'yes',
-					'btn-txtcolor' 		=> '#ffffff',
-					'btn-bgcolor' 		=> '#00a63f',
-					'btn-vpadding' 		=> 10,
-					'btn-hpadding' 		=> 40,
-					'btn-fsize' 		=> 16,
-				)
+					'xoo-wl-style-options' => array(
+						'popup-height-type' => 'custom'
+					),
 
-			);
+					'xoo-wl-emStyle-options' => array(
+						'c-font-family' 	=> 'Tahoma',
+						'c-outbgcolor' 		=> '#f0f0f0',
+						'c-txtcolor' 		=> '#000000',
+						'c-inbgcolor' 		=> '#ffffff',
+						'c-bdcolor' 		=> '#f0f0f0',
+						'c-fsize' 			=> 17,
+						'c-cont-padding' 	=> '20px 30px',
+						'bis-heading-color' => '#000000',
+						'bis-heading-fsize' => 19,
+						'bis-pimg-width' 	=> 200,
+						'bis-pimg-height' 	=> 0,
+						'bis-en-buy' 		=> 'yes',
+						'btn-txtcolor' 		=> '#ffffff',
+						'btn-bgcolor' 		=> '#00a63f',
+						'btn-vpadding' 		=> 10,
+						'btn-hpadding' 		=> 40,
+						'btn-fsize' 		=> 16,
+					)
 
-			foreach ( $options as $option_key => $values ) {
-				$optionVal = (array) get_option( $option_key , true );
-				update_option( $option_key, array_merge( $optionVal, $values ) );
+				);
+
+				foreach ( $options as $option_key => $values ) {
+					$optionVal = (array) get_option( $option_key , true );
+					update_option( $option_key, array_merge( $optionVal, $values ) );
+				}
+		
 			}
-	
-		}
 
-		if( $db_version &&version_compare( $db_version, '2.7.4', '<') ){
+			if( version_compare( $db_version, '2.7.4', '<') ){
 
-			$syOptions = (array) xoo_wl_helper()->get_style_option();
+				$syOptions['btn-padding'] = 10;
 
-			$syOptions['btn-padding'] = 10;
+			}
 
+
+			if( version_compare( $db_version, '2.7.8', '<') ){
+				$this->reformat_emailcronhistory();
+			}
+
+			if( version_compare( $db_version, '2.8.2', '<')  ){
+				update_option('xoo_tracking_consent_waitlist-woocommerce', 'no' );
+			}
+
+			if( version_compare( $db_version, '2.8.5', '<')  ){
+
+				update_option('xoo-wl-list-view', 'products' );
+				
+				$emailOptions['bis-content'] 	= '<p style="margin: 0 0 16px 0;">'.$this->parse_old_email_placeholders( $emailOptions['bis-content'] ).'</p>';
+				$emailOptions['bis-heading'] 	= '<p style="margin: 0 0 30px 0;">'.$this->parse_old_email_placeholders( $emailOptions['bis-heading'] ).'</p>';
+				$emailOptions['gl-ft-content'] 	= '<p>'.$this->parse_old_email_placeholders( $emailOptions['gl-ft-content'] ).'</p>';
+
+				$glOptions['m-btn-show'] = array('outofstock');
+
+				if( $glOptions['m-en-bod'] === "yes" ){
+					$glOptions['m-btn-show'][] = 'backorder_out';
+				}
+
+
+
+			}
+
+			update_option( 'xoo-wl-general-options', $glOptions );
+			update_option( 'xoo-wl-email-options', $emailOptions );
 			update_option( 'xoo-wl-style-options', $syOptions );
 
 		}
 
-
-		if( $db_version && version_compare( $db_version, '2.7.8', '<') ){
-			$this->reformat_emailcronhistory();
-		}
-
-		if( $db_version && version_compare( $db_version, '2.8.2', '<')  ){
-			update_option('xoo_tracking_consent_waitlist-woocommerce', 'no' );
-		}
 
 		if( version_compare( $db_version, XOO_WL_VERSION, '<') ){
 			xoo_wl()->aff->fields->set_defaults();
@@ -206,6 +232,24 @@ class Xoo_Wl{
 			update_option( $version_option, XOO_WL_VERSION);
 		}
 	}
+
+
+	public function parse_old_email_placeholders( $string ) {
+	    $map = array(
+	        '[b]'         => '<b>',
+	        '[/b]'        => '</b>',
+	        '[new_line]'  => '<br>',
+	        '[i]'         => '<i>',
+	        '[/i]'        => '</i>',
+	    );
+
+	    return str_replace(
+	        array_keys( $map ),
+	        array_values( $map ),
+	        $string
+	    );
+	}
+
 
 
 	public function reformat_emailcronhistory(){
@@ -360,6 +404,22 @@ class Xoo_Wl{
 	public function register_elementor_widget( $widgets_manager ){
 		require_once XOO_WL_PATH.'includes/class-xoo-wl-elementor.php';
 		$widgets_manager->register( new \Xoo_WL_Elementor_Widget() );
+	}
+
+	public function get_product_name(){
+
+		$title = '';
+
+		if ( $product && $product->is_type( 'variation' ) ) {
+
+		    $parent_name = wc_get_product( $product->get_parent_id() )->get_name();
+		    $attributes  = wc_get_formatted_variation( $product, true, false, true );
+
+		    $title = $parent_name . ' - ' . $attributes;
+
+		} elseif ( $product ) {
+		    $title = $product->get_name();
+		}
 	}
 
 }

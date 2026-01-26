@@ -24,6 +24,24 @@ class BWFAN_DB_Table_Tasks extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'e_date'       => [ 'e_date' ],
+				'automation_id' => [ 'automation_id' ],
+				'status'       => [ 'status' ],
+				'claim_id'     => [ 'claim_id' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -44,7 +62,6 @@ class BWFAN_DB_Table_Tasks extends BWFAN_DB_Tables_Base {
 		  `attempts` tinyint(1) unsigned default 0,
 		  `priority` int(5) unsigned default 10,
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `e_date` (`e_date`),
 		  KEY `automation_id` (`automation_id`),
 		  KEY `status` (`status`),

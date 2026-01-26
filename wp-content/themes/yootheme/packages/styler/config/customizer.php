@@ -1,0 +1,11 @@
+<?php
+
+return [
+    'sections' => [
+        'styler' => [
+            'title' => 'Style',
+            'width' => 350,
+            'priority' => 11,
+        ],
+    ],
+];

@@ -6,6 +6,9 @@ import { Typography } from 'antd';
 // Styles
 import './index.scss';
 
+// Helpers
+import { sanitizeHtml } from '../../../shared/helpers/sanitize';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -30,7 +33,7 @@ const Premium = () => {
           <img className="logo" src={image} alt={logo_alt} />
         </a>
       </p>
-      <h2 dangerouslySetInnerHTML={{ __html: title }} />
+      <h2 dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }} />
       <p>
         <Link className="acfw-upgrade-button" href={action.btn_link} target="_blank">
           {action.btn_text}

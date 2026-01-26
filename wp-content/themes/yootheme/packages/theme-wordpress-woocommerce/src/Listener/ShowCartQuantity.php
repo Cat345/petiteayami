@@ -3,6 +3,7 @@
 namespace YOOtheme\Theme\Wordpress\WooCommerce\Listener;
 
 use YOOtheme\Config;
+use function WC;
 
 class ShowCartQuantity
 {
@@ -15,6 +16,10 @@ class ShowCartQuantity
 
     /**
      * Add fragment with cart item count.
+     *
+     * @param array<string> $fragments
+     *
+     * @return array<string>
      */
     public static function addToCartFragments(array $fragments): array
     {
@@ -23,10 +28,15 @@ class ShowCartQuantity
 
     /**
      * Filters the navigation menu items being returned.
+     *
+     * @param list<object> $items
+     *
+     * @return list<object>
      */
     public function navMenuObjects(array $items): array
     {
-        if (!\WC()->cart) {
+        // @phpstan-ignore booleanNot.alwaysFalse
+        if (!WC()->cart) {
             return $items;
         }
 
@@ -43,9 +53,12 @@ class ShowCartQuantity
         return $items;
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected static function getCartQuantity(): array
     {
-        $quantity = \WC()->cart->get_cart_contents_count();
+        $quantity = WC()->cart->get_cart_contents_count();
 
         $types = [
             ['text', '%d'],

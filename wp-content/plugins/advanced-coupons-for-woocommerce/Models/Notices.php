@@ -51,8 +51,8 @@ class Notices extends Base_Model implements Model_Interface, Activatable_Interfa
      */
     public function register_acfwp_admin_notice_options( $notice_options ) {
         $priority_notices = array(
-			'new_update_notice' => $this->_constants->SHOW_NEW_UPDATE_NOTICE,
-		);
+            'new_update_notice' => $this->_constants->SHOW_NEW_UPDATE_NOTICE,
+        );
 
         return array_merge( $priority_notices, $notice_options );
     }
@@ -87,30 +87,30 @@ class Notices extends Base_Model implements Model_Interface, Activatable_Interfa
      */
     private function _get_new_update_notice_data() {
         return array(
-			'slug'           => 'new_update_notice',
-			'id'             => $this->_constants->SHOW_NEW_UPDATE_NOTICE,
-			'logo_img'       => $this->_constants->IMAGES_ROOT_URL . '/acfw-logo.png',
-			'is_dismissable' => is_admin(), // make notice dismissable on other pages except for the dashboard.
-			'type'           => 'warning',
-			'heading'        => __( 'IMPORTANT INFORMATION', 'advanced-coupons-for-woocommerce' ),
-			'content'        => array(
-				sprintf(
+            'slug'           => 'new_update_notice',
+            'id'             => $this->_constants->SHOW_NEW_UPDATE_NOTICE,
+            'logo_img'       => $this->_constants->IMAGES_ROOT_URL . '/acfw-logo.png',
+            'is_dismissable' => is_admin(), // make notice dismissable on other pages except for the dashboard.
+            'type'           => 'warning',
+            'heading'        => __( 'IMPORTANT INFORMATION', 'advanced-coupons-for-woocommerce' ),
+            'content'        => array(
+                sprintf(
                     /* Translators: %1$s: Formatting tag start. %2$s: Formatting tag end. */
                     __( 'The next update of %1$sAdvanced Coupons Premium%2$s (version 3.4) changes how the discounts of BOGO coupons with product categories as triggers and/or deals are implemented on the cart.', 'advanced-coupons-for-woocommerce' ),
                     '<strong>',
                     '</strong>'
                 ),
-				__( 'You can learn more about this new changes by reading the blog post linked below.', 'advanced-coupons-for-woocommerce' ),
-			),
-			'actions'        => array(
-				array(
-					'key'         => 'primary',
-					'link'        => 'https://advancedcouponsplugin.com/knowledgebase/bogo-product-categories-logic-changes/',
-					'text'        => __( 'View Changes', 'advanced-coupons-for-woocommerce' ),
-					'is_external' => true,
-				),
-			),
-		);
+                __( 'You can learn more about this new changes by reading the blog post linked below.', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'actions'        => array(
+                array(
+                    'key'         => 'primary',
+                    'link'        => 'https://advancedcouponsplugin.com/knowledgebase/bogo-product-categories-logic-changes/',
+                    'text'        => __( 'View Changes', 'advanced-coupons-for-woocommerce' ),
+                    'is_external' => true,
+                ),
+            ),
+        );
     }
 
     /**
@@ -156,10 +156,11 @@ class Notices extends Base_Model implements Model_Interface, Activatable_Interfa
                     array(
                         'key'         => 'primary',
                         'link'        => 'https://advancedcouponsplugin.com/knowledgebase/advanced-coupons-premium-getting-started-guide/?utm_source=acfwp&utm_medium=kb&utm_campaign=acfwpgettingstarted',
-                        'text'        => __( 'Read The Getting Started Guide &rarr;', 'advanced-coupons-for-woocommerce' ),
+                        'text'        => __( 'Read The Getting Started Guide →', 'advanced-coupons-for-woocommerce' ),
                         'is_external' => true,
                     ),
                 ),
+                'nonce'          => wp_create_nonce( 'acfw_dismiss_notice_getting_started' ),
             );
         }
 

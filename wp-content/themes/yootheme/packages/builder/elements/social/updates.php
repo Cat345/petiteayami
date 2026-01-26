@@ -3,6 +3,15 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.0.2' => function ($node) {
+        if (array_all($node->children ?? [], fn($child) => empty($child->props->image) && empty($child->source->props->image))) {
+            if (($node->props['icon_width'] ?? '') && !($node->props['image_width'] ?? '')) {
+                $node->props['image_width'] = $node->props['icon_width'];
+            }
+        }
+        unset($node->props['icon_width']);
+    },
+
     '4.4.6' => function ($node) {
         // Previous version still had grid_gap as default
         unset($node->props['grid_gap']);
@@ -33,7 +42,7 @@ return [
     },
 
     '2.8.0-beta.0.3' => function ($node) {
-        Arr::del($node->props, 'gap');
+        unset($node->props['gap']);
     },
 
     '2.4.14.1' => function ($node) {

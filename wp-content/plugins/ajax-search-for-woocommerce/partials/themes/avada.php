@@ -4,63 +4,89 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_filter( 'get_search_form', function ( $form ) {
-	return do_shortcode( '[wcas-search-form]' );
-}, 100 );
+add_filter(
+	'get_search_form',
+	function ( $form ) {
+		return do_shortcode( '[wcas-search-form]' );
+	},
+	100
+);
 
-add_action( 'init', function () {
-	remove_filter( 'wp_nav_menu_items', 'avada_add_search_to_main_nav', 20, 2 );
+add_action(
+	'init',
+	function () {
+		remove_filter( 'wp_nav_menu_items', 'avada_add_search_to_main_nav', 20, 2 );
 
-	// Add search to the main navigation.
-	add_filter( 'wp_nav_menu_items', function ( $items, $args ) {
-		// Disable woo cart on ubermenu navigations.
-		$ubermenu = ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ubermenu_get_menu_instance_by_theme_location( $args->theme_location ) );
+		// Add search to the main navigation.
+		add_filter(
+			'wp_nav_menu_items',
+			function ( $items, $args ) {
+				// Disable woo cart on ubermenu navigations.
+				$ubermenu = ( function_exists( 'ubermenu_get_menu_instance_by_theme_location' ) && ubermenu_get_menu_instance_by_theme_location( $args->theme_location ) );
 
-		if ( 'v6' !== Avada()->settings->get( 'header_layout' ) && false === $ubermenu ) {
-			if ( 'main_navigation' === $args->theme_location || 'sticky_navigation' === $args->theme_location ) {
-				if ( Avada()->settings->get( 'main_nav_search_icon' ) ) {
-					$items .= '<li class="fusion-custom-menu-item fusion-main-menu-search">';
-					$items .= do_shortcode( '[wcas-search-form layout="icon"]' );
-					$items .= '</li>';
+				if ( 'v6' !== Avada()->settings->get( 'header_layout' ) && false === $ubermenu ) {
+					if ( 'main_navigation' === $args->theme_location || 'sticky_navigation' === $args->theme_location ) {
+						if ( Avada()->settings->get( 'main_nav_search_icon' ) ) {
+							$items .= '<li class="fusion-custom-menu-item fusion-main-menu-search">';
+							$items .= do_shortcode( '[wcas-search-form layout="icon"]' );
+							$items .= '</li>';
+						}
+					}
 				}
-			}
-		}
 
-		return $items;
-	}, 20, 2 );
-} );
+				return $items;
+			},
+			20,
+			2
+		);
+	}
+);
 
 // Fusion search
-add_filter( 'search_form_after_fields', function ( $args ) {
-	add_action( 'wp_footer', function () {
-		echo '<div class="dgwt-wcas-avada-fus-search-replace-wrapper">';
-		echo do_shortcode( '[wcas-search-form]' );
-		echo '</div>';
-	} );
+add_filter(
+	'search_form_after_fields',
+	function ( $args ) {
+		add_action(
+			'wp_footer',
+			function () {
+				echo '<div class="dgwt-wcas-avada-fus-search-replace-wrapper">';
+				echo do_shortcode( '[wcas-search-form]' );
+				echo '</div>';
+			}
+		);
 
-	$args['after_fields'] = '<div class="dgwt-wcas-avada-fus-search-replace"></div>';
+		$args['after_fields'] = '<div class="dgwt-wcas-avada-fus-search-replace"></div>';
 
-	return $args;
-} );
+		return $args;
+	}
+);
 
-add_filter( 'dgwt/wcas/icon', function ( $svg, $name, $class, $color ) {
-	if ( $name === 'magnifier-thin' ) {
-		ob_start();
-		?>
-		<svg version="1.1" class="<?php echo $class; ?>" xmlns="http://www.w3.org/2000/svg"
-			 viewBox="0 0 30 32">
+add_filter(
+	'dgwt/wcas/icon',
+	function ( $svg, $name, $class, $color ) {
+		if ( $name === 'magnifier-thin' ) {
+			ob_start();
+			?>
+		<svg
+			version="1.1" class="<?php echo $class; ?>" xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 30 32">
 			<path
 				d="M20.571 15.143q0-3.304-2.348-5.652t-5.652-2.348-5.652 2.348-2.348 5.652 2.348 5.652 5.652 2.348 5.652-2.348 2.348-5.652zM29.714 30q0 0.929-0.679 1.607t-1.607 0.679q-0.964 0-1.607-0.679l-6.125-6.107q-3.196 2.214-7.125 2.214-2.554 0-4.884-0.991t-4.018-2.679-2.679-4.018-0.991-4.884 0.991-4.884 2.679-4.018 4.018-2.679 4.884-0.991 4.884 0.991 4.018 2.679 2.679 4.018 0.991 4.884q0 3.929-2.214 7.125l6.125 6.125q0.661 0.661 0.661 1.607z"></path>
 		</svg>
-		<?php
-		$svg = ob_get_clean();
-	}
+			<?php
+			$svg = ob_get_clean();
+		}
 
-	return $svg;
-}, 10, 4 );
+		return $svg;
+	},
+	10,
+	4
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.fusion-secondary-menu-search {
 			width: 500px;
@@ -147,11 +173,14 @@ add_action( 'wp_head', function () {
 			}
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 
@@ -255,5 +284,7 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-}, 1000 );
+		<?php
+	},
+	1000
+);

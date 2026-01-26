@@ -11,8 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class The7 extends ThemeIntegration {
 	public function extraFunctions() {
-		add_action( 'wp_head', function () {
-			?>
+		add_action(
+			'wp_head',
+			function () {
+				?>
 			<style>
 				.mini-widgets .dgwt-wcas-search-icon {
 					width: 17px;
@@ -23,10 +25,11 @@ class The7 extends ThemeIntegration {
 					top: calc(100% + 5px);
 				}
 			</style>
-			<?php
-		} );
+				<?php
+			}
+		);
 
-		add_filter( 'presscore_template_manager_located_template', array( $this, 'changeTemplatePath' ), 10, 2 );
+		add_filter( 'presscore_template_manager_located_template', [ $this, 'changeTemplatePath' ], 10, 2 );
 	}
 
 	/**

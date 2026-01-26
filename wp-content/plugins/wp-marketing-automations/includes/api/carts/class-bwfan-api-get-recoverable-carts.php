@@ -239,7 +239,7 @@ class BWFAN_API_Get_Recoverable_Carts extends BWFAN_API_Base {
 				$product_discount   = $product_sub_total - $product_price;
 				$product_price      = $product_price + $product_discount;
 				$products[]         = array(
-					'name'  => $product['data']->get_formatted_name(),
+					'name'  => apply_filters( 'bwfan_get_formatted_cart_item_name', $product['data']->get_formatted_name(), $product ),
 					'qty'   => $product['quantity'],
 					'price' => $product_price,
 				);

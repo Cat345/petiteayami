@@ -4,32 +4,20 @@ namespace YOOtheme;
 
 abstract class Event
 {
-    /**
-     * @var EventDispatcher|null
-     */
-    protected static $dispatcher;
+    protected static ?EventDispatcher $dispatcher = null;
 
     /**
      * Adds an event listener.
-     *
-     * @param string   $event
-     * @param callable $listener
-     * @param int      $priority
      */
-    public static function on($event, $listener, $priority = 0)
+    public static function on(string $event, callable $listener, int $priority = 0): void
     {
         static::getDispatcher()->addListener($event, $listener, $priority);
     }
 
     /**
      * Removes an event listener.
-     *
-     * @param string   $event
-     * @param callable $listener
-     *
-     * @return bool
      */
-    public static function off($event, $listener = null)
+    public static function off(string $event, ?callable $listener = null): bool
     {
         return static::getDispatcher()->removeListener($event, $listener);
     }
@@ -37,23 +25,20 @@ abstract class Event
     /**
      * Emits an event with arguments.
      *
-     * @param string $event
-     * @param array  $arguments
+     * @param mixed ...$arguments
      *
      * @return mixed
      */
-    public static function emit($event, ...$arguments)
+    public static function emit(string $event, ...$arguments)
     {
         return static::getDispatcher()->dispatch($event, ...$arguments);
     }
 
     /**
      * Gets the event dispatcher instance.
-     *
-     * @return EventDispatcher
      */
-    public static function getDispatcher()
+    public static function getDispatcher(): EventDispatcher
     {
-        return static::$dispatcher ?: (static::$dispatcher = new EventDispatcher());
+        return static::$dispatcher ??= new EventDispatcher();
     }
 }

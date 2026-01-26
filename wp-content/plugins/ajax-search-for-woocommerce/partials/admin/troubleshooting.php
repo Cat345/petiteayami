@@ -12,14 +12,14 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 				<span class="progress_number">0%</span>
 			</small>
 			<span class="progress-bar-inner" style="background-color: #e6a51d; width: 0;">
-        </span>
+		</span>
 		</div>
 	</div>
 	<p class="js-dgwt-wcas-troubleshooting-no-issues"><?php _e( 'Great! We have not detected any problems that could affect the correct functioning of our plugin.', 'ajax-search-for-woocommerce' ); ?></p>
 	<div class="js-dgwt-wcas-troubleshooting-issues-critical"></div>
 	<div class="js-dgwt-wcas-troubleshooting-issues-recommended"></div>
 	<div>
-		<?php submit_button( __( 'Recheck the status', 'ajax-search-for-woocommerce' ), 'primary', 'dgwt-wcas-async-action-reset-async-tests', false, array( 'data-internal-action' => 'reset_async_tests' ) ); ?>
+		<?php submit_button( __( 'Recheck the status', 'ajax-search-for-woocommerce' ), 'primary', 'dgwt-wcas-async-action-reset-async-tests', false, [ 'data-internal-action' => 'reset_async_tests' ] ); ?>
 		<span class="dgwt-wcas-ajax-loader" style="margin-top: 5px;"></span>
 	</div>
 </div>

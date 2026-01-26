@@ -6,25 +6,21 @@ trait MessageTrait
 {
     /**
      * Gets content type.
-     *
-     * @return string|null
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
-        $result = $this->getHeader('Content-Type');
-
-        return $result ? $result[0] : null;
+        return $this->hasHeader('content-type')
+            ? (string) $this->getHeader('content-type')[0]
+            : null;
     }
 
     /**
      * Gets content length.
-     *
-     * @return int|null
      */
-    public function getContentLength()
+    public function getContentLength(): ?int
     {
-        $result = $this->getHeader('Content-Length');
-
-        return $result ? (int) $result[0] : null;
+        return $this->hasHeader('content-length')
+            ? (int) $this->getHeader('content-length')[0]
+            : null;
     }
 }

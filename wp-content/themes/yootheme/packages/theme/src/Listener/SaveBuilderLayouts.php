@@ -14,7 +14,11 @@ class SaveBuilderLayouts
         $this->builder = $builder;
     }
 
-    public function handle($config): array
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    public function handle(array $config): array
     {
         Arr::update(
             $config,

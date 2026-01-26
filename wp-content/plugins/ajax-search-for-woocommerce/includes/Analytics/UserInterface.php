@@ -54,20 +54,20 @@ class UserInterface {
      */
     public function init() {
         // Draw settings page
-        add_filter( 'dgwt/wcas/settings/sections', array($this, 'addSettingsSection') );
-        add_filter( 'dgwt/wcas/settings', array($this, 'addSettingsTab') );
-        add_filter( 'dgwt/wcas/scripts/admin/localize', array($this, 'localizeSettings') );
+        add_filter( 'dgwt/wcas/settings/sections', [$this, 'addSettingsSection'] );
+        add_filter( 'dgwt/wcas/settings', [$this, 'addSettingsTab'] );
+        add_filter( 'dgwt/wcas/scripts/admin/localize', [$this, 'localizeSettings'] );
         // AJAX callbacks
-        add_action( 'wp_ajax_dgwt_wcas_load_stats_interface', array($this, 'loadInterface') );
-        add_action( 'wp_ajax_dgwt_wcas_laod_more_critical_searches', array($this, 'loadMoreCriticalSearches') );
-        add_action( 'wp_ajax_dgwt_wcas_laod_more_autocomplete', array($this, 'loadMoreAutocomplete') );
-        add_action( 'wp_ajax_dgwt_wcas_laod_more_search_page', array($this, 'loadMoreSearchPage') );
-        add_action( 'wp_ajax_dgwt_wcas_check_critical_phrase', array($this, 'checkCriticalPhrase') );
-        add_action( 'wp_ajax_dgwt_wcas_exclude_critical_phrase', array($this, 'excludeCriticalPhrase') );
-        add_action( 'wp_ajax_dgwt_wcas_reset_stats', array($this, 'resetStats') );
-        add_action( 'wp_ajax_dgwt_wcas_export_stats_csv', array($this, 'exportStats') );
+        add_action( 'wp_ajax_dgwt_wcas_load_stats_interface', [$this, 'loadInterface'] );
+        add_action( 'wp_ajax_dgwt_wcas_laod_more_critical_searches', [$this, 'loadMoreCriticalSearches'] );
+        add_action( 'wp_ajax_dgwt_wcas_laod_more_autocomplete', [$this, 'loadMoreAutocomplete'] );
+        add_action( 'wp_ajax_dgwt_wcas_laod_more_search_page', [$this, 'loadMoreSearchPage'] );
+        add_action( 'wp_ajax_dgwt_wcas_check_critical_phrase', [$this, 'checkCriticalPhrase'] );
+        add_action( 'wp_ajax_dgwt_wcas_exclude_critical_phrase', [$this, 'excludeCriticalPhrase'] );
+        add_action( 'wp_ajax_dgwt_wcas_reset_stats', [$this, 'resetStats'] );
+        add_action( 'wp_ajax_dgwt_wcas_export_stats_csv', [$this, 'exportStats'] );
         if ( $this->analytics->isModuleEnabled() ) {
-            add_action( DGWT_WCAS_SETTINGS_KEY . '-form_end_' . self::SECTION_ID, array($this, 'tabContent') );
+            add_action( DGWT_WCAS_SETTINGS_KEY . '-form_end_' . self::SECTION_ID, [$this, 'tabContent'] );
         }
     }
 
@@ -79,10 +79,10 @@ class UserInterface {
      * @return array
      */
     public function addSettingsSection( $sections ) {
-        $sections[28] = array(
+        $sections[28] = [
             'id'    => self::SECTION_ID,
             'title' => __( 'Analytics', 'ajax-search-for-woocommerce' ),
-        );
+        ];
         return $sections;
     }
 
@@ -95,30 +95,30 @@ class UserInterface {
      */
     public function addSettingsTab( $settings ) {
         $searchAnalyticsLink = 'https://fibosearch.com/documentation/features/fibosearch-analytics/';
-        $settings[self::SECTION_ID] = apply_filters( 'dgwt/wcas/settings/section=analytics', array(
-            100 => array(
+        $settings[self::SECTION_ID] = apply_filters( 'dgwt/wcas/settings/section=analytics', [
+            100 => [
                 'name'  => 'analytics_head',
                 'label' => __( 'Search Analytics', 'ajax-search-for-woocommerce' ),
                 'type'  => 'head',
                 'class' => 'dgwt-wcas-sgs-header',
-            ),
-            110 => array(
+            ],
+            110 => [
                 'name'    => 'analytics_enabled',
                 'label'   => __( 'Enable search analytics', 'ajax-search-for-woocommerce' ) . ' ' . Helpers::createQuestionMark( 'enable_search_analytics', sprintf( __( 'Search analytics system helps to eliminate search phrases that don’t return any results. Also, allows to explore trending keywords. <a target="_blank" href="%s">Find our more</a> how to use and customize FiboSearch Analytics.', 'ajax-search-for-woocommerce' ), $searchAnalyticsLink ) ),
                 'type'    => 'checkbox',
                 'class'   => 'dgwt-wcas-options-cb-toggle js-dgwt-wcas-cbtgroup-analytics-critial-searches-widget',
                 'size'    => 'small',
                 'default' => 'off',
-            ),
-            120 => array(
+            ],
+            120 => [
                 'name'    => 'analytics_critical_searches_widget_enabled',
                 'label'   => __( 'Show widget with critical searches in Dashboard', 'ajax-search-for-woocommerce' ),
                 'type'    => 'checkbox',
                 'class'   => 'js-dgwt-wcas-cbtgroup-analytics-critial-searches-widget',
                 'size'    => 'small',
                 'default' => 'off',
-            ),
-        ) );
+            ],
+        ] );
         return $settings;
     }
 
@@ -130,8 +130,8 @@ class UserInterface {
      * @return array
      */
     public function localizeSettings( $localize ) {
-        $localize['analytics'] = array(
-            'nonce'   => array(
+        $localize['analytics'] = [
+            'nonce'   => [
                 'analytics_load_interface'    => wp_create_nonce( self::LOAD_INTERFACE_NONCE ),
                 'load_more_critical_searches' => wp_create_nonce( self::LOAD_MORE_CRITICAL_SEARCHES_NONCE ),
                 'load_more_autocomplete'      => wp_create_nonce( self::LOAD_MORE_AUTOCOMPLETE_NONCE ),
@@ -140,15 +140,15 @@ class UserInterface {
                 'exclude_critical_phrase'     => wp_create_nonce( self::EXCLUDE_CRITICAL_PHRASE_NONCE ),
                 'reset_stats'                 => wp_create_nonce( self::RESET_STATS_NONCE ),
                 'export_stats_csv'            => wp_create_nonce( self::EXPORT_STATS_CSV_NONCE ),
-            ),
+            ],
             'enabled' => $this->analytics->isModuleEnabled(),
-            'images'  => array(
+            'images'  => [
                 'placeholder' => DGWT_WCAS_URL . 'assets/img/admin-stats-placeholder.png',
-            ),
-            'labels'  => array(
+            ],
+            'labels'  => [
                 'reset_stats_confirm' => __( 'Are you sure you want to reset stats?', 'ajax-search-for-woocommerce' ),
-            ),
-        );
+            ],
+        ];
         return $localize;
     }
 
@@ -170,13 +170,13 @@ class UserInterface {
      * @return string
      */
     private function getLanguageSwitcher() {
-        $vars = array(
-            'multilingual' => array(
+        $vars = [
+            'multilingual' => [
                 'is-multilingual' => true,
                 'current-lang'    => Multilingual::getCurrentLanguage(),
-                'langs'           => array(),
-            ),
-        );
+                'langs'           => [],
+            ],
+        ];
         foreach ( Multilingual::getLanguages() as $lang ) {
             $vars['multilingual']['langs'][$lang] = Multilingual::getLanguageField( $lang, 'name' );
         }
@@ -196,9 +196,9 @@ class UserInterface {
         }
         check_ajax_referer( self::LOAD_INTERFACE_NONCE );
         $lang = ( !empty( $_REQUEST['lang'] ) && Multilingual::isLangCode( sanitize_key( $_REQUEST['lang'] ) ) ? sanitize_key( $_REQUEST['lang'] ) : '' );
-        $data = array(
+        $data = [
             'html' => '',
-        );
+        ];
         ob_start();
         $vars = $this->getVars( $lang );
         require DGWT_WCAS_DIR . 'partials/admin/stats/stats.php';
@@ -236,11 +236,11 @@ class UserInterface {
         }
         $toLoad = $total - $offset - count( $critical );
         $more = min( self::CRITICAL_SEARCHES_LOAD_LIMIT, $toLoad );
-        $data = array(
+        $data = [
             'html'       => $html,
             'more'       => $more,
             'more_label' => '',
-        );
+        ];
         if ( $more > 0 ) {
             $data['more_label'] = sprintf( _n(
                 'load another %d phrase',
@@ -277,9 +277,9 @@ class UserInterface {
             $i++;
         }
         $html = ob_get_clean();
-        $data = array(
+        $data = [
             'html' => $html,
-        );
+        ];
         wp_send_json_success( $data );
     }
 
@@ -308,9 +308,9 @@ class UserInterface {
             $i++;
         }
         $html = ob_get_clean();
-        $data = array(
+        $data = [
             'html' => $html,
-        );
+        ];
         wp_send_json_success( $data );
     }
 
@@ -324,10 +324,10 @@ class UserInterface {
             wp_die( -1, 403 );
         }
         check_ajax_referer( self::CRITICAL_CHECK_NONCE );
-        $data = array(
+        $data = [
             'html'   => '',
             'status' => '',
-        );
+        ];
         $phrase = ( !empty( $_REQUEST['phrase'] ) ? $_REQUEST['phrase'] : '' );
         if ( empty( $phrase ) ) {
             wp_send_json_error( 'empty phrase' );
@@ -362,11 +362,11 @@ class UserInterface {
      */
     public function getCriticalPhraseMessage( $context = '' ) {
         $html = '';
-        //This phrase returns X products.
+        // This phrase returns X products.
         switch ( $context ) {
             case 'with-results':
                 $html = '<p>';
-                $html .= '<b class="dgwt-wcas-analytics-text-good">' . __( "Perfect!", 'ajax-search-for-woocommerce' ) . '</b>';
+                $html .= '<b class="dgwt-wcas-analytics-text-good">' . __( 'Perfect!', 'ajax-search-for-woocommerce' ) . '</b>';
                 $html .= ' ' . __( "It's sorted.", 'ajax-search-for-woocommerce' );
                 $html .= ' ' . __( 'This phrase returns some results.', 'ajax-search-for-woocommerce' );
                 $html .= ' ' . __( 'Click the button below to remove this phrase from the list.', 'ajax-search-for-woocommerce' );
@@ -375,7 +375,7 @@ class UserInterface {
                 break;
             case 'without-results':
                 $html = '<p>';
-                $html .= '<b class="dgwt-wcas-analytics-text-poorly">' . __( "Poor!", 'ajax-search-for-woocommerce' ) . '</b>';
+                $html .= '<b class="dgwt-wcas-analytics-text-poorly">' . __( 'Poor!', 'ajax-search-for-woocommerce' ) . '</b>';
                 $html .= ' ' . __( "Still this phrase doesn't return any results. Learn how to fix it.", 'ajax-search-for-woocommerce' );
                 $html .= '</p>';
                 break;
@@ -468,43 +468,43 @@ class UserInterface {
             $data->setLang( $lang );
         }
         $mainUrl = 'https://fibosearch.com/lack-of-queries-insight-really-hurts-your-sales/';
-        $vars = array(
+        $vars = [
             'days'                             => $this->getExpirationInDays(),
-            'autocomplete'                     => array(),
-            'search-page'                      => array(),
-            'critical-searches'                => array(),
+            'autocomplete'                     => [],
+            'search-page'                      => [],
+            'critical-searches'                => [],
             'critical-searches-total'          => 0,
             'critical-searches-more'           => 0,
             'returning-results-percent'        => 0,
             'returning-results-percent-poorly' => false,
-            'links'                            => array(
+            'links'                            => [
                 'synonyms' => $mainUrl . '#synonyms',
                 'support'  => 'https://fibosearch.com/contact/',
-            ),
+            ],
             'table-info'                       => Helpers::getTableInfo( Database::getTableName() ),
-        );
+        ];
         // Autocomplete
         $data->setContext( 'autocomplete' );
-        $vars['autocomplete'] = array(
+        $vars['autocomplete'] = [
             'with-results'               => $data->getPhrasesWithResults( self::TABLE_ROW_LIMIT_LIMIT ),
             'total-with-results-uniq'    => $data->getTotalSearches( true, true ),
             'total-without-results-uniq' => $data->getTotalSearches( false, true ),
             'total-with-results'         => $data->getTotalSearches( true ),
             'total-without-results'      => $data->getTotalSearches( false ),
             'total-results'              => 0,
-        );
+        ];
         $vars['autocomplete']['total-results-uniq'] = $vars['autocomplete']['total-with-results-uniq'] + $vars['autocomplete']['total-without-results-uniq'];
         $vars['autocomplete']['total-results'] = $vars['autocomplete']['total-with-results'] + $vars['autocomplete']['total-without-results'];
         // WooCommerce Search Results Page
         $data->setContext( 'search-results-page' );
-        $vars['search-page'] = array(
+        $vars['search-page'] = [
             'with-results'               => $data->getPhrasesWithResults( self::TABLE_ROW_LIMIT_LIMIT ),
             'total-with-results-uniq'    => $data->getTotalSearches( true, true ),
             'total-without-results-uniq' => $data->getTotalSearches( false, true ),
             'total-with-results'         => $data->getTotalSearches( true ),
             'total-without-results'      => $data->getTotalSearches( false ),
             'total-results'              => 0,
-        );
+        ];
         $vars['search-page']['total-results-uniq'] = $vars['search-page']['total-with-results-uniq'] + $vars['search-page']['total-without-results-uniq'];
         $vars['search-page']['total-results'] = $vars['search-page']['total-with-results'] + $vars['search-page']['total-without-results'];
         // Common

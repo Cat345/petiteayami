@@ -8,12 +8,12 @@ use YOOtheme\Storage;
 
 class LibraryController
 {
-    public static function index(Request $request, Response $response, Storage $storage)
+    public static function index(Request $request, Response $response, Storage $storage): Response
     {
         return $response->withJson((object) $storage('styler.library'));
     }
 
-    public static function save(Request $request, Response $response, Storage $storage)
+    public static function save(Request $request, Response $response, Storage $storage): Response
     {
         $id = $request->getParam('id');
         $style = $request->getParam('style');
@@ -25,7 +25,7 @@ class LibraryController
         return $response->withJson(['message' => 'success']);
     }
 
-    public static function delete(Request $request, Response $response, Storage $storage)
+    public static function delete(Request $request, Response $response, Storage $storage): Response
     {
         $id = $request->getQueryParam('id');
 

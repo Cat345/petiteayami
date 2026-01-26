@@ -51,7 +51,8 @@ class BWFAN_WC_Cart_Abandoned_Date extends BWFAN_Merge_Tag {
 			return $this->parse_shortcode_output( '', $attr );
 		}
 
-		$date = $this->format_datetime( $abandoned_row_details['last_modified'], $parameters );
+		$is_gmt = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
+		$date   = $this->format_datetime( $abandoned_row_details['last_modified'], $parameters, $is_gmt );
 
 		return $this->parse_shortcode_output( $date, $attr );
 	}
@@ -64,7 +65,8 @@ class BWFAN_WC_Cart_Abandoned_Date extends BWFAN_Merge_Tag {
 	 * @return string
 	 */
 	public function get_dummy_preview( $parameters ) {
-		return $this->format_datetime( '2018-12-07 13:25:39', $parameters );
+		$is_gmt = ! empty( $parameters['is_gmt'] ) && 'false' !== $parameters['is_gmt'];
+		return $this->format_datetime( '2018-12-07 13:25:39', $parameters, $is_gmt );
 	}
 
 	/**
@@ -77,7 +79,7 @@ class BWFAN_WC_Cart_Abandoned_Date extends BWFAN_Merge_Tag {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,
@@ -104,6 +106,12 @@ class BWFAN_WC_Cart_Abandoned_Date extends BWFAN_Merge_Tag {
 				'placeholder' => 'e.g. +2 months, -1 day, +6 hours',
 				'required'    => false,
 				'toggler'     => array(),
+			],
+			[
+				'id'            => 'is_gmt',
+				'type'          => 'checkbox',
+				'checkboxlabel' => __( 'In GMT time ( Default in store time )', 'wp-marketing-automations' ),
+				'description'   => '',
 			],
 		];
 	}

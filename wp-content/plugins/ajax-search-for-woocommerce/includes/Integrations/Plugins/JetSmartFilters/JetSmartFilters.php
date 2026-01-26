@@ -26,23 +26,23 @@ class JetSmartFilters extends AbstractPluginIntegration {
 
     public function init() : void {
         // Widget: Elementor Pro Archive Products
-        add_filter( 'jet-smart-filters/query/final-query', array($this, 'filter_query') );
+        add_filter( 'jet-smart-filters/query/final-query', [$this, 'filter_query'] );
         add_filter(
             'dgwt/wcas/helpers/is_search_query',
-            array($this, 'allow_to_process_search_query'),
+            [$this, 'allow_to_process_search_query'],
             10,
             2
         );
         // Widget: JetWooBuilder Products Grid
-        add_filter( 'jet-woo-builder/shortcodes/jet-woo-products/final-query-args', array($this, 'filter_query_builder_grid'), 10 );
+        add_filter( 'jet-woo-builder/shortcodes/jet-woo-products/final-query-args', [$this, 'filter_query_builder_grid'], 10 );
         // Widget: JetWooBuilder Products List
         add_filter(
             'jet-woo-builder/shortcodes/jet-woo-products-list/query-args',
-            array($this, 'filter_query_builder_list'),
+            [$this, 'filter_query_builder_list'],
             10,
             2
         );
-        add_filter( 'jet-smart-filters/filters/localized-data', array($this, 'jet_smart_filter_settings'), 10 );
+        add_filter( 'jet-smart-filters/filters/localized-data', [$this, 'jet_smart_filter_settings'], 10 );
     }
 
     /**
@@ -55,7 +55,7 @@ class JetSmartFilters extends AbstractPluginIntegration {
      * @return array
      */
     public function filter_query( $query ) {
-        if ( isset( $_POST['action'] ) && $_POST['action'] === 'jet_smart_filters' && isset( $_POST['provider'] ) && in_array( $_POST['provider'], array('epro-archive-products/default', 'jet-engine/default') ) && !empty( $_POST['defaults']['s'] ) ) {
+        if ( isset( $_POST['action'] ) && $_POST['action'] === 'jet_smart_filters' && isset( $_POST['provider'] ) && in_array( $_POST['provider'], ['epro-archive-products/default', 'jet-engine/default'] ) && !empty( $_POST['defaults']['s'] ) ) {
             $query['run_wcas_search'] = true;
         }
         return $query;
@@ -96,11 +96,11 @@ class JetSmartFilters extends AbstractPluginIntegration {
     public function filter_query_builder_grid( $query_args ) {
         $phrase = false;
         if ( $this->is_jet_woo_products_query( $query_args, 'jet-woo-products-grid/default' ) ) {
+            //phpcs:ignore WordPress.Security.NonceVerification.Recommended
             $phrase = $_GET['s'];
-        } else {
-            if ( $this->is_jet_woo_products_ajax_query( $query_args, 'jet-woo-products-grid/default' ) ) {
-                $phrase = $_POST['settings']['dgwt_wcas_s'];
-            }
+        } elseif ( $this->is_jet_woo_products_ajax_query( $query_args, 'jet-woo-products-grid/default' ) ) {
+            //phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $phrase = $_POST['settings']['dgwt_wcas_s'];
         }
         if ( $phrase ) {
             if ( !dgoraAsfwFs()->is_premium() ) {
@@ -121,11 +121,11 @@ class JetSmartFilters extends AbstractPluginIntegration {
     public function filter_query_builder_list( $query_args, $products_list_shortcode ) {
         $phrase = false;
         if ( $this->is_jet_woo_products_query( $query_args, 'jet-woo-products-list/default' ) ) {
+            //phpcs:ignore WordPress.Security.NonceVerification.Recommended
             $phrase = $_GET['s'];
-        } else {
-            if ( $this->is_jet_woo_products_ajax_query( $query_args, 'jet-woo-products-list/default' ) ) {
-                $phrase = $_POST['settings']['dgwt_wcas_s'];
-            }
+        } elseif ( $this->is_jet_woo_products_ajax_query( $query_args, 'jet-woo-products-list/default' ) ) {
+            //phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $phrase = $_POST['settings']['dgwt_wcas_s'];
         }
         if ( $phrase ) {
             if ( !dgoraAsfwFs()->is_premium() ) {
@@ -146,6 +146,7 @@ class JetSmartFilters extends AbstractPluginIntegration {
      * @return array
      */
     public function jet_smart_filter_settings( $settings ) {
+        //phpcs:disable WordPress.Security.NonceVerification.Recommended
         if ( Helpers::isProductSearchPage() ) {
             if ( isset( $settings['settings']['jet-woo-products-grid']['default'] ) && !empty( $_GET['s'] ) ) {
                 $settings['settings']['jet-woo-products-grid']['default']['dgwt_wcas_s'] = $_GET['s'];
@@ -154,6 +155,7 @@ class JetSmartFilters extends AbstractPluginIntegration {
                 $settings['settings']['jet-woo-products-list']['default']['dgwt_wcas_s'] = $_GET['s'];
             }
         }
+        //phpcs:enable
         return $settings;
     }
 
@@ -162,7 +164,9 @@ class JetSmartFilters extends AbstractPluginIntegration {
     }
 
     private function is_jet_woo_products_ajax_query( $query_args, $type ) {
+        //phpcs:disable WordPress.Security.NonceVerification.Missing
         return isset( $_POST['settings']['dgwt_wcas_s'] ) && !empty( $_POST['settings']['dgwt_wcas_s'] ) && isset( $query_args['jet_smart_filters'] ) && $query_args['jet_smart_filters'] === $type;
+        //phpcs:enable
     }
 
 }

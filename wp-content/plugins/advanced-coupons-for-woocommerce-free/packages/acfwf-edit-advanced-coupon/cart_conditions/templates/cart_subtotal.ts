@@ -1,4 +1,4 @@
-import { condition_options } from "../../helper";
+import { condition_options } from '../../helper';
 
 declare var acfw_edit_coupon: any;
 
@@ -11,8 +11,11 @@ declare var acfw_edit_coupon: any;
  */
 export default function cart_subtotal_template(data: any): string {
   const { condition, value, include_tax } = data;
-  const { cart_condition_fields, condition_label } = acfw_edit_coupon;
+  const { cart_condition_fields, condition_label, default_include_tax } = acfw_edit_coupon;
   const { title, desc, field, tax_label } = cart_condition_fields.cart_subtotal;
+
+  // if include_tax is undefined, get the value from the woocommerce settings backend
+  const include_tax_value = include_tax ?? default_include_tax;
 
   return `
     <div class="cart-subtotal-field condition-field" data-type="cart-subtotal">
@@ -27,11 +30,11 @@ export default function cart_subtotal_template(data: any): string {
     </div>
     <div class="field-control">
       <label>${field}</label>
-      <input class="condition-value wc_input_price" type="text" value="${value ? value : ""}">
+      <input class="condition-value wc_input_price" type="text" value="${value ? value : ''}">
     </div>
     <div class="field-control no-label">
-      <label><input type="checkbox" class="condition-include-tax" type="checkbox" ${
-        "yes" === include_tax ? "checked" : ""
+      <label><input type="checkbox" class="condition-include-tax" ${
+        'yes' === include_tax_value ? 'checked' : ''
       } /> ${tax_label}</label>
     </div>
     </div>

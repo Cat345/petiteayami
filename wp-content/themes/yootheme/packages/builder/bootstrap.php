@@ -4,6 +4,7 @@ namespace YOOtheme\Builder;
 
 use YOOtheme\Builder;
 use YOOtheme\Config;
+use YOOtheme\Theme\ThemeConfig;
 use YOOtheme\View;
 
 return [
@@ -17,13 +18,22 @@ return [
     'events' => [
         'customizer.init' => [
             Listener\LoadBuilderData::class => ['@handle', -10],
+            Listener\LoadLeafletScript::class => '@handle',
+            Listener\LoadGoogleMapsScript::class => '@handle',
+            Listener\LoadYoutubeScript::class => '@handle',
+        ],
+
+        ThemeConfig::class => [
+            Listener\LoadLeafletScript::class => 'config',
+            Listener\LoadGoogleMapsScript::class => 'config',
+            Listener\LoadYoutubeScript::class => 'config',
         ],
     ],
 
     'extend' => [
         View::class => function (View $view, $app) {
             $builder = function ($node, $params = []) use ($app) {
-                // support old builder arguments
+                // Deprecated: support old builder arguments
                 if (!is_string($node)) {
                     $node = json_encode($node);
                 }
@@ -41,12 +51,28 @@ return [
 
     'services' => [
         Builder::class => function (View $view, Config $config, UpdateTransform $update) {
-            $config->addFile('builder', __DIR__ . '/config/builder.json');
+            $config->addFile('builder', __DIR__ . '/config/builder.php');
 
             // Deprecated: BC support e.g. `${builder:margin}` config interpolation in element json files.
             $config->addFilter('builder', fn($value) => $config->get("builder.{$value}"));
 
-            $builder = new Builder([$config, 'loadFile'], [$view, 'render']);
+            $loader = function ($file) use ($config) {
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+
+                if ($extension === 'php') {
+                    $value = @include $file;
+
+                    if (is_array($value)) {
+                        return ['file' => $file] + $value;
+                    }
+
+                    return $value;
+                }
+
+                return $config->loadFile($file);
+            };
+
+            $builder = new Builder($loader, [$view, 'render']);
             $builder->addTransform('preload', $update);
             $builder->addTransform('preload', new DefaultTransform());
             if ($config('app.isCustomizer')) {
@@ -62,12 +88,67 @@ return [
             $builder->addTransform('render', new ElementTransform($view));
             $builder->addTransform('render', [CollapseTransform::class, 'render']);
             $builder->addTransform('render', new VisibilityTransform());
-            $builder->addTypePath(__DIR__ . '/elements/*/element.json');
+
+            $elements = [
+                'accordion',
+                'accordion_item',
+                'alert',
+                'button',
+                'button_item',
+                'code',
+                'column',
+                'countdown',
+                'description_list',
+                'description_list_item',
+                'divider',
+                'fragment',
+                'gallery',
+                'gallery_item',
+                'grid',
+                'grid_item',
+                'headline',
+                'html',
+                'icon',
+                'image',
+                'layout',
+                'list',
+                'list_item',
+                'map',
+                'map_item',
+                'nav',
+                'nav_item',
+                'overlay-slider',
+                'overlay-slider_item',
+                'overlay',
+                'panel-slider',
+                'panel-slider_item',
+                'panel',
+                'popover',
+                'popover_item',
+                'quotation',
+                'row',
+                'section',
+                'slideshow',
+                'slideshow_item',
+                'social',
+                'social_item',
+                'subnav',
+                'subnav_item',
+                'switcher',
+                'switcher_item',
+                'table',
+                'table_item',
+                'text',
+                'totop',
+                'video',
+            ];
+
+            foreach ($elements as $element) {
+                $builder->addType($element, __DIR__ . "/elements/{$element}/element.php");
+            }
 
             return $builder;
         },
-
-        BuilderConfig::class => '',
 
         UpdateTransform::class => function (Config $config) {
             $update = new UpdateTransform($config('theme.version', ''));

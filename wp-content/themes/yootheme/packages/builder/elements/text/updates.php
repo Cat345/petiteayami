@@ -3,9 +3,16 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.0.1' => function ($node) {
+        if ($node->props['height_expand'] ?? '') {
+            $node->props['push'] = true;
+            unset($node->props['height_expand']);
+        }
+    },
+
     '2.8.0-beta.0.13' => function ($node) {
-        if (Arr::get($node->props, 'text_size') && !Arr::get($node->props, 'text_style')) {
-            $node->props['text_style'] = Arr::get($node->props, 'text_size');
+        if (($node->props['text_size'] ?? '') && !($node->props['text_style'] ?? '')) {
+            $node->props['text_style'] = $node->props['text_size'];
         }
         unset($node->props['text_size']);
     },

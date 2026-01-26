@@ -25,6 +25,10 @@ abstract class AbstractPluginIntegration {
 		return $minVersion === '' ? true : version_compare( $version, $minVersion, '>=' );
 	}
 
+	public static function shouldInitLate() : bool {
+		return false;
+	}
+
 	public static function pluginVersion(): string {
 		$const = static::VERSION_CONST;
 		if ( $const !== '' && defined( $const ) ) {
@@ -49,15 +53,18 @@ abstract class AbstractPluginIntegration {
 			return;
 		}
 
-		add_filter( 'dgwt/wcas/troubleshooting/unsupported_plugin_versions', function ( $list ) use ( $currentVersion, $minVersion ) {
-			$list[] = [
-				'name'           => static::label(),
-				'currentVersion' => $currentVersion,
-				'minimumVersion' => $minVersion,
-			];
+		add_filter(
+			'dgwt/wcas/troubleshooting/unsupported_plugin_versions',
+			function ( $list ) use ( $currentVersion, $minVersion ) {
+				$list[] = [
+					'name'           => static::label(),
+					'currentVersion' => $currentVersion,
+					'minimumVersion' => $minVersion,
+				];
 
-			return $list;
-		} );
+				return $list;
+			}
+		);
 	}
 
 	abstract public function init(): void;

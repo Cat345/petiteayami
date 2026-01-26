@@ -16,36 +16,45 @@ function fibosearchKadenceRenderColor( $color ) {
 	return $color;
 }
 
-add_action( 'after_setup_theme', function () {
-	remove_action( 'kadence_header_search', 'Kadence\header_search' );
-} );
-
-add_action( 'kadence_header_search', function () {
-	echo do_shortcode( '[fibosearch layout="icon"]' );
-} );
-
-add_action( 'wp_footer', function () {
-	$color      = '';
-	$hoverColor = '';
-	if ( function_exists( 'Kadence\kadence' ) ) {
-		$color      = Kadence\kadence()->sub_option( 'header_search_color', 'color' );
-		$hoverColor = Kadence\kadence()->sub_option( 'header_search_color', 'hover' );
+add_action(
+	'after_setup_theme',
+	function () {
+		remove_action( 'kadence_header_search', 'Kadence\header_search' );
 	}
-	?>
+);
+
+add_action(
+	'kadence_header_search',
+	function () {
+		echo do_shortcode( '[fibosearch layout="icon"]' );
+	}
+);
+
+add_action(
+	'wp_footer',
+	function () {
+		$color      = '';
+		$hoverColor = '';
+		if ( function_exists( 'Kadence\kadence' ) ) {
+			$color      = Kadence\kadence()->sub_option( 'header_search_color', 'color' );
+			$hoverColor = Kadence\kadence()->sub_option( 'header_search_color', 'hover' );
+		}
+		?>
 	<style>
-		<?php if (!empty($color)) { ?>
+		<?php if ( ! empty( $color ) ) { ?>
 		.dgwt-wcas-search-icon path {
-			fill: <?php echo fibosearchKadenceRenderColor($color); ?>;
+			fill: <?php echo fibosearchKadenceRenderColor( $color ); ?>;
 		}
 
 		<?php } ?>
 
-		<?php if (!empty($hoverColor)) { ?>
+		<?php if ( ! empty( $hoverColor ) ) { ?>
 		.dgwt-wcas-search-icon:hover path {
-			fill: <?php echo fibosearchKadenceRenderColor($hoverColor); ?>;
+			fill: <?php echo fibosearchKadenceRenderColor( $hoverColor ); ?>;
 		}
 
 		<?php } ?>
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

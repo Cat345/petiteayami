@@ -31,12 +31,12 @@ class EANForWooCommerce extends AbstractPluginIntegration {
         // Disable plugin hook on WP_Query.
         if ( !is_admin() ) {
             if ( isset( alg_wc_ean()->core->search ) && get_option( 'alg_wc_ean_frontend_search', 'no' ) === 'yes' ) {
-                remove_action( 'pre_get_posts', array(alg_wc_ean()->core->search, 'search'), 10 );
+                remove_action( 'pre_get_posts', [alg_wc_ean()->core->search, 'search'], 10 );
                 if ( !dgoraAsfwFs()->is_premium() ) {
-                    add_filter( 'dgwt/wcas/native/search_query/join', array($this, 'searchQueryJoin') );
+                    add_filter( 'dgwt/wcas/native/search_query/join', [$this, 'searchQueryJoin'] );
                     add_filter(
                         'dgwt/wcas/native/search_query/search_or',
-                        array($this, 'searchQueryOr'),
+                        [$this, 'searchQueryOr'],
                         10,
                         2
                     );
@@ -75,9 +75,9 @@ class EANForWooCommerce extends AbstractPluginIntegration {
             return $search;
         }
         if ( strpos( $search, 'dgwt_wcasmsku' ) !== false ) {
-            $search .= $wpdb->prepare( " OR (dgwt_wcasmsku.meta_key=%s AND dgwt_wcasmsku.meta_value LIKE %s)", $field, $like );
+            $search .= $wpdb->prepare( ' OR (dgwt_wcasmsku.meta_key=%s AND dgwt_wcasmsku.meta_value LIKE %s)', $field, $like );
         } else {
-            $search .= $wpdb->prepare( " OR (dgwt_wcasmean.meta_key=%s AND dgwt_wcasmean.meta_value LIKE %s)", $field, $like );
+            $search .= $wpdb->prepare( ' OR (dgwt_wcasmean.meta_key=%s AND dgwt_wcasmean.meta_value LIKE %s)', $field, $like );
         }
         return $search;
     }

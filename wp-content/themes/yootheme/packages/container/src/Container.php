@@ -2,6 +2,7 @@
 
 namespace YOOtheme;
 
+use Closure;
 use Psr\Container\ContainerInterface;
 use YOOtheme\Container\BadFunctionCallException;
 use YOOtheme\Container\InvalidArgumentException;
@@ -14,39 +15,36 @@ use YOOtheme\Container\ServiceNotFoundException;
 class Container implements ContainerInterface
 {
     /**
-     * @var array
+     * @var array<string, string>
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
-     * @var array
+     * @var array<string, Service>
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
-     * @var array
+     * @var array<string, list<callable>>
      */
-    protected $extenders = [];
+    protected array $extenders = [];
 
     /**
-     * @var array
+     * @var array<string, object|null>
      */
-    protected $instances = [];
+    protected array $instances = [];
 
     /**
-     * @var array
+     * @var array<string, true|object|null>
      */
-    protected $resolving = [];
+    protected array $resolving = [];
 
     /**
      * Gets a service.
      *
-     * @param string $id
-     * @param string ...$ids
-     *
-     * @return mixed
+     * @return mixed|array
      */
-    public function __invoke($id, ...$ids)
+    public function __invoke(string $id, string ...$ids)
     {
         return $ids ? array_map([$this, 'get'], [$id, ...$ids]) : $this->get($id);
     }
@@ -54,23 +52,17 @@ class Container implements ContainerInterface
     /**
      * Gets a service.
      *
-     * @param string $id
-     *
      * @return mixed
      */
-    public function __get($id)
+    public function __get(string $id)
     {
         return $this->get($id);
     }
 
     /**
      * Checks if service exists.
-     *
-     * @param string $id
-     *
-     * @return bool
      */
-    public function __isset($id)
+    public function __isset(string $id): bool
     {
         return $this->has($id);
     }
@@ -94,12 +86,11 @@ class Container implements ContainerInterface
     /**
      * Sets a service instance.
      *
-     * @param string $id
      * @param mixed  $instance
      *
      * @return mixed
      */
-    public function set($id, $instance)
+    public function set(string $id, $instance)
     {
         unset($this->aliases[$id]);
 
@@ -109,18 +100,15 @@ class Container implements ContainerInterface
     /**
      * Adds a service definition.
      *
-     * @param string                  $id
-     * @param string|callable|Service $service
-     * @param bool                    $shared
-     *
-     * @return Service
+     * @param string|Closure|Service $service
      */
-    public function add($id, $service = null, $shared = true)
+    public function add(string $id, $service = null, bool $shared = true): Service
     {
         if (is_string($service) || is_null($service)) {
             $service = new Service($service ?: $id, $shared);
-        } elseif ($service instanceof \Closure) {
+        } elseif ($service instanceof Closure) {
             $service = (new Service($id, $shared))->setFactory($service);
+            //@phpstan-ignore instanceof.alwaysTrue
         } elseif (!$service instanceof Service) {
             throw new InvalidArgumentException('Service definition must be string or Closure');
         }
@@ -132,11 +120,8 @@ class Container implements ContainerInterface
 
     /**
      * Adds a callback to extend a service.
-     *
-     * @param string   $id
-     * @param callable $callback
      */
-    public function extend($id, callable $callback)
+    public function extend(string $id, callable $callback): void
     {
         $id = $this->getAlias($id);
 
@@ -155,24 +140,16 @@ class Container implements ContainerInterface
 
     /**
      * Checks if a service is shared.
-     *
-     * @param string $id
-     *
-     * @return bool
      */
-    public function isShared($id)
+    public function isShared(string $id): bool
     {
         return !empty($this->services[$id]->shared) || isset($this->instances[$id]);
     }
 
     /**
      * Checks if an alias exists.
-     *
-     * @param string $id
-     *
-     * @return bool
      */
-    public function isAlias($id)
+    public function isAlias(string $id): bool
     {
         return isset($this->aliases[$id]);
     }
@@ -180,13 +157,9 @@ class Container implements ContainerInterface
     /**
      * Gets an alias.
      *
-     * @param string $alias
-     *
      * @throws LogicException
-     *
-     * @return string
      */
-    public function getAlias($alias)
+    public function getAlias(string $alias): string
     {
         if (!isset($this->aliases[$alias])) {
             return $alias;
@@ -201,11 +174,8 @@ class Container implements ContainerInterface
 
     /**
      * Sets an alias.
-     *
-     * @param string $id
-     * @param string $alias
      */
-    public function setAlias($id, $alias)
+    public function setAlias(string $id, string $alias): void
     {
         $this->aliases[$alias] = $id;
     }
@@ -214,10 +184,8 @@ class Container implements ContainerInterface
      * Gets a callback from service@method or service::method syntax.
      *
      * @param callable|string $callback
-     *
-     * @return callable|null
      */
-    public function callback($callback)
+    public function callback($callback): ?callable
     {
         if (is_string($callback)) {
             if (str_contains($callback, '::')) {
@@ -240,20 +208,19 @@ class Container implements ContainerInterface
      * Calls the callback with given parameters.
      *
      * @param callable|string $callback
-     * @param array           $parameters
-     * @param bool            $resolve
-     *
-     * @throws \Exception
+     * @param list<mixed> $parameters
      *
      * @return mixed
+     *
+     * @throws BadFunctionCallException
      */
-    public function call($callback, array $parameters = [], $resolve = true)
+    public function call($callback, array $parameters = [], bool $resolve = true)
     {
         if (!($callable = $this->callback($callback))) {
             throw BadFunctionCallException::create($callback);
         }
 
-        if ($resolve) {
+        if ($resolve && ParameterResolver::needsResolving($callable)) {
             $resolver = new ParameterResolver($this);
             $function = Reflection::getFunction($callable);
             $parameters = $resolver->resolve($function, $parameters);
@@ -265,13 +232,12 @@ class Container implements ContainerInterface
     /**
      * Wraps the callback with optional parameter resolving.
      *
-     * @param callable|string $callback
-     * @param array           $parameters
-     * @param bool            $resolve
+     * @param callable|string       $callback
+     * @param list<mixed> $parameters
      *
      * @return callable
      */
-    public function wrap($callback, array $parameters = [], $resolve = true)
+    public function wrap($callback, array $parameters = [], bool $resolve = true): callable
     {
         return fn(
             ...$params
@@ -281,14 +247,11 @@ class Container implements ContainerInterface
     /**
      * Resolves a service from the container.
      *
-     * @param string $id
-     *
-     * @throws \Exception
-     * @throws \ReflectionException
-     *
      * @return mixed
+     *
+     * @throws \ReflectionException
      */
-    public function resolve($id)
+    public function resolve(string $id)
     {
         $id = $this->getAlias($id);
 
@@ -326,14 +289,10 @@ class Container implements ContainerInterface
     /**
      * Resolves a service instance.
      *
-     * @param string $id
-     *
      * @throws \Exception
      * @throws \ReflectionException
-     *
-     * @return mixed
      */
-    protected function resolveService($id)
+    protected function resolveService(string $id): ?object
     {
         if (empty($this->services[$id]) && !class_exists($id)) {
             throw new ServiceNotFoundException("Service '{$id}' not found");

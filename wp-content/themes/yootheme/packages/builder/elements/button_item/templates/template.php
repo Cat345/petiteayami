@@ -3,35 +3,39 @@
 $props['id'] = "js-{$this->uid()}";
 
 // Button
-$button = $this->el('a', [
+$el = $this->el('a', [
 
-    'class' => $this->expr([
+    'class' => [
         'el-content',
         'uk-width-1-1 {@fullwidth}',
         'uk-{button_style: link-\w+}' => ['button_style' => $props['button_style']],
         'uk-button uk-button-{!button_style: |link-\w+} [uk-button-{button_size}]' => ['button_style' => $props['button_style']],
         'uk-flex-inline uk-flex-center uk-flex-middle' => $props['content'] && $props['icon'],
-    ], $element),
+    ],
 
-    'title' => ['{link_title}'],
-    'aria-label' => ['{link_aria_label}'],
+    'title' => $props['link_title'],
+    'aria-label' => $props['link_aria_label'],
 
 ]);
 
-
-if (($props['link'] && $props['link_target'] == 'modal') ||
+if (($props['link'] && $props['lightbox']) ||
     (!$props['link'] && $props['dialog'] && in_array($props['dialog_layout'], ['modal', 'offcanvas']))) {
 
-    $button->attr([
-        'href' => ['#{id}'],
+    $el->attr([
+        'href' => "#{$props['id']}",
         'uk-toggle' => true,
     ]);
 
 } else {
 
-    $button->attr([
-        'href' => ['{link}'],
-        'target' => ['_blank {@link_target}'],
+    $el->attr([
+        'href' => $props['link'],
+        'target' => $props['link_target'] ? '_blank' : false,
+        'download' => $props['link_download'],
+        'rel' => [
+            'nofollow' => $props['link_rel_nofollow'],
+            'noreferrer' => $props['link_rel_noreferrer']
+        ],
         'uk-scroll' => str_contains((string) $props['link'], '#'),
     ]);
 
@@ -41,8 +45,8 @@ if (($props['link'] && $props['link_target'] == 'modal') ||
 $icon = $this->el('span', [
 
     'class' => [
-        'uk-margin-small-right' => $props['content'] && $props['icon_align'] == 'left',
-        'uk-margin-small-left' => $props['content'] && $props['icon_align'] == 'right',
+        'uk-margin-xsmall-right' => $props['content'] && $props['icon_align'] == 'left',
+        'uk-margin-xsmall-left' => $props['content'] && $props['icon_align'] == 'right',
     ],
     'uk-icon' => $props['icon'],
 
@@ -50,7 +54,7 @@ $icon = $this->el('span', [
 
 ?>
 
-<?= $button($props, $attrs) ?>
+<?= $el($element, $attrs) ?>
 
     <?php if ($props['icon'] && $props['icon_align'] == 'left') : ?>
     <?= $icon($props, '') ?>
@@ -64,9 +68,9 @@ $icon = $this->el('span', [
     <?= $icon($props, '') ?>
     <?php endif ?>
 
-<?= $button->end() ?>
+<?= $el->end() ?>
 
-<?php if (($props['link'] && $props['link_target'] == 'modal') || (!$props['link'] && $props['dialog'] && $props['dialog_layout'] == 'modal')) : ?>
+<?php if (($props['link'] && $props['lightbox']) || (!$props['link'] && $props['dialog'] && $props['dialog_layout'] == 'modal')) : ?>
 <?= $this->render("{$__dir}/template-modal", compact('props')) ?>
 <?php endif ?>
 

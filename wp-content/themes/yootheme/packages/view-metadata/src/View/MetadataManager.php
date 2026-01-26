@@ -9,23 +9,25 @@ use YOOtheme\Metadata;
  * Manages HTML elements belonging to the metadata content category.
  *
  * @link https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Content_categories#Metadata_content
+ *
+ * @implements \IteratorAggregate<string, MetadataObject>
  */
 class MetadataManager implements Metadata, \IteratorAggregate
 {
     /**
-     * @var array
+     * @var list<string>
      */
     protected $prefix = ['article', 'fb', 'og', 'twitter'];
 
     /**
-     * @var array
+     * @var array<string, MetadataObject>
      */
     protected $metadata = [];
 
     /**
      * @inheritdoc
      */
-    public function all(...$names)
+    public function all(string ...$names): array
     {
         if (!$names) {
             return $this->metadata;
@@ -52,7 +54,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function get($name)
+    public function get(string $name): ?MetadataObject
     {
         return $this->metadata[$name] ?? null;
     }
@@ -60,7 +62,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function set($name, $value, array $attributes = [])
+    public function set(string $name, $value, array $attributes = []): MetadataObject
     {
         if (is_array($value) && !is_callable($value)) {
             [$value, $attributes] = [null, array_merge($value, $attributes)];
@@ -76,7 +78,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function del($name)
+    public function del(string $name): void
     {
         unset($this->metadata[$name]);
     }
@@ -84,7 +86,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function merge(array $metadata)
+    public function merge(array $metadata): void
     {
         foreach ($metadata as $name => $value) {
             $this->set($name, $value);
@@ -94,7 +96,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function filter(callable $filter)
+    public function filter(callable $filter): array
     {
         return array_filter($this->metadata, $filter);
     }
@@ -102,7 +104,7 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function render()
+    public function render(): string
     {
         return join("\n", $this->metadata);
     }
@@ -110,22 +112,17 @@ class MetadataManager implements Metadata, \IteratorAggregate
     /**
      * Returns an iterator for metadata tags.
      *
-     * @return \ArrayIterator
+     * @return \ArrayIterator<string, MetadataObject>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->metadata);
     }
 
     /**
      * Resolves the metadata.
-     *
-     * @param MetadataObject $metadata
-     *
-     * @return MetadataObject
      */
-    protected function resolveMetadata(MetadataObject $metadata)
+    protected function resolveMetadata(MetadataObject $metadata): MetadataObject
     {
         if (is_string($metadata->value)) {
             $metadata = $this->resolveAttributes($metadata);
@@ -144,12 +141,8 @@ class MetadataManager implements Metadata, \IteratorAggregate
 
     /**
      * Resolve the metadata attributes.
-     *
-     * @param MetadataObject $metadata
-     *
-     * @return MetadataObject
      */
-    protected function resolveAttributes($metadata)
+    protected function resolveAttributes(MetadataObject $metadata): MetadataObject
     {
         if ($metadata->tag === 'base') {
             return $metadata->withAttributes([

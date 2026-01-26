@@ -2,18 +2,19 @@
 
 namespace YOOtheme\Builder\Source\Filesystem\Type;
 
-use function YOOtheme\app;
 use YOOtheme\Builder\Source\Filesystem\FileHelper;
+use function YOOtheme\app;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class FileQueryType
 {
     /**
-     * @param string $rootDir
-     *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config($rootDir)
+    public static function config(string $rootDir): array
     {
         return [
             'fields' => [
@@ -97,9 +98,13 @@ class FileQueryType
         ];
     }
 
+    /**
+     * @param mixed $root
+     * @param array<string, mixed> $args
+     * @return ?string
+     */
     public static function resolve($root, array $args)
     {
-        $files = app(FileHelper::class)->query(['limit' => 1] + $args);
-        return array_shift($files);
+        return array_first(app(FileHelper::class)->query(['limit' => 1] + $args));
     }
 }

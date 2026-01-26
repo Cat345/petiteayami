@@ -6,13 +6,15 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Trackingmeta' ) && BWFAN_Common::is
 
 		static function get_meta( $con_id, $key = '' ) {
 			global $wpdb;
-			$table          = self::_table();
-			$meta_key_query = '';
+			$table = self::_table();
+
 			if ( ! empty( $key ) ) {
-				$meta_key_query = "meta_key = '$key'";
+				$query = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$table} WHERE meta_key = %s AND eid = %d", $key, $con_id ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			} else {
+				$query = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$table} WHERE eid = %d", $con_id ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 
-			return $wpdb->get_results( "SELECT meta_key, meta_value from $table WHERE $meta_key_query AND eid=$con_id", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		static function get_merge_tags( $con_id ) {

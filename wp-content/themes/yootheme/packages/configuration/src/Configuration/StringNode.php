@@ -4,23 +4,19 @@ namespace YOOtheme\Configuration;
 
 class StringNode extends Node
 {
-    /**
-     * @var string
-     */
-    protected $format;
+    protected string $format;
 
     /**
-     * @var array
+     * @var list<FilterNode|VariableNode>
      */
-    protected $arguments;
+    protected array $arguments;
 
     /**
      * Constructor.
      *
-     * @param string $format
-     * @param array  $arguments
+     * @param list<FilterNode|VariableNode> $arguments
      */
-    public function __construct($format, array $arguments = [])
+    public function __construct(string $format, array $arguments = [])
     {
         $this->format = $format;
         $this->arguments = $arguments;
@@ -40,7 +36,7 @@ class StringNode extends Node
     /**
      * @inheritdoc
      */
-    public function compile(array $params)
+    public function compile(array $params): string
     {
         $arguments = array_merge([$this->format], $this->arguments);
         $arguments = $this->compileArgs($arguments, $params);

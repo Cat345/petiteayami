@@ -36,27 +36,19 @@ class Configuration extends Repository implements Config
 
     public const REGEX_STRING = '/\${((?:\w+:)+)?\s*([^}]+)}/S';
 
-    /**
-     * @var Filter
-     */
-    protected $filter;
+    protected Filter $filter;
+
+    protected Resolver $resolver;
 
     /**
-     * @var Resolver
+     * @var array<string>
      */
-    protected $resolver;
-
-    /**
-     * @var array
-     */
-    protected $cache = [];
+    protected array $cache = [];
 
     /**
      * Constructor.
-     *
-     * @param string $cache
      */
-    public function __construct($cache = null)
+    public function __construct(?string $cache = null)
     {
         $values = [
             'env' => $_ENV,
@@ -85,7 +77,7 @@ class Configuration extends Repository implements Config
     /**
      * @inheritdoc
      */
-    public function addFilter($name, callable $filter)
+    public function addFilter(string $name, callable $filter)
     {
         $this->filter->add($name, $filter);
 
@@ -95,7 +87,7 @@ class Configuration extends Repository implements Config
     /**
      * @inheritdoc
      */
-    public function addFile($index, $file, $replace = true)
+    public function addFile(string $index, string $file, bool $replace = true)
     {
         return $this->add($index, $this->loadFile($file), $replace);
     }
@@ -103,14 +95,13 @@ class Configuration extends Repository implements Config
     /**
      * @inheritdoc
      */
-    public function loadFile($file)
+    public function loadFile(string $file): array
     {
         // load file config
         $config = $this->resolver->loadFile($file);
         $config = $this->resolveExtend($config);
-        $config = $this->resolveImport($config);
 
-        return $config;
+        return $this->resolveImport($config);
     }
 
     /**
@@ -174,7 +165,7 @@ class Configuration extends Repository implements Config
      * Resolves and evaluates values.
      *
      * @param mixed $value
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return mixed
      */
@@ -185,13 +176,8 @@ class Configuration extends Repository implements Config
 
     /**
      * Resolves "path: dir/myfile.php" filter.
-     *
-     * @param string $value
-     * @param string $file
-     *
-     * @return string
      */
-    public function resolvePath($value, $file)
+    public function resolvePath(string $value, string $file): string
     {
         return Path::resolve(dirname($file), $value);
     }
@@ -199,39 +185,31 @@ class Configuration extends Repository implements Config
     /**
      * Resolves "glob: dir/file*.php" filter.
      *
-     * @param string $value
-     * @param string $file
-     *
      * @return string[]
      */
-    public function resolveGlob($value, $file)
+    public function resolveGlob(string $value, string $file): array
     {
-        return glob(Path::resolve(dirname($file), $value)) ?: [];
+        return glob($this->resolvePath($value, $file)) ?: [];
     }
 
     /**
      * Resolves "load: dir/file.php" filter.
      *
-     * @param string $value
-     * @param string $file
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function resolveLoad($value, $file)
+    public function resolveLoad(string $value, string $file): array
     {
-        return $this->loadFile(Path::resolve(dirname($file), $value));
+        return $this->loadFile($this->resolvePath($value, $file));
     }
 
     /**
      * Resolves "@extend" in config array.
      *
-     * @param array $config
+     * @param array<string, mixed> $config
      *
-     * @throws \RuntimeException
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function resolveExtend(array $config)
+    protected function resolveExtend(array $config): array
     {
         $extends = $config['@extend'] ?? [];
 
@@ -247,13 +225,11 @@ class Configuration extends Repository implements Config
     /**
      * Resolves "@import" in config array.
      *
-     * @param array $config
+     * @param array<string, mixed> $config
      *
-     * @throws \RuntimeException
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function resolveImport(array $config)
+    protected function resolveImport(array $config): array
     {
         $imports = $config['@import'] ?? [];
 

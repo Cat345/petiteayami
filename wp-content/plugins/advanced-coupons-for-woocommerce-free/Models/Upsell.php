@@ -1349,8 +1349,10 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
             )
         );
 
-        // Extracted variables are defined above.
-        extract( $args ); // phpcs:ignore
+        // Replace extract() with explicit variable assignment for security.
+        $title    = isset( $args['title'] ) ? $args['title'] : '';
+        $contents = isset( $args['contents'] ) ? $args['contents'] : array();
+        $links    = isset( $args['links'] ) ? $args['links'] : array();
 
         $html  = sprintf( '<img src="%1$s" alt="%2$s" />', $this->_constants->IMAGES_ROOT_URL . '/acfw-logo.png', __( 'Advanced Coupons Premium', 'advanced-coupons-for-woocommerce-free' ) );
         $html .= sprintf( '<h3>%s</h3>', $title );

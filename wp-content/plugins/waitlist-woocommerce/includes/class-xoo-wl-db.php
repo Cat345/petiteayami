@@ -43,6 +43,7 @@
 			'email'			=> null,
 			'quantity' 		=> 1,
 			'user_id'		=> get_current_user_id(),
+			'product_name' 	=> null
 		);
 
 		$data = wp_parse_args( $data, $defaults );
@@ -121,6 +122,32 @@
 	}
 
 
+	public function get_waitlist_meta_bulk( array $xoo_wl_ids ) {
+
+		$xoo_wl_ids = array_values(
+			array_unique(
+				array_map( 'absint', $xoo_wl_ids )
+			)
+		);
+
+		if ( empty( $xoo_wl_ids ) ) {
+			return array();
+		}
+
+		// Prime meta cache (ONE query)
+		update_meta_cache( 'xoo_wl', $xoo_wl_ids );
+
+		$meta = array();
+
+		foreach ( $xoo_wl_ids as $id ) {
+			$meta[ $id ] = $this->get_waitlist_meta( $id );
+		}
+
+		return $meta;
+	}
+
+
+
 
 
 	private function get_placeholder( $input ){
@@ -146,58 +173,105 @@
 	}
 
 
-	public function get_products_waitlist( $args = array(), $output = OBJECT ){
+	public function get_products_waitlist( $args = array(), $output = OBJECT ) {
 
 		global $wpdb;
 
 		$defaults = array(
-			'limit' 	=> -1,
-			'offset' 	=> 0
+			'where'   => array(),
+			'limit'   => -1,
+			'offset'  => 0,
+			'orderby' => '',
+			'order'   => 'DESC',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-
 		extract( $args );
 
-		$values = array();
+		/* Allowed ORDER BY columns */
+		$allowed_orderby = array(
+			'product_id',
+			'quantity',
+			'entries',
+		);
+
+		/* Build WHERE */
+		$where_data = $this->build_where( $where );
 
 		$query = "
-		SELECT product_id, SUM(quantity) AS quantity, COUNT(*) AS entries FROM {$this->waitlist_table}
-		WHERE 1 = %d
-		GROUP BY product_id
+			SELECT
+				product_id,
+				SUBSTRING_INDEX(
+					GROUP_CONCAT(product_name ORDER BY join_date DESC SEPARATOR '|||'),
+					'|||',
+					1
+				) AS product_name,
+				SUM(quantity) AS quantity,
+				COUNT(*) AS entries
+			FROM {$this->waitlist_table}
+			WHERE {$where_data['query']}
+			GROUP BY product_id
 		";
 
-		$values[] = 1;
 
-		if( $limit !== -1 ){
+		$values = $where_data['values'];
+
+		/* ✅ ORDER BY */
+		if ( ! empty( $orderby ) && in_array( $orderby, $allowed_orderby, true ) ) {
+
+			$order = strtoupper( $order ) === 'ASC' ? 'ASC' : 'DESC';
+
+			$query .= " ORDER BY {$orderby} {$order}";
+		}
+
+		/* Pagination */
+		if ( $limit !== -1 ) {
 
 			$query .= " LIMIT {$this->get_placeholder( $limit )}";
 			$values[] = $limit;
 
-			if( $offset ){
+			if ( $offset ) {
 				$query .= " OFFSET {$this->get_placeholder( $offset )}";
 				$values[] = $offset;
 			}
-
 		}
 
-		$page_results = $wpdb->get_results( 
-			$wpdb->prepare(
-				$query,
-				$values
-			),
+		return $wpdb->get_results(
+			$wpdb->prepare( $query, $values ),
 			$output
 		);
-
-	
-		return $page_results;
-
 	}
 
 
-	public function get_waitlisted_count( $product_id = false ){
+
+
+
+	public function get_product_waitlist_count( $product_id ){
+		return $this->get_waitlisted_count( array(
+				'where' => array(
+					array(
+						'key' 		=> 'product_id',
+						'value' 	=> $product_id,
+						'compare' 	=> '='
+					)
+				)
+			)
+		);
+	}
+
+
+	public function get_waitlisted_count( $args = array() ){
 
 		global $wpdb;
+
+		$defaults = array(
+			'where'      => array(),
+			'relation'   => 'AND'
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		extract($args);
 
 		$query = "
 		SELECT COUNT(DISTINCT {$this->waitlist_table}.product_id) AS productsCount, COUNT(*) AS rowsCount, SUM(quantity) AS totalQuantity FROM {$this->waitlist_table}
@@ -205,17 +279,15 @@
 
 		$values = array();
 
-		$query .= " WHERE";
+		$query .= " WHERE ";
 
-		if( $product_id ){
-			$query .= " product_id = %d";
-			$values[] = $product_id;
-		}
-		else{
-			$query .= " 1 = %d";
-			$values[] = 1;
-		}
 
+		$where_build = $this->build_where( $where, $relation );
+
+		$query  .= $where_build['query'];
+		$values  = array_merge( $values, $where_build['values'] );
+
+	
 		$results = $wpdb->get_row(
 			$wpdb->prepare( 
 				$query,
@@ -281,87 +353,119 @@
 	}
 
 	public function get_waitlist_rows( $args = array(), $output = OBJECT ){
-		return $this->get_rows( $this->waitlist_table, $args );
+		return $this->get_rows( $this->waitlist_table, $args, $output );
 	}
 
 	public function get_cron_rows( $args = array(), $output = OBJECT ){
 		return $this->get_rows( $this->waitlist_crons_table, $args );
 	}
 
-	public function get_rows( $table, $args = array(), $output = OBJECT ){
-		
+
+	public function build_where( $where, $relation = 'AND' ) {
+
+		$query  = array();
+		$values = array();
+
+		if ( empty( $where ) ) {
+			return array(
+				'query'  => '1 = %d',
+				'values' => array( 1 ),
+			);
+		}
+
+		foreach ( $where as $index => $whereData ) {
+
+			/* 🔁 Nested group */
+			if ( isset( $whereData['where'] ) && is_array( $whereData['where'] ) ) {
+
+				$group_relation = strtoupper( $whereData['relation'] ?? 'AND' );
+				$nested = $this->build_where( $whereData['where'], $group_relation );
+
+				$query[]  = '( ' . $nested['query'] . ' )';
+				$values   = array_merge( $values, $nested['values'] );
+				continue;
+			}
+
+			$key     = $whereData['key'];
+			$compare = $whereData['compare'] ?? '=';
+			$value   = $whereData['value'];
+
+			$placeholder = $this->get_placeholder( $value );
+
+			$query[] = "{$key} {$compare} {$placeholder}";
+
+			if ( is_array( $value ) ) {
+				$values = array_merge( $values, $value );
+			} else {
+				$values[] = $value;
+			}
+		}
+
+		return array(
+			'query'  => implode( " {$relation} ", $query ),
+			'values' => $values,
+		);
+	}
+
+
+	public function get_rows( $table, $args = array(), $output = OBJECT ) {
+
 		global $wpdb;
 
 		$defaults = array(
-			'limit' 		=> -1,
-			'offset' 		=> 0,
-			'where' 		=> array(),
-			'meta_query' 	=> array(),
-			'relation' 		=> 'AND'
+			'limit'      => -1,
+			'offset'     => 0,
+			'orderby'    => '',
+			'order'      => 'DESC',
+			'where'      => array(),
+			'meta_query' => array(),
+			'relation'   => 'AND'
 		);
 
 		$args = wp_parse_args( $args, $defaults );
 
 		extract( $args );
 
+		$allowed_orderby = array(
+			'join_date',
+			'quantity',
+			'xoo_wl_id',
+		);
+
 		$values = array();
+		$query  = "SELECT * FROM {$table} WHERE ";
 
-		$query = "SELECT * FROM {$table}";
+		$where_build = $this->build_where( $where, $relation );
 
-		$query .= " WHERE";
+		$query  .= $where_build['query'];
+		$values  = array_merge( $values, $where_build['values'] );
 
-		if( !empty( $where ) ){
-			
-			$i = 0;
-			foreach ( $where as $index => $whereData ) {
-				if( $i > 0 ){
-					$query .= " {$relation}";
-				}
-				$query .= " {$whereData['key']}";
-				$compare = isset( $whereData['compare'] ) ? $whereData['compare'] : '=';
-				$query .= " {$compare}";
-				$query .= " {$this->get_placeholder( $whereData['value'] )}";
-				if( is_array( $whereData['value'] ) ){
-					$values = array_merge( $values, $whereData['value'] );
-				}
-				else{
-					$values[] = $whereData['value'];
-				}
-				
-				$i++;
-			}
-		}
-		else{
-			$query .= " 1 = %d";
-			$values[] = 1;
+		/* ✅ ORDER BY */
+		if ( ! empty( $orderby ) && in_array( $orderby, $allowed_orderby, true ) ) {
+
+			$order = strtoupper( $order ) === 'ASC' ? 'ASC' : 'DESC';
+
+			$query .= " ORDER BY {$orderby} {$order}";
 		}
 
-		if( $limit !== -1 ){
+		/* LIMIT & OFFSET */
+		if ( $limit !== -1 ) {
 
 			$query .= " LIMIT {$this->get_placeholder( $limit )}";
 			$values[] = $limit;
 
-			if( $offset ){
+			if ( $offset ) {
 				$query .= " OFFSET {$this->get_placeholder( $offset )}";
 				$values[] = $offset;
 			}
-
 		}
 
-
-		$results = $wpdb->get_results( 
-			$wpdb->prepare(
-				$query,
-				$values
-			),
-			$output 
+		return $wpdb->get_results(
+			$wpdb->prepare( $query, $values ),
+			$output
 		);
-
-
-		return $results;
-		
-
 	}
+
 
 	/* $where contains key value pair of column and value */
 	public function delete_waitlist_row( $where = array() ){
@@ -379,42 +483,122 @@
 	}
 
 
-	public function delete_waitlist_by_product( $product_id ){
+	/**
+	 * Delete waitlist rows and related meta
+	 *
+	 * @param array $ids Waitlist IDs
+	 *
+	 * @return bool
+	 */
+	public function delete_waitlist_rows( array $ids ) {
 
 		global $wpdb;
 
-		$product_id = (int) $product_id;
+		$ids = array_map( 'absint', $ids );
+		$ids = array_filter( $ids );
 
-
-		$users =  $this->get_waitlist_rows_by_product( $product_id );
-
-		if( empty( $users ) ) return;
-
-		$row_ids = array();
-
-		foreach ( $users as $user_row ) {
-			$row_ids[] = $user_row->xoo_wl_id;
+		if ( empty( $ids ) ) {
+			return false;
 		}
 
-		$delete_meta = $this->delete_waitlist_meta_by_row_id( $row_ids );
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
-		if( false === $delete_meta ){
-			return new WP_Error( $wpdb->last_error );
+		// Start transaction (if supported)
+		$wpdb->query( 'START TRANSACTION' );
+
+		try {
+
+			// Delete meta first
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$this->waitlist_meta_table}
+					 WHERE xoo_wl_id IN ($placeholders)",
+					$ids
+				)
+			);
+
+			// Delete main rows
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$this->waitlist_table}
+					 WHERE xoo_wl_id IN ($placeholders)",
+					$ids
+				)
+			);
+
+			$wpdb->query( 'COMMIT' );
+
+			return true;
+
+		} catch ( Exception $e ) {
+
+			$wpdb->query( 'ROLLBACK' );
+			return false;
 		}
-
-		$delete_row = $this->delete_waitlist_row(
-			array(
-				'product_id' => $product_id
-			)
-		);
-
-
-		if( false === $delete_row ){
-			return new WP_Error( $wpdb->last_error );
-		}
-
-		return true;
 	}
+
+
+
+	/**
+	 * Delete waitlist rows and related meta for multiple product IDs
+	 *
+	 * @param array $product_ids
+	 * @return bool|WP_Error
+	 */
+	public function delete_waitlist_by_products( array $product_ids ) {
+
+		global $wpdb;
+
+		$product_ids = array_map( 'absint', $product_ids );
+		$product_ids = array_filter( $product_ids );
+
+		if ( empty( $product_ids ) ) {
+			return false;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $product_ids ), '%d' ) );
+
+		$wpdb->query( 'START TRANSACTION' );
+
+		try {
+
+			/**
+			 * 1. Delete meta using JOIN (fastest, no PHP loops)
+			 */
+			$meta_sql = "
+				DELETE m
+				FROM {$this->waitlist_meta_table} m
+				INNER JOIN {$this->waitlist_table} w
+					ON w.xoo_wl_id = m.xoo_wl_id
+				WHERE w.product_id IN ($placeholders)
+			";
+
+			$wpdb->query(
+				$wpdb->prepare( $meta_sql, $product_ids )
+			);
+
+			/**
+			 * 2. Delete waitlist rows
+			 */
+			$row_sql = "
+				DELETE FROM {$this->waitlist_table}
+				WHERE product_id IN ($placeholders)
+			";
+
+			$wpdb->query(
+				$wpdb->prepare( $row_sql, $product_ids )
+			);
+
+			$wpdb->query( 'COMMIT' );
+			return true;
+
+		} catch ( Exception $e ) {
+
+			$wpdb->query( 'ROLLBACK' );
+			return new WP_Error( 'delete_failed', $e->getMessage() );
+		}
+	}
+
 
 
 
@@ -582,41 +766,42 @@
 
 
 
-	public function create_table(){
+	public function create_table() {
 
 		global $wpdb;
 
 		$version_option = 'xoo-wl-db-version';
+		$db_version     = get_option( $version_option );
 
-		$db_version 	= get_option( $version_option );
-
-		if( version_compare( $db_version, '1.1', '=' ) ) return;
+		// Only run if upgrade is needed
+		if ( version_compare( $db_version, '1.2', '>=' ) ) {
+			return;
+		}
 
 		$charset_collate = $wpdb->get_charset_collate();
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$sql = "CREATE TABLE {$this->waitlist_table} (
 			xoo_wl_id BIGINT(20) UNSIGNED AUTO_INCREMENT,
 			product_id BIGINT(20) UNSIGNED NOT NULL,
+			product_name VARCHAR(255) NOT NULL DEFAULT '',
 			email VARCHAR(100) NOT NULL,
 			quantity FLOAT(20) UNSIGNED NOT NULL,
 			join_date DATETIME NOT NULL,
 			user_id BIGINT(20) UNSIGNED NOT NULL,
-			INDEX product_id (product_id),
-			PRIMARY KEY  (xoo_wl_id)
-			) $charset_collate;";
-
+			PRIMARY KEY  (xoo_wl_id),
+			KEY product_id (product_id)
+		) $charset_collate;";
 
 		$sql .= "CREATE TABLE {$this->waitlist_meta_table} (
 			meta_id BIGINT(20) UNSIGNED AUTO_INCREMENT,
 			xoo_wl_id BIGINT(20) UNSIGNED NOT NULL,
 			meta_key VARCHAR(255),
 			meta_value LONGTEXT,
-			INDEX meta_key (meta_key),
-			INDEX xoo_wl_id (xoo_wl_id),
-			PRIMARY KEY  (meta_id)
-			) $charset_collate;";
-
+			PRIMARY KEY  (meta_id),
+			KEY meta_key (meta_key),
+			KEY xoo_wl_id (xoo_wl_id)
+		) $charset_collate;";
 
 		$sql .= "CREATE TABLE {$this->waitlist_crons_table} (
 			cron_id BIGINT(20) UNSIGNED AUTO_INCREMENT,
@@ -626,14 +811,15 @@
 			emails_count BIGINT(20) UNSIGNED NOT NULL,
 			PRIMARY KEY  (cron_id),
 			KEY product_id (product_id),
-		    KEY status (status)
-			) $charset_collate;";
+			KEY status (status)
+		) $charset_collate;";
 
 		dbDelta( $sql );
 
-		update_option( $version_option, '1.1' );
-
+		update_option( $version_option, '1.2' );
 	}
+
+
 
 
 	public function register_meta_table(){

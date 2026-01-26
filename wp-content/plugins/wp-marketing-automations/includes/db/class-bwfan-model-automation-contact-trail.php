@@ -27,7 +27,7 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 			$args[]           = $after_time;
 		}
 
-		$query = "SELECT `sid`, count(`sid`) as `count` FROM {$table_name} WHERE `sid` IN ($placeholder) AND `status` = %d $after_time_query GROUP BY `sid`";
+		$query = "SELECT `sid`, COUNT(DISTINCT `tid`) AS `count` FROM {$table_name} WHERE `sid` IN ($placeholder) AND `status` = %d $after_time_query GROUP BY `sid`";
 
 		return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
@@ -97,23 +97,29 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 	public static function get_step_completed_contacts( $aid, $step_id, $type = '', $offset = 0, $limit = 25, $path = 0 ) {
 		global $wpdb;
 		$table_name = self::_table();
-		$status     = 'queued' === $type ? 2 : 1;
-		if ( 'failed' === $type ) {
-			$status = 3;
-		}
-		if ( 'skipped' === $type ) {
-			$status = 4;
+		switch ( $type ) {
+			case 'queued':
+				$status = 2;
+				break;
+			case 'skipped':
+				$status = 4;
+				break;
+			case 'failed':
+				$status = 3;
+				break;
+			default:
+				$status = 1;
+				break;
 		}
 
-		$path_query = '';
 		if ( ! empty( $path ) ) {
-			$path_query = '%"path":"' . $path . '"%';
-			$path_query = " AND ct.data LIKE '$path_query' ";
+			$path_pattern = '%"path":"' . $wpdb->esc_like( $path ) . '"%';
+			$sub_query    = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d AND data LIKE %s GROUP BY tid LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $path_pattern, $limit, $offset );
+		} else {
+			$sub_query = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d GROUP BY tid LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $limit, $offset );
 		}
-
-		$query     = $wpdb->prepare( "SELECT ct.ID, ct.cid, ct.aid, ct.data, ct.tid, ct.c_time, c.email, c.f_name, c.l_name, c.contact_no FROM {$table_name} as ct JOIN {$wpdb->prefix}bwf_contact AS c ON ct.cid = c.ID WHERE 1=1 AND ct.aid = %d AND ct.sid = %d AND ct.status = %d $path_query  ORDER BY ct.c_time DESC LIMIT %d OFFSET %d", $aid, $step_id, $status, $limit, $offset );
-		$contacts  = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$completed = 2 === $status ? false : true;
+		$query    = $wpdb->prepare( "SELECT ct.ID, ct.cid, ct.aid, ct.data, ct.tid, ct.c_time, c.email, c.f_name, c.l_name, c.contact_no FROM {$table_name} as ct {$sub_query} JOIN {$wpdb->prefix}bwf_contact AS c ON ct.cid = c.ID WHERE ct.sid = %d ORDER BY ct.ID DESC ", $step_id );
+		$contacts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return [
 			'contacts' => $contacts,
@@ -134,13 +140,14 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 		$table_name = self::_table();
 		$status     = ( true === $status ) ? 1 : $status;
 
-		$query = $wpdb->prepare( "SELECT COUNT(*) AS `count` FROM {$table_name} WHERE `sid` = %d AND `status` = %d ", $step_id, $status );
+		$query = $wpdb->prepare( " SELECT COUNT(*) AS `count` FROM {$table_name} as ct JOIN ( SELECT tid,MAX(c_time) AS latest_time FROM {$table_name} WHERE sid = %d AND status = %d  GROUP BY tid ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time  WHERE ct.sid = %d", $step_id, $status, $step_id );
 		if ( ! empty( $path ) ) {
-			$path  = '%"path":"' . $path . '"%';
-			$query .= " AND `data` LIKE '$path' ";
+			$path_pattern = '%"path":"' . $wpdb->esc_like( $path ) . '"%';
+			$query        .= $wpdb->prepare( " AND `data` LIKE %s ", $path_pattern );
 		}
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return intval( $wpdb->get_var( $query ) );
 	}
 
 	/**
@@ -184,7 +191,7 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 	}
 
 	public static function update_multiple_trail_status( $tids, $sid, $status = 1 ) {
-		if ( empty( $tids ) && ! is_array( $tids ) ) {
+		if ( empty( $tids ) || ! is_array( $tids ) ) {
 			return false;
 		}
 
@@ -259,10 +266,9 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 	public static function get_path_contact_count( $split_id, $path ) {
 		global $wpdb;
 		$table_name = self::_table();
-		$path       = '%"path":"' . $path . '"%';
+		$path       = '%"path":"' . $wpdb->esc_like( $path ) . '"%';
 
-		$query = "SELECT count(`sid`) as `count` FROM {$table_name} WHERE `sid`= %d AND `data` LIKE '$path' GROUP BY `sid`";
-		$query = $wpdb->prepare( $query, $split_id );
+		$query = $wpdb->prepare( "SELECT count(`sid`) as `count` FROM {$table_name} WHERE `sid`= %d AND `data` LIKE %s GROUP BY `sid`", intval( $split_id ), $path );
 
 		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}

@@ -2,11 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class ValueType
 {
-    public static function config()
+    /**
+     * @return ObjectConfig
+     */
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -20,7 +27,10 @@ class ValueType
         ];
     }
 
-    public static function configDate()
+    /**
+     * @return array{fields: array{value: array{type: string, metadata: array{label: string, filters: array{0: string}}}}}
+     */
+    public static function configDate(): array
     {
         return [
             'fields' => [

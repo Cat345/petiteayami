@@ -3,6 +3,9 @@
 // Components
 import PluginInstallerButton from '../../PluginInstallerButton';
 
+// Helpers
+import { sanitizeHtml } from '../../../../shared/helpers/sanitize';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -39,7 +42,7 @@ const FunnelKitUpsell = (props: IProps) => {
       {!!image && <img src={image} />}
       <span className="title">{noticeTitle}</span>
       <br />
-      <span className="text" dangerouslySetInnerHTML={{ __html: description }} />
+      <span className="text" dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }} />
       <span className="button-wrap">
         <PluginInstallerButton
           pluginSlug="funnel-builder"

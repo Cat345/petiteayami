@@ -2,7 +2,7 @@
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
 Requires at least: 5.2
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: trunk
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
@@ -379,6 +379,15 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.7.1 =
+* Bug Fix: BOGO coupon not working when a regular coupon is already applied
+* Bug Fix: Elementor Pro: Unable to apply Store Credits if using the Elementor Checkout element
+* Bug Fix: Incorrect coupon URL for secondary languages
+* Bug Fix: Store Credit could not adjust 4-figure points if the thousand separator was blank
+* Bug Fix: Tax was not automatically included for cart conditions subtotals and totals
+* Improvement: Automatically send email on Store Credits adjustment
+* Improvement: Add filter to allow disabling the "add new coupon" popup
 
 = 4.7.0 =
 * Bug Fix: BOGO GET item added all available stock instead of the defined quantity when stock management was enabled

@@ -3,27 +3,27 @@
 // Resets
 if ($props['overlay_link']) { $props['title_link'] = ''; }
 if (!$props['slider_width']) {
-    $props['slider_height'] = '';
+    $props['height_viewport'] = '';
     $props['height_expand'] = '';
     $props['image_expand'] = true;
 }
-if ($props['slider_width'] && $props['slider_height'] ) {
+if ($props['slider_width'] && $props['height_viewport'] ) {
     $props['height_expand'] = '';
 }
-if ($props['height_expand'] || $props['slider_min_height'] || $props['slider_height']) {
+if ($props['height_expand'] || $props['slider_min_height'] || $props['height_viewport']) {
     $props['image_expand'] = true;
 }
-if ($props['slider_height'] == 'viewport') {
-    if ($props['slider_height_viewport'] > 100) {
-        $props['slider_height_offset_top'] = false;
-    } elseif (!$props['slider_height_viewport']) {
-        $props['slider_height_viewport'] = 100;
+if ($props['height_viewport'] == 'viewport') {
+    if ($props['height_viewport_height'] > 100) {
+        $props['height_viewport_offset'] = false;
+    } elseif (!$props['height_viewport_height']) {
+        $props['height_viewport_height'] = 100;
     }
 }
 if ($props['slider_parallax']) {
     $props['slidenav'] = '';
 }
-if ($props['content_expand']) {
+if ($props['content_expand'] = $props['title_margin_auto'] ?: $props['meta_margin_auto'] ?: $props['content_margin_auto']) {
     if (in_array($props['overlay_position'], ['top', 'bottom'])) {
         $props['overlay_position'] = 'cover';
     }
@@ -46,7 +46,7 @@ $el = $this->el('div', [
     'class' => [
         'uk-slider-container {@!slidenav: outside}',
         // Expand to column height
-        'uk-flex-1 uk-flex uk-flex-column {@height_expand}',
+        'uk-flex-1 uk-flex uk-flex-column {@height_expand}]',
     ],
 
     'uk-slider' => $this->expr([
@@ -97,21 +97,22 @@ $slider_items = $this->el('div', [
         'uk-slider-items',
         'uk-grid [uk-grid-{!slider_gap: default}] {@slider_gap}',
         'uk-grid-divider {@slider_gap} {@slider_divider}',
+        'uk-flex-middle {@slider_row_align} {@slider_width}',
         'uk-flex-1 {@height_expand}',
     ],
 
     'style' => [
-        'min-height: {slider_min_height}px; {@!slider_height}',
-        'height: max({0}px, {slider_height_viewport}vh); {@slider_height: viewport} {@!slider_height_offset_top}' => [$props['slider_min_height'] ?: '0'],
+        'min-height: {slider_min_height}px; {@!height_viewport}',
+        'height: max({0}px, {height_viewport_height}vh); {@height_viewport: viewport} {@!height_viewport_offset}' => [$props['slider_min_height'] ?: '0'],
     ],
 
     // Height Viewport
-    'uk-height-viewport' => ($props['slider_height'] == 'viewport' && $props['slider_height_offset_top']) || $props['slider_height'] == 'section' ? [
+    'uk-height-viewport' => ($props['height_viewport'] == 'viewport' && $props['height_viewport_offset']) || $props['height_viewport'] == 'section' ? [
         'property: height;',
-        'offset-top: true; {@slider_height_offset_top}',
+        'offset-top: true; {@height_viewport_offset}',
         'min: {slider_min_height};',
-        'offset-bottom: {0}; {@slider_height: viewport}' => $props['slider_height_viewport'] && $props['slider_height_viewport'] < 100 ? 100 - (int) $props['slider_height_viewport'] : false,
-        'offset-bottom: !:is(.uk-section-default,.uk-section-muted,.uk-section-primary,.uk-section-secondary) +; {@slider_height: section}',
+        'offset-bottom: {0}; {@height_viewport: viewport}' => $props['height_viewport_height'] && $props['height_viewport_height'] < 100 ? 100 - (int) $props['height_viewport_height'] : false,
+        'offset-bottom: !:is(.uk-section-default,.uk-section-muted,.uk-section-primary,.uk-section-secondary) +; {@height_viewport: section}',
     ] : false,
 
 ]);
@@ -164,6 +165,5 @@ $slider_item = $this->el('div', [
     <?php if ($props['nav'] && $props['nav_below']) : ?>
     <?= $this->render("{$__dir}/template-nav") ?>
     <?php endif ?>
-
 
 <?= $el->end() ?>

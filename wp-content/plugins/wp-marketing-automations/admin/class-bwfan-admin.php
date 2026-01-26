@@ -326,7 +326,7 @@ class BWFAN_Admin {
 			), 24 );
 
 			if ( BWFAN_Common::is_automation_v1_active() ) {
-				add_submenu_page( 'autonami', __( 'Automations', 'wp-marketing-automations' ), __( 'Automations', 'wp-marketing-automations' ) . ' <span style="background-color:#ece6e4; color: #000;white-space: nowrap; border-radius:10px;margin-left:2px;font-size:10px;padding:3px 6px;">Legacy</span>', $capability, 'autonami-automations', array(
+				add_submenu_page( 'autonami', __( 'Automations', 'wp-marketing-automations' ), __( 'Automations', 'wp-marketing-automations' ) . ' <span style="background-color:#ece6e4; color: #000;white-space: nowrap; border-radius:10px;margin-left:2px;font-size:10px;padding:3px 6px;">Legacy</span>', $capability, 'autonami&path=/automations-v1', array(
 					$this,
 					'autonami_automations_page'
 				), 25 );
@@ -597,7 +597,7 @@ class BWFAN_Admin {
 
 		if ( BWFAN_Common::is_load_admin_assets( 'all' ) ) {
 			$data['bwfan_global_settings']        = BWFAN_Common::get_global_settings();
-			$data['bwfan_global_settings_schema'] = BWFAN_Common::get_setting_schema();// sample test data
+			$data['bwfan_global_settings_schema'] = BWFAN_Common::get_setting_schema();
 		}
 
 		if ( bwfan_is_autonami_pro_active() ) {
@@ -970,7 +970,7 @@ class BWFAN_Admin {
 
 		/* translators: 1: Dynamic URL */
 
-		return sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>.', 'wp-marketing-automations' ), '270+', esc_url( $link ) );
+		return sprintf( __( 'Over %1$s 5 star reviews show that FunnelKit users trust our top-rated support for their online business. Do you need help? <a href="%2$s" target="_blank"><b>Contact FunnelKit Support</b></a>.', 'wp-marketing-automations' ), '302+', esc_url( $link ) );
 	}
 
 	/**
@@ -987,7 +987,6 @@ class BWFAN_Admin {
 		}
 
 		/* translators: 1: Dynamic Data */
-
 		return sprintf( __( 'Version %1$s', 'wp-marketing-automations' ), BWFAN_VERSION );
 	}
 
@@ -1314,6 +1313,7 @@ class BWFAN_Admin {
 		if ( ! empty( $tab ) || ! empty( $edit ) ) {
 			return;
 		}
+		
 		wp_safe_redirect( admin_url( 'admin.php?page=autonami&path=/automations-v1' ) );
 		exit;
 	}

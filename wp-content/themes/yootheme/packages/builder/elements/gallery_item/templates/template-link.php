@@ -2,10 +2,7 @@
 
 namespace YOOtheme;
 
-use YOOtheme\Http\Uri;
-
-/** @var ImageProvider $imageProvider */
-$imageProvider = app(ImageProvider::class);
+use YOOtheme\Html\Html;
 
 $link = $props['link'] ? $this->el('a', [
     'href' => $props['link'],
@@ -15,21 +12,29 @@ $link = $props['link'] ? $this->el('a', [
 // Lightbox
 if ($link && $element['lightbox']) {
 
-    if ($type = $this->isImage($props['link'])) {
-
-        if ($type !== 'svg' && ($element['lightbox_image_width'] || $element['lightbox_image_height'])) {
-
-            $thumbnail = [$element['lightbox_image_width'], $element['lightbox_image_height'], $element['lightbox_image_orientation']];
-            if (!empty($props['lightbox_image_focal_point'])) {
-                [$y, $x] = explode('-', $props['lightbox_image_focal_point']);
-                $thumbnail += [3 => $x, 4 => $y];
-            }
-
-            $props['link'] = (string) (new Uri($props['link']))->withFragment('thumbnail=' . implode(',', $thumbnail));
-        }
+    if (Image::create($props['link'])) {
+        $image = Event::emit(
+            'html.image|middleware',
+            fn($element) => $element,
+            Html::tag('Image', [
+                'src' => $props['link'],
+                'width' => $element['lightbox_image_width'],
+                'height' => $element['lightbox_image_height'],
+                'focal_point' => $props['lightbox_image_focal_point'] ?? null,
+                'thumbnail' => true,
+                'formats' => false,
+            ]),
+            [],
+        );
 
         $link->attr([
-            'href' => $imageProvider->getUrl($props['link']),
+            'href' => $image->attr('src'),
+            'data-attrs' => json_encode(array_filter([
+                'width' => $image->attr('width'),
+                'height' => $image->attr('height'),
+                'srcset' => $image->attr('srcset'),
+                'sizes' => $image->attr('sizes'),
+            ])),
             'data-alt' => $props['image_alt'],
             'data-type' => 'image',
         ]);
@@ -77,6 +82,11 @@ if ($link && $element['lightbox']) {
 
     $link->attr([
         'target' => ['_blank {@link_target}'],
+        'download' => $element['link_download'],
+        'rel' => [
+            'nofollow {@link_rel_nofollow}',
+            'noreferrer {@link_rel_noreferrer}'
+        ],
         'uk-scroll' => str_contains((string) $props['link'], '#'),
     ]);
 

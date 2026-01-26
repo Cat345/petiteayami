@@ -28,7 +28,8 @@ class BWFAN_Table_Validation_Controller {
 		'bwf_contact',
 		'bwf_contact_meta',
 		'bwf_wc_customers',
-		'bwfan_automation_contact_claim'
+		'bwfan_automation_contact_claim',
+		'bwfan_import_export',
 	];
 
 	public static $pro_tables = [
@@ -36,7 +37,6 @@ class BWFAN_Table_Validation_Controller {
 		'bwfan_broadcast',
 		'bwfan_bulk_action',
 		'bwfan_form_feeds',
-		'bwfan_import_export',
 		'bwfan_link_triggers',
 	];
 
@@ -60,23 +60,16 @@ class BWFAN_Table_Validation_Controller {
 	/**
 	 * Validate database tables and return missing ones
 	 *
-	 * @param array $tables
+	 * @param $tables
 	 *
-	 * @return array
+	 * @return array|array[]|string[]|string[][]
 	 */
 	public static function bwfan_validate_db_tables( $tables ) {
 		global $wpdb;
-		$db_name = ! empty( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? DB_NAME : '' );
-		if ( empty( $db_name ) ) {
-			return array( 'error' => __( "Unable to find the Database name", "wp-marketing-automations" ) );
-		}
-		$table_names = array_map( function ( $table ) use ( $wpdb ) {
+		$table_names     = array_map( function ( $table ) use ( $wpdb ) {
 			return $wpdb->prefix . $table;
 		}, $tables );
-
-		$placeholders    = implode( ',', array_fill( 0, count( $table_names ), '%s' ) );
-		$query           = $wpdb->prepare( "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ($placeholders)", array_merge( [ $db_name ], $table_names ) );
-		$existing_tables = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$existing_tables = self::get_existing_tables( $table_names );
 
 		$missing_tables = array_diff( $table_names, $existing_tables );
 
@@ -86,19 +79,44 @@ class BWFAN_Table_Validation_Controller {
 	}
 
 	/**
+	 * @param $table_names
+	 *
+	 * @return array
+	 */
+	public static function get_existing_tables( $table_names = [] ) {
+		global $wpdb;
+
+		if ( empty( $table_names ) ) {
+			$tables      = array_merge( self::$tables, self::$pro_tables, self::$v1_tables, self::$core_tables );
+			$table_names = array_map( function ( $table ) use ( $wpdb ) {
+				return $wpdb->prefix . $table;
+			}, $tables );
+		}
+
+		$db_name = ! empty( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? DB_NAME : '' );
+		if ( empty( $db_name ) ) {
+			return array( 'error' => __( "Unable to find the Database name", "wp-marketing-automations" ) );
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $table_names ), '%s' ) );
+		$query        = $wpdb->prepare( "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ($placeholders)", array_merge( [ $db_name ], $table_names ) );
+
+		return $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+	/**
 	 * @param $missing_tables
 	 *
 	 * @return bool
 	 */
 	public static function create_missing_tables( $missing_tables ) {
-		self::load_table_classes();
 		$db_errors = [];
 		global $wpdb;
 
 		foreach ( $missing_tables as $table ) {
 
 			/** Check for core tables */
-			if ( in_array( $table, self::$core_tables ) ) {
+			if ( in_array( $table, self::$core_tables, true ) ) {
 				$method_name = 'create_' . $table;
 				if ( ! method_exists( __CLASS__, $method_name ) ) {
 					continue;
@@ -122,6 +140,85 @@ class BWFAN_Table_Validation_Controller {
 
 			if ( ! empty( $table_instance->db_errors ) ) {
 				$db_errors[] = $table_instance->db_errors;
+			}
+		}
+		if ( empty( $db_errors ) ) {
+			bwf_options_update( 'bwfan_table_validation_error', 0 );
+
+			return true;
+		}
+
+		BWFAN_Common::log_test_data( array( 'table validation logs ' => $db_errors ), 'base_table_validation', true );
+
+		return false;
+	}
+
+	/**
+	 * Verify and create missing tables
+	 *
+	 * @param $tables
+	 *
+	 * @return bool
+	 */
+	public static function check_collation( $tables ) {
+		self::load_table_classes();
+		$db_errors = [];
+		global $wpdb;
+		foreach ( $tables as $table ) {
+			$class_name = str_replace( [ "{$wpdb->prefix}bwf_", "{$wpdb->prefix}bwfan_" ], '', $table );
+			$class_name = 'BWFAN_DB_Table_' . $class_name;
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+			/** @var BWFAN_DB_Tables_Base $table_instance */
+			$table_instance = new $class_name();
+
+			/** Check table collation */
+			$collation_checked = $table_instance->check_table_collation();
+			if ( is_array( $collation_checked ) ) {
+				$db_errors = array_merge( $db_errors, $collation_checked );
+			}
+
+			/** Check primary key and auto-increment */
+			$pk_checked = $table_instance->check_primary_key_auto_increment();
+			if ( is_array( $pk_checked ) ) {
+				$db_errors = array_merge( $db_errors, $pk_checked );
+			}
+		}
+		if ( empty( $db_errors ) ) {
+			bwf_options_update( 'bwfan_table_validation_error', 0 );
+
+			return true;
+		}
+
+		BWFAN_Common::log_test_data( array( 'table validation logs ' => $db_errors ), 'base_table_validation', true );
+
+		return false;
+	}
+
+	/**
+	 * Verify primary key and auto-increment on all tables
+	 *
+	 * @param $tables
+	 *
+	 * @return bool
+	 */
+	public static function check_primary_keys( $tables ) {
+		self::load_table_classes();
+		$db_errors = [];
+		global $wpdb;
+		foreach ( $tables as $table ) {
+			$class_name = str_replace( [ "{$wpdb->prefix}bwf_", "{$wpdb->prefix}bwfan_" ], '', $table );
+			$class_name = 'BWFAN_DB_Table_' . $class_name;
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+			/** @var BWFAN_DB_Tables_Base $table_instance */
+			$table_instance = new $class_name();
+
+			$pk_checked = $table_instance->check_primary_key_auto_increment();
+			if ( is_array( $pk_checked ) ) {
+				$db_errors = array_merge( $db_errors, $pk_checked );
 			}
 		}
 		if ( empty( $db_errors ) ) {
@@ -161,7 +258,6 @@ class BWFAN_Table_Validation_Controller {
 	}
 
 	public static function load_table_classes() {
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$dir = BWFAN_PLUGIN_DIR . '/includes/db/tables';
 
@@ -210,7 +306,6 @@ class BWFAN_Table_Validation_Controller {
 		}
 
 		$missing_tables = self::check_missing_tables();
-
 		$table_validate = ! empty( $missing_tables ) ? 1 : 0;
 
 		bwf_options_update( 'bwfan_table_validation_error', $table_validate );

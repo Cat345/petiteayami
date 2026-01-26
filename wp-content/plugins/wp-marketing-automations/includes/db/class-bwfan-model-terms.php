@@ -347,6 +347,81 @@ if ( ! class_exists( 'BWFAN_Model_Terms' ) && BWFAN_Common::is_pro_3_0() ) {
 		}
 
 		/**
+		 * Get term IDs by term names in a single query, creating terms that don't exist in bulk
+		 *
+		 * @param array $term_names Array of term names to look up
+		 * @param int $type Term type (tag or list)
+		 *
+		 * @return array Array of term IDs indexed by term name
+		 */
+		public static function get_term_ids_by_names( $term_names = [], $type = 1 ) {
+			if ( empty( $term_names ) || ! is_array( $term_names ) ) {
+				return [];
+			}
+
+			global $wpdb;
+
+			// Prepare placeholders for the IN clause
+			$placeholders = implode( ',', array_fill( 0, count( $term_names ), '%s' ) );
+
+			// Build the query with proper escaping
+			$table = $wpdb->prefix . 'bwfan_terms';
+			$query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$placeholders}) AND type = %d", array_merge( $term_names, [ $type ] ) );
+
+			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+
+			$term_map    = [];
+			$found_names = [];
+
+			if ( ! empty( $results ) ) {
+				foreach ( $results as $result ) {
+					$term_map[ $result['name'] ] = intval( $result['ID'] );
+					$found_names[]               = $result['name'];
+				}
+			}
+
+			$missing_names = array_diff( $term_names, $found_names );
+
+			if ( ! empty( $missing_names ) ) {
+				$current_time     = current_time( 'mysql', 1 );
+				$values           = [];
+				$insert_term_data = [];
+
+				foreach ( $missing_names as $name ) {
+					if ( empty( $name ) ) {
+						continue;
+					}
+
+					$values[] = [
+						'name'       => $name,
+						'type'       => $type,
+						'created_at' => $current_time
+					];
+
+					$insert_term_data[] = $name;
+				}
+
+				if ( ! empty( $values ) ) {
+					$result = self::insert_multiple( $values, [ 'name', 'type', 'created_at' ] );
+
+					if ( $result ) {
+						$new_placeholders  = implode( ',', array_fill( 0, count( $insert_term_data ), '%s' ) );
+						$get_new_ids_query = $wpdb->prepare( "SELECT ID, name FROM {$table} WHERE name IN ({$new_placeholders}) AND type = %d", array_merge( $insert_term_data, [ $type ] ) );
+						$new_results       = $wpdb->get_results( $get_new_ids_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+
+						if ( ! empty( $new_results ) ) {
+							foreach ( $new_results as $new_result ) {
+								$term_map[ $new_result['name'] ] = intval( $new_result['ID'] );
+							}
+						}
+					}
+				}
+			}
+
+			return $term_map;
+		}
+
+		/**
 		 * Get term objects
 		 *
 		 * @param $terms

@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Listener;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Source\Type\RequestType;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Builder\Wordpress\Source\Type;
@@ -9,41 +10,44 @@ use YOOtheme\Str;
 
 class LoadSourceTypes
 {
+    /**
+     * @param Source $source
+     */
     public static function handle($source): void
     {
         $query = [
-            Type\DateQueryType::config(),
-            Type\UserQueryType::config(),
-            Type\SearchQueryType::config(),
-            Type\SiteQueryType::config(),
+            [Type\DateQueryType::class, 'config'],
+            [Type\UserQueryType::class, 'config'],
+            [Type\SearchQueryType::class, 'config'],
+            [Type\SiteQueryType::class, 'config'],
         ];
 
         $types = [
-            ['Date', Type\DateType::config()],
-            ['Request', RequestType::config()],
-            ['Search', Type\SearchType::config()],
-            ['Site', Type\SiteType::config()],
-            ['User', Type\UserType::config()],
-            ['Attachment', Type\AttachmentType::config()],
+            ['Date', [Type\DateType::class, 'config']],
+            ['Request', [RequestType::class, 'config']],
+            ['Search', [Type\SearchType::class, 'config']],
+            ['Site', [Type\SiteType::class, 'config']],
+            ['User', [Type\UserType::class, 'config']],
+            ['Attachment', [Type\AttachmentType::class, 'config']],
         ];
 
         foreach (Helper::getPostTypes() as $type) {
-            $query[] = Type\PostQueryType::config($source, $type);
-            $types[] = [Str::camelCase($type->name, true), Type\PostType::config($type)];
+            $query[] = fn() => Type\PostQueryType::config($source, $type);
+            $types[] = [Str::camelCase($type->name, true), fn() => Type\PostType::config($type)];
         }
 
-        $types[] = ['MenuItem', Type\MenuItemType::config()];
+        $types[] = ['MenuItem', [Type\MenuItemType::class, 'config']];
 
         foreach (Helper::getTaxonomies() as $taxonomy) {
-            $query[] = Type\TaxonomyQueryType::config($source, $taxonomy);
+            $query[] = fn() => Type\TaxonomyQueryType::config($source, $taxonomy);
             $types[] = [
                 Str::camelCase($taxonomy->name, true),
-                Type\TaxonomyType::config($taxonomy),
+                fn() => Type\TaxonomyType::config($taxonomy),
             ];
         }
 
-        $query[] = Type\CustomMenuItemQueryType::config();
-        $query[] = Type\CustomUserQueryType::config();
+        $query[] = [Type\CustomMenuItemQueryType::class, 'config'];
+        $query[] = [Type\CustomUserQueryType::class, 'config'];
 
         foreach ($query as $args) {
             $source->queryType($args);

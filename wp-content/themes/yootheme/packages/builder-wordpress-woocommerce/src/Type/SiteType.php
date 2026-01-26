@@ -7,9 +7,15 @@ use YOOtheme\Http\Request;
 use function YOOtheme\app;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class SiteType
 {
-    public static function config(Source $source)
+    /**
+     * @return ObjectConfig
+     */
+    public static function config(Source $source): array
     {
         $source->objectType('WoocommercePages', [
             'fields' => [
@@ -78,16 +84,17 @@ class SiteType
                     'type' => 'WoocommercePages',
                     'metadata' => [],
                     'extensions' => [
-                        'call' => [
-                            'func' => __CLASS__ . '::resolve',
-                        ],
+                        'call' => [static::class, 'resolve'],
                     ],
                 ],
             ],
         ];
     }
 
-    public static function resolve()
+    /**
+     * @return ?array<string, true>
+     */
+    public static function resolve(): ?array
     {
         if (is_lost_password_page()) {
             $request = app(Request::class);
@@ -114,5 +121,6 @@ class SiteType
         } elseif (is_checkout()) {
             return ['checkout' => true];
         }
+        return null;
     }
 }

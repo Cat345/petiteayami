@@ -6,7 +6,7 @@ use YOOtheme\Builder\Wordpress\PostHelper;
 
 class RemoveContentFilter
 {
-    public static function handle($content)
+    public static function handle(?string $content): ?string
     {
         // Prevent content filters from corrupting builder JSON in post_content on save.
         if (PostHelper::matchContent($content)) {

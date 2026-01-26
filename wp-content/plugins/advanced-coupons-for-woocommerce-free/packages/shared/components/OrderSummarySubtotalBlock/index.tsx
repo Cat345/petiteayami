@@ -5,6 +5,8 @@
  *
  * @return {JSX.Element} Accordion component.
  * */
+import { sanitizeHtml } from '../../utils';
+
 const OrderSummarySubtotalBlock = (props: any) => {
   const { label, value, children } = props;
 
@@ -15,7 +17,7 @@ const OrderSummarySubtotalBlock = (props: any) => {
         <span className="wc-block-components-totals-item__value">
           <div
             dangerouslySetInnerHTML={{
-              __html: value,
+              __html: sanitizeHtml(value),
             }}
           />
         </span>

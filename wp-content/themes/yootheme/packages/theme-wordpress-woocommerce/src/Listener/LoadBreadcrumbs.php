@@ -6,6 +6,11 @@ use WooCommerce;
 
 class LoadBreadcrumbs
 {
+    /**
+     * @param array<string, mixed> $items
+     *
+     * @return array<string, mixed>|list<array{name:string, link: string}>
+     */
     public static function handle(array $items): array
     {
         if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page()) {
@@ -14,7 +19,7 @@ class LoadBreadcrumbs
 
         $breadcrumbs = new class extends \WC_Breadcrumb {
             // Remove paged trail
-            protected function paged_trail() {}
+            protected function paged_trail(): void {}
         };
         $breadcrumbs->generate();
 

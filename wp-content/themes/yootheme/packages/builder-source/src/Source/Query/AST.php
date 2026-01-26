@@ -2,8 +2,16 @@
 
 namespace YOOtheme\Builder\Source\Query;
 
+/**
+ * @phpstan-type Name array{kind: string, value: string}
+ * @phpstan-type Argument array{kind: string, name: Name, value: ?array<string, mixed>}
+ * @phpstan-type SelectionSet array{kind: string, selections: list<array<string, mixed>>}
+ */
 class AST
 {
+    /**
+     * @return array<object>
+     */
     public static function build(Node $node)
     {
         $build = [static::class, $node->kind];
@@ -11,6 +19,9 @@ class AST
         return $build($node);
     }
 
+    /**
+     * @return array{kind: string, name: Name, arguments: list<Argument>, directives: list<array<string, mixed>>, alias?: Name, selectionSet?: SelectionSet}
+     */
     public static function field(Node $node)
     {
         $result = [
@@ -31,6 +42,9 @@ class AST
         return $result;
     }
 
+    /**
+     * @return array{kind: string, operation: string, selectionSet: SelectionSet, variableDefinitions: list<array<string, mixed>>, name?: Name}
+     */
     public static function query(Node $node)
     {
         $result = [
@@ -47,6 +61,9 @@ class AST
         return $result;
     }
 
+    /**
+     * @return array{kind: string, definitions: list<array<string, mixed>>}
+     */
     public static function document(Node $node)
     {
         return [
@@ -55,6 +72,9 @@ class AST
         ];
     }
 
+    /**
+     * @return array{kind: string, name: Name, arguments: list<Argument>}
+     */
     public static function directive(Node $node)
     {
         return [
@@ -64,7 +84,10 @@ class AST
         ];
     }
 
-    public static function name($name)
+    /**
+     * @return Name
+     */
+    public static function name(string $name)
     {
         return [
             'kind' => 'Name',
@@ -72,7 +95,11 @@ class AST
         ];
     }
 
-    public static function value($value)
+    /**
+     * @param mixed $value
+     * @return ?array<string, mixed>
+     */
+    public static function value($value): ?array
     {
         switch (gettype($value)) {
             case 'NULL':
@@ -102,9 +129,15 @@ class AST
                     'fields' => $fields,
                 ];
         }
+
+        return null;
     }
 
-    public static function objectField($name, $value)
+    /**
+     * @param mixed $value
+     * @return array{kind: string, name: Name, value: ?array<string, mixed>}
+     */
+    public static function objectField(string $name, $value)
     {
         return [
             'kind' => 'ObjectField',
@@ -113,6 +146,10 @@ class AST
         ];
     }
 
+    /**
+     * @param array<string, mixed> $arguments
+     * @return list<Argument>
+     */
     public static function arguments(array $arguments)
     {
         $result = [];
@@ -128,6 +165,10 @@ class AST
         return $result;
     }
 
+    /**
+     * @param list<Node> $selections
+     * @return SelectionSet
+     */
     public static function selections(array $selections)
     {
         $result = [

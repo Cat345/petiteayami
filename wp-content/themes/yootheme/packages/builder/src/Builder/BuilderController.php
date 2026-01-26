@@ -9,8 +9,12 @@ use YOOtheme\Storage;
 
 class BuilderController
 {
-    public function index(Request $request, Response $response, Storage $storage, Builder $builder)
-    {
+    public function index(
+        Request $request,
+        Response $response,
+        Storage $storage,
+        Builder $builder
+    ): Response {
         $library = $storage('library') ?: [];
         $library = array_map('json_encode', $library);
         $library = array_map([$builder, 'load'], $library);
@@ -18,7 +22,7 @@ class BuilderController
         return $response->withJson($library);
     }
 
-    public function encodeLayout(Request $request, Response $response, Builder $builder)
+    public function encodeLayout(Request $request, Response $response, Builder $builder): Response
     {
         $layout = $request->getParam('layout');
 
@@ -36,7 +40,7 @@ class BuilderController
         Response $response,
         Storage $storage,
         Builder $builder
-    ) {
+    ): Response {
         $id = $request->getParam('id');
         $element = $request->getParam('element');
 
@@ -51,7 +55,7 @@ class BuilderController
         return $response->withJson($element);
     }
 
-    public function removeElement(Request $request, Response $response, Storage $storage)
+    public function removeElement(Request $request, Response $response, Storage $storage): Response
     {
         $id = $request->getQueryParam('id');
 

@@ -16,9 +16,9 @@ class FilterMenuLocations
     /**
      * Loads menu locations from theme config in customizer session.
      *
-     * @param array|false $locations
+     * @param array<string, mixed>|false $locations
      *
-     * @return array|false
+     * @return array<string, mixed>|false
      */
     public function handle($locations)
     {

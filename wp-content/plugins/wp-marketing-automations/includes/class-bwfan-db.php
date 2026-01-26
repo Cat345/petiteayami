@@ -89,7 +89,6 @@ class BWFAN_DB {
 	 * @return void
 	 */
 	public static function load_table_classes() {
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$dir = __DIR__ . '/db/tables';
 		/** Load base class of verify tables */
@@ -156,6 +155,12 @@ class BWFAN_DB {
 			$db_errors[] = $table_instance->db_errors;
 		}
 
+		$table_instance = new BWFAN_DB_Table_Lite_Import_Export();
+		$table_instance->create_table();
+		if ( ! empty( $table_instance->db_errors ) ) {
+			$db_errors[] = $table_instance->db_errors;
+		}
+
 		$this->tables_created = true;
 
 		$this->method_run[] = '1.0.0';
@@ -175,10 +180,9 @@ class BWFAN_DB {
 		/** Scheduling actions one-time */
 		$this->schedule_actions();
 
+		$global_option = get_option( 'bwfan_global_settings', array() );
 		/** Auto global settings */
 		if ( BWFAN_Plugin_Dependency::woocommerce_active_check() ) {
-			$global_option = get_option( 'bwfan_global_settings', array() );
-
 			$global_option['bwfan_ab_enable'] = true;
 			update_option( 'bwfan_global_settings', $global_option, true );
 		}
@@ -203,6 +207,17 @@ class BWFAN_DB {
 
 		/** Adding a new unique key for file download */
 		update_option( 'bwfan_unique_secret', wp_generate_password( 32, false ), true );
+
+		/** Create manage profile page for new user */
+		if ( method_exists( 'BWFAN_Manage_Profile', 'create_profile_sample_page' ) ) {
+			BWFAN_Manage_Profile::get_instance()->create_profile_sample_page();
+		}
+
+		/** Set the 'Unsubscribe Page Type: No Distraction Mode (Prebuilt)' as the default for new users.*/
+		if ( empty( $global_option['bwfan_unsubscribe_page_type'] ) ) {
+			$global_option['bwfan_unsubscribe_page_type'] = 'prebuild';
+			update_option( 'bwfan_global_settings', $global_option );
+		}
 
 		/** Log if any mysql errors */
 		if ( ! empty( $db_errors ) ) {
@@ -304,6 +319,8 @@ class BWFAN_DB {
 			'3.5.0'    => '3_5_0',
 			'3.5.1'    => '3_5_1',
 			'3.5.2'    => '3_5_2',
+			'3.5.3'    => '3_5_3',
+			'3.5.4'    => '3_5_4',
 		);
 		$db_version = get_option( 'bwfan_db', '2.0' );
 
@@ -1143,7 +1160,7 @@ class BWFAN_DB {
 	}
 
 	/**
-	 * Set notification email default settings
+	 * Set notification email default settings && profile page created action
 	 *
 	 * @param $version_key
 	 *
@@ -1159,6 +1176,7 @@ class BWFAN_DB {
 
 		/** set default settings for email notification */
 		BWFAN_Notification_Email::set_bwfan_settings();
+		do_action( 'bwfan_db_profile_page_created' );
 
 		/** Updating version key */
 		update_option( 'bwfan_db', $version_key, true );
@@ -1528,6 +1546,22 @@ class BWFAN_DB {
 			BWFAN_Common::log_test_data( array_merge( [ __FUNCTION__ ], $db_errors ), 'db-creation-errors' );
 		}
 
+		// Additional checkbox field added on settings page for enabling deleting expired coupons and engagement tracking meta
+		$global_option = get_option( 'bwfan_global_settings', array() );
+		if ( ! empty( $global_option['bwfan_delete_autonami_generated_coupons_time'] ) ) {
+			$global_option['bwfan_delete_expired_coupon'] = true;
+		} else {
+			$global_option['bwfan_delete_expired_coupon'] = false;
+		}
+
+		if ( ! empty( $global_option['bwfan_delete_engagement_tracking_meta'] ) ) {
+			$global_option['bwfan_delete_engagement_tracking_meta_enable'] = true;
+		} else {
+			$global_option['bwfan_delete_engagement_tracking_meta_enable'] = false;
+		}
+
+		update_option( 'bwfan_global_settings', $global_option, true );
+
 		// Updating version key
 		update_option( 'bwfan_db', $version_key, true );
 	}
@@ -1699,7 +1733,7 @@ class BWFAN_DB {
 				if ( false === strpos( $customer_col['Type'], 'unsigned' ) || $customer_col['Null'] !== 'NO' || $customer_col['Default'] !== 'NULL' ) {
 					do {
 						//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-						$count = $wpdb->query( $wpdb->prepare( "UPDATE $customer_table SET total_order_count = 0 WHERE total_order_count < 0 OR total_order_count > 9999999 LIMIT 500" ) );
+						$count = $wpdb->query( "UPDATE $customer_table SET total_order_count = 0 WHERE total_order_count < 0 OR total_order_count > 9999999 LIMIT 500" );
 					} while ( $count > 0 );
 
 					if ( ! empty( $wpdb->last_error ) ) {
@@ -1768,6 +1802,91 @@ class BWFAN_DB {
 				}
 			}
 		}
+
+		/** Log if any mysql errors */
+		if ( ! empty( $db_errors ) ) {
+			BWFAN_Common::log_test_data( array_merge( [ __FUNCTION__ ], $db_errors ), 'db-creation-errors' );
+		}
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
+	public function db_update_3_5_3( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		/** Check manage profile page creation for old user */
+		if ( method_exists( 'BWFAN_Manage_Profile', 'create_profile_sample_page' ) ) {
+			BWFAN_Manage_Profile::get_instance()->create_profile_sample_page();
+		}
+
+		$global_option = get_option( 'bwfan_global_settings', array() );
+		if ( ! empty( $global_option['bwfan_delete_autonami_generated_coupons_time'] ) ) {
+			$global_option['bwfan_delete_expired_coupon'] = true;
+		}
+
+		if ( ! empty( $global_option['bwfan_delete_engagement_tracking_meta'] ) ) {
+			$global_option['bwfan_delete_engagement_tracking_meta_enable'] = true;
+		}
+
+		update_option( 'bwfan_global_settings', $global_option, true );
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
+	/**
+	 * Add import export table
+	 *
+	 * @param $version_key
+	 *
+	 * @return void
+	 */
+	public function db_update_3_5_4( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		$table_instance = new BWFAN_DB_Table_Lite_Import_Export();
+		if ( ! $table_instance->is_exists() ) {
+			$table_instance->create_table();
+			if ( ! empty( $table_instance->db_errors ) ) {
+				$db_errors[] = $table_instance->db_errors;
+			}
+		} else {
+			global $wpdb;
+			$table_name  = $wpdb->prefix . $table_instance->table_name;
+			$column_name = 'meta';
+
+			// Query to get the column type
+			$query = $wpdb->prepare( "DESCRIBE {$table_name} %s", $column_name );
+
+			$column_info = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			// Check if the column exists
+			if ( ! empty( $column_info ) ) {
+				$column_type = $column_info[0]->Type;
+
+				// Check if the column is not already LONGTEXT
+				if ( stripos( $column_type, 'longtext' ) === false ) {
+					// Alter the column type to LONGTEXT
+					$alter_query = "ALTER TABLE {$table_name} MODIFY {$column_name} LONGTEXT";
+
+					// Execute the query
+					$wpdb->query( $alter_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+
+				}
+			}
+		}
+
 
 		/** Log if any mysql errors */
 		if ( ! empty( $db_errors ) ) {

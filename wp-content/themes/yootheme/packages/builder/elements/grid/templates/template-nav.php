@@ -6,7 +6,6 @@ $nav = $this->el('ul', [
     'class' => [
         'el-nav',
         'uk-{filter_style} {@filter_style: tab}',
-        'uk-margin[-{filter_margin}] {@filter_position: top}',
     ],
 
     'uk-scrollspy-class' => in_array($props['animation'], ['none', 'parallax']) || !$props['item_animation'] ? false : (!empty($props['animation'])
@@ -17,9 +16,10 @@ $nav = $this->el('ul', [
 
 $nav_horizontal = [
     'uk-subnav {@filter_style: subnav.*}',
-    'uk-{filter_style}  {@filter_style: subnav-.*}',
+    'uk-{filter_style} {@filter_style: subnav-.*}',
     'uk-flex-{filter_align: right|center}',
     'uk-child-width-expand {@filter_align: justify}',
+    'uk-flex-nowrap {@filter_wrap}',
 ];
 
 $nav_vertical = [
@@ -41,7 +41,26 @@ $nav_attrs = $props['filter_position'] === 'top'
         ],
     ];
 
+// Container
+$container = $props['filter_wrap'] ? $this->el('div', [
+
+    'class' => [
+        'uk-panel',
+    ],
+
+    'uk-overflow-fade' => true,
+
+]) : null;
+
+($container ?: $nav)->attr('class', [
+    'uk-margin[-{filter_margin}] {@filter_position: top}',
+]);
+
 ?>
+
+<?php if ($container) : ?>
+<?= $container($props) ?>
+<?php endif ?>
 
 <?= $nav($props, $nav_attrs) ?>
 
@@ -50,7 +69,7 @@ $nav_attrs = $props['filter_position'] === 'top'
     <?php endif ?>
 
     <?php foreach ($tags as $tag => $name) : ?>
-    <li <?= $this->attrs([
+    <li<?= $this->attrs([
         'class' => ['uk-active' => $tag === array_key_first($tags) && !$props['filter_all']],
         'uk-filter-control' => json_encode(['filter' => '[data-tag~="' . str_replace('"', '\"', $tag) . '"]']),
     ]) ?>>
@@ -59,3 +78,7 @@ $nav_attrs = $props['filter_position'] === 'top'
     <?php endforeach ?>
 
 <?= $nav->end() ?>
+
+<?php if ($container) : ?>
+<?= $container->end() ?>
+<?php endif ?>

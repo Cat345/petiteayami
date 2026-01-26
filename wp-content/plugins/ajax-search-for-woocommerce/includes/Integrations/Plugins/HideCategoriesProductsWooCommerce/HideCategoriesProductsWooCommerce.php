@@ -21,7 +21,7 @@ class HideCategoriesProductsWooCommerce extends AbstractPluginIntegration {
     }
 
     public function init() : void {
-        add_filter( 'dgwt/wcas/search_query/args', array($this, 'excludeHiddenProducts') );
+        add_filter( 'dgwt/wcas/search_query/args', [$this, 'excludeHiddenProducts'] );
     }
 
     /**

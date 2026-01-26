@@ -10,6 +10,9 @@ import Tooltip from "./Tooltip";
 // Types
 import { IDashboardWidget, ICouponWidgetTableData } from "../../../types/dashboard";
 
+// Helpers
+import { sanitizeHtml } from "../../../../shared/utils";
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -61,7 +64,7 @@ const CouponTableWidget = (props: IProps) => {
   return (
     <div className="widget coupon-table-widget">
       <div className="widget-header">
-        <h3 className="widget-name" dangerouslySetInnerHTML={{ __html: widget.title_html }} />
+        <h3 className="widget-name" dangerouslySetInnerHTML={{ __html: sanitizeHtml(widget.title_html) }} />
         <a href={coupons_list_link} target="_blank" rel="noreferrer">
           <WidgetLinkIcon />
         </a>

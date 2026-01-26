@@ -9,10 +9,9 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 /**
  * Adapted from https://github.com/tareq1988/wordpress-settings-api-class
- *
  */
 /**
- * weDevs Settings API wrapper class
+ * WeDevs Settings API wrapper class
  *
  * @version 1.1
  *
@@ -22,24 +21,25 @@ if ( !defined( 'ABSPATH' ) ) {
  */
 class SettingsAPI {
     /**
-     * settings sections array
+     * Settings sections array.
      *
      * @var array
      */
-    private $settings_sections = array();
+    private $settings_sections = [];
 
     /**
      * Settings fields array
      *
      * @var array
      */
-    private $settingsFields = array();
+    private $settingsFields = [];
 
     /**
      * Singleton instance
      *
      * @var object
      */
+    // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
     private static $_instance;
 
     /*
@@ -58,7 +58,7 @@ class SettingsAPI {
      * @param string $prefix - unique prefix for CSS classes and other names
      */
     public function __construct( $name = '' ) {
-        add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
+        add_action( 'admin_enqueue_scripts', [$this, 'admin_enqueue_scripts'] );
         $this->name = sanitize_title( $name );
         $this->prefix = sanitize_title( $name ) . '-';
     }
@@ -66,7 +66,7 @@ class SettingsAPI {
     /**
      * Enqueue scripts and styles
      */
-    function admin_enqueue_scripts() {
+    public function admin_enqueue_scripts() {
         if ( Helpers::isSettingsPage() ) {
             wp_enqueue_style( 'wp-color-picker' );
             wp_enqueue_media();
@@ -80,7 +80,7 @@ class SettingsAPI {
      *
      * @param array $sections setting sections array
      */
-    function set_sections( $sections ) {
+    public function set_sections( $sections ) {
         $this->settings_sections = $sections;
         return $this;
     }
@@ -90,7 +90,7 @@ class SettingsAPI {
      *
      * @param array $section
      */
-    function add_section( $section ) {
+    public function add_section( $section ) {
         $this->settings_sections[] = $section;
         return $this;
     }
@@ -100,18 +100,18 @@ class SettingsAPI {
      *
      * @param array $fields settings fields array
      */
-    function set_fields( $fields ) {
+    public function set_fields( $fields ) {
         $this->settingsFields = $fields;
         return $this;
     }
 
-    function add_field( $section, $field ) {
-        $defaults = array(
+    public function add_field( $section, $field ) {
+        $defaults = [
             'name'  => '',
             'label' => '',
             'desc'  => '',
             'type'  => 'text',
-        );
+        ];
         $arg = wp_parse_args( $field, $defaults );
         $this->settingsFields[$section][] = $arg;
         return $this;
@@ -129,7 +129,7 @@ class SettingsAPI {
         if ( false == get_option( $this->name ) ) {
             add_option( $this->name );
         }
-        //Register settings sections
+        // Register settings sections
         foreach ( $this->settings_sections as $section ) {
             if ( isset( $section['desc'] ) && !empty( $section['desc'] ) ) {
                 $section['desc'] = '<div class="inside">' . $section['desc'] . '</div>';
@@ -148,11 +148,11 @@ class SettingsAPI {
                 $section['id']
             );
         }
-        //Register settings fields
+        // Register settings fields
         foreach ( $this->settingsFields as $section => $field ) {
             foreach ( $field as $option ) {
                 $type = ( isset( $option['type'] ) ? $option['type'] : 'text' );
-                $args = array(
+                $args = [
                     'id'                   => $option['name'],
                     'label_for'            => $args['label_for'] = "{$this->name}[{$option['name']}]",
                     'desc'                 => ( isset( $option['desc'] ) ? $option['desc'] : '' ),
@@ -170,11 +170,11 @@ class SettingsAPI {
                     'disabled'             => ( isset( $option['disabled'] ) ? $option['disabled'] : false ),
                     'textarea_rows'        => ( isset( $option['textarea_rows'] ) ? $option['textarea_rows'] : 5 ),
                     'disabled_before_init' => ( isset( $option['disabled_before_init'] ) ? $option['disabled_before_init'] : false ),
-                );
+                ];
                 add_settings_field(
                     "{$this->name}[" . $option['name'] . ']',
                     $option['label'],
-                    array($this, 'callback_' . $type),
+                    [$this, 'callback_' . $type],
                     $section,
                     $section,
                     $args
@@ -183,7 +183,7 @@ class SettingsAPI {
         }
         // Creates our settings in the options table
         foreach ( $this->settings_sections as $section ) {
-            register_setting( $section['id'], $this->name, array($this, 'sanitize_options') );
+            register_setting( $section['id'], $this->name, [$this, 'sanitize_options'] );
         }
     }
 
@@ -205,7 +205,7 @@ class SettingsAPI {
     /**
      * Head
      */
-    function callback_head( $args ) {
+    public function callback_head( $args ) {
         echo '<span class="dgwt-wcas-settings-hr"></span>';
     }
 
@@ -214,7 +214,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_text( $args ) {
+    public function callback_text( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             esc_attr( $this->get_option( $args['id'], $args['std'] ) ),
@@ -248,7 +248,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_url( $args ) {
+    public function callback_url( $args ) {
         $this->callback_text( $args );
     }
 
@@ -257,7 +257,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_number( $args ) {
+    public function callback_number( $args ) {
         $this->callback_text( $args );
     }
 
@@ -266,7 +266,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_checkbox( $args ) {
+    public function callback_checkbox( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             esc_attr( $this->get_option( $args['id'], $args['std'] ) ),
@@ -306,7 +306,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_multicheck( $args ) {
+    public function callback_multicheck( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             $this->get_option( $args['id'], $args['std'] ),
@@ -341,7 +341,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_radio( $args ) {
+    public function callback_radio( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             $this->get_option( $args['id'], $args['std'], false ),
@@ -377,7 +377,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_select( $args ) {
+    public function callback_select( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             esc_attr( $this->get_option( $args['id'], $args['std'] ) ),
@@ -411,14 +411,14 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_selectize( $args ) {
+    public function callback_selectize( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             esc_attr( $this->get_option( $args['id'], $args['std'] ) ),
             $args['std'],
             $args
         );
-        $options = ( !empty( $args['options'] ) && is_array( $args['options'] ) ? $args['options'] : array() );
+        $options = ( !empty( $args['options'] ) && is_array( $args['options'] ) ? $args['options'] : [] );
         $nonce = wp_create_nonce( 'dgwt_wcas_get_custom_fields' );
         $disabled = disabled( ($args['disabled_before_init'] ?? false) || ($args['disabled'] ?? false), true, false );
         $disabledBeforeInit = ( empty( $args['disabled_before_init'] ) ? '' : 'data-disabled-before-init="1"' );
@@ -446,7 +446,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_textarea( $args ) {
+    public function callback_textarea( $args ) {
         $value = apply_filters(
             'dgwt/wcas/settings/option_value',
             esc_textarea( $this->get_option( $args['id'], $args['std'] ) ),
@@ -474,7 +474,7 @@ class SettingsAPI {
      *
      * @return void
      */
-    function callback_html( $args ) {
+    public function callback_html( $args ) {
         if ( !empty( $args['desc'] ) ) {
             $css_class = $this->prefix . 'description-row';
             $desc = sprintf( '<div class="%s">%s</div>', $css_class, $args['desc'] );
@@ -489,15 +489,15 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_wysiwyg( $args ) {
+    public function callback_wysiwyg( $args ) {
         $value = $this->get_option( $args['id'], $args['std'] );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : '500px' );
         echo '<div style="max-width: ' . $size . ';">';
-        $editor_settings = array(
+        $editor_settings = [
             'teeny'         => true,
             'textarea_name' => $this->name . '[' . $args['id'] . ']',
             'textarea_rows' => 10,
-        );
+        ];
         if ( isset( $args['options'] ) && is_array( $args['options'] ) ) {
             $editor_settings = array_merge( $editor_settings, $args['options'] );
         }
@@ -511,7 +511,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_file( $args ) {
+    public function callback_file( $args ) {
         $value = esc_attr( $this->get_option( $args['id'], $args['std'] ) );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : 'regular' );
         $id = $this->name . '[' . $args['id'] . ']';
@@ -534,7 +534,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_password( $args ) {
+    public function callback_password( $args ) {
         $value = esc_attr( $this->get_option( $args['id'], $args['std'] ) );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : 'regular' );
         $html = sprintf(
@@ -553,7 +553,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_color( $args ) {
+    public function callback_color( $args ) {
         $value = esc_attr( $this->get_option( $args['id'], $args['std'] ) );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : 'regular' );
         $html = sprintf(
@@ -573,7 +573,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_desc( $args ) {
+    public function callback_desc( $args ) {
         $html = '';
         if ( isset( $args['desc'] ) && !empty( $args['desc'] ) ) {
             $html .= '<div class="dgwt-wcas-settings-info">';
@@ -588,7 +588,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_datepicker( $args ) {
+    public function callback_datepicker( $args ) {
         $value = esc_attr( $this->get_option( $args['id'], $args['std'] ) );
         $size = ( isset( $args['size'] ) && !is_null( $args['size'] ) ? $args['size'] : 'regular' );
         $html = sprintf(
@@ -607,7 +607,7 @@ class SettingsAPI {
      *
      * @param array $args settings field args
      */
-    function callback_filters_rules_plug( $args ) {
+    public function callback_filters_rules_plug( $args ) {
         ob_start();
         ?>
 		<div id="dgwt-wcas-settings-filters-rules">
@@ -628,7 +628,7 @@ class SettingsAPI {
     /**
      * Sanitize callback for Settings API
      */
-    function sanitize_options( $options ) {
+    public function sanitize_options( $options ) {
         if ( !isset( $options ) || empty( $options ) || !is_array( $options ) ) {
             return $options;
         }
@@ -650,7 +650,7 @@ class SettingsAPI {
      *
      * @return mixed string or bool false
      */
-    function get_sanitize_callback( $slug = '' ) {
+    public function get_sanitize_callback( $slug = '' ) {
         if ( empty( $slug ) ) {
             return false;
         }
@@ -667,7 +667,7 @@ class SettingsAPI {
                 // Not added? Sanitize it based on a type
                 switch ( $option['type'] ) {
                     case 'checkbox':
-                        $sanitize_callback = array(__CLASS__, 'sanitize_checkbox');
+                        $sanitize_callback = [__CLASS__, 'sanitize_checkbox'];
                         break;
                     case 'number':
                         $sanitize_callback = 'intval';
@@ -677,7 +677,7 @@ class SettingsAPI {
                         $sanitize_callback = 'wp_kses_post';
                         break;
                     case 'color':
-                        $sanitize_callback = array(__CLASS__, 'sanitize_color');
+                        $sanitize_callback = [__CLASS__, 'sanitize_color'];
                         break;
                     case 'select':
                         $sanitize_callback = 'sanitize_key';
@@ -702,7 +702,7 @@ class SettingsAPI {
      * @return string
      */
     public static function sanitize_checkbox( $value ) {
-        return ( in_array( $value, array('on', 'off') ) ? $value : '' );
+        return ( in_array( $value, ['on', 'off'] ) ? $value : '' );
     }
 
     /**
@@ -759,7 +759,7 @@ class SettingsAPI {
      *
      * @return string
      */
-    function get_option( $option, $default = '', $allow_empty = true ) {
+    public function get_option( $option, $default = '', $allow_empty = true ) {
         $options = get_option( $this->name );
         $value = $default;
         if ( isset( $options[$option] ) ) {
@@ -779,7 +779,7 @@ class SettingsAPI {
      *
      * Shows all the settings section labels as tab
      */
-    function show_navigation() {
+    public function show_navigation() {
         $html = '<h2 class="nav-tab-wrapper ' . $this->prefix . 'nav-tab-wrapper">';
         foreach ( $this->settings_sections as $tab ) {
             $html .= sprintf( '<a href="#%1$s" class="nav-tab" id="%1$s-tab">%2$s</a>', $tab['id'], $tab['title'] );
@@ -799,19 +799,20 @@ class SettingsAPI {
      *
      * This function displays every sections in a different form
      */
-    function show_forms() {
+    public function show_forms() {
         ?>
 		<div class="metabox-holder">
 			<form class="dgwt-eq-settings-form" method="post" action="options.php">
 				<?php 
         foreach ( $this->settings_sections as $form ) {
             ?>
-					<div id="<?php 
+					<div
+						id="<?php 
             echo $form['id'];
             ?>" class="<?php 
             echo $this->prefix;
             ?>group"
-						 style="display: none;">
+						style="display: none;">
 
 						<?php 
             do_action( $this->prefix . 'form_top_' . $form['id'], $form );

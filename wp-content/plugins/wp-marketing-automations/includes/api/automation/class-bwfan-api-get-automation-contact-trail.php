@@ -59,9 +59,9 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 		/** Get event slug, name and source*/
 		$event_slug  = BWFAN_Model_Automations::get_event_name( $aid );
 		$event_obj   = BWFAN_Core()->sources->get_event( $event_slug );
-		$event_name  = ! empty( $event_obj ) ? $event_obj->get_name() : '-';
-		$source      = $event_obj->get_source();
-		$integration = BWFAN_Core()->sources->get_source( $source );
+		$event_name  = ! empty( $event_obj ) ? $event_obj->get_name() : $event_slug;
+		$source      = ! empty( $event_obj ) ? $event_obj->get_source() : '';
+		$integration = ! empty( $source ) ? BWFAN_Core()->sources->get_source( $source ) : '';
 		$source_name = ! empty( $integration ) ? $integration->get_name() : '-';
 		/** Set start array */
 		$trail_data = [
@@ -75,7 +75,6 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 					'date'      => ''
 				],
 				'hidden'   => false,
-				'position' => [ 'x' => 250, 'y' => 25 ],
 			]
 		];
 		$last_sid   = 'start';
@@ -126,7 +125,6 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 				'label'  => __( 'End Automation', 'wp-marketing-automations' ),
 			],
 			'hidden'   => false,
-			'position' => [ 'x' => 250, 'y' => 1100 ],
 		];
 		/** Set last node link with last step id  */
 		$trail_data[] = [
@@ -195,7 +193,7 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 		$response = isset( $data['data'] ) ? json_decode( $data['data'], true ) : '';
 		$res_msg  = isset( $response['msg'] ) ? $this->get_trail_message( $response['msg'] ) : '';
 		$time     = $this->get_step_execution_time( $data, $current_step_index );
-
+		$aid = empty( $this->get_sanitized_arg( 'automation_id' ) ) ? 0 : intval( $this->get_sanitized_arg( 'automation_id' ) );
 		$trail_data = [];
 		/** Set step node and data by type */
 		switch ( absint( $data['type'] ) ) {
@@ -325,6 +323,7 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 						'data' => [
 							'sidebarValues' => $sidebar_data,
 							'event'         => $event,
+							'aid'           => $aid,
 							'date'          => date( 'Y-m-d H:i:s', $time ),
 							'status'        => $status,
 							'msg'           => $res_msg,
@@ -346,7 +345,7 @@ class BWFAN_API_Get_Automation_Contact_Trail extends BWFAN_API_Base {
 						'id'           => $data['sid'] . '-condi-edge-' . $data['ID'],
 						'source'       => $data['sid'] . '-' . $data['ID'],
 						'target'       => $data['sid'] . '-condi-' . $data['ID'],
-						'sourceHandle' => '',
+						'sourceHandle' => $direction,
 						'animated'     => false,
 					];
 				}

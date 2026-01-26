@@ -22,11 +22,13 @@ if ( ! class_exists( 'BWFCRM_Group' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * get group from the bwfcrm_group table
 		 **/
 		public static function get_groups( $group_ids ) {
+			global $wpdb;
 
 			$query = "select ID,name from {table_name} ";
 			if ( ! empty( $group_ids ) ) {
-				$ids   = implode( ' ,', $group_ids );
-				$query .= " WHERE ID NOT IN ($ids)";
+				$group_ids   = array_map( 'absint', $group_ids );
+				$placeholder = implode( ' ,', array_fill( 0, count( $group_ids ), '%d' ) );
+				$query      .= $wpdb->prepare( " WHERE ID NOT IN ($placeholder)", $group_ids );
 			}
 
 			$groups = BWFAN_Model_Field_Groups::get_results( $query );

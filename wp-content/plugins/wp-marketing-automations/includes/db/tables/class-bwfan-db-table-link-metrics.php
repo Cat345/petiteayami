@@ -25,12 +25,28 @@ if ( ! class_exists( 'BWFAN_DB_Table_Link_Metrics' ) ) {
 			];
 		}
 
-		/**
-		 * Get query for create table
-		 *
-		 * @return string
-		 */
-		public function get_create_table_query() {
+	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'link_id'    => [ 'link_id' ],
+				'contact_id' => [ 'contact_id' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
+	 * Get query for create table
+	 *
+	 * @return string
+	 */
+	public function get_create_table_query() {
 			global $wpdb;
 			$collate = $this->get_collation();
 

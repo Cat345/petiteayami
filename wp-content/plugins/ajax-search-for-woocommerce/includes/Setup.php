@@ -14,9 +14,9 @@ class Setup {
 	private $thumbnailSize;
 
 	public function init() {
-		add_action( 'init', array( $this, 'setThumbnailSize' ) );
+		add_action( 'init', [ $this, 'setThumbnailSize' ] );
 
-		add_filter( 'woocommerce_regenerate_images_intermediate_image_sizes', array( $this, 'getImageSizes' ) );
+		add_filter( 'woocommerce_regenerate_images_intermediate_image_sizes', [ $this, 'getImageSizes' ] );
 	}
 
 	/**

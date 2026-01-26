@@ -5,6 +5,13 @@ abstract class BWFAN_Model {
 	static $primary_key = 'id';
 	static $count = 20;
 
+	/**
+	 * Table name
+	 *
+	 * @var string
+	 */
+//	protected static $table = '';
+
 	static function set_id() {
 	}
 
@@ -25,8 +32,12 @@ abstract class BWFAN_Model {
 
 	protected static function _table() {
 		global $wpdb;
-		$tablename = strtolower( get_called_class() );
-		$tablename = str_replace( 'bwfan_model_', 'bwfan_', $tablename );
+		if ( ! property_exists( get_called_class(), 'table' ) || static::$table === '' ) {
+			$tablename = strtolower( get_called_class() );
+			$tablename = str_replace( 'bwfan_model_', 'bwfan_', $tablename );
+		} else {
+			$tablename = static::$table;
+		}
 
 		return $wpdb->prefix . $tablename;
 	}
@@ -110,17 +121,27 @@ abstract class BWFAN_Model {
 	}
 
 	static function get_specific_rows( $where_key, $where_value, $offset = 0, $limit = 0 ) {
-		$pagination = '';
-		if ( ! empty( $offset ) && ! empty( $limit ) ) {
-			$pagination = " LIMIT $offset, $limit";
-		}
-
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = "SELECT * FROM $table_name WHERE $where_key = '$where_value'$pagination";
+		// Whitelist allowed column names to prevent column injection
+		$allowed_columns = array( 'ID', 'id', 'recipient', 'slug', 'email', 'cid', 'wcid', 'trackid', 'type', 'aid', 'hash_code' );
+		if ( ! in_array( $where_key, $allowed_columns, true ) ) {
+			return array();
+		}
 
-		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQL
+		if ( ! empty( $limit ) ) {
+			$query = $wpdb->prepare(
+				"SELECT * FROM {$table_name} WHERE `{$where_key}` = %s LIMIT %d, %d", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$where_value,
+				absint( $offset ),
+				absint( $limit )
+			);
+		} else {
+			$query = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		}
+
+		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	static function get_rows( $only_query = false, $automation_ids = array() ) {
@@ -162,6 +183,57 @@ abstract class BWFAN_Model {
 		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $results;
+	}
+
+	/**
+	 * Get data by id.
+	 *
+	 * @param array|int $ids Array of IDs or single ID
+	 *
+	 * @return array Associative array keyed by ID
+	 */
+	static function get_data_by_id( $ids = [] ) {
+		if ( empty( $ids ) ) {
+			return [];
+		}
+
+		if ( ! is_array( $ids ) ) {
+			$ids = [ $ids ];
+		}
+
+		// Sanitize all IDs to integers
+		$ids = array_map( 'absint', $ids );
+		$ids = array_filter( $ids ); // Remove any invalid values
+
+		if ( empty( $ids ) ) {
+			return [];
+		}
+
+		global $wpdb;
+		$table_name = self::_table();
+
+		// Build placeholders for prepared statement
+		$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+		$query        = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id IN ({$placeholders})", ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+
+		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		if ( empty( $results ) ) {
+			return [];
+		}
+
+		$data = [];
+		foreach ( $results as $result ) {
+			if ( isset( $result['ID'] ) ) {
+				$data[ $result['ID'] ] = $result;
+			}
+
+			if ( isset( $result['id'] ) ) {
+				$data[ $result['id'] ] = $result;
+			}
+		}
+
+		return $data;
 	}
 
 	static function get_var( $query ) {

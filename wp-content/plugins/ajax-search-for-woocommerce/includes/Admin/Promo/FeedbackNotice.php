@@ -21,20 +21,21 @@ class FeedbackNotice {
 
 	/**
 	 * Admin notice offset
+	 *
 	 * @var int timestamp
 	 */
 	private $offset;
 
-	function __construct() {
+	public function __construct() {
 		$this->offset = strtotime( '-7 days' );
 
-		add_action( 'admin_init', array( $this, 'checkInstallationDate' ) );
+		add_action( 'admin_init', [ $this, 'checkInstallationDate' ] );
 
-		add_action( 'wp_ajax_' . self::DISMISS_AJAX_ACTION, array( $this, 'dismissNotice' ) );
+		add_action( 'wp_ajax_' . self::DISMISS_AJAX_ACTION, [ $this, 'dismissNotice' ] );
 
-		add_action( 'admin_head', array( $this, 'loadStyle' ) );
+		add_action( 'admin_head', [ $this, 'loadStyle' ] );
 
-		add_action( 'admin_footer', array( $this, 'printDismissJS' ) );
+		add_action( 'admin_footer', [ $this, 'printDismissJS' ] );
 	}
 
 	/**
@@ -47,7 +48,7 @@ class FeedbackNotice {
 		if (
 			! empty( $currentScreen )
 			&& (
-				in_array( $currentScreen->base, array( 'dashboard', 'post', 'edit' ) )
+				in_array( $currentScreen->base, [ 'dashboard', 'post', 'edit' ] )
 				|| strpos( $currentScreen->base, DGWT_WCAS_SETTINGS_KEY ) !== false
 			)
 		) {
@@ -70,27 +71,33 @@ class FeedbackNotice {
 
 			<div class="notice-info notice dgwt-wcas-notice dgwt-wcas-review-notice">
 				<div class="dgwt-wcas-review-notice-logo"></div>
-				<?php printf( __( "Hey %s, it's Damian Góra from %s. You have used this free plugin for some time now, and I hope you like it!", 'ajax-search-for-woocommerce' ),
+				<?php
+				printf(
+					__( "Hey %1\$s, it's Damian Góra from %2\$s. You have used this free plugin for some time now, and I hope you like it!", 'ajax-search-for-woocommerce' ),
 					'<strong>' . $current_user->display_name . '</strong>',
 					'<strong>' . DGWT_WCAS_NAME . '</strong>'
-				); ?>
+				);
+				?>
 				<br/>
-				<?php printf( __( "The FiboSearch team have spent countless hours developing it, and it would mean a lot to me if you %ssupport it with a quick review on WordPress.org.%s", 'ajax-search-for-woocommerce' ),
-					'<strong><a target="_blank" href="' . self::REVIEW_URL . '">', '</a></strong>'
-				); ?>
+				<?php
+				printf(
+					__( 'The FiboSearch team have spent countless hours developing it, and it would mean a lot to me if you %1$ssupport it with a quick review on WordPress.org.%2$s', 'ajax-search-for-woocommerce' ),
+					'<strong><a target="_blank" href="' . self::REVIEW_URL . '">',
+					'</a></strong>'
+				);
+				?>
 				<div class="button-container">
-					<a href="<?php echo self::REVIEW_URL; ?>" target="_blank" data-link="follow"
-					   class="button-secondary js-dgwt-review-notice-dismiss">
+					<a href="<?php echo self::REVIEW_URL; ?>" target="_blank" data-link="follow" class="button-secondary js-dgwt-review-notice-dismiss">
 						<span class="dashicons dashicons-star-filled"></span>
-						<?php printf( __( "Review %s", 'ajax-search-for-woocommerce' ), DGWT_WCAS_NAME ); ?>
+						<?php printf( __( 'Review %s', 'ajax-search-for-woocommerce' ), DGWT_WCAS_NAME ); ?>
 					</a>
 					<a href="#" class="button-secondary js-dgwt-review-notice-dismiss dgwt-review-notice-dismiss">
 						<span class="dashicons dashicons-no-alt"></span>
-						<?php _e( "No thanks", 'ajax-search-for-woocommerce' ); ?>
+						<?php _e( 'No thanks', 'ajax-search-for-woocommerce' ); ?>
 					</a>
 				</div>
 				<button class="dgwt-review-notice-dismiss-x js-dgwt-review-notice-dismiss"
-						aria-label="<?php _e( "Close", 'ajax-search-for-woocommerce' ); ?>">
+						aria-label="<?php _e( 'Close', 'ajax-search-for-woocommerce' ); ?>">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
 						<path
 							d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"></path>
@@ -101,7 +108,6 @@ class FeedbackNotice {
 
 		}
 	}
-
 
 	/**
 	 * Check instalation date
@@ -121,11 +127,10 @@ class FeedbackNotice {
 			$install_date = get_option( self::ACTIVATION_DATE_OPT );
 
 			if ( $this->offset >= $install_date && current_user_can( 'install_plugins' ) ) {
-				add_action( 'admin_notices', array( $this, 'displayNotice' ) );
+				add_action( 'admin_notices', [ $this, 'displayNotice' ] );
 			}
 		}
 	}
-
 
 	/**
 	 * Hide admin notice

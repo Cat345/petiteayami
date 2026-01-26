@@ -22,8 +22,8 @@ class WooCommerceAJAXFilters extends AbstractPluginIntegration {
 	protected const VERSION_CONST = 'BeRocket_AJAX_filters_version';
 
 	public function init(): void {
-		add_filter( 'berocket_aapf_get_attribute_values_post__in_outside', array( $this, 'filterPostInIds' ), 20 );
-		add_filter( 'dgwt/wcas/helpers/is_search_query', array( $this, 'markQueryToProcess' ), 10, 2 );
+		add_filter( 'berocket_aapf_get_attribute_values_post__in_outside', [ $this, 'filterPostInIds' ], 20 );
+		add_filter( 'dgwt/wcas/helpers/is_search_query', [ $this, 'markQueryToProcess' ], 10, 2 );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class WooCommerceAJAXFilters extends AbstractPluginIntegration {
 			return $post__in;
 		}
 
-		$posts_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', array() );
+		$posts_ids = apply_filters( 'dgwt/wcas/search_page/result_post_ids', [] );
 
 		if ( ! empty( $posts_ids ) ) {
 			return $posts_ids;
@@ -58,7 +58,7 @@ class WooCommerceAJAXFilters extends AbstractPluginIntegration {
 		if (
 			$query->is_search() &&
 			( $query->get( 'post_type' ) && is_string( $query->get( 'post_type' ) ) && $query->get( 'post_type' ) === 'product' ) &&
-			Helpers::is_running_inside_class('BeRocket_AAPF_Widget', 20)
+			Helpers::is_running_inside_class( 'BeRocket_AAPF_Widget', 20 )
 		) {
 			$enabled = true;
 		}

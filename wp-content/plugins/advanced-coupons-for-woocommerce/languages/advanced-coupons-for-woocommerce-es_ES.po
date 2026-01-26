@@ -113,7 +113,7 @@ msgstr "24 Horas"
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:429
+#: Models/Auto_Apply.php:432
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -136,7 +136,7 @@ msgstr "La cantidad de %s no se puede modificar."
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:434
+#: Models/Auto_Apply.php:437
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -191,12 +191,12 @@ msgstr "La caché de cupones de notificación de Appy se ha borrado con éxito."
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "La caché de cupones de notificación de Appy se ha reconstruido con éxito. %s cupón(es) han sido validados."
 
-#: Models/Auto_Apply.php:444
+#: Models/Auto_Apply.php:447
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr "La caché de cupones de aplicación automática se ha borrado con éxito."
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:454
+#: Models/Auto_Apply.php:457
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "La caché de cupones de aplicación automática se ha reconstruido con éxito. %s cupón(es) han sido validados."
@@ -629,31 +629,31 @@ msgid "Modify the label displayed for the coupon on the cart totals table. Add t
 msgstr "Modifica la etiqueta mostrada para el cupón en la tabla de totales del carrito. Agrega la etiqueta %s a este texto y será reemplazada por el código del cupón real."
 
 #: Models/Coupon_Tab.php:87
-#: Models/Coupon_Tab.php:149
+#: Models/Coupon_Tab.php:152
 msgid "My Coupons"
 msgstr "Mis Cupones"
 
-#: Models/Coupon_Tab.php:125
+#: Models/Coupon_Tab.php:128
 msgid "Available Coupons"
 msgstr "Cupones Disponibles"
 
-#: Models/Coupon_Tab.php:126
+#: Models/Coupon_Tab.php:129
 msgid "Owned Coupons"
 msgstr "Cupones Propios"
 
-#: Models/Coupon_Tab.php:127
+#: Models/Coupon_Tab.php:130
 msgid "Used / Expired Coupons"
 msgstr "Cupones Usados / Expirados"
 
-#: Models/Coupon_Tab.php:128
+#: Models/Coupon_Tab.php:131
 msgid "You have no coupons."
 msgstr "No tienes cupones."
 
-#: Models/Coupon_Tab.php:184
+#: Models/Coupon_Tab.php:187
 msgid "Hide my coupons tab"
 msgstr "Ocultar la pestaña de mis cupones"
 
-#: Models/Coupon_Tab.php:186
+#: Models/Coupon_Tab.php:189
 msgid "If checked, this feature will hide my coupons tab on my account page."
 msgstr "Si está marcado, esta función ocultará la pestaña de mis cupones en la página de mi cuenta."
 
@@ -959,23 +959,23 @@ msgstr "Elija el formato de correo electrónico a enviar."
 msgid "The %s coupon can't be applied. This coupon is not allowed to work in conjunction with the coupon(s) currently applied on the cart."
 msgstr "El cupón %s no se puede aplicar. Este cupón no está permitido en conjunto con los cupones actualmente aplicados en el carrito."
 
-#: Models/Force_Apply.php:110
+#: Models/Force_Apply.php:109
 msgid "Force Apply"
 msgstr "Aplicación Forzada"
 
-#: Models/Force_Apply.php:112
+#: Models/Force_Apply.php:111
 msgid "Disable"
 msgstr "Desactivar"
 
-#: Models/Force_Apply.php:113
+#: Models/Force_Apply.php:112
 msgid "When applied via URL only"
 msgstr "Solo cuando se aplica a través de URL"
 
-#: Models/Force_Apply.php:114
+#: Models/Force_Apply.php:113
 msgid "Enabled"
 msgstr "Habilitado"
 
-#: Models/Force_Apply.php:116
+#: Models/Force_Apply.php:115
 msgid "When enabled, conflicting coupons that are already applied to the cart will be replaced with this coupon instead. This is useful especially if you have an auto applied coupon that you want to be removed when a conflicting coupon is applied."
 msgstr "Cuando está habilitado, los cupones en conflicto que ya están aplicados al carrito serán reemplazados por este cupón. Esto es especialmente útil si tiene un cupón aplicado automáticamente que desea eliminar cuando se aplica un cupón en conflicto."
 
@@ -2512,6 +2512,6 @@ msgstr ""
 msgid "List of disallowed billing email addresses. Separate multiple email addresses with commas. Wildcards like *@gmail.com are supported."
 msgstr ""
 
-#: Models/BOGO/Types/Same_Products.php:433
+#: Models/BOGO/Types/Same_Products.php:302
 msgid "Same Products"
 msgstr ""

@@ -14,7 +14,7 @@ class Platform
     /**
      * Handle application routes.
      *
-     * @param Application $app
+     * @return never
      */
     public static function handleRoute(Application $app)
     {
@@ -23,7 +23,8 @@ class Platform
             ob_clean();
         }
 
-        $app->run();
+        // use route from query parameter
+        $app->run(true, $_GET[Router::ROUTE_NAME] ?? '');
 
         exit();
     }
@@ -31,35 +32,28 @@ class Platform
     /**
      * Handle application errors.
      *
-     * @param Request    $request
-     * @param Response   $response
-     * @param \Exception $exception
+     * @param Response $response (event parameter, not injected)
+     * @param \Exception $exception (event parameter, not injected)
      *
      * @throws \Exception
-     *
-     * @return Response
      */
-    public static function handleError(Request $request, $response, $exception)
+    public static function handleError(Request $request, $response, $exception): Response
     {
-        if ($exception instanceof Exception) {
-            if (str_starts_with($request->getHeaderLine('Content-Type'), 'application/json')) {
-                return $response->withJson($exception->getMessage());
-            }
-
-            return $response
-                ->write($exception->getMessage())
-                ->withHeader('Content-Type', 'text/plain');
+        if (!($exception instanceof Exception)) {
+            throw $exception;
         }
 
-        throw $exception;
+        if (str_starts_with($request->getHeaderLine('Content-Type'), 'application/json')) {
+            return $response->withJson($exception->getMessage());
+        }
+
+        return $response->write($exception->getMessage())->withHeader('Content-Type', 'text/plain');
     }
 
     /**
      * Prints style tags.
-     *
-     * @param Metadata $metadata
      */
-    public static function printStyles(Metadata $metadata)
+    public static function printStyles(Metadata $metadata): void
     {
         foreach ($metadata->all('style:*') as $name => $style) {
             if ($style->defer) {
@@ -81,10 +75,8 @@ class Platform
 
     /**
      * Prints script tags.
-     *
-     * @param Metadata $metadata
      */
-    public static function printScripts(Metadata $metadata)
+    public static function printScripts(Metadata $metadata): void
     {
         foreach ($metadata->all('script:*') as $name => $script) {
             $metadata->del($name);
@@ -102,10 +94,8 @@ class Platform
 
     /**
      * Callback to register scripts in footer.
-     *
-     * @param Metadata $metadata
      */
-    public static function printFooterScripts(Metadata $metadata)
+    public static function printFooterScripts(Metadata $metadata): void
     {
         foreach ($metadata->all('style:*') as $style) {
             if ($style->href) {

@@ -2,66 +2,67 @@
 
 namespace YOOtheme;
 
+use SplStack;
 use YOOtheme\Theme\ViewHelperInterface;
 use YOOtheme\View\HtmlElementInterface;
 use YOOtheme\View\HtmlHelperInterface;
 
 /**
  * @method string builder($node, $params = [])
+ * @method string|false section(string $name, $default = false)
  * @mixin ViewHelperInterface
  * @mixin HtmlHelperInterface
  * @mixin HtmlElementInterface
+ * @implements \ArrayAccess<string, object>
  */
 class View implements \ArrayAccess
 {
     /**
-     * @var \SplStack
+     * @var SplStack<callable>
      */
-    protected $loader;
+    protected SplStack $loader;
 
     /**
-     * @var array
+     * @var list<string>
      */
-    protected $template = [];
+    protected array $template = [];
 
     /**
-     * @var array
+     * @var list<array<string, mixed>>
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
-     * @var array
+     * @var array<string, list<callable>>
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $globals = [];
+    protected array $globals = [];
 
     /**
-     * @var array
+     * @var array<string, object>
      */
-    protected $helpers = [];
+    protected array $helpers = [];
 
     /**
-     * @var array
+     * @var array<string, callable>
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $evalParameters;
+    private array $evalParameters;
 
     /**
      * Constructor.
-     *
-     * @param callable $loader
      */
     public function __construct(?callable $loader = null)
     {
-        $this->loader = new \SplStack();
+        $this->loader = new SplStack();
         $this->loader->push([$this, 'evaluate']);
 
         if ($loader) {
@@ -74,12 +75,9 @@ class View implements \ArrayAccess
     /**
      * Renders a template (shortcut).
      *
-     * @param string $name
-     * @param mixed  $parameters
-     *
-     * @return string|false
+     * @param array<string, mixed> $parameters
      */
-    public function __invoke($name, $parameters = [])
+    public function __invoke(string $name, array $parameters = []): string
     {
         return $this->render($name, $parameters);
     }
@@ -87,12 +85,11 @@ class View implements \ArrayAccess
     /**
      * Handles dynamic calls to the class.
      *
-     * @param string $name
-     * @param array  $args
+     * @param array<array<string, mixed>>  $args
      *
      * @return mixed
      */
-    public function __call($name, $args)
+    public function __call(string $name, array $args)
     {
         if (!isset($this->functions[($key = strtolower($name))])) {
             trigger_error(
@@ -101,15 +98,15 @@ class View implements \ArrayAccess
             );
         }
 
-        return call_user_func_array($this->functions[$key], $args);
+        return $this->functions[$key](...$args);
     }
 
     /**
      * Gets the global parameters.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return $this->globals;
     }
@@ -117,12 +114,11 @@ class View implements \ArrayAccess
     /**
      * Adds a global parameter.
      *
-     * @param string $name
      * @param mixed  $value
      *
      * @return $this
      */
-    public function addGlobal($name, $value)
+    public function addGlobal(string $name, $value): self
     {
         $this->globals[$name] = $value;
 
@@ -136,7 +132,7 @@ class View implements \ArrayAccess
      *
      * @return $this
      */
-    public function addHelper($helper)
+    public function addHelper($helper): self
     {
         if (is_callable($helper)) {
             $helper($this);
@@ -150,12 +146,9 @@ class View implements \ArrayAccess
     /**
      * Adds a custom function.
      *
-     * @param string   $name
-     * @param callable $callback
-     *
-     * @return View
+     * @return $this
      */
-    public function addFunction($name, callable $callback)
+    public function addFunction(string $name, callable $callback): self
     {
         $this->functions[strtolower($name)] = $callback;
 
@@ -165,19 +158,16 @@ class View implements \ArrayAccess
     /**
      * Adds a loader callback.
      *
-     * @param callable $loader
-     * @param string   $filter
-     *
      * @return $this
      */
-    public function addLoader(callable $loader, $filter = null)
+    public function addLoader(callable $loader, ?string $filter = null): self
     {
         if (is_null($filter)) {
             $next = $this->loader->top();
 
-            $this->loader->push(function ($name, array $parameters = []) use ($loader, $next) {
-                return $loader($name, $parameters, $next);
-            });
+            $this->loader->push(
+                fn(string $name, array $parameters = []) => $loader($name, $parameters, $next),
+            );
         } else {
             $this->filters[$filter][] = $loader;
         }
@@ -189,17 +179,16 @@ class View implements \ArrayAccess
      * Applies multiple functions.
      *
      * @param mixed  $value
-     * @param string $functions
      *
-     * @return string
+     * @return mixed
      */
-    public function apply($value, $functions)
+    public function apply($value, string $functions)
     {
         $functions = explode('|', strtolower($functions));
 
         return array_reduce(
             $functions,
-            fn($value, $function) => call_user_func([$this, $function], $value),
+            fn($value, $function) => ([$this, $function])($value),
             $value,
         );
     }
@@ -207,12 +196,9 @@ class View implements \ArrayAccess
     /**
      * Converts special characters to HTML entities.
      *
-     * @param string $value
-     * @param string $functions
-     *
-     * @return string
+     * @param mixed $value
      */
-    public function escape($value, $functions = '')
+    public function escape($value, string $functions = ''): string
     {
         $value = strval($value);
 
@@ -226,20 +212,10 @@ class View implements \ArrayAccess
     /**
      * Renders a template.
      *
-     * @param string         $name
-     * @param array|callable $parameters
-     *
-     * @return string|callable|false
+     * @param array<string, mixed> $parameters
      */
-    public function render($name, $parameters = [])
+    public function render(string $name, array $parameters = []): string
     {
-        if (is_callable($parameters)) {
-            return fn() => $this->render(
-                $name,
-                call_user_func_array($parameters, func_get_args()) ?: [],
-            );
-        }
-
         $next = $this->loader->top();
 
         foreach ($this->filters as $filter => $loaders) {
@@ -263,11 +239,9 @@ class View implements \ArrayAccess
     /**
      * Renders current template.
      *
-     * @param mixed $parameters
-     *
-     * @return string|false
+     * @param array<string, mixed> $parameters
      */
-    public function self($parameters = [])
+    public function self(array $parameters = []): string
     {
         return $this->render(end($this->template), $parameters);
     }
@@ -275,12 +249,9 @@ class View implements \ArrayAccess
     /**
      * Evaluates a template.
      *
-     * @param string $template
-     * @param array  $parameters
-     *
-     * @return string|false
+     * @param array<string, mixed>  $parameters
      */
-    public function evaluate($template, array $parameters = [])
+    public function evaluate(string $template, array $parameters = []): string
     {
         $this->template[] = $template;
         $this->parameters[] = $this->evalParameters = $parameters;
@@ -302,18 +273,15 @@ class View implements \ArrayAccess
         array_pop($this->template);
         array_pop($this->parameters);
 
-        return $result ?? false;
+        return (string) ($result ?? '');
     }
 
     /**
      * Checks if a helper is registered.
      *
      * @param string $name
-     *
-     * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($name)
+    public function offsetExists($name): bool
     {
         return isset($this->helpers[$name]);
     }
@@ -323,7 +291,7 @@ class View implements \ArrayAccess
      *
      * @param string $name
      *
-     * @return mixed
+     * @return object
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($name)
@@ -341,8 +309,7 @@ class View implements \ArrayAccess
      * @param string $name
      * @param object $helper
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($name, $helper)
+    public function offsetSet($name, $helper): void
     {
         $this->helpers[$name] = $helper;
     }
@@ -352,8 +319,7 @@ class View implements \ArrayAccess
      *
      * @param string $name
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($name)
+    public function offsetUnset($name): void
     {
         throw new \LogicException(sprintf('You can\'t remove a helper "%s"', $name));
     }

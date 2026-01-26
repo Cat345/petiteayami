@@ -1,5 +1,8 @@
 <?php
-// Exit if accessed directly
+/**
+ * Exit if accessed directly
+ */
+
 if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
@@ -11,7 +14,7 @@ if (
 ) {
 	global $dgwtWcasSettings;
 
-	$dgwtWcasSettings = array();
+	$dgwtWcasSettings = [];
 	delete_option( DGWT_WCAS_SETTINGS_KEY );
 	DgoraWcas\Admin\Install::createOptions();
 	?>
@@ -23,11 +26,14 @@ if (
 
 ?>
 	<h3>Settings</h3>
-	<form action="<?php echo admin_url( 'admin.php' ); ?>" method="get"
-		  onsubmit="return confirm('Are you sure you want to reset the settings?');">
-		<input type="hidden" name="page" value="dgwt_wcas_debug">
+	<form
+		action="<?php echo admin_url( 'admin.php' ); ?>" method="get"
+		onsubmit="return confirm('Are you sure you want to reset the settings?');">
+		<input
+			type="hidden" name="page" value="dgwt_wcas_debug">
 		<?php wp_nonce_field( 'dgwt_wcas_debug_reset_settings', '_wpnonce', false ); ?>
-		<input type="submit" name="dgwt-wcas-debug-setting-reset-to-default" class="button"
-			   value="Reset the plugin settings to default values">
+		<input
+			type="submit" name="dgwt-wcas-debug-setting-reset-to-default" class="button"
+			value="Reset the plugin settings to default values">
 	</form>
 <?php

@@ -9,7 +9,7 @@ use YOOtheme\Http\Response;
 
 class PageController
 {
-    public static function getPages(Request $request, Response $response)
+    public static function getPages(Request $request, Response $response): Response
     {
         $home = 0;
         $query = [
@@ -52,8 +52,11 @@ class PageController
         return $response->withJson($posts);
     }
 
-    public static function savePage(Request $request, Response $response, Builder $builder)
-    {
+    public static function savePage(
+        Request $request,
+        Response $response,
+        Builder $builder
+    ): Response {
         $request
             ->abortIf(!($page = $request->getParam('page')), 400)
             ->abortIf(!($page = base64_decode($page)), 400)
@@ -77,7 +80,10 @@ class PageController
 
         if ($page->content) {
             $content = json_encode($page->content);
-            $fulltext = json_encode($builder->withParams(['context' => 'save'])->load($content));
+            $fulltext = json_encode(
+                $builder->withParams(['context' => 'save'])->load($content),
+                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            );
             $introtext = $builder->withParams(['context' => 'content'])->render($content);
 
             $data['post_content'] = wp_slash("{$introtext}\n<!--more-->\n<!-- {$fulltext} -->");

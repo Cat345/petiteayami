@@ -19,18 +19,19 @@ class UsCore extends AbstractPluginIntegration {
 
     protected const VERSION_CONST = 'US_CORE_VERSION';
 
-    private $post_ids = array();
+    private $post_ids = [];
 
     public function init() : void {
-        add_action( 'pre_get_posts', array($this, 'pre_get_posts') );
-        add_action( 'wp_ajax_us_ajax_grid', array($this, 'set_search_post_ids_from_ajax'), 5 );
-        add_action( 'wp_ajax_nopriv_us_ajax_grid', array($this, 'set_search_post_ids_from_ajax'), 5 );
+        add_action( 'pre_get_posts', [$this, 'pre_get_posts'] );
+        add_action( 'wp_ajax_us_ajax_grid', [$this, 'set_search_post_ids_from_ajax'], 5 );
+        add_action( 'wp_ajax_nopriv_us_ajax_grid', [$this, 'set_search_post_ids_from_ajax'], 5 );
     }
 
     public function set_search_post_ids_from_ajax() {
         if ( !$this->isRelevantProductAjaxQuery() ) {
             return;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $template_vars_json = $_POST['template_vars'] ?? '';
         $template_vars = json_decode( stripslashes( $template_vars_json ), true );
         $search_term = $template_vars['query_args']['s'] ?? '';
@@ -68,10 +69,11 @@ class UsCore extends AbstractPluginIntegration {
         if ( !defined( 'DOING_AJAX' ) ) {
             return false;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if ( !isset( $_POST['action'] ) || $_POST['action'] !== 'us_ajax_grid' ) {
             return false;
         }
-        $template_vars = ( function_exists( 'us_get_HTTP_POST_json' ) ? us_get_HTTP_POST_json( 'template_vars' ) : array() );
+        $template_vars = ( function_exists( 'us_get_HTTP_POST_json' ) ? us_get_HTTP_POST_json( 'template_vars' ) : [] );
         $post_type = $template_vars['query_args']['post_type'] ?? null;
         if ( empty( $post_type ) || is_array( $post_type ) && !in_array( 'product', $post_type, true ) || is_string( $post_type ) && $post_type !== 'product' ) {
             return false;

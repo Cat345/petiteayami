@@ -1,46 +1,21 @@
 <?php
 
-if ($iframe = $this->iframeVideo($src)) {
+$video = $this->el('video', [
 
-    $video = $this->el('iframe', [
-
-        'src' => $iframe,
-        'uk-responsive' => true,
-        'loading' => ['lazy {@image_loading}'],
-        'title' => $props['video_title'],
-
-        'class' => [
-            'uk-disabled',
-        ],
-
-        'uk-video' => [
-            'automute: true;',
-        ],
-
-    ]);
-
-} else {
-
-    $video = $this->el('video', [
-
-        'src' => $src,
-        'controls' => false,
-        'loop' => true,
-        'autoplay' => true,
-        'muted' => true,
-        'playsinline' => true,
-        'preload' => ['none {@image_loading}'],
-
-        'uk-video' => true,
-
-    ]);
-
-}
-
-$video->attr([
+    'src' => $src,
+    'playsinline' => true,
+    'loop' => true,
+    'muted' => true,
+    'preload' => ['none {@!image_loading}'],
 
     'width' => $props['image_width'],
     'height' => $props['image_height'],
+
+    'uk-video' => $props['video_autoplay'] ? [
+        'autoplay: {video_autoplay};',
+        'hover-target: !.tm-video-toggle {@video_autoplay: hover};',
+        'restart: true; {@video_autoplay_restart} {@video_autoplay}',
+    ] : true,
 
 ]);
 

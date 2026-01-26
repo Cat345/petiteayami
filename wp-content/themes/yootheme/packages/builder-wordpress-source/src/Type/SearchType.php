@@ -2,14 +2,19 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Query;
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class SearchType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -47,24 +52,24 @@ class SearchType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('Search'),
             ],
         ];
     }
 
-    public static function searchQuery()
+    public static function searchQuery(): string
     {
         return get_search_query();
     }
 
-    public static function foundPosts()
+    public static function foundPosts(): int
     {
+        /** @var WP_Query $wp_query */
         global $wp_query;
 
         return is_search() && get_search_query() ? $wp_query->found_posts : 0;
     }
 
-    public static function link()
+    public static function link(): string
     {
         return get_search_link();
     }

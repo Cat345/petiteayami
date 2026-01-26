@@ -1,7 +1,6 @@
 <?php
 
 use YOOtheme\Builder\Wordpress\Woocommerce\Helper;
-use YOOtheme\Builder\Wordpress\Woocommerce\WidgetLayeredNav;
 use YOOtheme\Http\Request;
 use function YOOtheme\app;
 
@@ -31,6 +30,15 @@ if ($props['show_attribute_filters']) {
     }
 }
 
+// Brands Filter
+if ($props['show_brands_filter'] && taxonomy_exists('product_brand')) {
+    $tax = get_taxonomy('product_brand');
+    $widget = Helper::renderLayeredNavWidget(['attribute' => $tax->name]);
+    if ($widget) {
+        $filters['attributes'][$tax->label] = "<div class=\"woocommerce widget_layered_nav woocommerce-widget-layered-nav uk-panel uk-text-nowrap\">{$widget}</div>";
+    }
+}
+
 // Filter Count
 if ($props['filter_active_count']) {
     $filters['filter_count'] = [];
@@ -38,7 +46,7 @@ if ($props['filter_active_count']) {
     $request = app(Request::class);
 
     if ($props['show_attribute_filters']) {
-        foreach (\WC_Query::get_layered_nav_chosen_attributes() as $name => $attr) {
+        foreach (WC_Query::get_layered_nav_chosen_attributes() as $name => $attr) {
             $filters['filter_count']['attr'][$name] = count($attr['terms']);
         }
     }

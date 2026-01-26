@@ -5,8 +5,10 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.page_header .qode_search_form .dgwt-wcas-search-wrapp {
 			max-width: 100%;
@@ -31,18 +33,22 @@ add_action( 'wp_head', function () {
 			max-width: 100%;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_footer', function () {
-	if ( ! function_exists( 'bridge_qode_options' ) ) {
-		return;
-	}
-	if ( bridge_qode_options()->getOptionValue( 'enable_search' ) !== 'yes' ) {
-		return;
-	}
-	$search_type = bridge_qode_options()->getOptionValue( 'search_type' );
-	if ( $search_type === 'search_slides_from_window_top' ) { ?>
+add_action(
+	'wp_footer',
+	function () {
+		if ( ! function_exists( 'bridge_qode_options' ) ) {
+			return;
+		}
+		if ( bridge_qode_options()->getOptionValue( 'enable_search' ) !== 'yes' ) {
+			return;
+		}
+		$search_type = bridge_qode_options()->getOptionValue( 'search_type' );
+		if ( $search_type === 'search_slides_from_window_top' ) {
+			?>
 		<div id="wcas-bridge-search" style="display: block;">
 			<div class="qode_search_form">
 				<div class="container">
@@ -58,7 +64,7 @@ add_action( 'wp_footer', function () {
 				bridgeSearch.replaceWith(document.querySelector('#wcas-bridge-search > div'));
 			}
 		</script>
-	<?php } else if ( $search_type === 'search_slides_from_header_bottom' ) { ?>
+	<?php } elseif ( $search_type === 'search_slides_from_header_bottom' ) { ?>
 		<div id="wcas-bridge-search" style="display: block;">
 			<div class="qode_search_form_2">
 				<div class="container">
@@ -76,7 +82,7 @@ add_action( 'wp_footer', function () {
 				bridgeSearch.replaceWith(document.querySelector('#wcas-bridge-search > div'));
 			}
 		</script>
-	<?php } else if ( $search_type === 'search_covers_header' ) { ?>
+	<?php } elseif ( $search_type === 'search_covers_header' ) { ?>
 		<div id="wcas-bridge-search" style="display: block;">
 			<div class="qode_search_form_3">
 				<div class="container">
@@ -96,7 +102,7 @@ add_action( 'wp_footer', function () {
 				bridgeSearch.replaceWith(document.querySelector('#wcas-bridge-search > div'));
 			}
 		</script>
-	<?php } else if ( $search_type === 'fullscreen_search' ) { ?>
+	<?php } elseif ( $search_type === 'fullscreen_search' ) { ?>
 		<div id="wcas-bridge-search" style="display: block;">
 			<div class="fullscreen_search_form">
 				<div class="form_holder">
@@ -110,5 +116,7 @@ add_action( 'wp_footer', function () {
 				bridgeSearch.replaceWith(document.querySelector('#wcas-bridge-search > div'));
 			}
 		</script>
-	<?php }
-} );
+		<?php
+	}
+	}
+);

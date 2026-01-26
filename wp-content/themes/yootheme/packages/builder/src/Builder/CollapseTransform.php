@@ -7,10 +7,9 @@ class CollapseTransform
     /**
      * Transform "preload" callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      */
-    public static function preload($node, array $params)
+    public static function preload(object $node, array $params): void
     {
         if ($params['context'] !== 'render') {
             return;
@@ -21,13 +20,8 @@ class CollapseTransform
 
     /**
      * Transform "render" callback.
-     *
-     * @param object $node
-     * @param array  $params
-     *
-     * @return bool
      */
-    public static function render($node, array $params)
+    public static function render(object $node): bool
     {
         return empty($node->parent) ||
             !empty($node->children) ||

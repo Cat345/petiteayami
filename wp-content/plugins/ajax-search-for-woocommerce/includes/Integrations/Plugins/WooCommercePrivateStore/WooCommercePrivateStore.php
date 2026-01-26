@@ -28,11 +28,11 @@ class WooCommercePrivateStore extends AbstractPluginIntegration {
         if ( !dgoraAsfwFs()->is_premium() ) {
             add_filter(
                 'http_request_args',
-                array($this, 'httpRequestArgs'),
+                [$this, 'httpRequestArgs'],
                 10,
                 2
             );
-            add_filter( 'dgwt/wcas/search_results/output', array($this, 'hideSearchResults') );
+            add_filter( 'dgwt/wcas/search_results/output', [$this, 'hideSearchResults'] );
         }
     }
 
@@ -48,9 +48,9 @@ class WooCommercePrivateStore extends AbstractPluginIntegration {
         if ( defined( 'DGWT_WCAS_SEARCH_ACTION' ) && defined( 'WCPS_COOKIE_PREFIX' ) && strpos( $url, \WC_AJAX::get_endpoint( \DGWT_WCAS_SEARCH_ACTION ) ) !== false ) {
             $cookie = \filter_input( \INPUT_COOKIE, \WCPS_COOKIE_PREFIX . \COOKIEHASH );
             if ( !empty( $cookie ) ) {
-                $args['cookies'] = array(
+                $args['cookies'] = [
                     \WCPS_COOKIE_PREFIX . \COOKIEHASH => $cookie,
-                );
+                ];
             }
         }
         return $args;
@@ -70,10 +70,10 @@ class WooCommercePrivateStore extends AbstractPluginIntegration {
         if ( is_callable( '\\Barn2\\Plugin\\WC_Private_Store\\Util::store_locked' ) ) {
             if ( \Barn2\Plugin\WC_Private_Store\Util::store_locked() ) {
                 $output['total'] = 0;
-                $output['suggestions'] = array(array(
+                $output['suggestions'] = [[
                     'value' => '',
                     'type'  => 'no-results',
-                ));
+                ]];
                 $output['time'] = '0 sec';
             }
         }

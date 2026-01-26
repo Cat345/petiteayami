@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Wordpress\WooCommerce\Listener;
 
 use YOOtheme\Metadata;
-use YOOtheme\Path;
 
 class AddVariableProductScript
 {
@@ -17,14 +16,14 @@ class AddVariableProductScript
     /**
      * Update variable product properties.
      */
-    public function variableScript()
+    public function variableScript(): void
     {
         global $product;
 
         if ($product->is_type('variable')) {
             $this->metadata->set('script:woocommerce_variable_product', [
-                'src' => Path::get('../../assets/js/variable-product.min.js', __DIR__),
-                'defer' => true,
+                'src' => '~assets/site/js/variable-product.js',
+                'type' => 'module',
             ]);
         }
     }

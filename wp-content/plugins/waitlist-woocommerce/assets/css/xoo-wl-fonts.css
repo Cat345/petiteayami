@@ -1,7 +1,6 @@
 @font-face {
   font-family: 'waitlist';
-  src:  url('../fonts/waitlist.eot?gwad77');
-  src:  url('../fonts/waitlist.eot?gwad77#iefix') format('embedded-opentype'),
+  src:
     url('../fonts/waitlist.ttf?gwad77') format('truetype'),
     url('../fonts/waitlist.woff?gwad77') format('woff'),
     url('../fonts/waitlist.svg?gwad77#waitlist') format('svg');
@@ -10,10 +9,10 @@
   font-display: block;
 }
 
-[class^="xoo-wl-icon"], [class*=" xoo-wl-icon"] {
+[class^="xoo-wl-icon-"], [class*=" xoo-wl-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'waitlist' !important;
-  speak: none;
+  speak: never;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -36,4 +35,7 @@
 }
 .xoo-wl-icon-cancel-circle:before {
   content: "\ea0d";
+}
+.xoo-wl-icon-spinner8:before {
+  content: "\e981";
 }

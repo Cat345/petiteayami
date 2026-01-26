@@ -3,6 +3,32 @@
 use YOOtheme\Arr;
 
 return [
+    '5.0.0-beta.0.14' => function ($config) {
+        global $wp_widget_factory;
+        if ($wp_widget_factory->widgets) {
+            foreach ($wp_widget_factory->widgets as $widget) {
+                $settings = $widget->get_settings();
+                foreach ($settings as $key => $value) {
+                    if (!empty($value['_theme'])) {
+                        $conf = json_decode($value['_theme'], true);
+
+                        if (
+                            ($conf['menu_icon_width'] ?? '') &&
+                            !($conf['menu_image_width'] ?? '')
+                        ) {
+                            $conf['menu_image_width'] = $conf['menu_icon_width'];
+                        }
+                        unset($conf['menu_icon_width']);
+
+                        $settings[$key]['_theme'] = json_encode($conf);
+                    }
+                }
+                $widget->save_settings($settings);
+            }
+        }
+
+        return $config;
+    },
     '3.0.1.1' => function ($config) {
         $sidebars = get_option('sidebars_widgets', []);
         Arr::set($sidebars, 'dialog-mobile', Arr::get($sidebars, 'dialog-mobile') ?: []);
@@ -32,13 +58,11 @@ return [
     },
     '2.8.0-beta.0.4' => function ($config) {
         $locations = get_nav_menu_locations();
-        Arr::set($locations, 'dialog-mobile', Arr::get($locations, 'mobile'));
-        Arr::del($locations, 'mobile');
+        Arr::updateKeys($locations, ['mobile' => 'dialog-mobile']);
         set_theme_mod('nav_menu_locations', $locations);
 
         $sidebars = get_option('sidebars_widgets', []);
-        Arr::set($sidebars, 'dialog-mobile', Arr::get($sidebars, 'mobile'));
-        Arr::del($sidebars, 'mobile');
+        Arr::updateKeys($sidebars, ['mobile' => 'dialog-mobile']);
         update_option('sidebars_widgets', $sidebars);
 
         return $config;
@@ -46,13 +70,11 @@ return [
     '2.8.0-beta.0.1' => function ($config, array $params) {
         if (preg_match('/(offcanvas|modal)/', Arr::get($params['config'], 'header.layout'))) {
             $locations = get_nav_menu_locations();
-            Arr::set($locations, 'dialog', Arr::get($locations, 'navbar'));
-            Arr::del($locations, 'navbar');
+            Arr::updateKeys($locations, ['navbar' => 'dialog']);
             set_theme_mod('nav_menu_locations', $locations);
 
             $sidebars = get_option('sidebars_widgets', []);
-            Arr::set($sidebars, 'dialog', Arr::get($sidebars, 'navbar'));
-            Arr::del($sidebars, 'navbar');
+            Arr::updateKeys($sidebars, ['navbar' => 'dialog']);
             update_option('sidebars_widgets', $sidebars);
         }
 

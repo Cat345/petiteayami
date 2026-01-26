@@ -4,18 +4,12 @@ namespace YOOtheme\GraphQL;
 
 use YOOtheme\GraphQL\Error\Error;
 use YOOtheme\GraphQL\Language\Printer;
+use YOOtheme\GraphQL\Type\Definition\FieldDefinition;
 use YOOtheme\GraphQL\Type\Definition\InterfaceType;
 use YOOtheme\GraphQL\Type\Definition\ObjectType;
 use YOOtheme\GraphQL\Type\Schema;
 use YOOtheme\GraphQL\Utils\SchemaPrinter as BasePrinter;
 use YOOtheme\GraphQL\Utils\Utils;
-use function array_keys;
-use function array_map;
-use function array_values;
-use function compact;
-use function count;
-use function implode;
-use function sprintf;
 
 /**
  * Given an instance of Schema, prints it in GraphQL type language.
@@ -76,20 +70,24 @@ class SchemaPrinter extends BasePrinter
         return implode(
             "\n",
             array_map(
-                fn($f, $i) => static::printDescription($options, $f, '  ', !$i) .
+                fn($field, $i) => static::printDescription($options, $field, '  ', !$i) .
                     '  ' .
-                    $f->name .
-                    static::printArgs($options, $f->args, '  ') .
+                    $field->name .
+                    static::printArgs($options, $field->args, '  ') .
                     ': ' .
-                    $f->getType() .
-                    static::printDirectives($f, $options) .
-                    static::printDeprecated($f),
+                    $field->getType() .
+                    static::printDirectives($field, $options) .
+                    static::printDeprecated($field),
                 $fields,
                 array_keys($fields),
             ),
         );
     }
 
+    /**
+     * @param FieldDefinition|ObjectType $fieldOrType
+     * @param array<string, mixed> $options
+     */
     protected static function printDirectives($fieldOrType, array $options): string
     {
         $directives = [];

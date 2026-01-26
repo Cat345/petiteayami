@@ -6,8 +6,18 @@
  * https://wordpress.org/plugins/atum-stock-manager-for-woocommerce/
  */
 if ( ! class_exists( 'BWFAN_Compatibility_With_Atom_Stock_Manager' ) ) {
+	/**
+	 * Bwfan Compatibility With Atom Stock Manager
+	 *
+	 * @since 1.0.0
+	 */
 	class BWFAN_Compatibility_With_Atom_Stock_Manager {
 
+		/**
+		 *   Construct
+		 *
+		 * @since 1.0.0
+		 */
 		public function __construct() {
 			add_action( 'action_scheduler_failed_action', [ $this, 'unhook_atom_stock_manager' ], 9, 2 );
 		}
@@ -23,7 +33,7 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_Atom_Stock_Manager' ) ) {
 		public function unhook_atom_stock_manager( $action_id, $timeout ) {
 			$rest_route = filter_input( INPUT_GET, 'rest_route' );
 			if ( empty( $rest_route ) ) {
-				$rest_route = $_SERVER['REQUEST_URI'] ?? '';
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
 			}
 			if ( empty( $rest_route ) ) {
 				return;

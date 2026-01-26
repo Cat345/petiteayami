@@ -14,15 +14,15 @@ use YOOtheme\GraphQL\Type\ObjectScalarType;
 
 return [
     'events' => [
-        'source.init' => [Listener\LoadSourceSchema::class => ['@handle', 50]],
         'source.error' => [Listener\LogSourceError::class => '@handle'],
         'source.type.metadata' => [Listener\OrderSourceMetadata::class => 'handle'],
-        BuilderConfig::class => [Listener\LoadBuilderConfig::class => '@handle'],
     ],
 
     'config' => [
-        BuilderConfig::class => __DIR__ . '/config/customizer.json',
+        BuilderConfig::class => __DIR__ . '/config/customizer.php',
     ],
+
+    'routes' => [['get', '/builder/schema', [Builder\SchemaController::class, 'index']]],
 
     'extend' => [
         Builder::class => function (Builder $builder, $app) {

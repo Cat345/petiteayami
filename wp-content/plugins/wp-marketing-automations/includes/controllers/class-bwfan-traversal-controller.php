@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Bwfan Traversal Controller
+ *
+ * @since 1.0.0
+ */
 #[AllowDynamicProperties]
 class BWFAN_Traversal_Controller {
 	public $current_node_id = 0;
@@ -166,7 +171,12 @@ class BWFAN_Traversal_Controller {
 		}
 
 		foreach ( $this->steps as $step ) {
-			if ( isset( $step['stepId'] ) && ( absint( $step['stepId'] ) === absint( $step_id ) ) ) {
+
+			/** If step id is empty or is a split path then skip */
+			if ( empty( $step['stepId'] ) || false !== strpos( (string) $step['stepId'], '-path-' ) ) {
+				continue;
+			}
+			if ( ( absint( $step['stepId'] ) === absint( $step_id ) ) ) {
 				return $step;
 			}
 		}

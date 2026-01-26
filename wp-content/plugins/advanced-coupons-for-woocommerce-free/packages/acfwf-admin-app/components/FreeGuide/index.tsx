@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Tag, Button, Input, message } from "antd";
 import { BulbFilled } from "@ant-design/icons";
+import { sanitizeHtml } from '../../../shared/helpers/sanitize';
 
 // CSS
 import "./index.scss";
@@ -112,7 +113,7 @@ const FreeGuide = (props: IProps) => {
                     <h2>{ title }</h2>
                     <img src={ image } alt={ title } />
                     { showSubtitle ? <h3>{ subtitle }</h3> : null }
-                    <p dangerouslySetInnerHTML={{ __html: content }} />
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
                     <ul>
                         { list.map( (list_text: string, index: number) => (
                             <li key={ index }>

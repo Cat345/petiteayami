@@ -421,6 +421,7 @@
                     type: 'post',
                     data: {
                         action: 'dgwt_wcas_index_details_toggle',
+                        _wpnonce: dgwt_wcas.nonces.index_details_toggle,
                         display: display
                     }
                 });

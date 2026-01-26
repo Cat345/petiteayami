@@ -376,16 +376,22 @@ if ( ! class_exists( 'BWFAN_Recoverable_Carts' ) ) {
 		 */
 		public static function delete_recovered_carts( $ids ) {
 			global $wpdb;
-			$ids   = is_array( $ids ) ? implode( ',', $ids ) : $ids;
-			$query = "DELETE FROM {$wpdb->prefix}postmeta WHERE `post_id` IN($ids) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'";
-			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
-				$query = "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE `order_id` IN($ids) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'";
+			// Sanitize IDs to prevent SQL injection
+			$ids = is_array( $ids ) ? array_map( 'absint', $ids ) : array( absint( $ids ) );
+			$ids = array_filter( $ids ); // Remove any zero values
+			if ( empty( $ids ) ) {
+				return;
 			}
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			$query        = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}postmeta WHERE `post_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids );
+			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
+				$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE `order_id` IN($placeholders) AND `meta_key` = '_bwfan_ab_cart_recovered_a_id'", $ids );
+			}
+			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			/** Delete from conversion table */
-			$query = "DELETE FROM {$wpdb->prefix}bwfan_conversions WHERE `wcid` IN($ids) ";
-			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_conversions WHERE `wcid` IN($placeholders) ", $ids );
+			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		/**

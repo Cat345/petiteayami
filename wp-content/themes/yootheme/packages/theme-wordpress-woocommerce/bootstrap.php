@@ -3,7 +3,6 @@
 namespace YOOtheme\Theme\Wordpress\WooCommerce;
 
 use YOOtheme\Config;
-use YOOtheme\Path;
 use YOOtheme\Theme\Styler\StylerConfig;
 use YOOtheme\View;
 
@@ -23,14 +22,14 @@ return array_merge_recursive($config, [
     'theme' => function (Config $config) {
         $config->set(
             'styles.imports.search',
-            Path::get('../../vendor/assets/uikit/src/images/icons/search.svg', __DIR__),
+            __DIR__ . '/../../vendor/assets/uikit/src/images/icons/search.svg',
         );
 
-        return $config->loadFile(__DIR__ . '/config/theme.json');
+        return $config->loadFile(__DIR__ . '/config/theme.php');
     },
 
     'config' => [
-        StylerConfig::class => __DIR__ . '/config/styler.json',
+        StylerConfig::class => __DIR__ . '/config/styler.php',
     ],
 
     'events' => [

@@ -9,16 +9,15 @@ class AliasLoader
     /**
      * Load service aliases.
      *
-     * @param Container $container
-     * @param array     $configs
+     * @param list<array<string, string|list<string>>> $configs
      */
-    public function __invoke(Container $container, array $configs)
+    public function __invoke(Container $container, array $configs): void
     {
-        $config = array_merge_recursive(...$configs);
-
-        foreach ($config as $id => $aliases) {
-            foreach ((array) $aliases as $alias) {
-                $container->setAlias($id, $alias);
+        foreach ($configs as $config) {
+            foreach ($config as $id => $aliases) {
+                foreach ((array) $aliases as $alias) {
+                    $container->setAlias($id, $alias);
+                }
             }
         }
     }

@@ -52,7 +52,6 @@ class BWFAN_API_Delete_Automations extends BWFAN_API_Base {
 			if ( 2 === intval( $data['v'] ) ) {
 				$automation_obj->delete_migrations( $automation_id );
 			}
-
 			BWFAN_Core()->automations->delete_automation( $ids );
 			BWFAN_Core()->automations->delete_automationmeta( $ids );
 
@@ -67,9 +66,7 @@ class BWFAN_API_Delete_Automations extends BWFAN_API_Base {
 					'automation_id' => $automation_id,
 				) );
 			}
-
 			BWFAN_Core()->automations->set_automation_id( $automation_id );
-
 			do_action( 'bwfan_automation_deleted', $automation_id );
 		}
 

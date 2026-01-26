@@ -5,14 +5,14 @@ namespace YOOtheme\Configuration;
 class Filter
 {
     /**
-     * @var array
+     * @var array<string,  mixed>
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
      * Constructor.
      *
-     * @param array $filters
+     * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
     {
@@ -23,25 +23,18 @@ class Filter
 
     /**
      * Adds a filter function.
-     *
-     * @param string   $name
-     * @param callable $filter
-     *
-     * @return $this
      */
-    public function add($name, callable $filter)
+    public function add(string $name, callable $filter): void
     {
         $this->filters[$name] = $filter;
-
-        return $this;
     }
 
     /**
      * Applies filters to a value.
      *
-     * @param mixed $value
-     * @param mixed $filters
-     * @param array $arguments
+     * @param mixed           $value
+     * @param string|string[] $filters
+     * @param mixed           ...$arguments
      *
      * @throws \RuntimeException
      *

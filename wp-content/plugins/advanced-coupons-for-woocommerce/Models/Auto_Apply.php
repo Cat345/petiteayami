@@ -202,8 +202,8 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
                     continue;
                 }
 
-                // Auto-apply the coupon.
-                $checked = $this->_auto_apply_single_coupon( $coupon, $discounts );
+                // Validate coupon.
+                $checked = $discounts->is_coupon_valid( $coupon );
 
                 /**
                  * If an individual-use coupon was already applied,
@@ -246,8 +246,11 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
                     $individual_use_allowed_coupons = $allowed_coupons;
                 }
 
-                // Add coupon to applied coupons list if it's valid.
                 if ( $checked ) {
+                    // Auto-apply the coupon.
+                    $this->_auto_apply_single_coupon( $coupon, $discounts );
+
+                    // Add coupon to applied coupons list if it's valid and auto applied.
                     $applied[] = $coupon->get_code();
                 }
             }

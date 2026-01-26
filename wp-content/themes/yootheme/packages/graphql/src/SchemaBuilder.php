@@ -2,14 +2,14 @@
 
 namespace YOOtheme\GraphQL;
 
+use Generator;
 use YOOtheme\GraphQL\Error\InvariantViolation;
 use YOOtheme\GraphQL\Executor\Executor;
 use YOOtheme\GraphQL\Executor\Values;
-use YOOtheme\GraphQL\Language\AST\DirectiveNode;
-use YOOtheme\GraphQL\Language\AST\NodeList;
 use YOOtheme\GraphQL\Language\Parser;
 use YOOtheme\GraphQL\Type\Definition\Directive;
 use YOOtheme\GraphQL\Type\Definition\InputObjectType;
+use YOOtheme\GraphQL\Type\Definition\ListOfType;
 use YOOtheme\GraphQL\Type\Definition\NamedType;
 use YOOtheme\GraphQL\Type\Definition\ObjectType;
 use YOOtheme\GraphQL\Type\Definition\ResolveInfo;
@@ -24,27 +24,32 @@ class SchemaBuilder
     /**
      * @var callable[][]
      */
-    protected $hooks = [];
+    protected array $hooks = [];
 
     /**
-     * @var Type[]
+     * @var array<string, array<string, mixed>|callable>
      */
-    protected $types = [];
+    protected array $configs = [];
 
     /**
-     * @var Type[]
+     * @var array<string, Type&NamedType>
      */
-    protected $loadedTypes = [];
+    protected array $types = [];
 
     /**
-     * @var array
+     * @var array<string, Type&NamedType>
      */
-    protected $directives = [];
+    protected array $loadedTypes = [];
+
+    /**
+     * @var array<string, Directive>
+     */
+    protected array $directives = [];
 
     /**
      * Constructor.
      *
-     * @param array $plugins
+     * @param array<object> $plugins
      */
     public function __construct(array $plugins = [])
     {
@@ -58,7 +63,6 @@ class SchemaBuilder
             $this->loadPlugin($plugin);
         }
 
-        /** @phpstan-ignore-next-line */
         foreach ($this->hooks['onLoad'] as $hook) {
             $hook($this);
         }
@@ -95,11 +99,9 @@ class SchemaBuilder
     }
 
     /**
-     * @param array $config
-     *
-     * @return Schema
+     * @param array<string, mixed> $config
      */
-    public function buildSchema(array $config = [])
+    public function buildSchema(array $config = []): Schema
     {
         $config = array_replace_recursive(
             [
@@ -128,7 +130,7 @@ class SchemaBuilder
     }
 
     /**
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return string
      */
@@ -150,27 +152,20 @@ class SchemaBuilder
     /**
      * @param Directive $directive
      */
-    public function setDirective(Directive $directive)
+    public function setDirective(Directive $directive): void
     {
         $this->directives[$directive->name] = $directive;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasType($name)
+    public function hasType(string $name): bool
     {
         return isset($this->types[$name]);
     }
 
     /**
-     * @param string $name
-     *
-     * @return Type|void
+     * @return ?(Type&NamedType)
      */
-    public function getType($name)
+    public function getType(string $name): ?Type
     {
         if (empty($this->loadedTypes)) {
             $this->loadedTypes = Type::getStandardTypes();
@@ -183,34 +178,30 @@ class SchemaBuilder
         if (isset($this->types[$name])) {
             return $this->loadType($this->loadedTypes[$name] = $this->types[$name]);
         }
+
+        return null;
     }
 
     /**
-     * @param Type $type
+     * @param NamedType&Type $type
      */
-    public function setType(Type $type)
+    public function setType($type): void
     {
-        /** @var NamedType $type */
         $this->types[$type->name] = $type;
     }
 
     /**
-     * @param array|callable $config
-     *
-     * @return ObjectType
+     * @param array<string, mixed>|callable $config
      */
-    public function queryType($config = [])
+    public function queryType($config = []): void
     {
-        return $this->objectType('Query', $config);
+        $this->objectType('Query', $config);
     }
 
     /**
-     * @param string         $name
-     * @param array|callable $config
-     *
-     * @return InputObjectType
+     * @param array<string, mixed>|callable $config
      */
-    public function inputType($name, $config = [])
+    public function inputType(string $name, $config = []): void
     {
         $type =
             $this->types[$name] ??
@@ -219,20 +210,21 @@ class SchemaBuilder
                 'fields' => [],
             ]);
 
+        if ($config) {
+            $this->configs[$name][] = $config;
+        }
+
         if (!$type instanceof InputObjectType) {
             throw new InvariantViolation("Type '{$name}' must be an InputObjectType.");
         }
 
-        return $this->types[$name] = $this->extendType($type, $config);
+        $this->types[$name] = $type;
     }
 
     /**
-     * @param string         $name
-     * @param array|callable $config
-     *
-     * @return ObjectType
+     * @param array<string, mixed>|callable $config
      */
-    public function objectType($name, $config = [])
+    public function objectType(string $name, $config = []): void
     {
         $type =
             $this->types[$name] ??
@@ -242,17 +234,21 @@ class SchemaBuilder
                 'resolveField' => [$this, 'resolveField'],
             ]);
 
+        if ($config) {
+            $this->configs[$name][] = $config;
+        }
+
         if (!$type instanceof ObjectType) {
             throw new InvariantViolation("Type '{$name}' must be an ObjectType.");
         }
 
-        return $this->types[$name] = $this->extendType($type, $config);
+        $this->types[$name] = $type;
     }
 
     /**
      * @template T of Type
      * @param T $type
-     * @param array|callable $config
+     * @param array<string, mixed>|callable $config
      * @return T
      */
     public function extendType(Type $type, $config = [])
@@ -269,12 +265,16 @@ class SchemaBuilder
     }
 
     /**
-     * @template T of Type
+     * @template T of Type&NamedType
      * @param T $type
      * @return T
      */
     public function loadType(Type $type)
     {
+        foreach ($this->configs[$type->name] ?? [] as $config) {
+            $this->extendType($type, $config);
+        }
+
         foreach ($this->hooks['onLoadType'] as $hook) {
             $hook($type, $this);
         }
@@ -289,12 +289,6 @@ class SchemaBuilder
 
         if (isset($type->config['fields'])) {
             $type->config['fields'] = $this->loadFields($type, $type->config['fields']);
-        }
-
-        if ($type instanceof ObjectType) {
-            $type->astNode = ASTHelper::objectType($type);
-        } elseif ($type instanceof InputObjectType) {
-            $type->astNode = ASTHelper::inputType($type);
         }
 
         return $type;
@@ -312,14 +306,9 @@ class SchemaBuilder
     {
         $resolver = new Middleware([Executor::class, 'defaultFieldResolver']);
 
-        foreach ($this->resolveDirectives($info) as $directiveNode) {
-            $directiveDef = $this->getDirective($directiveNode->name->value);
-            if (is_callable($directiveDef)) {
-                $directive = $directiveDef(
-                    Values::getArgumentValues($directiveDef, $directiveNode, $info->variableValues),
-                    $resolver,
-                );
-                if (is_callable($directive)) {
+        foreach ($this->resolveDirectives($info) as ['name' => $name, 'args' => $arguments]) {
+            if (is_callable($directiveDef = $this->getDirective($name))) {
+                if (is_callable($directive = $directiveDef($arguments, $resolver))) {
                     $resolver->push($directive);
                 }
             }
@@ -329,53 +318,54 @@ class SchemaBuilder
     }
 
     /**
-     * @return NodeList<DirectiveNode>
+     * @return Generator<array{'name': string, 'args': array<string, mixed>}>
      */
-    public function resolveDirectives(ResolveInfo $info)
+    public function resolveDirectives(ResolveInfo $info): Generator
     {
-        $nodes = new NodeList([]);
-        $field = $info->parentType->getField($info->fieldName);
-
         // type directives
-        if (isset($info->parentType->astNode->directives)) {
-            $nodes = $nodes->merge($info->parentType->astNode->directives);
-        }
+        yield from $info->parentType->config['directives'] ?? []; // @phpstan-ignore-line
 
         // field directives
-        if (isset($field->astNode->directives)) {
-            $nodes = $nodes->merge($field->astNode->directives);
-        }
+        yield from $info->parentType->getField($info->fieldName)->config['directives'] ?? []; // @phpstan-ignore-line
 
         // query field directives
         foreach ($info->fieldNodes as $node) {
-            if ($info->fieldName === $node->name->value) {
-                return $nodes->merge($node->directives);
+            if ($info->fieldName !== $node->name->value) {
+                continue;
             }
-        }
 
-        return $nodes;
+            foreach ($node->directives as $directiveNode) {
+                $name = $directiveNode->name->value;
+                $args = Values::getArgumentValues(
+                    $this->getDirective($name),
+                    $directiveNode,
+                    $info->variableValues,
+                );
+
+                yield ['name' => $name, 'args' => $args];
+            }
+
+            return;
+        }
     }
 
     /**
-     * @param Type  $type
-     * @param array $field
+     * @param Type&NamedType $type
+     * @param array<string, mixed> $field
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function loadField(Type $type, array $field)
+    protected function loadField($type, array $field): array
     {
         $field += ['type' => null];
 
         if (is_string($field['type'])) {
             $field['type'] = $this->getType($field['type']);
-        }
-
-        if (is_array($field['type'])) {
+        } elseif (is_array($field['type'])) {
             $field['type'] = $this->loadModifiers($field['type']);
         }
 
-        if (empty($field['type'])) {
-            /** @var NamedType $type */
+        if (!$field['type']) {
             throw new InvariantViolation(
                 "Field '{$field['name']}' on '{$type->name}' does not have a Type.",
             );
@@ -385,42 +375,40 @@ class SchemaBuilder
     }
 
     /**
-     * @param Type  $type
-     * @param array $fields
+     * @param Type&NamedType $type
+     * @param array<string, array<string, mixed>> $fields
      *
-     * @return array
+     * @return Generator<string, callable>
      */
-    protected function loadFields(Type $type, array $fields)
+    protected function loadFields(Type $type, array $fields): Generator
     {
-        $result = [];
-
         foreach ($fields as $name => $field) {
-            $field = $this->loadField(
-                $type,
-                $field + [
-                    'name' => lcfirst($name),
-                    'args' => [],
-                ],
-            );
+            yield $name => function () use ($type, $name, $field) {
+                $field = $this->loadField(
+                    $type,
+                    $field + [
+                        'name' => lcfirst($name),
+                        'args' => [],
+                    ],
+                );
 
-            foreach ($field['args'] as $key => $arg) {
-                $field['args'][$key] = $this->loadField($type, $arg);
-            }
+                foreach ($field['args'] as $key => $arg) {
+                    $field['args'][$key] = $this->loadField($type, $arg);
+                }
 
-            foreach ($this->hooks['onLoadField'] as $hook) {
-                $field = $hook($type, $field, $this);
-            }
+                foreach ($this->hooks['onLoadField'] as $hook) {
+                    $field = $hook($type, $field, $this);
+                }
 
-            $result[$name] = $field;
+                return $field;
+            };
         }
-
-        return $result;
     }
 
     /**
-     * @param array $type
+     * @param array<string, mixed> $type
      *
-     * @return Type|array
+     * @return Type|ListOfType
      */
     protected function loadModifiers(array $type)
     {
@@ -448,7 +436,7 @@ class SchemaBuilder
     /**
      * @param mixed $plugin
      */
-    protected function loadPlugin($plugin)
+    protected function loadPlugin($plugin): void
     {
         foreach ($this->hooks as $method => &$hooks) {
             $hook = [$plugin, $method];
@@ -471,7 +459,7 @@ class SchemaBuilder
     {
         if (is_array($value)) {
             $array = [];
-            $assoc = array_values($value) !== $value;
+            $assoc = !array_is_list($value);
             $indention = str_repeat('  ', $indent);
             $indentlast = $assoc ? "\n" . $indention : '';
 

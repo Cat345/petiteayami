@@ -242,6 +242,29 @@ span.xwh-subheading {
 }
 
 
+.xoo-wl-processing{
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+
+.xoo-wl-spinner {
+    animation: xoo-wl-spin 2s linear infinite;
+    display: inline-block;
+}
+
+@keyframes xoo-wl-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
 .xoo-wl-popup-active.xoo-wl-popup[data-wpr-lazyrender] {
     content-visibility: visible!important;
 }

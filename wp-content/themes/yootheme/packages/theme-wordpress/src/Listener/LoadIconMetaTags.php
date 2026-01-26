@@ -7,6 +7,7 @@ class LoadIconMetaTags
     /**
      * If WP site icon is not set, try to load icons from the theme settings.
      *
+     * @link https://developer.wordpress.org/reference/hooks/wp_head/
      * @link https://developer.wordpress.org/reference/hooks/admin_head/
      */
     public static function handle(): void

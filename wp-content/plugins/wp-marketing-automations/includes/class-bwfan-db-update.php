@@ -29,10 +29,12 @@ class BWFAN_DB_Update {
 	public function __construct() {
 		add_action( 'admin_init', [ $this, 'db_update' ], 11 );
 		add_action( 'bwfan_db_update_2_11', array( $this, 'db_update_2_11_cb' ) );
+		add_action( 'bwfan_db_update_3_6_5', array( $this, 'db_update_3_6_5_cb' ) );
 		add_action( 'bwfan_reindex_cart_conversions_base_total', array( $this, 'reindex_cart_conversion_base_total' ) );
 
 		$this->db_changes = array(
 			'2.11' => '2_11',
+			'3.6.5' => '3_6_5',
 		);
 	}
 
@@ -430,6 +432,81 @@ class BWFAN_DB_Update {
 
 			bwf_unschedule_actions( 'bwfan_reindex_cart_conversions_base_total' );
 			break;
+		} while ( $this->should_run( $start_time ) ); // keep going until we run out of time, or memory
+	}
+
+	/**
+	 * Database update callback to add template_hash column and populate existing records
+	 *
+	 * @return void
+	 */
+	public function db_update_3_6_5_cb() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'bwfan_templates';
+
+		/** Check if column already exists */
+		$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM {$table_name} LIKE 'template_hash'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		if ( empty( $column_exists ) ) {
+			/** Add template_hash column */
+			$query = "ALTER TABLE {$table_name} ADD COLUMN `template_hash` varchar(40) default NULL, ADD KEY `template_hash` (`template_hash`)";
+			$wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+
+			if ( ! empty( $wpdb->last_error ) ) {
+				BWFAN_Common::log_test_data ( 'Error adding template_hash column: ' . $wpdb->last_error, 'db_update_3_6_5', true );
+
+				$this->mark_complete( '3.6.5' );
+				return;
+			}
+		}
+		$start_time      = time();
+		$global_settings = get_option( 'bwfan_global_settings', array() );
+		/** Populate template_hash for existing records that don't have it */
+		do {
+			$last_id = bwf_options_get( 'last_template_hash_id' );
+			$last_id = intval( $last_id );
+
+			if ( $last_id > 0 ) {
+				$query = $wpdb->prepare( "SELECT `ID`, `template` FROM {$table_name} WHERE (`template_hash` IS NULL OR `template_hash` = '') AND `template` IS NOT NULL AND `template` != '' AND `ID` > %d ORDER BY `ID` ASC LIMIT 50", $last_id ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			} else {
+				$query = "SELECT `ID`, `template` FROM {$table_name} WHERE (`template_hash` IS NULL OR `template_hash` = '') AND `template` IS NOT NULL AND `template` != '' ORDER BY `ID` ASC LIMIT 50"; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			}
+			$templates = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			if ( ! is_array( $templates ) || 0 === count( $templates ) ) {
+				bwf_options_delete( 'last_template_hash_id' );
+				$this->mark_complete( '3.6.5' );
+
+				/** Added a flag to the global settings to indicate that the database update is complete */
+				$global_settings['__db_update_3_6_5_completed'] = true;
+				update_option( 'bwfan_global_settings', $global_settings );
+
+				BWFAN_Common::log_test_data( 'template_hash population complete','db_update_3_6_5', false );
+				return;
+			}
+
+			$last_processed_id = 0;
+			foreach ( $templates as $template ) {
+				$template_hash = sha1( $template['template'] );
+				$wpdb->update(
+					$table_name,
+					[ 'template_hash' => $template_hash ],
+					[ 'ID' => $template['ID'] ],
+					[ '%s' ],
+					[ '%d' ]
+				); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+				if ( ! empty( $wpdb->last_error ) ) {
+					BWFAN_Common::log_test_data('Error updating template_hash for ID '.$template['ID'].': '.$wpdb->last_error,'db_update_3_6_5',true);
+				}
+
+				$last_processed_id = $template['ID'];
+			}
+
+			/** Save last processed ID */
+			bwf_options_update( 'last_template_hash_id', $last_processed_id );
+			BWFAN_Common::log_test_data('Updated template_hash for '.count( $templates ).' templates, last ID: '.$last_processed_id,'db_update_3_6_5',false);
+
 		} while ( $this->should_run( $start_time ) ); // keep going until we run out of time, or memory
 	}
 }

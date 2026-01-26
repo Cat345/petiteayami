@@ -32,39 +32,50 @@ function dgwt_wcas_astra_search_box_style() {
 }
 
 // Force mobile overlay breakpoint.
-add_filter( 'dgwt/wcas/settings/load_value/key=mobile_overlay_breakpoint', function () {
-	return dgwt_wcas_astra_header_break_point();
-} );
+add_filter(
+	'dgwt/wcas/settings/load_value/key=mobile_overlay_breakpoint',
+	function () {
+		return dgwt_wcas_astra_header_break_point();
+	}
+);
 
 // Force mobile breakpoint.
-add_filter( 'dgwt/wcas/settings/load_value/key=mobile_breakpoint', function () {
-	return dgwt_wcas_astra_header_break_point();
-} );
+add_filter(
+	'dgwt/wcas/settings/load_value/key=mobile_breakpoint',
+	function () {
+		return dgwt_wcas_astra_header_break_point();
+	}
+);
 
 // Overwrite search in Slide Search and Search Box mode
-add_filter( 'astra_get_search_form', function ( $form ) {
-	$header_break_point = dgwt_wcas_astra_header_break_point();
-	$form               = '<div class="search-form"><span class="search-field"></span>';
-	$form               .= do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '"]' );
-	$form               .= '</div>';
+add_filter(
+	'astra_get_search_form',
+	function ( $form ) {
+		$header_break_point = dgwt_wcas_astra_header_break_point();
+		$form               = '<div class="search-form"><span class="search-field"></span>';
+		$form              .= do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '"]' );
+		$form              .= '</div>';
 
-	return $form;
-} );
-
-add_action( 'wp_footer', function () {
-	$header_break_point = dgwt_wcas_astra_header_break_point();
-	$search_box         = dgwt_wcas_astra_search_box();
-	$search_box_style   = dgwt_wcas_astra_search_box_style();
-
-	// Header Cover Search
-	if ( $search_box === 'search' && $search_box_style === 'header-cover' ) {
-		echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><div class="search-text-wrap"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div><span id="close" class="close"></span></div></div>';
+		return $form;
 	}
-	// Full Screen Search
-	if ( $search_box === 'search' && $search_box_style === 'full-screen' ) {
-		echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div></div>';
-	}
-	?>
+);
+
+add_action(
+	'wp_footer',
+	function () {
+		$header_break_point = dgwt_wcas_astra_header_break_point();
+		$search_box         = dgwt_wcas_astra_search_box();
+		$search_box_style   = dgwt_wcas_astra_search_box_style();
+
+		// Header Cover Search
+		if ( $search_box === 'search' && $search_box_style === 'header-cover' ) {
+			echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><div class="search-text-wrap"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div><span id="close" class="close"></span></div></div>';
+		}
+		// Full Screen Search
+		if ( $search_box === 'search' && $search_box_style === 'full-screen' ) {
+			echo '<div id="wcas-search-instance" style="display: block;"><div class="search-form"><input class="search-field" type="text" style="display:none;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="' . $header_break_point . '" ]' ) . '</div></div>';
+		}
+		?>
 	<script>
 		(function ($) {
 			<?php if ( $search_box === 'search' && $search_box_style === 'header-cover' ) { ?>
@@ -94,7 +105,7 @@ add_action( 'wp_footer', function () {
 
 			// Autofocus
 			$(document).on('click', '.astra-search-icon', function (event) {
-				if ($(window).width() > <?php echo $header_break_point ?>) {
+				if ($(window).width() > <?php echo $header_break_point; ?>) {
 					setTimeout(function () {
 						// Slide Search, Search Box
 						$input = $(event.target).closest('.ast-search-menu-icon').find('.dgwt-wcas-search-input');
@@ -135,11 +146,14 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_filter( 'wp_head', function () {
-	?>
+add_filter(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		/* Slide Search */
 		.ast-dropdown-active .search-form {
@@ -174,5 +188,6 @@ add_filter( 'wp_head', function () {
 			transform: translate(-50%, -25%);
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

@@ -18,11 +18,15 @@ class LogSourceError
         $this->metadata = $metadata;
     }
 
+    /**
+     * @param array<\Throwable> $errors
+     */
     public function handle($errors): void
     {
         if ($this->config->get('app.debug') || $this->config->get('app.isCustomizer')) {
+            static $id = 0;
             $this->metadata->set(
-                'script:graphql-errors',
+                'script:graphql-errors-' . $id++,
                 join(
                     "\n",
                     array_map(

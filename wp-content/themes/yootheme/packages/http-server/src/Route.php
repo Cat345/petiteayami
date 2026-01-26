@@ -4,15 +4,8 @@ namespace YOOtheme;
 
 class Route
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $path;
+    protected string $name;
+    protected string $path;
 
     /**
      * @var string|callable
@@ -20,23 +13,22 @@ class Route
     protected $callable;
 
     /**
-     * @var array
+     * @var list<string>
      */
-    protected $methods = [];
+    protected array $methods = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * Constructor.
      *
-     * @param string          $path
      * @param string|callable $callable
-     * @param string|string[] $methods
+     * @param string|list<string> $methods
      */
-    public function __construct($path, $callable, $methods = [])
+    public function __construct(string $path, $callable, $methods = [])
     {
         $this->setPath($path);
         $this->setMethods($methods);
@@ -45,10 +37,8 @@ class Route
 
     /**
      * Gets the path.
-     *
-     * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -56,11 +46,9 @@ class Route
     /**
      * Sets the path.
      *
-     * @param string $path
-     *
      * @return $this
      */
-    public function setPath($path)
+    public function setPath(string $path): self
     {
         $this->path = '/' . trim($path, '/');
 
@@ -80,9 +68,9 @@ class Route
     /**
      * Gets the methods.
      *
-     * @return string[]
+     * @return list<string>
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -90,11 +78,11 @@ class Route
     /**
      * Sets the methods.
      *
-     * @param string|string[] $methods
+     * @param string|list<string> $methods
      *
      * @return $this
      */
-    public function setMethods($methods)
+    public function setMethods($methods): self
     {
         $this->methods = array_map('strtoupper', (array) $methods);
 
@@ -104,12 +92,11 @@ class Route
     /**
      * Gets an attribute.
      *
-     * @param string $name
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, $default = null)
     {
         return $this->attributes[$name] ?? $default;
     }
@@ -117,12 +104,11 @@ class Route
     /**
      * Sets an attribute.
      *
-     * @param string $name
      * @param mixed  $value
      *
      * @return $this
      */
-    public function setAttribute($name, $value)
+    public function setAttribute(string $name, $value): self
     {
         $this->attributes[$name] = $value;
 
@@ -132,9 +118,9 @@ class Route
     /**
      * Gets the attributes.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -142,11 +128,11 @@ class Route
     /**
      * Sets the attributes.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return $this
      */
-    public function setAttributes(array $attributes)
+    public function setAttributes(array $attributes): self
     {
         $this->attributes = $attributes;
 

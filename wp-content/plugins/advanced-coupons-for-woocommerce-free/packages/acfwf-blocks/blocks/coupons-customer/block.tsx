@@ -26,6 +26,9 @@ import {layoutDefaults, orderByOptions} from "../../utils/sharedAtts";
 // Types
 import {IAttributes} from "../../types/settings";
 
+// Helpers
+import { sanitizeHtml } from "../../../shared/utils";
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -167,7 +170,7 @@ const CouponsByCustomerBlock = (props: IProps) => {
           {!isPremium && (
             <div className="acfw-upsell-message" 
               dangerouslySetInnerHTML={
-                { __html: premiumUpsellMessage}
+                { __html: sanitizeHtml(premiumUpsellMessage)}
               } 
             />
           )}

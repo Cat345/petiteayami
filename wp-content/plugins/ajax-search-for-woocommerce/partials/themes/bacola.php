@@ -5,8 +5,10 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		const isMobile = window.matchMedia('(max-width: 768px)').matches;
 		const searchForm = document.querySelector('#searchform');
@@ -89,8 +91,9 @@ add_action( 'wp_footer', function () {
 			}
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
 /**
  * Hide the quantity field in the details panel.

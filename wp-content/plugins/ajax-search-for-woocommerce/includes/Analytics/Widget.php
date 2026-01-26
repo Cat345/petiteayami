@@ -35,10 +35,10 @@ class Widget {
 	public function init() {
 		if ( $this->analytics->isModuleEnabled() && $this->isCriticalSearchesWidgetEnabled() ) {
 			if ( current_user_can( Helpers::shopManagerHasAccess() ? 'manage_woocommerce' : 'manage_options' ) ) {
-				add_action( 'wp_dashboard_setup', array( $this, 'addWidget' ) );
+				add_action( 'wp_dashboard_setup', [ $this, 'addWidget' ] );
 
 				if ( Multilingual::isMultilingual() ) {
-					add_action( 'admin_init', array( $this, 'enqueueTabsScript' ), 5 );
+					add_action( 'admin_init', [ $this, 'enqueueTabsScript' ], 5 );
 				}
 			}
 		}
@@ -57,33 +57,33 @@ class Widget {
 		wp_add_dashboard_widget(
 			'fibosearch_analytics_critical_searches',
 			esc_html__( 'FiboSearch - Search Analytics', 'ajax-search-for-woocommerce' ),
-			array( $this, 'render' )
+			[ $this, 'render' ]
 		);
 	}
 
 	public function render() {
 		$data = new Data();
 
-		$vars = array(
+		$vars = [
 			'days'                    => $this->ui->getExpirationInDays(),
-			'critical-searches'       => array(),
+			'critical-searches'       => [],
 			'critical-searches-total' => 0,
 			'settings-analytics-url'  => admin_url( 'admin.php?page=dgwt_wcas_settings#analytics' ),
-			'multilingual'            => array(),
-		);
+			'multilingual'            => [],
+		];
 
 		if ( Multilingual::isMultilingual() ) {
-			$vars['multilingual'] = array(
+			$vars['multilingual'] = [
 				'current-lang' => Multilingual::getCurrentLanguage(),
-				'langs'        => array()
-			);
+				'langs'        => [],
+			];
 			foreach ( Multilingual::getLanguages() as $lang ) {
 				$data->setLang( $lang );
-				$vars['multilingual']['langs'][ $lang ] = array(
+				$vars['multilingual']['langs'][ $lang ] = [
 					'name'                    => Multilingual::getLanguageField( $lang, 'name' ),
 					'critical-searches'       => $data->getCriticalSearches( UserInterface::CRITICAL_SEARCHES_LOAD_LIMIT ),
 					'critical-searches-total' => $data->getTotalCriticalSearches(),
-				);
+				];
 			}
 		} else {
 			$vars['critical-searches']       = $data->getCriticalSearches( UserInterface::CRITICAL_SEARCHES_LOAD_LIMIT );
@@ -112,11 +112,14 @@ class Widget {
 			<?php
 			foreach ( $vars['multilingual']['langs'] as $lang => $langName ) {
 				?>
-				<div class="dgwt-wcas-widget-tab-content"
-					 id="dgwt-wcas-widget-tab-content-<?php echo esc_attr( $lang ); ?>">
-					<?php $this->renderTable(
+				<div
+					class="dgwt-wcas-widget-tab-content"
+					id="dgwt-wcas-widget-tab-content-<?php echo esc_attr( $lang ); ?>">
+					<?php
+					$this->renderTable(
 						array_merge( $vars, $vars['multilingual']['langs'][ $lang ] )
-					); ?>
+					);
+					?>
 				</div>
 				<?php
 			}
@@ -125,17 +128,22 @@ class Widget {
 		}
 		?>
 		<p>
-			<?php printf( __( "Go to FiboSearch Settings page → %s to see more.", 'ajax-search-for-woocommerce' ), sprintf( '<a title="%2$s" href="%1$s">%2$s</a>', $vars['settings-analytics-url'], esc_attr__( 'Analytics tab', 'ajax-search-for-woocommerce' ) ) ); ?>
+			<?php printf( __( 'Go to FiboSearch Settings page → %s to see more.', 'ajax-search-for-woocommerce' ), sprintf( '<a title="%2$s" href="%1$s">%2$s</a>', $vars['settings-analytics-url'], esc_attr__( 'Analytics tab', 'ajax-search-for-woocommerce' ) ) ); ?>
 		</p>
 		<?php
 		echo ob_get_clean();
 	}
 
 	private function renderTable( $vars ) {
-		if ( ! empty( $vars['critical-searches'] ) ) { ?>
+		if ( ! empty( $vars['critical-searches'] ) ) {
+			?>
 			<p>
-				<?php printf( _n( 'The FiboSearch analyzer found <b>1 critical search phrase</b>.', 'The FiboSearch analyzer found <b>%d critical search phrases</b>.', $vars['critical-searches-total'], 'ajax-search-for-woocommerce' ), $vars['critical-searches-total'] );
+				<?php
+				// TODO
+				//phpcs:ignore WordPress.WP.I18n.MismatchedPlaceholders,WordPress.WP.I18n.MissingSingularPlaceholder
+				printf( _n( 'The FiboSearch analyzer found <b>1 critical search phrase</b>.', 'The FiboSearch analyzer found <b>%d critical search phrases</b>.', $vars['critical-searches-total'], 'ajax-search-for-woocommerce' ), $vars['critical-searches-total'] );
 				echo ' ';
+				//phpcs:ignore WordPress.WP.I18n.MismatchedPlaceholders,WordPress.WP.I18n.MissingSingularPlaceholder
 				printf( _n( 'These phrases have been typed by users over the last 1 day.', 'These phrases have been typed by users over the last %d days.', $vars['days'], 'ajax-search-for-woocommerce' ), $vars['days'] );
 				echo ' ';
 				_e( "These phrases don`t return any search results. It's time to fix it.", 'ajax-search-for-woocommerce' );
@@ -200,7 +208,7 @@ class Widget {
 			);
 		</script>
 		<?php
-		$script = str_replace( array( '<script>', '</script>' ), array( '', '' ), ob_get_clean() );
+		$script = str_replace( [ '<script>', '</script>' ], [ '', '' ], ob_get_clean() );
 		wp_add_inline_script( 'jquery', $script );
 	}
 }

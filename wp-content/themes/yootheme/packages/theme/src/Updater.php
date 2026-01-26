@@ -4,32 +4,22 @@ namespace YOOtheme\Theme;
 
 class Updater
 {
-    /**
-     * @var string
-     */
-    public $version;
+    public string $version;
 
     /**
-     * @var string[]
+     * @var list<string>
      */
-    public $updates = [];
+    public array $updates = [];
 
-    /**
-     * Constructor.
-     *
-     * @param string $version
-     */
-    public function __construct($version)
+    public function __construct(string $version)
     {
         $this->version = $version;
     }
 
     /**
      * Add update files.
-     *
-     * @param string $file
      */
-    public function add($file)
+    public function add(string $file): void
     {
         $this->updates[] = $file;
     }
@@ -37,12 +27,12 @@ class Updater
     /**
      * Updates a config.
      *
-     * @param array $config
-     * @param mixed $params
+     * @param array<string, mixed> $config
+     * @param array<string, mixed> $params
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function update($config, $params)
+    public function update(array $config, array $params): array
     {
         $version = empty($config['version']) ? '1.0.0' : $config['version'];
 
@@ -66,11 +56,9 @@ class Updater
     /**
      * Resolves updates for the current version.
      *
-     * @param string $version
-     *
-     * @return array
+     * @return array<string, list<callable>>
      */
-    protected function resolveUpdates($version)
+    protected function resolveUpdates(string $version): array
     {
         $resolved = [];
 

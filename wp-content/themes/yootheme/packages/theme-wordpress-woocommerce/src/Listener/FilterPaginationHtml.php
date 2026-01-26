@@ -16,6 +16,10 @@ class FilterPaginationHtml
 
     /**
      * Filters the pagination args.
+     *
+     * @param array<string, mixed> $args
+     *
+     * @return array<string, mixed>
      */
     public static function args(array $args): array
     {
@@ -36,11 +40,13 @@ class FilterPaginationHtml
      * Renders the pagination template.
      *
      * @link https://developer.wordpress.org/reference/hooks/paginate_links_output/
+     *
+     * @param array<string, mixed> $args
      */
     public function links(string $r, array $args): string
     {
         if ($args['type'] === 'yootheme_woocommerce') {
-            return $this->view->render(Path::get('../../templates/pagination', __DIR__), [
+            return $this->view->render(Path::join(__DIR__, '../../templates/pagination'), [
                 'args' => $args,
                 'links' => explode("\n", $r),
             ]);

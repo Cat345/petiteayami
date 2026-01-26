@@ -1,7 +1,7 @@
 <?php
 
 // Link
-$link = $this->el('a', [
+$el = $this->el('a', [
 
     'class' => [
         'uk-flex-{text_align: left|right}[@{text_align_breakpoint} [uk-flex-{text_align_fallback}]]',
@@ -11,7 +11,7 @@ $link = $this->el('a', [
 
 if ($props['link']) {
 
-    $link->attr([
+    $el->attr([
 
         'class' => [
             'el-link',
@@ -19,13 +19,18 @@ if ($props['link']) {
         ],
 
         'href' => $props['link'],
-        'target' => $props['link_target'] ? '_blank' : '',
+        'target' => $props['link_target'] ? '_blank' : false,
+        'download' => $props['link_download'],
+        'rel' => [
+            'nofollow' => $props['link_rel_nofollow'],
+            'noreferrer' => $props['link_rel_noreferrer']
+        ],
 
     ]);
 
 } else {
 
-    $link->attr([
+    $el->attr([
 
         'class' => [
             'el-content uk-disabled',
@@ -63,52 +68,11 @@ $cell_image = $this->el('div', [
 ]);
 
 // Image
-if ($props['image']) {
-
-    $image = $this->el('image', [
-
-        'class' => [
-            'el-image',
-            'uk-border-{image_border}',
-            'uk-margin-small-right {@image_margin}' => !$props['meta'],
-            'uk-text-{image_svg_color} {@image_svg_inline}' => $this->isImage($props['image']) == 'svg',
-        ],
-
-        'src' => $props['image'],
-        'alt' => $props['image_alt'],
-        'loading' => $element['image_loading'] ? false : null,
-        'width' => $element['image_width'],
-        'height' => $element['image_height'],
-        'focal_point' => $props['image_focal_point'],
-        'uk-svg' => $element['image_svg_inline'],
-        'thumbnail' => true,
-    ]);
-
-    $props['image'] = $image($element);
-
-} elseif ($props['icon']) {
-
-    $icon = $this->el('span', [
-
-        'class' => [
-            'el-image',
-            'uk-margin-small-right {@image_margin}' => !$props['meta'],
-        ],
-
-        'uk-icon' => [
-            'icon: {0};' => $props['icon'],
-            'width: {icon_width};',
-            'height: {icon_width};',
-        ],
-
-    ]);
-
-    $props['image'] = $icon($element, '');
-}
+$props['image'] = $this->render("{$__dir}/template-media", compact('props', 'element'));
 
 ?>
 
-<?= $link($element) ?>
+<?= $el($element, $attrs) ?>
 
     <?php if ($props['image'] && $props['meta'] != '') : ?>
 
@@ -135,4 +99,4 @@ if ($props['image']) {
 
     <?php endif ?>
 
-<?= $link->end() ?>
+<?= $el->end() ?>

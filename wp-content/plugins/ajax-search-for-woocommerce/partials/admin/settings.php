@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $advSettings = DGWT_WCAS()->settings->canSeeAdvSettings();
 
-$classes = array();
+$classes = [];
 if ( dgoraAsfwFs()->is_premium() ) {
 	$classes[] = 'dgwt-wcas-settings-pro';
 }
@@ -28,11 +28,17 @@ if ( DGWT_WCAS()->themeCompatibility->isCurrentThemeSupported() ) {
 			</div>
 		</div>
 		<span class="dgwt-wcas-settings__advanced js-dgwt-wcas-settings__advanced">
-            <span
-				class="js-dgwt-wcas-adv-settings-toggle woocommerce-input-toggle woocommerce-input-toggle--<?php echo $advSettings ? 'enabled' : 'disabled'; ?>"><?php _e( 'Show advanced settings',
-					'ajax-search-for-woocommerce' ); ?></span>
-            <span class="dgwt-wcas-adv-settings-label"><?php _e( 'Show advanced settings', 'ajax-search-for-woocommerce' ); ?></span>
-         </span>
+			<span
+				class="js-dgwt-wcas-adv-settings-toggle woocommerce-input-toggle woocommerce-input-toggle--<?php echo $advSettings ? 'enabled' : 'disabled'; ?>">
+				<?php
+					_e(
+						'Show advanced settings',
+						'ajax-search-for-woocommerce'
+					);
+					?>
+					</span>
+			<span class="dgwt-wcas-adv-settings-label"><?php _e( 'Show advanced settings', 'ajax-search-for-woocommerce' ); ?></span>
+		</span>
 	</h2>
 
 	<?php $settings->show_navigation(); ?>

@@ -1,6 +1,6 @@
 <?php
 
-$items = array_filter($items, fn($item) => !empty(trim($item->content ?? '')));
+$items = array_filter($items, fn($item) => trim($item->content ?? '') != '');
 
 $render = function ($items, $wrap = null) use ($view, $name) {
     $output = [];
@@ -8,7 +8,7 @@ $render = function ($items, $wrap = null) use ($view, $name) {
         $widget = $view('~theme/templates/module', ['index' => $index, 'module' => $item, 'position' => $name]);
         $output[] = $wrap ? $wrap([], $widget) : $widget;
     }
-    return implode('', $output);
+    return implode($output);
 };
 
 // Blank

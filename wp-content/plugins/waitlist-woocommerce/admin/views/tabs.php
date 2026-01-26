@@ -7,24 +7,26 @@ $tabs = array(
 		'option_key' 	=> 'xoo-wl-general-options'
 	),
 
-	'style' => array(
-		'title'			=> 'Style',
-		'id' 			=> 'style',
-		'option_key' 	=> 'xoo-wl-style-options'
-	),
-
 	'email' => array(
 		'title'			=> 'Email',
 		'id' 			=> 'email',
 		'option_key' 	=> 'xoo-wl-email-options'
 	),
 
-
 	'email-style' => array(
 		'title'			=> 'Email Style',
 		'id' 			=> 'email-style',
 		'option_key' 	=> 'xoo-wl-emStyle-options',
 	),
+
+	'style' => array(
+		'title'			=> 'Style',
+		'id' 			=> 'style',
+		'option_key' 	=> 'xoo-wl-style-options'
+	),
+
+
+	
 
 );
 

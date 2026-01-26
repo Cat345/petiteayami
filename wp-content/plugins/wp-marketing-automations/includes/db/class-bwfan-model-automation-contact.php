@@ -255,13 +255,21 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = "SELECT aid, count(aid) as count FROM $table_name WHERE aid IN ($aids) GROUP BY aid";
+		if ( ! is_array( $aids ) ) {
+			$aids = explode( ',', $aids );
+		}
+		$aids        = array_map( 'absint', $aids );
+		$placeholder = implode( ',', array_fill( 0, count( $aids ), '%d' ) );
+
+		$query = $wpdb->prepare( "SELECT aid, count(aid) as count FROM $table_name WHERE aid IN ($placeholder) GROUP BY aid", $aids );
 
 		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function get_automation_contacts( $cid, $search = '', $limit = 10, $offset = 0, $more_data = false, $only_total = false ) {
-		$where = " AND cc.cid = $cid ";
+		global $wpdb;
+		$cid   = absint( $cid );
+		$where = $wpdb->prepare( ' AND cc.cid = %d ', $cid );
 
 		return self::get_contacts( $where, $search, $limit, $offset, $more_data, '', $only_total );
 	}
@@ -272,8 +280,10 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 
 		$where = "aid = %d";
 		if ( is_array( $aid ) ) {
-			$where = "aid IN ('" . implode( "','", array_map( 'esc_sql', $aid ) ) . "')";
-			$aid   = [];
+			$aid         = array_map( 'absint', $aid );
+			$placeholder = implode( ',', array_fill( 0, count( $aid ), '%d' ) );
+			$where       = $wpdb->prepare( "aid IN ($placeholder)", $aid );
+			$aid         = [];
 		}
 
 		$query = " DELETE FROM $table_name WHERE $where";

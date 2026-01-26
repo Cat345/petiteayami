@@ -9,12 +9,10 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @var callable[][]
      */
-    public $transforms = [];
+    public array $transforms = [];
 
     /**
      * Constructor.
-     *
-     * @param View $view
      */
     public function __construct(View $view)
     {
@@ -31,15 +29,20 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @inheritdoc
      */
-    public function el($name, array $attrs = [], $contents = false)
+    public function el(string $name, array $attrs = [], $contents = false)
     {
-        return new HtmlElement($name, $attrs, $contents, [$this, 'applyTransform']);
+        return new HtmlElement(
+            $name,
+            $attrs,
+            $contents,
+            isset($this->transforms[$name]) ? [$this, 'applyTransform'] : null,
+        );
     }
 
     /**
      * @inheritdoc
      */
-    public function link($title, $url = null, array $attrs = [])
+    public function link(string $title, ?string $url = null, array $attrs = []): string
     {
         return "<a{$this->attrs(['href' => $url], $attrs)}>{$title}</a>";
     }
@@ -47,7 +50,7 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @inheritdoc
      */
-    public function image($url, array $attrs = [])
+    public function image($url, array $attrs = []): string
     {
         $url = (array) $url;
         $path = array_shift($url);
@@ -70,7 +73,7 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @inheritdoc
      */
-    public function form($tags, array $attrs = [])
+    public function form(array $tags, array $attrs = []): string
     {
         return HtmlElement::tag(
             'form',
@@ -85,12 +88,12 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * @inheritdoc
      */
-    public function attrs(array $attrs)
+    public function attrs(array $attrs): string
     {
         $params = [];
 
         if (count($args = func_get_args()) > 1) {
-            $attrs = call_user_func_array('array_merge_recursive', $args);
+            $attrs = array_merge_recursive(...$args);
         }
 
         if (isset($attrs[':params'])) {
@@ -103,22 +106,16 @@ class HtmlHelper implements HtmlHelperInterface
 
     /**
      * Adds a component.
-     *
-     * @param string   $name
-     * @param callable $component
      */
-    public function addComponent($name, callable $component)
+    public function addComponent(string $name, callable $component): void
     {
         $this->addTransform($name, $component);
     }
 
     /**
      * Adds a transform.
-     *
-     * @param string   $name
-     * @param callable $transform
      */
-    public function addTransform($name, callable $transform)
+    public function addTransform(string $name, callable $transform): void
     {
         $this->transforms[$name][] = $transform;
     }
@@ -127,20 +124,20 @@ class HtmlHelper implements HtmlHelperInterface
      * Applies transform callbacks.
      *
      * @param HtmlElement $element
-     * @param array       $params
-     *
-     * @return string|void
+     * @param array<string, mixed> $params
      */
-    public function applyTransform(HtmlElement $element, array $params = [])
+    public function applyTransform(HtmlElement $element, array $params = []): ?string
     {
         if (empty($this->transforms[$element->name])) {
-            return;
+            return null;
         }
 
         foreach ($this->transforms[$element->name] as $transform) {
-            if ($result = call_user_func($transform, $element, $params)) {
+            if ($result = $transform($element, $params)) {
                 return $result;
             }
         }
+
+        return null;
     }
 }

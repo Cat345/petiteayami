@@ -5,8 +5,10 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.dgwt-wcas-search-wrapp {
 			max-width: none;
@@ -15,8 +17,9 @@ add_action( 'wp_head', function () {
 			bottom: -100%;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
 if ( ! function_exists( 'ekommart_product_search' ) ) {
 	function ekommart_product_search() {

@@ -2,47 +2,37 @@
 
 namespace YOOtheme;
 
+use YOOtheme\Http\Response;
+
 interface HttpClientInterface
 {
     /**
      * Execute a GET HTTP request.
      *
-     * @param string $url
-     * @param array  $options
-     *
-     * @return mixed
+     * @param array<string, mixed> $options
      */
-    public function get($url, $options = []);
+    public function get(string $url, array $options = []): Response;
 
     /**
      * Execute a POST HTTP request.
      *
-     * @param string $url
-     * @param string $data
-     * @param array  $options
-     *
-     * @return mixed
+     * @param array<string, mixed>|string|null $data
+     * @param array<string, mixed> $options
      */
-    public function post($url, $data = null, $options = []);
+    public function post(string $url, $data = null, array $options = []): Response;
 
     /**
      * Execute a PUT HTTP request.
      *
-     * @param string $url
-     * @param string $data
-     * @param array  $options
-     *
-     * @return mixed
+     * @param array<string, mixed>|string|null $data
+     * @param array<string, mixed> $options
      */
-    public function put($url, $data = null, $options = []);
+    public function put(string $url, $data = null, array $options = []): Response;
 
     /**
      * Execute a DELETE HTTP request.
      *
-     * @param string $url
-     * @param array  $options
-     *
-     * @return mixed
+     * @param array<string, mixed> $options
      */
-    public function delete($url, $options = []);
+    public function delete(string $url, array $options = []): Response;
 }

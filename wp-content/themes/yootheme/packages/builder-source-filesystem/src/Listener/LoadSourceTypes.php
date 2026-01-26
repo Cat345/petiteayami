@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Builder\Source\Filesystem\Listener;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Source\Filesystem\Type;
 use YOOtheme\Config;
 use YOOtheme\Path;
@@ -15,6 +16,9 @@ class LoadSourceTypes
         $this->config = $config;
     }
 
+    /**
+     * @param Source $source
+     */
     public function handle($source): void
     {
         try {
@@ -23,9 +27,9 @@ class LoadSourceTypes
                 $this->config->get('app.uploadDir'),
             );
 
-            $source->queryType(Type\FileQueryType::config($rootDir));
-            $source->queryType(Type\FilesQueryType::config($rootDir));
-            $source->objectType('File', Type\FileType::config());
+            $source->queryType(fn() => Type\FileQueryType::config($rootDir));
+            $source->queryType(fn() => Type\FilesQueryType::config($rootDir));
+            $source->objectType('File', [Type\FileType::class, 'config']);
         } catch (\Exception $e) {
         }
     }

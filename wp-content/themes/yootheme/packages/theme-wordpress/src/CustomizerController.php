@@ -6,10 +6,11 @@ use YOOtheme\Config;
 use YOOtheme\Event;
 use YOOtheme\Http\Request;
 use YOOtheme\Path;
+use YOOtheme\View;
 
 class CustomizerController
 {
-    public static function index(Config $config, Request $request)
+    public static function index(Config $config, Request $request): string
     {
         // init customizer
         Event::emit('customizer.init');
@@ -23,10 +24,10 @@ class CustomizerController
         ]);
 
         // load template
-        include Path::get('../templates/customizer.php');
+        return (new View())->render(Path::join(__DIR__, '../templates/customizer.php'));
     }
 
-    public static function save(Request $request)
+    public static function save(Request $request): string
     {
         $request->abortIf(
             !current_user_can('edit_theme_options'),

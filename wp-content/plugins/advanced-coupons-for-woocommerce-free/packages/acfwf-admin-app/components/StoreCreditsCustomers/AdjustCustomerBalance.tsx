@@ -4,7 +4,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Select, Input, Button, Space, message } from 'antd';
+import { Select, Input, Button, Space, Checkbox, message } from 'antd';
 
 // Actions
 import { StoreCreditsCustomersActions } from '../../store/actions/storeCreditsCustomers';
@@ -14,6 +14,7 @@ import { IStoreCreditCustomer } from '../../types/storeCredits';
 
 // Helpers
 import { priceFormat, validatePrice, parsePrice } from '../../helpers/currency';
+import { sanitizeHtml } from '../../../shared/helpers/sanitize';
 
 // #endregion [Imports]
 
@@ -52,6 +53,7 @@ const AdjustCustomerBalance = (props: IProps) => {
   const [entryNote, setEntryNote] = useState('');
   const [noteVisible, setNoteVisible] = useState(false);
   const noteTextArea = useRef<HTMLTextAreaElement>(null);
+  const [sendEmailNotification, setSendEmailNotification] = useState(true);
 
   /**
    * Show or hide the note input.
@@ -80,6 +82,7 @@ const AdjustCustomerBalance = (props: IProps) => {
       type,
       amount: parsePrice(amount),
       note: noteVisible && entryNote ? entryNote : '',
+      send_email_notification: sendEmailNotification,
       successCB: (response: any) => {
         setLoading(false);
         message.success(response.data.message);
@@ -145,13 +148,25 @@ const AdjustCustomerBalance = (props: IProps) => {
         <h3
           className="new-balance"
           dangerouslySetInnerHTML={{
-            __html: adjust_modal.new_balance.replace('{balance}', `<span>${newBalance}</span>`),
+            __html: sanitizeHtml(adjust_modal.new_balance.replace('{balance}', `<span>${newBalance}</span>`)),
           }}
         />
       ) : null}
-      <Button className="make-adjustment-btn" type="primary" size="large" loading={loading} onClick={handleAdjustment}>
-        {adjust_modal.make_adjustment}
-      </Button>
+      <div className="adjust-store-credits-form-actions">
+        <Button
+          className="make-adjustment-btn"
+          type="primary"
+          size="large"
+          loading={loading}
+          onClick={handleAdjustment}
+        >
+          {adjust_modal.make_adjustment}
+        </Button>
+
+        <Checkbox checked={sendEmailNotification} onChange={(e) => setSendEmailNotification(e.target.checked)}>
+          {adjust_modal.send_email_notification}
+        </Checkbox>
+      </div>
     </div>
   );
 };

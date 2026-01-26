@@ -7,10 +7,12 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 /**
  * Default search
  */
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;"><div class="goya-search"><fieldset><div class="search-button-group">' . do_shortcode( '[wcas-search-form layout="classic"]' ) . '</div></fieldset></div></div>';
-	echo '<div id="wcas-theme-search-mobile" style="display: block;"><div class="goya-search"><fieldset><div class="search-button-group">' . do_shortcode( '[wcas-search-form layout="classic"]' ) . '</div></fieldset></div></div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;"><div class="goya-search"><fieldset><div class="search-button-group">' . do_shortcode( '[wcas-search-form layout="classic"]' ) . '</div></fieldset></div></div>';
+		echo '<div id="wcas-theme-search-mobile" style="display: block;"><div class="goya-search"><fieldset><div class="search-button-group">' . do_shortcode( '[wcas-search-form layout="classic"]' ) . '</div></fieldset></div></div>';
+		?>
 	<script>
 		var wcasThemeSearch = document.querySelector('.search-panel .side-panel-content .goya-search');
 		if (wcasThemeSearch !== null) {
@@ -46,5 +48,7 @@ add_action( 'wp_footer', function () {
 			max-width: 100%;
 		}
 	</style>
-	<?php
-}, 12);
+		<?php
+	},
+	12
+);

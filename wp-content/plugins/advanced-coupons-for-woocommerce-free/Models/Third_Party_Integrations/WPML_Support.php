@@ -679,9 +679,17 @@ class WPML_Support implements Model_Interface {
                          */
                         $format = '';
                         if ( 1 === $language_format ) {
+                            $translated_url = $redirect_url;
+
+                            // Remove the default language directory first to prevent double directories (e.g., /en/bn/).
+                            $translated_url = $this->_maybe_remove_default_language_directory( $translated_url, $sitepress, $default_language );
+
+                            // Add the secondary language directory.
+                            $translated_url = str_replace( '/coupon/', '/' . $key . '/coupon/', $translated_url );
+
                             $format = sprintf(
                                 '<code>%s</code>',
-                                str_replace( '/coupon/', '/' . $key . '/coupon/', $redirect_url )
+                                $translated_url
                             );
                         } elseif ( 3 === $language_format ) {
                             $format = sprintf( '<code>%s?lang=%s</code>', $redirect_url, $key );
@@ -705,7 +713,7 @@ class WPML_Support implements Model_Interface {
     /**
      * Filter the priority level for implementing BOGO (Buy One Get One) deals.
      *
-     * Ensures that advanced BOGO logic runs after WPML’s recursive
+     * Ensures that advanced BOGO logic runs after WPML's recursive
      * `calculate_totals()` adjustments, preventing duplicate processing
      * and product ID mismatches.
      *
@@ -717,6 +725,71 @@ class WPML_Support implements Model_Interface {
      */
     public function filter_bogo_implementation_priority( $priority ) {
         return 20;
+    }
+
+    /**
+     * Remove default language directory from coupon URL for secondary languages.
+     *
+     * When WPML is set to "Use directory for default language" and a secondary language is active,
+     * this removes the default language directory from the coupon URL to prevent URLs like
+     * /en/bn/coupon/code/ and ensures they become /bn/coupon/code/ instead.
+     *
+     * @since 4.6.8.1
+     * @access public
+     *
+     * @param string          $coupon_url Coupon URL.
+     * @param Advanced_Coupon $coupon     Coupon object.
+     * @return string Filtered coupon URL.
+     */
+    public function remove_default_language_directory_from_coupon_url( $coupon_url, $coupon ) {
+        global $sitepress;
+
+        // Return early if WPML is not active or sitepress is not available.
+        if ( ! $sitepress ) {
+            return $coupon_url;
+        }
+
+        $current_language = $sitepress->get_current_language();
+        $default_language = $sitepress->get_default_language();
+
+        // Only process if current language is not the default language.
+        if ( $current_language === $default_language ) {
+            return $coupon_url;
+        }
+
+        // Remove default language directory if the setting is enabled.
+        $coupon_url = $this->_maybe_remove_default_language_directory( $coupon_url, $sitepress, $default_language );
+
+        return $coupon_url;
+    }
+
+    /**
+     * Remove default language directory from URL if the WPML setting is enabled.
+     *
+     * This helper method checks if "Use directory for default language" option is enabled
+     * and removes the default language directory from the URL to prevent double directories.
+     *
+     * @since 4.7.1
+     * @access private
+     *
+     * @param string $url               The URL to process.
+     * @param object $sitepress         The WPML sitepress object.
+     * @param string $default_language  The default language code.
+     * @return string The processed URL with default language directory removed if applicable.
+     */
+    private function _maybe_remove_default_language_directory( $url, $sitepress, $default_language ) {
+        // Check if "Use directory for default language" option is enabled.
+        $language_settings = $sitepress->get_setting( 'urls' );
+        if ( ! isset( $language_settings['directory_for_default_language'] ) || 1 !== (int) $language_settings['directory_for_default_language'] ) {
+            return $url;
+        }
+
+        // Remove the default language directory from the URL.
+        // Example: https://wpml.test/en/bn/coupon/welcome10/ -> https://wpml.test/bn/coupon/welcome10/.
+        $pattern = '#/' . preg_quote( $default_language, '#' ) . '/#';
+        $url     = preg_replace( $pattern, '/', $url, 1 );
+
+        return $url;
     }
 
     /**
@@ -808,6 +881,7 @@ class WPML_Support implements Model_Interface {
         add_filter( 'acfw_before_apply_store_credit_discount', array( $this, 'validate_user_currency_on_apply_store_credits_discount' ), 10, 2 );
 
         add_filter( 'acfw_url_coupons_admin_data_panel_fields', array( $this, 'add_instructions_to_coupon_url_field' ) );
+        add_filter( 'acfw_coupon_url', array( $this, 'remove_default_language_directory_from_coupon_url' ), 10, 2 );
     }
 
     /**

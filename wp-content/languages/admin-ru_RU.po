@@ -651,8 +651,8 @@ msgstr[0] "<strong>Ошибка:</strong> %1$s требует %2$d устано�
 msgstr[1] "<strong>Ошибка:</strong> %1$s требует %2$d установленных и активированных плагинов: %3$s."
 msgstr[2] "<strong>Ошибка:</strong> %1$s требует %2$d установленных и активированных плагинов: %3$s."
 
-#: wp-admin/includes/plugin-install.php:973
-#: wp-admin/includes/plugin-install.php:978
+#: wp-admin/includes/plugin-install.php:971
+#: wp-admin/includes/plugin-install.php:976
 msgctxt "plugin"
 msgid "Update Now"
 msgstr "Обновить сейчас"
@@ -717,9 +717,9 @@ msgstr "Деактивировать для сети"
 #: wp-admin/includes/class-wp-plugins-list-table.php:611
 #: wp-admin/includes/class-wp-plugins-list-table.php:942
 #: wp-admin/includes/class-wp-plugins-list-table.php:959
-#: wp-admin/includes/plugin-install.php:879
-#: wp-admin/includes/plugin-install.php:993
-#: wp-admin/includes/plugin-install.php:1024 wp-admin/js/updates.js:980
+#: wp-admin/includes/plugin-install.php:877
+#: wp-admin/includes/plugin-install.php:991
+#: wp-admin/includes/plugin-install.php:1022 wp-admin/js/updates.js:980
 #: wp-admin/js/updates.js:1025
 msgctxt "plugin"
 msgid "Activate"
@@ -749,8 +749,8 @@ msgstr "Используемая у вас версия WordPress - %1$s, одн
 #: wp-admin/includes/class-wp-plugins-list-table.php:611
 #: wp-admin/includes/class-wp-plugins-list-table.php:836
 #: wp-admin/includes/class-wp-plugins-list-table.php:853
-#: wp-admin/includes/plugin-install.php:1006
-#: wp-admin/includes/plugin-install.php:1024 wp-admin/js/updates.js:969
+#: wp-admin/includes/plugin-install.php:1004
+#: wp-admin/includes/plugin-install.php:1022 wp-admin/js/updates.js:969
 msgctxt "plugin"
 msgid "Network Activate"
 msgstr "Активировать для сети"
@@ -761,8 +761,8 @@ msgid "%s is already active."
 msgstr "%s уже активен."
 
 #: wp-admin/import.php:166 wp-admin/includes/plugin-install.php:355
-#: wp-admin/includes/plugin-install.php:951
-#: wp-admin/includes/plugin-install.php:956 wp-admin/press-this.php:63
+#: wp-admin/includes/plugin-install.php:949
+#: wp-admin/includes/plugin-install.php:954 wp-admin/press-this.php:63
 #: wp-admin/js/updates.js:1312 wp-admin/js/updates.js:2637
 #: wp-admin/js/updates.js:2693
 msgctxt "plugin"
@@ -1946,7 +1946,7 @@ msgstr "Была предпринята попытка, но ваш сайт н�
 
 #: wp-admin/includes/class-core-upgrader.php:166
 #: wp-admin/includes/class-wp-upgrader.php:206
-#: wp-admin/includes/update-core.php:1108
+#: wp-admin/includes/update-core.php:1109
 msgid "The update cannot be installed because some files could not be copied. This is usually due to inconsistent file permissions."
 msgstr "Обновление не может быть установлено, потому что не удастся скопировать некоторые файлы. Обычно это связано с неверными правами на файлы."
 
@@ -3229,7 +3229,7 @@ msgstr "Плагин уже установлен."
 
 #. translators: %s: Plugin name and version.
 #. translators: %s: Plugin name.
-#: wp-admin/includes/plugin-install.php:971 wp-admin/includes/update.php:566
+#: wp-admin/includes/plugin-install.php:969 wp-admin/includes/update.php:566
 #: wp-admin/js/updates.js:2544
 msgctxt "plugin"
 msgid "Update %s now"
@@ -3238,7 +3238,7 @@ msgstr "Обновить %s сейчас"
 #. translators: %s: Importer name.
 #. translators: %s: Plugin name and version.
 #. translators: %s: Plugin name.
-#: wp-admin/import.php:165 wp-admin/includes/plugin-install.php:949
+#: wp-admin/import.php:165 wp-admin/includes/plugin-install.php:947
 #: wp-admin/js/updates.js:1308 wp-admin/js/updates.js:2553
 #: wp-admin/js/updates.js:2689
 msgctxt "plugin"
@@ -3992,7 +3992,7 @@ msgid "The seventh parameter passed to %s should be numeric representing menu po
 msgstr "Седьмой параметр, передаваемый в %s, должен быть целым числом представляющим позицию меню."
 
 #. translators: 1: WordPress version number, 2: The PHP extension name needed.
-#: wp-admin/includes/update-core.php:1214
+#: wp-admin/includes/update-core.php:1215
 msgid "The update cannot be installed because WordPress %1$s requires the %2$s PHP extension."
 msgstr "Это обновление не может быть установлено, поскольку WordPress %1$s требует наличия PHP расширения %2$s."
 
@@ -5854,20 +5854,20 @@ msgid "Removing the old version of the translation&#8230;"
 msgstr "Удаление старой версии перевода&#8230;"
 
 #. translators: %s: URL to WordPress Updates screen.
-#: wp-admin/includes/plugin-install.php:845
+#: wp-admin/includes/plugin-install.php:843
 msgid "<a href=\"%s\" target=\"_parent\">Click here to update WordPress</a>."
 msgstr "<a href=\"%s\" target=\"_parent\">Нажмите здесь для обновления WordPress</a>."
 
-#: wp-admin/includes/plugin-install.php:841
+#: wp-admin/includes/plugin-install.php:839
 msgid "<strong>Error:</strong> This plugin <strong>requires a newer version of WordPress</strong>."
 msgstr "<strong>Ошибка:</strong> Этот плагин <strong>требует более новой версии WordPress</strong>."
 
 #. translators: %s: URL to Update PHP page.
-#: wp-admin/includes/plugin-install.php:815
+#: wp-admin/includes/plugin-install.php:813
 msgid "<a href=\"%s\" target=\"_blank\">Click here to learn more about updating PHP</a>."
 msgstr "<a href=\"%s\" target=\"_blank\">Нажмите, чтобы узнать больше об обновлении PHP</a>."
 
-#: wp-admin/includes/plugin-install.php:810
+#: wp-admin/includes/plugin-install.php:808
 msgid "<strong>Error:</strong> This plugin <strong>requires a newer version of PHP</strong>."
 msgstr "<strong>Ошибка:</strong> Этот плагин <strong>требует более новой версии PHP</strong>."
 
@@ -6827,7 +6827,7 @@ msgstr "Индекс стирателя не может быть меньше е
 msgid "Invalid email address in request."
 msgstr "Неверный адрес email в запросе."
 
-#: wp-admin/includes/plugin-install.php:680
+#: wp-admin/includes/plugin-install.php:678
 msgid "Requires PHP Version:"
 msgstr "Требуемая версия PHP:"
 
@@ -7089,11 +7089,11 @@ msgstr "%s уже редактирует эту запись. Вы хотите 
 msgid "Custom installation script."
 msgstr "Пользовательский скрипт установки."
 
-#: wp-admin/includes/plugin-install.php:687
+#: wp-admin/includes/plugin-install.php:685
 msgid "Active Installations:"
 msgstr "Активные установки:"
 
-#: wp-admin/includes/plugin-install.php:602 wp-admin/update.php:128
+#: wp-admin/includes/plugin-install.php:600 wp-admin/update.php:128
 msgid "Plugin Installation"
 msgstr "Установка плагина"
 
@@ -7190,14 +7190,14 @@ msgstr "Разрешить оповещения с других блогов (у
 
 #. translators: %s: Plugin name.
 #: wp-admin/includes/class-wp-plugins-list-table.php:852
-#: wp-admin/includes/plugin-install.php:1008 wp-admin/js/updates.js:972
+#: wp-admin/includes/plugin-install.php:1006 wp-admin/js/updates.js:972
 msgctxt "plugin"
 msgid "Network Activate %s"
 msgstr "Активировать %s для сети"
 
 #. translators: %s: Plugin name.
 #: wp-admin/includes/class-wp-plugins-list-table.php:958
-#: wp-admin/includes/plugin-install.php:995 wp-admin/js/updates.js:983
+#: wp-admin/includes/plugin-install.php:993 wp-admin/js/updates.js:983
 msgctxt "plugin"
 msgid "Activate %s"
 msgstr "Активировать %s"
@@ -7362,7 +7362,7 @@ msgid "&#8220;%s&#8221; is locked"
 msgstr "&#8220;%s&#8221; заблокирована"
 
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:723
-#: wp-admin/includes/plugin-install.php:697
+#: wp-admin/includes/plugin-install.php:695
 msgctxt "Active plugin installations"
 msgid "Less Than 10"
 msgstr "Менее 10"
@@ -7373,7 +7373,7 @@ msgstr "Извините, Вам не разрешено делать вложе
 
 #: wp-admin/freedoms.php:105
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:346
-#: wp-admin/includes/plugin-install.php:704 wp-admin/plugin-install.php:101
+#: wp-admin/includes/plugin-install.php:702 wp-admin/plugin-install.php:101
 #: wp-admin/plugins.php:570
 msgid "https://wordpress.org/plugins/"
 msgstr "https://ru.wordpress.org/plugins/"
@@ -7676,7 +7676,7 @@ msgstr "Шаблон ошибки 404 для объекта"
 msgid "Embed Template"
 msgstr "Шаблон объекта"
 
-#: wp-admin/includes/plugin-install.php:989 wp-admin/js/updates.js:1155
+#: wp-admin/includes/plugin-install.php:987 wp-admin/js/updates.js:1155
 #: wp-admin/js/updates.js:1163
 msgctxt "plugin"
 msgid "Active"
@@ -7952,18 +7952,18 @@ msgstr "Нажмите на изображение, чтобы изменить 
 
 #. translators: 1: Number of stars (used to determine singular/plural), 2:
 #. Number of reviews.
-#: wp-admin/includes/plugin-install.php:745
+#: wp-admin/includes/plugin-install.php:743
 msgid "Reviews with %1$d star: %2$s. Opens in a new tab."
 msgid_plural "Reviews with %1$d stars: %2$s. Opens in a new tab."
 msgstr[0] "Отзывов с оценкой в %1$d звезду: %2$s. Ссылка откроется в новой вкладке."
 msgstr[1] "Отзывов с оценкой в %1$d звезды: %2$s. Ссылка откроется в новой вкладке."
 msgstr[2] "Отзывов с оценкой в %1$d звёзд: %2$s. Ссылка откроется в новой вкладке."
 
-#: wp-admin/includes/plugin-install.php:737
+#: wp-admin/includes/plugin-install.php:735
 msgid "Read all reviews on WordPress.org or write your own!"
 msgstr "Посмотрите все отзывы на WordPress.org или напишите свой!"
 
-#: wp-admin/includes/plugin-install.php:736
+#: wp-admin/includes/plugin-install.php:734
 msgid "Reviews"
 msgstr "Отзывы"
 
@@ -9004,7 +9004,7 @@ msgstr "Плагины успешно обновлены."
 
 #. translators: %s: Number of millions.
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:719
-#: wp-admin/includes/plugin-install.php:693
+#: wp-admin/includes/plugin-install.php:691
 msgctxt "Active plugin installations"
 msgid "%s+ Million"
 msgid_plural "%s+ Million"
@@ -9207,7 +9207,7 @@ msgstr "%1$s %2$s, %3$s в %4$s:%5$s"
 msgid "You are only logged in at this location."
 msgstr "Вы авторизованы только в текущем браузере."
 
-#: wp-admin/includes/plugin-install.php:404
+#: wp-admin/includes/plugin-install.php:405
 msgid "These suggestions are based on the plugins you and other users have installed."
 msgstr "Рекомендации основаны на плагинах, установленных у вас и у других пользователей."
 
@@ -9422,7 +9422,7 @@ msgid "<strong>Incompatible</strong> with your version of WordPress"
 msgstr "<strong>Несовместим</strong> с вашей версией WordPress."
 
 #. translators: %s: Number of stars.
-#: wp-admin/includes/plugin-install.php:763
+#: wp-admin/includes/plugin-install.php:761
 msgid "%d star"
 msgid_plural "%d stars"
 msgstr[0] "%d звезда"
@@ -9443,16 +9443,16 @@ msgstr "Добавить пользователя без отправки пис
 msgid "The grid view for the Media Library requires JavaScript. <a href=\"%s\">Switch to the list view</a>."
 msgstr "Просмотр библиотеки файлов в режиме сетки требует JavaScript. <a href=\"%s\">Переключиться в режим списка</a>."
 
-#: wp-admin/credits.php:36 wp-admin/includes/plugin-install.php:777
+#: wp-admin/credits.php:36 wp-admin/includes/plugin-install.php:775
 msgid "Contributors"
 msgstr "Участники разработки"
 
-#: wp-admin/includes/plugin-install.php:708
-#: wp-admin/includes/plugin-install.php:795
+#: wp-admin/includes/plugin-install.php:706
+#: wp-admin/includes/plugin-install.php:793
 msgid "Donate to this plugin &#187;"
 msgstr "Сделать пожертвование &#187;"
 
-#: wp-admin/includes/plugin-install.php:578
+#: wp-admin/includes/plugin-install.php:576
 msgctxt "Plugin installer section title"
 msgid "Reviews"
 msgstr "Отзывы"
@@ -9941,8 +9941,8 @@ msgstr "На вашем сайте %1$s произошла критическа�
 msgid "WordPress %s is also now available."
 msgstr "Также доступен WordPress %s."
 
-#: wp-admin/includes/update-core.php:1304
-#: wp-admin/includes/update-core.php:1340
+#: wp-admin/includes/update-core.php:1305
+#: wp-admin/includes/update-core.php:1341
 msgid "The update cannot be installed because your site is unable to copy some files. This is usually due to inconsistent file permissions."
 msgstr "Обновление не может быть установлено, потому что нам не удастся скопировать некоторые файлы. Обычно это связано с неверными правами на файлы."
 
@@ -10057,7 +10057,7 @@ msgstr "Обновить переводы"
 msgid "Background updates"
 msgstr "Фоновые обновления"
 
-#: wp-admin/includes/update-core.php:1407
+#: wp-admin/includes/update-core.php:1408
 msgid "There is not enough free disk space to complete the update."
 msgstr "Недостаточно места на диске, чтобы завершить обновление."
 
@@ -10135,11 +10135,11 @@ msgstr "Введённое имя пользователя содержит не
 msgid "Please provide a valid username."
 msgstr "Пожалуйста, введите корректное имя пользователя."
 
-#: wp-admin/includes/update-core.php:1321
+#: wp-admin/includes/update-core.php:1322
 msgid "Copying the required files&#8230;"
 msgstr "Копирование необходимых файлов&#8230;"
 
-#: wp-admin/includes/update-core.php:1228
+#: wp-admin/includes/update-core.php:1229
 msgid "Preparing to install the latest version&#8230;"
 msgstr "Подготовка к установке свежей версии&#8230;"
 
@@ -10836,7 +10836,7 @@ msgid "Search engine visibility"
 msgstr "Видимость для поисковых систем"
 
 #. translators: 1: WordPress version, 2: URL to About screen.
-#: wp-admin/includes/update-core.php:1709 wp-admin/update-core.php:923
+#: wp-admin/includes/update-core.php:1710 wp-admin/update-core.php:923
 msgid "Welcome to WordPress %1$s. You will be redirected to the About WordPress screen. If not, click <a href=\"%2$s\">here</a>."
 msgstr "Добро пожаловать в WordPress %1$s. Сейчас вы будете перенаправлены на экран &laquo;О WordPress&raquo;. Если этого не произошло, нажмите <a href=\"%2$s\">сюда</a>."
 
@@ -10972,7 +10972,7 @@ msgstr "Свернуть"
 msgid "If you do not want a header image to be displayed on your site at all, click the &#8220;Remove Header Image&#8221; button at the bottom of the Header Image section of this page. If you want to re-enable the header image later, you just have to select one of the other image options and click &#8220;Save Changes&#8221;."
 msgstr "Если вы вообще не хотите выводить на сайте изображение в качестве заголовка, нажмите кнопку &laquo;Удалить изображение заголовка&raquo; в нижней части раздела &laquo;Изображение заголовка&raquo;. Если позже вы захотите вернуть его, просто выберите один из предложенных вариантов и нажмите &laquo;Сохранить изменения&raquo;."
 
-#: wp-admin/includes/plugin-install.php:1030
+#: wp-admin/includes/plugin-install.php:1028
 msgctxt "plugin"
 msgid "Installed"
 msgstr "Установлен"
@@ -11127,7 +11127,7 @@ msgstr "Комментариев пока нет."
 
 #: wp-admin/includes/class-wp-theme-install-list-table.php:520
 #: wp-admin/includes/class-wp-themes-list-table.php:281
-#: wp-admin/includes/plugin-install.php:658
+#: wp-admin/includes/plugin-install.php:656
 msgid "Version:"
 msgstr "Версия:"
 
@@ -11443,37 +11443,37 @@ msgstr "Чтобы разрешить использование этой стр
 msgid "No comments awaiting moderation."
 msgstr "Нет комментариев, ожидающих проверки."
 
-#: wp-admin/includes/plugin-install.php:579
+#: wp-admin/includes/plugin-install.php:577
 msgctxt "Plugin installer section title"
 msgid "Other Notes"
 msgstr "Заметки"
 
-#: wp-admin/includes/plugin-install.php:577
+#: wp-admin/includes/plugin-install.php:575
 msgctxt "Plugin installer section title"
 msgid "Changelog"
 msgstr "Изменения"
 
-#: wp-admin/includes/plugin-install.php:576
+#: wp-admin/includes/plugin-install.php:574
 msgctxt "Plugin installer section title"
 msgid "Screenshots"
 msgstr "Скриншоты"
 
-#: wp-admin/includes/plugin-install.php:575
+#: wp-admin/includes/plugin-install.php:573
 msgctxt "Plugin installer section title"
 msgid "FAQ"
 msgstr "FAQ"
 
-#: wp-admin/includes/plugin-install.php:574
+#: wp-admin/includes/plugin-install.php:572
 msgctxt "Plugin installer section title"
 msgid "Installation"
 msgstr "Установка"
 
-#: wp-admin/includes/plugin-install.php:573
+#: wp-admin/includes/plugin-install.php:571
 msgctxt "Plugin installer section title"
 msgid "Description"
 msgstr "Описание"
 
-#: wp-admin/includes/plugin-install.php:706
+#: wp-admin/includes/plugin-install.php:704
 msgid "Plugin Homepage &#187;"
 msgstr "Страница плагина &#187;"
 
@@ -11608,7 +11608,7 @@ msgid "This screen allows you to choose your permalink structure. You can choose
 msgstr "На этом экране можно выбрать структуру постоянных ссылок. Вы можете выбрать один из предложенных вариантов или создать произвольную структуру URL."
 
 #. translators: 1: WordPress version, 2: URL to About screen.
-#: wp-admin/includes/update-core.php:1717 wp-admin/update-core.php:931
+#: wp-admin/includes/update-core.php:1718 wp-admin/update-core.php:931
 msgid "Welcome to WordPress %1$s. <a href=\"%2$s\">Learn more</a>."
 msgstr "Добро пожаловать в WordPress %1$s. <a href=\"%2$s\">Узнать больше</a>."
 
@@ -13547,7 +13547,7 @@ msgid "User already exists. Password inherited."
 msgstr "Пользователь уже существует. Пароль унаследован."
 
 #: wp-admin/includes/class-wp-automatic-updater.php:529
-#: wp-admin/includes/update-core.php:1703 wp-admin/update-core.php:919
+#: wp-admin/includes/update-core.php:1704 wp-admin/update-core.php:919
 msgid "WordPress updated successfully."
 msgstr "WordPress успешно обновлён."
 
@@ -14712,34 +14712,34 @@ msgstr "Обновить до %s"
 msgid "You are using a development version (%1$s). Cool! Please <a href=\"%2$s\">stay updated</a>."
 msgstr "Вы используете версию %1$s. Супер! <a href=\"%2$s\">Следите за обновлениями</a>."
 
-#: wp-admin/includes/update-core.php:1576
+#: wp-admin/includes/update-core.php:1577
 msgid "Upgrading database&#8230;"
 msgstr "Обновление базы данных&#8230;"
 
-#: wp-admin/includes/update-core.php:1092
+#: wp-admin/includes/update-core.php:1093
 msgid "The update could not be unpacked"
 msgstr "Обновление не удалось распаковать"
 
-#: wp-admin/includes/update-core.php:1074
+#: wp-admin/includes/update-core.php:1075
 msgid "Verifying the unpacked files&#8230;"
 msgstr "Проверка распакованных файлов&#8230;"
 
 #. translators: 1: WordPress version number, 2: Minimum required MySQL version
 #. number, 3: Current MySQL version number.
-#: wp-admin/includes/update-core.php:1194
+#: wp-admin/includes/update-core.php:1195
 msgid "The update cannot be installed because WordPress %1$s requires MySQL version %2$s or higher. You are running version %3$s."
 msgstr "Обновление не может быть установлено, так как WordPress %1$s требует MySQL версии %2$s или выше. У вас используется версия %3$s."
 
 #. translators: 1: WordPress version number, 2: Minimum required PHP version
 #. number, 3: Current PHP version number.
-#: wp-admin/includes/update-core.php:1183
+#: wp-admin/includes/update-core.php:1184
 msgid "The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher. You are running version %3$s."
 msgstr "Обновление не может быть установлено, так как WordPress %1$s требует PHP версии %2$s или выше. У вас используется версия %3$s."
 
 #. translators: 1: WordPress version number, 2: Minimum required PHP version
 #. number, 3: Minimum required MySQL version number, 4: Current PHP version
 #. number, 5: Current MySQL version number.
-#: wp-admin/includes/update-core.php:1170
+#: wp-admin/includes/update-core.php:1171
 msgid "The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s."
 msgstr "Обновление не может быть установлено, так как WordPress %1$s требует PHP версии %2$s или выше и MySQL версии %3$s или выше. У вас используется PHP %4$s и MySQL %5$s."
 
@@ -15019,39 +15019,39 @@ msgstr "Один из плагинов неработоспособен."
 msgid "The plugin generated unexpected output."
 msgstr "Плагин произвёл неожиданный вывод на экран."
 
-#: wp-admin/includes/plugin-install.php:834
+#: wp-admin/includes/plugin-install.php:832
 msgid "<strong>Warning:</strong> This plugin <strong>has not been tested</strong> with your current version of WordPress."
 msgstr "<strong>Внимание:</strong> Этот плагин <strong>не был протестирован</strong> с вашей версией WordPress."
 
-#: wp-admin/includes/plugin-install.php:712
+#: wp-admin/includes/plugin-install.php:710
 msgid "Average Rating"
 msgstr "Средний рейтинг"
 
-#: wp-admin/includes/plugin-install.php:704
+#: wp-admin/includes/plugin-install.php:702
 msgid "WordPress.org Plugin Page &#187;"
 msgstr "Страница на WordPress.org &#187;"
 
-#: wp-admin/includes/plugin-install.php:677
+#: wp-admin/includes/plugin-install.php:675
 msgid "Compatible up to:"
 msgstr "Совместим вплоть до:"
 
 #. translators: %s: Version number.
-#: wp-admin/includes/plugin-install.php:673
-#: wp-admin/includes/plugin-install.php:683
+#: wp-admin/includes/plugin-install.php:671
+#: wp-admin/includes/plugin-install.php:681
 msgid "%s or higher"
 msgstr "%s или выше"
 
-#: wp-admin/includes/plugin-install.php:670
+#: wp-admin/includes/plugin-install.php:668
 msgid "Requires WordPress Version:"
 msgstr "Требуемая версия WordPress:"
 
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:707
-#: wp-admin/includes/plugin-install.php:662
+#: wp-admin/includes/plugin-install.php:660
 msgid "Last Updated:"
 msgstr "Обновление:"
 
 #. translators: %s: Number of ratings.
-#: wp-admin/includes/plugin-install.php:726
+#: wp-admin/includes/plugin-install.php:724
 msgid "(based on %s rating)"
 msgid_plural "(based on %s ratings)"
 msgstr[0] "(всего %s голос)"
@@ -15603,7 +15603,7 @@ msgid "Empty archive."
 msgstr "Архив пуст."
 
 #: wp-admin/includes/file.php:1831 wp-admin/includes/file.php:1985
-#: wp-admin/includes/file.php:2043 wp-admin/includes/update-core.php:1514
+#: wp-admin/includes/file.php:2043 wp-admin/includes/update-core.php:1515
 msgid "Could not copy file."
 msgstr "Не удалось скопировать файл."
 
@@ -15908,12 +15908,12 @@ msgid "The plugin is at the latest version."
 msgstr "Используется свежая версия плагина."
 
 #: wp-admin/includes/class-wp-upgrader.php:210
-#: wp-admin/includes/update-core.php:1461
+#: wp-admin/includes/update-core.php:1462
 msgid "Disabling Maintenance mode&#8230;"
 msgstr "Отключение режима обслуживания&#8230;"
 
 #: wp-admin/includes/class-wp-upgrader.php:209
-#: wp-admin/includes/update-core.php:1312
+#: wp-admin/includes/update-core.php:1313
 msgid "Enabling Maintenance mode&#8230;"
 msgstr "Включение режима обслуживания&#8230;"
 

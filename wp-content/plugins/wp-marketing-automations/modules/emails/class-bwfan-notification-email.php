@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Bwfan Notification Email
+ *
+ * @since 1.0.0
+ */
 #[AllowDynamicProperties]
 class BWFAN_Notification_Email {
 	/**
@@ -445,7 +450,7 @@ class BWFAN_Notification_Email {
 		$date = new DateTime( $date_string );
 		$date->setTimezone( wp_timezone() );
 
-		return $date->format( 'F j' );
+		return $date->format( 'F j, Y' );
 	}
 
 	/**
@@ -458,7 +463,8 @@ class BWFAN_Notification_Email {
 		if ( ! isset( $_GET['bwfan_email_preview'] ) ) {
 			return;
 		}
-		$mode = filter_input( INPUT_GET, 'bwfan_mode', FILTER_SANITIZE_STRING );
+		$mode = filter_input( INPUT_GET, 'bwfan_mode' );
+		$mode = $mode ? sanitize_text_field( $mode ) : '';
 		$mode = empty( $mode ) ? 'weekly' : $mode;
 
 		switch ( $mode ) {
@@ -500,7 +506,8 @@ class BWFAN_Notification_Email {
 			wp_send_json_error( __( 'You do not have permission to perform this action.', 'wp-marketing-automations' ) );
 		}
 
-		$mode = filter_input( INPUT_GET, 'bwfan_mode', FILTER_SANITIZE_STRING );
+		$mode = filter_input( INPUT_GET, 'bwfan_mode' );
+		$mode = $mode ? sanitize_text_field( $mode ) : '';
 		$mode = empty( $mode ) ? 'weekly' : $mode;
 
 		switch ( $mode ) {

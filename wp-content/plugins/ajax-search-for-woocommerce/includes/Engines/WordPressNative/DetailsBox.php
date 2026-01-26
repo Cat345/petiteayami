@@ -15,10 +15,10 @@ class DetailsBox {
         if ( defined( 'DGWT_WCAS_WC_AJAX_ENDPOINT' ) ) {
             // Searched result details ajax action
             if ( DGWT_WCAS_WC_AJAX_ENDPOINT ) {
-                add_action( 'wc_ajax_' . DGWT_WCAS_RESULT_DETAILS_ACTION, array($this, 'getResultDetails') );
+                add_action( 'wc_ajax_' . DGWT_WCAS_RESULT_DETAILS_ACTION, [$this, 'getResultDetails'] );
             } else {
-                add_action( 'wp_ajax_nopriv_' . DGWT_WCAS_RESULT_DETAILS_ACTION, array($this, 'getResultDetails') );
-                add_action( 'wp_ajax_' . DGWT_WCAS_RESULT_DETAILS_ACTION, array($this, 'getResultDetails') );
+                add_action( 'wp_ajax_nopriv_' . DGWT_WCAS_RESULT_DETAILS_ACTION, [$this, 'getResultDetails'] );
+                add_action( 'wp_ajax_' . DGWT_WCAS_RESULT_DETAILS_ACTION, [$this, 'getResultDetails'] );
             }
         }
     }
@@ -30,10 +30,21 @@ class DetailsBox {
         if ( !defined( 'DGWT_WCAS_AJAX_DETAILS_PANEL' ) ) {
             define( 'DGWT_WCAS_AJAX_DETAILS_PANEL', true );
         }
-        $output = array();
-        $items = array();
-        if ( !empty( $_POST['items'] ) && is_array( $_POST['items'] ) ) {
-            foreach ( $_POST['items'] as $item ) {
+        $output = [];
+        $items = [];
+        //phpcs:ignore WordPress.Security.NonceVerification.Missing
+        $rawItems = $_POST['items'];
+        if ( !empty( $rawItems ) && is_array( $rawItems ) ) {
+            $maxItems = 50;
+            // Hard cap request size to avoid unnecessary iteration and potential abuse.
+            $rawItems = array_slice( $rawItems, 0, $maxItems );
+            $totalLimitSetting = DGWT_WCAS()->settings->getOption( 'suggestions_limit', 7 );
+            $totalLimit = min( $totalLimitSetting, $maxItems );
+            $i = 1;
+            foreach ( $rawItems as $item ) {
+                if ( $i > $totalLimit ) {
+                    break;
+                }
                 if ( empty( $item['objectID'] ) ) {
                     continue;
                 }
@@ -65,25 +76,26 @@ class DetailsBox {
                     $postID = ( !empty( $parts[1] ) ? absint( $parts[1] ) : 0 );
                 }
                 // Get product details
-                if ( !empty( $postID ) && !empty( $postType ) && in_array( $postType, array('product', 'product_variation') ) ) {
+                if ( !empty( $postID ) && !empty( $postType ) && in_array( $postType, ['product', 'product_variation'] ) ) {
                     if ( $postType === 'product_variation' ) {
                         $productDetails = $this->getProductDetails( $postID, $variationID );
                     } else {
                         $productDetails = $this->getProductDetails( $postID );
                     }
-                    $items[] = array(
+                    $items[] = [
                         'objectID' => $objectID,
                         'html'     => $productDetails['html'],
                         'price'    => $productDetails['price'],
-                    );
+                    ];
                 }
                 // Get taxonomy details
                 if ( !empty( $termID ) && !empty( $taxonomy ) ) {
-                    $items[] = array(
+                    $items[] = [
                         'objectID' => $objectID,
                         'html'     => $this->getTaxonomyDetails( $termID, $taxonomy, $suggestionValue ),
-                    );
+                    ];
                 }
+                $i++;
             }
             $output['items'] = $items;
             echo json_encode( apply_filters( 'dgwt/wcas/suggestion_details/output', $output ) );
@@ -99,7 +111,7 @@ class DetailsBox {
      *
      * @return array
      */
-    private function getProductDetails( $productID, $variationID = 0 ) {
+    private function getProductDetails( $productID, $variationID = 0 ) : array {
         if ( $variationID ) {
             $product = new ProductVariation($variationID);
             $type = 'product_variation';
@@ -107,17 +119,20 @@ class DetailsBox {
             $product = new Product($productID);
             $type = 'product';
         }
-        $details = array(
+        $details = [
             'html'  => '',
             'price' => '',
-        );
+        ];
         if ( !$product->isCorrect() ) {
+            return $details;
+        }
+        if ( !$product->canUserSee( true, 'details-panel' ) ) {
             return $details;
         }
         $thumbSize = apply_filters( 'dgwt/wcas/suggestion_details/product/thumb_size', 'woocommerce_thumbnail' );
         $responsiveImages = apply_filters( 'dgwt/wcas/suggestion_details/responsive_images', true );
         $wooProduct = $product->getWooObject();
-        $vars = array(
+        $vars = [
             'ID'                => $product->getID(),
             'name'              => $product->getName(),
             'desc'              => $product->getDescription( 'details-panel' ),
@@ -131,9 +146,9 @@ class DetailsBox {
             'priceHtml'         => $product->getPriceHTML(),
             'showQuantity'      => false,
             'stockAvailability' => $product->getStockAvailability(),
-            'attributes'        => array(),
+            'attributes'        => [],
             'wooObject'         => $product->getWooObject(),
-        );
+        ];
         if ( $variationID ) {
             $vars['attributes'] = $product->getVariationAttributes();
         }
@@ -212,7 +227,7 @@ class DetailsBox {
                 $products->the_post();
                 $product = new Product(get_the_ID());
                 if ( $product->isValid() ) {
-                    $vars = array(
+                    $vars = [
                         'ID'          => $product->getID(),
                         'name'        => $product->getName(),
                         'link'        => apply_filters( 'dgwt/wcas/suggestion_details/term_product/url', $product->getPermalink(), $product ),
@@ -223,7 +238,7 @@ class DetailsBox {
                         'ratingHtml'  => $product->getRatingHtml(),
                         'priceHtml'   => $product->getPriceHTML(),
                         'wooObject'   => $product->getWooObject(),
-                    );
+                    ];
                     $vars = (object) apply_filters(
                         'dgwt/wcas/suggestion_details/term_products/vars',
                         $vars,
@@ -262,7 +277,7 @@ class DetailsBox {
      */
     private function getProductsQueryArgs( $termID, $taxonomy ) {
         $productVisibilityTermIds = wc_get_product_visibility_term_ids();
-        $queryArgs = array(
+        $queryArgs = [
             'posts_per_page' => apply_filters( 'dgwt/wcas/suggestion_details/taxonomy/limit', 4 ),
             'post_status'    => 'publish',
             'post_type'      => 'product',
@@ -270,31 +285,31 @@ class DetailsBox {
             'order'          => 'desc',
             'orderby'        => 'meta_value_num',
             'meta_key'       => 'total_sales',
-            'tax_query'      => array(),
-        );
+            'tax_query'      => [],
+        ];
         // Visibility
-        $queryArgs['tax_query'][] = array(
+        $queryArgs['tax_query'][] = [
             'taxonomy' => 'product_visibility',
             'field'    => 'term_taxonomy_id',
             'terms'    => $productVisibilityTermIds['exclude-from-search'],
             'operator' => 'NOT IN',
-        );
+        ];
         // Out of stock
         if ( 'yes' === get_option( 'woocommerce_manage_stock' ) && DGWT_WCAS()->settings->getOption( 'exclude_out_of_stock' ) === 'on' ) {
-            $queryArgs['tax_query'][] = array(
+            $queryArgs['tax_query'][] = [
                 'taxonomy' => 'product_visibility',
                 'field'    => 'term_taxonomy_id',
                 'terms'    => $productVisibilityTermIds['outofstock'],
                 'operator' => 'NOT IN',
-            );
+            ];
         }
         // Search with specific category
-        $queryArgs['tax_query'][] = array(
+        $queryArgs['tax_query'][] = [
             'taxonomy'         => $taxonomy,
             'field'            => 'id',
             'terms'            => $termID,
             'include_children' => true,
-        );
+        ];
         return apply_filters(
             'dgwt/wcas/suggestion_details/taxonomy/products_query_args',
             $queryArgs,

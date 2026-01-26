@@ -16,13 +16,13 @@ if ($icon) {
 
     echo $this->el('span', [
         'class' => [
-            'uk-margin-small-right' => $config("$menuposition.image_margin") && !$config("$menuitem.image_only") && !$config("$menuitem.subtitle"),
+            'uk-margin-xsmall-right' => $config("$menuposition.image_margin") && !$config("$menuitem.image_only") && !$config("$menuitem.subtitle"),
             $config("$menuitem.image_classes", ''),
 
         ],
         'uk-icon' => [
             'icon: {0};' => $icon,
-            'width: {0};' => $config("$menuposition.icon_width"),
+            'width: {0};' => $config("$menuposition.image_width"),
         ],
     ])([], '');
 
@@ -31,7 +31,7 @@ if ($icon) {
     echo $this->el('image', [
 
         'class' => [
-            'uk-margin-small-right' => $config("$menuposition.image_margin") && !$config("$menuitem.image_only") && !$config("$menuitem.subtitle"),
+            'uk-margin-xsmall-right' => $config("$menuposition.image_margin") && !$config("$menuitem.image_only") && !$config("$menuitem.subtitle"),
             $config("$menuitem.image_classes", ''),
         ],
         'src' => $image,

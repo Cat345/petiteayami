@@ -121,16 +121,17 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
     public function get_allowed_plugins() {
 
         $allowed_plugins = array(
-            'woocommerce-wholesale-prices'    => Plugin_Constants::WWP_PLUGIN_BASENAME,
-            'uncanny-automator'               => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
-            'funnel-builder'                  => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
-            'pushengage'                      => Plugin_Constants::PUSHENGAGE_PLUGIN,
-            'storeagent-ai-for-woocommerce'   => Plugin_Constants::STOREAGENT_AI_PLUGIN,
-            'woo-product-feed-pro'            => Plugin_Constants::PRODUCT_FEED_PRO_PLUGIN,
-            'wc-vendors'                      => Plugin_Constants::WC_VENDORS_PLUGIN,
-            'invoice-gateway-for-woocommerce' => Plugin_Constants::INVOICE_GATEWAY_PLUGIN,
-            'woocommerce-store-toolkit'       => Plugin_Constants::STORE_TOOLKIT_PLUGIN,
-            'woocommerce-exporter'            => Plugin_Constants::STORE_EXPORTER_PLUGIN,
+            'woocommerce-wholesale-prices'         => Plugin_Constants::WWP_PLUGIN_BASENAME,
+            'uncanny-automator'                    => Plugin_Constants::UNCANNY_AUTOMATOR_PLUGIN,
+            'funnel-builder'                       => Plugin_Constants::FUNNEL_BUILDER_PLUGIN,
+            'pushengage'                           => Plugin_Constants::PUSHENGAGE_PLUGIN,
+            'storeagent-ai-for-woocommerce'        => Plugin_Constants::STOREAGENT_AI_PLUGIN,
+            'woo-product-feed-pro'                 => Plugin_Constants::PRODUCT_FEED_PRO_PLUGIN,
+            'wc-vendors'                           => Plugin_Constants::WC_VENDORS_PLUGIN,
+            'invoice-gateway-for-woocommerce'      => Plugin_Constants::INVOICE_GATEWAY_PLUGIN,
+            'woocommerce-store-toolkit'            => Plugin_Constants::STORE_TOOLKIT_PLUGIN,
+            'woocommerce-exporter'                 => Plugin_Constants::STORE_EXPORTER_PLUGIN,
+            'saveto-wishlist-lite-for-woocommerce' => Plugin_Constants::SAVETO_WISHLIST_LITE_PLUGIN,
         );
 
         // Allow other plugins to be installed but not let them overwrite the ones listed above.
@@ -264,13 +265,11 @@ class Plugin_Installer extends Base_Model implements Model_Interface, Initializa
             }
 
             if ( ! $this->_is_plugin_allowed_for_install( $plugin_slug ) ) {
-                $allowed_plugins = array_keys( $this->get_allowed_plugins() );
                 wp_send_json_error(
                     array(
                         'message' => sprintf(
-                            'Plugin %s is not in the allowed plugins list. Allowed plugins: %s',
+                            'Plugin %s is not in the allowed plugins list.',
                             $plugin_slug,
-                            implode( ', ', $allowed_plugins )
                         ),
                     )
                 );

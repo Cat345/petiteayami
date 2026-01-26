@@ -17,12 +17,16 @@ class RenderBuilderTemplate
         $this->config = $config;
     }
 
+    /**
+     * @param string $template
+     * @return string
+     */
     public function handle($template)
     {
         if ($this->view['sections']->exists('builder')) {
             if ($this->config->get('app.template.type') === '_search') {
                 echo $this->view['sections']->get('builder');
-                return false;
+                return '';
             }
 
             $this->config->set('app.isBuilder', true);

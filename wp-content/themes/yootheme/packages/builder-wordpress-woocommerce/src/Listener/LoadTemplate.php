@@ -30,6 +30,8 @@ class LoadTemplate
 
     /**
      * Ensure actions are only applied on main page content.
+     *
+     * @param array<string, mixed> $parameters
      */
     public function loadLayout(string $name, array $parameters, callable $next): string
     {
@@ -42,6 +44,8 @@ class LoadTemplate
 
     /**
      * Trigger WooCommerce actions before/after builder content.
+     *
+     * @param array<string, mixed> $parameters
      */
     public function loadContent(string $name, array $parameters, callable $next): void
     {

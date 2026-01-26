@@ -2,6 +2,12 @@
 
 namespace YOOtheme\GraphQL\Utils;
 
+use YOOtheme\GraphQL\Language\AST\ArgumentNode;
+use YOOtheme\GraphQL\Language\AST\DirectiveNode;
+use YOOtheme\GraphQL\Language\AST\FieldDefinitionNode;
+use YOOtheme\GraphQL\Language\AST\InputObjectTypeDefinitionNode;
+use YOOtheme\GraphQL\Language\AST\InputValueDefinitionNode;
+use YOOtheme\GraphQL\Language\AST\ObjectTypeDefinitionNode;
 use YOOtheme\GraphQL\Type\Definition\FieldDefinition;
 use YOOtheme\GraphQL\Type\Definition\InputObjectField;
 use YOOtheme\GraphQL\Type\Definition\InputObjectType;
@@ -9,7 +15,7 @@ use YOOtheme\GraphQL\Type\Definition\ObjectType;
 
 class ASTHelper extends AST
 {
-    public static function objectType(ObjectType $type)
+    public static function objectType(ObjectType $type): ObjectTypeDefinitionNode
     {
         $node = [
             'kind' => 'ObjectTypeDefinition',
@@ -22,20 +28,18 @@ class ASTHelper extends AST
             'directives' => [],
         ];
 
-        if (isset($type->config['directives'])) {
-            foreach ($type->config['directives'] as $config) {
-                $node['directives'][] = static::directive($config);
-            }
-        }
+        static::addDirectives($node, $type->config);
 
         foreach ($type->getFields() as $field) {
             $field->astNode = static::field($field);
         }
 
-        return static::fromArray($node);
+        /** @var ObjectTypeDefinitionNode $result */
+        $result = static::fromArray($node);
+        return $result;
     }
 
-    public static function inputType(InputObjectType $type)
+    public static function inputType(InputObjectType $type): InputObjectTypeDefinitionNode
     {
         $node = [
             'kind' => 'InputObjectTypeDefinition',
@@ -47,18 +51,18 @@ class ASTHelper extends AST
             'directives' => [],
         ];
 
-        foreach ($type->config['directives'] ?? [] as $config) {
-            $node['directives'][] = static::directive($config);
-        }
+        static::addDirectives($node, $type->config);
 
         foreach ($type->getFields() as $field) {
             $field->astNode = static::inputField($field);
         }
 
-        return static::fromArray($node);
+        /** @var InputObjectTypeDefinitionNode $result */
+        $result = static::fromArray($node);
+        return $result;
     }
 
-    public static function field(FieldDefinition $field)
+    public static function field(FieldDefinition $field): FieldDefinitionNode
     {
         $node = [
             'kind' => 'FieldDefinition',
@@ -70,14 +74,14 @@ class ASTHelper extends AST
             'directives' => [],
         ];
 
-        foreach ($field->config['directives'] ?? [] as $config) {
-            $node['directives'][] = static::directive($config);
-        }
+        static::addDirectives($node, $field->config);
 
-        return static::fromArray($node);
+        /** @var FieldDefinitionNode $result */
+        $result = static::fromArray($node);
+        return $result;
     }
 
-    public static function inputField(InputObjectField $field)
+    public static function inputField(InputObjectField $field): InputValueDefinitionNode
     {
         $node = [
             'kind' => 'InputValueDefinition',
@@ -88,14 +92,28 @@ class ASTHelper extends AST
             'directives' => [],
         ];
 
-        foreach ($field->config['directives'] ?? [] as $config) {
-            $node['directives'][] = static::directive($config);
-        }
+        static::addDirectives($node, $field->config);
 
-        return static::fromArray($node);
+        /** @var InputValueDefinitionNode $result */
+        $result = static::fromArray($node);
+        return $result;
     }
 
-    public static function directive(array $config)
+    /**
+     * @param array<string, mixed> $node
+     * @param array<string, mixed> $config
+     */
+    protected static function addDirectives(array &$node, array $config): void
+    {
+        foreach ($config['directives'] ?? [] as $directives) {
+            $node['directives'][] = static::directive($directives);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public static function directive(array $config): DirectiveNode
     {
         $directive = [
             'kind' => 'Directive',
@@ -109,10 +127,15 @@ class ASTHelper extends AST
             $directive['arguments'][] = static::argument($name, $value);
         }
 
-        return static::fromArray($directive);
+        /** @var DirectiveNode $result */
+        $result = static::fromArray($directive);
+        return $result;
     }
 
-    public static function argument($name, $value)
+    /**
+     * @param mixed $value
+     */
+    public static function argument(string $name, $value): ArgumentNode
     {
         $argument = [
             'kind' => 'Argument',
@@ -126,6 +149,8 @@ class ASTHelper extends AST
             ],
         ];
 
-        return static::fromArray($argument);
+        /** @var ArgumentNode $result */
+        $result = static::fromArray($argument);
+        return $result;
     }
 }

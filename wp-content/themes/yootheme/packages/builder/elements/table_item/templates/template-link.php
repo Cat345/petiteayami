@@ -18,6 +18,11 @@ $el = $this->el('a', [
 
     'href' => $props['link'],
     'target' => ['_blank {@link_target}'],
+    'download' => $element['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
     'uk-scroll' => str_contains((string) $props['link'], '#'),
 ]);
 

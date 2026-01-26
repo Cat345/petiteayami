@@ -1,6 +1,7 @@
 // Import library.
 import { subscribe, useSelect } from '../library/StoreAPI';
 import OrderSummarySubtotalBlock from '../components/OrderSummarySubtotalBlock';
+import { sanitizeHtml } from '../utils';
 
 // Global Variables.
 declare var acfwfObj: any;
@@ -36,7 +37,7 @@ const CouponSummary = () => {
           <div
             className={`acfwf-bogo-discount-summary-block`}
             dangerouslySetInnerHTML={{
-              __html: row.content,
+              __html: sanitizeHtml(row.content),
             }}
           />
         </OrderSummarySubtotalBlock>

@@ -3,14 +3,18 @@
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
 use WP_User;
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class UserType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -182,61 +186,95 @@ class UserType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('User'),
             ],
         ];
     }
 
+    /**
+     * @return int
+     */
     public static function id(WP_User $user)
     {
         return $user->ID;
     }
 
+    /**
+     * @return string
+     */
     public static function name(WP_User $user)
     {
         return $user->display_name;
     }
 
+    /**
+     * @return string
+     */
     public static function nicename(WP_User $user)
     {
         return $user->user_nicename;
     }
 
+    /**
+     * @return string
+     */
     public static function firstName(WP_User $user)
     {
         return $user->first_name;
     }
 
+    /**
+     * @return string
+     */
     public static function lastName(WP_User $user)
     {
         return $user->last_name;
     }
 
+    /**
+     * @return string
+     */
     public static function email(WP_User $user)
     {
         return $user->user_email;
     }
 
+    /**
+     * @return string
+     */
     public static function registered(WP_User $user)
     {
         return $user->user_registered;
     }
 
+    /**
+     * @return string
+     */
     public static function url(WP_User $user)
     {
         return $user->user_url;
     }
 
+    /**
+     * @return string
+     */
     public static function link(WP_User $user)
     {
         return get_author_posts_url($user->ID);
     }
 
+    /**
+     * @param array<string, mixed> $args
+     *
+     * @return string
+     */
     public static function avatar(WP_User $user, $args)
     {
         return get_avatar_url($user->ID, $args);
     }
 
+    /**
+     * @param array<string, mixed> $args
+     */
     public static function rolesString(WP_User $user, $args): string
     {
         $result = [];

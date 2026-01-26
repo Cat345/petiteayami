@@ -8,16 +8,22 @@ use YOOtheme\Http\Response;
 
 class WidgetController
 {
-    public static function getWidget(Request $request, Response $response, Builder $builder)
-    {
+    public static function getWidget(
+        Request $request,
+        Response $response,
+        Builder $builder
+    ): Response {
         $widget = static::getInstance($request->getQueryParam('id'));
         $widget['content'] = $builder->load($widget['content'] ?? '');
 
         return $response->withJson($widget);
     }
 
-    public static function saveWidget(Request $request, Response $response, Builder $builder)
-    {
+    public static function saveWidget(
+        Request $request,
+        Response $response,
+        Builder $builder
+    ): Response {
         $id = $request->getParam('id');
         $data = $request->getParam('data', []);
 
@@ -35,6 +41,7 @@ class WidgetController
                     $builder
                         ->withParams(['context' => 'save'])
                         ->load(json_encode($data['content'])),
+                    JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                 ),
             ];
         }
@@ -44,6 +51,9 @@ class WidgetController
         ]);
     }
 
+    /**
+     * @return ?array<string, mixed>
+     */
     protected static function getInstance(string $id): ?array
     {
         $parts = explode('-', $id);
@@ -54,6 +64,9 @@ class WidgetController
         return $instances[$index] ?? null;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected static function saveInstance(string $id, array $data): bool
     {
         $parts = explode('-', $id);

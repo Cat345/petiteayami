@@ -5,6 +5,7 @@ namespace YOOtheme\GraphQL\Validator\Rules;
 use YOOtheme\GraphQL\Error\Error;
 use YOOtheme\GraphQL\Error\InvariantViolation;
 use YOOtheme\GraphQL\Executor\Values;
+use YOOtheme\GraphQL\Language\AST\DocumentNode;
 use YOOtheme\GraphQL\Language\AST\FieldNode;
 use YOOtheme\GraphQL\Language\AST\FragmentSpreadNode;
 use YOOtheme\GraphQL\Language\AST\InlineFragmentNode;
@@ -18,6 +19,7 @@ use YOOtheme\GraphQL\Language\Visitor;
 use YOOtheme\GraphQL\Language\VisitorOperation;
 use YOOtheme\GraphQL\Type\Definition\Directive;
 use YOOtheme\GraphQL\Type\Definition\FieldDefinition;
+use YOOtheme\GraphQL\Type\Introspection;
 use YOOtheme\GraphQL\Validator\QueryValidationContext;
 
 /**
@@ -70,8 +72,8 @@ class QueryComplexity extends QuerySecurityRule
 
                     return Visitor::skipNode();
                 },
-                NodeKind::OPERATION_DEFINITION => [
-                    'leave' => function (OperationDefinitionNode $operationDefinition) use ($context): void {
+                NodeKind::DOCUMENT => [
+                    'leave' => function (DocumentNode $document) use ($context): void {
                         $errors = $context->getErrors();
 
                         if ($errors !== []) {
@@ -82,18 +84,24 @@ class QueryComplexity extends QuerySecurityRule
                             return;
                         }
 
-                        $this->queryComplexity = $this->fieldComplexity($operationDefinition->selectionSet);
+                        foreach ($document->definitions as $definition) {
+                            if (! $definition instanceof OperationDefinitionNode) {
+                                continue;
+                            }
 
-                        if ($this->queryComplexity <= $this->maxQueryComplexity) {
-                            return;
+                            $this->queryComplexity = $this->fieldComplexity($definition->selectionSet);
+
+                            if ($this->queryComplexity > $this->maxQueryComplexity) {
+                                $context->reportError(
+                                    new Error(static::maxQueryComplexityErrorMessage(
+                                        $this->maxQueryComplexity,
+                                        $this->queryComplexity
+                                    ))
+                                );
+
+                                return;
+                            }
                         }
-
-                        $context->reportError(
-                            new Error(static::maxQueryComplexityErrorMessage(
-                                $this->maxQueryComplexity,
-                                $this->queryComplexity
-                            ))
-                        );
                     },
                 ],
             ]
@@ -117,6 +125,11 @@ class QueryComplexity extends QuerySecurityRule
     {
         switch (true) {
             case $node instanceof FieldNode:
+                // Exclude __schema field and all nested content from complexity calculation
+                if ($node->name->value === Introspection::SCHEMA_FIELD_NAME) {
+                    return 0;
+                }
+
                 if ($this->directiveExcludesField($node)) {
                     return 0;
                 }
@@ -256,6 +269,10 @@ class QueryComplexity extends QuerySecurityRule
         return $this->maxQueryComplexity;
     }
 
+    /**
+     * Complexity of the first operation exceeding the defined limit, or, in case no operation
+     * exceeds the limit, complexity of the last defined operation.
+     */
     public function getQueryComplexity(): int
     {
         return $this->queryComplexity;

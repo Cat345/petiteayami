@@ -3,10 +3,14 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.0.9' => function ($node) {
+        Arr::updateKeys($node->props, ['thumbnav_nowrap' => 'thumbnav_shrink']);
+    },
+
     '2.8.0-beta.0.13' => function ($node) {
         foreach (['title_style', 'meta_style', 'content_style'] as $prop) {
-            if (in_array(Arr::get($node->props, $prop), ['meta', 'lead'])) {
-                $node->props[$prop] = 'text-' . Arr::get($node->props, $prop);
+            if (in_array($node->props[$prop] ?? '', ['meta', 'lead'])) {
+                $node->props[$prop] = "text-{$node->props[$prop]}";
             }
         }
     },
@@ -56,11 +60,11 @@ return [
     },
 
     '2.1.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'title_grid_width') === 'xxlarge') {
+        if (($node->props['title_grid_width'] ?? '') === 'xxlarge') {
             $node->props['title_grid_width'] = '2xlarge';
         }
 
-        if (Arr::get($node->props, 'image_grid_width') === 'xxlarge') {
+        if (($node->props['image_grid_width'] ?? '') === 'xxlarge') {
             $node->props['image_grid_width'] = '2xlarge';
         }
     },
@@ -95,7 +99,7 @@ return [
 
         [$style] = explode(':', $config('~theme.style'));
 
-        if (Arr::get($node->props, 'title_style') === 'heading-primary') {
+        if (($node->props['title_style'] ?? '') === 'heading-primary') {
             $node->props['title_style'] = 'heading-medium';
         }
 
@@ -115,66 +119,66 @@ return [
             ])
         ) {
             if (
-                Arr::get($node->props, 'title_style') === 'h1' ||
+                ($node->props['title_style'] ?? '') === 'h1' ||
                 (empty($node->props['title_style']) &&
-                    Arr::get($node->props, 'title_element') === 'h1')
+                    ($node->props['title_element'] ?? '') === 'h1')
             ) {
                 $node->props['title_style'] = 'heading-small';
             }
         }
 
         if (in_array($style, ['florence', 'max', 'nioh-studio', 'sonic', 'summit', 'trek'])) {
-            if (Arr::get($node->props, 'title_style') === 'h2') {
+            if (($node->props['title_style'] ?? '') === 'h2') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
+                    ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h2'
+                ($node->props['title_element'] ?? '') === 'h2'
             ) {
                 $node->props['title_style'] = 'h1';
             }
         }
 
         if (in_array($style, ['fuse', 'horizon', 'joline', 'juno', 'lilian', 'vibe', 'yard'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] = 'heading-small';
             }
         }
 
         if ($style == 'copper-hill') {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
-            } elseif (Arr::get($node->props, 'title_style') === 'h1') {
+                    ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
+            } elseif (($node->props['title_style'] ?? '') === 'h1') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h2' ? '' : 'h2';
+                    ($node->props['title_element'] ?? '') === 'h2' ? '' : 'h2';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h1'
+                ($node->props['title_element'] ?? '') === 'h1'
             ) {
                 $node->props['title_style'] = 'h2';
             }
         }
 
         if (in_array($style, ['trek', 'fjord'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] = 'heading-large';
             }
         }
     },
 
     '1.19.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'meta_align') === 'top') {
+        if (($node->props['meta_align'] ?? '') === 'top') {
             $node->props['meta_align'] = 'above-title';
         }
 
-        if (Arr::get($node->props, 'meta_align') === 'bottom') {
+        if (($node->props['meta_align'] ?? '') === 'bottom') {
             $node->props['meta_align'] = 'below-title';
         }
     },
 
     '1.18.10.3' => function ($node) {
-        if (Arr::get($node->props, 'meta_align') === 'top') {
+        if (($node->props['meta_align'] ?? '') === 'top') {
             if (!empty($node->props['meta_margin'])) {
                 $node->props['title_margin'] = $node->props['meta_margin'];
             }
@@ -191,21 +195,18 @@ return [
     },
 
     '1.18.0' => function ($node) {
-        if (Arr::get($node->props, 'switcher_style') === 'thumbnail') {
+        if (($node->props['switcher_style'] ?? '') === 'thumbnail') {
             $node->props['switcher_style'] = 'thumbnav';
         }
 
         if (
             !isset($node->props['image_box_decoration']) &&
-            Arr::get($node->props, 'image_box_shadow_bottom') === true
+            ($node->props['image_box_shadow_bottom'] ?? '') === true
         ) {
             $node->props['image_box_decoration'] = 'shadow';
         }
 
-        if (
-            !isset($node->props['meta_color']) &&
-            Arr::get($node->props, 'meta_style') === 'muted'
-        ) {
+        if (!isset($node->props['meta_color']) && ($node->props['meta_style'] ?? '') === 'muted') {
             $node->props['meta_color'] = 'muted';
             $node->props['meta_style'] = '';
         }

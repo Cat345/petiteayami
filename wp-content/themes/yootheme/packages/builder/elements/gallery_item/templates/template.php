@@ -7,6 +7,10 @@ if (!$props['link'] && $element['lightbox']) {
 
 // Override default settings
 $element['text_color'] = $props['text_color'] ?: $element['text_color'];
+$element['media_background'] = $props['media_background'] ?: $element['media_background'];
+$element['media_blend_mode'] = $props['media_blend_mode'] ?: $element['media_blend_mode'];
+$element['media_overlay'] = $props['media_overlay'] ?: $element['media_overlay'];
+$element['media_overlay_gradient'] = $props['media_overlay_gradient'] ?: $element['media_overlay_gradient'];
 
 if ($element['grid_masonry']) {
     $element['image_expand'] = '';
@@ -26,8 +30,9 @@ $el = $this->el($props['item_element'] ?: 'div', [
         // Needs to be parent of `uk-link-toggle`
         'uk-{0}' => !$element['overlay_style'] || $element['overlay_cover'] ? $element['text_color'] : false,
         // Only for transparent navbar
-        'uk-inverse-{0}' => $element['overlay_style'] && !$element['overlay_cover'] ? $element['text_color'] : false,
+        'uk-inverse-{0}' => $element['overlay_style'] ? $element['text_color'] : false,
 
+        'tm-video-toggle {@video_autoplay: hover}' => $props['video'] || $props['hover_video'],
     ],
 
 ]);
@@ -61,7 +66,7 @@ $link_container = $props['link'] && $element['overlay_link'] ? $this->el('a', [
     ],
 
     'style' => [
-        "background-color: {$props['media_background']};" => $props['media_background'],
+        'background-color: {media_background};',
     ],
 
     'tabindex' => $element['has_transition'] && !($props['link'] && $element['overlay_link']) ? 0 : null,
@@ -132,6 +137,19 @@ if (!$element['overlay_cover']) {
 // Link
 $link = include "{$__dir}/template-link.php";
 
+// Media Overlay
+$media_overlay = ($props['image'] || $props['video']) && ($element['media_overlay'] || $element['media_overlay_gradient']) ? $this->el('div', [
+
+    'class' => ['uk-position-cover'],
+
+    'style' => [
+        'background-color: {media_overlay};',
+        // `background-clip` fixes sub-pixel issue
+        'background-image: {media_overlay_gradient}; background-clip: padding-box;',
+    ],
+
+]) : null;
+
 ?>
 
 <?= $el($element, $attrs) ?>
@@ -146,8 +164,8 @@ $link = include "{$__dir}/template-link.php";
 
             <?= $this->render("{$__dir}/template-media", compact('props', 'element')) ?>
 
-            <?php if ($props['media_overlay']) : ?>
-            <div class="uk-position-cover" style="background-color:<?= $props['media_overlay'] ?>"></div>
+            <?php if ($media_overlay) : ?>
+            <?= $media_overlay($element, '') ?>
             <?php endif ?>
 
             <?php if ($element['overlay_cover']) : ?>

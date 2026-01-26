@@ -29,21 +29,21 @@ class FacetWP extends AbstractPluginIntegration {
         // Search page
         add_filter(
             'facetwp_query_args',
-            array($this, 'query_args'),
+            [$this, 'query_args'],
             10,
             2
         );
         add_filter(
             'dgwt/wcas/search_bar/value',
-            array($this, 'restore_search_phrase'),
+            [$this, 'restore_search_phrase'],
             10,
             2
         );
         // Search facet
-        add_filter( 'facetwp_facet_search_engines', array($this, 'search_engines') );
+        add_filter( 'facetwp_facet_search_engines', [$this, 'search_engines'] );
         add_filter(
             'facetwp_facet_filter_posts',
-            array($this, 'search_facet'),
+            [$this, 'search_facet'],
             10,
             2
         );
@@ -52,7 +52,7 @@ class FacetWP extends AbstractPluginIntegration {
     /**
      * Prevent the default WP search from running when our plugin is enabled
      */
-    function query_args( $args, $class ) {
+    public function query_args( $args, $class ) {
         if ( $class->is_search && isset( $class->http_params['get']['dgwt_wcas'] ) ) {
             $this->search_terms = $args['s'];
             if ( !dgoraAsfwFs()->is_premium() ) {

@@ -971,6 +971,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			/** Send WC Data */
 			$wc_data_send         = is_array( $additional_info ) && isset( $additional_info['customer_data'] ) && true === $additional_info['customer_data'];
 			$grab_totals          = is_array( $additional_info ) && isset( $additional_info['grab_totals'] ) && true === $additional_info['grab_totals'];
+			$customer_count       = is_array( $additional_info ) && isset( $additional_info['customer_count'] ) && true === $additional_info['customer_count'];
 			$exclude_unsubs_lists = is_array( $additional_info ) && isset( $additional_info['exclude_unsubs_lists'] ) && true === $additional_info['exclude_unsubs_lists'];
 
 			/** Unsubscribed Lists Filter Handling */
@@ -983,21 +984,21 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$filters      = bwfan_is_autonami_pro_active() ? BWFCRM_Filters::_normalize_input_filters( $filters ) : [];
 
 			/** Get Contacts from DB */
-			$contacts = BWFCRM_Model_Contact::get_contacts( $search, $limit, $offset, $filters, $additional_info, $filter_match );
+			$contact_data = BWFCRM_Model_Contact::get_contacts( $search, $limit, $offset, $filters, $additional_info, $filter_match );
 
 			/** Return WP_Error in-case any WP_Error */
-			if ( is_wp_error( $contacts ) ) {
-				return $contacts;
+			if ( is_wp_error( $contact_data ) ) {
+				return $contact_data;
 			}
 
-			/** Return Empty array on non-array or empty content */
-			if ( ! is_array( $contacts ) || empty( $contacts ) ) {
+			/** Return an Empty array on non-array or empty content */
+			if ( ! is_array( $contact_data ) || empty( $contact_data ) ) {
 				return array(
 					'contacts' => array(),
 				);
 			}
-			$total_count = $contacts['total'];
-			$contacts    = $contacts['contacts'];
+			$total_count = $contact_data['total'];
+			$contacts    = $contact_data['contacts'];
 
 			/** Prepare the output */
 			$contact_details = array();
@@ -1029,6 +1030,10 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			if ( true === $grab_totals ) {
 				$return_data['total_count'] = $total_count;
+				if ( $customer_count ) {
+					$return_data['customer_count'] = $contact_data['customer_count'] ?? 0;
+					$return_data['total_revenue']  = $contact_data['total_revenue'] ?? 0;
+				}
 			}
 
 			return $return_data;
@@ -1379,6 +1384,27 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 						continue;
 					}
 					$field_value = self::get_date_value( $field_value );
+				}
+
+
+				/** Date time field */
+				if ( isset( $field_types[ $field_id ] ) && ( absint( $field_types[ $field_id ] ) === BWFCRM_Fields::$TYPE_DATETIME ) ) {
+					/** If the date time field value is empty */
+					if ( empty( $field_value ) ) {
+						$field_array[ 'f' . $field_id ] = null;
+						continue;
+					}
+					$field_value = self::get_date_value( $field_value, 'Y-m-d H:i:s' );
+				}
+
+				/** Time field */
+				if ( isset( $field_types[ $field_id ] ) && ( absint( $field_types[ $field_id ] ) === BWFCRM_Fields::$TYPE_TIME ) ) {
+					/** If the date time field value is empty */
+					if ( empty( $field_value ) ) {
+						$field_array[ 'f' . $field_id ] = null;
+						continue;
+					}
+					$field_value = self::get_date_value( $field_value, 'H:i:s' );
 				}
 
 				/** Else fields case */
@@ -1859,11 +1885,17 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				}
 
 				if ( isset( $contact_note['body'] ) && ! empty( $contact_note['body'] ) ) {
-					$action_object        = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
-					$contact_note['body'] = $action_object->email_content_v2( [
-						'body'     => $contact_note['body'],
-						'template' => 1,
-					] );
+					$action_object = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
+					if ( null === $action_object && class_exists( 'BWFAN_Wp_Sendemail' ) ) {
+						/** Try to get the instance directly */
+						$action_object = BWFAN_Wp_Sendemail::get_instance();
+					}
+					if ( null !== $action_object ) {
+						$contact_note['body'] = $action_object->email_content_v2( [
+							'body'     => $contact_note['body'],
+							'template' => 1,
+						] );
+					}
 					$dom                  = new DOMDocument;
 					$dom->loadHTML( $contact_note['body'] );
 					$bodies = $dom->getElementsByTagName( 'body' );
@@ -2317,23 +2349,22 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return self::$DISPLAY_STATUS_UNSUBSCRIBED;
 			}
 
-			if ( self::$STATUS_BOUNCED === $status ) {
-				return self::$DISPLAY_STATUS_BOUNCED;
-			}
+			switch ( $status ) {
+				case self::$STATUS_BOUNCED:
+					return self::$DISPLAY_STATUS_BOUNCED;
 
-			if ( self::$STATUS_SOFT_BOUNCED === $status ) {
-				return self::$DISPLAY_STATUS_SOFT_BOUNCED;
-			}
+				case self::$STATUS_SOFT_BOUNCED:
+					return self::$DISPLAY_STATUS_SOFT_BOUNCED;
 
-			if ( self::$STATUS_COMPLAINT === $status ) {
-				return self::$DISPLAY_STATUS_COMPLAINT;
-			}
+				case self::$STATUS_COMPLAINT:
+					return self::$DISPLAY_STATUS_COMPLAINT;
 
-			if ( self::$STATUS_NOT_OPTED_IN === $status ) {
-				return self::$DISPLAY_STATUS_UNVERIFIED;
-			}
+				case self::$STATUS_NOT_OPTED_IN:
+					return self::$DISPLAY_STATUS_UNVERIFIED;
 
-			return self::$DISPLAY_STATUS_SUBSCRIBED;
+				default:
+					return self::$DISPLAY_STATUS_SUBSCRIBED;
+			}
 		}
 
 		public function resubscribe( $stop_hooks = false ) {
@@ -2699,11 +2730,10 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$is_already_bounced = self::$STATUS_BOUNCED === absint( $this->contact->get_status() );
 			}
 
-			/** Remove data from unsubscribe table */
-			$this->remove_unsubscribe_data();
-
 			/** save last status in contact meta */
 			$this->save_last_status();
+			/** Remove data from unsubscribe table */
+			$this->remove_unsubscribe_data();
 			$this->contact->set_status( self::$STATUS_BOUNCED );
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->save();
@@ -2737,12 +2767,14 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$soft_bounce_count = $this->contact->get_meta( 'soft_bounce_count' );
 			$soft_bounce_count = empty( $soft_bounce_count ) ? 0 : intval( $soft_bounce_count );
 
+			/** save last status in contact meta */
+			$this->save_last_status();
+			/** Remove data from unsubscribe table */
+			$this->remove_unsubscribe_data();
+
 			if ( $soft_bounce_count >= $soft_bounce_limit ) {
 				/** Soft bounce limit reached, mark contact bounced */
 
-				/** Remove data from unsubscribe table */
-				$this->remove_unsubscribe_data();
-				$this->save_last_status();
 				$this->contact->set_status( self::$STATUS_BOUNCED );
 				$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 				$this->save();
@@ -2762,15 +2794,9 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				];
 			}
 
-			/** Remove data from unsubscribe table */
-			$this->remove_unsubscribe_data();
-
 			/** Mark contact soft bounced */
 			$soft_bounce_count ++;
 			$this->contact->set_meta( 'soft_bounce_count', $soft_bounce_count );
-
-			/** save last status in contact meta */
-			$this->save_last_status();
 			$this->contact->set_status( self::$STATUS_SOFT_BOUNCED );
 			$this->contact->set_last_modified( current_time( 'mysql', 1 ) );
 			$this->save();
@@ -2924,7 +2950,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * @return void
 		 */
 		public function save_last_status() {
-			if ( self::$DISPLAY_STATUS_SOFT_BOUNCED === $this->get_display_status() ) {
+			if ( self::$DISPLAY_STATUS_SOFT_BOUNCED === $this->get_display_status() || self::$DISPLAY_STATUS_BOUNCED === $this->get_display_status() ) {
 				return;
 			}
 

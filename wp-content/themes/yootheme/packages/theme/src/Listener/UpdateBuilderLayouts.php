@@ -20,13 +20,15 @@ class UpdateBuilderLayouts
     {
         $this->config->update(
             '~theme.footer.content',
-            fn($footer) => $footer ? $this->builder->load(json_encode($footer)) : null,
+            fn($footer) => $footer ? $this->builder->load(json_encode($footer) ?: '') : null,
         );
 
         $this->config->update('~theme.menu.items', function ($items) {
             foreach ($items ?: [] as $id => $item) {
                 if (!empty($item['content'])) {
-                    $items[$id]['content'] = $this->builder->load(json_encode($item['content']));
+                    $items[$id]['content'] = $this->builder->load(
+                        json_encode($item['content']) ?: '',
+                    );
                 }
             }
 

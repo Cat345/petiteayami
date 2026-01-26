@@ -955,6 +955,11 @@ class Checkout extends Base_Model implements Model_Interface, Initializable_Inte
                 'status'    => 'fail',
                 'error_msg' => __( 'Invalid AJAX call', 'advanced-coupons-for-woocommerce-free' ),
             );
+        } elseif ( ! is_user_logged_in() ) {
+            $response = array(
+                'status'    => 'fail',
+                'error_msg' => __( 'You must be logged in to redeem store credits.', 'advanced-coupons-for-woocommerce-free' ),
+            );
         } elseif (
             ! isset( $_POST['wpnonce'] ) ||
             ! wp_verify_nonce( $nonce, 'acfwf_redeem_store_credits_checkout' )

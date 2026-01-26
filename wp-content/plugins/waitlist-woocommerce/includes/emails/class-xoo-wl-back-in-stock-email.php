@@ -37,7 +37,7 @@ class Xoo_Wl_Back_In_Stock_Email extends Xoo_Wl_Email{
 	}
 
 	public function delete_waitlist_row( $sent, $obj ){
-		if( !$sent || xoo_wl_helper()->get_email_option( 'bis-keep-wl' ) === "yes" ) return;
+		if( !$sent || is_wp_error( $sent ) || xoo_wl_helper()->get_email_option( 'bis-keep-wl' ) === "yes" ) return;
 		xoo_wl_db()->delete_waitlist_row_by_id( $this->row_id );
 	}
 
@@ -67,7 +67,7 @@ class Xoo_Wl_Back_In_Stock_Email extends Xoo_Wl_Email{
 				$product = $product_id ? wc_get_product( $product_id ) : $this->product; 
 
 				if( !$product ){
-					throw new Xoo_Exception( new WP_Error( 'no-product', __( 'No product found', 'waitlist-woocommerce' ) ) );
+					throw new Xoo_Exception( new WP_Error( 'no-product',  'No product found' ) );
 				}
 
 				if( xoo_wl_helper()->get_email_option( 'bis-check-stock' ) === "yes" && xoo_wl_is_product_out_of_stock( $product->get_id() ) ){

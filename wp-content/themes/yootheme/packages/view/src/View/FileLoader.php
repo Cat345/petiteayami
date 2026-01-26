@@ -6,9 +6,15 @@ use YOOtheme\File;
 
 class FileLoader
 {
+    /**
+     * @var array<string, string>
+     */
     protected array $resolvedPaths = [];
 
-    public function __invoke($name, $parameters, $next)
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function __invoke(string $name, array $parameters, callable $next): string
     {
         if (!str_ends_with(strtolower($name), '.php')) {
             $name .= '.php';

@@ -2,6 +2,7 @@
 import config from '../config.json';
 import { getSetting } from '../../shared/library/BlockIntegration';
 import { store } from '../../shared/library/StoreAPI';
+import { sanitizeHtml } from '../../shared/utils';
 
 // Global variables.
 declare var acfwfObj: any;
@@ -99,7 +100,7 @@ export default function () {
           <p className="acfw-store-credit-user-balance">
             <div
               dangerouslySetInnerHTML={{
-                __html: balance_text_detail.replace('%s', `<strong>${balance_text}</strong>`),
+                __html: sanitizeHtml(balance_text_detail.replace('%s', `<strong>${balance_text}</strong>`)),
               }}
             />
           </p>

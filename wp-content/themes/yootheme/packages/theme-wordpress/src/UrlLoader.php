@@ -15,10 +15,16 @@ class UrlLoader
                         \2                                      # match the previous quote
                        /xiU';
 
-    public static function resolveRelativeUrl($name, $parameters, $next)
-    {
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public static function resolveRelativeUrl(
+        string $name,
+        array $parameters,
+        callable $next
+    ): string {
         if (!is_string($content = $next($name, $parameters))) {
-            return $content;
+            return (string) $content;
         }
 
         // Apply to root template view only

@@ -22,6 +22,25 @@ class BWFAN_DB_Table_Automation_Complete_Contact extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'cid'    => [ 'cid' ],
+				'aid'    => [ 'aid' ],
+				'c_date' => [ 'c_date' ],
+			],
+			'unique_keys' => [
+				'trail' => [ 'trail' ],
+			],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -40,7 +59,6 @@ class BWFAN_DB_Table_Automation_Complete_Contact extends BWFAN_DB_Tables_Base {
 		  `data` longtext,
 		  `trail` varchar(40) NULL COMMENT 'Trail ID',
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `cid` (`cid`),
 		  KEY `aid` (`aid`),
 		  KEY `c_date` (`c_date`),

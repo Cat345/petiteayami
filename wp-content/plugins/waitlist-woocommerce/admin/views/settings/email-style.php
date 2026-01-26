@@ -73,8 +73,8 @@ $settings = array(
 		'section_id' 	=> 'emsy_container',
 		'id'			=> 'c-cont-padding',
 		'title' 		=> 'Content Padding',
-		'default' 		=> '20px 30px',
-		'desc'			=> 'Top-Bottom Left-Right ( Default 20px 30px )'
+		'default' 		=> '20px 30px 40px 20px',
+		'desc'			=> 'Top-Right-Bottom-Left ( Default 20px 30px 40px 20px )'
 	),
 
 
@@ -130,8 +130,8 @@ $settings = array(
 		'section_id' 	=> 'emsy_footer',
 		'id'			=> 'ftc-padding',
 		'title' 		=> 'Padding',
-		'default' 		=> '20px 30px',
-		'desc'			=> 'Top-Bottom Left-Right ( Default 20px 30px )'
+		'default' 		=> '20px 30px 20px 30px',
+		'desc'			=> 'Top-Right-Bottom-Left ( Default 20px 30px 20px 30px )'
 	),
 
 
@@ -140,7 +140,7 @@ $settings = array(
 		'section_id' 	=> 'emsy_footer',
 		'id'			=> 'ftc-bgcolor',
 		'title' 		=> 'Background Color',
-		'default' 		=> '#dcdcdc'
+		'default' 		=> '#f7f7f7'
 	),
 
 

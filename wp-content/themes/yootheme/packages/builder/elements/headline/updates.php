@@ -3,9 +3,31 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.0.16' => function ($node) {
+        if ($node->props['height_expand'] ?? '') {
+            $node->props['push'] = true;
+        }
+        unset($node->props['height_expand']);
+    },
+
+    '5.0.0-beta.0.2' => function ($node) {
+        if (
+            (($node->props['icon'] ?? '') || !empty($node->source->props->icon)) &&
+            !($node->props['image'] ?? '') && empty($node->source->props->image)
+        ) {
+            if ($node->props['icon_width'] ?? '') {
+                $node->props['image_width'] = $node->props['icon_width'];
+            }
+            if ($node->props['icon_color'] ?? '') {
+                $node->props['image_svg_color'] = $node->props['icon_color'];
+            }
+        }
+        unset($node->props['icon_width'], $node->props['icon_color']);
+    },
+
     '2.8.0-beta.0.13' => function ($node) {
-        if (in_array(Arr::get($node->props, 'title_style'), ['meta', 'lead'])) {
-            $node->props['title_style'] = 'text-' . Arr::get($node->props, 'title_style');
+        if (in_array($node->props['title_style'] ?? '', ['meta', 'lead'])) {
+            $node->props['title_style'] = "text-{$node->props['title_style']}";
         }
     },
 
@@ -19,11 +41,11 @@ return [
 
         [$style] = explode(':', $config('~theme.style'));
 
-        if (Arr::get($node->props, 'title_style') === 'heading-hero') {
+        if (($node->props['title_style'] ?? '') === 'heading-hero') {
             $node->props['title_style'] = 'heading-xlarge';
         }
 
-        if (Arr::get($node->props, 'title_style') === 'heading-primary') {
+        if (($node->props['title_style'] ?? '') === 'heading-primary') {
             $node->props['title_style'] = 'heading-medium';
         }
 
@@ -43,76 +65,67 @@ return [
             ])
         ) {
             if (
-                Arr::get($node->props, 'title_style') === 'h1' ||
+                ($node->props['title_style'] ?? '') === 'h1' ||
                 (empty($node->props['title_style']) &&
-                    Arr::get($node->props, 'title_element') === 'h1')
+                    ($node->props['title_element'] ?? '') === 'h1')
             ) {
                 $node->props['title_style'] = 'heading-small';
             }
         }
 
         if (in_array($style, ['florence', 'max', 'nioh-studio', 'sonic', 'summit', 'trek'])) {
-            if (Arr::get($node->props, 'title_style') === 'h2') {
+            if (($node->props['title_style'] ?? '') === 'h2') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
+                    ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h2'
+                ($node->props['title_element'] ?? '') === 'h2'
             ) {
                 $node->props['title_style'] = 'h1';
             }
         }
 
         if ($style == 'copper-hill') {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
-            } elseif (Arr::get($node->props, 'title_style') === 'h1') {
+                    ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
+            } elseif (($node->props['title_style'] ?? '') === 'h1') {
                 $node->props['title_style'] =
-                    Arr::get($node->props, 'title_element') === 'h2' ? '' : 'h2';
+                    ($node->props['title_element'] ?? '') === 'h2' ? '' : 'h2';
             } elseif (
                 empty($node->props['title_style']) &&
-                Arr::get($node->props, 'title_element') === 'h1'
+                ($node->props['title_element'] ?? '') === 'h1'
             ) {
                 $node->props['title_style'] = 'h2';
             }
         }
 
         if (in_array($style, ['fuse', 'horizon', 'joline', 'juno', 'lilian', 'vibe', 'yard'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] = 'heading-small';
             }
         }
 
         if (in_array($style, ['trek', 'fjord'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+            if (($node->props['title_style'] ?? '') === 'heading-medium') {
                 $node->props['title_style'] = 'heading-large';
             }
         }
 
         if (in_array($style, ['juno', 'vibe', 'yard'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-xlarge') {
+            if (($node->props['title_style'] ?? '') === 'heading-xlarge') {
                 $node->props['title_style'] = 'heading-medium';
             }
         }
 
-        if (
-            in_array($style, [
-                'district',
-                'florence',
-                'flow',
-                'nioh-studio',
-                'summit',
-                'vision',
-            ])
-        ) {
-            if (Arr::get($node->props, 'title_style') === 'heading-xlarge') {
+        if (in_array($style, ['district', 'florence', 'flow', 'nioh-studio', 'summit', 'vision'])) {
+            if (($node->props['title_style'] ?? '') === 'heading-xlarge') {
                 $node->props['title_style'] = 'heading-large';
             }
         }
 
         if ($style == 'lilian') {
-            if (Arr::get($node->props, 'title_style') === 'heading-xlarge') {
+            if (($node->props['title_style'] ?? '') === 'heading-xlarge') {
                 $node->props['title_style'] = 'heading-2xlarge';
             }
         }

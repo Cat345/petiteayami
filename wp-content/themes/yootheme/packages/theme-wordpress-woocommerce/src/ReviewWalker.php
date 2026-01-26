@@ -8,14 +8,16 @@ class ReviewWalker extends \Walker_Comment
 {
     /**
      * @inheritdoc
+     *
+     * @param array<string, mixed> $args
      */
-    public function start_el(&$output, $comment, $depth = 0, $args = [], $id = 0)
+    public function start_el(&$output, $comment, $depth = 0, $args = [], $id = 0): void
     {
         parent::start_el($output, $comment, $depth, $args, $id);
 
         // Workaround for the woocommerce singe-product/review-meta.php template
-        $output = preg_replace_callback(
-            '/\((' . preg_quote(esc_attr__('verified owner', 'woocommerce')) . ')\)/',
+        $output = (string) preg_replace_callback(
+            '/\((' . preg_quote(esc_attr__('verified owner', 'woocommerce'), '/') . ')\)/',
             fn($matches) => Str::titleCase($matches[1]),
             $output,
         );

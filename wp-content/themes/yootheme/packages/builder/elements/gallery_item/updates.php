@@ -3,8 +3,12 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.8.1' => function ($node) {
+        unset($node->props['video_title']);
+    },
+
     '4.5.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'image') && Arr::get($node->props, 'video')) {
+        if (($node->props['image'] ?? '') && ($node->props['video'] ?? '')) {
             unset($node->props['video']);
         }
     },
@@ -16,8 +20,6 @@ return [
     },
 
     '1.18.0' => function ($node) {
-        if (!isset($node->props['hover_image'])) {
-            $node->props['hover_image'] = Arr::get($node->props, 'image2');
-        }
+        $node->props['hover_image'] ??= $node->props['image2'] ?? '';
     },
 ];

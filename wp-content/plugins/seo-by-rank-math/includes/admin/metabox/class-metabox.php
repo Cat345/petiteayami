@@ -62,6 +62,10 @@ class Metabox implements Runner {
 
 			// Add taxonomy metabox hooks.
 			$this->action( 'init', 'add_taxonomy_metabox_hooks', 9999 );
+
+			// Add user metabox hooks.
+			$this->action( 'edit_user_profile', 'add_user_profile_metabox' );
+			$this->action( 'show_user_profile', 'add_user_profile_metabox' );
 		}
 
 		$this->action( 'save_post', 'save_meta', 10, 2 );
@@ -362,11 +366,31 @@ class Metabox implements Runner {
 			return;
 		}
 
+		$this->screen->get_object_types();
+
 		// Add metabox for taxonomies.
 		foreach ( $taxonomies as $taxonomy ) {
 			// For editing existing terms - renders after the table.
 			add_action( "{$taxonomy}_edit_form", [ $this, 'render_taxonomy_metabox' ], 10, 2 );
 		}
+	}
+
+	/**
+	 * Add SEO metabox on the User profile page.
+	 */
+	public function add_user_profile_metabox() {
+		if ( $this->can_add_metabox() ) {
+			return;
+		}
+
+		?>
+		<div class="form-table rank-math-metabox-wrap rank-math-metabox-frame postbox">
+			<div id="setting-panel-container-<?php echo esc_attr( $this->metabox_id ); ?>" class="rank-math-sidebar-panel rank-math-tabs">
+				<h2 class="rank-math-metabox-frame-title"><?php esc_html_e( 'Rank Math SEO', 'rank-math' ); ?></h2>
+				<div id="rank-math-metabox-wrapper"></div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**

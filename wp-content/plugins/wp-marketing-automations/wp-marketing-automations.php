@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Automations
  * Plugin URI: https://funnelkit.com/wordpress-marketing-automation-autonami/
  * Description: Recover lost revenue with Abandoned Cart Recovery for WooCommerce. Increase retention with Post Purchase Follow-Up Emails. Send beautiful Newsletters.
- * Version: 3.6.4.3
+ * Version: 3.7.0
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -143,6 +143,11 @@ final class BWFAN_Core {
 	 */
 	public $subscribe_link_handler;
 
+	/**
+	 * @var BWFAN_Importer
+	 */
+	public $importer;
+
 	public $wfco_admin;
 
 	public $db;
@@ -179,16 +184,17 @@ final class BWFAN_Core {
 	 * Defining constants
 	 */
 	public function define_plugin_properties() {
-		define( 'BWFAN_VERSION', '3.6.4.3' );
-		define( 'BWFAN_MIN_PRO_VERSION', '3.6.4' );
+		define( 'BWFAN_VERSION', '3.7.0' );
+		define( 'BWFAN_MIN_PRO_VERSION', '3.7.0' );
 		define( 'BWFAN_MIN_WC_VERSION', '5.0' );
 		define( 'BWFAN_SLUG', 'bwfan' );
 		define( 'BWFAN_FULL_NAME', 'FunnelKit Automations' );
-		define( 'BWFAN_BWF_VERSION', '1.10.12.71' );
+		define( 'BWFAN_BWF_VERSION', '1.10.12.76' );
 		define( 'BWFAN_PLUGIN_FILE', __FILE__ );
 		define( 'BWFAN_PLUGIN_DIR', __DIR__ );
 		define( 'BWFAN_TEMPLATE_DIR', plugin_dir_path( BWFAN_PLUGIN_FILE ) . 'templates' );
 		define( 'BWFAN_SINGLE_EXPORT_DIR', wp_upload_dir()['basedir'] . '/funnelkit/fka-single-export' );
+		define( 'BWFAN_IMPORT_DIR', wp_upload_dir()['basedir'] . '/funnelkit/fka-import' );
 
 		$plugin_url = untrailingslashit( plugin_dir_url( BWFAN_PLUGIN_FILE ) );
 		if ( is_ssl() ) {
@@ -216,8 +222,6 @@ final class BWFAN_Core {
 		require BWFAN_PLUGIN_DIR . '/includes/bwfan-functions.php';
 		require BWFAN_PLUGIN_DIR . '/includes/bwfan-options.php';
 		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-plugin-dependency.php';
-
-		add_action( 'admin_notices', array( $this, 'maybe_show_old_pro_notice' ), 1 );
 	}
 
 	public function load_woofunnels_core_classes() {
@@ -326,6 +330,7 @@ final class BWFAN_Core {
 		 * Loads all the admin
 		 */
 		if ( is_admin() ) {
+			add_action( 'admin_notices', array( $this, 'maybe_show_old_pro_notice' ), 20 );
 			$this->load_admin();
 		}
 
@@ -348,6 +353,7 @@ final class BWFAN_Core {
 		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-merge-tag-loader.php';
 		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-load-sources.php';
 		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-load-connectors.php';
+		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-importer.php';
 
 		require BWFAN_PLUGIN_DIR . '/compatibilities/class-bwfan-compatibilities.php';
 		require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-automations.php';
@@ -380,7 +386,6 @@ final class BWFAN_Core {
 			/** Added export handler */
 			require BWFAN_PLUGIN_DIR . '/includes/class-bwfan-exporter-handler.php';
 		}
-
 		/** Load contact-related classes */
 		if ( BWFAN_Common::is_pro_3_0() ) {
 			require BWFAN_PLUGIN_DIR . '/includes/class-bwfcrm-contacts.php';
@@ -485,7 +490,10 @@ final class BWFAN_Core {
 	}
 
 	public function localization() {
-		load_plugin_textdomain( 'wp-marketing-automations', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+		// Load text domain only if not already loaded (WordPress 6.7.0+ requirement: must load on init or later)
+		if ( ! is_textdomain_loaded( 'wp-marketing-automations' ) ) {
+			load_plugin_textdomain( 'wp-marketing-automations', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+		}
 	}
 
 	/**

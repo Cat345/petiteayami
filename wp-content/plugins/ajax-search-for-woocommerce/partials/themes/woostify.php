@@ -24,21 +24,26 @@ if ( ! function_exists( 'woostify_search' ) ) {
 	}
 }
 
-add_action( 'init', function () {
-	// When we remove the popups, there is no "click" event on the magnifier icon.
-	remove_action( 'woostify_after_footer', 'woostify_dialog_search', 30 );
-	remove_action( 'elementor/page_templates/canvas/after_content', 'woostify_dialog_search', 50 );
-} );
-
-add_action( 'wp_footer', function () {
-	if ( ! function_exists( 'woostify_options' ) ) {
-		return;
+add_action(
+	'init',
+	function () {
+		// When we remove the popups, there is no "click" event on the magnifier icon.
+		remove_action( 'woostify_after_footer', 'woostify_dialog_search', 30 );
+		remove_action( 'elementor/page_templates/canvas/after_content', 'woostify_dialog_search', 50 );
 	}
-	$options = woostify_options( false );
+);
 
-	// Desktop search.
-	echo '<div id="dgwt-wcas-desktop-search" style="display: none;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		if ( ! function_exists( 'woostify_options' ) ) {
+			return;
+		}
+		$options = woostify_options( false );
+
+		// Desktop search.
+		echo '<div id="dgwt-wcas-desktop-search" style="display: none;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
+		?>
 	<script>
 		var desktopSearch = document.querySelector('.header-search-icon .icon-search');
 		if (desktopSearch !== null) {
@@ -56,11 +61,11 @@ add_action( 'wp_footer', function () {
 			max-width: 24px;
 		}
 	</style>
-	<?php
-	// Mobile sticky footer search.
-	if ( isset( $options['sticky_footer_bar_enable'] ) && $options['sticky_footer_bar_enable'] ) {
-		echo '<div id="dgwt-wcas-mobile-sticky-footer-search" style="display: none;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
-		?>
+		<?php
+		// Mobile sticky footer search.
+		if ( isset( $options['sticky_footer_bar_enable'] ) && $options['sticky_footer_bar_enable'] ) {
+			echo '<div id="dgwt-wcas-mobile-sticky-footer-search" style="display: none;">' . do_shortcode( '[fibosearch layout="icon"]' ) . '</div>';
+			?>
 		<script>
 			var mobileStickyFooterSearch = document.querySelector('.woostify-item-list .header-search-icon');
 			if (mobileStickyFooterSearch !== null) {
@@ -68,6 +73,7 @@ add_action( 'wp_footer', function () {
 			}
 			document.querySelector('#dgwt-wcas-mobile-sticky-footer-search').remove();
 		</script>
-		<?php
+			<?php
+		}
 	}
-} );
+);

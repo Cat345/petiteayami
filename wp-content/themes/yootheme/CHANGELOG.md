@@ -1,5 +1,226 @@
 # Changelog
 
+## 5.0.7 (January 23, 2026)
+
+### Added
+
+- Add YOOtheme button to create a page builder layout to article edit view (Joomla)
+- Add YOOtheme button to create a page builder layout to page/post edit view (WordPress)
+- Add aria label option for video loading on click to Video element
+
+### Changed
+
+- Update YOOtheme button in article edit view to open the corresponding article in the page builder (Joomla)
+- Update YOOtheme button in page/post edit view to open the corresponding page/post in the page builder (WordPress)
+
+### Fixed
+
+- Fix resolving Article Field from Regular Labs when used in subform field (Joomla)
+- Fix video consent overlay being briefly visible on page load even though consent has already been given
+
+## 5.0.6 (January 21, 2026)
+
+### Added
+
+- Add Clear Cache button again
+- Add regular price and sale price arguments for the WooCommerce products source (WordPress)
+
+### Fixed
+
+- Fix missing length filter in ACF text area fields (WordPress)
+- Fix smooth scrolling for links in static Navbar
+- Fix caching causing PHP warning with empty scripts (Joomla)
+
+## 5.0.5 (January 19, 2026)
+
+### Added
+
+- Add check for cache friendly image URLs to system check panel
+
+### Fixed
+
+- Fix wrongly configured ACF Field causes dynamic content not to be available (WordPress)
+- Fix image sizes in lightbox for retina displays in Grid and Gallery elements
+- Fix PHP warning in consent layout
+
+## 5.0.4 (January 19, 2026)
+
+### Fixed
+
+- Fix regression in frontend editing in customizer (Joomla)
+
+## 5.0.3 (January 16, 2026)
+
+### Changed
+
+- Make consistent image URLs an option in advanced settings
+- Rename Google Tag Manager script type to Google Analytics
+- Use admin_ajax.php for customizer routes (WordPress)
+
+### Fixed
+
+- Fix "YOOtheme Builder" button in post edit view is not shown (WordPress)
+- Fix WebP/AVIF formats not being served
+
+## 5.0.2 (January 14, 2026)
+
+### Fixed
+
+- Fix "Unsupported operand types: string / string" error
+- Fix downloading of images in layout fails (WordPress)
+
+## 5.0.1 (January 13, 2026)
+
+### Fixed
+
+- Fix division by zero error in image generation
+
+## 5.0.0 (January 13, 2026)
+
+### Added
+
+- Add consent manager panel with support for consent categories and single services
+- Add cookie banner and modal layouts to consent manager
+- Add script manager panel with prebuilt scripts for YouTube, OpenStreetMap, Google Maps and Google Tag Manager
+- Add consent placeholder for YouTube videos, Google Maps and OpenStreetMap to Video and Map elements
+- Add YouTube thumbnail as placeholder fallback for on click and consent mode to Video element
+- Add filter by relative, fixed or custom format date range to custom article and related article sources (Joomla)
+- Add filter by relative, fixed or custom format date range to custom post type and related post sources (WordPress)
+- Add `Reverse Results` option to custom article and related article sources (Joomla)
+- Add `Reverse Results` option to custom post type and related post sources (WordPress)
+- Add bidirectional relationship as field for Article Field from Regular Labs (Joomla)
+- Add language switcher menu item type to create language menu items (Joomla)
+- Add support for language menu items for Polylang and WPML plugins (WordPress)
+- Add language icon options to language switcher module (Joomla)
+- Add icon option for active language menu item to Layout panel for WPML plugin (WordPress)
+- Add Menu element
+- Add `active` field to category, tag and taxonomy sources
+- Add Media File custom field (Joomla)
+- Add file extension to ACF file field (WordPress)
+- Add text transform to dynamic content field options
+- Add field options to display condition
+- Add support for multiple post types to ACF post object field (WordPress)
+- Add ordering options for ACF post object field in content sources (WordPress)
+- Add option to include posts from child terms to template assignment for Taxonomy Archives (WordPress)
+- Add post order option to template assignment for all archives (WordPress)
+- Add builder button to edit the current template to Templates panel
+- Add background color and gradient options to builder columns and sections
+- Add background color parallax to builder columns and sections
+- Add field mapping for style option to builder columns and sections
+- Add general media color options to Gallery, Overlay Slider and Slideshow elements
+- Add gradient option to media overlay color picker in Overlay, Gallery, Overlay Slider and Slideshow elements
+- Add margin auto option to push elements up or down within the column across all elements
+- Add margin auto option to push content fields down to Overlay, Gallery, Overlay Slider, Slideshow, Panel, Grid and Panel Slider elements
+- Add height expand and viewport options to Popover element
+- Add height viewport value and top offset options to Image and Video elements
+- Add name, id, class and attributes options across all multiple items elements
+- Add field mapping for CSS option across all elements
+- Add download and rel nofollow and noreferrer options for links across all elements
+- Add overlay to card style options across all elements
+- Add image and icon options to Headline and Subnav elements
+- Add option to outline the headline text to Heading element
+- Add wrap option to force items into one line to Subnav, Grid, Gallery and Switcher elements
+- Add animation to toggle icon in Accordion element
+- Add reload option to Countdown element
+- Add style, font-family and color options for numbers and labels to Countdown element
+- Add option to center rows to Overlay Slider and Panel Slider elements
+- Add border option to Overlay Slider, Popover, Slideshow and Video elements
+- Add round border option to builder columns
+- Add xsmall margin option across all elements
+- Add link style option to Grid Item and Panel Slider Item elements
+- Add option to load video on click including YouTube and Vimeo to Video element
+- Add option to autoplay video on hover or if in view across all elements
+- Add support for lazy loading videos across all elements
+- Add support for lazy loading YouTube and Vimeo videos to Video element
+- Add general settings to HTML element
+- Add Search Ordering element (Joomla)
+- Add brands filter to WooCommerce Filter element (WordPress)
+- Add categories to link picker (Joomla)
+- Add option to preserve text color in navbar dropdowns to header settings
+- Add border-radius for section overlap option to Section component in style customizer
+- Add item mode, border-radius, content padding and active style options to Accordion components in style customizer
+- Add item mode, border-radius and vertical margin options to Tab component in style customizer
+- Add text stroke option to Text component in style customizer
+- Add padding right option for italic text background to Text component in style customizer
+- Add border bottom option for toolbar to Theme component in style customizer
+- Add option to remove padding from expanded navbar container to Navbar component in style customizer
+- Add box-shadow options to navbar group and item to Navbar component in style customizer
+- Add background color options to navbar nav item and toggle to Navbar component in style customizer
+- Add translate vertical options to Button component in style customizer
+- Add font-size option for medium devices to Countdown component in style customizer
+- Add background color to fit inversed backgrounds to Overlay component in style customizer
+- Add general support for overriding layouts and plugin templates in child themes (Joomla)
+- Add `mod_articles` module override (Joomla)
+
+### Changed
+
+- Move cookie banner to consent manager panel
+- Move CSS and JavaScript from custom code panel into separate panels
+- Move Google Analytics and Maps options from external services to scripts panel
+- Prefix customizer session cookie with `yootheme_`
+- Make customizer session cookie temporary and no longer shared across multiple browser tabs
+- Refactor image generation including fewer file checks
+- Move image cache to `media/yootheme/cache` (Joomla)
+- Move image cache to `wp-content/uploads/yootheme/cache` (WordPress)
+- Refactor GraphQL source types including lazy loading and no cache files
+- Refactor element configs to use PHP instead of JSON files
+- Refactor builder row
+- Refactor margin and allow to set top and bottom margin differently in all builder elements
+- Allow to set top and bottom padding differently in builder sections
+- Allow to set uk-height-viewport in attributes in builder sections and columns
+- Refactor Countdown element and remove Less variables in favor of using HTML classes
+- Refactor Nav, List and Video elements
+- Render child items of menu heading as siblings in menu nav styles
+- Optimize the delay of opening and closing navbar dropbars
+- Refactor language switcher in mod_languages (Joomla)
+- Update edit layout button to open the full customizer and require `edit` permission for `com_templates` in article edit view (Joomla)
+- Update edit layout button to open the full customizer and require `edit_theme_options` capability in page/post edit view (WordPress)
+- Refactor accordion component in style customizer
+- Refactor navbar border mode options in Style customizer
+- Update laptop width and height for device preview icon in customizer
+
+### Removed
+
+- IMPORTANT: Remove Joomla 3 and 4 support
+- Remove support for iframe videos used like animated images across all elements
+- Remove Clear Cache button
+- Remove content expand option in favor of margin auto in Overlay, Gallery, Overlay Slider, Slideshow, Panel, Grid and Panel Slider elements
+- Remove icon width and color options and use image options instead in Panel, Grid, Panel Slider, List, Nav and Social elements
+- Remove icon width option and use image width instead in menu position and module settings as well as Module element
+- Remove the button to create a page builder layout from article edit view (Joomla)
+- Remove the button to create a page builder layout from page/post edit view (WordPress)
+- Remove system fallback for favicons
+
+### Fixed
+
+- Fix dropdown stretch option for header menu position if rendered as navbar
+- Fix search dropbar if positioned within headerbar top or bottom in header layouts
+- Fix search expand width if header position is empty for stacked left and justify header layouts
+- Fix search word highlighting on search page by setting `js-highlight` HTML class manually (Joomla)
+- Fix height expand option causing incorrect slider item width in Panel Slider element
+- Fix text alignment option for Image and Video elements if height is expanded
+- Fix image sizes in lightbox for retina displays in Grid and Gallery elements
+- Fix option to open link in a new window in Nav element
+- Fix margin caused by address HTML element on sections
+- Fix to ensure correct date format in Countdown element
+- Fix alignment option for menus in Module/Widget element and module/widget settings
+- Fix missing blend option in WooCommerce Filter element (WordPress)
+- Fix tooltips not being translated in settings tab in builder elements
+- Fix preview of image links inserted as data urls
+- Fix field groups in dynamic content order options (Joomla)
+- Fix article event type source when progressive caching is enabled (Joomla)
+- Fix error if subform field has no published subfields (Joomla)
+- Fix active and hover item box-shadows for transparent navbar
+- Fix toolbar font-family not being applied in Theme component in style customizer
+- Fix update notification check (WordPress)
+
+## 4.5.33 (December 16, 2025)
+
+### Fixed
+
+- Fix getting child tags when multilanguage is enabled (Joomla)
+- Fix custom files source does not resolve folders other than images folder (Joomla)
+
 ## 4.5.32 (November 3, 2025)
 
 ### Fixed
@@ -57,7 +278,6 @@
 ### Fixed
 
 - Fix possible regression in generating field names for sources if name contains digits
-
 
 ## 4.5.23 (July 10, 2025)
 
@@ -466,7 +686,7 @@
 
 ### Added
 
-- Add title attribute to iframe videos
+- Add video title option for iframe videos across all elements
 
 ### Fixed
 
@@ -752,7 +972,7 @@
 - Fix option text color if select box has transparent background on Windows
 - Fix Choices.js select box adapting dark styles in frontend editing (Joomla)
 - Fix date picker calendar color in frontend editing (Joomla)
-- Fix reactivity for YOOtheme API Key and GoogleMaps API Key
+- Fix reactivity for YOOtheme API Key and Google Maps API Key
 - Fix template assignment for tagged items view (Joomla)
 - Fix cursor jumps to beginning while editing debounced editor fields
 - Fix width and height attributes not applied for GIF images
@@ -2467,7 +2687,7 @@
 - Add selecting an image from Media Library in builder will select the alt text too (WordPress)
 - Add help videos for the page builder, layout library, element library and sections
 - Add support for resizing webp images
-- Add multi-line border radius option to form in style customizer
+- Add multi-line border-radius option to form in style customizer
 - Add customizer shows error in dev tools if duplicate id attributes are found
 
 ### Changed
@@ -5717,7 +5937,7 @@
 
 - Wrap custom js code in try/catch block
 - Optimize variable groups in style
-- Rename search border radius variable
+- Rename search border-radius variable
 
 ### Fixed
 

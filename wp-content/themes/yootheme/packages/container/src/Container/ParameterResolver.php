@@ -7,10 +7,12 @@ use YOOtheme\Reflection;
 
 class ParameterResolver
 {
+    protected Container $container;
+
     /**
-     * @var Container
+     * @var array<string, int>
      */
-    protected $container;
+    protected static array $dependencies = [];
 
     /**
      * Constructor.
@@ -23,12 +25,12 @@ class ParameterResolver
     /**
      * Resolves parameters for given function.
      *
-     * @param \ReflectionFunctionAbstract $function
-     * @param array                       $parameters
+     * @param \ReflectionFunction|\ReflectionMethod $function
+     * @param array<mixed> $parameters
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function resolve(\ReflectionFunctionAbstract $function, array $parameters = [])
+    public function resolve(\ReflectionFunctionAbstract $function, array $parameters = []): array
     {
         if ($dependencies = $this->resolveDependencies($function, $parameters)) {
             $parameters = array_merge($dependencies, $parameters);
@@ -43,21 +45,42 @@ class ParameterResolver
             );
         }
 
+        if ($function instanceof \ReflectionMethod) {
+            static::$dependencies["{$function->class}:{$function->name}"] = count($dependencies);
+        }
+
         return $parameters;
+    }
+
+    /**
+     * Checks if given callable needs resolving.
+     */
+    public static function needsResolving(callable $callback): bool
+    {
+        if (!is_array($callback)) {
+            return true;
+        }
+
+        [$class, $method] = $callback;
+
+        if (is_object($class)) {
+            $class = get_class($class);
+        }
+
+        return (bool) (static::$dependencies["{$class}:{$method}"] ?? true);
     }
 
     /**
      * Resolves dependencies for given function.
      *
-     * @param \ReflectionFunctionAbstract $function
-     * @param array                       $parameters
+     * @param array<mixed> $parameters
      *
-     * @return array
+     * @return list<mixed>
      */
     protected function resolveDependencies(
         \ReflectionFunctionAbstract $function,
         array &$parameters = []
-    ) {
+    ): array {
         $dependencies = [];
 
         foreach ($function->getParameters() as $parameter) {
@@ -92,12 +115,8 @@ class ParameterResolver
 
     /**
      * Resolves classname from parameter type.
-     *
-     * @param \ReflectionParameter $parameter
-     *
-     * @return string|null
      */
-    protected function resolveClassname(\ReflectionParameter $parameter)
+    protected function resolveClassname(\ReflectionParameter $parameter): ?string
     {
         $type = $parameter->getType();
 

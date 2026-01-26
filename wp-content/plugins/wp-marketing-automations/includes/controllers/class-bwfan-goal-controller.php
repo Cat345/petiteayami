@@ -32,8 +32,48 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 			return false;
 		}
 
-		/** Get Active Automations for current goal */
-		$automations = $event->get_current_goal_automations();
+		/** Get Active Automations and goal ids */
+		$automations = $event->get_current_goal_automations( true );
+		$a_ids       = $automations['a_ids'] ?? [];
+		$goal_ids    = $automations['goal_ids'] ?? [];
+		if ( empty( $a_ids ) || empty( $goal_ids ) ) {
+			return false;
+		}
+
+		/** Validate goal step setting */
+		$goal_steps_data = BWFAN_Model_Automation_Step::get_step_data_by_ids( $goal_ids );
+		if ( empty( $goal_steps_data ) ) {
+			return false;
+		}
+		$controller = new self();
+		foreach ( $goal_steps_data as $goal_step ) {
+			if ( empty( $goal_step ) ) {
+				continue;
+			}
+			$aid             = $goal_step['aid'] ?? 0;
+			$automation_sids = $a_ids[ $aid ] ?? [];
+			$step_index      = array_search( intval( $goal_step['ID'] ), $automation_sids, true );
+			if ( empty( $automation_sids ) || false === $step_index ) {
+				continue;
+			}
+
+			/** Reset old data */
+			$controller->data      = null;
+			$controller->step_data = null;
+
+			if ( ! $controller->populate_step_data( $goal_step ) ) {
+				BWFAN_Common::log_l2_data( 'Failed to populate step data for goal step: ' . $goal_step['ID'], 'goal-validation' );
+				continue;
+			}
+			if ( $event->validate_goal_settings( $controller->data, $post_parameters ) ) {
+				continue;
+			}
+			/** Remove the invalid goal step from the steps */
+			unset( $automation_sids[ $step_index ] );
+			$a_ids[ $aid ] = $automation_sids;
+		}
+
+		$automations = array_keys( $a_ids );
 		if ( empty( $automations ) ) {
 			return false;
 		}
@@ -46,15 +86,19 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 
 		/** Process each automation */
 		foreach ( $automation_contact_rows as $automation_contact ) {
+			$validated_goals = $a_ids[ $automation_contact['aid'] ] ?? [];
+			if ( empty( $validated_goals ) ) {
+				continue;
+			}
 			$automation = BWFAN_Model_Automations::get_automation_with_data( $automation_contact['aid'] );
 			if ( empty( $automation ) ) {
 				continue;
 			}
 
-			$controller                = new BWFAN_Goal_Controller();
+			/** Reset controller properties */
 			$controller->automation_id = absint( $automation_contact['aid'] );
 			$controller->contact_id    = absint( $contact_id );
-			$controller->process_goal( $automation, $event, $automation_contact, self::$captured_data );
+			$controller->process_goal( $automation, $event, $automation_contact, $validated_goals );
 		}
 
 		self::$captured_data = array();
@@ -88,18 +132,18 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 	 * @param array $automation Automation data
 	 * @param BWFAN_Event $event
 	 * @param array $automation_contact Automation contact row
-	 * @param array $post_parameters
+	 * @param array $goal_step_ids
 	 *
 	 * @return void
 	 */
-	public function process_goal( $automation, $event, $automation_contact, $post_parameters ) {
+	public function process_goal( $automation, $event, $automation_contact, $goal_step_ids ) {
 		/** Set default values */
 		$this->traverse_setting = 'continue';
 		$this->data             = null;
 		$this->goal_steps       = [];
 		$this->update_status    = false;
 
-		/** Fetching steps trail */
+		/** Fetching step trail */
 		$trail_id = $automation_contact['trail'];
 		if ( empty( $trail_id ) ) {
 			$trail_id                    = md5( $automation_contact['ID'] . $automation_contact['cid'] . $automation_contact['c_date'] );
@@ -117,14 +161,6 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 		}
 
 		BWFAN_Common::log_l2_data( 'Trail id: ' . $trail_id, 'goal-check' );
-
-		/** Again Checking if the goal and it's step_id exists */
-		$goal_step_ids = $this->get_goal_step_ids( $this->automation_id, $event->get_slug() );
-		if ( empty( $goal_step_ids ) ) {
-			BWFAN_Common::log_l2_data( 'no goal step ids found', 'goal-check' );
-
-			return;
-		}
 
 		$this->step_id = ( 0 === absint( $automation_contact['last'] ) ) ? $automation['start'] : $automation_contact['last'];
 		BWFAN_Common::log_l2_data( 'Last run: ' . $this->step_id, 'goal-check' );
@@ -151,18 +187,6 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 				continue;
 			}
 
-			$step_data = BWFAN_Model_Automation_Step::get_step_data_by_id( $step_id );
-
-			/** Get Benchmark Step Data */
-			$this->step_id = $step_id;
-			$this->populate_step_data( $step_data );
-
-			if ( ! $event->validate_goal_settings( $this->data, $post_parameters ) ) {
-				/** Unable to pass the goal settings */
-				BWFAN_Common::log_l2_data( 'Goal settings failed for step id ' . $step_id, 'goal-check' );
-				continue;
-			}
-
 			BWFAN_Common::log_l2_data( 'Goal achieved: step id ' . $step_id, 'goal-check' );
 
 			/** Update existing steps trail status if needed or insert */
@@ -183,24 +207,30 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 	}
 
 	/**
-	 * Get goals step ids in an automation
+	 * Get goal step ids in an automation or check it exists
 	 *
-	 * @param $automation_id
-	 * @param $event_slug
+	 * @param array $step_ids Optional array of step IDs to validate
+	 * @param string $automation_id Optional automation ID
+	 * @param string $event_slug Optional event slug
 	 *
-	 * @return array|int
+	 * @return array
 	 */
-	public function get_goal_step_ids( $automation_id, $event_slug ) {
-		if ( empty( $automation_id ) || empty( $event_slug ) ) {
-			return 0;
-		}
+	public function get_goal_step_ids( $step_ids = array(), $automation_id = '', $event_slug = '' ) {
 		global $wpdb;
-		$query = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `aid` = %d AND `type` = 3 AND `status` IN (0, 1) AND `action` LIKE %s", $automation_id, "%{$event_slug}%" );
+		if ( ! empty( $step_ids ) ) {
+			$placeholder = array_fill( 0, count( $step_ids ), '%d' );
+			$placeholder = implode( ', ', $placeholder );
 
-		$step_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		if ( empty( $step_ids ) ) {
+			$query    = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `type` = 3 AND `status` IN (0, 1) AND `ID` IN ($placeholder)", $step_ids );
+			$step_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+			return ! empty( $step_ids ) ? $step_ids : [];
+		}
+		if ( empty( $automation_id ) || empty( $event_slug ) ) {
 			return [];
 		}
+		$query    = $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_step` WHERE `aid` = %d AND `type` = 3 AND `status` IN (0, 1) AND `action` LIKE %s", $automation_id, "%{$event_slug}%" );
+		$step_ids = $wpdb->get_col( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return ! empty( $step_ids ) ? $step_ids : [];
 	}

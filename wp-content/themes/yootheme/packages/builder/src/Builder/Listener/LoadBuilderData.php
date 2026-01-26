@@ -20,10 +20,7 @@ class LoadBuilderData
     {
         $this->metadata->set(
             'script:builder-data',
-            sprintf(
-                'window.yootheme ||= {}; var $builder = yootheme.builder = %s;',
-                json_encode($this->config),
-            ),
+            sprintf('window.yootheme ||= {}; yootheme.builder = %s;', json_encode($this->config)),
         );
     }
 }

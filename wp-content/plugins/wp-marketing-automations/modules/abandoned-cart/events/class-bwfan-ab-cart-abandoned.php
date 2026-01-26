@@ -17,6 +17,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 	/** v2 */
 	public $contact_data_v2 = array();
 
+	/**
+	 * Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct( $source_slug ) {
 		$this->source_type            = $source_slug;
 		$this->optgroup_label         = __( 'Cart', 'wp-marketing-automations' );
@@ -44,6 +49,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		$this->automation_add         = true;
 	}
 
+	/**
+	 * Load Hooks
+	 *
+	 * @since 1.0.0
+	 */
 	public function load_hooks() {
 	}
 
@@ -70,8 +80,16 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		if ( ! is_array( $active_abandoned_carts ) || count( $active_abandoned_carts ) === 0 ) {
 			return;
 		}
+
+		/** Remove duplicate abandoned carts */
 		$active_abandoned_carts = BWFAN_Abandoned_Cart::remove_duplicate_cart( $active_abandoned_carts );
-		$ids                    = array_column( $active_abandoned_carts, 'ID', 'ID' );
+
+		/** If no active abandoned carts found after removing duplicates, return */
+		if ( empty( $active_abandoned_carts ) ) {
+			return;
+		}
+
+		$ids = array_column( $active_abandoned_carts, 'ID' );
 
 		/** Status 1: In-Progress (Automations Found), 3: Pending (No Tasks Found) */
 		BWFAN_Core()->public->load_active_automations( $this->get_slug() );
@@ -94,6 +112,7 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		}
 
 		foreach ( $active_abandoned_carts as $active_abandoned_cart ) {
+
 			BWFAN_Common::maybe_create_abandoned_contact( $active_abandoned_cart );// create contact at the time of abandonment
 
 			if ( empty( $days_to_check ) ) {
@@ -309,6 +328,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		$this->create_tasks( $automation_id, $integration_data, $event_data, $data_to_send );
 	}
 
+	/**
+	 * Get Event Data
+	 *
+	 * @since 1.0.0
+	 */
 	public function get_event_data() {
 		$data_to_send                                = [];
 		$data_to_send['global']['email']             = $this->abandoned_email;
@@ -340,6 +364,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		return $this->user_id;
 	}
 
+	/**
+	 * Update Task Meta
+	 *
+	 * @since 1.0.0
+	 */
 	public function update_task_meta( $index, $task_id ) {
 		BWFAN_Core()->tasks->insert_taskmeta( $task_id, 'c_a_id', $this->abandoned_id );
 	}
@@ -371,6 +400,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Validate Event
+	 *
+	 * @since 1.0.0
+	 */
 	public function validate_event( $task_details ) {
 		$cart_id   = $task_details['processed_data']['cart_abandoned_id'];
 		$cart_data = BWFAN_Model_Abandonedcarts::get( $cart_id );
@@ -522,6 +556,11 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		return true;
 	}
 
+	/**
+	 * Validate V2 Event Settings
+	 *
+	 * @since 1.0.0
+	 */
 	public function validate_v2_event_settings( $automation_data ) {
 		if ( ! isset( $automation_data['abandoned_id'] ) ) {
 			return false;
@@ -600,8 +639,10 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 		if ( ! $contact->is_contact_exists() ) {
 			return [ 'status' => 0, 'type' => 'contact_not_found' ];
 		}
-		$email = $contact->contact->get_email();
-		$cart  = BWFAN_Model_Abandonedcarts::get_abandoned_data( " WHERE `email`='$email' ", '', '', 'ID', ARRAY_A );
+		$email = sanitize_email( $contact->contact->get_email() );
+		global $wpdb;
+		$where_clause = $wpdb->prepare( " WHERE `email`=%s", $email );
+		$cart         = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where_clause, '', '', 'ID', ARRAY_A );
 		if ( empty( $cart ) ) {
 			return [ 'status' => 0, 'type' => '', 'message' => "Contact doesn't have any tracked cart." ];
 		}
@@ -636,6 +677,26 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 
 		return ( $wpdb->query( $query ) > 0 ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
+
+	public function get_fields_schema() {
+		return [
+			[
+				'id'       => 'ab_notice',
+				'type'     => 'notice',
+				'class'    => '',
+				'status'   => 'info',
+				'message'  => sprintf(
+					__( 'This automation will automatically end when the contact places an order. %s', 'wp-marketing-automations' ),
+					'<a href="' . esc_url( 'https://funnelkit.com/docs/autonami-2/carts/set-up-abandoned-cart-automation/?utm_source=WordPress&utm_medium=FKA+Event+Notice&utm_campaign=FKA+Abandoned+Notice#how-the-cart-abandonment-feature-works' ) . '" target="_blank">' . __( 'Learn more', 'wp-marketing-automations' ) . '</a>'
+				),
+				'dismiss'  => false,
+				'required' => false,
+				'toggler'  => array(),
+				'isHtml'   => true
+			]
+		];
+	}
+
 }
 
 /**

@@ -8,6 +8,7 @@ use ACFWF\Interfaces\Model_Interface;
 use ACFWF\Interfaces\Initializable_Interface;
 use ACFWF\Models\Objects\Advanced_Coupon;
 use ACFWF\Models\Objects\Emails\Coupon as Coupon_Email;
+use ACFWF\Models\Objects\Emails\Store_Credit_Adjustment as Store_Credit_Adjustment_Email;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -105,7 +106,8 @@ class Emails implements Model_Interface, Initializable_Interface {
      * @return array Filtered list of email objects.
      */
     public function register_advanced_gift_card_email( $emails ) {
-        $emails['acfw_coupon_email'] = new Coupon_Email();
+        $emails['acfw_coupon_email']                  = new Coupon_Email();
+        $emails['acfw_store_credit_adjustment_email'] = new Store_Credit_Adjustment_Email();
 
         return $emails;
     }
@@ -122,7 +124,12 @@ class Emails implements Model_Interface, Initializable_Interface {
      * @param string $email_id      Email ID.
      */
     public function override_template_file_path_check( $core_file, $template, $template_base, $email_id ) {
-        if ( 'acfw_coupon_email' === $email_id ) {
+        $acfw_email_ids = array(
+            'acfw_coupon_email',
+            'acfw_store_credit_adjustment_email',
+        );
+
+        if ( in_array( $email_id, $acfw_email_ids, true ) ) {
             return $this->_constants->TEMPLATES_ROOT_PATH . $template;
         }
 

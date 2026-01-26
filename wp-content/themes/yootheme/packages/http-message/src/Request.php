@@ -5,6 +5,7 @@ namespace YOOtheme\Http;
 use Psr\Http\Message\UploadedFileInterface;
 use YOOtheme\Http\Message\ServerRequest;
 
+/** @phpstan-ignore class.extendsFinalByPhpDoc */
 class Request extends ServerRequest
 {
     use MessageTrait;
@@ -12,12 +13,11 @@ class Request extends ServerRequest
     /**
      * Gets a parameter (shortcut).
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function __invoke($key, $default = null)
+    public function __invoke(string $key, $default = null)
     {
         return $this->getParam($key, $default);
     }
@@ -25,12 +25,11 @@ class Request extends ServerRequest
     /**
      * Retrieve a parameter value from body or query string (in that order).
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getParam($key, $default = null)
+    public function getParam(string $key, $default = null)
     {
         $body = $this->getParsedBody();
 
@@ -48,12 +47,11 @@ class Request extends ServerRequest
     /**
      * Retrieve a value from query string parameters.
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getQueryParam($key, $default = null)
+    public function getQueryParam(string $key, $default = null)
     {
         $query = $this->getQueryParams();
 
@@ -63,12 +61,11 @@ class Request extends ServerRequest
     /**
      * Retrieve a value from cookies.
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getCookieParam($key, $default = null)
+    public function getCookieParam(string $key, $default = null)
     {
         $cookies = $this->getCookieParams();
 
@@ -78,12 +75,11 @@ class Request extends ServerRequest
     /**
      * Retrieve a value from server parameters.
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getServerParam($key, $default = null)
+    public function getServerParam(string $key, $default = null)
     {
         $server = $this->getServerParams();
 
@@ -93,11 +89,9 @@ class Request extends ServerRequest
     /**
      * Retrieve a single file upload.
      *
-     * @param string $key
-     *
-     * @return UploadedFileInterface|null
+     * @return ?UploadedFileInterface
      */
-    public function getUploadedFile($key)
+    public function getUploadedFile(string $key)
     {
         $files = $this->getUploadedFiles();
 
@@ -106,12 +100,8 @@ class Request extends ServerRequest
 
     /**
      * Does this request use a given method?
-     *
-     * @param string $method
-     *
-     * @return bool
      */
-    public function isMethod($method)
+    public function isMethod(string $method): bool
     {
         return $this->getMethod() === strtoupper($method);
     }
@@ -119,12 +109,10 @@ class Request extends ServerRequest
     /**
      * Throws an exception.
      *
-     * @param int    $code
-     * @param string $message
-     *
      * @throws Exception
+     * @return never
      */
-    public function abort($code, $message = '')
+    public function abort(int $code, string $message = ''): void
     {
         throw new Exception($code, $message);
     }
@@ -132,15 +120,10 @@ class Request extends ServerRequest
     /**
      * Throws an exception if given condition is true.
      *
-     * @param bool   $bool
-     * @param int    $code
-     * @param string $message
-     *
-     * @throws Exception
-     *
      * @return $this
+     * @throws Exception
      */
-    public function abortIf($bool, $code, $message = '')
+    public function abortIf(bool $bool, int $code, string $message = ''): self
     {
         if ($bool) {
             throw new Exception($code, $message);

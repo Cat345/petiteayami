@@ -85,21 +85,17 @@ return [
     ],
 
     'services' => [
-        Request::class => function (Config $config) {
-            return (new HttpFactory())->createServerRequestFromGlobals(
-                $config('req.href'),
-                $_GET,
-                $_POST,
-                $_FILES,
-                $_COOKIE,
-                $_SERVER,
-            );
-        },
+        Request::class => fn(Config $config) => (new HttpFactory())->createServerRequestFromGlobals(
+            $config('req.href'),
+            $_GET,
+            $_POST,
+            $_FILES,
+            $_COOKIE,
+            $_SERVER,
+        ),
 
-        Response::class => function () {
-            return (new Response())
-                ->withHeader('Content-Type', 'text/html; charset=utf-8')
-                ->withHeader('Cache-Control', 'no-cache, must-revalidate, max-age=0');
-        },
+        Response::class => fn() => (new Response())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8')
+            ->withHeader('Cache-Control', 'no-cache, must-revalidate, max-age=0'),
     ],
 ];

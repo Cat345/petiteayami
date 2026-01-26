@@ -550,44 +550,104 @@ class Calculation {
         $context    = $trigger_only ? 'trigger_only' : 'trigger';
         $cart_items = $this->get_sorted_cart_items_by_price( $context ); // sort prices from highest to lowest.
 
-        foreach ( $this->_bogo_deal->triggers as $trigger ) {
+        // For same-products without repeat, track how many triggers have been verified.
+        // Without repeat, we should only verify ONE trigger (for one product).
+        $same_products_verified_count = 0;
 
-            $entry_id = $trigger['entry_id'];
+        // For same-products, swap loop order to leverage sorted cart items.
+        // Cart items are already sorted by price (most expensive first for triggers).
+        if ( 'same-products' === $this->_bogo_deal->deal_type ) {
 
             foreach ( $cart_items as $key => $cart_item ) {
 
-                if (
-                    $this->is_item_valid( $cart_item ) // make sure item is not already discounted by other ACFW features.
-                    && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $trigger ) // check if item matches the trigger ids.
-                ) {
-                    $needed_qty = $this->_bogo_deal->get_needed_trigger_quantity( $entry_id );
-                    $quantity   = min( $needed_qty, $this->calculate_cart_item_spare_quantity( $cart_item ) );
+                // Stop after verifying ONE trigger (without repeat).
+                if ( ! $this->_bogo_deal->is_repeat && $same_products_verified_count >= 1 ) {
+                    break;
+                }
 
-                    if ( $quantity ) {
-                        $this->_bogo_deal->set_needed_triggers_quantity( $entry_id, max( 0, $needed_qty - $quantity ) );
+                foreach ( $this->_bogo_deal->triggers as $trigger ) {
+                    $entry_id = $trigger['entry_id'];
 
-                        if ( $save_temp ) {
-                            $this->update_entry(
-                                array(
-                                    'key'      => $cart_item['key'],
-                                    'coupon'   => $this->_bogo_deal->get_coupon()->get_code(),
-                                    'entry_id' => $entry_id,
-                                    'type'     => 'trigger',
-                                    'quantity' => $quantity,
-                                    'name'     => $cart_item['data']->get_name(),
-                                ),
-                                'temp'
-                            );
+                    if (
+                        $this->is_item_valid( $cart_item )
+                        && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $trigger )
+                    ) {
+                        $needed_qty = $this->_bogo_deal->get_needed_trigger_quantity( $entry_id );
+                        $spare_qty  = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $quantity   = min( $needed_qty, $spare_qty );
+
+                        if ( $quantity ) {
+                            $this->_bogo_deal->set_needed_triggers_quantity( $entry_id, max( 0, $needed_qty - $quantity ) );
+
+                            if ( $save_temp ) {
+                                $this->update_entry(
+                                    array(
+                                        'key'      => $cart_item['key'],
+                                        'coupon'   => $this->_bogo_deal->get_coupon()->get_code(),
+                                        'entry_id' => $entry_id,
+                                        'type'     => 'trigger',
+                                        'quantity' => $quantity,
+                                        'name'     => $cart_item['data']->get_name(),
+                                    ),
+                                    'temp'
+                                );
+                            }
+
+                            // Trigger verified for this product.
+                            if ( 0 >= $this->_bogo_deal->get_needed_trigger_quantity( $entry_id ) ) {
+                                ++$same_products_verified_count; // Increment counter.
+                                break; // Exit inner triggers loop, move to next cart item.
+                            }
                         }
                     }
-                }
-            } // endforeach cart items
+                } // endforeach triggers
+            } // endforeach cart items (same-products)
+        } else {
+            // Original logic for other BOGO types.
+            foreach ( $this->_bogo_deal->triggers as $trigger ) {
 
-            // if a single row trigger wasn't fully met for this instance then skip other rows.
-            if ( 0 < $this->_bogo_deal->get_needed_trigger_quantity( $entry_id ) ) {
-                break;
-            }
-        } // endforeach triggers
+                $entry_id = $trigger['entry_id'];
+
+                foreach ( $cart_items as $key => $cart_item ) {
+
+                    if (
+                        $this->is_item_valid( $cart_item )
+                        && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $trigger )
+                    ) {
+                        $needed_qty = $this->_bogo_deal->get_needed_trigger_quantity( $entry_id );
+                        $spare_qty  = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $quantity   = min( $needed_qty, $spare_qty );
+
+                        if ( $quantity ) {
+                            $this->_bogo_deal->set_needed_triggers_quantity( $entry_id, max( 0, $needed_qty - $quantity ) );
+
+                            if ( $save_temp ) {
+                                $this->update_entry(
+                                    array(
+                                        'key'      => $cart_item['key'],
+                                        'coupon'   => $this->_bogo_deal->get_coupon()->get_code(),
+                                        'entry_id' => $entry_id,
+                                        'type'     => 'trigger',
+                                        'quantity' => $quantity,
+                                        'name'     => $cart_item['data']->get_name(),
+                                    ),
+                                    'temp'
+                                );
+                            }
+
+                            if ( 0 >= $this->_bogo_deal->get_needed_trigger_quantity( $entry_id ) ) {
+                                break; // Exit cart items loop.
+                            }
+                        }
+                    }
+                } // endforeach cart items
+
+                // If a single row trigger wasn't fully met for this instance then skip other rows.
+                if ( 0 < $this->_bogo_deal->get_needed_trigger_quantity( $entry_id ) ) {
+                    break;
+                }
+            } // endforeach triggers
+        } // endif same-products
 
         /**
          * When sum of the needed quantity for all triggers is 0, then it means trigger for the BOGO deal is verified.
@@ -605,38 +665,97 @@ class Calculation {
     public function verify_deals() {
         $cart_items = $this->get_sorted_cart_items_by_price( 'deal' ); // sort prices from lowest to highest.
 
-        foreach ( $this->_bogo_deal->deals as $deal ) {
+        // For same-products without repeat, track how many deals have been verified.
+        // Without repeat, we should only verify ONE deal (for one product).
+        $same_products_verified_count = 0;
 
-            $entry_id = $deal['entry_id'];
+        // For same-products, swap loop order to leverage sorted cart items.
+        // Cart items are already sorted by price (cheapest first for deals).
+        if ( 'same-products' === $this->_bogo_deal->deal_type ) {
 
             foreach ( $cart_items as $cart_item ) {
 
-                if (
-                    $this->is_item_valid( $cart_item ) // make sure item is not already discounted by other ACFW features.
-                    && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $deal, true ) // check if item matches the trigger ids.
-                ) {
-                    $allowed_qty = $this->_bogo_deal->get_allowed_deal_quantity( $entry_id );
-                    $quantity    = min( $allowed_qty, $this->calculate_cart_item_spare_quantity( $cart_item ) );
-
-                    if ( $quantity ) {
-                        $this->_bogo_deal->set_allowed_deal_quantity( $entry_id, max( 0, $allowed_qty - $quantity ) );
-                        $this->update_entry(
-                            array(
-                                'key'           => $cart_item['key'],
-                                'coupon'        => $this->_bogo_deal->get_coupon()->get_code(),
-                                'entry_id'      => $entry_id,
-                                'type'          => 'deal',
-                                'quantity'      => $quantity,
-                                'discount_type' => $deal['type'],
-                                'discount'      => $deal['discount'],
-                                'name'          => $cart_item['data']->get_name(),
-                            ),
-                            'temp'
-                        );
-                    }
+                // Stop after verifying ONE deal (without repeat).
+                if ( ! $this->_bogo_deal->is_repeat && $same_products_verified_count >= 1 ) {
+                    break;
                 }
-} // endforeach cart items
-        } // endforeach deals
+
+                foreach ( $this->_bogo_deal->deals as $deal ) {
+                    $entry_id = $deal['entry_id'];
+
+                    if (
+                        $this->is_item_valid( $cart_item )
+                        && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $deal, true )
+                    ) {
+                        $allowed_qty = $this->_bogo_deal->get_allowed_deal_quantity( $entry_id );
+                        $spare_qty   = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $quantity    = min( $allowed_qty, $spare_qty );
+
+                        if ( $quantity ) {
+                            $this->_bogo_deal->set_allowed_deal_quantity( $entry_id, max( 0, $allowed_qty - $quantity ) );
+                            $this->update_entry(
+                                array(
+                                    'key'           => $cart_item['key'],
+                                    'coupon'        => $this->_bogo_deal->get_coupon()->get_code(),
+                                    'entry_id'      => $entry_id,
+                                    'type'          => 'deal',
+                                    'quantity'      => $quantity,
+                                    'discount_type' => $deal['type'],
+                                    'discount'      => $deal['discount'],
+                                    'name'          => $cart_item['data']->get_name(),
+                                ),
+                                'temp'
+                            );
+
+                            // Deal verified for this product.
+                            if ( 0 >= $this->_bogo_deal->get_allowed_deal_quantity( $entry_id ) ) {
+                                ++$same_products_verified_count; // Increment counter.
+                                break; // Exit inner deals loop, move to next cart item.
+                            }
+                        }
+                    }
+                } // endforeach deals
+            } // endforeach cart items (same-products)
+        } else {
+            // Original logic for other BOGO types.
+            foreach ( $this->_bogo_deal->deals as $deal ) {
+
+                $entry_id = $deal['entry_id'];
+
+                foreach ( $cart_items as $cart_item ) {
+
+                    if (
+                        $this->is_item_valid( $cart_item )
+                        && $this->_bogo_deal->is_cart_item_match_entries( $cart_item, $deal, true )
+                    ) {
+                        $allowed_qty = $this->_bogo_deal->get_allowed_deal_quantity( $entry_id );
+                        $spare_qty   = $this->calculate_cart_item_spare_quantity( $cart_item );
+                        $quantity    = min( $allowed_qty, $spare_qty );
+
+                        if ( $quantity ) {
+                            $this->_bogo_deal->set_allowed_deal_quantity( $entry_id, max( 0, $allowed_qty - $quantity ) );
+                            $this->update_entry(
+                                array(
+                                    'key'           => $cart_item['key'],
+                                    'coupon'        => $this->_bogo_deal->get_coupon()->get_code(),
+                                    'entry_id'      => $entry_id,
+                                    'type'          => 'deal',
+                                    'quantity'      => $quantity,
+                                    'discount_type' => $deal['type'],
+                                    'discount'      => $deal['discount'],
+                                    'name'          => $cart_item['data']->get_name(),
+                                ),
+                                'temp'
+                            );
+
+                            if ( 0 >= $this->_bogo_deal->get_allowed_deal_quantity( $entry_id ) ) {
+                                break; // Exit cart items loop.
+                            }
+                        }
+                    }
+                } // endforeach cart items
+            } // endforeach deals
+        } // endif same-products
 
         return $this->_bogo_deal->has_deal_fulfilled();
     }
@@ -795,7 +914,12 @@ class Calculation {
      * @return string Entry key hash value.
      */
     private function _generate_entry_key( $entry ) {
-        extract( $entry ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+        // Replace extract() with explicit variable assignment for security.
+        $key      = isset( $entry['key'] ) ? $entry['key'] : '';
+        $coupon   = isset( $entry['coupon'] ) ? $entry['coupon'] : '';
+        $entry_id = isset( $entry['entry_id'] ) ? $entry['entry_id'] : '';
+        $type     = isset( $entry['type'] ) ? $entry['type'] : '';
+
         return md5( sprintf( '%s_%s_%s_%s', $key, $coupon, $entry_id, $type ) );
     }
 

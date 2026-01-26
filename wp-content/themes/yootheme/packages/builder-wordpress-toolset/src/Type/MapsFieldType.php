@@ -2,14 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Toolset\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class MapsFieldType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -36,11 +40,19 @@ class MapsFieldType
         ];
     }
 
+    /**
+     * @param string $value
+     * @return string
+     */
     public static function address($value)
     {
         return $value;
     }
 
+    /**
+     * @param mixed $value
+     * @return ?string
+     */
     public static function coordinates($value): ?string
     {
         if (!class_exists(\Toolset_Addon_Maps_Common::class)) {

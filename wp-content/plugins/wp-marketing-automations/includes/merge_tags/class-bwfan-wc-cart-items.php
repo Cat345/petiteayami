@@ -84,7 +84,7 @@ class BWFAN_WC_Cart_Items extends Merge_Tag_Abstract_Product_Display {
 			$discount_total          = 15.00;
 			$fees                    = [
 				(object) [
-					'name'  => 'Taxes',
+					'name'  => WC()->countries->tax_or_vat(),
 					'total' => 5.00,
 				]
 			];

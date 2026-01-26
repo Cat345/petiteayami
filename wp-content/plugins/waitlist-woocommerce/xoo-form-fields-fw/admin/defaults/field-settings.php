@@ -131,7 +131,9 @@ $field_settings = array(
 		'label',
 		'cols',
 		'icon',
-		'use_select2',
+		'use_select2' => array(
+			'value' => 'yes'
+		),
 		'placeholder',
 		'country_list',
 		'country_choose',

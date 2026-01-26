@@ -899,16 +899,46 @@ abstract class BWFAN_Event {
 	/**
 	 * Get all active automations by the goal
 	 *
+	 * @param bool $fetch_goal_ids
+	 *
 	 * @return array|false
 	 */
-	public function get_current_goal_automations() {
+	public function get_current_goal_automations( $fetch_goal_ids = false ) {
 		if ( ! $this->is_goal() ) {
 			return false;
 		}
 
 		$goal_automations = BWFAN_Model_Automations_V2::get_goal_automations( $this->get_slug() );
+		if ( empty( $goal_automations ) ) {
+			return false;
+		}
 
-		return empty( $goal_automations ) ? false : $goal_automations;
+		if ( false === $fetch_goal_ids ) {
+			return $goal_automations;
+		}
+
+		$a_ids = $all_goal_ids = [];
+		foreach ( $goal_automations as $automation ) {
+			$automation_id = $automation['ID'] ?? 0;
+			$benchmark     = ! empty( $automation['benchmark'] ) && is_string( $automation['benchmark'] ) ? json_decode( $automation['benchmark'], true ) : [];
+			if ( empty( $automation_id ) || empty( $benchmark ) ) {
+				continue;
+			}
+			$goal_ids = [];
+			foreach ( $benchmark as $step_id => $slug ) {
+				if ( $this->get_slug() !== $slug ) {
+					continue;
+				}
+				$goal_ids[]     = $step_id;
+				$all_goal_ids[] = $step_id;
+			}
+			$a_ids[ $automation_id ] = $goal_ids;
+		}
+
+		return [
+			'a_ids'    => $a_ids,
+			'goal_ids' => $all_goal_ids,
+		];
 	}
 
 	public function get_contact_id_for_goal( $capture_args ) {
@@ -1406,17 +1436,32 @@ abstract class BWFAN_Event {
 		return $this->optgroup_priority;
 	}
 
-	protected function validate_order( $data ) {
+	protected function validate_order( $data, $event_data = [] ) {
 		if ( ! isset( $data['order_id'] ) ) {
 			return false;
 		}
 
 		$order = wc_get_order( $data['order_id'] );
-		if ( $order instanceof WC_Order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return false;
+		}
+
+		/** If event data is empty, return true */
+		if ( empty( $event_data ) ) {
 			return true;
 		}
 
-		return false;
+		/** Check if order status checking enabled with order validation */
+		$is_check_status = apply_filters( 'bwfan_check_order_status_with_order_validation', false, $data );
+		if ( false === $is_check_status ) {
+			return true;
+		}
+
+		$order_status              = 'wc-' . $order->get_status();
+		$order_automation_statuses = isset( $event_data['order_status'] ) ? $event_data['order_status'] : [];
+
+		/** check order status with automation setting */
+		return in_array( $order_status, $order_automation_statuses, true );
 	}
 
 	protected function validate_subscription( $data ) {

@@ -2,14 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class DateType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -27,13 +31,15 @@ class DateType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('Date'),
             ],
         ];
     }
 
+    /**
+     * @return ?string
+     */
     public static function date()
     {
-        return get_the_date();
+        return get_the_date() ?: null;
     }
 }

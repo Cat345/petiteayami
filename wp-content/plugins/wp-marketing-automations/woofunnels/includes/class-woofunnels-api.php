@@ -94,9 +94,71 @@ if ( ! class_exists( 'WooFunnels_API' ) ) :
 				'body'      => urlencode_deep( $api_params ),
 			) );
 
-			$request = wp_remote_post( self::get_api_url( self::$woofunnels_api_url ), $request_args );
+			$api_url = self::get_api_url( self::$woofunnels_api_url );
+
+			// Log tracking data being sent to API
+			self::log_tracking_data( $data, $api_url, $api_params );
+
+			$request = wp_remote_post( $api_url, $request_args );
+
+			// Log API response
+			if ( is_wp_error( $request ) ) {
+				self::log_tracking_response( 'error', $request->get_error_message(), $request->get_error_code() );
+			} else {
+				$response_code = wp_remote_retrieve_response_code( $request );
+				self::log_tracking_response( 'success', $response_code, wp_remote_retrieve_body( $request ) );
+			}
 
 			return $request;
+		}
+
+		/**
+		 * Log tracking data being sent to API
+		 *
+		 * @param array  $data Collected tracking data
+		 * @param string $api_url API endpoint URL
+		 * @param array  $api_params API parameters
+		 */
+		private static function log_tracking_data( $data, $api_url, $api_params ) {
+			// Use WFFN logger if available
+			if ( class_exists( 'WFFN_Core' ) ) {
+				$logger = WFFN_Core()->logger;
+				if ( $logger && method_exists( $logger, 'log' ) ) {
+					// Log full data structure
+					$log_data = array(
+						'timestamp'  => current_time( 'mysql' ),
+						'api_url'    => $api_url,
+						'data_size'  => strlen( wp_json_encode( $data ) ) . ' bytes',
+						'data_keys'  => array_keys( $data ),
+						'api_action' => isset( $api_params['action'] ) ? $api_params['action'] : 'unknown',
+						'full_data'  => $data, // Include complete data
+					);
+					$logger->log( '[Tracking API] Sending tracking data: ' . wp_json_encode( $log_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ), 'wffn-tracking', true );
+				}
+			}
+		}
+
+		/**
+		 * Log API response
+		 *
+		 * @param string $status Response status (success/error)
+		 * @param mixed  $code Response code or error message
+		 * @param mixed  $body Response body or error code
+		 */
+		private static function log_tracking_response( $status, $code, $body = '' ) {
+			// Use WFFN logger if available
+			if ( class_exists( 'WFFN_Core' ) ) {
+				$logger = WFFN_Core()->logger;
+				if ( $logger && method_exists( $logger, 'log' ) ) {
+					$log_data = array(
+						'timestamp' => current_time( 'mysql' ),
+						'status'    => $status,
+						'code'      => $code,
+						'body'      => is_string( $body ) && strlen( $body ) > 500 ? substr( $body, 0, 500 ) . '...' : $body,
+					);
+					$logger->log( '[Tracking API] Response: ' . wp_json_encode( $log_data ), 'wffn-tracking', true );
+				}
+			}
 		}
 
 		/**

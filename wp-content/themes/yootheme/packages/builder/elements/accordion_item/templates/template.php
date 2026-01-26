@@ -53,7 +53,7 @@ $cell_content = $this->el('div', [
 
 <?= $el($element, $attrs) ?>
 
-    <a class="el-title uk-accordion-title" href><?= $props['title'] ?></a>
+    <a class="el-title uk-accordion-title" href><?= $props['title'] ?> <span uk-accordion-icon></span></a>
 
     <?= $content($element) ?>
 

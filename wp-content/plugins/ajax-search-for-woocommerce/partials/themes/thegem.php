@@ -10,22 +10,29 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 /**
  * Forcing our engine to run when WooCommerce >> Shop grid >> Layout Type is "Products Grid".
  */
-add_filter( 'dgwt/wcas/helpers/is_search_query', function ( $enabled, $query ) {
-	if (
+add_filter(
+	'dgwt/wcas/helpers/is_search_query',
+	function ( $enabled, $query ) {
+		if (
 		$query->get( 'post_type' ) &&
 		is_string( $query->get( 'post_type' ) ) &&
 		$query->get( 'post_type' ) === 'product' &&
 		is_string( $query->get( 's' ) ) &&
 		strlen( $query->get( 's' ) ) > 0 &&
 		Helpers::isRunningInsideFunction( 'thegem_extended_products_get_posts', 25 )
-	) {
-		$enabled = true;
-	}
+		) {
+			$enabled = true;
+		}
 
-	return $enabled;
-}, 10, 2 );
+		return $enabled;
+	},
+	10,
+	2
+);
 
-add_action( 'wp_head', function () { ?>
+add_action(
+	'wp_head',
+	function () { ?>
 	<style>
 		.dgwt-wcas-thegem-menu-search .minisearch {
 			width: 500px;
@@ -88,10 +95,14 @@ add_action( 'wp_head', function () { ?>
 			bottom: auto;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_footer', function () { ?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 			$('.header-layout-overlay .dgwt-wcas-thegem-menu-search').on('click', function () {
@@ -113,5 +124,6 @@ add_action( 'wp_footer', function () { ?>
 			});
 		})(jQuery);
 	</script>
-	<?php
-} );
+		<?php
+	}
+);

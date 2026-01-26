@@ -469,11 +469,31 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 			return false;
 		}
 
+		$order_contains = isset( $automation_data['event_meta']['order-contains'] ) ? $automation_data['event_meta']['order-contains'] : 'any';
+
 		/** Any product case */
-		if ( ! isset( $automation_data['event_meta'] ) || ! isset( $automation_data['event_meta']['order-contains'] ) || 'any' === $automation_data['event_meta']['order-contains'] ) {
+		if ( 'any' === $order_contains ) {
 			return true;
 		}
 
+		/** Specific category case */
+		if ( 'selected_category' === $order_contains ) {
+			$get_selected_categories = isset( $automation_data['event_meta']['product_categories'] ) ? $automation_data['event_meta']['product_categories'] : [];
+			if ( empty( $get_selected_categories ) ) {
+				return false;
+			}
+
+			$category_ids = array_column( $get_selected_categories, 'id' );
+			$product      = wc_get_product( $item->get_product_id() );
+			if ( $product instanceof WC_Product ) {
+				$product_categories = $product->get_category_ids();
+				return ! empty( array_intersect( $category_ids, $product_categories ) );
+			}
+
+			return false;
+		}
+
+		/** Specific product case */
 		$ordered_products = [ $item->get_product_id() ];
 
 		/** In case variation */
@@ -495,9 +515,10 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 		}
 
 		$data = isset( $row['data'] ) ? json_decode( $row['data'], true ) : [];
+		$event_data = isset( $data['event_data'] ) ? $data['event_data'] : [];
 		$data = isset( $data['global'] ) ? $data['global'] : [];
 
-		return $this->validate_order( $data );
+		return $this->validate_order( $data, $event_data );
 	}
 
 	public function handle_automation_run_v2( $automation_id, $automation_data ) {
@@ -657,6 +678,10 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 						'label' => __( 'Specific Products', 'wp-marketing-automations' ),
 						'value' => 'selected_product'
 					],
+					[
+						'label' => __( 'Specific Category Products', 'wp-marketing-automations' ),
+						'value' => 'selected_category'
+					],
 				],
 				"class"       => 'bwfan-input-wrapper',
 				"tip"         => "",
@@ -682,6 +707,24 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 					]
 				],
 			];
+			$arr[] = [
+				'id'            => 'product_categories',
+				'label'         => __( 'Select Product Categories', 'wp-marketing-automations' ),
+				'type'          => 'search',
+				'autocompleter' => 'categories',
+				'class'         => '',
+				'placeholder'   => '',
+				'required'      => true,
+				'hint'          => __( 'This automation would run on orders containing products from selected categories.', 'wp-marketing-automations' ),
+				'toggler'       => [
+					'fields' => [
+						[
+							'id'    => 'order-contains',
+							'value' => 'selected_category',
+						]
+					]
+				],
+			];
 		} else {
 			$arr[] = [
 				'id'       => 'products',
@@ -696,12 +739,15 @@ final class BWFAN_WC_Product_Purchased extends BWFAN_Event {
 						[
 							'id'    => 'order-contains',
 							'value' => 'selected_product',
+						],
+						[
+							'id'    => 'order-contains',
+							'value' => 'selected_category',
 						]
 					]
 				],
 			];
 		}
-
 		return $arr;
 	}
 

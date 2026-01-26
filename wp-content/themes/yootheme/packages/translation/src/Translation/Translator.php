@@ -9,17 +9,17 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
-    protected $locale;
+    protected string $locale;
 
     /**
-     * @var array
+     * @var array<string, array<string, string>>
      */
-    protected $resources = [];
+    protected array $resources = [];
 
     /**
      * @inheritdoc
      */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -27,7 +27,7 @@ class Translator implements TranslatorInterface
     /**
      * @inheritdoc
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale): void
     {
         $this->locale = $locale;
     }
@@ -35,11 +35,9 @@ class Translator implements TranslatorInterface
     /**
      * Gets a Resource.
      *
-     * @param string $locale
-     *
-     * @return array
+     * @return array<string, string>
      */
-    public function getResource($locale = null)
+    public function getResource(?string $locale = null)
     {
         if ($locale === null) {
             $locale = $this->getLocale();
@@ -59,7 +57,7 @@ class Translator implements TranslatorInterface
     /**
      * @inheritdoc
      */
-    public function addResource($resource, $locale = null)
+    public function addResource($resource, ?string $locale = null): self
     {
         if ($locale === null) {
             $locale = $this->getLocale();
@@ -81,13 +79,11 @@ class Translator implements TranslatorInterface
     /**
      * @inheritdoc
      */
-    public function trans($id, array $parameters = [], $locale = null)
+    public function trans(string $id, array $parameters = [], ?string $locale = null): string
     {
         if ($locale === null) {
             $locale = $this->getLocale();
         }
-
-        $id = (string) $id;
 
         if (isset($this->resources[$locale][$id])) {
             return strtr($this->resources[$locale][$id], $parameters);
@@ -98,30 +94,25 @@ class Translator implements TranslatorInterface
     /**
      * @inheritdoc
      */
-    public function transChoice($id, $number, array $parameters = [], $locale = null)
-    {
+    public function transChoice(
+        string $id,
+        int $number,
+        array $parameters = [],
+        ?string $locale = null
+    ): string {
         if (null === $locale) {
             $locale = $this->getLocale();
         }
 
-        return strtr(
-            $this->choose($this->trans($id, [], $locale), (int) $number, $locale),
-            $parameters,
-        );
+        return strtr($this->choose($this->trans($id, [], $locale), $number, $locale), $parameters);
     }
 
     /**
      * Returns the correct portion of the message based on the given number.
      *
-     * @param string $message The message being translated
-     * @param int    $number  The number of items represented for the message
-     * @param string $locale  The locale to use for choosing
-     *
      * @throws \InvalidArgumentException
-     *
-     * @return string
      */
-    public function choose($message, $number, $locale)
+    public function choose(string $message, int $number, string $locale): string
     {
         $parts = explode('|', $message);
         $explicitRules = [];

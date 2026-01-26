@@ -263,12 +263,12 @@ msgid "Auto Apply Coupon"
 msgstr "Auto application du code promo"
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:454
+#: Models/Auto_Apply.php:457
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "Le cache d’auto application des codes promo a été reconstruit avec succès. %s code promo(s) validé(s)."
 
-#: Models/Auto_Apply.php:444
+#: Models/Auto_Apply.php:447
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr "Le cache d’auto application des codes promo a été effacé avec succès."
 
@@ -684,7 +684,7 @@ msgstr "Info"
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:429
+#: Models/Auto_Apply.php:432
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -1659,7 +1659,7 @@ msgstr "Vous utilisez actuellement la version Premium de Advanced Coupons for Wo
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:434
+#: Models/Auto_Apply.php:437
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -1808,23 +1808,23 @@ msgstr ""
 msgid "Choose which format of email to send."
 msgstr ""
 
-#: Models/Force_Apply.php:110
+#: Models/Force_Apply.php:109
 msgid "Force Apply"
 msgstr ""
 
-#: Models/Force_Apply.php:112
+#: Models/Force_Apply.php:111
 msgid "Disable"
 msgstr ""
 
-#: Models/Force_Apply.php:113
+#: Models/Force_Apply.php:112
 msgid "When applied via URL only"
 msgstr ""
 
-#: Models/Force_Apply.php:114
+#: Models/Force_Apply.php:113
 msgid "Enabled"
 msgstr ""
 
-#: Models/Force_Apply.php:116
+#: Models/Force_Apply.php:115
 msgid "When enabled, conflicting coupons that are already applied to the cart will be replaced with this coupon instead. This is useful especially if you have an auto applied coupon that you want to be removed when a conflicting coupon is applied."
 msgstr ""
 
@@ -1967,31 +1967,31 @@ msgid "When checked, this will show the coupon in all customers my coupons page"
 msgstr ""
 
 #: Models/Coupon_Tab.php:87
-#: Models/Coupon_Tab.php:149
+#: Models/Coupon_Tab.php:152
 msgid "My Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:125
+#: Models/Coupon_Tab.php:128
 msgid "Available Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:126
+#: Models/Coupon_Tab.php:129
 msgid "Owned Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:127
+#: Models/Coupon_Tab.php:130
 msgid "Used / Expired Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:128
+#: Models/Coupon_Tab.php:131
 msgid "You have no coupons."
 msgstr ""
 
-#: Models/Coupon_Tab.php:184
+#: Models/Coupon_Tab.php:187
 msgid "Hide my coupons tab"
 msgstr ""
 
-#: Models/Coupon_Tab.php:186
+#: Models/Coupon_Tab.php:189
 msgid "If checked, this feature will hide my coupons tab on my account page."
 msgstr ""
 
@@ -2519,6 +2519,6 @@ msgstr ""
 msgid "List of disallowed billing email addresses. Separate multiple email addresses with commas. Wildcards like *@gmail.com are supported."
 msgstr ""
 
-#: Models/BOGO/Types/Same_Products.php:433
+#: Models/BOGO/Types/Same_Products.php:302
 msgid "Same Products"
 msgstr ""

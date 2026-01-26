@@ -2,48 +2,40 @@
 
 namespace YOOtheme\Configuration;
 
+use RuntimeException;
+
 class Resolver
 {
-    /**
-     * @var int
-     */
-    protected $ctime;
+    protected int $ctime;
+
+    protected string $cache;
+
+    protected ?string $key = null;
 
     /**
-     * @var string
+     * @var string[]
      */
-    protected $cache;
+    protected array $path = [];
 
     /**
-     * @var string|false
+     * @var array<string, mixed>
      */
-    protected $key = false;
+    protected array $params = [];
 
     /**
-     * @var array
+     * @var callable[]
      */
-    protected $path = [];
-
-    /**
-     * @var array
-     */
-    protected $params = [];
-
-    /**
-     * @var array
-     */
-    protected $callbacks = [];
+    protected array $callbacks = [];
 
     /**
      * Constructor.
      *
-     * @param string $cache
-     * @param array  $params
-     * @param array  $callbacks
+     * @param array<string, mixed>  $params
+     * @param callable[]            $callbacks
      */
-    public function __construct($cache, array $params = [], array $callbacks = [])
+    public function __construct(?string $cache = null, array $params = [], array $callbacks = [])
     {
-        if (is_dir($cache)) {
+        if ($cache && is_dir($cache)) {
             $this->cache = $cache;
             $this->ctime = filectime(__FILE__);
         }
@@ -57,7 +49,7 @@ class Resolver
      */
     public function __clone()
     {
-        $this->key = false;
+        $this->key = null;
         $this->path = [];
     }
 
@@ -65,7 +57,7 @@ class Resolver
      * Resolves value and evaluates it after applying callbacks.
      *
      * @param mixed $value
-     * @param array $params
+     * @param array<string, mixed> $params
      *
      * @return mixed
      */
@@ -81,8 +73,8 @@ class Resolver
     /**
      * Resolves value recursively.
      *
-     * @param mixed $value
-     * @param array $callbacks
+     * @param mixed      $value
+     * @param callable[] $callbacks
      *
      * @return mixed
      */
@@ -126,11 +118,9 @@ class Resolver
      * Compiles a parsable string of a value after applying callbacks.
      *
      * @param mixed $value
-     * @param array $params
-     *
-     * @return string
+     * @param array<string, mixed> $params
      */
-    public function compile($value, array $params = [])
+    public function compile($value, array $params = []): string
     {
         $compile = fn($value) => $value instanceof Node
             ? $value->compile($params + $this->params)
@@ -142,17 +132,13 @@ class Resolver
     /**
      * Compiles a parsable string representation of a value.
      *
-     * @param mixed    $value
-     * @param callable $callback
-     * @param int      $indent
-     *
-     * @return string
+     * @param mixed  $value
      */
-    public function compileValue($value, ?callable $callback = null, $indent = 0)
+    public function compileValue($value, ?callable $callback = null, int $indent = 0): string
     {
         if (is_array($value)) {
             $array = [];
-            $assoc = array_values($value) !== $value;
+            $assoc = !array_is_list($value);
             $indention = str_repeat('  ', $indent);
             $indentlast = $assoc ? "\n" . $indention : '';
 
@@ -162,7 +148,7 @@ class Resolver
                     $this->compileValue($val, $callback, $indent + 1);
             }
 
-            return '[' . join(', ', $array) . $indentlast . ']';
+            return '[' . join(',', $array) . $indentlast . ']';
         }
 
         return $callback ? $callback($value) : var_export($value, true);
@@ -171,16 +157,15 @@ class Resolver
     /**
      * Loads a file.
      *
-     * @param string $file
-     * @param array  $params
+     * @param array<string, mixed>  $params
      *
-     * @throws \RuntimeException
+     * @return array<string, mixed>
      *
-     * @return array|null
+     * @throws RuntimeException
      */
-    public function loadFile($file, array $params = [])
+    public function loadFile(string $file, array $params = []): array
     {
-        $params = array_merge($this->params, $params, compact('file'));
+        $params = array_merge($this->params, $params, ['file' => $file]);
         $extension = pathinfo($file, PATHINFO_EXTENSION);
 
         if ($extension === 'php') {
@@ -191,25 +176,24 @@ class Resolver
             return $this->loadJsonFile($file, $params);
         }
 
-        throw new \RuntimeException("Unable to load file '{$file}'");
+        throw new RuntimeException("Unable to load file '{$file}'");
     }
 
     /**
      * Loads a PHP file.
      *
-     * @param string $file
-     * @param array  $params
+     * @param array<string, mixed>  $params
      *
-     * @throws \RuntimeException
+     * @return array<string, mixed>
      *
-     * @return array
+     * @throws RuntimeException
      */
-    protected function loadPhpFile($file, array $params = [])
+    protected function loadPhpFile(string $file, array $params = []): array
     {
         extract($params, EXTR_SKIP);
 
         if (!is_array($value = @include $file)) {
-            throw new \RuntimeException("Unable to load file '{$file}'");
+            throw new RuntimeException("Unable to load file '{$file}'");
         }
 
         return $value;
@@ -218,14 +202,13 @@ class Resolver
     /**
      * Loads a JSON config file.
      *
-     * @param string $file
-     * @param array  $params
+     * @param array<string, mixed>  $params
      *
-     * @throws \RuntimeException
+     * @return array<string, mixed>
      *
-     * @return array
+     * @throws RuntimeException
      */
-    protected function loadJsonFile($file, array $params = [])
+    protected function loadJsonFile(string $file, array $params = []): array
     {
         extract($params, EXTR_SKIP);
 
@@ -245,11 +228,11 @@ class Resolver
         }
 
         if (!($content = @file_get_contents($file))) {
-            throw new \RuntimeException("Unable to load file '{$file}'");
+            throw new RuntimeException("Unable to load file '{$file}'");
         }
 
         if (!is_array($value = @json_decode($content, true))) {
-            throw new \RuntimeException("Invalid JSON format in '{$file}'");
+            throw new RuntimeException("Invalid JSON format in '{$file}'");
         }
 
         if ($this->cache && $this->writeCacheFile($cache, $value, $params)) {
@@ -262,13 +245,10 @@ class Resolver
     /**
      * Writes a cache file.
      *
-     * @param string $cache
-     * @param array  $value
-     * @param array  $params
-     *
-     * @return bool
+     * @param array<string, mixed>  $value
+     * @param array<string, mixed>  $params
      */
-    protected function writeCacheFile($cache, array $value, array $params = [])
+    protected function writeCacheFile(string $cache, array $value, array $params = []): bool
     {
         $temp = uniqid("{$this->cache}/temp-" . hash('crc32b', $cache));
         $data = "<?php // \$file = {$params['file']}\n\nreturn {$this->compile(

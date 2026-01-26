@@ -2,13 +2,25 @@
 
 namespace YOOtheme\Theme\Wordpress;
 
+use WP_Post;
+use WP_Post_Type;
+use WP_Term;
 use YOOtheme\Config;
 use YOOtheme\Event;
 use function YOOtheme\app;
 
+/**
+ * @phpstan-type Item array{name: string, link: string}
+ * @phpstan-type Items list<Item>
+ */
 class Breadcrumbs
 {
-    public static function getItems($options = [])
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @return list<object>
+     */
+    public static function getItems(array $options = []): array
     {
         $options += [
             'show_current' => true,
@@ -61,13 +73,17 @@ class Breadcrumbs
         if (!$options['show_current']) {
             array_pop($items);
         } elseif ($items) {
-            $items[count($items) - 1]['link'] = '';
+            array_last($items)['link'] = '';
         }
 
         return array_map(fn($item) => (object) $item, $items);
     }
 
-    protected static function handlePage($id = null)
+    /**
+     * @param int|string $id
+     * @return Items
+     */
+    protected static function handlePage($id = null): array
     {
         $id ??= get_queried_object_id();
 
@@ -84,11 +100,14 @@ class Breadcrumbs
         return array_reverse($items);
     }
 
-    protected static function handlePost()
+    /**
+     * @return Items
+     */
+    protected static function handlePost(): array
     {
         $items = [];
 
-        if (($categories = get_the_category()) && is_object($categories[0])) {
+        if ($categories = get_the_category()) {
             $items = static::getCategories($categories[0]);
         }
 
@@ -97,7 +116,10 @@ class Breadcrumbs
         return $items;
     }
 
-    protected static function handleSingular()
+    /**
+     * @return Items
+     */
+    protected static function handleSingular(): array
     {
         $post = get_queried_object();
         $items = [];
@@ -115,12 +137,18 @@ class Breadcrumbs
         return $items;
     }
 
-    protected static function handleCategory()
+    /**
+     * @return Items
+     */
+    protected static function handleCategory(): array
     {
         return static::getCategories(get_queried_object());
     }
 
-    protected static function handleTag()
+    /**
+     * @return Items
+     */
+    protected static function handleTag(): array
     {
         $items = [];
 
@@ -133,20 +161,23 @@ class Breadcrumbs
         return $items;
     }
 
-    protected static function handleDate()
+    /**
+     * @return Items
+     */
+    protected static function handleDate(): array
     {
         global $post;
 
         $items = [];
 
-        $day = get_the_time('d', $post);
         $month = get_the_time('m', $post);
         $year = get_the_time('Y', $post);
 
         switch (true) {
             case is_day():
+                $day = get_the_time('d', $post);
                 $items[] = [
-                    'name' => get_the_time('d', $post),
+                    'name' => $day,
                     'link' => get_day_link($year, $month, $day),
                 ];
             case is_month():
@@ -156,7 +187,7 @@ class Breadcrumbs
                 ];
             default:
                 $items[] = [
-                    'name' => get_the_time('Y', $post),
+                    'name' => $year,
                     'link' => get_year_link($year),
                 ];
         }
@@ -164,19 +195,28 @@ class Breadcrumbs
         return array_reverse($items);
     }
 
-    protected static function handleAuthor()
+    /**
+     * @return Items
+     */
+    protected static function handleAuthor(): array
     {
         $user = get_queried_object();
 
         return [['name' => $user->display_name, 'link' => '']];
     }
 
-    protected static function handleSearch()
+    /**
+     * @return Items
+     */
+    protected static function handleSearch(): array
     {
         return [['name' => stripslashes(strip_tags(get_search_query())), 'link' => '']];
     }
 
-    protected static function handleTax()
+    /**
+     * @return Items
+     */
+    protected static function handleTax(): array
     {
         $term = get_queried_object();
         $taxonomy = get_taxonomy($term->taxonomy);
@@ -192,19 +232,30 @@ class Breadcrumbs
         return $items;
     }
 
-    protected static function handlePostTypeArchive()
+    /**
+     * @return Items
+     */
+    protected static function handlePostTypeArchive(): array
     {
         $item = static::getPostType(get_queried_object(), false);
 
         return $item ? [$item] : [];
     }
 
-    protected static function handleArchive()
+    /**
+     * @return Items
+     */
+    protected static function handleArchive(): array
     {
         return [];
     }
 
-    protected static function getCategories($category, $categories = [])
+    /**
+     * @param Items $categories
+     *
+     * @return Items
+     */
+    protected static function getCategories(WP_Term $category, array $categories = []): array
     {
         if (!$category->parent && get_option('show_on_front') == 'page') {
             $categories = self::handlePage(get_option('page_for_posts'));
@@ -225,7 +276,12 @@ class Breadcrumbs
         return $categories;
     }
 
-    protected static function getPostType($type, $link = true)
+    /**
+     * @param string|WP_Post_Type $type
+     *
+     * @return ?Item
+     */
+    protected static function getPostType($type, bool $link = true): ?array
     {
         if (is_string($type)) {
             $type = get_post_type_object($type);
@@ -233,17 +289,20 @@ class Breadcrumbs
 
         return $type && $type->has_archive
             ? [
-                'name' => apply_filters(
+                'name' => (string) apply_filters(
                     'post_type_archive_title',
                     $type->labels->name,
                     $type->name,
                 ),
-                'link' => $link ? get_post_type_archive_link($type->name) : '',
+                'link' => $link ? (string) get_post_type_archive_link($type->name) : '',
             ]
             : null;
     }
 
-    protected static function getPostTerms($post)
+    /**
+     * @return ?Items
+     */
+    protected static function getPostTerms(WP_Post $post): ?array
     {
         foreach (get_object_taxonomies($post, 'object') as $taxonomy) {
             if (
@@ -255,9 +314,14 @@ class Breadcrumbs
                 return static::getTermTrail($terms[0]);
             }
         }
+
+        return null;
     }
 
-    protected static function getTermTrail($term)
+    /**
+     * @return Items
+     */
+    protected static function getTermTrail(WP_Term $term): array
     {
         $list = [];
 

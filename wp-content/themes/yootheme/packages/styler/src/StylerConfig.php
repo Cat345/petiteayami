@@ -5,7 +5,6 @@ namespace YOOtheme\Theme\Styler;
 use YOOtheme\Config;
 use YOOtheme\ConfigObject;
 use YOOtheme\File;
-use YOOtheme\Path;
 use YOOtheme\Url;
 
 class StylerConfig extends ConfigObject
@@ -23,7 +22,7 @@ class StylerConfig extends ConfigObject
         parent::__construct([
             'update' => $version !== $config('theme.version'),
             'route' => 'theme/style',
-            'worker' => Url::to(Path::get('../app/worker.min.js', __DIR__), [
+            'worker' => Url::to('~assets/admin/js/worker.js', [
                 'ver' => $config('theme.version'),
             ]),
         ]);

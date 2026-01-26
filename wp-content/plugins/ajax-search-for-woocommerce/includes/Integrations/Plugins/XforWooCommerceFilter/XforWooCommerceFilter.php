@@ -22,7 +22,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
 
     protected const MIN_VERSION = '7.2.3';
 
-    protected $post_ids = array();
+    protected $post_ids = [];
 
     public static function pluginVersion() : string {
         if ( class_exists( 'XforWC_Product_Filters' ) && isset( \XforWC_Product_Filters::$version ) ) {
@@ -33,10 +33,10 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
     }
 
     public function init() : void {
-        add_action( 'prdctfltr_add_inputs', array($this, 'prdctfltr_add_inputs') );
-        add_action( 'pre_get_posts', array($this, 'search_products'), 1000000 );
-        add_action( 'wp_ajax_nopriv_prdctfltr_respond_550', array($this, 'set_search_post_ids_from_ajax'), 5 );
-        add_action( 'wp_ajax_prdctfltr_respond_550', array($this, 'set_search_post_ids_from_ajax'), 5 );
+        add_action( 'prdctfltr_add_inputs', [$this, 'prdctfltr_add_inputs'] );
+        add_action( 'pre_get_posts', [$this, 'search_products'], 1000000 );
+        add_action( 'wp_ajax_nopriv_prdctfltr_respond_550', [$this, 'set_search_post_ids_from_ajax'], 5 );
+        add_action( 'wp_ajax_prdctfltr_respond_550', [$this, 'set_search_post_ids_from_ajax'], 5 );
     }
 
     /**
@@ -45,6 +45,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
      * Only on search page or during AJAX query on the search page.
      */
     public function prdctfltr_add_inputs() {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         if ( Helpers::isProductSearchPage() || defined( 'DOING_AJAX' ) && isset( $_POST['action'] ) && $_POST['action'] === 'prdctfltr_respond_550' && isset( $_POST['pf_id'] ) && isset( $_POST['pf_filters'][$_POST['pf_id']]['dgwt_wcas'] ) ) {
             echo '<input type="hidden" name="dgwt_wcas" value="1"  class="pf_added_input" />';
             echo '<input type="hidden" name="post_type" value="product"  class="pf_added_input" />';
@@ -52,6 +53,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
     }
 
     public function set_search_post_ids_from_ajax() {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         if ( !isset( $_POST['pf_filters'][$_POST['pf_id']]['dgwt_wcas'] ) ) {
             return;
         }
@@ -61,6 +63,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
             $order = 'asc';
         }
         $phrase = $_POST['pf_filters'][$_POST['pf_id']]['s'];
+        // phpcs:enable
         if ( !dgoraAsfwFs()->is_premium() ) {
             $this->post_ids = Helpers::searchProducts( $phrase );
         }
@@ -94,6 +97,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
      * @return bool
      */
     private function is_prdctfltr_ajax_search() {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         if ( !defined( 'DOING_AJAX' ) ) {
             return false;
         }
@@ -115,6 +119,7 @@ class XforWooCommerceFilter extends AbstractPluginIntegration {
         if ( !isset( $_POST['pf_filters'][$_POST['pf_id']]['dgwt_wcas'] ) ) {
             return false;
         }
+        // phpcs:enable
         return true;
     }
 

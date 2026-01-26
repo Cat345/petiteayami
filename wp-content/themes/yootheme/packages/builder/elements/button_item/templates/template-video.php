@@ -1,6 +1,6 @@
 <?php
 
-if ($iframe = $this->iframeVideo($src)) {
+if ($iframe = $this->iframeVideo($src, [], false)) {
 
     $video = $this->el('iframe', [
 
@@ -16,11 +16,13 @@ if ($iframe = $this->iframeVideo($src)) {
     $video = $this->el('video', [
 
         'src' => $src,
+        'playsinline' => true,
         'controls' => true,
+        'preload' => 'none',
 
         'class' => [
             // Imitate cropping like an image
-            'uk-object-cover [uk-object-{image_focal_point}] {@image_width} {@image_height}',
+            'uk-object-{image_focal_point} {@image_width} {@image_height}',
         ],
 
         'style' => [

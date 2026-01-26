@@ -430,8 +430,8 @@
     select[size],
     textarea {
         min-height: 150px;
-        padding-top: @form-padding-vertical;
-        padding-bottom: @form-padding-vertical;
+        padding-top: @form-multi-line-padding-vertical;
+        padding-bottom: @form-multi-line-padding-vertical;
         vertical-align: top;
         .hook-form-multi-line();
     }
@@ -4127,6 +4127,8 @@ ul.product_list_widget {
         list-style: none;
     }
 
+    ul ul { padding-left: 20px; }
+
     //
     // Link
     //
@@ -4194,7 +4196,7 @@ ul.product_list_widget {
 
 }
 
-.woocommerce-widget-layered-nav-list { margin: 0; }
+.woocommerce-widget-layered-nav form > ul { margin: 0; }
 
 .tm-element-woo-filter .tm-element-filter-columns {
 
@@ -4568,8 +4570,13 @@ ul.product_list_widget {
         .hook-search-default-input-focus();
     }
 
-    button { width: @search-default-icon-width; }
-    input { padding-right: (@search-default-icon-width); }
+    button {
+        box-sizing: content-box;
+        width: @search-default-icon-width;
+        padding-left: @search-default-padding-horizontal;
+        padding-right: @search-default-padding-horizontal;
+    }
+    input { padding-right: (@search-default-icon-width + @search-default-padding-horizontal + @search-default-icon-padding); }
 
 }
 
@@ -4690,6 +4697,17 @@ ul.product_list_widget {
     }
 
 }
+
+/*
+ * Brand thumnails
+ */
+
+.widget_brand_thumbnails {
+
+    .brand-thumbnails { padding-left: 0; }
+
+}
+
 
 /*
  * YOOtheme Pro Source

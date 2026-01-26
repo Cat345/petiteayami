@@ -10,6 +10,14 @@ const $ = jQuery;
  * @since 4.6.0
  */
 export default function accordionEvents() {
+  // Remove any existing handlers to prevent duplicates when re-initialized.
+  $(document.body).off(
+    'click acfw_toggle_accordion',
+    '.acfw-checkout-ui-block .acfw-accordion > h3',
+    toggleAccordionContent
+  );
+
+  // Add the event handler
   $(document.body).on(
     'click acfw_toggle_accordion',
     '.acfw-checkout-ui-block .acfw-accordion > h3',
@@ -29,8 +37,9 @@ export default function accordionEvents() {
  * @param this {JQuery} The element that triggered the event.
  */
 function toggleAccordionContent(this: JQuery) {
-  const $accordions = $('#acfw-checkout-ui-block').find('.acfw-accordion');
   const $accordion = $(this).parent();
+  const $block = $accordion.closest('.acfw-checkout-ui-block');
+  const $accordions = $block.find('.acfw-accordion');
   const isShown = $accordion.hasClass('show');
 
   $accordions.removeClass('show');

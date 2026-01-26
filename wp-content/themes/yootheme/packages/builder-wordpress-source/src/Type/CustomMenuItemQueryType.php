@@ -2,14 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class CustomMenuItemQueryType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -148,60 +152,98 @@ class CustomMenuItemQueryType
         ];
     }
 
-    public static function resolve($root, array $args)
+    /**
+     * @param array<string, mixed>|object $root
+     * @param array<string, mixed> $args
+     * @return array<object>
+     */
+    public static function resolve($root, array $args): array
     {
-        $items = wp_get_nav_menu_items($args['id']);
+        $items = static::getItems($args['id']);
 
-        _wp_menu_item_classes_by_context($items);
-
-        apply_filters('wp_nav_menu_objects', $items, []);
-
-        $found = false;
-        return array_filter($items, function ($item) use ($args, &$found) {
-            if (!empty($args['ids'])) {
-                return in_array($item->ID, $args['ids']);
+        $result = [];
+        foreach ($items as $item) {
+            // Pull children of heading items up to their parent.
+            if (
+                !empty($heading) &&
+                (int) $item->menu_item_parent === $heading->ID &&
+                $item->ID != ($args['parent'] ?? '')
+            ) {
+                $item->menu_item_parent = $heading->menu_item_parent;
             }
 
-            if (!empty($args['heading'])) {
-                if (!$found) {
+            if (
+                $item->type === 'custom' &&
+                $item->url === '#' &&
+                $item->ID != ($args['parent'] ?? '')
+            ) {
+                $heading = $item;
+            }
+
+            if (!empty($args['ids'])) {
+                if (in_array($item->ID, $args['ids'])) {
+                    $result[] = $item;
+                }
+            } elseif (!empty($args['heading'])) {
+                if (empty($found)) {
                     if ((string) $item->ID === $args['heading']) {
                         $found = $item;
-                        return !empty($args['include_heading']);
+                        if (!empty($args['include_heading'])) {
+                            $result[] = $item;
+                        }
                     }
-                    return false;
+                    continue;
                 }
 
                 if ($item->menu_item_parent !== $found->menu_item_parent) {
-                    return false;
+                    continue;
                 }
 
                 if (!($item->type === 'custom' && $item->url === '#')) {
-                    return true;
+                    $result[] = $item;
+                    continue;
                 }
 
-                return $found = false;
+                break;
+            } elseif (!empty($args['parent'])) {
+                if ($item->menu_item_parent == $args['parent']) {
+                    $result[] = $item;
+                }
+            } elseif ($item->menu_item_parent == 0) {
+                $result[] = $item;
             }
+        }
 
-            if (!empty($args['parent'])) {
-                return $item->menu_item_parent == $args['parent'];
-            }
-
-            return $item->menu_item_parent == 0;
-        });
+        return $result;
     }
 
+    /**
+     * @param array<string, mixed>|object $root
+     * @param array<string, mixed> $args
+     * @return ?object
+     */
     public static function resolveItem($root, array $args)
     {
-        $items = wp_get_nav_menu_items($args['menu']);
-
-        _wp_menu_item_classes_by_context($items);
-
-        apply_filters('wp_nav_menu_objects', $items, []);
-
-        foreach ($items as $item) {
+        foreach (static::getItems($args['menu']) as $item) {
             if ($item->ID == $args['id']) {
                 return $item;
             }
         }
+
+        return null;
+    }
+
+    /**
+     * @return array<object>
+     */
+    protected static function getItems(int $menu): array
+    {
+        $items = wp_get_nav_menu_items($menu);
+
+        _wp_menu_item_classes_by_context($items);
+
+        apply_filters('wp_nav_menu_objects', $items, []);
+
+        return $items;
     }
 }

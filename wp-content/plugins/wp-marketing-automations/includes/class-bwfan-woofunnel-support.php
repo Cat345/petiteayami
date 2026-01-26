@@ -14,7 +14,10 @@ class BWFAN_WooFunnels_Support {
 		add_filter( 'woofunnels_default_reason_default', function () {
 			return 1;
 		} );
+
+		add_filter( 'woofunnels_register_usage_collectors', array( $this, 'maybe_add_registery' ), 15, 1 );
 	}
+
 
 	/**
 	 * @return null|BWFAN_WooFunnels_Support
@@ -64,6 +67,23 @@ class BWFAN_WooFunnels_Support {
 			WooFunnels_dashboard::$selected = 'support';
 		}
 		WooFunnels_dashboard::load_page();
+	}
+
+	public function maybe_add_registery( $collectors ) {
+		/**
+		 * Load usage collector (lazy registration via filter hook)
+		 */
+		// Load the usage collector class if it doesn't exist yet
+		if ( ! class_exists( 'BWFAN_Usage_Collector' ) && file_exists( BWFAN_PLUGIN_DIR . '/includes/usage/class-bwfan-usage-collector.php' ) ) {
+			require_once BWFAN_PLUGIN_DIR . '/includes/usage/class-bwfan-usage-collector.php';
+		}
+
+		// Register with registry if class exists and Pro is not active
+		if ( class_exists( 'BWFAN_Usage_Collector' ) && ! class_exists( 'BWFANCRM_Usage_Collector' ) ) {
+			return BWFAN_Usage_Collector::add_to_registry( $collectors );
+		}
+
+		return $collectors;
 	}
 }
 

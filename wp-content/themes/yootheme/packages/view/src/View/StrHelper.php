@@ -9,8 +9,6 @@ class StrHelper extends Str
 {
     /**
      * Constructor.
-     *
-     * @param View $view
      */
     public function __construct(View $view)
     {
@@ -26,7 +24,6 @@ class StrHelper extends Str
 
             // string util
             'limit' => [$this, 'limit'],
-            'words' => [$this, 'words'],
             'upper' => [$this, 'upper'],
             'lower' => [$this, 'lower'],
             'title' => [$this, 'titleCase'],
@@ -40,12 +37,11 @@ class StrHelper extends Str
     /**
      * Formats a date.
      *
-     * @param mixed  $date
-     * @param string $format
+     * @param int|string|\DateTime|null $date
      *
-     * @return string
+     * @return string|false
      */
-    public function date($date, $format = 'F j, Y H:i')
+    public function date($date, string $format = 'F j, Y H:i')
     {
         if (is_string($date)) {
             $date = strtotime($date);

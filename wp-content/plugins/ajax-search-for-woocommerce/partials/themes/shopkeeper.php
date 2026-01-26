@@ -6,17 +6,25 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 }
 
 // Remove native form
-add_action( 'init', function () {
-	remove_action( 'wp_loaded', 'shopkeeper_predictive_search', 100 );
-} );
+add_action(
+	'init',
+	function () {
+		remove_action( 'wp_loaded', 'shopkeeper_predictive_search', 100 );
+	}
+);
 
 // Embed search bar
-add_action( 'getbowtied_product_search', function () {
-	echo do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="767"]' );
-} );
+add_action(
+	'getbowtied_product_search',
+	function () {
+		echo do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="767"]' );
+	}
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.site-search.off-canvas {
 			min-height: 100px;
@@ -82,11 +90,14 @@ add_action( 'wp_head', function () {
 		}
 
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 			if ($(window).width() > 767) {
@@ -116,5 +127,6 @@ add_action( 'wp_footer', function () {
 			}
 		})(jQuery);
 	</script>
-	<?php
-} );
+		<?php
+	}
+);

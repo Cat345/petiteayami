@@ -1,5 +1,26 @@
 <?php
 
+// Link
+$el = $this->el('a', [
+
+    'class' => [
+        'el-link',
+        'uk-icon-link {@!link_style}',
+        'uk-icon-button {@link_style: button}',
+        'uk-link-{link_style: muted|text|reset}',
+    ],
+
+    'href' => $props['link'],
+    'aria-label' => $props['link_aria_label'] ?: $element['link_aria_label'],
+    'target' => ['_blank {@link_target}'],
+    'download' => $element['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
+
+]);
+
 // Image
 if ($props['image']) {
 
@@ -20,31 +41,14 @@ if ($props['image']) {
 
         'uk-icon' => [
             'icon: {0};' => $props['icon'] ?: $this->e($props['link'], 'social'),
-            'width: {icon_width};',
-            'height: {icon_width};',
+            'width: {image_width};',
+            'height: {image_width};',
         ],
 
     ]);
 
 }
 
-// Link
-$link = $this->el('a', [
-
-    'class' => [
-        'el-link',
-        'uk-icon-link {@!link_style}',
-        'uk-icon-button {@link_style: button}',
-        'uk-link-{link_style: muted|text|reset}',
-    ],
-
-    'href' => $props['link'],
-    'aria-label' => $props['link_aria_label'] ?: $element['link_aria_label'],
-    'target' => ['_blank {@link_target}'],
-    'rel' => 'noreferrer',
-
-]);
-
 ?>
 
-<?= $link($element, $icon($element, '')) ?>
+<?= $el($element, $attrs, $icon($element, '')) ?>

@@ -193,8 +193,9 @@ if ( ! class_exists( 'BWFAN_Model_Fields' ) && BWFAN_Common::is_pro_3_0() ) {
 			global $wpdb;
 			$table = self::_table();
 
-			$ids   = implode( ',', $ids );
-			$query = "SELECT * From $table WHERE ID IN ($ids)";
+			$ids         = array_map( 'absint', $ids );
+			$placeholder = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			$query       = $wpdb->prepare( "SELECT * From $table WHERE ID IN ($placeholder)", $ids );
 
 			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}

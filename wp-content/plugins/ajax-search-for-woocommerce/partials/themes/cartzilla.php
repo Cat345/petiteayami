@@ -4,17 +4,24 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_filter( 'widget_display_callback', function ( $instance, $widget_obj, $args ) {
-	if ( is_a( $widget_obj, 'WC_Widget_Product_Search' ) ) {
-		echo do_shortcode( '[fibosearch]' );
-	}
+add_filter(
+	'widget_display_callback',
+	function ( $instance, $widget_obj, $args ) {
+		if ( is_a( $widget_obj, 'WC_Widget_Product_Search' ) ) {
+			echo do_shortcode( '[fibosearch]' );
+		}
 
-	return false;
-}, 10, 3 );
+		return false;
+	},
+	10,
+	3
+);
 
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		(function ($) {
 			$(window).on('load', function () {
@@ -29,5 +36,6 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-} );
+		<?php
+	}
+);

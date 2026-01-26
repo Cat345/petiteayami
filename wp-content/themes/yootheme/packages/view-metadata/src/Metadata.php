@@ -9,59 +9,44 @@ interface Metadata
     /**
      * Gets all metadata tags.
      *
-     * @param string $names
-     *
-     * @return MetadataObject[]
+     * @return array<string, MetadataObject>
      */
-    public function all(...$names);
+    public function all(string ...$names): array;
 
     /**
      * Gets a metadata tag.
-     *
-     * @param string $name
-     *
-     * @return MetadataObject|null
      */
-    public function get($name);
+    public function get(string $name): ?MetadataObject;
 
     /**
      * Sets a metadata tag.
      *
-     * @param string $name
-     * @param mixed  $value
-     * @param array  $attributes
-     *
-     * @return MetadataObject
+     * @param mixed $value
+     * @param array<string, mixed> $attributes
      */
-    public function set($name, $value, array $attributes = []);
+    public function set(string $name, $value, array $attributes = []): MetadataObject;
 
     /**
      * Deletes a metadata tag.
-     *
-     * @param string $name
      */
-    public function del($name);
+    public function del(string $name): void;
 
     /**
      * Merges multiple metadata tags.
      *
-     * @param array $metadata
+     * @param array<string, mixed> $metadata
      */
-    public function merge(array $metadata);
+    public function merge(array $metadata): void;
 
     /**
      * Filters metadata tags using a callback.
      *
-     * @param callable $filter
-     *
-     * @return MetadataObject[]
+     * @return array<string, MetadataObject>
      */
-    public function filter(callable $filter);
+    public function filter(callable $filter): array;
 
     /**
      * Renders metadata tags.
-     *
-     * @return string
      */
-    public function render();
+    public function render(): string;
 }

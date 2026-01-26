@@ -17,19 +17,31 @@ class FilterIconMetaTags
     /**
      * Disables the site icon meta tags in frontend, sets the site icon meta tags in admin.
      *
+     * @param list<string> $tags
+     *
+     * @return list<string>
+     *
      * @link https://developer.wordpress.org/reference/hooks/site_icon_meta_tags/
      */
-    public function handle()
+    public function handle(array $tags)
     {
         $icons = SetFavicons::load($this->config);
 
-        $tags = ["<link rel=\"icon\" href=\"{$icons['favicon']}\" sizes=\"any\">"];
+        if (!empty(array_filter($icons))) {
+            $tags = [];
+        }
 
-        if (!empty($icons['favicon_svg'])) {
+        if ($icons['favicon']) {
+            $tags[] = "<link rel=\"icon\" href=\"{$icons['favicon']}\" sizes=\"any\">";
+        }
+
+        if ($icons['favicon_svg']) {
             $tags[] = "<link rel=\"icon\" href=\"{$icons['favicon_svg']}\" type=\"image/svg+xml\">";
         }
 
-        $tags[] = "<link rel=\"apple-touch-icon\" href=\"{$icons['touchicon']}\">";
+        if ($icons['touchicon']) {
+            $tags[] = "<link rel=\"apple-touch-icon\" href=\"{$icons['touchicon']}\">";
+        }
 
         return $tags;
     }

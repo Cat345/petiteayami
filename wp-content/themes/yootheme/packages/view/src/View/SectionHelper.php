@@ -7,14 +7,14 @@ use YOOtheme\View;
 class SectionHelper
 {
     /**
-     * @var array
+     * @var array<string, list<string|callable>>
      */
-    protected $sections = [];
+    protected array $sections = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
-    protected $openSections = [];
+    protected array $openSections = [];
 
     /**
      * Constructor.
@@ -30,12 +30,11 @@ class SectionHelper
     /**
      * Gets a section.
      *
-     * @param string       $name
      * @param string|false $default
      *
      * @return string|false
      */
-    public function get($name, $default = false)
+    public function get(string $name, $default = false)
     {
         if (empty($this->sections[$name])) {
             return $default;
@@ -55,10 +54,9 @@ class SectionHelper
     /**
      * Sets a section value.
      *
-     * @param string          $name
      * @param string|callable $content
      */
-    public function set($name, $content)
+    public function set(string $name, $content): void
     {
         $this->sections[$name] = [$content];
     }
@@ -66,32 +64,25 @@ class SectionHelper
     /**
      * Adds a section value by appending it.
      *
-     * @param string          $name
      * @param string|callable $content
      */
-    public function add($name, $content)
+    public function add(string $name, $content): void
     {
         $this->sections[$name][] = $content;
     }
 
     /**
      * Checks if a section exists.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function exists($name)
+    public function exists(string $name): bool
     {
         return isset($this->sections[$name]);
     }
 
     /**
      * Starts a new section.
-     *
-     * @param string $name
      */
-    public function start($name)
+    public function start(string $name): void
     {
         if (ob_start()) {
             $this->openSections[] = $name;
@@ -103,7 +94,7 @@ class SectionHelper
      *
      * @throws \LogicException
      */
-    public function stop()
+    public function stop(): void
     {
         if (!($name = array_pop($this->openSections))) {
             throw new \LogicException('Cannot stop a section without first starting one.');

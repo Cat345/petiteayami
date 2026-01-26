@@ -191,9 +191,12 @@ class Coupon_Card extends Base_Model implements Model_Interface {
                 // Check if SHOW_ON_MY_COUPONS_PAGE is set to yes.
                 $show_only_eligible = get_post_meta( $post->ID, $this->_constants->SHOW_ONLY_ELIGIBILE_COUPON_MY_COUPONS_PAGE, true );
                 $is_valid           = 'yes' === $show_only_eligible ? ! is_wp_error( $discounts->is_coupon_valid( $coupon ) ) : true;
+                $is_expired         = $coupon->is_expired();
                 if (
                     'yes' === get_post_meta( $post->ID, $this->_constants->SHOW_ON_MY_COUPONS_PAGE, true ) && // Check if SHOW_ON_MY_COUPONS_PAGE is set to yes.
-                    $is_valid // Check if coupon is valid.
+                    $is_valid && // Check if coupon is valid.
+                    ! $is_expired // Check if coupon is not expired.
+
                 ) {
                     $coupons[ $post->ID ] = $coupon;
                 }
@@ -315,6 +318,10 @@ class Coupon_Card extends Base_Model implements Model_Interface {
         $used_by_coupons = $this->_helper_functions->get_coupons_used_by( get_current_user_id() );
         $coupons         = array_merge( $coupons, $used_by_coupons );
 
+        // Get all expired coupons.
+        $expired_coupons = $this->get_all_coupons_expired();
+        $coupons         = array_merge( $coupons, $expired_coupons );
+
         // Check coupons exists.
         if ( empty( $coupons ) ) {
             return '';
@@ -358,6 +365,39 @@ class Coupon_Card extends Base_Model implements Model_Interface {
                 array_replace_recursive( $this->get_default_attributes(), $attributes )
             );
         return ob_get_clean();
+    }
+
+    /**
+     * Get all expired coupons.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @return array of \ACFWP\Models\Objects\Advanced_Coupon
+     */
+    public function get_all_coupons_expired() {
+        $posts = get_posts(
+            array(
+                'post_type'      => 'shop_coupon',
+                'post_status'    => 'publish',
+                'posts_per_page' => -1,
+                'meta_key'       => $this->_constants->SHOW_ON_MY_COUPONS_PAGE,
+                'meta_value'     => 'yes',
+            )
+        );
+
+        $coupons = array();
+        if ( $posts && ! empty( $posts ) ) {
+            foreach ( $posts as $post ) {
+                $coupon = new Advanced_Coupon( $post->ID );
+
+                if ( $coupon->is_expired() ) {
+                    $coupons[ $post->ID ] = $coupon;
+                }
+            }
+        }
+
+        return $coupons;
     }
 
     /*

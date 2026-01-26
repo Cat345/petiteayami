@@ -8,26 +8,26 @@ use YOOtheme\Path;
 class FileHelper
 {
     /**
-     * @var string
+     * @var list<string>
      */
-    protected $rootDir;
+    protected array $rootDirs;
 
     /**
-     * @param string $rootDir
+     * @param string|list<string> $rootDirs
      */
-    public function __construct($rootDir)
+    public function __construct($rootDirs)
     {
-        $this->rootDir = $rootDir;
+        $this->rootDirs = (array) $rootDirs;
     }
 
     /**
      * Query files.
      *
-     * @param array $args
+     * @param array<string, mixed> $args
      *
-     * @return array
+     * @return array<string>
      */
-    public function query(array $args = [])
+    public function query(array $args = []): array
     {
         $args += ['offset' => 0, 'limit' => 10, 'order' => '', 'order_direction' => 'ASC'];
 
@@ -43,7 +43,8 @@ class FileHelper
         // filter out any dir
         $files = array_filter(
             $files,
-            fn($file) => File::isFile($file) && str_starts_with($file, $this->rootDir),
+            fn($file) => array_any($this->rootDirs, fn($dir) => str_starts_with($file, $dir)) &&
+                is_file($file),
         );
 
         // order

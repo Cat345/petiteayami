@@ -4,6 +4,11 @@ $link = $props['link'] ? $this->el('a', [
     'href' => $props['link'],
     'aria-label' => $props['link_aria_label'] ?: $element['link_aria_label'],
     'target' => ['_blank {@link_target}'],
+    'download' => $element['link_download'],
+    'rel' => [
+        'nofollow {@link_rel_nofollow}',
+        'noreferrer {@link_rel_noreferrer}'
+    ],
     'uk-scroll' => str_contains((string) $props['link'], '#'),
 ]) : null;
 
@@ -42,7 +47,7 @@ if ($link && $props['image'] && $element['image_link']) {
 
     $props['image'] = $link($element, [
         'class' => [
-            'uk-flex-1 uk-flex uk-flex-column {@panel_expand: image|both}',
+            'uk-flex-1 uk-flex uk-flex-column {@image_expand}',
         ],
     ], $props['image']);
 

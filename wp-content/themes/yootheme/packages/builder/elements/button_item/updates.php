@@ -3,6 +3,16 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.6.1' => function ($node) {
+        if (($node->props['link_target'] ?? '') === 'blank') {
+            $node->props['link_target'] = true;
+        }
+        if (($node->props['link_target'] ?? '') === 'modal') {
+            unset($node->props['link_target']);
+            $node->props['lightbox'] = true;
+        }
+    },
+
     '4.5.0-beta.0.1' => function ($node) {
         Arr::updateKeys($node->props, [
             'lightbox_width' => 'image_width',
@@ -12,11 +22,11 @@ return [
     },
 
     '1.18.0' => function ($node) {
-        if (Arr::get($node->props, 'link_target') === true) {
+        if (($node->props['link_target'] ?? '') === true) {
             $node->props['link_target'] = 'blank';
         }
 
-        if (Arr::get($node->props, 'button_style') === 'muted') {
+        if (($node->props['button_style'] ?? '') === 'muted') {
             $node->props['button_style'] = 'link-muted';
         }
     },

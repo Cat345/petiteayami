@@ -33,7 +33,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 			add_action( 'bwf_global_save_settings_woofunnels_general_settings', array( $this, 'update_global_settings_fields' ), 99 );
 
 		}
-		/** 
+		/**
 		 * Get the instance of the BWF_Admin_General_Settings class
 		 *
 		 * @return BWF_Admin_General_Settings The instance of the class
@@ -148,7 +148,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 		}
 
 		public function default_general_settings() {
-			
+
 			return apply_filters( 'bwf_general_settings_default_config', array(
 				'tiktok_pixel'                            => '',
 				'is_tiktok_add_to_cart_bump'              => '',
@@ -442,7 +442,7 @@ if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
 
 		public function update_general_settings() {
 			check_admin_referer( 'bwf_general_settings_update', '_nonce' );
-			$options = isset( $_POST['data'] ) ? bwf_clean( $_POST['data'] ) : 0;
+			$options = isset( $_POST['data'] ) ? bwf_clean( $_POST['data'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			$resp    = $this->update_global_settings_fields( $options );
 			wp_send_json( $resp );
 		}

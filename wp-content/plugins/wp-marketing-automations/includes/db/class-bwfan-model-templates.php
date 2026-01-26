@@ -17,11 +17,14 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 		 *
 		 * @return array|object|stdClass[]
 		 */
-		public static function bwfan_get_templates( $offset, $limit, $search, $id, $get_template = true, $mode = '' ) {
+		public static function bwfan_get_templates( $offset, $limit, $search, $id, $get_template = true, $mode = '', $category = '' ) {
 			global $wpdb;
 			$column = '*';
 			if ( ! $get_template ) {
 				$column = 'ID, title, mode,  created_at, updated_at';
+				if ( class_exists('BWFCRM_Category' ) ) {
+					$column .= ', category';
+				}
 			}
 			$query = "SELECT $column FROM {table_name} WHERE 1=1 AND type = 1 AND canned = 1";
 
@@ -38,15 +41,37 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			if ( ! empty( $search ) ) {
 				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
 			}
+
+			if ( ! empty( $category ) && class_exists('BWFCRM_Category' ) ) {
+				$category_ids = array_map( 'absint', explode( ',', $category ) );
+				$category_ids = array_filter( $category_ids ); // Remove any invalid values
+				$conditions   = [];
+				foreach ( $category_ids as $category_id ) {
+					// absint() ensures numeric value, so no LIKE wildcards to escape
+					$pattern      = '%"' . absint( $category_id ) . '"%';
+					$conditions[] = $wpdb->prepare( "category LIKE %s", $pattern );
+				}
+				if ( ! empty( $conditions ) ) {
+					$query .= " AND (" . implode( ' OR ', $conditions ) . ")";
+				}
+			}
+
 			$query .= ' ORDER BY updated_at DESC';
+
 			if ( intval( $limit ) > 0 ) {
 				$offset = ! empty( $offset ) ? intval( $offset ) : 0;
 				$query  .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 			}
 
 			$result = self::get_results( $query );
-
 			$result = is_array( $result ) && ! empty( $result ) ? $result : array();
+
+			if ( class_exists('BWFCRM_Category' ) && ! empty( $result ) ) {
+				foreach ( $result as $key => $value ) {
+					$category_ids               = ! empty( $value['category'] ) && BWFAN_Common::is_json( $value['category'] ) ? json_decode( $value['category'], true ) : [];
+					$result[ $key ]['category'] = ( class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'get_category_by_id' ) && isset( BWFCRM_Category::$TEMPLATE ) ) ? BWFCRM_Category::get_category_by_id( BWFCRM_Category::$TEMPLATE, $category_ids ) : [];
+				}
+			}
 
 			return $result;
 		}
@@ -99,7 +124,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 		 *
 		 * @return int
 		 */
-		public static function bwfan_get_templates_count( $search = '', $id = [], $mode = 0 ) {
+		public static function bwfan_get_templates_count( $search = '', $id = [], $mode = 0, $category = '' ) {
 			global $wpdb;
 			$table = $wpdb->prefix . 'bwfan_templates';
 
@@ -109,7 +134,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
-					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", $id );
+					$query        .= $wpdb->prepare( " AND ID in ( " . implode( ',', $placeholders ) . " )", ...$id );
 				}
 			}
 			if ( ! empty( $mode ) ) {
@@ -117,6 +142,19 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 			if ( ! empty( $search ) ) {
 				$query .= $wpdb->prepare( " AND title LIKE %s", "%" . esc_sql( $search ) . "%" );
+			}
+			if ( ! empty( $category ) ) {
+				$category_ids = array_map( 'absint', explode( ',', $category ) );
+				$category_ids = array_filter( $category_ids ); // Remove any invalid values
+				$conditions   = [];
+				foreach ( $category_ids as $category_id ) {
+					// absint() ensures numeric value, so no LIKE wildcards to escape
+					$pattern      = '%"' . absint( $category_id ) . '"%';
+					$conditions[] = $wpdb->prepare( "`category` LIKE %s", $pattern );
+				}
+				if ( ! empty( $conditions ) ) {
+					$query .= " AND (" . implode( ' OR ', $conditions ) . ")";
+				}
 			}
 
 			$result = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -204,10 +242,14 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				return;
 			}
 
-			self::insert( $data );
-			$id = absint( self::insert_id() );
+			/** Generate template hash if template content is provided and database update is complete */
+			$global_settings = BWFAN_Common::get_global_settings();
+			if ( ! empty( $global_settings['__db_update_3_6_5_completed'] ) && ! empty( $data['template'] ) && empty( $data['template_hash'] ) ) {
+				$data['template_hash'] = sha1( $data['template'] );
+			}
 
-			return $id;
+			self::insert( $data );
+			return absint( self::insert_id() );
 		}
 
 		/**
@@ -223,12 +265,16 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			global $wpdb;
+
+			$templates = BWFAN_Model_Templates::get_templates_by_ids( $id, [ 'ID', 'category' ] );
+			$templates = empty( $templates ) ? [] : $templates;
+
 			$template_data = [
 				'canned' => 0,
 			];
 			$table_name    = self::_table();
 			if ( is_array( $id ) ) {
-				/**Update multiple rows */
+				/** Update multiple rows */
 				$id = array_filter( array_map( 'intval', $id ) );
 				if ( ! empty( $id ) ) {
 					$placeholders = array_fill( 0, count( $id ), '%d' );
@@ -242,6 +288,12 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 
 				if ( false === $delete_template ) {
 					return false;
+				}
+			}
+
+			if ( class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'handle_category_count_decrease' ) ) {
+				if ( isset( BWFCRM_Category::$TEMPLATE ) && ! empty( $id ) ) {
+					BWFCRM_Category::handle_category_count_decrease( $id, BWFCRM_Category::$TEMPLATE );
 				}
 			}
 
@@ -296,6 +348,12 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				return false;
 			}
 
+			/** Generate template hash if template content is provided and database update is complete */
+			$global_settings = BWFAN_Common::get_global_settings();
+			if ( ! empty( $global_settings['__db_update_3_6_5_completed'] ) && ! empty( $data['template'] ) ) {
+				$data['template_hash'] = sha1( $data['template'] );
+			}
+
 			return ! ! self::update( $data, array(
 				'id' => absint( $id ),
 			) );
@@ -333,7 +391,14 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 				$template['updated_at'] = $create_time;
 
 				self::insert( $template );
-				$new_template_id = self::insert_id();
+				$new_template_id   = self::insert_id();
+				$existing_category = isset( $template['category'] ) ? json_decode( $template['category'], true ) : [];
+
+				if ( ! empty( $existing_category ) && class_exists( 'BWFCRM_Category' ) && method_exists( 'BWFCRM_Category', 'update_term_counts' ) ) {
+					if ( isset( BWFCRM_Category::$TEMPLATE ) ) {
+						BWFCRM_Category::update_term_counts( array_fill_keys( $existing_category, 1 ), $existing_category, BWFCRM_Category::$TEMPLATE );
+					}
+				}
 
 				if ( $new_template_id ) {
 					$status  = 200;
@@ -369,7 +434,7 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			$placeholders = array_fill( 0, count( $tids ), '%d' );
 			$placeholders = implode( ', ', $placeholders );
 			$query        = "SELECT " . implode( ', ', $columns ) . " FROM {$wpdb->prefix}bwfan_templates WHERE `ID` IN( $placeholders )";
-			$result       = $wpdb->get_results( $wpdb->prepare( $query, $tids ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$result       = $wpdb->get_results( $wpdb->prepare( $query, ...$tids ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			$data = [];
 			foreach ( $result as $template ) {
@@ -398,6 +463,41 @@ if ( ! class_exists( 'BWFAN_Model_Templates' ) && BWFAN_Common::is_pro_3_0() ) {
 			$query = "SELECT * FROM {$wpdb->prefix}bwfan_templates $where";
 
 			return $wpdb->get_results( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+		}
+
+		/**
+		 * Get data with categories id.
+		 *
+		 * @param array|int $category_ids Category IDs to filter by
+		 *
+		 * @return array|object|stdClass[]|null
+		 */
+		public static function get_data_with_categories( $category_ids ) {
+			if ( ! is_array( $category_ids ) ) {
+				$category_ids = [ $category_ids ];
+			}
+
+			// Sanitize all category IDs to integers
+			$category_ids = array_map( 'absint', $category_ids );
+			$category_ids = array_filter( $category_ids ); // Remove any invalid values
+
+			if ( empty( $category_ids ) ) {
+				return [];
+			}
+
+			global $wpdb;
+			$conditions = [];
+			foreach ( $category_ids as $category_id ) {
+				// absint() ensures numeric value, so no LIKE wildcards to escape
+				$pattern      = '%"' . absint( $category_id ) . '"%';
+				$conditions[] = $wpdb->prepare( "category LIKE %s", $pattern );
+			}
+
+			$sql = "SELECT id AS ID, category
+           FROM {table_name}
+           WHERE " . implode( ' OR ', $conditions );
+
+			return self::get_results( $sql );
 		}
 	}
 }

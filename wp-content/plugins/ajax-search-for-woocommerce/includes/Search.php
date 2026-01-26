@@ -29,7 +29,7 @@ class Search {
      * @return array|\WP_Error
      */
     public function searchPosts( $phrase, $args ) {
-        $args = wp_parse_args( $args, array(
+        $args = wp_parse_args( $args, [
             'post_type' => 'product',
             'fields'    => 'ids',
             'per_page'  => 10,
@@ -38,7 +38,7 @@ class Search {
             'orderby'   => 'relevance',
             'order'     => '',
             'lang'      => '',
-        ) );
+        ] );
         $args = $this->validateArgs( $args );
         if ( is_wp_error( $args ) ) {
             return $args;
@@ -46,11 +46,12 @@ class Search {
         if ( !dgoraAsfwFs()->is_premium() ) {
             list( $results, $totalResults, $totalPages ) = $this->doSearch( $phrase, $args );
         }
-        $response = array(
+        $response = [
             'results'     => $results,
             'total'       => $totalResults,
             'total_pages' => $totalPages,
-        );
+        ];
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
         return json_decode( json_encode( $response ), true );
     }
 
@@ -64,7 +65,7 @@ class Search {
      */
     private function doSearch( $phrase, $args ) : array {
         $searchResults = DGWT_WCAS()->nativeSearch->getSearchResults( $phrase, true, 'product-ids' );
-        $results = array();
+        $results = [];
         if ( isset( $searchResults['suggestions'] ) && is_array( $searchResults['suggestions'] ) ) {
             $results = wp_list_pluck( $searchResults['suggestions'], 'ID' );
         }
@@ -73,7 +74,7 @@ class Search {
          * However, here, when there are no results, we just want to return an empty array.
          */
         if ( isset( $results[0] ) && $results[0] === 0 ) {
-            $results = array();
+            $results = [];
         }
         $totalResults = count( $results );
         $totalPages = (int) ceil( $totalResults / $args['per_page'] );
@@ -90,10 +91,10 @@ class Search {
             $totalPages = 0;
         }
         if ( $args['fields'] === 'ids' ) {
-            return array($results, $totalResults, $totalPages);
+            return [$results, $totalResults, $totalPages];
         }
-        $results = DGWT_WCAS()->nativeSearch->getProductsData( $results, -1, array('price', 'sku', 'thumb_html') );
-        return array($results, $totalResults, $totalPages);
+        $results = DGWT_WCAS()->nativeSearch->getProductsData( $results, -1, ['price', 'sku', 'thumb_html'] );
+        return [$results, $totalResults, $totalPages];
     }
 
     /**
@@ -115,11 +116,11 @@ class Search {
         if ( $args['offset'] < 0 ) {
             $args['offset'] = 0;
         }
-        $allowedPostTypes = array('product');
+        $allowedPostTypes = ['product'];
         if ( !in_array( $args['post_type'], $allowedPostTypes, true ) ) {
             $error->add( 'dgwt-wcas-invalid-arg-post-type', 'Invalid argument: post_type' );
         }
-        if ( !in_array( $args['fields'], array('all', 'ids'), true ) ) {
+        if ( !in_array( $args['fields'], ['all', 'ids'], true ) ) {
             $error->add( 'dgwt-wcas-invalid-arg-fields', 'Invalid argument: fields' );
         }
         if ( $error->has_errors() ) {

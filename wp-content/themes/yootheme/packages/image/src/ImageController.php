@@ -6,91 +6,86 @@ use YOOtheme\Http\CallbackStream;
 use YOOtheme\Http\Exception;
 use YOOtheme\Http\Request;
 use YOOtheme\Http\Response;
+use YOOtheme\Http\Uri;
+use YOOtheme\Image\ImageDriver;
+use YOOtheme\Image\ImageResizable;
+use YOOtheme\Image\Listener\LoadImageUrl;
 
 class ImageController
 {
     protected ?string $cache;
-    protected ImageProvider $provider;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(ImageProvider $provider)
+    public function __construct(Config $config)
     {
-        $this->cache = $provider->cache;
-        $this->provider = $provider;
+        $this->cache = $config('image.cacheDir');
+
+        // create cache directory
+        File::makeDir($this->cache, 0777, true);
     }
 
     /**
      * Gets the image file.
-     *
-     * @param Request       $request
-     * @param Response      $response
-     *
-     * @throws \Exception
-     *
-     * @return Response
      */
-    public function get(Request $request, Response $response)
+    public function get(Request $request, Response $response): Response
     {
-        $src = $request->getQueryParam('src', '');
-        $hash = $request->getQueryParam('hash');
+        $params = $request->getQueryParams();
+        $file = $request->getAttribute('routeParams')['file'] ?? '';
+        $cache = Path::join($this->cache, $file);
 
-        if (!$request->getAttribute('save')) {
-            $this->cache = null;
-        }
-
-        if ($hash !== $this->provider->getHash($src)) {
+        if (!$this->verifyHash($file, $params)) {
             throw new Exception(400, 'Invalid image hash');
         }
 
-        $params = json_decode($src, true);
-        $file = $params['file'] ?? '';
-        unset($params['file']);
+        if (($params['cache'] ?? '') === 'false') {
+            $this->cache = null;
+        }
 
         $response =
-            $this->loadImage($this->getImage($file, $params, false), $response) ??
-            $this->createImage($this->getImage($file, $params), $response);
+            $this->loadImage($cache, $response) ?? $this->createImage($cache, $params, $response);
+
+        if ($request->isMethod('HEAD')) {
+            $response = $response->withBody(new CallbackStream(fn() => ''));
+        }
 
         return $response->withHeader('Cache-Control', 'max-age=600, must-revalidate');
     }
 
-    protected function getImage(string $file, array $params, bool $resource = true): Image
+    protected function loadImage(string $cache, Response $response): ?Response
     {
-        $image = $this->provider->create($file, $resource);
-
-        if (!$image) {
-            throw new Exception(404, "Image '{$file}' not found");
+        if (!is_file($cache) || !($info = ImageResizable::getInfo($cache))) {
+            return null;
         }
-
-        if ($resource) {
-            Memory::raise();
-        }
-
-        return $image->apply($params);
-    }
-
-    protected function loadImage(Image $image, Response $response): ?Response
-    {
-        $cache = $this->cache
-            ? Path::join($this->cache, substr($image->getHash(), 0, 2), $image->getFilename())
-            : null;
 
         $callback = function () use ($cache): string {
             readfile($cache);
             return '';
         };
 
-        return $cache && is_file($cache)
-            ? $response
-                ->withBody(new CallbackStream($callback))
-                ->withHeader('Content-Type', "image/{$image->getType()}")
-                ->withHeader('Content-Length', filesize($cache))
-            : null;
+        return $response
+            ->withBody(new CallbackStream($callback))
+            ->withHeader('Content-Type', "image/{$info[2]}")
+            ->withHeader('Content-Length', (string) filesize($cache));
     }
 
-    protected function createImage(Image $image, Response $response): Response
+    /**
+     * @param array<string, string> $params
+     */
+    protected function createImage(string $cache, array $params, Response $response): Response
     {
+        Memory::raise();
+
+        $image = ImageDriver::fromFile($params['src']);
+
+        if (!$image) {
+            throw new Exception(404, "Image '{$params['src']}' not found");
+        }
+
+        foreach ($params as $key => $args) {
+            if (method_exists($image, $key)) {
+                $image = $image->$key(...explode(',', $args));
+            }
+        }
+
         $temp = fopen('php://temp', 'rw+');
 
         if (!$temp) {
@@ -101,9 +96,7 @@ class ImageController
             throw new Exception(500, 'Image saving failed');
         }
 
-        $cache = $this->cache
-            ? Path::join($this->cache, substr($image->getHash(), 0, 2), $image->getFilename())
-            : null;
+        $cache = $this->cache ? $cache : null;
 
         $callback = function () use ($temp, $cache): string {
             // output image first
@@ -124,6 +117,22 @@ class ImageController
         return $response
             ->withBody(new CallbackStream($callback))
             ->withHeader('Content-Type', "image/{$image->getType()}")
-            ->withHeader('Content-Length', ftell($temp));
+            ->withHeader('Content-Length', (string) ftell($temp));
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    protected function verifyHash(string $file, array $params): bool
+    {
+        $query = array_intersect_key($params, array_flip(get_class_methods(ImageDriver::class)));
+        $query += ['cachekey' => pathinfo($file, PATHINFO_FILENAME)];
+
+        if ($params['cache'] ?? false) {
+            $query['cache'] = $params['cache'];
+        }
+
+        $uri = ($params['src'] ?? '') . '?' . (new Uri(''))->withQueryParams($query)->getQuery();
+        return hash_equals($params['hash'] ?? '', LoadImageUrl::getHash($uri));
     }
 }

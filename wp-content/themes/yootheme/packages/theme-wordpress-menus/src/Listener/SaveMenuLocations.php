@@ -2,18 +2,14 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
-use YOOtheme\Config;
-
 class SaveMenuLocations
 {
-    public Config $config;
-
-    public function __construct(Config $config)
-    {
-        $this->config = $config;
-    }
-
-    public function handle(array $config): array
+    /**
+     * @param array<string, array<string, mixed>> $config
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function handle(array $config): array
     {
         // skip when WPML active
         if (class_exists('SitePress', false)) {

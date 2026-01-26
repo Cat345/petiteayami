@@ -1,8 +1,25 @@
 <?php
 
-$el = $this->el(!$props['width'] && $props['html_element'] ? $props['html_element'] : 'div', $attrs);
+$el = $this->el($props['html_element'] ?: 'div');
 
 $el->attr([
+
+    'class' => [
+
+        'uk-grid-margin[-{row_gap}] {@row_gap: |small|medium|large}' => !$props['margin_top'] || !$props['margin_bottom'],
+
+        'uk-container {@width}',
+        'uk-container-{width}{@width: xsmall|small|large|xlarge|expand}',
+        'uk-padding-remove-horizontal' => ($props['padding_remove_horizontal'] && $props['width'] && $props['width'] != 'expand') || $props['parent'] == 'layout',
+        'uk-container-expand-{width_expand} {@width} {@!width:expand}',
+    ],
+
+]);
+
+// Grid
+$grid = $props['width'] ? $this->el('div') : null;
+
+($grid ?: $el)->attr([
 
     'class' => [
         'uk-grid',
@@ -20,26 +37,21 @@ $el->attr([
         'parallax-start: {parallax_start};',
         'parallax-end: {parallax_end};',
     ] : count($children) > 1,
+
 ]);
 
-// Margin
-$margin = $this->el($props['html_element'] ?: 'div', [
-    'class' => [
+?>
 
-        'uk-grid-margin[-{row_gap}] {@!margin} {@row_gap: |small|medium|large}',
+<?= $el($props, $attrs) ?>
 
-        'uk-margin {@margin: default}',
-        'uk-margin-{!margin: |default}',
-        'uk-margin-remove-top {@margin_remove_top}{@!margin: remove-vertical}',
-        'uk-margin-remove-bottom {@margin_remove_bottom}{@!margin: remove-vertical}',
+    <?php if ($grid) : ?>
+    <?= $grid($props) ?>
+    <?php endif ?>
 
-        'uk-container {@width}',
-        'uk-container-{width}{@width: xsmall|small|large|xlarge|expand}',
-        'uk-padding-remove-horizontal' => ($props['padding_remove_horizontal'] && $props['width'] && $props['width'] != 'expand') || $props['parent'] == 'layout',
-        'uk-container-expand-{width_expand} {@width} {@!width:expand}',
-    ],
-]);
+        <?= $builder->render($children) ?>
 
-echo $props['width']
-    ? $margin($props, $el($props, $builder->render($children)))
-    : $el($props, $margin->attrs, $builder->render($children));
+    <?php if ($grid) : ?>
+    <?= $grid->end() ?>
+    <?php endif ?>
+
+<?= $el->end() ?>

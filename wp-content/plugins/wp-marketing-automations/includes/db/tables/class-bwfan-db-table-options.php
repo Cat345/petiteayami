@@ -17,6 +17,22 @@ class BWFAN_DB_Table_Options extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'id',
+			'indexes'    => [
+				'id'  => [ 'id' ],
+				'key' => [ 'key' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string

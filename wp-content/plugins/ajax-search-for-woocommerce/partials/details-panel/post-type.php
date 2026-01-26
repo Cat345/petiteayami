@@ -21,12 +21,12 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 
 		<?php do_action( "dgwt/wcas/details_panel/{$vars->postType}/image_before", $vars ); ?>
 		<a class="dgwt-wcas-pd-details-post" href="<?php echo esc_url( $vars->link ); ?>" title="<?php echo esc_attr( wp_strip_all_tags( $vars->title ) ); ?>">
-			<?php if ( ! empty( $vars->imageSrc ) ): ?>
+			<?php if ( ! empty( $vars->imageSrc ) ) : ?>
 				<div class="dgwt-wcas-details-main-image">
 					<img
 						src="<?php echo esc_url( $vars->imageSrc ); ?>"
-						<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : '' ?>
-						<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : '' ?>
+						<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'srcset="' . esc_attr( $vars->imageSrcset ) . '"' : ''; ?>
+						<?php echo ( ! empty( $vars->imageSrcset ) && ! empty( $vars->imageSizes ) ) ? 'sizes="' . esc_attr( $vars->imageSizes ) . '"' : ''; ?>
 						alt="<?php echo esc_attr( wp_strip_all_tags( $vars->title ) ); ?>"
 					>
 				</div>
@@ -39,7 +39,7 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 				<?php echo Helpers::secureHtmlOutput( $vars->title, 'name' ); ?>
 			</a>
 
-			<?php if ( ! empty( $vars->desc ) ): ?>
+			<?php if ( ! empty( $vars->desc ) ) : ?>
 				<div class="dgwt-wcas-details-desc">
 					<?php echo Helpers::secureHtmlOutput( $vars->desc, 'description' ); ?>
 				</div>

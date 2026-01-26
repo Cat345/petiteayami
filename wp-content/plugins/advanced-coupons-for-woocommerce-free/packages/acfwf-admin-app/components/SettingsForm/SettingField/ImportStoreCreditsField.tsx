@@ -12,6 +12,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 
 // Helpers
 import axiosInstance from '../../../helpers/axios';
+import { sanitizeHtml } from '../../../../shared/utils';
 
 // SCSS
 import './index.scss';
@@ -191,7 +192,7 @@ const ImportStoreCreditsField = (props: IProps) => {
         <Col className="setting-field-column tool-field-column" span={16}>
           {pluginOptions?.length ? (
             <>
-              {desc ? <p className="field-desc" dangerouslySetInnerHTML={{ __html: desc }} /> : null}
+              {desc ? <p className="field-desc" dangerouslySetInnerHTML={{ __html: sanitizeHtml(desc) }} /> : null}
               <div className="import-store-credits-form-wrapper">
                 <Select
                   style={{ width: `100%` }}
@@ -235,7 +236,7 @@ const ImportStoreCreditsField = (props: IProps) => {
                 <div className="import-store-credits-progress-wrapper">
                   <p
                     dangerouslySetInnerHTML={{
-                      __html: labels.progress_text.replace('%s', `<strong>${selectedPlugin}</strong>`),
+                      __html: sanitizeHtml(labels.progress_text.replace('%s', `<strong>${selectedPlugin}</strong>`)),
                     }}
                   />
                   <Progress

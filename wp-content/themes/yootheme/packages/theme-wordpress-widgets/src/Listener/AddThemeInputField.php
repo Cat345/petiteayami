@@ -7,11 +7,13 @@ use WP_Widget;
 class AddThemeInputField
 {
     /**
+     * @link https://developer.wordpress.org/reference/hooks/in_widget_form/
+     *
      * @param WP_Widget $widget
      * @param null       $return
-     * @param array      $instance
+     * @param array<string, mixed> $instance
      */
-    public static function handle($widget, $return, $instance)
+    public static function handle($widget, $return, $instance): void
     {
         echo sprintf(
             '<input type="hidden" name="%s" value="%s" data-widget>',

@@ -23,9 +23,6 @@ if (!(($props['image'] || $props['video'])
 }
 
 // Override default settings
-if ($element['grid_masonry'] && !(($props['image'] || $props['video']) && in_array($element['image_align'], ['left', 'right']))) {
-    $element['panel_expand'] = '';
-}
 $element['image_text_color'] = $props['image_text_color'] ?: $element['image_text_color'];
 
 // If link is not set use image/video field for the lightbox
@@ -62,6 +59,8 @@ $el = $this->el($props['item_element'] ?: 'div', [
         'el-item',
         'uk-margin-auto uk-width-{item_maxwidth}',
         'uk-flex uk-flex-column {@panel_link}' => $props['link'],
+
+        'tm-video-toggle {@video_autoplay: hover}' => $props['video'] || $props['hover_video'],
     ],
 
 ]);
@@ -70,6 +69,8 @@ $el = $this->el($props['item_element'] ?: 'div', [
 $link_container = $props['link'] && $element['panel_link'] ? $this->el('a', [
 
     'class' => [
+        'uk-tile-hover {@panel_style: tile-.*} {@panel_link_hover}',
+        'uk-card-hover {@panel_style: card-(default|primary|secondary|overlay)} {@panel_link_hover}',
         'uk-flex-1',
     ],
 
@@ -80,8 +81,6 @@ $link_container = $props['link'] && $element['panel_link'] ? $this->el('a', [
     'class' => [
         'uk-panel [uk-{panel_style: tile-.*}] {@panel_style: |tile-.*}',
         'uk-card uk-{panel_style: card-.*} [uk-card-{!panel_padding: |default}]',
-        'uk-tile-hover {@panel_style: tile-.*} {@panel_link} {@panel_link_hover}' => $props['link'],
-        'uk-card-hover {@panel_style: card-(default|primary|secondary)} {@panel_link} {@panel_link_hover}' => $props['link'],
         'uk-transition-toggle {@panel_link}' => $props['image'] && ($element['image_transition'] || $element['image_transition_border'] || $props['hover_image'] || $props['hover_video']),
         'uk-flex uk-flex-column {@panel_expand}',
         // Image not wrapped in card media container or grid
@@ -97,7 +96,7 @@ if (($element['panel_padding'] && $props['image'] && (!$element['panel_style'] |
 
     $content_container = $this->el('div', [
         'class' => [
-            'uk-flex-1 uk-flex uk-flex-column {@panel_expand: content|both}',
+            'uk-flex-1 uk-flex uk-flex-column {@content_expand}',
             // 1 Column Content Width
             'uk-container uk-container-{panel_content_width}',
             // Image not wrapped in card media container or grid
@@ -143,11 +142,11 @@ if ($props['image'] && in_array($element['image_align'], ['left', 'right'])) {
             // Order
             'uk-flex-last[@{image_grid_breakpoint}] {@image_align: right}',
             // Center vertically and keep text align
-            'uk-flex uk-flex-middle[@{image_grid_breakpoint}] uk-flex-{text_align} {@image_vertical_align} {@panel_expand: content}',
-            'uk-flex-{text_align}[@{text_align_breakpoint} [uk-flex-{text_align_fallback}]] {@panel_expand: content}',
+            'uk-flex uk-flex-middle[@{image_grid_breakpoint}] uk-flex-{text_align} {@image_vertical_align} {@content_expand} {@!image_expand}',
+            'uk-flex-{text_align}[@{text_align_breakpoint} [uk-flex-{text_align_fallback}]] {@content_expand} {@!image_expand}',
             // Expand, also when stacking
-            'uk-flex uk-flex-column {@panel_expand: image|both} [uk-flex-1 uk-flex-initial@{image_grid_breakpoint}]',
-            'uk-flex-{flex_column_align}[@{text_align_breakpoint} [uk-flex-{flex_column_align_fallback}]] {@panel_expand: image|both}',
+            'uk-flex uk-flex-column {@image_expand} [uk-flex-1 uk-flex-initial@{image_grid_breakpoint}]',
+            'uk-flex-{flex_column_align}[@{text_align_breakpoint} [uk-flex-{flex_column_align_fallback}]] {@image_expand}',
         ],
 
     ]);
@@ -157,12 +156,12 @@ if ($props['image'] && in_array($element['image_align'], ['left', 'right'])) {
         'class' => [
             'uk-width-expand',
             // Center vertically
-            'uk-flex uk-flex-column uk-flex-center[@{image_grid_breakpoint}] {@image_vertical_align} {@panel_expand: image}',
+            'uk-flex uk-flex-column uk-flex-center[@{image_grid_breakpoint}] {@image_vertical_align} {@image_expand} {@!content_expand}',
             // Expand, also when stacking but only for `content`
-            'uk-flex uk-flex-column {@panel_expand: content|both}',
-            'uk-flex-1 {@image_grid_breakpoint} {@panel_expand: content}',
-            'uk-flex-1[@{image_grid_breakpoint} uk-flex-none] {@panel_expand: both}',
-            'uk-flex-none uk-flex-1@{image_grid_breakpoint} {@panel_expand: image}',
+            'uk-flex uk-flex-column {content_expand}',
+            'uk-flex-1 {@image_grid_breakpoint} {@content_expand} {@!image_expand}',
+            'uk-flex-1[@{image_grid_breakpoint} uk-flex-none] {@content_expand} {@image_expand}',
+            'uk-flex-none uk-flex-1@{image_grid_breakpoint} {@image_expand} {@!content_expand}',
         ],
 
     ]);
@@ -182,8 +181,8 @@ if ($element['panel_style'] && str_starts_with($element['panel_style'], 'card-')
     $props['image'] = $this->el('div', [
         'class' => [
             'uk-card-media-{image_align}',
-            'uk-flex-1 uk-flex uk-flex-column {@panel_expand: image|both}',
-            'uk-flex-{flex_column_align}[@{text_align_breakpoint} [uk-flex-{flex_column_align_fallback}]] {@panel_expand: image|both} {@!image_align: left|right}',
+            'uk-flex-1 uk-flex uk-flex-column {@image_expand}',
+            'uk-flex-{flex_column_align}[@{text_align_breakpoint} [uk-flex-{flex_column_align_fallback}]] {@image_expand} {@!image_align: left|right}',
         ],
 
         'uk-toggle' => [

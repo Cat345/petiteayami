@@ -5,7 +5,7 @@ namespace YOOtheme\Theme\Wordpress;
 return [
     'events' => [
         'theme.init' => [Listener\LoadMenuLocations::class => '@handle'],
-        'config.save' => [Listener\SaveMenuLocations::class => '@handle'],
+        'config.save' => [Listener\SaveMenuLocations::class => 'handle'],
         'customizer.init' => [Listener\LoadMenuData::class => '@handle'],
     ],
 

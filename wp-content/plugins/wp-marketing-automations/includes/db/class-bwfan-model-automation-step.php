@@ -344,4 +344,28 @@ class BWFAN_Model_Automation_Step extends BWFAN_Model {
 
 		return $return_array;
 	}
+
+	/**
+	 * Get step data by IDs
+	 *
+	 * @param $step_ids
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public static function get_step_data_by_ids( $step_ids ) {
+		if ( empty( $step_ids ) ) {
+			return [];
+		}
+		global $wpdb;
+
+		$table_name = self::_table();
+
+		$placeholder = array_fill( 0, count( $step_ids ), '%d' );
+		$placeholder = implode( ", ", $placeholder );
+		$query       = "SELECT * FROM $table_name WHERE `ID` IN ($placeholder) AND `status` = 1;";
+		$query       = $wpdb->prepare( $query, $step_ids );
+
+		//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_results( $query, ARRAY_A );
+	}
 }

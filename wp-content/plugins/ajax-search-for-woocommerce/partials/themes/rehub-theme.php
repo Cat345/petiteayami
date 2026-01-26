@@ -4,10 +4,12 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-search-instance" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1024" ]' ) . '</div>';
-	echo '<div id="wcas-search-icon-instance" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1024" ]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-search-instance" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1024" ]' ) . '</div>';
+		echo '<div id="wcas-search-icon-instance" style="display: block;">' . do_shortcode( '[wcas-search-form layout="classic" mobile_overlay="1" mobile_breakpoint="1024" ]' ) . '</div>';
+		?>
 	<script>
 		var themeSearch = document.querySelector('#main_header .head_search');
 		if (themeSearch !== null) {
@@ -60,5 +62,7 @@ add_action( 'wp_footer', function () {
 			}
 		}
 	</style>
-	<?php
-}, 15 );
+		<?php
+	},
+	15
+);

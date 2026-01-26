@@ -2,18 +2,25 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Post;
+use WP_Post_Type;
+use WP_Query;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class SinglePostQueryType
 {
     /**
-     * @param \WP_Post_Type $type
+     * @param WP_Post_Type $type
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Post_Type $type)
+    public static function config(WP_Post_Type $type): array
     {
         $name = Str::camelCase($type->name, true);
         $field = Str::camelCase(['single', $type->name]);
@@ -95,8 +102,15 @@ class SinglePostQueryType
         ];
     }
 
+    /**
+     * @return WP_Post
+     */
     public static function resolve()
     {
+        /**
+         * @var WP_Post $post
+         * @var WP_Query $wp_query
+         */
         global $post, $wp_query;
 
         $wp_query->setup_postdata($post);
@@ -104,6 +118,11 @@ class SinglePostQueryType
         return $post;
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return ?WP_Post
+     */
     public static function resolvePreviousPost($root, $args)
     {
         $args += ['taxonomy' => ''];
@@ -111,6 +130,11 @@ class SinglePostQueryType
             null;
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return ?WP_Post
+     */
     public static function resolveNextPost($root, $args)
     {
         $args += ['taxonomy' => ''];

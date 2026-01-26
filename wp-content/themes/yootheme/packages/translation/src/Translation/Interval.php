@@ -12,14 +12,9 @@ class Interval
     /**
      * Tests if the given number is in the math interval.
      *
-     * @param int    $number   A number
-     * @param string $interval An interval
-     *
      * @throws \InvalidArgumentException
-     *
-     * @return bool
      */
-    public static function test($number, $interval)
+    public static function test(int $number, string $interval): bool
     {
         $interval = trim($interval);
 
@@ -52,10 +47,8 @@ class Interval
 
     /**
      * Returns a Regexp that matches valid intervals.
-     *
-     * @return string A Regexp (without the delimiters)
      */
-    public static function getIntervalRegexp()
+    public static function getIntervalRegexp(): string
     {
         return <<<EOF
                 ({\s*
@@ -74,7 +67,7 @@ class Interval
         EOF;
     }
 
-    private static function convertNumber($number)
+    private static function convertNumber(string $number): float
     {
         if ('-Inf' === $number) {
             return log(0);

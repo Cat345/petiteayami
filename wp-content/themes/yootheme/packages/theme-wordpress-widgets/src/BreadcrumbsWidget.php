@@ -2,9 +2,9 @@
 
 namespace YOOtheme\Theme\Widgets;
 
-use function YOOtheme\app;
 use YOOtheme\Theme\Wordpress\Breadcrumbs;
 use YOOtheme\View;
+use function YOOtheme\app;
 
 class BreadcrumbsWidget extends \WP_Widget
 {
@@ -15,7 +15,13 @@ class BreadcrumbsWidget extends \WP_Widget
         ]);
     }
 
-    public function widget($args, $instance)
+    /**
+     * @inheritdoc
+     *
+     * @param array<string, mixed> $args
+     * @param array<string, mixed> $instance
+     */
+    public function widget($args, $instance): void
     {
         $view = app(View::class);
 
@@ -33,6 +39,11 @@ class BreadcrumbsWidget extends \WP_Widget
         echo implode("\n", $output);
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @param array<string, mixed> $instance
+     */
     public function form($instance)
     {
         $instance = wp_parse_args((array) $instance, [

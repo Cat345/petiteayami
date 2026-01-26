@@ -50,6 +50,8 @@ class BWFAN_Compatibilities {
 			'rest/class-bwfan-compatibility-with-image-optimisation.php'               => defined( 'IMAGE_OPTIMIZATION_VERSION' ),
 			'rest/class-bwfan-compatibility-with-atom-stock-manager.php'               => defined( 'ATUM_VERSION' ),
 			'rest/class-bwfan-compatibility-with-security-by-cleantalk.php'            => defined( 'SPBC_VERSION' ),
+			'rest/class-bwfan-compatibility-with-tec.php'                              => class_exists( 'Tribe__Events__Main' ),
+			'rest/class-bwfan-compatibility-with-hostinger-reach.php'                  => class_exists( 'Hostinger\Reach\Jobs\ActionScheduler' ),
 
 			// other files
 			'class-bwfan-compatibility-with-wp-oauth.php'                              => ( defined( 'WPOAUTH_VERSION' ) && class_exists( 'WO_SERVER' ) ),

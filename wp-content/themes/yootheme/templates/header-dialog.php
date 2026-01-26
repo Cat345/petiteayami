@@ -19,7 +19,6 @@ if (in_array($position, ['navbar', 'navbar-push', 'header', 'header-push'])) {
     } else {
         $attrs_toggle['class'][] = 'uk-navbar-toggle';
     }
-    $attrs_toggle['class'][] = str_starts_with($config("$dialog.layout"), 'dropbar') ? 'uk-navbar-toggle-animate' : '';
 
 } elseif (in_array($position, ['navbar-mobile', 'header-mobile'])) {
 
@@ -31,7 +30,6 @@ if (in_array($position, ['navbar', 'navbar-push', 'header', 'header-push'])) {
 
     $attrs_toggle['href'] ='#tm-dialog-mobile';
     $attrs_toggle['class'][] = 'uk-navbar-toggle';
-    $attrs_toggle['class'][] = str_starts_with($config("$dialog.layout"), 'dropbar') ? 'uk-navbar-toggle-animate' : '';
 
 }
 
@@ -43,13 +41,13 @@ if (in_array($position, ['navbar', 'navbar-push', 'header', 'header-push'])) {
     <a<?= $this->attrs($attrs_toggle) ?>>
 
         <?php if ($config("$dialog.toggle_text") && explode(':', $config("$dialog.toggle"), 2)[1] == 'end') : ?>
-        <span class="uk-margin-small-right uk-text-middle"><?= __('Menu', 'yootheme') ?></span>
+        <span class="uk-margin-xsmall-right uk-text-middle"><?= __('Menu', 'yootheme') ?></span>
         <?php endif ?>
 
         <div uk-navbar-toggle-icon></div>
 
         <?php if ($config("$dialog.toggle_text") && explode(':', $config("$dialog.toggle"), 2)[1] == 'start') : ?>
-        <span class="uk-margin-small-left uk-text-middle"><?= __('Menu', 'yootheme') ?></span>
+        <span class="uk-margin-xsmall-left uk-text-middle"><?= __('Menu', 'yootheme') ?></span>
         <?php endif ?>
 
     </a>

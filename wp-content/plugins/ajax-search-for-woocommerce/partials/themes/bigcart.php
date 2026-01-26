@@ -4,12 +4,17 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-} );
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		var wcasThemeSearch = document.querySelector('#bigcart-search-box .woocommerce-product-search');
 		if (wcasThemeSearch !== null) {
@@ -58,5 +63,6 @@ add_action( 'wp_footer', function () {
 			transform: none !important;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

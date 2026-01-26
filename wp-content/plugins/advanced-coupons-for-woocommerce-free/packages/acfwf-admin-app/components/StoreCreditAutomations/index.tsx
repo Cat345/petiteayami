@@ -12,6 +12,9 @@ import PluginInstallerButton from '../PluginInstallerButton';
 // SCSS
 import './index.scss';
 
+// Helpers
+import { sanitizeHtml } from '../../../shared/helpers/sanitize';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -59,7 +62,7 @@ const StoreCreditAutomations = () => {
       <div className="store-credit-automations__inner">
         <div className="store-credit-automations__header">
           <img src={logo} />
-          <p dangerouslySetInnerHTML={{ __html: main_content }} />
+          <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(main_content) }} />
 
           {isPluginActive ? (
             <Button className="main-cta-btn" type="primary" size="large" href={action_url} icon={<PlusOutlined />}>

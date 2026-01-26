@@ -11,16 +11,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Restoration extends ThemeIntegration {
 	public function extraFunctions() {
-		add_filter( 'wc_get_template', function ( $template, $templateName ) {
-			if ( ! empty( $templateName ) && $templateName === 'product-searchform.php' ) {
-				$template = DGWT_WCAS_DIR . 'partials/themes/restoration-searchform.php';
-			}
+		add_filter(
+			'wc_get_template',
+			function ( $template, $templateName ) {
+				if ( ! empty( $templateName ) && $templateName === 'product-searchform.php' ) {
+					$template = DGWT_WCAS_DIR . 'partials/themes/restoration-searchform.php';
+				}
 
-			return $template;
-		}, 10, 5 );
+				return $template;
+			},
+			10,
+			5
+		);
 
-
-		add_action( 'wp_head', function () { ?>
+		add_action(
+			'wp_head',
+			function () { ?>
 			<style>
 				.thb-header-inline-search-inner .dgwt-wcas-sf-wrapp input[type=search].dgwt-wcas-search-input {
 					border: none;
@@ -43,7 +49,8 @@ class Restoration extends ThemeIntegration {
 					color: #fff;
 				}
 			</style>
-			<?php
-		} );
+				<?php
+			}
+		);
 	}
 }

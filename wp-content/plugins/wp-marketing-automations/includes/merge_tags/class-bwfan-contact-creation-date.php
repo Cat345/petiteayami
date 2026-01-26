@@ -51,7 +51,8 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 		$cid           = isset( $get_data['contact_id'] ) ? $get_data['contact_id'] : '';
 		$creation_date = $this->get_creation_date( $cid );
 		if ( ! empty( $creation_date ) ) {
-			$creation_date = $this->format_datetime( $creation_date, $parameters );
+			$is_gmt        = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
+			$creation_date = $this->format_datetime( $creation_date, $parameters, $is_gmt );
 
 			return $this->parse_shortcode_output( $creation_date, $attr );
 		}
@@ -62,7 +63,8 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 			$cid           = BWFAN_Woocommerce_Compatibility::get_order_data( $order, '_woofunnel_cid' );
 			$creation_date = $this->get_creation_date( $cid );
 			if ( false !== $creation_date ) {
-				$creation_date = $this->format_datetime( $creation_date, $parameters );
+				$is_gmt        = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
+				$creation_date = $this->format_datetime( $creation_date, $parameters, $is_gmt );
 
 				return $this->parse_shortcode_output( $creation_date, $attr );
 			}
@@ -84,7 +86,8 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 		if ( absint( $contact->get_id() ) > 0 ) {
 			$creation_date = $contact->get_creation_date();
 			if ( ! empty( $creation_date ) ) {
-				$creation_date = $this->format_datetime( $creation_date, $parameters );
+				$is_gmt        = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
+				$creation_date = $this->format_datetime( $creation_date, $parameters, $is_gmt );
 
 				return $this->parse_shortcode_output( $creation_date, $attr );
 			}
@@ -99,7 +102,8 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 	 * @return string
 	 */
 	public function get_dummy_preview( $parameters ) {
-		return $this->format_datetime( date( 'j M Y' ), $parameters );
+		$is_gmt = ! empty( $parameters['is_gmt'] ) && 'false' !== $parameters['is_gmt'];
+		return $this->format_datetime( gmdate( 'j M Y' ), $parameters, $is_gmt );
 	}
 
 	/**
@@ -132,7 +136,7 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,
@@ -159,6 +163,12 @@ class BWFAN_Contact_Creation_Date extends BWFAN_Merge_Tag {
 				'placeholder' => 'e.g. +2 months, -1 day, +6 hours',
 				'required'    => false,
 				'toggler'     => array(),
+			],
+			[
+				'id'            => 'is_gmt',
+				'type'          => 'checkbox',
+				'checkboxlabel' => __( 'In GMT time ( Default in store time )', 'wp-marketing-automations' ),
+				'description'   => '',
 			],
 		];
 	}

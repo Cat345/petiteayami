@@ -3,6 +3,43 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.8.1' => function ($node) {
+        unset($node->props['video_title']);
+    },
+
+    '5.0.0-beta.0.16' => function ($node) {
+        Arr::updateKeys($node->props, ['padding' => 'padding_top']);
+        if ($node->props['padding_top'] ?? '') {
+            $node->props['padding_bottom'] = $node->props['padding_top'];
+        }
+        if ($node->props['padding_remove_top'] ?? '') {
+            $node->props['padding_top'] = 'none';
+        }
+        if ($node->props['padding_remove_bottom'] ?? '') {
+            $node->props['padding_bottom'] = 'none';
+        }
+        unset(
+            $node->props['padding_remove_top'],
+            $node->props['padding_remove_bottom'],
+        );
+    },
+
+    '5.0.0-beta.0.15' => function ($node) {
+        Arr::updateKeys($node->props, [
+            'height_offset_top' => 'height_viewport_offset',
+        ]);
+    },
+
+    '5.0.0-beta.0.3' => function ($node) {
+        if (!($node->props['image'] ?? '') && empty($node->source->props->image) &&
+            (($node->props['video'] ?? '') || !empty($node->source->props->video))
+        ) {
+            $node->props['image_width'] = $node->props['video_width'] ?? '';
+            $node->props['image_height'] = $node->props['video_height'] ?? '';
+        }
+        unset($node->props['video_width'], $node->props['video_height']);
+    },
+
     // Remove obsolete props
     '4.5.0-beta.0.4' => function ($node) {
         unset(
@@ -16,21 +53,21 @@ return [
 
     '4.4.0-beta.0.3' => function ($node) {
         if (
-            Arr::get($node->props, 'vertical_align') &&
+            ($node->props['vertical_align'] ?? '') &&
             !(
-                (Arr::get($node->props, 'height') == 'viewport' &&
-                    Arr::get($node->props, 'height_viewport') <= 100) ||
-                in_array(Arr::get($node->props, 'height'), ['section', 'pixels'])
+                (($node->props['height'] ?? '') == 'viewport' &&
+                    ($node->props['height_viewport'] ?? '') <= 100) ||
+                in_array($node->props['height'] ?? '', ['section', 'pixels'])
             )
         ) {
-            Arr::set($node->props, 'vertical_align', '');
+            $node->props['vertical_align'] = '';
         }
     },
 
     '4.3.1' => function ($node) {
         if (
-            Arr::get($node->props, 'header_transparent_noplaceholder') &&
-            Arr::get($node->props, 'header_transparent_text_color')
+            ($node->props['header_transparent_noplaceholder'] ?? '') &&
+            ($node->props['header_transparent_text_color'] ?? '')
         ) {
             $element = $node->children[0]->children[0]->children[0] ?? null;
 
@@ -38,7 +75,7 @@ return [
                 $element &&
                 in_array($element->type ?? '', ['slideshow', 'slider']) &&
                 ($element->props->text_color ?? '') !==
-                    Arr::get($node->props, 'header_transparent_text_color')
+                    $node->props['header_transparent_text_color']
             ) {
                 $element->props->css = trim(
                     str_replace(
@@ -52,7 +89,7 @@ return [
     },
 
     '4.3.0-beta.0.5' => function ($node, $params) {
-        if ($height = Arr::get($node->props, 'height')) {
+        if ($height = $node->props['height'] ?? '') {
             $rename = [
                 'full' => 'viewport',
                 'percent' => 'viewport',
@@ -83,15 +120,13 @@ return [
         $params['updateContext']['sectionIndex'] = $params['i'] ?? 0;
     },
 
-    '4.3.0-beta.0.3' => function ($node, $params) {
-        if (Arr::get($node->props, 'header_transparent')) {
+    '4.3.0-beta.0.3' => function ($node) {
+        if ($node->props['header_transparent'] ?? '') {
             if (
-                Arr::get($node->props, 'text_color') !=
-                    Arr::get($node->props, 'header_transparent') ||
-                !(Arr::get($node->props, 'image') || Arr::get($node->props, 'video'))
+                ($node->props['text_color'] ?? '') != ($node->props['header_transparent'] ?? '') ||
+                !(($node->props['image'] ?? '') || ($node->props['video'] ?? ''))
             ) {
-                $node->props['header_transparent_text_color'] =
-                    $node->props['header_transparent'];
+                $node->props['header_transparent_text_color'] = $node->props['header_transparent'];
             }
 
             $node->props['header_transparent'] = true;
@@ -102,15 +137,15 @@ return [
 
     '3.0.5.1' => function ($node) {
         if (
-            Arr::get($node->props, 'image_effect') == 'parallax' &&
-            !is_numeric(Arr::get($node->props, 'image_parallax_easing'))
+            ($node->props['image_effect'] ?? '') == 'parallax' &&
+            !is_numeric($node->props['image_parallax_easing'] ?? '')
         ) {
-            Arr::set($node->props, 'image_parallax_easing', '1');
+            $node->props['image_parallax_easing'] = '1';
         }
     },
 
     '2.8.0-beta.0.12' => function ($node) {
-        if (Arr::get($node->props, 'image_position') === '') {
+        if (($node->props['image_position'] ?? '') === '') {
             $node->props['image_position'] = 'center-center';
         }
     },
@@ -118,17 +153,15 @@ return [
     '2.8.0-beta.0.3' => function ($node) {
         foreach (['bgx', 'bgy'] as $prop) {
             $key = "image_parallax_{$prop}";
-            $start = Arr::get($node->props, "{$key}_start", '');
-            $end = Arr::get($node->props, "{$key}_end", '');
+            $start = $node->props["{$key}_start"] ?? '';
+            $end = $node->props["{$key}_end"] ?? '';
             if ($start != '' || $end != '') {
-                Arr::set(
-                    $node->props,
-                    $key,
-                    implode(',', [$start != '' ? $start : 0, $end != '' ? $end : 0]),
-                );
+                $node->props[$key] = implode(',', [
+                    $start != '' ? $start : '0',
+                    $end != '' ? $end : '0',
+                ]);
             }
-            Arr::del($node->props, "{$key}_start");
-            Arr::del($node->props, "{$key}_end");
+            unset($node->props["{$key}_start"], $node->props["{$key}_end"]);
         }
     },
 
@@ -139,7 +172,7 @@ return [
     },
 
     '2.4.12.1' => function ($node) {
-        if (Arr::get($node->props, 'animation_delay') === true) {
+        if (($node->props['animation_delay'] ?? '') === true) {
             $node->props['animation_delay'] = '200';
         }
     },
@@ -155,14 +188,14 @@ return [
         [$style] = explode(':', $config('~theme.style'));
 
         if ($style == 'fjord') {
-            if (Arr::get($node->props, 'width') === 'default') {
+            if (($node->props['width'] ?? '') === 'default') {
                 $node->props['width'] = 'large';
             }
         }
     },
 
     '2.1.0-beta.2.1' => function ($node) {
-        if (in_array(Arr::get($node->props, 'style'), ['primary', 'secondary'])) {
+        if (in_array($node->props['style'] ?? '', ['primary', 'secondary'])) {
             $node->props['text_color'] = '';
         }
     },
@@ -174,7 +207,7 @@ return [
         [$style] = explode(':', $config('~theme.style'));
 
         if (!in_array($style, ['jack-baker', 'morgan-consulting', 'vibe'])) {
-            if (Arr::get($node->props, 'width') === 'large') {
+            if (($node->props['width'] ?? '') === 'large') {
                 $node->props['width'] = 'xlarge';
             }
         }
@@ -194,7 +227,7 @@ return [
                 'yard',
             ])
         ) {
-            if (Arr::get($node->props, 'width') === 'default') {
+            if (($node->props['width'] ?? '') === 'default') {
                 $node->props['width'] = 'large';
             }
         }
@@ -207,26 +240,24 @@ return [
     },
 
     '1.18.0' => function ($node) {
-        if (!isset($node->props['image_effect'])) {
-            $node->props['image_effect'] = Arr::get($node->props, 'image_fixed') ? 'fixed' : '';
-        }
+        $node->props['image_effect'] ??= $node->props['image_fixed'] ?? '' ? 'fixed' : '';
 
         if (
             !isset($node->props['vertical_align']) &&
-            in_array(Arr::get($node->props, 'height'), ['full', 'percent', 'section'])
+            in_array($node->props['height'] ?? '', ['full', 'percent', 'section'])
         ) {
             $node->props['vertical_align'] = 'middle';
         }
 
-        if (Arr::get($node->props, 'style') === 'video') {
+        if (($node->props['style'] ?? '') === 'video') {
             $node->props['style'] = 'default';
         }
 
-        if (Arr::get($node->props, 'width') === 0) {
+        if (($node->props['width'] ?? '') === 0) {
             $node->props['width'] = 'default';
-        } elseif (Arr::get($node->props, 'width') === 2) {
+        } elseif (($node->props['width'] ?? '') === 2) {
             $node->props['width'] = 'small';
-        } elseif (Arr::get($node->props, 'width') === 3) {
+        } elseif (($node->props['width'] ?? '') === 3) {
             $node->props['width'] = 'expand';
         }
     },

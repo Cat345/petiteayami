@@ -2,6 +2,8 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
+use WP_Post;
+use YOOtheme\Builder\Wordpress\PostHelper;
 use YOOtheme\Config;
 
 class FilterPostStates
@@ -13,24 +15,30 @@ class FilterPostStates
         $this->config = $config;
     }
 
-    public function handle($post_states, ?\WP_Post $post = null)
+    /**
+     * @param array<string, mixed> $post_states
+     * @param WP_Post              $post
+     * @return array<string, mixed>
+     */
+    public function handle($post_states, $post)
     {
-        // is builder?
-        if ($post && ($post->builder = preg_match('/<!--\s?{/', $post->post_content))) {
-            $post_states = (array) $post_states;
-
-            // remove gutenberg?
-            $key = array_search('Gutenberg', $post_states);
-
-            if ($key !== false) {
-                unset($post_states[$key]);
-            }
-
-            $post_states[$this->config->get('theme.template', '')] = $this->config->get(
-                'theme.name',
-                '',
-            );
+        if (!PostHelper::matchContent($post->post_content)) {
+            return $post_states;
         }
+
+        $post_states = (array) $post_states;
+
+        // remove gutenberg?
+        $key = array_search('Gutenberg', $post_states);
+
+        if ($key !== false) {
+            unset($post_states[$key]);
+        }
+
+        $post_states[$this->config->get('theme.template', '')] = $this->config->get(
+            'theme.name',
+            '',
+        );
 
         return $post_states;
     }

@@ -8,11 +8,11 @@
 $app = require __DIR__ . '/bootstrap.php';
 $app->load(
     __DIR__ .
-    '/{packages/{platform-wordpress,' .
-    'theme{,-analytics,-cookie,-highlight,-settings},' .
-    'builder{,-source*,-templates,-newsletter},' .
-    'styler,theme-wordpress*,builder-wordpress*}' .
-    '/bootstrap.php,config.php}'
+        '/{packages/{platform-wordpress,' .
+        'theme{,-consent,-highlight,-settings},' .
+        'builder{,-source*,-templates,-newsletter},' .
+        'styler,theme-wordpress*,builder-wordpress*}' .
+        '/bootstrap.php,config.php}',
 );
 
 /**
@@ -39,11 +39,10 @@ add_action('admin_notices', function () {
         printf(
             '<div class="notice notice-warning"><h2>%s</h2><p>%s</p></div>',
             'Action required: Critical vulnerability in your installation',
-            'YOOtheme Pro was unable to remove the <code>wp-content/install.php</code> file. This file was used during the installation of the YOOtheme Pro demo package. It can potentially be used to reset the database. Please delete the file manually.'
+            'YOOtheme Pro was unable to remove the <code>wp-content/install.php</code> file. This file was used during the installation of the YOOtheme Pro demo package. It can potentially be used to reset the database. Please delete the file manually.',
         );
     }
 });
-
 
 add_action( 'get_header', 'usota_storefront_remove_sidebar' );
 function usota_storefront_remove_sidebar() {

@@ -3,8 +3,8 @@
 namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Url;
 use YOOtheme\Http\Request;
+use YOOtheme\Url;
 
 class AddAdminBarButton
 {
@@ -36,6 +36,10 @@ class AddAdminBarButton
      */
     public function menu($admin_bar): void
     {
+        if (!current_user_can('edit_theme_options')) {
+            return;
+        }
+
         $icon = '<span class="ab-icon" aria-hidden="true"></span>';
         $title = "<span class=\"ab-label\" aria-hidden=\"true\">{$this->config->get(
             'theme.name',
@@ -61,7 +65,7 @@ class AddAdminBarButton
 
     protected function printStyle(): void
     {
-        $font = get_template_directory_uri() . '/packages/theme-wordpress/assets/icon.ttf';
+        $font = get_template_directory_uri() . '/packages/theme-wordpress/fonts/icon.ttf';
         $style = <<<CSS
             @font-face {
                 font-family: YOOtheme;

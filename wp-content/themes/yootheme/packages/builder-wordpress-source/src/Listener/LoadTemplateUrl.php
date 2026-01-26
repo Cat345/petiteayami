@@ -2,8 +2,19 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Listener;
 
+use WP_Post;
+use WP_Term;
+use YOOtheme\Builder\Templates\TemplateHelper;
+
+/**
+ * @phpstan-import-type Template from TemplateHelper
+ */
 class LoadTemplateUrl
 {
+    /**
+     * @param Template $template
+     * @return Template
+     */
     public static function handle(array $template): array
     {
         static $registered = false;
@@ -40,11 +51,23 @@ class LoadTemplateUrl
         return $template;
     }
 
+    /**
+     * @param string $link_html
+     * @param string $url
+     * @param string $text
+     * @param string $format
+     * @return string
+     *
+     * @link https://developer.wordpress.org/reference/hooks/get_archives_link/
+     */
     public static function getArchivesLink($link_html, $url, $text, $format): string
     {
         return $format === 'url' ? $url : $link_html;
     }
 
+    /**
+     * @param Template $template
+     */
     protected static function getArchives(array $template): string
     {
         $type = $template['query']['archive'] ?? '';
@@ -64,6 +87,11 @@ class LoadTemplateUrl
             : '';
     }
 
+    /**
+     * @param Template $template
+     *
+     * @return array<WP_Term>
+     */
     protected static function getTerms(array $template): array
     {
         $args = [
@@ -92,6 +120,11 @@ class LoadTemplateUrl
         return is_array($terms) ? $terms : [];
     }
 
+    /**
+     * @param Template $template
+     *
+     * @return array<WP_Post>
+     */
     protected static function getPosts(array $template): array
     {
         $args = [

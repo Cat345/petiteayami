@@ -7,9 +7,11 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 /**
  * Default search
  */
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+		?>
 	<script>
 		var wcasThemeSearch = document.querySelector('.main-header #search-box form');
 		if (wcasThemeSearch !== null) {
@@ -27,18 +29,21 @@ add_action( 'wp_footer', function () {
 			margin: 0 !important;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);
 
 /**
  * Search in sticky header
  */
-add_action( 'wp_footer', function () {
-	if ( get_theme_mod( 'top_store_pro_sticky_header', false ) === false && get_theme_mod( 'top_store_sticky_header', false ) === false ) {
-		return;
-	}
-	echo '<div id="wcas-theme-search-sticky" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		if ( get_theme_mod( 'top_store_pro_sticky_header', false ) === false && get_theme_mod( 'top_store_sticky_header', false ) === false ) {
+			return;
+		}
+		echo '<div id="wcas-theme-search-sticky" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+		?>
 	<script>
 		var wcasThemeSearchSticky = document.querySelector('.search-wrapper #search-box form');
 		if (wcasThemeSearchSticky !== null) {
@@ -87,5 +92,6 @@ add_action( 'wp_footer', function () {
 			min-width: 500px;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

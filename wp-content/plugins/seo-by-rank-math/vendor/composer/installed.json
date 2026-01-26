@@ -193,52 +193,6 @@
             "install-path": "../donatj/phpuseragentparser"
         },
         {
-            "name": "mythemeshop/wordpress-helpers",
-            "version": "v1.1.22",
-            "version_normalized": "1.1.22.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/MyThemeShopTeam/wordpress-helpers.git",
-                "reference": "0ee4a87a03dac72e9e503cc4e1b0208d3269f4dc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/MyThemeShopTeam/wordpress-helpers/zipball/0ee4a87a03dac72e9e503cc4e1b0208d3269f4dc",
-                "reference": "0ee4a87a03dac72e9e503cc4e1b0208d3269f4dc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6"
-            },
-            "time": "2023-06-15T08:54:41+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "MyThemeShop\\Helpers\\": "src/"
-                },
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "MyThemeShop",
-                    "email": "info@mythemeshop.com"
-                }
-            ],
-            "description": "Collection of utilities required during development of a plugin or theme for WordPress. Built for developers by developers.",
-            "support": {
-                "issues": "https://github.com/MyThemeShopTeam/wordpress-helpers/issues",
-                "source": "https://github.com/MyThemeShopTeam/wordpress-helpers/tree/v1.1.22"
-            },
-            "install-path": "../mythemeshop/wordpress-helpers"
-        },
-        {
             "name": "woocommerce/action-scheduler",
             "version": "3.9.3",
             "version_normalized": "3.9.3.0",

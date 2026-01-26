@@ -30,14 +30,12 @@ $offcanvas_close = $this->el('button', [
     ],
 
     'uk-close' => true,
-    
+
     'uk-toggle' => $props['dialog_close_large'] ? [
         'cls: uk-close-large {@dialog_close_large};',
         'mode: media;',
         'media: @s;',
     ] : false,
-
-
 
     'type' => 'button',
 

@@ -4,27 +4,19 @@ namespace YOOtheme\Builder;
 
 class UpdateTransform
 {
-    /**
-     * @var string
-     */
-    protected $version;
+    protected string $version;
 
     /**
-     * @var array
+     * @var array<string, array<string, list<callable>>>
      */
-    protected $updates = [];
+    protected array $updates = [];
 
     /**
-     * @var array
+     * @var list<array<string, callable>>
      */
-    protected $globals = [];
+    protected array $globals = [];
 
-    /**
-     * Constructor.
-     *
-     * @param string $version
-     */
-    public function __construct($version)
+    public function __construct(string $version)
     {
         $this->version = $version;
     }
@@ -32,10 +24,9 @@ class UpdateTransform
     /**
      * Transform callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed>  $params
      */
-    public function __invoke($node, array &$params)
+    public function __invoke(object $node, array &$params): void
     {
         if (isset($node->version)) {
             $params['version'] = $node->version;
@@ -56,9 +47,7 @@ class UpdateTransform
             return;
         }
 
-        if (!isset($params['updateContext'])) {
-            $params['updateContext'] = new \ArrayObject();
-        }
+        $params['updateContext'] ??= new \ArrayObject();
 
         // apply update callbacks
         foreach ($this->resolveUpdates($params['type'], $version) as $update) {
@@ -69,7 +58,7 @@ class UpdateTransform
     /**
      * Adds global updates for any type.
      *
-     * @param array $globals
+     * @param array<string, callable> $globals
      *
      * @return $this
      */
@@ -83,12 +72,9 @@ class UpdateTransform
     /**
      * Resolves updates for a type and current version.
      *
-     * @param object $type
-     * @param string $version
-     *
-     * @return array
+     * @return list<callable>
      */
-    protected function resolveUpdates($type, $version)
+    protected function resolveUpdates(object $type, string $version)
     {
         if (isset($this->updates[$type->name][$version])) {
             return $this->updates[$type->name][$version];

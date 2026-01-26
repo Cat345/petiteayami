@@ -19,6 +19,11 @@ return [
         'customizer.init' => [
             Listener\ShowNewsModal::class => '@handle',
             Listener\AvifImageSupport::class => '@handle',
+            Listener\ImageUrlSupport::class => '@handle',
+        ],
+
+        'systemcheck.extra' => [
+            Listener\ImageUrlSupport::class => '@systemcheck',
         ],
     ],
 ];

@@ -21,18 +21,16 @@ class SetFavicons
         }
     }
 
+    /**
+     * @return array{favicon: string|false, touchicon: string|false, favicon_svg?: string|false}
+     */
     public static function load(Config $config): array
     {
-        $images = "~yootheme/theme-{$config->get('app.platform')}/assets/images";
-        $icons = [
-            'favicon' => Url::to($config('~theme.favicon') ?: "{$images}/favicon.png"),
-            'touchicon' => Url::to($config('~theme.touchicon') ?: "{$images}/apple-touch-icon.png"),
-        ];
-
-        if ($config('~theme.favicon_svg')) {
-            $icons['favicon_svg'] = Url::to($config('~theme.favicon_svg'));
+        $icons = [];
+        foreach (['favicon', 'favicon_svg', 'touchicon'] as $icon) {
+            $path = $config("~theme.{$icon}");
+            $icons[$icon] = $path ? Url::to($path) : null;
         }
-
         return $icons;
     }
 }

@@ -394,6 +394,47 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 			return true;
 		}
 
+		/** Specific category case */
+		if ( 'selected_category' === $current_order_contains ) {
+			$get_selected_categories = isset( $current_automation_event_meta['product_categories'] ) ? $current_automation_event_meta['product_categories'] : [];
+			if ( ! is_array( $get_selected_categories ) || empty( $get_selected_categories ) ) {
+				return false;
+			}
+
+			$category_ids = array_column( $get_selected_categories, 'id' );
+			if ( ! is_array( $category_ids ) || empty( $category_ids ) ) {
+				return false;
+			}
+			$order_id    = absint( $automation_data['order_id'] );
+			$order       = wc_get_order( $order_id );
+			$order_items = $order->get_items();
+			if ( ! is_array( $order_items ) || empty( $order_items ) ) {
+				return false;
+			}
+
+			// Collect all categories from all products in the order
+			$order_product_categories = [];
+			foreach ( $order_items as $item ) {
+				if ( ! $item instanceof WC_Order_Item_Product ) {
+					continue;
+				}
+
+				$product = $item->get_product();
+				if ( ! $product instanceof WC_Product ) {
+					continue;
+				}
+
+				$product_categories = $product->get_category_ids();
+				if ( is_array( $product_categories ) && ! empty( $product_categories ) ) {
+					$order_product_categories = array_merge( $order_product_categories, $product_categories );
+				}
+			}
+
+			// Remove duplicates and check for intersection
+			$order_product_categories = array_unique( $order_product_categories );
+			return ! empty( array_intersect( $category_ids, $order_product_categories ) );
+		}
+
 		/** Specific product case */
 		if ( 'selected_product' === $current_order_contains ) {
 			$order_id    = absint( $automation_data['order_id'] );
@@ -412,7 +453,7 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 			}
 			$ordered_products = array_unique( $ordered_products );
 
-			$get_selected_product = $automation_data['event_meta']['products'];
+			$get_selected_product = isset( $automation_data['event_meta']['products'] ) ? $automation_data['event_meta']['products'] : [];
 			$product_selected     = array_column( $get_selected_product, 'id' );
 
 			$check_products = count( array_intersect( $product_selected, $ordered_products ) );
@@ -490,6 +531,10 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 						'label' => __( 'Specific Products', 'wp-marketing-automations' ),
 						'value' => 'selected_product'
 					],
+					[
+						'label' => __( 'Specific Category Products', 'wp-marketing-automations' ),
+						'value' => 'selected_category'
+					],
 				],
 				"class"       => 'bwfan-input-wrapper',
 				"tip"         => "",
@@ -515,6 +560,24 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 					]
 				],
 			];
+			$arr[] = [
+				'id'            => 'product_categories',
+				'label'         => __( 'Select Product Categories', 'wp-marketing-automations' ),
+				'type'          => 'search',
+				'autocompleter' => 'categories',
+				'class'         => '',
+				'placeholder'   => '',
+				'required'      => true,
+				'hint'          => __( 'This automation would run on orders containing products from selected categories.', 'wp-marketing-automations' ),
+				'toggler'       => [
+					'fields' => [
+						[
+							'id'    => 'order-contains',
+							'value' => 'selected_category',
+						]
+					]
+				],
+			];
 		} else {
 			$arr[] = [
 				'id'       => 'products',
@@ -529,6 +592,10 @@ final class BWFAN_WC_Order_Status_Change extends BWFAN_Event {
 						[
 							'id'    => 'order-contains',
 							'value' => 'selected_product',
+						],
+						[
+							'id'    => 'order-contains',
+							'value' => 'selected_category',
 						]
 					]
 				],

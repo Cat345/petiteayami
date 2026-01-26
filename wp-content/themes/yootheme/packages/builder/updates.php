@@ -3,26 +3,50 @@
 namespace YOOtheme;
 
 return [
+    '5.0.0-beta.0.7' => function ($node) {
+        if (($node->props['margin'] ?? '') === 'remove-vertical') {
+            $node->props['margin'] = 'remove';
+        }
+        if (isset($node->props['margin'])) {
+            $node->props['margin_top'] = $node->props['margin'];
+            $node->props['margin_bottom'] = $node->props['margin'];
+        }
+        if ($node->props['margin_remove_top'] ?? '') {
+            $node->props['margin_top'] = 'remove';
+        }
+        if ($node->props['margin_remove_bottom'] ?? '') {
+            $node->props['margin_bottom'] = 'remove';
+        }
+        if ($node->props['push'] ?? '') {
+            $node->props['margin_bottom'] = 'auto';
+        }
+        unset(
+            $node->props['margin'],
+            $node->props['margin_remove_top'],
+            $node->props['margin_remove_bottom'],
+            $node->props['push'],
+        );
+    },
     '3.1.0-beta.0.1' => function ($node) {
         if (
-            ($target = Arr::get($node->props, 'parallax_target')) &&
+            ($target = $node->props['parallax_target'] ?? '') &&
             str_starts_with($target, '![uk-grid]')
         ) {
-            Arr::set($node->props, 'parallax_target', str_replace('[uk-grid]', '', $target));
+            $node->props['parallax_target'] = str_replace('[uk-grid]', '', $target);
         }
     },
     '3.0.5.1' => function ($node) {
         if (
-            (Arr::get($node->props, 'animation') == 'parallax' ||
-                Arr::get($node->props, 'item_animation') == 'parallax') &&
-            !is_numeric(Arr::get($node->props, 'parallax_easing'))
+            (($node->props['animation'] ?? '') == 'parallax' ||
+                ($node->props['item_animation'] ?? '') == 'parallax') &&
+            !is_numeric($node->props['parallax_easing'] ?? '')
         ) {
-            Arr::set($node->props, 'parallax_easing', '1');
+            $node->props['parallax_easing'] = '1';
         }
     },
     '3.0.0-beta.3.1' => function ($node) {
-        if (Arr::get($node->props, 'parallax_target') === false) {
-            Arr::del($node->props, 'parallax_target');
+        if (($node->props['parallax_target'] ?? '') === false) {
+            unset($node->props['parallax_target']);
         }
     },
     '3.0.0-beta.2.1' => function ($node) {
@@ -33,8 +57,8 @@ return [
         if (
             $style === 'fjord' &&
             !array_key_exists('@base-h6-font-size', $config('~theme.less', [])) &&
-            Arr::get($node->props, 'title_style') === 'h6' &&
-            Arr::get($node->props, 'title_element') === 'h4'
+            ($node->props['title_style'] ?? '') === 'h6' &&
+            ($node->props['title_element'] ?? '') === 'h4'
         ) {
             $node->props['title_style'] = '';
         }
@@ -44,33 +68,24 @@ return [
             $key = "parallax_{$prop}";
 
             // Cleanup old values from before introducing '_start' and '_end' props
-            Arr::del($node->props, $key);
+            unset($node->props[$key]);
 
-            $start = implode(
-                ',',
-                array_map('trim', explode(',', Arr::get($node->props, "{$key}_start", ''))),
-            );
-            $end = implode(
-                ',',
-                array_map('trim', explode(',', Arr::get($node->props, "{$key}_end", ''))),
-            );
+            $start = preg_replace('/\s*,\s*/', ',', $node->props["{$key}_start"] ?? '');
+            $end = preg_replace('/\s*,\s*/', ',', $node->props["{$key}_end"] ?? '');
+
             if ($start !== '' || $end !== '') {
-                $default = in_array($prop, ['scale', 'opacity']) ? 1 : 0;
-                Arr::set(
-                    $node->props,
-                    $key,
-                    implode(',', [
-                        $start !== '' ? $start : $default,
-                        $end !== '' ? $end : $default,
-                    ]),
-                );
+                $default = in_array($prop, ['scale', 'opacity']) ? '1' : '0';
+
+                $node->props[$key] = implode(',', [
+                    $start !== '' ? $start : $default,
+                    $end !== '' ? $end : $default,
+                ]);
             }
-            Arr::del($node->props, "{$key}_start");
-            Arr::del($node->props, "{$key}_end");
+            unset($node->props["{$key}_start"], $node->props["{$key}_end"]);
         }
     },
     '2.8.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'parallax_target')) {
+        if ($node->props['parallax_target'] ?? '') {
             $node->props['parallax_target'] = '!.uk-section';
         }
 
@@ -95,10 +110,10 @@ return [
 
         if ($style == 'horizon') {
             if (
-                (Arr::get($node->props, 'title_style') === 'h6' ||
-                    (Arr::get($node->props, 'title_element') === 'h6' &&
-                        empty(Arr::get($node->props, 'title_style')))) &&
-                empty(Arr::get($node->props, 'title_color'))
+                (($node->props['title_style'] ?? '') === 'h6' ||
+                    (($node->props['title_element'] ?? '') === 'h6' &&
+                        empty($node->props['title_style']))) &&
+                empty($node->props['title_color'])
             ) {
                 $node->props['title_color'] = 'primary';
             }
@@ -106,10 +121,10 @@ return [
 
         if ($style == 'fjord') {
             if (
-                (Arr::get($node->props, 'title_style') === 'h4' ||
-                    (Arr::get($node->props, 'title_element') === 'h4' &&
-                        empty(Arr::get($node->props, 'title_style')))) &&
-                empty(Arr::get($node->props, 'title_color'))
+                (($node->props['title_style'] ?? '') === 'h4' ||
+                    (($node->props['title_element'] ?? '') === 'h4' &&
+                        empty($node->props['title_style']))) &&
+                empty($node->props['title_color'])
             ) {
                 $node->props['title_color'] = 'primary';
             }
@@ -119,7 +134,7 @@ return [
     '2.1.0-beta.0.1' => function ($node, array $params) {
         $type = $params['type'];
 
-        if (Arr::get($node->props, 'maxwidth') === 'xxlarge') {
+        if (($node->props['maxwidth'] ?? '') === 'xxlarge') {
             $node->props['maxwidth'] = '2xlarge';
         }
 
@@ -162,7 +177,7 @@ return [
 
     '1.20.0-beta.0.1' => function ($node) {
         if (in_array($node->type ?? '', ['joomla_module', 'wordpress_widget'])) {
-            if (Arr::get($node->props, 'title_style') === 'heading-primary') {
+            if (($node->props['title_style'] ?? '') === 'heading-primary') {
                 $node->props['title_style'] = 'heading-medium';
             }
 
@@ -187,49 +202,49 @@ return [
                 ])
             ) {
                 if (
-                    Arr::get($node->props, 'title_style') === 'h1' ||
+                    ($node->props['title_style'] ?? '') === 'h1' ||
                     (empty($node->props['title_style']) &&
-                        Arr::get($node->props, 'title_element') === 'h1')
+                        ($node->props['title_element'] ?? '') === 'h1')
                 ) {
                     $node->props['title_style'] = 'heading-small';
                 }
             }
 
             if (in_array($style, ['florence', 'max', 'nioh-studio', 'sonic', 'summit', 'trek'])) {
-                if (Arr::get($node->props, 'title_style') === 'h2') {
+                if (($node->props['title_style'] ?? '') === 'h2') {
                     $node->props['title_style'] =
-                        Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
+                        ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
                 } elseif (
                     empty($node->props['title_style']) &&
-                    Arr::get($node->props, 'title_element') === 'h2'
+                    ($node->props['title_element'] ?? '') === 'h2'
                 ) {
                     $node->props['title_style'] = 'h1';
                 }
             }
 
             if (in_array($style, ['fuse', 'horizon', 'joline', 'juno', 'lilian', 'vibe', 'yard'])) {
-                if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+                if (($node->props['title_style'] ?? '') === 'heading-medium') {
                     $node->props['title_style'] = 'heading-small';
                 }
             }
 
             if ($style == 'copper-hill') {
-                if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+                if (($node->props['title_style'] ?? '') === 'heading-medium') {
                     $node->props['title_style'] =
-                        Arr::get($node->props, 'title_element') === 'h1' ? '' : 'h1';
-                } elseif (Arr::get($node->props, 'title_style') === 'h1') {
+                        ($node->props['title_element'] ?? '') === 'h1' ? '' : 'h1';
+                } elseif (($node->props['title_style'] ?? '') === 'h1') {
                     $node->props['title_style'] =
-                        Arr::get($node->props, 'title_element') === 'h2' ? '' : 'h2';
+                        ($node->props['title_element'] ?? '') === 'h2' ? '' : 'h2';
                 } elseif (
                     empty($node->props['title_style']) &&
-                    Arr::get($node->props, 'title_element') === 'h1'
+                    ($node->props['title_element'] ?? '') === 'h1'
                 ) {
                     $node->props['title_style'] = 'h2';
                 }
             }
 
             if (in_array($style, ['trek', 'fjord'])) {
-                if (Arr::get($node->props, 'title_style') === 'heading-medium') {
+                if (($node->props['title_style'] ?? '') === 'heading-medium') {
                     $node->props['title_style'] = 'heading-large';
                 }
             }

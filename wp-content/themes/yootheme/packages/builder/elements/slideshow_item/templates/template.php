@@ -2,13 +2,20 @@
 
 // Override default settings
 $element['text_color'] = $props['text_color'] ?: $element['text_color'];
+$element['media_blend_mode'] = $props['media_blend_mode'] ?: $element['media_blend_mode'];
+$element['media_overlay'] = $props['media_overlay'] ?: $element['media_overlay'];
+$element['media_overlay_gradient'] = $props['media_overlay_gradient'] ?: $element['media_overlay_gradient'];
 
 if ($element['link']) {
     $props['link'] = '';
 }
 
 // Item
-$el = $props['item_element'] ? $this->el($props['item_element']) : null;
+$el = $props['item_element']
+    ? $this->el($props['item_element'])
+    : (($props['id'] || $props['class'] || $props['attributes'])
+        ? $this->el('div')
+        : null);
 
 // Link Container
 $link_container = $props['link'] && $element['overlay_link'] ? $this->el('a', [
@@ -76,11 +83,11 @@ $kenburns = $this->el('div', [
 ]);
 
 // Blend mode
-if ($props['media_blend_mode']) {
+if ($element['media_blend_mode']) {
     if (in_array($element['slideshow_animation'], ['push', 'pull'])) {
-        $pull_push->attr('class', ["uk-blend-{$props['media_blend_mode']}"]);
+        $pull_push->attr('class', ["uk-blend-{$element['media_blend_mode']}"]);
     } elseif ($element['slideshow_kenburns']) {
-        $kenburns->attr('class', ["uk-blend-{$props['media_blend_mode']}"]);
+        $kenburns->attr('class', ["uk-blend-{$element['media_blend_mode']}"]);
     }
 }
 
@@ -148,10 +155,23 @@ $overlay = $this->el('div', [
 // Link
 $link = include "{$__dir}/template-link.php";
 
+// Media Overlay
+$media_overlay = ($props['image'] || $props['video']) && ($element['media_overlay'] || $element['media_overlay_gradient']) ? $this->el('div', [
+
+    'class' => ['uk-position-cover'],
+
+    'style' => [
+        'background-color: {media_overlay};',
+        // `background-clip` fixes sub-pixel issue
+        'background-image: {media_overlay_gradient}; background-clip: padding-box;',
+    ],
+
+]) : null;
+
 ?>
 
 <?php if ($el) : ?>
-<?= $el($element) ?>
+<?= $el($element, $attrs) ?>
 <?php endif ?>
 
     <?php if ($link_container) : ?>
@@ -177,8 +197,8 @@ $link = include "{$__dir}/template-link.php";
         <?= $pull_push_overlay($element, '') ?>
         <?php endif ?>
 
-        <?php if ($props['media_overlay']) : ?>
-        <div class="uk-position-cover" style="background-color:<?= $props['media_overlay'] ?>"></div>
+        <?php if ($media_overlay) : ?>
+        <?= $media_overlay($element, '') ?>
         <?php endif ?>
 
         <?php if ($props['title'] != '' || $props['meta'] != '' || $props['content'] != '' || $props['link']) : ?>

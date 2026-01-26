@@ -3,6 +3,9 @@
 $el = $this->el('div', [
 
     'class' => [
+        // Expand to column height
+        'uk-flex-1 uk-flex uk-flex-column {@height_expand}',
+
         // Fix stacking context for drops if parallax is enabled
         'uk-position-relative uk-position-z-index {@animation: parallax}',
     ],
@@ -12,7 +15,9 @@ $el = $this->el('div', [
 $inline = $this->el('div', [
 
     'class' => [
-        'uk-inline',
+        'uk-inline {@!height_expand}',
+        'uk-flex-1 uk-flex uk-flex-column {@height_expand} uk-width-fit-content uk-position-relative',
+
         'uk-inverse-{marker_color}',
     ],
 
@@ -20,9 +25,26 @@ $inline = $this->el('div', [
 
 // Image
 $image = $this->el('image', [
+
     'class' => [
-        'uk-text-{image_svg_color}' => $props['image_svg_inline'] && $props['image_svg_color'] && $this->isImage($props['background_image']) == 'svg',
+        'uk-flex-1 {@height_expand}',
+        'uk-border-{background_image_border}',
+        'uk-object-{background_image_focal_point}' => $props['height_viewport'] || $props['height_expand'],
     ],
+
+    'style' => [
+        'height: 100vh; {@!height_viewport_height} {@height_viewport} {@!height_viewport_offset} {@!height_expand}',
+        'height: {height_viewport_height}vh; {@height_viewport} {@!height_viewport_offset} {@!height_expand}',
+        // Fix bug in Safari not stretching an image beyond its intrinsic height
+        'aspect-ratio: auto; {@height_expand}',
+    ],
+
+    'uk-height-viewport' => $props['height_viewport'] && $props['height_viewport_offset'] && !$props['height_expand'] ? [
+        'property: height;',
+        'offset-top: true; {@height_viewport_offset}',
+        'offset-bottom: {0}; {@height_viewport}' => $props['height_viewport_height'] && $props['height_viewport_height'] < 100 ? 100 - (int) $props['height_viewport_height'] : false,
+    ] : false,
+
     'src' => $props['background_image'],
     'alt' => $props['background_image_alt'],
     'loading' => $props['background_image_loading'] ? false : null,

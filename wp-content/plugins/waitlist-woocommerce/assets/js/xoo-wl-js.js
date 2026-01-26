@@ -63,13 +63,19 @@ jQuery(document).ready(function( $ ){
 		var form = event.data.form;
 		if( !form.validationPassed() ) return;
 
-		var formData = form.$form.serialize()+'&action=xoo_wl_form_submit';
+		var formData 	= form.$form.serialize()+'&action=xoo_wl_form_submit',
+			$button 	= form.$form.find('button[type="submit"]'),
+			buttonHTML 	= $button.html();
+
+			$button.html( xoo_wl_localize.html.spinner ).addClass('xoo-wl-processing');
 
 		$.ajax({
 			url: xoo_wl_localize.adminurl,
 			type: 'POST',
 			data: formData,
 			success: function(response){
+
+				$button.removeClass('xoo-wl-processing').html(buttonHTML);
 
 				if( response.notice ){
 					form.showNotice(response.notice);
@@ -146,16 +152,40 @@ jQuery(document).ready(function( $ ){
 			selectedVariation = $atcForm.find('input[name="product_id"]').val();
 		}
 
-		$.each( variationsData, function( index, variation ){
+
+		$.each( variationsData, function ( index, variation ) {
+
+			if ( variation.variation_id != selectedVariation ) return;
+
+			let showBtn = false;
+
+			// outofstock
+			if ( xoo_wl_localize.waitlist_show.includes( 'outofstock' ) && ! variation.is_in_stock ) {
+				showBtn = true;
+			}
+
+			// backorder
+			else if ( xoo_wl_localize.waitlist_show.includes( 'backorder' ) && variation.backorders_allowed ) {
+				showBtn = true;
+			}
+
+			// backorder but out of stock
+			else if ( xoo_wl_localize.waitlist_show.includes( 'backorder_out' )  && variation.backorders_allowed && variation.availability_html.includes('available-on-backorder') ) {
+				showBtn = true;
+			}
+
+			// instock
+			else if (xoo_wl_localize.waitlist_show.includes( 'instock' ) && variation.is_in_stock ) {
+				showBtn = true;
+			}
+
+			if ( showBtn ) $waitlistContainer.show();
 			
-			if( variation.variation_id != selectedVariation ) return;
-		
-			if( variation.is_in_stock && ( xoo_wl_localize.showOnBackorders !== "yes" || !variation.backorders_allowed  ) ) return;
-			
-			$waitlistContainer.show();
 
 			return false;
-		} );
+
+		});
+
 
 
 		//Set product IDS

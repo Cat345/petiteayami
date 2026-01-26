@@ -5,47 +5,46 @@ namespace YOOtheme\Builder\Newsletter;
 use Psr\Http\Message\ResponseInterface;
 use YOOtheme\HttpClientInterface;
 
+/**
+ * @phpstan-type Response array{success: bool, data:string|array<string, mixed>}
+ */
 abstract class AbstractProvider
 {
-    protected $apiKey;
+    protected string $apiKey;
+    protected string $apiEndpoint = '';
+    protected HttpClientInterface $client;
 
-    protected $apiEndpoint = '';
-
-    /**
-     * @var HttpClientInterface
-     */
-    protected $client;
-
-    public function __construct($apiKey, HttpClientInterface $client)
+    public function __construct(string $apiKey, HttpClientInterface $client)
     {
         $this->apiKey = $apiKey;
         $this->client = $client;
     }
 
     /**
-     * @param array $provider
+     * @param array<string, mixed> $provider
+     *
+     * @return array{
+     *     lists: list<array{value: string, text: string}>,
+     *     clients: list<array{value: string, text: string}>
+     * }
      *
      * @throws \Exception
-     *
-     * @return array
      */
-    abstract public function lists($provider);
+    abstract public function lists(array $provider): array;
 
     /**
      * @param string $email
-     * @param array  $data
-     * @param array  $provider
+     * @param array<string, mixed> $data
+     * @param array<string, mixed>  $provider
      *
      * @throws \Exception
-     *
-     * @return bool
      */
-    abstract public function subscribe($email, $data, $provider);
+    abstract public function subscribe(string $email, array $data, array $provider): bool;
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
-    protected function getHeaders()
+    protected function getHeaders(): array
     {
         return [
             'Accept' => 'application/vnd.api+json',
@@ -54,41 +53,33 @@ abstract class AbstractProvider
     }
 
     /**
-     * @param string $name
-     * @param array  $args
+     * @param array<string, mixed> $args
      *
-     * @throws \Exception
-     *
-     * @return array
+     * @return Response
      */
-    public function get($name, $args = [])
+    public function get(string $name, array $args = []): array
     {
         return $this->request('GET', $name, $args);
     }
 
     /**
-     * @param string $name
-     * @param array  $args
+     * @param array<string, mixed> $args
      *
-     * @throws \Exception
-     *
-     * @return array
+     * @return Response
      */
-    public function post($name, $args = [])
+    public function post(string $name, array $args = []): array
     {
         return $this->request('POST', $name, $args);
     }
 
     /**
-     * @param string $method
-     * @param string $name
-     * @param array  $args
+     * @param array<string, mixed> $args
      *
      * @throws \Exception
      *
-     * @return array
+     * @return Response
      */
-    protected function request($method, $name, $args)
+    protected function request(string $method, string $name, array $args): array
     {
         $url = "{$this->apiEndpoint}/{$name}";
 
@@ -111,8 +102,7 @@ abstract class AbstractProvider
         }
 
         $encoded = json_decode($response->getBody(), true);
-        $success =
-            $response->getStatusCode() >= 200 && $response->getStatusCode() <= 299 && $encoded;
+        $success = $response->isSuccessful() && $encoded;
 
         return [
             'success' => $success,
@@ -124,11 +114,9 @@ abstract class AbstractProvider
      * Get error message from response.
      *
      * @param ResponseInterface $response
-     * @param array $formattedResponse
-     *
-     * @return string
+     * @param array<string, string> $formattedResponse
      */
-    protected function findError($response, $formattedResponse)
+    protected function findError($response, $formattedResponse): string
     {
         return $formattedResponse['detail'] ??
             'Unknown error, call getLastResponse() to find out what happened.';

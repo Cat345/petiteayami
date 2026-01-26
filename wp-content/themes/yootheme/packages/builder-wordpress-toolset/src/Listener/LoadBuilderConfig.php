@@ -20,10 +20,28 @@ class LoadBuilderConfig
         foreach (SourceHelper::getPostTypes() as $type) {
             foreach (Helper::groups('posts', $type->name) as $group) {
                 $fields = Helper::fields('posts', $group->get_field_slugs(), false);
-                $options = [];
 
-                foreach (array_column($fields, 'slug', 'name') as $name => $slug) {
-                    $options[] = ['value' => "field:wpcf-{$slug}", 'text' => $name];
+                $options = [];
+                $dateFields = [];
+
+                foreach ($fields as $field) {
+                    $option = [
+                        'value' => "field:wpcf-{$field['slug']}",
+                        'text' => $field['name'],
+                    ];
+
+                    $options[] = $option;
+
+                    if ($field['type'] === 'date') {
+                        $dateFields[] = $option;
+                    }
+                }
+
+                if (!empty($dateFields)) {
+                    $config->push("sources.{$type->name}DateFilterOptions", [
+                        'label' => $group->get_display_name(),
+                        'options' => $dateFields,
+                    ]);
                 }
 
                 $config->push("sources.{$type->name}OrderOptions", [

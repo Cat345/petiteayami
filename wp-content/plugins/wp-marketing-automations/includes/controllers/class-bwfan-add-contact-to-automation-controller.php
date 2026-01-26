@@ -49,7 +49,7 @@ class BWFAN_Add_Contact_To_Automation_Controller {
 			return $this->get_response( 404, $automation_data['type'], $message );
 		}
 
-		if ( false === $event->validate_v2_event_settings( $automation_data ) ) {
+		if ( false === apply_filters( 'bwfan_skip_add_contact_to_automation_validation', false, $event, $automation_data ) && false === $event->validate_v2_event_settings( $automation_data ) ) {
 			return $this->get_response( 500, 'validation_failed' );
 		}
 

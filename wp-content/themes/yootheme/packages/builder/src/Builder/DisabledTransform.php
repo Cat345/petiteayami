@@ -6,13 +6,9 @@ class DisabledTransform
 {
     /**
      * Transform callback.
-     *
-     * @param object $node
-     * @param array  $params
-     * @return bool
      */
-    public function __invoke($node, array $params)
+    public function __invoke(object $node): bool
     {
-        return !isset($node->props['status']) || $node->props['status'] !== 'disabled';
+        return ($node->props['status'] ?? '') !== 'disabled';
     }
 }

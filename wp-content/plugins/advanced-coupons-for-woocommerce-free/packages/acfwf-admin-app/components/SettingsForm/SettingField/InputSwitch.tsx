@@ -17,6 +17,9 @@ import { ISectionField } from '../../../types/section';
 // Actions
 import { SettingActions } from '../../../store/actions/setting';
 
+// Helpers
+import { sanitizeHtml } from '../../../../shared/utils';
+
 // #endregion [Imports]
 
 // #region [Variables] =================================================================================================
@@ -245,7 +248,7 @@ const InputSwitch = (props: IProps) => {
     return (
       <div className="acfw-license-field">
         {licenseContent?.map((text) => (
-          <p dangerouslySetInnerHTML={{ __html: text }} />
+          <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(text) }} />
         ))}
       </div>
     );

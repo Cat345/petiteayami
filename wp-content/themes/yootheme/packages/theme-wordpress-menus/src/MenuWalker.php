@@ -2,42 +2,30 @@
 
 namespace YOOtheme\Theme\Wordpress;
 
+use Walker_Nav_Menu;
 use YOOtheme\Config;
 use YOOtheme\View;
 
-class MenuWalker extends \Walker_Nav_Menu
+class MenuWalker extends Walker_Nav_Menu
 {
-    /**
-     * @var View
-     */
-    protected $view;
+    protected View $view;
+    protected Config $config;
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * @var \WP_Post
+     * @var object $item
      */
     protected $item;
 
     /**
-     * @var array
+     * @var list<object>
      */
-    protected $items = [];
+    protected array $items = [];
 
     /**
-     * @var array
+     * @var list<object>
      */
-    protected $parents = [];
+    protected array $parents = [];
 
-    /**
-     * Constructor.
-     *
-     * @param View   $view
-     * @param Config $config
-     */
     public function __construct(View $view, Config $config)
     {
         $this->view = $view;
@@ -46,6 +34,8 @@ class MenuWalker extends \Walker_Nav_Menu
 
     /**
      * @inheritdoc
+     *
+     * @return void
      */
     public function start_lvl(&$output, $depth = 0, $args = null)
     {
@@ -55,14 +45,20 @@ class MenuWalker extends \Walker_Nav_Menu
 
     /**
      * @inheritdoc
+     *
+     * @return void
      */
     public function end_lvl(&$output, $depth = 0, $args = null)
     {
-        array_splice($this->parents, -1);
+        array_pop($this->parents);
     }
 
     /**
      * @inheritdoc
+     *
+     * @param object $item
+     *
+     * @return void
      */
     public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0)
     {
@@ -76,8 +72,8 @@ class MenuWalker extends \Walker_Nav_Menu
         $item->type = $item->type === 'custom' && $item->url === '#' ? 'heading' : $item->type;
 
         // set parent
-        if (count($this->parents)) {
-            $this->parents[count($this->parents) - 1]->children[] = $item;
+        if ($this->parents) {
+            array_last($this->parents)->children[] = $item;
         } else {
             $this->items[] = $item;
         }
@@ -90,6 +86,11 @@ class MenuWalker extends \Walker_Nav_Menu
 
     /**
      * @inheritdoc
+     *
+     * @param list<object> $elements
+     * @param mixed ...$args
+     *
+     * @return string
      */
     public function walk($elements, $max_depth, ...$args)
     {

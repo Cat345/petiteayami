@@ -56,18 +56,23 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 
 		public static function get_conversions_by_oid( $oid, $contact_id, $engagements_ids = [], $type = 1 ) {
 			global $wpdb;
-			$table = self::_table();
-			$query = "SELECT wcid,date,wctotal FROM $table WHERE otype=$type AND oid=$oid AND cid=$contact_id";
+			$table      = self::_table();
+			$oid        = absint( $oid );
+			$contact_id = absint( $contact_id );
+			$type       = absint( $type );
+			$query      = $wpdb->prepare( "SELECT wcid,date,wctotal FROM $table WHERE otype=%d AND oid=%d AND cid=%d", $type, $oid, $contact_id );
 			if ( ! empty( $engagements_ids ) ) {
-				$engagements_ids = implode( ', ', $engagements_ids );
-				$query           .= " AND trackid IN($engagements_ids)";
+				$engagements_ids = array_map( 'absint', $engagements_ids );
+				$placeholder     = implode( ', ', array_fill( 0, count( $engagements_ids ), '%d' ) );
+				$query          .= $wpdb->prepare( " AND trackid IN($placeholder)", $engagements_ids );
 			}
 
 			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 
 		public static function get_conversions_for_check_validity( $saved_last_conversion_id ) {
-			if ( empty( absint( $saved_last_conversion_id ) ) ) {
+			$saved_last_conversion_id = absint( $saved_last_conversion_id );
+			if ( empty( $saved_last_conversion_id ) ) {
 				return [];
 			}
 
@@ -75,10 +80,10 @@ if ( ! class_exists( 'BWFAN_Model_Conversions' ) && BWFAN_Common::is_pro_3_0() )
 			$table = self::_table();
 			$and   = '';
 			if ( ! empty( $saved_last_conversion_id ) ) {
-				$and .= " AND ID <= $saved_last_conversion_id";
+				$and .= $wpdb->prepare( ' AND ID <= %d', $saved_last_conversion_id );
 			}
 
-			$query = "SELECt ID,wcid FROM $table WHERE 1=1 $and ORDER BY ID DESC";
+			$query = "SELECT ID,wcid FROM $table WHERE 1=1 $and ORDER BY ID DESC";
 
 			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}

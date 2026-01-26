@@ -376,7 +376,6 @@ a.dgwt-wcas-product-details-readmore:hover {
 	border-left: none;
 	padding: 0;
 	width: 300px;
-	max-width: 300px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -392,6 +391,7 @@ a.dgwt-wcas-product-details-readmore:hover {
 .dgwt-wcas-details-outside .dgwt-wcas-details-wrapp {
 	margin-top: -1px;
 	border-top: 1px solid #ddd;
+	max-width: 300px;
 }
 
 .dgwt-wcas-details-outside.dgwt-wcas-is-details .dgwt-wcas-suggestions-wrapp {

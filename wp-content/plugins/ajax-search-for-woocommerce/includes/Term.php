@@ -8,8 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Term {
-	protected $termID = 0;
-	protected $term = null;
+	protected $termID   = 0;
+	protected $term     = null;
 	protected $taxonomy = null;
 
 	public function __construct( $term, $taxonomy = '' ) {
@@ -31,6 +31,7 @@ class Term {
 
 	/**
 	 * Get term ID (term_id)
+	 *
 	 * @return int
 	 */
 	public function getID() {
@@ -50,6 +51,7 @@ class Term {
 
 	/**
 	 * Check, if class is initialized correctly
+	 *
 	 * @return bool
 	 */
 	public function isValid() {

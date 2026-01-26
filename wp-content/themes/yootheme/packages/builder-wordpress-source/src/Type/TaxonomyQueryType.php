@@ -2,28 +2,28 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Taxonomy;
 use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper as SourceHelper;
 use YOOtheme\Str;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class TaxonomyQueryType
 {
     /**
-     * @param Source       $source
-     * @param \WP_Taxonomy $taxonomy
-     * @param bool         $custom
-     *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(Source $source, \WP_Taxonomy $taxonomy, $custom = true)
+    public static function config(Source $source, WP_Taxonomy $taxonomy, bool $custom = true): array
     {
         $name = Str::camelCase([SourceHelper::getBase($taxonomy), 'Query'], true);
         $field = Str::camelCase(SourceHelper::getBase($taxonomy));
 
-        $source->objectType($name, TaxonomyArchiveQueryType::config($taxonomy));
+        $source->objectType($name, fn() => TaxonomyArchiveQueryType::config($taxonomy));
 
         if ($custom) {
-            $source->objectType($name, CustomTaxonomyQueryType::config($taxonomy));
+            $source->objectType($name, fn() => CustomTaxonomyQueryType::config($taxonomy));
         }
 
         return [
@@ -38,6 +38,10 @@ class TaxonomyQueryType
         ];
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @return array<string, mixed>
+     */
     public static function resolve($root)
     {
         return $root;

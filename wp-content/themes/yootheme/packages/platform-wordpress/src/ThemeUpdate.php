@@ -11,6 +11,8 @@ class ThemeUpdate
 
     /**
      * Package URL query parameters.
+     *
+     * @var array<string, string>
      */
     protected array $query = [];
 
@@ -34,12 +36,15 @@ class ThemeUpdate
         // @link https://developer.wordpress.org/reference/hooks/upgrader_package_options/
         add_filter('upgrader_package_options', [$this, 'addQuery']);
 
+        // @link https://developer.wordpress.org/reference/hooks/pre_set_site_transient_transient/
         // @link https://make.wordpress.org/core/2020/07/30/recommended-usage-of-the-updates-api-to-support-the-auto-updates-ui-for-plugins-and-themes-in-wordpress-5-5/
         add_filter('pre_set_site_transient_update_themes', [$this, 'checkUpdate']);
     }
 
     /**
      * Set the package URL query parameters.
+     *
+     * @param array<string, string> $query
      */
     public function setQuery(array $query): self
     {
@@ -70,8 +75,12 @@ class ThemeUpdate
 
     /**
      * Add query parameters to package URL.
+     *
+     * @param array<string, mixed> $options
+     *
+     * @return array<string, mixed>
      */
-    public function addQuery($options)
+    public function addQuery(array $options): array
     {
         $query = array_filter($this->query);
         $theme = $options['hook_extra']['theme'] ?? null;
@@ -85,6 +94,10 @@ class ThemeUpdate
 
     /**
      * Check API for updates.
+     *
+     * @param mixed $transient
+     *
+     * @return mixed
      */
     public function checkUpdate($transient)
     {
@@ -114,6 +127,8 @@ class ThemeUpdate
 
     /**
      * Check if an update is available.
+     *
+     * @param array<string, string> $release
      */
     protected function hasUpdate(array $release, string $version): bool
     {
@@ -122,6 +137,8 @@ class ThemeUpdate
 
     /**
      * Fetch details on the latest updates.
+     *
+     * @return array<string, mixed>
      */
     protected function fetchUpdate(string $url): array
     {
@@ -144,6 +161,8 @@ class ThemeUpdate
 
     /**
      * Get the latest release with preferred stability.
+     *
+     * @return ?array<string, string>
      */
     protected function getRelease(string $url): ?array
     {
@@ -169,6 +188,10 @@ class ThemeUpdate
 
     /**
      * Normalize data from the API to the expected values.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, string>
      */
     protected function mapData(array $data = []): array
     {

@@ -1,11 +1,6 @@
 <?php
 
 $placeholders = array(
-	'[b]' 				=> 'Bold',
-	'[/b]' 				=> 'End Bold',
-	'[new_line]' 		=> 'New Line',
-	'[i]' 				=> 'Italic',
-	'[/i]' 				=> 'End Italic',
 	'[user_email]' 		=> 'User email',
 	'[quantity]' 		=> 'Quantity requested',
 	'[join_date]' 		=> 'Waitlisted Date',
@@ -30,10 +25,9 @@ foreach ( $placeholders as $key => $desc ) {
 }
 
 ?>
+<h4>Placeholders</h4>
 
 <div id="xoo-wl-placeholder-nfo"><?php echo wp_kses_post( $placeholders_text ); ?></div>
-
-<h4>Custom Field Placeholders</h4>
 
 <div id="xoo-wl-placeholder-nfo">
 
@@ -43,20 +37,7 @@ foreach ( $placeholders as $key => $desc ) {
 		if( in_array( $field_id , $predefined_fields ) ) continue;
 		$settings = $field_data['settings'];
 		$label = $settings['label'] ? $settings['label'] : ( $settings['placeholder'] ? $settings['placeholder'] : $field_id.' value' );
-		echo esc_html( '<span>'.'['.$field_id.']' .' - '.$label.'</span>' );
-	}
-
-	?>
-</div>
-
-<h4>Heading Placeholders</h4>
-
-<div id="xoo-wl-placeholder-nfo">
-
-	<?php
-
-	for ( $i= 1; $i <= 6 ; $i++ ) {
-		echo '<span>[h'.(int) $i.'][/h'.(int) $i.'] - Heading'.(int) $i.'</span>';
+		echo wp_kses_post( '<span>'.'['.$field_id.']' .' - '.$label.'</span>' );
 	}
 
 	?>

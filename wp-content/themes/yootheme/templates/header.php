@@ -44,6 +44,7 @@ if ($config("$navbar.dropbar")) {
 
     $attrs_navbar['uk-navbar']['target-y'] = '.tm-header .uk-navbar-container';
     $attrs_navbar['uk-navbar']['dropbar'] = true;
+    $attrs_navbar['uk-navbar']['delay-hide'] = '200';
     $attrs_navbar['uk-navbar']['dropbar-anchor'] = $config("$header.transparent") && $config("$header.blend") ? ($outside ? '.tm-page-container > .tm-page' : '.tm-page > main') : '.tm-header .uk-navbar-container'; // Has to be after navbar container because it has uk-light/dark
     $attrs_navbar['uk-navbar']['dropbar-transparent-mode'] = $config("$header.transparent") ? 'behind' : 'remove';
 
@@ -429,7 +430,7 @@ if (preg_match('/^stacked-(left|justify)/', $layout)) :
 
     <?php if (is_active_sidebar('logo') || is_active_sidebar('header')) : ?>
     <div<?= $this->attrs($attrs_headerbar, ['class' => 'tm-headerbar tm-headerbar-top']) ?>>
-        <div<?= $this->attrs($attrs_width_container) ?>>
+        <div<?= $this->attrs($attrs_width_container, ($search_expand && preg_match('/^(logo|header)/', $config("$header.search", '')) && !is_active_sidebar('header')) ? ['class' => 'tm-header-search-expand'] : []) ?>>
 
             <?php if (is_active_sidebar('header')) : ?>
             <div class="uk-grid uk-grid-medium uk-child-width-auto uk-flex-middle">
@@ -552,7 +553,6 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
 
     $attrs_dropbar['uk-drop'] = [
         // Default
-        'clsDrop' => 'uk-dropbar',
         'flip' => 'false', // Has to be a string
         'container' => $sticky ? '.tm-header > [uk-sticky]' : '.tm-header',
         'target-y' => ".tm-header {$container}",
@@ -561,7 +561,7 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
         'target-x' => ".tm-header {$container}",
         'boundary-x' => $config("$site.layout") == 'boxed' && !$config("$site.boxed.header_outside") ? ".tm-header {$container}" : null,
         'stretch' => in_array($config("$dialog.dropbar.animation"), ['slide-left', 'slide-right']) && $config("$dialog.dropbar.width") ? 'y' : true,
-        'pos' => $config("$dialog.dropbar.animation") == 'slide-right' ? "bottom-right" : "bottom-left",
+        'pos' => $config("$dialog.dropbar.animation") == 'slide-right' ? 'bottom-right' : 'bottom-left',
         'bgScroll' => 'false', // Has to be a string
         'animation' => $config("$dialog.dropbar.animation") ?: null,
         'animateOut' => true,
@@ -573,7 +573,7 @@ if (str_starts_with($config("$dialog.layout"), 'dropbar')) {
     if ($config("$header.transparent")) {
         $attrs_dropbar['uk-drop']['inset'] = true;
         $attrs_dropbar['class'][] = 'uk-dropbar-inset';
-        $attrs_dropbar['uk-drop']['pos'] = $config("$dialog.dropbar.animation") == 'slide-right' ? "top-right" : "top-left";
+        $attrs_dropbar['uk-drop']['pos'] = $config("$dialog.dropbar.animation") == 'slide-right' ? 'top-right' : 'top-left';
 
         if ($config("$header.blend")) {
             $attrs_dropbar['uk-drop']['container'] = $outside ? '.tm-page-container' : '.tm-page';

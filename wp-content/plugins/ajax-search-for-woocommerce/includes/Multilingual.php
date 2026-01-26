@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Multilingual {
 
 	public static $currentCurrency = '';
-	public static $langs = null;
+	public static $langs           = null;
 
 	/**
 	 * Check if the website is multilingual
@@ -128,10 +128,11 @@ class Multilingual {
 				$currentLang = pll_default_language( 'slug' );
 			}
 		}
-
+		//phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( empty( $currentLang ) && ! empty( $_GET['lang'] ) && self::isLangCode( $_GET['lang'] ) ) {
 			$currentLang = $_GET['lang'];
 		}
+		//phpcs:enable
 
 		return apply_filters( 'dgwt/wcas/multilingual/current-language', $currentLang );
 	}
@@ -150,13 +151,19 @@ class Multilingual {
 			global $wpdb;
 
 			$postType = 'post_' . $postType;
-
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 			$tranlationsTable = $wpdb->prefix . 'icl_translations';
-			$sql              = $wpdb->prepare( "SELECT language_code
+			$sql              = $wpdb->prepare(
+				"SELECT language_code
                                           FROM $tranlationsTable
                                           WHERE element_type=%s
-                                          AND element_id=%d", sanitize_key( $postType ), $postID );
-			$result           = $wpdb->get_var( $sql );
+                                          AND element_id=%d",
+				sanitize_key( $postType ),
+				$postID
+			);
+
+			$result = $wpdb->get_var( $sql );
+			// phpcs:enable
 
 			if ( self::isLangCode( $result ) ) {
 				$lang = $result;
@@ -190,14 +197,19 @@ class Multilingual {
 			$tranlationsTable = $wpdb->prefix . 'icl_translations';
 
 			$term = \WP_Term::get_instance( $termID, $taxonomy );
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 			if ( is_a( $term, 'WP_Term' ) ) {
-				$sql = $wpdb->prepare( "SELECT language_code
+				$sql = $wpdb->prepare(
+					"SELECT language_code
                                           FROM $tranlationsTable
                                           WHERE element_type = %s
                                           AND element_id=%d",
-					$elementType, $term->term_taxonomy_id );
+					$elementType,
+					$term->term_taxonomy_id
+				);
 
 				$result = $wpdb->get_var( $sql );
+				// phpcs:enable
 
 				if ( self::isLangCode( $result ) ) {
 					$lang = $result;
@@ -240,7 +252,6 @@ class Multilingual {
 			} else {
 				$permalink = apply_filters( 'wpml_permalink', $url, $lang, true );
 			}
-
 		}
 
 		$permalink = apply_filters( 'dgwt/wcas/multilingual/post-permalink', $permalink, $lang, $postID );
@@ -262,10 +273,10 @@ class Multilingual {
 			return self::$langs;
 		}
 
-		$langs = array();
+		$langs = [];
 
 		if ( self::isWPML() ) {
-			$wpmlLangs = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) );
+			$wpmlLangs = apply_filters( 'wpml_active_languages', null, [ 'skip_missing' => 0 ] );
 
 			if ( is_array( $wpmlLangs ) ) {
 				foreach ( $wpmlLangs as $langCode => $details ) {
@@ -276,7 +287,7 @@ class Multilingual {
 			}
 
 			if ( ! $includeHidden ) {
-				$hiddenLangs = apply_filters( 'wpml_setting', array(), 'hidden_languages' );
+				$hiddenLangs = apply_filters( 'wpml_setting', [], 'hidden_languages' );
 				if ( ! empty( $hiddenLangs ) && is_array( $hiddenLangs ) ) {
 					foreach ( $hiddenLangs as $hiddenLang ) {
 						if ( ! self::isLangCode( $hiddenLang ) && $includeInvalid ) {
@@ -289,20 +300,25 @@ class Multilingual {
 		}
 
 		if ( self::isPolylang() ) {
-			$langs = pll_languages_list( array(
-				'hide_empty' => false,
-				'fields'     => ''
-			) );
+			$langs = pll_languages_list(
+				[
+					'hide_empty' => false,
+					'fields'     => '',
+				]
+			);
 
 			// Filter not-active languages
-			$langs = array_filter( $langs, function ( $lang ) {
-				// By default, 'active' prop isn't available; It is set the first time the administrator deactivates the language
-				if ( isset( $lang->active ) && ! $lang->active ) {
-					return false;
-				}
+			$langs = array_filter(
+				$langs,
+				function ( $lang ) {
+					// By default, 'active' prop isn't available; It is set the first time the administrator deactivates the language
+					if ( isset( $lang->active ) && ! $lang->active ) {
+						return false;
+					}
 
-				return true;
-			} );
+					return true;
+				}
+			);
 
 			$langs = wp_list_pluck( $langs, 'slug' );
 		}
@@ -345,10 +361,12 @@ class Multilingual {
 		}
 
 		if ( self::isPolylang() ) {
-			$langs = pll_languages_list( array(
-				'hide_empty' => false,
-				'fields'     => ''
-			) );
+			$langs = pll_languages_list(
+				[
+					'hide_empty' => false,
+					'fields'     => '',
+				]
+			);
 
 			if ( ! empty( $langs ) && is_array( $langs ) ) {
 				foreach ( $langs as $object ) {
@@ -377,19 +395,19 @@ class Multilingual {
 	 * @return array of WP_Term objects
 	 */
 	public static function getTermsInAllLangs( $taxonomy ) {
-		$terms = array();
+		$terms = [];
 
 		if ( self::isWPML() ) {
 			$currentLang = self::getCurrentLanguage();
-			$usedIds     = array();
+			$usedIds     = [];
 
 			foreach ( self::getLanguages() as $lang ) {
 				do_action( 'wpml_switch_language', $lang );
-				$args        = array(
+				$args        = [
 					'taxonomy'         => $taxonomy,
 					'hide_empty'       => true,
-					'suppress_filters' => false
-				);
+					'suppress_filters' => false,
+				];
 				$termsInLang = get_terms( apply_filters( 'dgwt/wcas/search/' . $taxonomy . '/args', $args ) );
 
 				if ( ! empty( $termsInLang ) && is_array( $termsInLang ) ) {
@@ -400,7 +418,6 @@ class Multilingual {
 						}
 					}
 				}
-
 			}
 
 			do_action( 'wpml_switch_language', $currentLang );
@@ -408,11 +425,13 @@ class Multilingual {
 
 		if ( self::isPolylang() ) {
 
-			$terms = get_terms( array(
-				'taxonomy'   => $taxonomy,
-				'hide_empty' => true,
-				'lang'       => '', // query terms in all languages
-			) );
+			$terms = get_terms(
+				[
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => true,
+					'lang'       => '', // query terms in all languages
+				]
+			);
 
 		}
 
@@ -429,8 +448,8 @@ class Multilingual {
 	 *
 	 * @return \WP_Term[]
 	 */
-	public static function getTermsInLang( $args = array(), $lang = '' ) {
-		$terms = array();
+	public static function getTermsInLang( $args = [], $lang = '' ) {
+		$terms = [];
 
 		if ( empty( $lang ) ) {
 			$lang = self::getDefaultLanguage();
@@ -438,14 +457,17 @@ class Multilingual {
 
 		if ( self::isWPML() ) {
 			$currentLang = self::getCurrentLanguage();
-			$usedIds     = array();
+			$usedIds     = [];
 
 			do_action( 'wpml_switch_language', $lang );
-			$args        = wp_parse_args( $args, array(
-				'taxonomy'         => '',
-				'hide_empty'       => true,
-				'suppress_filters' => false
-			) );
+			$args        = wp_parse_args(
+				$args,
+				[
+					'taxonomy'         => '',
+					'hide_empty'       => true,
+					'suppress_filters' => false,
+				]
+			);
 			$termsInLang = get_terms( apply_filters( 'dgwt/wcas/search/' . $args['taxonomy'] . '/args', $args ) );
 
 			if ( ! empty( $termsInLang ) && is_array( $termsInLang ) ) {
@@ -462,11 +484,14 @@ class Multilingual {
 		}
 
 		if ( self::isPolylang() ) {
-			$args = wp_parse_args( $args, array(
-				'taxonomy'   => '',
-				'hide_empty' => true,
-				'lang'       => $lang,
-			) );
+			$args = wp_parse_args(
+				$args,
+				[
+					'taxonomy'   => '',
+					'hide_empty' => true,
+					'lang'       => $lang,
+				]
+			);
 
 			$terms = get_terms( $args );
 		}
@@ -477,17 +502,17 @@ class Multilingual {
 	}
 
 	public static function searchTerms( $taxonomy, $query, $lang = '' ) {
-		$terms = array();
+		$terms = [];
 
 		if ( empty( $lang ) ) {
 			$lang = self::getDefaultLanguage();
 		}
 
-		$args  = array(
+		$args  = [
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => false,
 			'search'     => $query,
-		);
+		];
 		$terms = get_terms( $args );
 	}
 
@@ -539,7 +564,6 @@ class Multilingual {
 			$multiCurrency = true;
 		}
 
-
 		return $multiCurrency;
 	}
 
@@ -561,7 +585,6 @@ class Multilingual {
 					$currencyCode = $woocommerce_wpml->settings['default_currencies'][ $lang ];
 				}
 			}
-
 		}
 
 		return $currencyCode;

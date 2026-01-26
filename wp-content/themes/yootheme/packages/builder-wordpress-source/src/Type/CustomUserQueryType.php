@@ -2,14 +2,19 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_User;
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class CustomUserQueryType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -144,16 +149,26 @@ class CustomUserQueryType
         ];
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return ?WP_User
+     */
     public static function resolveUser($root, array $args)
     {
         if (empty($args['id'])) {
-            return;
+            return null;
         }
 
         return get_userdata($args['id']);
     }
 
-    public static function resolveUsers($root, array $args)
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return array<WP_User>
+     */
+    public static function resolveUsers($root, array $args): array
     {
         $query = [
             'orderby' => $args['order'],

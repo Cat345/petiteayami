@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2
+class ComposerStaticInitfb8c499ed3b75d2fff76f9fff9e92982
 {
     public static $files = array (
         'da5f6548f070d3d306f90eee42dd5de6' => __DIR__ . '/..' . '/donatj/phpuseragentparser/src/UserAgentParser.php',
@@ -22,10 +22,6 @@ class ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2
         array (
             'WPMedia\\Mixpanel\\' => 17,
         ),
-        'M' => 
-        array (
-            'MyThemeShop\\Helpers\\' => 20,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -37,38 +33,10 @@ class ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2
         array (
             0 => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src',
         ),
-        'MyThemeShop\\Helpers\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src',
-        ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'MyThemeShop\\Admin\\List_Table' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/admin/class-list-table.php',
-        'MyThemeShop\\Admin\\Page' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/admin/class-page.php',
-        'MyThemeShop\\Database\\Clauses' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-clauses.php',
-        'MyThemeShop\\Database\\Database' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-database.php',
-        'MyThemeShop\\Database\\Escape' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-escape.php',
-        'MyThemeShop\\Database\\GroupBy' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-groupby.php',
-        'MyThemeShop\\Database\\Joins' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-joins.php',
-        'MyThemeShop\\Database\\OrderBy' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-orderby.php',
-        'MyThemeShop\\Database\\Query_Builder' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-query-builder.php',
-        'MyThemeShop\\Database\\Select' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-select.php',
-        'MyThemeShop\\Database\\Translate' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-translate.php',
-        'MyThemeShop\\Database\\Where' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/database/class-where.php',
-        'MyThemeShop\\Helpers\\Arr' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-arr.php',
-        'MyThemeShop\\Helpers\\Attachment' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-attachment.php',
-        'MyThemeShop\\Helpers\\Conditional' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-conditional.php',
-        'MyThemeShop\\Helpers\\DB' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-db.php',
-        'MyThemeShop\\Helpers\\HTML' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-html.php',
-        'MyThemeShop\\Helpers\\Param' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-param.php',
-        'MyThemeShop\\Helpers\\Str' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-str.php',
-        'MyThemeShop\\Helpers\\Url' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-url.php',
-        'MyThemeShop\\Helpers\\WordPress' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/helpers/class-wordpress.php',
-        'MyThemeShop\\Json_Manager' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/class-json-manager.php',
-        'MyThemeShop\\Notification' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/class-notification.php',
-        'MyThemeShop\\Notification_Center' => __DIR__ . '/..' . '/mythemeshop/wordpress-helpers/src/class-notification-center.php',
         'RankMath\\ACF\\ACF' => __DIR__ . '/../..' . '/includes/modules/acf/class-acf.php',
         'RankMath\\Admin\\Admin' => __DIR__ . '/../..' . '/includes/admin/class-admin.php',
         'RankMath\\Admin\\Admin_Breadcrumbs' => __DIR__ . '/../..' . '/includes/admin/class-admin-breadcrumbs.php',
@@ -357,6 +325,7 @@ class ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2
         'RankMath\\Status\\System_Status' => __DIR__ . '/../..' . '/includes/modules/status/class-system-status.php',
         'RankMath\\Term' => __DIR__ . '/../..' . '/includes/class-term.php',
         'RankMath\\ThirdParty\\Loco\\Loco_I18n_Inline' => __DIR__ . '/../..' . '/includes/3rdparty/loco/class-loco-i18n-inline.php',
+        'RankMath\\ThirdParty\\WPML' => __DIR__ . '/../..' . '/includes/3rdparty/wpml/class-wpml.php',
         'RankMath\\Thumbnail_Overlay' => __DIR__ . '/../..' . '/includes/class-thumbnail-overlay.php',
         'RankMath\\Tools\\AIOSEO_Blocks' => __DIR__ . '/../..' . '/includes/modules/database-tools/class-aioseo-blocks.php',
         'RankMath\\Tools\\AIOSEO_TOC_Converter' => __DIR__ . '/../..' . '/includes/modules/database-tools/class-aioseo-toc-converter.php',
@@ -424,9 +393,9 @@ class ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitdf61d504370ce9d0497fc7229ad770b2::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitfb8c499ed3b75d2fff76f9fff9e92982::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitfb8c499ed3b75d2fff76f9fff9e92982::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitfb8c499ed3b75d2fff76f9fff9e92982::$classMap;
 
         }, null, ClassLoader::class);
     }

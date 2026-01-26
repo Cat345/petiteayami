@@ -16,6 +16,8 @@ class FilterProductHtml
 
     /**
      * Set the number of product cross-sell columns.
+     *
+     * @return string
      */
     public function crossSellsColumns()
     {
@@ -24,6 +26,8 @@ class FilterProductHtml
 
     /**
      * Set the number of product thumbnail columns.
+     *
+     * @return string
      */
     public function thumbnailsColumns()
     {
@@ -32,6 +36,9 @@ class FilterProductHtml
 
     /**
      * Adds custom ReviewWalker.
+     *
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
      */
     public static function reviewListArgs(array $args): array
     {
@@ -41,7 +48,9 @@ class FilterProductHtml
     /**
      * Add custom classes to <input> tags in review comment form.
      *
-     * @param mixed $form
+     * @param array<string, mixed> $form
+     *
+     * @return array<string, mixed>
      */
     public static function reviewCommentArgs($form)
     {

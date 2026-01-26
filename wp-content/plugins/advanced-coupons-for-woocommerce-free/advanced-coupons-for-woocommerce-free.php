@@ -4,11 +4,11 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.0
+ * Version: 4.7.1
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
  * Requires at least: 5.8
- * Tested up to: 6.8
+ * Tested up to: 6.9
  * WC requires at least: 4.0
  * WC tested up to: 10.3
  *
@@ -462,6 +462,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         $wc_subscriptions = ACFWF\Models\Third_Party_Integrations\WC_Subscriptions::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $pushengage       = ACFWF\Models\Third_Party_Integrations\PushEngage::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         $getting_started  = ACFWF\Models\Getting_Started::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        $elementor        = ACFWF\Models\Third_Party_Integrations\Elementor::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         // boostrap args.
         $initiables     = array( $cart_conditions, $admin_app, $edit_coupon, $bogo_admin, $notices, $upsell, $admin_notes, $help_links, $editor_blocks, $store_credits_admin, $store_credits_checkout, $store_credits_myaccount, $usage, $emails, $plugin_installer, $checkout, $funnelkit, $wc_payments, $notifications );

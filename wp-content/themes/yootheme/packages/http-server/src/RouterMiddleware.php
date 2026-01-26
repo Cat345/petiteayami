@@ -2,27 +2,18 @@
 
 namespace YOOtheme;
 
+use Exception;
 use YOOtheme\Http\Request;
 use YOOtheme\Http\Response;
 
 class RouterMiddleware
 {
     public const FOUND = 1;
-
     public const NOT_FOUND = 0;
-
     public const METHOD_NOT_ALLOWED = 2;
 
-    /**
-     * @var Router
-     */
-    protected $router;
+    protected Router $router;
 
-    /**
-     * Constructor.
-     *
-     * @param Router $router
-     */
     public function __construct(Router $router)
     {
         $this->router = $router;
@@ -32,11 +23,8 @@ class RouterMiddleware
      * Handles the route dispatch.
      *
      * @param Request  $request
-     * @param callable $next
-     *
-     * @return Response
      */
-    public function handleRoute($request, callable $next)
+    public function handleRoute($request, callable $next): Response
     {
         return $next($this->router->dispatch($request));
     }
@@ -45,11 +33,8 @@ class RouterMiddleware
      * Handles the route status.
      *
      * @param Request  $request
-     * @param callable $next
-     *
-     * @return Response
      */
-    public function handleStatus($request, callable $next)
+    public function handleStatus($request, callable $next): Response
     {
         $status = $request->getAttribute('routeStatus');
 
@@ -70,11 +55,9 @@ class RouterMiddleware
      * Handles an error.
      *
      * @param Response   $response
-     * @param \Exception $exception
-     *
-     * @return Response
+     * @param Exception $exception
      */
-    public function handleError($response, $exception)
+    public function handleError($response, $exception): Response
     {
         if ($exception instanceof Http\Exception) {
             return $response->withStatus($exception->getCode(), $exception->getMessage());

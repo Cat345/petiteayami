@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Typography, Spin, Row, Col, Divider, Popover, Tag } from 'antd';
 import { QuestionCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { validateURL } from '../../../helpers/utils';
+import { sanitizeHtml } from '../../../../shared/utils';
 
 // Components
 import FunnelKitUpsell from './FunnelKitUpsell';
@@ -70,7 +71,7 @@ const SettingField = (props: IProps) => {
         {!!image && <img src={image} />}
         <span className="title">{noticeTitle}</span>
         <br />
-        <span className="text" dangerouslySetInnerHTML={{ __html: description }} />
+        <span className="text" dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }} />
         {button_text && button_link ? (
           <a className={`acfw-button ${button_class}`} href={button_link} rel="noreferrer noopener" target="_blank">
             {button_text}
@@ -132,7 +133,7 @@ const SettingField = (props: IProps) => {
               <Text type="danger">{validation[type] ? validation[type] : validation.default}</Text>
             ) : null}
           </div>
-          {desc ? <p dangerouslySetInnerHTML={{ __html: desc }} /> : null}
+          {desc ? <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(desc) }} /> : null}
         </Col>
       </>
     );
@@ -150,7 +151,7 @@ const SettingField = (props: IProps) => {
               <Text type="danger">{validation[type] ? validation[type] : validation.default}</Text>
             ) : null}
           </div>
-          {desc ? <p dangerouslySetInnerHTML={{ __html: desc }} /> : null}
+          {desc ? <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(desc) }} /> : null}
         </Col>
       </>
     );

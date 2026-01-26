@@ -13,7 +13,7 @@ class RenderBuilder
         $this->sections = $view['sections'];
     }
 
-    public function handle()
+    public function handle(): void
     {
         // Force builder to be evaluated before header
         if ($this->sections->exists('builder')) {

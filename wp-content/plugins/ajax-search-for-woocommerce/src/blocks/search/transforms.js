@@ -8,73 +8,73 @@ const transforms = {
 	from: [
 		{
 			type: 'block',
-			blocks: ['core/search', 'woocommerce/product-search'],
+			blocks: [ 'core/search', 'woocommerce/product-search' ],
 			transform: () => {
-				return createBlock('fibosearch/search');
+				return createBlock( 'fibosearch/search' );
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['core/legacy-widget'],
-			isMatch: ({ idBase, instance }) => {
-				if (!instance?.raw) {
+			blocks: [ 'core/legacy-widget' ],
+			isMatch: ( { idBase, instance } ) => {
+				if ( ! instance?.raw ) {
 					// Can't transform if raw instance is not shown in REST API.
 					return false;
 				}
 				return idBase === 'dgwt_wcas_ajax_search';
 			},
-			transform: ({ instance }) => {
+			transform: ( { instance } ) => {
 				const layout = instance.raw.layout;
 				const attributes = {};
-				if (layout !== 'default') {
+				if ( layout !== 'default' ) {
 					attributes.inheritPluginSettings = false;
 					attributes.layout = layout;
 				}
-				return createBlock('fibosearch/search', attributes);
+				return createBlock( 'fibosearch/search', attributes );
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['core/shortcode'],
+			blocks: [ 'core/shortcode' ],
 			transform: () => {
-				return createBlock('fibosearch/search');
+				return createBlock( 'fibosearch/search' );
 			},
-			isMatch: ({ text }) => {
-				const re = regexp('fibosearch');
-				const match = re.exec(text);
-				return Array.isArray(match) && match[2] === 'fibosearch';
+			isMatch: ( { text } ) => {
+				const re = regexp( 'fibosearch' );
+				const match = re.exec( text );
+				return Array.isArray( match ) && match[ 2 ] === 'fibosearch';
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['core/shortcode'],
+			blocks: [ 'core/shortcode' ],
 			transform: () => {
-				return createBlock('fibosearch/search');
+				return createBlock( 'fibosearch/search' );
 			},
-			isMatch: ({ text }) => {
-				const re = regexp('wcas-search-form');
-				const match = re.exec(text);
-				return Array.isArray(match) && match[2] === 'wcas-search-form';
+			isMatch: ( { text } ) => {
+				const re = regexp( 'wcas-search-form' );
+				const match = re.exec( text );
+				return Array.isArray( match ) && match[ 2 ] === 'wcas-search-form';
 			},
 		},
 	],
 	to: [
 		{
 			type: 'block',
-			blocks: ['core/search'],
+			blocks: [ 'core/search' ],
 			transform: () => {
-				return createBlock('core/search', {
+				return createBlock( 'core/search', {
 					showLabel: false,
 					buttonUseIcon: true,
 					buttonPosition: 'button-inside',
-				});
+				} );
 			},
 		},
 		{
 			type: 'block',
-			blocks: ['woocommerce/product-search'],
+			blocks: [ 'woocommerce/product-search' ],
 			transform: () => {
-				return createBlock('woocommerce/product-search');
+				return createBlock( 'woocommerce/product-search' );
 			},
 		},
 	],

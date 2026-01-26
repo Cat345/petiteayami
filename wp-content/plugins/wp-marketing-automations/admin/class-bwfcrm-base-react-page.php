@@ -76,7 +76,7 @@ abstract class BWFCRM_Base_React_Page {
 			if ( class_exists( 'BWFCRM_Core' ) ) {
 				$first_broadcast_id    = BWFAN_Model_Broadcast::get_first_broadcast_id();
 				$first_form_id         = BWFAN_Model_Form_Feeds::get_first_form_id();
-				$first_export_id       = BWFAN_Model_Import_Export::get_first_export_id();
+				$first_export_id       = BWFAN_Model_Export_Import::get_first_export_id();
 				$first_template_id     = BWFAN_Model_Templates::get_first_template_id();
 				$first_link_trigger_id = class_exists( 'BWFAN_Model_Link_Triggers' ) ? BWFAN_Model_Link_Triggers::get_first_link_id() : null;
 				$first_bulk_action_id  = class_exists( 'BWFAN_Model_Bulk_Action' ) ? BWFAN_Model_Bulk_Action::get_first_bulk_action_id() : null;
@@ -140,7 +140,7 @@ abstract class BWFCRM_Base_React_Page {
 			);
 		}
 
-		$this->page_data['timezoneList'] = $this->get_timezone_list();
+		$this->page_data['timezoneList'] = BWFAN_Common::get_timezone_list();
 
 		if ( class_exists( 'WFFN_Core' ) ) {
 			$this->page_data['is_funnel_active'] = true;
@@ -244,6 +244,13 @@ abstract class BWFCRM_Base_React_Page {
 			$this->page_data['unsubscribe_page_data'] = $unsubscribe_page;
 		}
 
+		$this->page_data['contact_import_inprogress']    = BWFAN_Importer::get_import_option();
+		$this->page_data['feature_enabled']              = [
+			'categories' => class_exists('BWFCRM_Category' ),
+		];
+
+		$this->page_data['bwf_review_count'] = 302;
+
 		do_action( 'bwfan_admin_view_localize_data', $this );
 	}
 
@@ -324,45 +331,6 @@ abstract class BWFCRM_Base_React_Page {
 		$wait_time       = ( 1 === $wait_time ) ? $wait_time . ' min' : $wait_time . ' mins';
 
 		return $wait_time;
-	}
-
-	public function get_timezone_list() {
-		static $regions = array(
-			DateTimeZone::AFRICA,
-			DateTimeZone::AMERICA,
-			DateTimeZone::ANTARCTICA,
-			DateTimeZone::ASIA,
-			DateTimeZone::ATLANTIC,
-			DateTimeZone::AUSTRALIA,
-			DateTimeZone::EUROPE,
-			DateTimeZone::INDIAN,
-			DateTimeZone::PACIFIC,
-		);
-
-		$timezones = array();
-		foreach ( $regions as $region ) {
-			$timezones = array_merge( $timezones, DateTimeZone::listIdentifiers( $region ) );
-		}
-
-		$timezone_offsets = array();
-		foreach ( $timezones as $timezone ) {
-			$tz                            = new DateTimeZone( $timezone );
-			$timezone_offsets[ $timezone ] = $tz->getOffset( new DateTime() );
-		}
-
-		asort( $timezone_offsets );
-
-		$timezone_list = array();
-		foreach ( $timezone_offsets as $timezone => $offset ) {
-			$offset_prefix    = $offset < 0 ? '-' : '+';
-			$offset_formatted = gmdate( 'H:i', abs( $offset ) );
-
-			$pretty_offset = "UTC{$offset_prefix}{$offset_formatted}";
-
-			$timezone_list[ $timezone ] = "({$pretty_offset}) $timezone";
-		}
-
-		return $timezone_list;
 	}
 
 	public function enqueue_app_assets( $app_name ) {

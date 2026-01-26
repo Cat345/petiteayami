@@ -2,29 +2,32 @@
 
 namespace YOOtheme;
 
-class Routes implements \IteratorAggregate
+use ArrayIterator;
+use IteratorAggregate;
+
+/**
+ * @implements IteratorAggregate<Route>
+ */
+class Routes implements IteratorAggregate
 {
     /**
-     * @var Route[]
+     * @var array<string, Route>
      */
-    protected $index = [];
+    protected array $index = [];
 
     /**
-     * @var Route[]
+     * @var list<Route>
      */
-    protected $routes = [];
+    protected array $routes = [];
 
     /**
      * Adds a route.
      *
-     * @param string|string[] $method
-     * @param string          $path
+     * @param string|list<string> $method
      * @param string|callable $handler
-     * @param array           $attributes
-     *
-     * @return Route
+     * @param array<string, mixed> $attributes
      */
-    public function map($method, $path, $handler, array $attributes = [])
+    public function map($method, string $path, $handler, array $attributes = []): Route
     {
         $route = new Route($path, $handler, $method);
         $route->setAttributes($attributes);
@@ -39,13 +42,10 @@ class Routes implements \IteratorAggregate
     /**
      * Adds a GET route.
      *
-     * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
-     *
-     * @return Route
+     * @param array<string, mixed> $attributes
      */
-    public function get($path, $handler, array $attributes = [])
+    public function get(string $path, $handler, array $attributes = []): Route
     {
         return $this->map('GET', $path, $handler, $attributes);
     }
@@ -53,13 +53,12 @@ class Routes implements \IteratorAggregate
     /**
      * Adds a POST route.
      *
-     * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return Route
      */
-    public function post($path, $handler, array $attributes = [])
+    public function post(string $path, $handler, array $attributes = []): Route
     {
         return $this->map('POST', $path, $handler, $attributes);
     }
@@ -69,11 +68,11 @@ class Routes implements \IteratorAggregate
      *
      * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return Route
      */
-    public function put($path, $handler, array $attributes = [])
+    public function put($path, $handler, array $attributes = []): Route
     {
         return $this->map('PUT', $path, $handler, $attributes);
     }
@@ -83,11 +82,11 @@ class Routes implements \IteratorAggregate
      *
      * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return Route
      */
-    public function patch($path, $handler, array $attributes = [])
+    public function patch($path, $handler, array $attributes = []): Route
     {
         return $this->map('PATCH', $path, $handler, $attributes);
     }
@@ -97,11 +96,11 @@ class Routes implements \IteratorAggregate
      *
      * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return Route
      */
-    public function delete($path, $handler, array $attributes = [])
+    public function delete($path, $handler, array $attributes = []): Route
     {
         return $this->map('DELETE', $path, $handler, $attributes);
     }
@@ -109,13 +108,10 @@ class Routes implements \IteratorAggregate
     /**
      * Adds a HEAD route.
      *
-     * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
-     *
-     * @return Route
+     * @param array<string, mixed> $attributes
      */
-    public function head($path, $handler, array $attributes = [])
+    public function head(string $path, $handler, array $attributes = []): Route
     {
         return $this->map('HEAD', $path, $handler, $attributes);
     }
@@ -123,26 +119,18 @@ class Routes implements \IteratorAggregate
     /**
      * Adds a OPTIONS route.
      *
-     * @param string|string[] $path
      * @param string|callable $handler
-     * @param array           $attributes
-     *
-     * @return Route
+     * @param array<string, mixed> $attributes
      */
-    public function options($path, $handler, array $attributes = [])
+    public function options(string $path, $handler, array $attributes = []): Route
     {
         return $this->map('OPTIONS', $path, $handler, $attributes);
     }
 
     /**
      * Adds a group of routes.
-     *
-     * @param string   $prefix
-     * @param callable $group
-     *
-     * @return self
      */
-    public function group($prefix, callable $group)
+    public function group(string $prefix, callable $group): self
     {
         $routes = new self();
 
@@ -154,12 +142,9 @@ class Routes implements \IteratorAggregate
     /**
      * Mounts a route collection.
      *
-     * @param string $prefix
-     * @param Routes $routes
-     *
      * @return $this
      */
-    public function mount($prefix, Routes $routes)
+    public function mount(string $prefix, Routes $routes): self
     {
         $prefix = trim($prefix, '/');
 
@@ -172,24 +157,18 @@ class Routes implements \IteratorAggregate
 
     /**
      * Gets a route by name.
-     *
-     * @param string $name
-     *
-     * @return Route|null
      */
-    public function getRoute($name)
+    public function getRoute(string $name): ?Route
     {
-        $index = $this->getIndex();
-
-        return $index[$name] ?? null;
+        return $this->getIndex()[$name] ?? null;
     }
 
     /**
      * Gets an index of routes.
      *
-     * @return Route[]
+     * @return array<string, Route>
      */
-    public function getIndex()
+    public function getIndex(): array
     {
         if (!$this->index) {
             foreach ($this->routes as $index => $route) {
@@ -203,11 +182,10 @@ class Routes implements \IteratorAggregate
     /**
      * Implements the IteratorAggregate.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator<int, Route>
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->routes);
+        return new ArrayIterator($this->routes);
     }
 }

@@ -1,10 +1,20 @@
 <?php
 
+/**
+ * Bwfan Wc Order Data
+ *
+ * @since 1.0.0
+ */
 class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 
 	private static $instance = null;
 
 
+	/**
+	 * Construct
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
 		$this->tag_name        = 'order_data';
 		$this->tag_description = __( 'Order Data', 'wp-marketing-automations' );
@@ -47,6 +57,9 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		if ( true === BWFAN_Merge_Tag_Loader::get_data( 'is_preview' ) ) {
 			return $this->parse_shortcode_output( $this->get_dummy_preview( $attr ), $attr );
 		}
+		if ( ! is_array( $attr ) || empty( $attr['key'] ) ) {
+			return $this->parse_shortcode_output( '', $attr );
+		}
 
 		$item_key = $attr['key'];
 		$order    = $this->get_order_obj();
@@ -58,10 +71,19 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		if ( class_exists( 'WFACP_Common' ) ) {
 			$value = $this->get_wfacp_label( $item_key, $value );
 		}
-		$value = is_string( $value ) ? nl2br( $value ) : $value;
 
-		/** if value is date then checking format in attribute */
-		$value = $this->get_date_value( $value, $attr );
+		$type = isset( $attr['type'] ) ? $attr['type'] : '';
+
+		switch ( $type ) {
+			case 'date':
+				$value = $this->get_date_value( $value, $attr );
+				break;
+			case 'price':
+				$value = $this->get_price_value( $value, $attr );
+				break;
+			default:
+				break;
+		}
 
 		return $this->parse_shortcode_output( $value, $attr );
 	}
@@ -72,13 +94,27 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 	 * @return string
 	 */
 	public function get_dummy_preview( $attr ) {
-		if ( ! is_array( $attr ) || ! isset( $attr['type'] ) || 'date' !== $attr['type'] || ! isset( $attr['format'] ) || empty( $attr['format'] ) ) {
-			return __( 'Key value', 'wp-marketing-automations' );
-		}
+		$type = isset( $attr['type'] ) ? $attr['type'] : '';
+		// If type is price, show formatted price preview
+		switch ( $type ) {
+			case 'date':
+				if ( ! is_array( $attr ) || ! isset( $attr['format'] ) || empty( $attr['format'] ) ) {
+					return __( 'Key value', 'wp-marketing-automations' );
+				}
 
-		return $this->format_datetime( date( 'Y-m-d H:i:s' ), $attr );
+				return $this->format_datetime( gmdate( 'Y-m-d H:i:s' ), $attr );
+			case 'price':
+				return $this->get_price_value( 1255.50, $attr );
+			default:
+				return __( 'Key value', 'wp-marketing-automations' );
+		}
 	}
 
+	/**
+	 * Get Order Obj
+	 *
+	 * @since 1.0.0
+	 */
 	protected function get_order_obj() {
 		$order = BWFAN_Merge_Tag_Loader::get_data( 'wc_order' );
 		if ( $order instanceof WC_Order ) {
@@ -146,8 +182,41 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		if ( ! is_array( $attr ) || ! isset( $attr['type'] ) || 'date' !== $attr['type'] || ! isset( $attr['format'] ) || empty( $attr['format'] ) ) {
 			return $value;
 		}
+		$is_gmt = ! empty( $attr['is_gmt'] ) && 'false' !== $attr['is_gmt'];
 
-		return $this->format_datetime( $value, $attr );
+		return $this->format_datetime( $value, $attr, $is_gmt );
+	}
+
+	/**
+	 * Get formatted price value
+	 *
+	 * @param $value
+	 * @param $attr
+	 *
+	 * @return string|float
+	 */
+	public function get_price_value( $value, $attr ) {
+		if ( ! is_array( $attr ) || ! isset( $attr['type'] ) || 'price' !== $attr['type'] ) {
+			return $value;
+		}
+
+		// Get the order for currency formatting
+		$order = $this->get_order_obj();
+
+		// Convert value to float for price formatting
+		$price_value = is_numeric( $value ) ? floatval( $value ) : 0;
+
+		// Map price_display to format for compatibility with get_formatting_for_wc_price
+		$price_attr = $attr;
+		if ( isset( $attr['price_display'] ) ) {
+			$price_attr['format'] = $attr['price_display'];
+		}
+
+		// Get formatting options
+		$formatting = BWFAN_Common::get_formatting_for_wc_price( $price_attr, $order );
+
+		// Format the price
+		return BWFAN_Common::get_formatted_price_wc( $price_value, $formatting['raw'], $formatting['currency'] );
 	}
 
 	/**
@@ -160,7 +229,7 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,
@@ -185,17 +254,21 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 				'options'     => [
 					[
 						'value' => '',
-						'label' => 'Text',
+						'label' => __( 'Text', 'wp-marketing-automations' ),
 					],
 					[
 						'value' => 'date',
-						'label' => 'Date',
+						'label' => __( 'Date', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'price',
+						'label' => __( 'Price', 'wp-marketing-automations' ),
 					]
 				],
 				'label'       => __( 'Meta Field Type', 'wp-marketing-automations' ),
 				"class"       => 'bwfan-input-wrapper',
 				"required"    => false,
-				'placeholder' => 'Select',
+				'placeholder' => __( 'Select', 'wp-marketing-automations' ),
 			],
 			[
 				'id'          => 'input_format',
@@ -234,6 +307,53 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 					),
 					'relation' => 'AND',
 				)
+			],
+			[
+				'id'            => 'is_gmt',
+				'type'          => 'checkbox',
+				'checkboxlabel' => __( 'In GMT time ( Default in store time )', 'wp-marketing-automations' ),
+				'description'   => '',
+				"toggler"       => array(
+					'fields'   => array(
+						array(
+							'id'    => 'type',
+							'value' => 'date',
+						),
+					),
+					'relation' => 'AND',
+				)
+			],
+			[
+				'id'          => 'price_display',
+				'type'        => 'select',
+				'options'     => [
+					[
+						'value' => 'raw',
+						'label' => __( 'Raw', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'formatted',
+						'label' => __( 'Formatted', 'wp-marketing-automations' ),
+					],
+					[
+						'value' => 'formatted-currency',
+						'label' => __( 'Formatted with currency', 'wp-marketing-automations' ),
+					],
+				],
+				'label'       => __( 'Display', 'wp-marketing-automations' ),
+				"class"       => 'bwfan-input-wrapper',
+				"placeholder" => __( 'Raw', 'wp-marketing-automations' ),
+				"required"    => false,
+				"description" => "",
+				'toggler'     => array(
+					'fields'   => array(
+						array(
+							'id'    => 'type',
+							'value' => 'price',
+						),
+					),
+					'relation' => 'AND',
+				)
 			]
 		];
 	}
@@ -248,7 +368,7 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		$date_formats = [];
 		foreach ( $formats as $data ) {
 			if ( isset( $data['format'] ) ) {
-				$date_time      = date( $data['format'] );
+				$date_time      = gmdate( $data['format'] );
 				$date_formats[] = [
 					'value' => $data['format'],
 					'label' => $date_time,

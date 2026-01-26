@@ -4,7 +4,6 @@ namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
 use YOOtheme\Metadata;
-use YOOtheme\Path;
 
 class LoadCustomizer
 {
@@ -17,9 +16,9 @@ class LoadCustomizer
         $this->metadata = $metadata;
     }
 
-    public function handle()
+    public function handle(): void
     {
         // add config
-        $this->config->addFile('customizer', Path::get('../../config/customizer.json', __DIR__));
+        $this->config->addFile('customizer', __DIR__ . '/../../config/customizer.php');
     }
 }

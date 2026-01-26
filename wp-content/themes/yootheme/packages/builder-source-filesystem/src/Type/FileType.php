@@ -2,20 +2,23 @@
 
 namespace YOOtheme\Builder\Source\Filesystem\Type;
 
-use function YOOtheme\app;
 use YOOtheme\File;
 use YOOtheme\Path;
 use YOOtheme\Str;
-use function YOOtheme\trans;
 use YOOtheme\Url;
 use YOOtheme\View;
+use function YOOtheme\app;
+use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from \YOOtheme\Builder\Source
+ */
 class FileType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -159,14 +162,16 @@ class FileType
 
             'metadata' => [
                 'type' => true,
-                'label' => trans('File'),
             ],
         ];
     }
 
-    public static function name($file, $args)
+    /**
+     * @param array<string, mixed> $args
+     */
+    public static function name(string $file, array $args): string
     {
-        $name = basename($file, '.' . File::getExtension($file));
+        $name = basename($file, Path::extname($file));
 
         if (!empty($args['title_case'])) {
             $name = Str::titleCase($name);
@@ -175,57 +180,72 @@ class FileType
         return $name;
     }
 
-    public static function content($file)
+    public static function content(string $file): ?string
     {
         return File::getContents($file);
     }
 
-    public static function size($file)
+    /**
+     * @return ?int
+     */
+    public static function size(string $file)
     {
         return app(View::class)->formatBytes(File::getSize($file) ?: 0);
     }
 
-    public static function accessed($file)
+    /**
+     * @return ?int
+     */
+    public static function accessed(string $file)
     {
         return File::getATime($file);
     }
 
-    public static function changed($file)
+    /**
+     * @return ?int
+     */
+    public static function changed(string $file)
     {
         return File::getCTime($file);
     }
 
-    public static function modified($file)
+    /**
+     * @return ?int
+     */
+    public static function modified(string $file)
     {
         return File::getMTime($file);
     }
 
-    public static function mimetype($file)
+    /**
+     * @return string|false
+     */
+    public static function mimetype(string $file)
     {
         return File::getMimetype($file);
     }
 
-    public static function extension($file)
+    public static function extension(string $file): string
     {
         return File::getExtension($file);
     }
 
-    public static function basename($file)
+    public static function basename(string $file): string
     {
         return basename($file);
     }
 
-    public static function dirname($file)
+    public static function dirname(string $file): string
     {
         return dirname(self::path($file));
     }
 
-    public static function path($file)
+    public static function path(string $file): string
     {
         return Path::relative('~', $file);
     }
 
-    public static function url($file)
+    public static function url(string $file): string
     {
         return Url::relative(Url::to($file));
     }

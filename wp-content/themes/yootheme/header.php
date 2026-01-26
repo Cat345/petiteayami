@@ -71,7 +71,7 @@ if ($config("$site.layout") == 'boxed') {
         }
 
         // Navbar Color
-        if ($config("$site.boxed.header_outside") && ($config("$site.boxed.header_transparent") || $config("~theme.header.transparent")) && $config("$site.boxed.header_text_color")) {
+        if ($config("$site.boxed.header_outside") && ($config("$site.boxed.header_transparent") || $config('~theme.header.transparent')) && $config("$site.boxed.header_text_color")) {
             $attrs_page_container['class'][] = "uk-inverse-{$config("$site.boxed.header_text_color")}";
         }
 
@@ -82,24 +82,16 @@ if ($config("$site.layout") == 'boxed') {
 // Main section
 $attrs_main_section = [];
 $attrs_main_section['class'][] = 'tm-main uk-section uk-section-default';
-$attrs_main_section['class'][] = $layout == 'blog' && $config('~theme.blog.padding') ? "uk-section-{$config('~theme.blog.padding')}" : '';
-$attrs_main_section['class'][] = $layout == 'post' && $config('~theme.post.padding') ? "uk-section-{$config('~theme.post.padding')}" : '';
+$attrs_main_section['class'][] = in_array($layout, ['post', 'blog']) && $config("~theme.{$layout}.padding") ? "uk-section-{$config("~theme.{$layout}.padding")}" : '';
 $attrs_main_section['class'][] = $layout == 'post' && $config('~theme.post.padding_remove') ? 'uk-padding-remove-top' : '';
 $attrs_main_section['uk-height-viewport'] = $config("$site.main_section.height") ? 'expand: true' : false;
 
 // Main container
 $attrs_main_container = [];
+$attrs_main_container['class'][] = 'uk-container';
 
-if ($layout == 'post') {
-    if ($config('~theme.post.width')) {
-        $attrs_main_container['class'][] = $config('~theme.post.width') == 'default' ? 'uk-container' : "uk-container uk-container-{$config('~theme.post.width')}";
-    }
-} elseif ($layout == 'blog') {
-    if ($config('~theme.blog.width')) {
-        $attrs_main_container['class'][] = $config('~theme.blog.width') == 'default' ? 'uk-container' : "uk-container uk-container-{$config('~theme.blog.width')}";
-    }
-} else {
-    $attrs_main_container['class'][] = 'uk-container';
+if (in_array($layout, ['post', 'blog']) && $config("~theme.{$layout}.width") != 'default') {
+    $attrs_main_container['class'][] = "uk-container uk-container-{$config("~theme.{$layout}.width")}";
 }
 
 ?>
@@ -108,11 +100,6 @@ if ($layout == 'post') {
     <head>
         <meta charset="<?php bloginfo('charset') ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" href="<?= $config('~theme.favicon') ?>" sizes="any">
-        <?php if ($config('~theme.favicon_svg')) : ?>
-        <link rel="icon" href="<?= $config('~theme.favicon_svg') ?>" type="image/svg+xml">
-        <?php endif ?>
-        <link rel="apple-touch-icon" href="<?= $config('~theme.touchicon') ?>">
         <?php if (is_singular() && pings_open(get_queried_object())) : ?>
         <link rel="pingback" href="<?php bloginfo('pingback_url') ?>">
         <?php endif ?>
@@ -125,7 +112,7 @@ if ($layout == 'post') {
 
             // Force top position to be evaluated before header
             ob_start();
-            dynamic_sidebar("top:section");
+            dynamic_sidebar('top:section');
             $top = ob_get_clean();
         ?>
 
@@ -143,7 +130,7 @@ if ($layout == 'post') {
             <?php endif ?>
 
             <?php if ($attrs_media_overlay) : ?>
-            <div <?= $view->attrs($attrs_media_overlay) ?>></div>
+            <div<?= $view->attrs($attrs_media_overlay) ?>></div>
             <?php endif ?>
 
         <?php endif ?>
@@ -160,7 +147,7 @@ if ($layout == 'post') {
 
             <?= $top ?>
 
-            <main id="tm-main" <?= !$config('app.isBuilder') ? $view->attrs($attrs_main_section) : '' ?>>
+            <main id="tm-main"<?= !$config('app.isBuilder') ? $view->attrs($attrs_main_section) : '' ?>>
 
                 <?php if (!$config('app.isBuilder')) : ?>
                 <div<?= $view->attrs($attrs_main_container) ?>>

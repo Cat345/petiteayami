@@ -8,12 +8,19 @@ function qwery_trx_addons_action_search( $args ) {
 	echo do_shortcode( '[fibosearch layout="icon"]' );
 }
 
-add_filter( 'dgwt/wcas/form/magnifier_ico', function ( $html, $class ) {
-	return '<span class="trx_addons_icon-search ' . $class . '"></span>';
-}, 10, 2 );
+add_filter(
+	'dgwt/wcas/form/magnifier_ico',
+	function ( $html, $class ) {
+		return '<span class="trx_addons_icon-search ' . $class . '"></span>';
+	},
+	10,
+	2
+);
 
-add_action( 'wp_head', function () {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.dgwt-wcas-search-icon {
 			width: 25px;
@@ -37,5 +44,6 @@ add_action( 'wp_head', function () {
 			transition: none;
 		}
 	</style>
-	<?php
-} );
+		<?php
+	}
+);

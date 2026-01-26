@@ -34,14 +34,15 @@ class LoadBuilderConfig
                     'label' => $taxonomy->label,
                     'options' => array_values(
                         array_filter(
-                            array_map(function ($term) use ($mapping) {
-                                if (isset($mapping[$term->name])) {
-                                    return [
+                            array_map(
+                                fn($term) => isset($mapping[$term->name])
+                                    ? [
                                         'value' => $term->term_id,
                                         'text' => $mapping[$term->name],
-                                    ];
-                                }
-                            }, $terms),
+                                    ]
+                                    : false,
+                                $terms,
+                            ),
                         ),
                     ),
                 ],

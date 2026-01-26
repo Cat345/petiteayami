@@ -2,20 +2,26 @@
 
 namespace YOOtheme\Theme;
 
+use AppendIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+use Traversable;
+use YOOtheme\Config;
 use YOOtheme\Http\Request;
 use YOOtheme\Http\Response;
 use YOOtheme\Path;
 
 class CacheController
 {
-    public static function index(Request $request, Response $response)
+    public static function index(Request $request, Response $response, Config $config): Response
     {
-        return $response->withJson(['files' => iterator_count(static::getFiles())]);
+        return $response->withJson(['files' => iterator_count(static::getFiles($config))]);
     }
 
-    public static function clear(Request $request, Response $response)
+    public static function clear(Request $request, Response $response, Config $config): Response
     {
-        foreach (static::getFiles() as $file) {
+        foreach (static::getFiles($config) as $file) {
             if ($file->isFile()) {
                 unlink($file->getRealPath());
             } elseif ($file->isDir()) {
@@ -26,13 +32,27 @@ class CacheController
         return $response->withJson(['message' => 'success']);
     }
 
-    protected static function getFiles()
+    /**
+     * @return Traversable<SplFileInfo>
+     */
+    protected static function getFiles(Config $config): Traversable
     {
-        $iterator = new \RecursiveDirectoryIterator(
-            Path::get('~theme/cache'),
-            \FilesystemIterator::SKIP_DOTS,
-        );
+        $roots = [Path::get('~theme/cache'), $config('image.cacheDir')];
 
-        return new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+        $append = new AppendIterator();
+
+        foreach ($roots as $root) {
+            if (!is_dir($root)) {
+                continue;
+            }
+
+            $iterator = new RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS);
+
+            $append->append(
+                new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::CHILD_FIRST),
+            );
+        }
+
+        return $append;
     }
 }

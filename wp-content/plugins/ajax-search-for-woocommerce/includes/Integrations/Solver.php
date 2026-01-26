@@ -31,6 +31,7 @@ class Solver {
      * @return void
      */
     public function solveSearchWPWooCommerceIntegration() {
+        //phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( isset( $_GET['dgwt_wcas'] ) ) {
             add_filter( 'searchwp_woocommerce_forced', '__return_false', PHP_INT_MAX );
             add_filter( 'searchwp_short_circuit', '__return_true', PHP_INT_MAX );
@@ -45,6 +46,7 @@ class Solver {
      */
     public function solveDiviWithBuilderWC() {
         add_action( 'init', function () {
+            //phpcs:ignore WordPress.Security.NonceVerification.Recommended
             if ( isset( $_GET['dgwt_wcas'] ) ) {
                 remove_action( 'pre_get_posts', 'et_builder_wc_pre_get_posts', 10 );
             }
@@ -148,7 +150,7 @@ class Solver {
 					});
 				}
 			</script>
-			<?php 
+				<?php 
         } );
     }
 

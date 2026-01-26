@@ -3,6 +3,7 @@
 namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
+use YOOtheme\Theme\I18nConfig;
 
 class LoadThemeI18n
 {
@@ -43,6 +44,29 @@ class LoadThemeI18n
                 'previous' => __('Previous slide', 'yootheme'),
                 'slideLabel' => __('%s of %s', 'yootheme'),
                 'close' => __('Close', 'yootheme'),
+            ],
+        ]);
+    }
+
+    /**
+     * @param I18nConfig $config
+     */
+    public static function handleConfig($config): void
+    {
+        $config->merge([
+            'consent' => [
+                'button_accept' => __('Accept', 'yootheme'),
+                'text_openstreetmap' => __(
+                    'Display external content from OpenStreetMap.',
+                    'yootheme',
+                ),
+                'text_google_maps' => __('Display external content from Google Maps.', 'yootheme'),
+                'text_youtube' => __('Display external content from YouTube.', 'yootheme'),
+                'service_google_advertising' => __('Google Advertising', 'yootheme'),
+                'service_google_analytics' => __('Google Analytics', 'yootheme'),
+                'service_google_maps' => __('Google Maps', 'yootheme'),
+                'service_openstreetmap' => __('OpenStreetMap', 'yootheme'),
+                'service_youtube' => __('YouTube', 'yootheme'),
             ],
         ]);
     }

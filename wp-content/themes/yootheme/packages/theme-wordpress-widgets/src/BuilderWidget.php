@@ -20,8 +20,11 @@ class BuilderWidget extends WP_Widget
 
     /**
      * @inheritdoc
+     *
+     * @param array<string, mixed> $args
+     * @param array<string, mixed> $instance
      */
-    public function widget($args, $instance)
+    public function widget($args, $instance): void
     {
         $output = [$args['before_widget']];
         $settings = array_merge($this->widget_options['settings'], $instance);
@@ -44,11 +47,13 @@ class BuilderWidget extends WP_Widget
 
         array_push($output, $settings['content'], $args['after_widget']);
 
-        echo implode('', $output);
+        echo implode($output);
     }
 
     /**
      * @inheritdoc
+     *
+     * @param array<string, mixed> $instance
      */
     public function form($instance)
     {
@@ -93,6 +98,11 @@ class BuilderWidget extends WP_Widget
 
     /**
      * @inheritdoc
+     *
+     * @param array<string, mixed> $new_instance
+     * @param array<string, mixed> $old_instance
+     *
+     * @return array<string, mixed>
      */
     public function update($new_instance, $old_instance)
     {

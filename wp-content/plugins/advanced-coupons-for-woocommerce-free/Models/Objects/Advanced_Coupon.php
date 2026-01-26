@@ -425,7 +425,7 @@ class Advanced_Coupon extends \WC_Coupon {
         // build permalink.
         $coupon_permalink = str_replace( '%shop_coupon%', $slug, $coupon_permalink );
 
-        return $coupon_permalink;
+        return apply_filters( 'acfw_coupon_url', $coupon_permalink, $this );
     }
 
     /**

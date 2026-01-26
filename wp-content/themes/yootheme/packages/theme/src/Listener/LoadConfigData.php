@@ -27,19 +27,17 @@ class LoadConfigData
             'url' => Url::base(),
             'route' => Url::route(),
             'csrf' => $this->config->get('session.token'),
-            'base' => ($base = Url::to($this->config->get('theme.rootDir'))),
-            'assets' => Url::to("{$base}/packages/theme/assets"),
+            'base' => Url::to($this->config->get('theme.rootDir')),
+            'assets' => Url::to('~assets'),
             'locale' => $this->config->get('locale.code'),
             'locales' => $this->translator->getResources(),
+            'timezone' => $this->config->get('locale.timezone'),
             'platform' => $this->config->get('app.platform'),
         ];
 
         $this->metadata->set(
             'script:config',
-            sprintf(
-                'window.yootheme ||= {}; var $config = yootheme.config = %s;',
-                json_encode($values),
-            ),
+            sprintf('window.yootheme ||= {}; yootheme.config = %s;', json_encode($values)),
         );
     }
 }

@@ -2,6 +2,8 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
+use WP_Post;
+use YOOtheme\Builder\Wordpress\PostHelper;
 use YOOtheme\Http\Request;
 use YOOtheme\Url;
 
@@ -14,9 +16,17 @@ class AddBuilderAction
         $this->request = $request;
     }
 
-    public function handle(array $actions, \WP_Post $post): array
+    /**
+     * @param array<string, mixed> $actions
+     * @param WP_Post              $post
+     * @return array<string, mixed>
+     */
+    public function handle(array $actions, $post): array
     {
-        if (empty($post->builder)) {
+        if (
+            !PostHelper::matchContent($post->post_content) ||
+            !current_user_can('edit_theme_options')
+        ) {
             return $actions;
         }
 
@@ -29,7 +39,7 @@ class AddBuilderAction
         $actions['yootheme'] = sprintf(
             '<a href="%s" class="tm-button">%s</a>',
             $link,
-            __('YOOtheme Builder', 'yootheme'),
+            __('Edit with YOOtheme', 'yootheme'),
         );
 
         unset($actions['classic']);

@@ -2,6 +2,27 @@
 
 namespace YOOtheme\Builder\Wordpress\Acf;
 
+/**
+ * @phpstan-type Field array{
+ *     ID: int,
+ *     key: string,
+ *     label: string,
+ *     name: string,
+ *     type: string,
+ *     menu_order: int,
+ *     parent: int,
+ *     required: bool,
+ *     field_type: string,
+ *     group: array<string, mixed>,
+ *     choices?: array<string, string>,
+ *     sub_fields?: array<mixed>,
+ *     post_type?: array<mixed>,
+ *     multiple?: bool,
+ *     max?: int,
+ *     field_type?: string,
+ *     taxonomy?: string
+ * }
+ */
 class AcfHelper
 {
     public static function isActive(): bool
@@ -9,6 +30,11 @@ class AcfHelper
         return function_exists('acf_get_fields');
     }
 
+    /**
+     * @param list<string> $ignore
+     *
+     * @return array<string, Field>
+     */
     public static function fields(string $type, string $name = '', array $ignore = []): array
     {
         $fields = [];
@@ -24,6 +50,9 @@ class AcfHelper
         return $fields;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public static function groups(string $type, string $name): array
     {
         $groups = [];
@@ -37,7 +66,10 @@ class AcfHelper
         return $groups;
     }
 
-    protected static function matchGroup($group, string $type, string $name): bool
+    /**
+     * @param array<string, mixed> $group
+     */
+    protected static function matchGroup(array $group, string $type, string $name): bool
     {
         foreach ($group['location'] as $rules) {
             foreach ($rules ?: [] as $rule) {

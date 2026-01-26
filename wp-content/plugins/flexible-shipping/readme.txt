@@ -1,15 +1,15 @@
-=== Table Rate Shipping Method for WooCommerce by Flexible Shipping ===
+=== Weight Based Shipping Table Rate for WooCommerce – Flexible Shipping ===
 Contributors: octolize,grola,sebastianpisula
 Donate link: https://octol.io/fs-repo-up
-Tags: woocommerce shipping, table rate shipping, conditional shipping, advanced shipping, weight based shipping
+Tags: WooCommerce shipping, weight based shipping, Table Rate Shipping, conditional shipping, advanced shipping
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 6.4.5
+Stable tag: 6.5.4
 Requires PHP: 7.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Table Rate shipping plugin for WooCommerce. Easily define shipping calculation rules based on weight or cart total. Improve conversion - try it now!
+Weight based shipping methods for WooCommerce. Flexible shipping with table rate rules by cart weight and order value. Accurate rates at checkout.
 
 == Description ==
 
@@ -204,7 +204,7 @@ Key features:
 * WooCommerce shipping plugin,
 * WooCommerce table rate shipping.
 
-Give it a try and see for yourself that our Flexible Shipping is the only Table Rate Shipping plugin you need\!
+Give it a try and see for yourself that our Weight Based Table Rate Shipping for WooCommerce - Flexible Shipping is the only plugin you need to configure your weight based shipping!
 
 == Installation	 ==
 
@@ -218,13 +218,82 @@ Optionally you can also try to upload the plugin zip file using **Plugins &rarr;
 
 == Frequently Asked Questions ==
 
-= How to configure the plugin? =
+= How does Flexible Shipping differ from the default WooCommerce Shipping options? =
 
-To make it clear and as easy as possible we have prepared the detailed step-by-step guides in our [Flexible Shipping Docs here](https://octol.io/fs-repo-docs). You can also use the built-in tutorial that will guide you throught the whole process.
+WooCommerce’s built-in tools give you flat rate, free shipping, and some basic options, but the logic stops there. Flexible Shipping extends these capabilities significantly.
 
-= Do you offer support? =
+It allows you to calculate shipping costs based on **Weight** and **Cart Total**, enabling you to create unlimited rules tailored to your business. It also includes features that standard WooCommerce lacks:
 
-We provide a limited support for the free version of our Flexible Shipping plugin on the [dedicated plugin Support Forum](https://wordpress.org/support/plugin/flexible-shipping/). Please upgrade to PRO version to get the priority e-mail support as well as all PRO features. [Upgrade Now &rarr;](https://octol.io/fs-repo-up)
+* **Marketing:** A built-in **"Left for Free Shipping" notice** to increase your Average Order Value.
+* **Free Shipping:** Advanced overrides to trigger free shipping based on specific thresholds.
+* **Tax & Calculation:** Options to enter shipping costs as **Net or Gross** and precise control over how cart totals are calculated.
+* **Troubleshooting:** An advanced **Debug Mode** that helps you test your setup and understand exactly why a method is displayed or hidden, saving you hours of guesswork.
+
+Moreover, Flexible Shipping is a modular solution. You can extend its capabilities at any time with our add-ons, such as **Distance-Based Shipping Rates**, **Box Packing**, or custom **Locations**.
+
+= Can I set shipping costs based on weight and price in the Free version? =
+
+Yes\! The Free version allows you to configure shipping rules based on **Cart Total** and **Total Weight**. You can create cost tiers (ranges) for both. For example, you can set free shipping for orders over $100 or set the shipping cost for heavy orders above 100 lbs.
+
+= How do I set up Free Shipping over a certain amount? =
+
+It is simple. The plugin includes a built-in "Free Shipping Override" feature, allowing you to trigger free shipping based on a global minimum order amount, visible clearly in the method settings.
+
+Or you may utilize table rules, for example:
+
+* **Condition:** Price
+* **Min:** 100 (or your threshold)
+* **Cost:** 0
+
+= Is Flexible Shipping compatible with currency switchers? =
+
+Yes, Flexible Shipping works seamlessly with the most popular currency switchers in the WooCommerce ecosystem. We are compatible with:
+
+* **WooCommerce Multilingual** (part of the **WPML** package)
+* **Aelia Currency Switcher**
+* **FOX** – Currency Switcher Professional for WooCommerce (WOOCS)
+* **Currency Switcher for WooCommerce** by WP Wham
+* **CURCY** – Multi Currency for WooCommerce by VillaTheme
+
+= Can I add handling fees or insurance costs? =
+
+In the Free version, you can include handling fees by simply adding them to the base cost of the rule. If you need to add a percentage-based fee (e.g., 2% of the cart value for insurance) or a fixed fee per additional item, please upgrade to **Flexible Shipping PRO**, which supports "Additional Cost" and "Cost per Item" calculations.
+
+= Does this plugin support Shipping Classes? =
+
+Yes, the Free version recognizes WooCommerce Shipping Classes created in your store settings. However, **you cannot build shipping cost rules based on them in the Free version**.
+
+To use Shipping Classes as a condition in your rules table, you need **Flexible Shipping PRO**. This allows you to differentiate shipping costs for specific groups of products within a single method.
+
+**Examples of what you can do with PRO:**
+
+* Charge $5 for standard items but $20 for items with the "Bulky" shipping class.
+* Add an extra insurance fee only if the cart contains "Fragile" products.
+* Hide a specific shipping method (e.g., Bike Messenger) if the "Heavy" shipping class is present in the cart.
+
+= What countries & currencies are supported? =
+
+We support ALL countries and currencies available in WooCommerce. There are absolutely no geographical limitations. Whether you are selling locally, shipping across the EU, or delivering to customers worldwide, Flexible Shipping adapts to your needs
+
+= Is Flexible Shipping compatible with the latest WordPress and WooCommerce versions? =
+
+**Yes.** We have been developing Flexible Shipping for over 10 years, treating stability, security, and compatibility as a top priority. Our team continuously tests the plugin against the latest releases of WordPress and WooCommerce to ensure a smooth and secure experience for your store. We release regular updates to stay ahead of any core changes.
+
+= My shipping method is not showing up in the cart. How can I fix it? =
+
+Please use the built-in **Debug Mode**.
+
+1. Go to **WooCommerce → Settings → Shipping → Flexible Shipping**, scroll down to the "Debug Mode" section and enable it.
+2. Refresh your cart/checkout page.
+3. You will see a detailed notice explaining exactly which rules were checked and why the method was (or wasn't) displayed. This feature eliminates guesswork and helps you fix configuration errors in seconds.
+
+**Pro Tip:** If the debug information doesn't appear in the cart/checkout immediately, try **changing the shipping address** or **updating the product quantity**. This forces WooCommerce to refresh the shipping calculations and should trigger the debug mode display.
+
+= Where can I find the full documentation or get help? =
+
+Here you can find our comprehensive documentation: [https://octolize.com/docs/docs-category/flexible-shipping-table-rate/](https://octolize.com/docs/docs-category/flexible-shipping-table-rate/)
+
+If you encounter any issues with the Free version, you can post a topic on the [WordPress.org Support Forum](https://wordpress.org/support/plugin/flexible-shipping/).
 
 == Screenshots ==
 
@@ -240,6 +309,23 @@ We provide a limited support for the free version of our Flexible Shipping plugi
 If you are upgrading from the old Flexible Shipping version (1.3.2, woo-flexible-shipping) make sure to completely delete the old version first. If you install the new version without deleting the old one it may break your WordPress installation.
 
 == Changelog ==
+
+= 6.5.4 - 2026-01-20 =
+* Added support for WooCommerce 10.5
+
+= 6.5.3 - 2026-01-13 =
+* Updated rating petition popup
+* Fixed rounding shipping contents moved to line items
+
+= 6.5.2 - 2025-12-29 =
+* Updated rating petition CSS
+
+= 6.5.1 - 2025-12-18 =
+* Updated rating petition
+
+= 6.5.0 - 2025-12-16 =
+* Removed docs Beacon
+* Added AI chat in Flexible Shipping Info and shipping method settings
 
 = 6.4.5 - 2025-12-02 =
 * Added support for WordPress 6.9

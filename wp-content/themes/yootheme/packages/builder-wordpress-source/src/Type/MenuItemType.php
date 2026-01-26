@@ -2,16 +2,20 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use YOOtheme\Builder\Source;
 use YOOtheme\Config;
 use function YOOtheme\app;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class MenuItemType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -102,22 +106,29 @@ class MenuItemType
             ],
             'metadata' => [
                 'type' => true,
-                'label' => trans('Menu Item'),
             ],
         ];
     }
 
-    public static function id($item, $args, $context, $info)
+    /**
+     * @return int
+     */
+    public static function id(object $item)
     {
         return $item->ID;
     }
 
-    public static function data($item, $args, $context, $info)
+    /**
+     * @param array<string> $args
+     * @param mixed $context
+     * @return array<mixed>
+     */
+    public static function data(object $item, array $args, $context, object $info)
     {
         return app(Config::class)->get("~theme.menu.items.{$item->ID}.{$info->fieldName}");
     }
 
-    public static function type($item)
+    public static function type(object $item): string
     {
         if ($item->type === 'custom') {
             if ($item->url === '#' && preg_match('/---+/i', $item->title)) {
@@ -131,25 +142,30 @@ class MenuItemType
         return '';
     }
 
-    public static function parent($item)
+    public static function parent(object $item): ?object
     {
-        $menu = current(wp_get_object_terms($item->ID, 'nav_menu'));
-        if ($menu) {
-            return CustomMenuItemQueryType::resolveItem($item, [
+        $menu = array_first(wp_get_object_terms($item->ID, 'nav_menu'));
+
+        return $menu
+            ? CustomMenuItemQueryType::resolveItem($item, [
                 'menu' => $menu->term_id,
                 'id' => $item->menu_item_parent,
-            ]);
-        }
+            ])
+            : null;
     }
 
-    public static function children($item)
+    /**
+     * @return ?array<object>
+     */
+    public static function children(object $item): ?array
     {
-        $menu = current(wp_get_object_terms($item->ID, 'nav_menu'));
-        if ($menu) {
-            return CustomMenuItemQueryType::resolve($item, [
+        $menu = array_first(wp_get_object_terms($item->ID, 'nav_menu'));
+
+        return $menu
+            ? CustomMenuItemQueryType::resolve($item, [
                 'parent' => $item->ID,
                 'id' => $menu->term_id,
-            ]);
-        }
+            ])
+            : null;
     }
 }

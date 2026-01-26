@@ -2,12 +2,8 @@
 
 namespace YOOtheme\Theme\Highlight\Listener;
 
-use Joomla\CMS\Document\Document;
-use Joomla\CMS\Document\HtmlDocument;
 use YOOtheme\Config;
 use YOOtheme\Metadata;
-use YOOtheme\Path;
-use function YOOtheme\app;
 
 class LoadHighlightScript
 {
@@ -26,12 +22,12 @@ class LoadHighlightScript
 
         if ($highlight && str_contains($content, '</code>')) {
             $this->metadata->set('style:highlight', [
-                'href' => Path::get("../../assets/styles/{$highlight}.css", __DIR__),
+                'href' => "~assets/highlight.js/css/{$highlight}.css",
                 'defer' => true,
             ]);
 
             $this->metadata->set('script:highlight', [
-                'src' => Path::get('../../assets/highlight.js', __DIR__),
+                'src' => '~assets/highlight.js/highlight.js',
                 'defer' => true,
             ]);
 
@@ -42,14 +38,5 @@ class LoadHighlightScript
         }
 
         return $content;
-    }
-
-    public function beforeRender(): void
-    {
-        $document = app(Document::class);
-
-        if ($document instanceof HtmlDocument) {
-            $this->handle($document->getBuffer('component') ?? '');
-        }
     }
 }

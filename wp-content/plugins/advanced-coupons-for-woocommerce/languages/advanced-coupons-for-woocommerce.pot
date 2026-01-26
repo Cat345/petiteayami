@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.5\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.5.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-31T05:52:18+00:00\n"
+"POT-Creation-Date: 2025-12-21T01:54:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: advanced-coupons-for-woocommerce\n"
@@ -82,7 +82,7 @@ msgstr ""
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:434
+#: Models/Auto_Apply.php:437
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -140,7 +140,7 @@ msgstr ""
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:429
+#: Models/Auto_Apply.php:432
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -218,12 +218,12 @@ msgstr ""
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
 
-#: Models/Auto_Apply.php:444
+#: Models/Auto_Apply.php:447
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr ""
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:454
+#: Models/Auto_Apply.php:457
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
@@ -291,7 +291,7 @@ msgstr ""
 msgid "View Progress"
 msgstr ""
 
-#: Models/BOGO/Types/Same_Products.php:433
+#: Models/BOGO/Types/Same_Products.php:302
 msgid "Same Products"
 msgstr ""
 
@@ -729,31 +729,31 @@ msgid "Modify the label displayed for the coupon on the cart totals table. Add t
 msgstr ""
 
 #: Models/Coupon_Tab.php:87
-#: Models/Coupon_Tab.php:149
+#: Models/Coupon_Tab.php:152
 msgid "My Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:125
+#: Models/Coupon_Tab.php:128
 msgid "Available Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:126
+#: Models/Coupon_Tab.php:129
 msgid "Owned Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:127
+#: Models/Coupon_Tab.php:130
 msgid "Used / Expired Coupons"
 msgstr ""
 
-#: Models/Coupon_Tab.php:128
+#: Models/Coupon_Tab.php:131
 msgid "You have no coupons."
 msgstr ""
 
-#: Models/Coupon_Tab.php:184
+#: Models/Coupon_Tab.php:187
 msgid "Hide my coupons tab"
 msgstr ""
 
-#: Models/Coupon_Tab.php:186
+#: Models/Coupon_Tab.php:189
 msgid "If checked, this feature will hide my coupons tab on my account page."
 msgstr ""
 
@@ -1088,23 +1088,23 @@ msgstr ""
 msgid "The %s coupon can't be applied. This coupon is not allowed to work in conjunction with the coupon(s) currently applied on the cart."
 msgstr ""
 
-#: Models/Force_Apply.php:110
+#: Models/Force_Apply.php:109
 msgid "Force Apply"
 msgstr ""
 
-#: Models/Force_Apply.php:112
+#: Models/Force_Apply.php:111
 msgid "Disable"
 msgstr ""
 
-#: Models/Force_Apply.php:113
+#: Models/Force_Apply.php:112
 msgid "When applied via URL only"
 msgstr ""
 
-#: Models/Force_Apply.php:114
+#: Models/Force_Apply.php:113
 msgid "Enabled"
 msgstr ""
 
-#: Models/Force_Apply.php:116
+#: Models/Force_Apply.php:115
 msgid "When enabled, conflicting coupons that are already applied to the cart will be replaced with this coupon instead. This is useful especially if you have an auto applied coupon that you want to be removed when a conflicting coupon is applied."
 msgstr ""
 

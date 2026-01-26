@@ -275,10 +275,18 @@ class Help_Links implements Model_Interface, Initializable_Interface {
             wp_send_json( $this->_get_error_data( 400 ), 400 );
         }
 
-        // serve response body directly as JSON format.
-        @header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-        echo wp_remote_retrieve_body( $response ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        exit;
+        // Parse and validate JSON before outputting to prevent XSS.
+        $body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $body, true );
+
+        // Validate JSON parsing was successful.
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            wp_send_json( $this->_get_error_data( 400 ), 400 );
+            return;
+        }
+
+        // Re-encode and send JSON safely.
+        wp_send_json( $data );
     }
 
     /**

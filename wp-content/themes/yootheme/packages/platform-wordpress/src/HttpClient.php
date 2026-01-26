@@ -8,28 +8,17 @@ use YOOtheme\HttpClientInterface;
 class HttpClient implements HttpClientInterface
 {
     /**
-     * Execute a GET HTTP request.
-     *
-     * @param string $url
-     * @param array  $options
-     *
-     * @return Response
+     * @inheritdoc
      */
-    public function get($url, $options = [])
+    public function get(string $url, array $options = []): Response
     {
         return $this->makeRequest($url, $options);
     }
 
     /**
-     * Execute a POST HTTP request.
-     *
-     * @param string $url
-     * @param string $data
-     * @param array  $options
-     *
-     * @return Response
+     * @inheritdoc
      */
-    public function post($url, $data = null, $options = [])
+    public function post(string $url, $data = null, array $options = []): Response
     {
         $options['method'] = 'POST';
 
@@ -41,15 +30,9 @@ class HttpClient implements HttpClientInterface
     }
 
     /**
-     * Execute a PUT HTTP request.
-     *
-     * @param string $url
-     * @param string $data
-     * @param array  $options
-     *
-     * @return Response
+     * @inheritdoc
      */
-    public function put($url, $data = null, $options = [])
+    public function put(string $url, $data = null, array $options = []): Response
     {
         $options['method'] = 'PUT';
 
@@ -61,14 +44,9 @@ class HttpClient implements HttpClientInterface
     }
 
     /**
-     * Execute a DELETE HTTP request.
-     *
-     * @param string $url
-     * @param array  $options
-     *
-     * @return Response
+     * @inheritdoc
      */
-    public function delete($url, $options = [])
+    public function delete(string $url, array $options = []): Response
     {
         $options['method'] = 'DELETE';
 
@@ -78,12 +56,9 @@ class HttpClient implements HttpClientInterface
     /**
      * Makes a request by using `wp_remote_request`.
      *
-     * @param string $url
-     * @param array  $options
-     *
-     * @return Response
+     * @param array<string, mixed> $options
      */
-    protected function makeRequest($url, array $options)
+    protected function makeRequest(string $url, array $options): Response
     {
         $options = $this->filterOptions($options);
         $response = wp_remote_request($url, $options);
@@ -101,11 +76,11 @@ class HttpClient implements HttpClientInterface
     /**
      * Filters request options.
      *
-     * @param array $options
+     * @param array<string, mixed> $options
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function filterOptions(array $options)
+    protected function filterOptions(array $options): array
     {
         $result = [];
 

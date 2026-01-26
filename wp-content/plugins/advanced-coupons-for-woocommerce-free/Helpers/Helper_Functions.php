@@ -958,8 +958,11 @@ class Helper_Functions {
      * @return array Formatted BOGO trigger/deal entry.
      */
     public function format_bogo_trigger_deal_entry( $args, $is_deal = false ) {
-        // Extracted variable outputs: $ids, $quantity, $discount and $type.
-        extract( $args ); // phpcs:ignore
+        // Replace extract() with explicit variable assignment for security.
+        $ids      = isset( $args['ids'] ) ? $args['ids'] : array();
+        $quantity = isset( $args['quantity'] ) ? $args['quantity'] : 0;
+        $discount = isset( $args['discount'] ) ? $args['discount'] : 0;
+        $type     = isset( $args['type'] ) ? $args['type'] : '';
 
         $id_prefix = $is_deal ? 'deal_' : 'trigger_';
         $formatted = array(
@@ -1667,6 +1670,7 @@ class Helper_Functions {
             'funnelkit-stripe-woo-payment-gateway' => true,
             'woocommerce-store-toolkit'            => true,
             'woocommerce-exporter'                 => true,
+            'saveto-wishlist-lite-for-woocommerce' => true,
             // Add more as needed.
         );
 

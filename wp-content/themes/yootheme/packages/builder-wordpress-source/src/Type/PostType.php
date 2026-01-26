@@ -2,7 +2,13 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Post;
+use WP_Post_Type;
+use WP_Taxonomy;
+use WP_Term;
+use WP_User;
 use YOOtheme\Arr;
+use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper;
 use YOOtheme\Config;
 use YOOtheme\Path;
@@ -12,14 +18,18 @@ use function YOOtheme\app;
 use function YOOtheme\link_pages;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ * @phpstan-import-type FieldConfig from Source
+ */
 class PostType
 {
     /**
-     * @param \WP_Post_Type $type
+     * @param WP_Post_Type $type
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Post_Type $type)
+    public static function config(WP_Post_Type $type): array
     {
         $taxonomies = Helper::getObjectTaxonomies($type->name);
 
@@ -333,7 +343,6 @@ class PostType
 
         $metadata = [
             'type' => true,
-            'label' => $type->labels->singular_name,
         ];
 
         $features = [
@@ -356,6 +365,10 @@ class PostType
         return compact('fields', 'metadata');
     }
 
+    /**
+     * @param WP_Post_Type $type
+     * @return array<FieldConfig>
+     */
     public static function configHierarchicalFields($type)
     {
         if (!$type->hierarchical) {
@@ -373,9 +386,7 @@ class PostType
                     ]),
                 ],
                 'extensions' => [
-                    'call' => [
-                        'func' => __CLASS__ . '::resolveParent',
-                    ],
+                    'call' => [static::class, 'resolveParent'],
                 ],
             ],
             'children' => [
@@ -466,15 +477,17 @@ class PostType
                     'directives' => [],
                 ],
                 'extensions' => [
-                    'call' => [
-                        'func' => __CLASS__ . '::resolveChildren',
-                    ],
+                    'call' => [static::class, 'resolveChildren'],
                 ],
             ],
         ];
     }
 
-    protected static function configTaxonomyFields($taxonomies)
+    /**
+     * @param array<string, WP_Taxonomy> $taxonomies
+     * @return array<string, FieldConfig>
+     */
+    protected static function configTaxonomyFields(array $taxonomies)
     {
         $fields = [];
 
@@ -554,7 +567,11 @@ class PostType
         return $fields;
     }
 
-    protected static function configRelatedPostsField(\WP_Post_Type $type, $taxonomies)
+    /**
+     * @param  array<string, WP_Taxonomy> $taxonomies
+     * @return array<FieldConfig>
+     */
+    protected static function configRelatedPostsField(WP_Post_Type $type, array $taxonomies): array
     {
         if (!$taxonomies && !post_type_supports($type->name, 'author')) {
             return [];
@@ -565,7 +582,7 @@ class PostType
         $arguments = [];
         foreach ($taxonomies as $id => $taxonomy) {
             $arguments[strtr($id, '-', '_')] = [
-                'label' => current($taxonomies) === $taxonomy ? 'Relationship' : '',
+                'label' => array_first($taxonomies) === $taxonomy ? 'Relationship' : '',
                 'type' => 'select',
                 'default' => '',
                 'options' => [
@@ -597,6 +614,39 @@ class PostType
                     'author' => [
                         'type' => 'String',
                     ],
+                    'date_column' => [
+                        'type' => 'String',
+                    ],
+                    'date_range' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_value' => [
+                        'type' => 'Int',
+                    ],
+                    'date_relative_unit' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_unit_this' => [
+                        'type' => 'String',
+                    ],
+                    'date_relative_start_today' => [
+                        'type' => 'Boolean',
+                    ],
+                    'date_start' => [
+                        'type' => 'String',
+                    ],
+                    'date_end' => [
+                        'type' => 'String',
+                    ],
+                    'date_start_custom' => [
+                        'type' => 'String',
+                    ],
+                    'date_end_custom' => [
+                        'type' => 'String',
+                    ],
                     'offset' => [
                         'type' => 'Int',
                     ],
@@ -612,13 +662,15 @@ class PostType
                     'order_alphanum' => [
                         'type' => 'Boolean',
                     ],
+                    'order_reverse' => [
+                        'type' => 'Boolean',
+                    ],
                 ],
 
                 'metadata' => [
                     'label' => trans('Related %post_type%', ['%post_type%' => $type->labels->name]),
                     'arguments' => $arguments + [
                         'author' => [
-                            // TODO $taxonomies is always true at this point
                             'label' => !$taxonomies ? 'Relationship' : '',
                             'description' => $taxonomyList
                                 ? trans(
@@ -639,7 +691,142 @@ class PostType
                                 trans('Don\'t match author (NOR)') => 'NOT IN',
                             ],
                         ],
-
+                        '_date' => [
+                            'label' => trans('Filter by Date'),
+                            'description' =>
+                                'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                            'type' => 'grid',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_column' => [
+                                    'type' => 'select',
+                                    'options' => [
+                                        ['value' => '', 'text' => trans('None')],
+                                        [
+                                            'evaluate' =>
+                                                'yootheme.builder.sources.postTypeDateFilterOptions',
+                                        ],
+                                        [
+                                            'evaluate' => "yootheme.builder.sources['{$type->name}DateFilterOptions']",
+                                        ],
+                                    ],
+                                ],
+                                'date_range' => [
+                                    'type' => 'select',
+                                    'default' => 'relative',
+                                    'options' => [
+                                        trans('Relative Range') => 'relative',
+                                        trans('Fixed Range') => 'fixed',
+                                        trans('Custom Format Range') => 'custom',
+                                    ],
+                                    'enable' => 'date_column',
+                                ],
+                            ],
+                        ],
+                        '_date_range_relative' => [
+                            'label' => trans('Date Range'),
+                            'type' => 'grid',
+                            'width' => 'expand,auto,expand',
+                            'fields' => [
+                                'date_relative' => [
+                                    'type' => 'select',
+                                    'default' => 'next',
+                                    'options' => [
+                                        trans('Is in the next') => 'next',
+                                        trans('Is in this') => 'this',
+                                        trans('Is in the last') => 'last',
+                                    ],
+                                ],
+                                'date_relative_value' => [
+                                    'type' => 'limit',
+                                    'attrs' => [
+                                        'min' => 0,
+                                        'class' => 'uk-form-width-xsmall',
+                                        'placeholder' => '∞',
+                                    ],
+                                    'show' => 'date_relative !== \'this\'',
+                                ],
+                                'date_relative_unit' => [
+                                    'type' => 'select',
+                                    'default' => 'day',
+                                    'options' => [
+                                        trans('Days') => 'day',
+                                        trans('Weeks') => 'week',
+                                        trans('Months') => 'month',
+                                        trans('Years') => 'year',
+                                        trans('Calendar Weeks') => 'week_calendar',
+                                        trans('Calendar Months') => 'month_calendar',
+                                        trans('Calendar Years') => 'year_calendar',
+                                    ],
+                                    'show' => 'date_relative !== \'this\'',
+                                ],
+                                'date_relative_unit_this' => [
+                                    'type' => 'select',
+                                    'default' => 'day',
+                                    'options' => [
+                                        trans('Day') => 'day',
+                                        trans('Week') => 'week',
+                                        trans('Month') => 'month',
+                                        trans('Year') => 'year',
+                                    ],
+                                    'show' => 'date_relative === \'this\'',
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'relative\'',
+                        ],
+                        'date_relative_start_today' => [
+                            'type' => 'checkbox',
+                            'text' => trans('Start today'),
+                            'description' =>
+                                'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
+                            'enable' => 'date_relative !== \'this\'',
+                            'show' => 'date_column && date_range === \'relative\'',
+                        ],
+                        '_date_range_fixed' => [
+                            'type' => 'grid',
+                            'description' =>
+                                'Set only one date to load all posts either before or after that date.',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_start' => [
+                                    'label' => trans('Start Date'),
+                                    'type' => 'datetime',
+                                ],
+                                'date_end' => [
+                                    'label' => trans('End Date'),
+                                    'type' => 'datetime',
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'fixed\'',
+                        ],
+                        '_date_range_custom' => [
+                            'type' => 'grid',
+                            'description' =>
+                                'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                            'width' => '1-2',
+                            'fields' => [
+                                'date_start_custom' => [
+                                    'label' => trans('Start Date'),
+                                    'type' => 'data-list',
+                                    'options' => [
+                                        'This month' => 'first day of +0 month 00:00:00',
+                                        'Next month' => 'first day of +1 month 00:00:00',
+                                        'Month after next month' =>
+                                            'first day of +2 month 00:00:00',
+                                    ],
+                                ],
+                                'date_end_custom' => [
+                                    'label' => trans('End Date'),
+                                    'type' => 'data-list',
+                                    'options' => [
+                                        'This month' => 'last day of +0 month 23:59:59',
+                                        'Next month' => 'last day of +1 month 23:59:59',
+                                        'Month after next month' => 'last day of +2 month 23:59:59',
+                                    ],
+                                ],
+                            ],
+                            'show' => 'date_column && date_range === \'custom\'',
+                        ],
                         '_offset' => [
                             'type' => 'grid',
                             'width' => '1-2',
@@ -705,6 +892,11 @@ class PostType
                             'type' => 'checkbox',
                             '@order' => 70,
                         ],
+                        'order_reverse' => [
+                            'text' => trans('Reverse Results'),
+                            'type' => 'checkbox',
+                            '@order' => 80,
+                        ],
                     ],
                     'directives' => [],
                 ],
@@ -716,16 +908,29 @@ class PostType
         ];
     }
 
+    /**
+     * @param WP_Post $post
+     * @return int
+     */
     public static function id($post)
     {
         return $post->ID;
     }
 
+    /**
+     * @param WP_Post $post
+     * @return string
+     */
     public static function title($post)
     {
         return get_the_title($post);
     }
 
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return string
+     */
     public static function content($post, $args)
     {
         global $page, $numpages, $multipage;
@@ -753,6 +958,11 @@ class PostType
         return apply_filters('yootheme_source_post_content', $content, $post, $args);
     }
 
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return string
+     */
     public static function teaser($post, $args)
     {
         $args += ['show_excerpt' => true, 'show_content' => true];
@@ -776,31 +986,54 @@ class PostType
         return apply_filters('yootheme_source_post_teaser', $teaser, $post, $args);
     }
 
+    /**
+     * @param WP_Post $post
+     * @return string
+     */
     public static function excerpt($post)
     {
         return get_the_excerpt($post);
     }
 
+    /**
+     * @param WP_Post $post
+     * @return string
+     */
     public static function date($post)
     {
         return $post->post_date_gmt;
     }
 
-    public static function isSticky($post)
+    /**
+     * @param WP_Post $post
+     */
+    public static function isSticky($post): bool
     {
         return is_sticky($post->ID);
     }
 
+    /**
+     * @param WP_Post $post
+     * @return string
+     */
     public static function modified($post)
     {
         return $post->post_modified_gmt;
     }
 
+    /**
+     * @param WP_Post $post
+     * @return int|string
+     */
     public static function commentCount($post)
     {
         return $post->comment_count;
     }
 
+    /**
+     * @param WP_Post $post
+     * @return ?string
+     */
     public static function link($post)
     {
         $link = get_permalink($post);
@@ -808,17 +1041,29 @@ class PostType
         return is_string($link) ? $link : null;
     }
 
+    /**
+     * @param WP_Post $post
+     * @return ?int
+     */
     public static function featuredImage($post)
     {
         return get_post_thumbnail_id($post) ?: null;
     }
 
+    /**
+     * @param WP_Post $post
+     * @return ?WP_User
+     */
     public static function author($post)
     {
-        return get_userdata($post->post_author) ?: null;
+        return get_userdata((int) $post->post_author) ?: null;
     }
 
-    public static function metaString($post, array $args)
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     */
+    public static function metaString($post, array $args): string
     {
         $args += [
             'format' => 'list',
@@ -832,28 +1077,47 @@ class PostType
         ];
 
         return app(View::class)->render(
-            Path::get('../../templates/meta', __DIR__),
+            Path::join(__DIR__, '../../templates/meta'),
             compact('post', 'args'),
         );
     }
 
-    public static function resolveParent(\WP_Post $post)
+    /**
+     * @param WP_Post $post
+     * @return ?WP_Post
+     */
+    public static function resolveParent($post)
     {
         return get_post_parent($post);
     }
 
-    public static function resolveChildren(\WP_Post $post, array $args)
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return array<WP_Post>
+     */
+    public static function resolveChildren($post, array $args)
     {
         $args += ['post_parent' => $post->ID, 'post_type' => $post->post_type];
 
         return Helper::getPosts($args);
     }
 
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return array<WP_Term>
+     */
     public static function resolveTerms($post, array $args)
     {
         return wp_get_post_terms($post->ID, $args['taxonomy']);
     }
 
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return string
+     */
     public static function resolveTermString($post, array $args)
     {
         $args += ['separator' => ', ', 'show_link' => true, 'link_style' => ''];
@@ -878,6 +1142,11 @@ class PostType
             : null;
     }
 
+    /**
+     * @param WP_Post $post
+     * @param array<string, mixed> $args
+     * @return ?array<WP_Post>
+     */
     public static function relatedPosts($post, array $args)
     {
         $args += ['post_type' => $post->post_type, 'terms' => []];
@@ -894,7 +1163,7 @@ class PostType
             );
 
             if (!$terms && $operator === 'IN') {
-                return;
+                return null;
             }
 
             $args["{$taxonomy}_operator"] = $operator;

@@ -3,23 +3,45 @@
 namespace YOOtheme;
 
 // Helper functions.
+use WP_Post;
 
-function get_view(...$args)
+/**
+ * @param mixed ...$args
+ */
+function get_view(string $name, ...$args): string
 {
-    return app(View::class)->render(...$args);
+    /** @var View $view */
+    $view = app(View::class);
+    return $view->render($name, ...$args);
 }
 
-function get_attrs(...$args)
+/**
+ * @param mixed ...$args
+ */
+function get_attrs(...$args): string
 {
-    return app(View::class)->attrs(...$args);
+    /** @var View $view */
+    $view = app(View::class);
+    return $view->attrs(...$args);
 }
 
+/**
+ * @param mixed ...$args
+ *
+ * @return string|false
+ */
 function get_section(...$args)
 {
-    return app(View::class)->section(...$args);
+    /** @var View $view */
+    $view = app(View::class);
+    return $view->section(...$args);
 }
 
-function get_builder($node, $params = [])
+/**
+ * @param mixed $node
+ * @param mixed $params
+ */
+function get_builder($node, $params = []): ?string
 {
     // support old builder arguments
     if (!is_string($node)) {
@@ -33,7 +55,11 @@ function get_builder($node, $params = [])
     return app(Builder::class)->render($node, $params);
 }
 
-function get_post_date($post = null, $format = '')
+/**
+ * @param int|WP_Post $post
+ * @param string      $format
+ */
+function get_post_date($post = null, $format = ''): string
 {
     return '<time datetime="' .
         esc_attr(get_the_date('c', $post)) .
@@ -42,10 +68,13 @@ function get_post_date($post = null, $format = '')
         '</time>';
 }
 
-function get_post_author($post = null)
+/**
+ * @param ?WP_Post $post
+ */
+function get_post_author($post = null): string
 {
     if ($post) {
-        $authordata = get_userdata($post->post_author);
+        $authordata = get_userdata((int) $post->post_author);
     } else {
         global $authordata;
     }
@@ -57,7 +86,7 @@ function get_post_author($post = null)
         '</a>';
 }
 
-function link_pages()
+function link_pages(): string
 {
     global $page, $numpages, $multipage, $more;
 

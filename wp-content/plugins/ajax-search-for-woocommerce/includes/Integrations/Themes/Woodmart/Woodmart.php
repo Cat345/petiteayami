@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Woodmart extends ThemeIntegration {
 	public function extraFunctions() {
-		add_filter( 'woodmart_shop_page_link', array( $this, 'shop_page_link' ), 10, 3 );
+		add_filter( 'woodmart_shop_page_link', [ $this, 'shop_page_link' ], 10, 3 );
 	}
 
 	/**
@@ -24,6 +24,7 @@ class Woodmart extends ThemeIntegration {
 	 * @return string
 	 */
 	public function shop_page_link( $link, $keep_query, $taxonomy ) {
+		//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( $keep_query && isset( $_GET['dgwt_wcas'] ) ) {
 			$link = add_query_arg( 'dgwt_wcas', '1', $link );
 		}

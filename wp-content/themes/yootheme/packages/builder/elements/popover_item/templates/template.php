@@ -60,7 +60,7 @@ if ($props['image'] && $element['image_card_padding']) {
 
 ?>
 
-<?= $el($element) ?>
+<?= $el($element, $attrs) ?>
 
     <?php if ($link_container) : ?>
     <?= $link_container($element) ?>

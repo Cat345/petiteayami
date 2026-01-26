@@ -21,6 +21,9 @@ abstract class BWFAN_AJAX_Controller {
 	}
 
 	public static function bwfan_select2ajax() {
+		// Verify nonce for read-only operations
+		BWFAN_Common::check_nonce();
+
 		$callback = apply_filters( 'bwfan_select2_ajax_callable', '', $_POST ); //phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! is_callable( $callback ) ) {
 			wp_send_json( [] );
@@ -359,9 +362,19 @@ abstract class BWFAN_AJAX_Controller {
 
 		$post['event_data']['event_slug'] = $post['event'];
 		$action_object                    = BWFAN_Core()->integration->get_action( 'wp_sendemail' );
-		$action_object->is_preview        = true;
-		$data_to_set                      = $action_object->make_data( '', $post );
-		$data_to_set['test']              = true;
+		if ( null === $action_object && class_exists( 'BWFAN_Wp_Sendemail' ) ) {
+			/** Try to get the instance directly */
+			$action_object = BWFAN_Wp_Sendemail::get_instance();
+		}
+		if ( null === $action_object ) {
+			$result['msg']    = __( 'Email action not found.', 'wp-marketing-automations' );
+			$result['status'] = false;
+
+			return $result;
+		}
+		$action_object->is_preview = true;
+		$data_to_set               = $action_object->make_data( '', $post );
+		$data_to_set['test']       = true;
 
 		$action_object->set_data( $data_to_set );
 		$response = $action_object->send_email();

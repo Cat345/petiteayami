@@ -22,6 +22,24 @@ class BWFAN_DB_Table_Automation_Contact_Trail extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'tid'    => [ 'tid' ],
+				'cid'    => [ 'cid' ],
+				'sid'    => [ 'sid' ],
+				'status' => [ 'status' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -40,7 +58,6 @@ class BWFAN_DB_Table_Automation_Contact_Trail extends BWFAN_DB_Tables_Base {
 			`status` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '1 - Success | 2 - Wait | 3 - Failed | 4 - Skipped',
 			`data` varchar(255) NULL,
 			PRIMARY KEY (`ID`),
-			KEY `ID` (`ID`),
 			KEY `tid` (`tid`(40)),
 			KEY `cid` (`cid`),
 			KEY `sid` (`sid`),

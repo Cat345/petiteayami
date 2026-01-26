@@ -18,6 +18,22 @@ class BWFAN_DB_Table_Contact_Automations extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'contact_id'   => [ 'contact_id' ],
+				'automation_id' => [ 'automation_id' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string

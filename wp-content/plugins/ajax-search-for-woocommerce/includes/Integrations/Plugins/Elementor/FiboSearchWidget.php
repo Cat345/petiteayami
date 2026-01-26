@@ -17,11 +17,13 @@ class FiboSearchWidget extends Widget_Base {
 		parent::__construct( $data, $args );
 		$this->enqueue_elementor_preview_styles();
 	}
-	
+
 	private function enqueue_elementor_preview_styles() {
-		add_action( 'elementor/preview/enqueue_styles', function () {
-			ob_start();
-			?>
+		add_action(
+			'elementor/preview/enqueue_styles',
+			function () {
+				ob_start();
+				?>
 			<style>
 				/**
 				 * ╭───────────────────────────────────────╮
@@ -95,14 +97,15 @@ class FiboSearchWidget extends Widget_Base {
 					}
 				}
 			</style>
-			<?php
-			$css_with_style = ob_get_clean();
-			$css = str_replace( [ '<style>', '</style>' ], '', $css_with_style );
+				<?php
+				$css_with_style = ob_get_clean();
+				$css            = str_replace( [ '<style>', '</style>' ], '', $css_with_style );
 
-			wp_register_style( 'fibosearch-elementor-editor-only', false, [], DGWT_WCAS_VERSION );
-			wp_enqueue_style( 'fibosearch-elementor-editor-only' );
-			wp_add_inline_style( 'fibosearch-elementor-editor-only', $css );
-		} );
+				wp_register_style( 'fibosearch-elementor-editor-only', false, [], DGWT_WCAS_VERSION );
+				wp_enqueue_style( 'fibosearch-elementor-editor-only' );
+				wp_add_inline_style( 'fibosearch-elementor-editor-only', $css );
+			}
+		);
 	}
 
 	public function get_name(): string {

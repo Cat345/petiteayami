@@ -9,26 +9,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Blocks {
 	public function init() {
-		add_action( 'init', function () {
-			$this->registerBlocks();
+		add_action(
+			'init',
+			function () {
+				$this->registerBlocks();
 
-			add_filter( 'widget_types_to_hide_from_legacy_widget_block', array( $this, 'hideLegacyWidgetBlock' ) );
-		} );
+				add_filter( 'widget_types_to_hide_from_legacy_widget_block', [ $this, 'hideLegacyWidgetBlock' ] );
+			}
+		);
 	}
 
 	private function registerBlocks() {
 		register_block_type(
 			DGWT_WCAS_DIR . 'build/blocks/search',
-			array(
-				'render_callback' => array( $this, 'renderCallback' ),
-			)
+			[
+				'render_callback' => [ $this, 'renderCallback' ],
+			]
 		);
 
 		register_block_type(
 			DGWT_WCAS_DIR . 'build/blocks/search-nav',
-			array(
-				'render_callback' => array( $this, 'renderCallback' ),
-			)
+			[
+				'render_callback' => [ $this, 'renderCallback' ],
+			]
 		);
 	}
 
@@ -42,8 +45,8 @@ class Blocks {
 	 * @return string
 	 */
 	public function renderCallback( $attributes, $content, $block ) {
-		$normalizedAttributes = array();
-
+		$normalizedAttributes = [];
+		//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$isBackend = defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $_REQUEST['context'] ) && $_REQUEST['context'] === 'edit';
 
 		if ( isset( $attributes['inheritPluginSettings'] ) && ! $attributes['inheritPluginSettings'] ) {
@@ -74,7 +77,7 @@ class Blocks {
 					echo '</div>';
 
 					return ob_get_clean();
-				} else if ( isset( $attributes['layout'] ) && $attributes['layout'] === 'icon-flexible-inv' ) {
+				} elseif ( isset( $attributes['layout'] ) && $attributes['layout'] === 'icon-flexible-inv' ) {
 					ob_start();
 
 					echo '<div class="dgwt-wcas-show-on-preview-desktop">';
@@ -102,9 +105,13 @@ class Blocks {
 	}
 
 	private function getAttributesString( $attributes ) {
-		$attributesStringArr = array_map( function ( $key, $value ) {
-			return $key . '="' . $value . '"';
-		}, array_keys( $attributes ), $attributes );
+		$attributesStringArr = array_map(
+			function ( $key, $value ) {
+				return $key . '="' . $value . '"';
+			},
+			array_keys( $attributes ),
+			$attributes
+		);
 
 		return implode( ' ', $attributesStringArr );
 	}

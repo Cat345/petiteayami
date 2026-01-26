@@ -16,7 +16,7 @@ class Product {
 
     protected $langCode = 'en';
 
-    private $variations = array();
+    private $variations = [];
 
     private $indexingFailureReason = '';
 
@@ -47,6 +47,7 @@ class Product {
 
     /**
      * Get product ID (post_id)
+     *
      * @return INT
      */
     public function getID() {
@@ -68,6 +69,7 @@ class Product {
 
     /**
      * Get product name
+     *
      * @return string
      */
     public function getName() {
@@ -276,6 +278,7 @@ class Product {
 
     /**
      * Get SKU
+     *
      * @return string
      */
     public function getSKU() {
@@ -289,6 +292,7 @@ class Product {
 
     /**
      * Get Global Unique ID
+     *
      * @return string
      */
     public function getGlobalUniqueId() {
@@ -302,6 +306,7 @@ class Product {
 
     /**
      * Get available variations
+     *
      * @return array
      */
     public function getAvailableVariations() {
@@ -309,11 +314,12 @@ class Product {
         if ( empty( $this->variations ) && is_a( $this->wcProduct, 'WC_Product_Variable' ) ) {
             $sql = $wpdb->prepare( "\n\t\t\t\tSELECT {$wpdb->posts}.ID AS variation_id, postmeta.meta_value AS variation_description, wc_product_meta_lookup.sku\n\t\t\t\tFROM {$wpdb->posts}\n                LEFT JOIN {$wpdb->wc_product_meta_lookup} wc_product_meta_lookup ON {$wpdb->posts}.ID = wc_product_meta_lookup.product_id\n\t\t\t\tLEFT JOIN {$wpdb->postmeta} postmeta ON {$wpdb->posts}.ID = postmeta.post_id AND postmeta.meta_key = '_variation_description'\n\t\t\t\tWHERE {$wpdb->posts}.post_parent = %d\n\t\t\t\tAND {$wpdb->posts}.post_status = 'publish'\n\t\t\t", $this->getID() );
             if ( apply_filters( 'dgwt/wcas/indexer/include_variations_with_zero_price', true ) === false ) {
-                $sql .= " AND wc_product_meta_lookup.min_price > 0";
+                $sql .= ' AND wc_product_meta_lookup.min_price > 0';
             }
             if ( DGWT_WCAS()->settings->getOption( 'exclude_out_of_stock' ) === 'on' ) {
                 $sql .= " AND wc_product_meta_lookup.stock_status <> 'outofstock'";
             }
+            //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
             $result = $wpdb->get_results( $sql, ARRAY_A );
             if ( is_array( $result ) ) {
                 $result = array_map( function ( $item ) {
@@ -329,10 +335,11 @@ class Product {
 
     /**
      * Get all SKUs for variations
+     *
      * @return array
      */
     public function getVariationsSKUs() {
-        $skus = array();
+        $skus = [];
         $variations = $this->getAvailableVariations();
         foreach ( $variations as $variation ) {
             if ( is_array( $variation ) && !empty( $variation['sku'] ) ) {
@@ -353,7 +360,7 @@ class Product {
      * @return array
      */
     public function getVariationsDescriptions() {
-        $descriptions = array();
+        $descriptions = [];
         $variations = $this->getAvailableVariations();
         foreach ( $variations as $variation ) {
             if ( is_array( $variation ) && !empty( $variation['variation_description'] ) ) {
@@ -371,7 +378,7 @@ class Product {
      * @return array
      */
     public function getAttributes( $onlyNames = false ) {
-        $terms = array();
+        $terms = [];
         $attributes = apply_filters(
             'dgwt/wcas/product/attributes',
             $this->wcProduct->get_attributes(),
@@ -399,8 +406,9 @@ class Product {
                         }
                     }
                 }
+                //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElse
             } else {
-                //@TODO future use
+                // @TODO future use
             }
         }
         return apply_filters(
@@ -464,10 +472,9 @@ class Product {
      * @param string $format Output format
      *
      * @return string|array
-     *
      */
     public function getTerms( $taxonomy = 'product_cat', $format = 'array' ) {
-        $items = array();
+        $items = [];
         if ( !empty( $taxonomy ) ) {
             $terms = get_the_terms( $this->productID, $taxonomy );
             if ( !empty( $terms ) && is_array( $terms ) ) {
@@ -487,6 +494,7 @@ class Product {
 
     /**
      * Check, if class is initialized correctly
+     *
      * @return bool
      */
     public function isValid() {
@@ -509,7 +517,7 @@ class Product {
     /**
      * Get custom attributes
      *
-     * for external use
+     * For external use
      *
      * @param int productID
      *
@@ -517,10 +525,13 @@ class Product {
      */
     public static function getCustomAttributes( $productID ) {
         global $wpdb;
-        $terms = array();
+        $terms = [];
         $sql = $wpdb->prepare( "SELECT meta_value\n                                      FROM {$wpdb->postmeta}\n                                      WHERE post_id = %d\n                                      AND meta_key = '_product_attributes'\n                                     ", $productID );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $optValue = $wpdb->get_var( $sql );
         if ( !empty( $optValue ) && strpos( $optValue, 'a:' ) === 0 ) {
+            // TODO
+            //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
             $rawAttributes = unserialize( $optValue );
             if ( is_array( $rawAttributes ) && !empty( $rawAttributes ) ) {
                 $rawAttributes = apply_filters( 'dgwt/wcas/product/custom_attributes', $rawAttributes, $productID );
@@ -596,25 +607,73 @@ class Product {
     }
 
     /**
-     * Check if the product is published and visible for catalog or search
+     * Check if the product is published and visible in catalog/search.
+     *
+     * @param string $context Context name (e.g. 'indexer', 'details-panel').
      *
      * @return bool
      */
-    public function isPublishedAndVisible() {
+    public function isPublishedAndVisible( string $context = 'indexer' ) : bool {
         if ( !$this->isValid() ) {
             return false;
         }
-        $status = $this->getWooObject()->get_status();
-        $visibility = $this->getWooObject()->get_catalog_visibility();
+        $woo = $this->getWooObject();
+        $status = $woo->get_status();
+        $visibility = $woo->get_catalog_visibility();
         if ( $status !== 'publish' ) {
-            $this->indexingFailureReason = 'Product is not published.';
+            if ( $context === 'indexer' ) {
+                $this->indexingFailureReason = 'Product is not published.';
+            }
             return false;
         }
-        if ( !in_array( $visibility, array('visible', 'search') ) ) {
-            $this->indexingFailureReason = 'Product is not visible in catalog or search.';
+        if ( !in_array( $visibility, ['visible', 'search'], true ) ) {
+            if ( $context === 'indexer' ) {
+                $this->indexingFailureReason = 'Product is not visible in catalog or search.';
+            }
             return false;
         }
         return true;
+    }
+
+    /**
+     * Determine whether the current user can access product details in the details panel.
+     *
+     * Public users can only access published products visible in catalog/search.
+     * Non-public products (draft/private/pending/future) require 'read_post' capability.
+     * Hidden published products require stronger permissions ('edit_post').
+     *
+     * @param bool $checkStockStatus Whether to respect the "exclude out of stock" setting.
+     * @param string $context Method call context.
+     *
+     * @return bool
+     */
+    public function canUserSee( bool $checkStockStatus = true, string $context = '' ) : bool {
+        if ( !$this->isValid() ) {
+            return false;
+        }
+        $woo = $this->getWooObject();
+        $postId = $this->getID();
+        $canShow = $this->isPublishedAndVisible( $context );
+        // Non-public products: allow only authorized users.
+        if ( !$canShow ) {
+            $status = $woo->get_status();
+            if ( $status !== 'publish' ) {
+                $canShow = current_user_can( 'read_post', $postId );
+            } else {
+                // Published but hidden from catalog/search.
+                $canShow = current_user_can( 'edit_post', $postId );
+            }
+        }
+        // Respect "exclude out of stock" setting for public users.
+        if ( $canShow && $checkStockStatus && DGWT_WCAS()->settings->getOption( 'exclude_out_of_stock' ) === 'on' && !$woo->is_in_stock() && !current_user_can( 'edit_post', $postId ) ) {
+            $canShow = false;
+        }
+        // Do not reveal password-protected content to public users.
+        $post = get_post( $postId );
+        if ( $canShow && $post instanceof \WP_Post && post_password_required( $post ) && !current_user_can( 'edit_post', $postId ) ) {
+            $canShow = false;
+        }
+        return (bool) apply_filters( 'dgwt/wcas/product/can_show_in_details_panel', $canShow, $this );
     }
 
     /**

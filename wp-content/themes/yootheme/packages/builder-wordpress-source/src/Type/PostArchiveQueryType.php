@@ -2,17 +2,23 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use WP_Post;
+use WP_Post_Type;
+use YOOtheme\Builder\Source;
 use YOOtheme\Str;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class PostArchiveQueryType
 {
     /**
-     * @param \WP_Post_Type $type
+     * @param WP_Post_Type $type
      *
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config(\WP_Post_Type $type)
+    public static function config(WP_Post_Type $type): array
     {
         $name = Str::camelCase($type->name, true);
         $field = Str::camelCase(['archive', $type->name]);
@@ -118,6 +124,11 @@ class PostArchiveQueryType
         ];
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return array<WP_Post>
+     */
     public static function resolve($root, array $args)
     {
         global $wp_query;
@@ -136,6 +147,11 @@ class PostArchiveQueryType
         return $posts;
     }
 
+    /**
+     * @param array<string, mixed> $root
+     * @param array<string, mixed> $args
+     * @return ?WP_Post
+     */
     public static function resolveSingle($root, array $args)
     {
         return self::resolve($root, ['limit' => 1] + $args)[0] ?? null;

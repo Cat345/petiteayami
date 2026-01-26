@@ -8,7 +8,7 @@ return [
     },
 
     '2.1.0-beta.0.1' => function ($node) {
-        if (Arr::get($node->props, 'image_grid_width') === 'xxlarge') {
+        if (($node->props['image_grid_width'] ?? '') === 'xxlarge') {
             $node->props['image_grid_width'] = '2xlarge';
         }
     },

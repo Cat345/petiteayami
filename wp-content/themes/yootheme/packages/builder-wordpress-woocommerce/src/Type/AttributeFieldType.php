@@ -2,11 +2,20 @@
 
 namespace YOOtheme\Builder\Wordpress\Woocommerce\Type;
 
+use WC_Product;
+use WC_Product_Attribute;
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class AttributeFieldType
 {
-    public static function config()
+    /**
+     * @return ObjectConfig
+     */
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -45,22 +54,36 @@ class AttributeFieldType
         ];
     }
 
+    /**
+     * @param array{name: string, value: string}|object $ref
+     * @return string
+     */
     public static function name($ref)
     {
         if (is_array($ref)) {
             return $ref['name'];
         }
 
+        /** @var WC_Product_Attribute $attribute */
         [, $attribute] = (array) $ref;
         return wc_attribute_label($attribute->get_name());
     }
 
+    /**
+     * @param array{name: string, value: string}|object $ref
+     * @param array<string, mixed> $args
+     * @return string
+     */
     public static function value($ref, array $args)
     {
         if (is_array($ref)) {
             return $ref['value'];
         }
 
+        /**
+         * @var WC_Product $product
+         * @var WC_Product_Attribute $attribute
+         */
         [$product, $attribute] = (array) $ref;
 
         $args += [
@@ -70,6 +93,7 @@ class AttributeFieldType
         $values = [];
 
         if ($attribute->is_taxonomy()) {
+            /** @var object{attribute_public: bool} $taxonomy */
             $taxonomy = $attribute->get_taxonomy_object();
             $attributeValues = wc_get_product_terms($product->get_id(), $attribute->get_name(), [
                 'fields' => 'all',

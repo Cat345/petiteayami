@@ -4,12 +4,17 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-add_action( 'wp_footer', function () {
-	echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
-} );
+add_action(
+	'wp_footer',
+	function () {
+		echo '<div id="wcas-theme-search" style="display: block;">' . do_shortcode( '[wcas-search-form]' ) . '</div>';
+	}
+);
 
-add_action( 'wp_footer', function () {
-	?>
+add_action(
+	'wp_footer',
+	function () {
+		?>
 	<script>
 		var wcasThemeSearch = document.querySelector('#search_popup .search_form-inner');
 		if (wcasThemeSearch !== null) {
@@ -46,5 +51,7 @@ add_action( 'wp_footer', function () {
 			margin-top: -30%;
 		}
 	</style>
-	<?php
-}, 100 );
+		<?php
+	},
+	100
+);

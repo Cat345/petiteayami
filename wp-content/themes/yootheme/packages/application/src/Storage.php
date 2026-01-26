@@ -5,36 +5,28 @@ namespace YOOtheme;
 abstract class Storage implements \JsonSerializable
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $values = [];
+    protected array $values = [];
 
-    /**
-     * @var bool
-     */
-    protected $modified = false;
+    protected bool $modified = false;
 
     /**
      * Gets a value (shortcut).
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function __invoke($key, $default = null)
+    public function __invoke(string $key, $default = null)
     {
         return Arr::get($this->values, $key, $default);
     }
 
     /**
      * Checks if a key exists.
-     *
-     * @param string $key
-     *
-     * @return bool
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return Arr::has($this->values, $key);
     }
@@ -42,12 +34,11 @@ abstract class Storage implements \JsonSerializable
     /**
      * Gets a value.
      *
-     * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         return Arr::get($this->values, $key, $default);
     }
@@ -55,12 +46,11 @@ abstract class Storage implements \JsonSerializable
     /**
      * Sets a value.
      *
-     * @param string $key
      * @param mixed  $value
      *
      * @return $this
      */
-    public function set($key, $value)
+    public function set(string $key, $value): self
     {
         Arr::set($this->values, $key, $value);
 
@@ -72,11 +62,9 @@ abstract class Storage implements \JsonSerializable
     /**
      * Deletes a value.
      *
-     * @param string $key
-     *
      * @return $this
      */
-    public function del($key)
+    public function del(string $key): self
     {
         Arr::del($this->values, $key);
 
@@ -87,10 +75,8 @@ abstract class Storage implements \JsonSerializable
 
     /**
      * Checks if values are modified.
-     *
-     * @return bool
      */
-    public function isModified()
+    public function isModified(): bool
     {
         return $this->modified;
     }
@@ -98,7 +84,7 @@ abstract class Storage implements \JsonSerializable
     /**
      * Gets values which should be serialized to JSON.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     #[\ReturnTypeWillChange]
     public function jsonSerialize()
@@ -109,11 +95,9 @@ abstract class Storage implements \JsonSerializable
     /**
      * Adds values from JSON.
      *
-     * @param string $json
-     *
      * @return $this
      */
-    protected function addJson($json)
+    protected function addJson(string $json): self
     {
         $this->values = Arr::merge($this->values, json_decode($json, true) ?: []);
 

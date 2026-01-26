@@ -2,6 +2,7 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
+use WP_Error;
 use YOOtheme\Config;
 use YOOtheme\Wordpress\ThemeUpdate;
 
@@ -14,7 +15,7 @@ class LoadThemeUpdate
         $this->config = $config;
     }
 
-    public function handle()
+    public function handle(): void
     {
         // register theme update
         $update = new ThemeUpdate('yootheme');
@@ -27,12 +28,18 @@ class LoadThemeUpdate
         add_filter('upgrader_post_install', [$this, 'backupFiles'], 10, 2);
     }
 
-    public function backupFiles($return, $package)
+    /**
+     * @param bool|WP_Error $response
+     * @param array<string, mixed> $package
+     *
+     * @return bool|WP_Error
+     */
+    public function backupFiles($response, $package)
     {
         $theme = wp_get_theme();
 
-        if ($theme->get_template() !== ($package['theme'] ?? '') || is_wp_error($return)) {
-            return $return;
+        if ($theme->get_template() !== ($package['theme'] ?? '') || is_wp_error($response)) {
+            return $response;
         }
 
         $paths = [$theme->get_template_directory(), WP_CONTENT_DIR . '/upgrade'];
@@ -43,14 +50,15 @@ class LoadThemeUpdate
         $this->copyFiles("{$src}/css", "{$dest}/css", '/\.update\.css$/', $reverse);
         $this->copyFiles("{$src}/fonts", "{$dest}/fonts", '', $reverse);
 
-        // move cache files
-        $this->moveFolder("{$src}/cache", "{$dest}/cache");
-
-        return $return;
+        return $response;
     }
 
-    protected function copyFiles($src, $dest, $ignoreFile = '', $deleteDir = false)
-    {
+    protected function copyFiles(
+        string $src,
+        string $dest,
+        string $ignoreFile = '',
+        bool $deleteDir = false
+    ): void {
         /** @var \WP_Filesystem_Base $wp_filesystem */
         global $wp_filesystem;
 
@@ -71,13 +79,5 @@ class LoadThemeUpdate
         if ($deleteDir) {
             $wp_filesystem->delete($src, true);
         }
-    }
-
-    protected function moveFolder($src, $dest)
-    {
-        /** @var \WP_Filesystem_Base $wp_filesystem */
-        global $wp_filesystem;
-
-        $wp_filesystem->move($src, $dest, true);
     }
 }

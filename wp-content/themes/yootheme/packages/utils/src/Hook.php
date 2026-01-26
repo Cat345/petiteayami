@@ -10,6 +10,7 @@ abstract class Hook
      * Call hooks for given name.
      *
      * @param  string|string[] $name
+     * @param  mixed ...$arguments
      * @return mixed
      */
     public static function call($name, callable $callback, ...$arguments)
@@ -70,6 +71,6 @@ abstract class Hook
      */
     public static function getCollection(): HookCollection
     {
-        return static::$collection ?? (static::$collection = new HookCollection());
+        return static::$collection ??= new HookCollection();
     }
 }

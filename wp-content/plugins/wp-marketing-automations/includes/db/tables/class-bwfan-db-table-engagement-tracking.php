@@ -40,12 +40,40 @@ if ( ! class_exists( 'BWFAN_DB_Table_Engagement_Tracking' ) && BWFAN_Common::is_
 			];
 		}
 
-		/**
-		 * Get query for create table
-		 *
-		 * @return string
-		 */
-		public function get_create_table_query() {
+	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'cid'       => [ 'cid' ],
+				'created_at' => [ 'created_at' ],
+				'mode'      => [ 'mode' ],
+				'type'      => [ 'type' ],
+				'oid'       => [ 'oid' ],
+				'sid'       => [ 'sid' ],
+				'tid'       => [ 'tid' ],
+				'f_open'    => [ 'f_open' ],
+				'f_click'   => [ 'f_click' ],
+				'day'       => [ 'day' ],
+				'hour'      => [ 'hour' ],
+				'c_status'  => [ 'c_status' ],
+			],
+			'unique_keys' => [
+				'hash_code' => [ 'hash_code' ],
+			],
+		];
+	}
+
+	/**
+	 * Get query for create table
+	 *
+	 * @return string
+	 */
+	public function get_create_table_query() {
 			global $wpdb;
 			$collate = $this->get_collation();
 

@@ -4,7 +4,7 @@ namespace YOOtheme\Theme\Widgets;
 
 class Sidebar
 {
-    public static function register($id, $name)
+    public static function register(string $id, string $name): void
     {
         register_sidebar([
             'id' => $id,

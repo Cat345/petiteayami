@@ -11,7 +11,7 @@ use YOOtheme\Url;
 
 class StyleController
 {
-    public static function index(Request $request, Response $response, Styler $styler)
+    public static function index(Request $request, Response $response, Styler $styler): Response
     {
         return $response->withJson(
             array_map(function ($theme) {
@@ -21,8 +21,12 @@ class StyleController
         );
     }
 
-    public static function get(Request $request, Response $response, Config $config, Styler $styler)
-    {
+    public static function get(
+        Request $request,
+        Response $response,
+        Config $config,
+        Styler $styler
+    ): Response {
         $themeId = explode('::', $request->getQueryParam('id', ''))[0];
         $theme = $styler->getTheme($themeId);
 
@@ -44,7 +48,7 @@ class StyleController
         Response $response,
         Config $config,
         StyleFontLoader $font
-    ) {
+    ): Response {
         $upload = $request->getUploadedFile('files');
 
         // validate uploads

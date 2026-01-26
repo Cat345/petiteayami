@@ -2,12 +2,13 @@
 /**
 * Plugin Name: Waitlist woocommerce( Back in stock notifier )
 * Plugin URI: http://xootix.com/waitlist-for-woocommerce
-* Version: 2.8.4
+* Version: 2.8.5
 * Text Domain: waitlist-woocommerce
 * Domain Path: /languages
 * Author URI: http://xootix.com
 * Description: Send notification email to users when product arrives in stock.
 * Tags: out of stock, back in stock, out of stock notifier
+* Requires Plugins: woocommerce
 */
 
 //Exit if accessed directly

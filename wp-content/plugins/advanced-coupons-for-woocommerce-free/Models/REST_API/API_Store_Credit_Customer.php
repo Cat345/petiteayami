@@ -370,7 +370,15 @@ class API_Store_Credit_Customer implements Model_Interface {
      */
     private function _query_store_credit_customers( $params = array() ) {
         $params = wp_parse_args( $params, $this->_get_default_query_args() );
-        extract( $params ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+
+        // Replace extract() with explicit variable assignment for security.
+        // Note: Default values match _get_default_query_args() method.
+        $per_page   = isset( $params['per_page'] ) ? $params['per_page'] : 10;
+        $page       = isset( $params['page'] ) ? $params['page'] : 1;
+        $sort_by    = isset( $params['sort_by'] ) ? $params['sort_by'] : 'ID';
+        $meta_key   = isset( $params['meta_key'] ) ? $params['meta_key'] : '';
+        $sort_order = isset( $params['sort_order'] ) ? $params['sort_order'] : 'asc';
+        $search     = isset( $params['search'] ) ? $params['search'] : '';
 
         $query_args = array(
             'number'   => $per_page,

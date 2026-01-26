@@ -10,12 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Upgrade {
 
-	function __construct() {
-
-		add_action( 'current_screen', array( $this, 'printScripts' ) );
-
+	public function __construct() {
+		add_action( 'current_screen', [ $this, 'printScripts' ] );
 	}
-
 
 	public function printScripts() {
 
@@ -28,11 +25,10 @@ class Upgrade {
 		if ( ! empty( $cs->base ) && strpos( $cs->base, 'dgwt_wcas' ) !== false ) {
 
 			add_thickbox();
-			add_action( 'admin_footer', array( $this, 'renderUpgradeModal' ), 10 );
-			add_action( 'admin_footer', array( $this, 'upgradeModalHandler' ), 20 );
+			add_action( 'admin_footer', [ $this, 'renderUpgradeModal' ], 10 );
+			add_action( 'admin_footer', [ $this, 'upgradeModalHandler' ], 20 );
 
 		}
-
 	}
 
 	/**
@@ -43,14 +39,14 @@ class Upgrade {
 	public function renderUpgradeModal() {
 		$utmLink = 'https://fibosearch.com/pro-vs-free/?utm_source=wp-admin&utm_medium=referral&utm_campaign=upgrade-popup&utm_content=features&utm_gen=utmdc';
 
-		$features = array(
+		$features = [
 			__( 'Speed up search! (even 10× faster) - users love it!', 'ajax-search-for-woocommerce' ),
 			__( 'Modern search engine based on an inverted index and advanced matching algorithms', 'ajax-search-for-woocommerce' ),
 			__( 'Fuzzy search', 'ajax-search-for-woocommerce' ),
 			__( 'Synonyms', 'ajax-search-for-woocommerce' ),
 			__( 'Search in attributes and variation products SKUs (option)', 'ajax-search-for-woocommerce' ),
-			__( 'Individual tips and support from the FiboSearch team', 'ajax-search-for-woocommerce' )
-		);
+			__( 'Individual tips and support from the FiboSearch team', 'ajax-search-for-woocommerce' ),
+		];
 		echo '<a style="display:none;" class="thickbox js-dgwt-wcas-modal-pro-handler" href="#TB_inline?width=600&height=380&inlineId=dgwt-wcas-modal" title="' . __( 'FiboSearch Pro - Upgrade Now', 'ajax-search-for-woocommerce' ) . '"></a>';
 		echo '<div id="dgwt-wcas-modal" class="dgwt-wcas-modal-upgrade" style="display:none;">';
 		echo '<img class="dgwt-wcas-modal-logo" src="' . DGWT_WCAS_URL . 'assets/img/logo-128.png" width="128" height="128" />';
@@ -103,7 +99,7 @@ class Upgrade {
 	 */
 	public static function getUpgradeUrl( $type = 'external' ) {
 
-		$url = "https://fibosearch.com/pricing/?utm_source=wp-admin&utm_medium=referral&utm_campaign=upgrade-link&utm_content=upgrade-now-btn";
+		$url = 'https://fibosearch.com/pricing/?utm_source=wp-admin&utm_medium=referral&utm_campaign=upgrade-link&utm_content=upgrade-now-btn';
 
 		if ( $type === 'internal' ) {
 			$url = esc_url( dgoraAsfwFs()->get_upgrade_url() );
@@ -111,5 +107,4 @@ class Upgrade {
 
 		return $url;
 	}
-
 }

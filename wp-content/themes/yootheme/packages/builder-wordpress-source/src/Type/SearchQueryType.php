@@ -2,14 +2,18 @@
 
 namespace YOOtheme\Builder\Wordpress\Source\Type;
 
+use YOOtheme\Builder\Source;
 use function YOOtheme\trans;
 
+/**
+ * @phpstan-import-type ObjectConfig from Source
+ */
 class SearchQueryType
 {
     /**
-     * @return array
+     * @return ObjectConfig
      */
-    public static function config()
+    public static function config(): array
     {
         return [
             'fields' => [
@@ -28,7 +32,11 @@ class SearchQueryType
         ];
     }
 
-    public static function resolve($root, array $args)
+    /**
+     * @param array<string, mixed> $root
+     * @return array<string, mixed>
+     */
+    public static function resolve($root)
     {
         return $root;
     }

@@ -2,7 +2,6 @@
 
 namespace YOOtheme\Theme\Wordpress\WooCommerce\Listener;
 
-use YOOtheme\Path;
 use YOOtheme\Theme\Styler\Styler;
 
 class LoadStylerImports
@@ -14,11 +13,16 @@ class LoadStylerImports
         $this->styler = $styler;
     }
 
+    /**
+     * @param array<string, string> $imports
+     *
+     * @return array<string, string>
+     */
     public function handle(array $imports): array
     {
         // ignore files from being compiled into theme.css
         if (!class_exists('WooCommerce', false)) {
-            $woocommerce = Path::get('../../assets/less/woocommerce.less', __DIR__);
+            $woocommerce = __DIR__ . '/../../assets/less/woocommerce.less';
 
             foreach ($this->styler->resolveImports($woocommerce) as $file => $data) {
                 unset($imports[$file]);

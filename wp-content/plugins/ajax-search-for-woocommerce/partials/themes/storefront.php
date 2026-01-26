@@ -18,19 +18,21 @@ if ( ! function_exists( 'storefront_product_search' ) ) {
 	}
 }
 
-add_action( 'wp_footer', function () {
-	if ( Helpers::isAMPEndpoint() ) {
-		?>
+add_action(
+	'wp_footer',
+	function () {
+		if ( Helpers::isAMPEndpoint() ) {
+			?>
 		<style>
 			#page.search-mobile-active .storefront-handheld-footer-bar ul li.search .site-search {
 				bottom: 100%;
 			}
 		</style>
-		<?php
+			<?php
 
-		return;
-	}
-	?>
+			return;
+		}
+		?>
 	<style>
 		.dgwt-wcas-open .storefront-handheld-footer-bar,
 		.dgwt-wcas-focused .storefront-handheld-footer-bar {
@@ -54,8 +56,10 @@ add_action( 'wp_footer', function () {
 			});
 		}(jQuery));
 	</script>
-	<?php
-}, 100 );
+		<?php
+	},
+	100
+);
 
 /**
  * Toggle mobile search when AMP is active

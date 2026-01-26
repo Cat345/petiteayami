@@ -7,10 +7,9 @@ class NormalizeTransform
     /**
      * Transform callback.
      *
-     * @param object $node
-     * @param array  $params
+     * @param array<string, mixed> $params
      */
-    public function __invoke($node, array $params)
+    public function __invoke(object $node, array $params): void
     {
         $type = $params['type'];
 

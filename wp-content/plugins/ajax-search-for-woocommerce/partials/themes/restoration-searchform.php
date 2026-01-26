@@ -5,4 +5,4 @@ if ( ! defined( 'DGWT_WCAS_FILE' ) ) {
 	exit;
 }
 
-echo do_shortcode('[wcas-search-form layout="classic"]');
+echo do_shortcode( '[wcas-search-form layout="classic"]' );

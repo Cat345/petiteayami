@@ -4,97 +4,62 @@ namespace YOOtheme\Theme;
 
 interface ViewHelperInterface
 {
-    /**
-     * @param string $link
-     *
-     * @return string
-     */
-    public function social($link);
+    public function social(?string $link): string;
 
     /**
-     * @param string $link
-     * @param array $params
-     * @param bool $defaults
+     * @param array<string, mixed> $params
      *
      * @return false|string
      */
-    public function iframeVideo($link, $params = [], $defaults = true);
+    public function iframeVideo(?string $link, array $params = [], bool $defaults = true);
+
+    public function isYouTubeShorts(?string $link): bool;
+
+    public function uid(): int;
 
     /**
-     * @param string $link
-     *
-     * @return bool
-     */
-    public function isYouTubeShorts($link);
-
-    /**
-     * @return int
-     */
-    public function uid();
-
-    /**
-     * @param string $link
-     *
      * @return string|false
      */
-    public function isVideo($link);
+    public function isVideo(?string $link);
 
     /**
-     * @param string|array $url
-     * @param array $attrs
-     *
-     * @return string
+     * @param string|array<mixed> $url
+     * @param array<string, mixed> $attrs
      */
-    public function image($url, array $attrs = []);
+    public function image($url, array $attrs = []): string;
 
     /**
-     * @param string $url
-     * @param array $params
+     * @param array<string, mixed> $params
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function bgImage($url, array $params = []);
+    public function bgImage(?string $url, array $params = []): array;
 
     /**
-     * @param string $link
-     *
      * @return string|false
      */
-    public function isImage($link);
+    public function isImage(?string $link);
 
     /**
-     * @param string $url
-     *
-     * @return bool
+     * @deprecated
      */
-    public function isAbsolute($url): bool;
+    public function isAbsolute(?string $url): bool;
 
     /**
-     * @param array    $params
+     * @param array<string, mixed> $params
      * @param string   $prefix
-     * @param string[] $props
-     *
-     * @return mixed
+     * @param list<string> $props
      */
     public function parallaxOptions(
-        $params,
-        $prefix = '',
-        $props = ['x', 'y', 'scale', 'rotate', 'opacity', 'blur', 'background']
-    );
-
-    /**
-     * @param string $str
-     * @param string $allowable_tags
-     *
-     * @return string
-     */
-    public function striptags(
-        $str,
-        $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del>'
+        array $params,
+        string $prefix = '',
+        array $props = ['x', 'y', 'scale', 'rotate', 'opacity', 'blur', 'background']
     ): string;
 
-    /**
-     * @param string $margin
-     */
-    public function margin($margin): ?string;
+    public function striptags(
+        ?string $str,
+        string $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del>'
+    ): string;
+
+    public function margin(?string $margin): ?string;
 }

@@ -18,6 +18,21 @@ class BWFAN_DB_Table_Automation_Events extends BWFAN_DB_Tables_Base {
 	}
 
 	/**
+	 * Get primary key and indexes definition
+	 *
+	 * @return array
+	 */
+	public function get_indexes() {
+		return [
+			'primary_key' => 'ID',
+			'indexes'    => [
+				'execution_time' => [ 'execution_time' ],
+			],
+			'unique_keys' => [],
+		];
+	}
+
+	/**
 	 * Get query for create table
 	 *
 	 * @return string
@@ -32,7 +47,6 @@ class BWFAN_DB_Table_Automation_Events extends BWFAN_DB_Tables_Base {
 		  `execution_time` bigint(12) unsigned NOT NULL,
 		  `args` longtext,
 		  PRIMARY KEY (`ID`),
-		  KEY `ID` (`ID`),
 		  KEY `execution_time` (`execution_time`)
 		) $collate;";
 	}

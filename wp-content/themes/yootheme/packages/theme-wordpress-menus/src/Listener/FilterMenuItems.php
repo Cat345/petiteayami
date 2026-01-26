@@ -6,17 +6,19 @@ class FilterMenuItems
 {
     /**
      * Filters the sorted list of menu item objects before generating the menu's HTML.
+     *
+     * @param list<object> $sorted_menu_items
+     *
+     * @return list<object>
      */
     public static function handle(array $sorted_menu_items): array
     {
         $active = false;
 
-        foreach ($sorted_menu_items as $item) {
-            $classes = empty($item->classes) ? [] : (array) $item->classes;
-
+        foreach ($sorted_menu_items as $i => $item) {
             // Unset active class for posts_page if currently on none blog page
             if (
-                in_array('current_page_parent', $classes) &&
+                in_array('current_page_parent', $item->classes) &&
                 $item->object_id == get_option('page_for_posts') &&
                 !is_singular('post') &&
                 !is_category() &&
@@ -24,36 +26,41 @@ class FilterMenuItems
                 !is_date() &&
                 get_query_var('post_type') !== 'post'
             ) {
-                unset($classes[array_search('current_page_parent', $classes)]);
+                unset($item->classes[array_search('current_page_parent', $item->classes)]);
             }
 
-            $item->classes = $classes;
+            // Polylang language switcher
+            if (str_starts_with($item->post_name ?? '', 'languages')) {
+                $item->classes = array_diff($item->classes, [
+                    'current-menu-parent',
+                    'current_page_item',
+                ]);
+            }
 
             // set current
             $item->active =
                 !empty($item->active) ||
-                (is_page() && in_array($item->object_id, get_post_ancestors(get_the_ID()))) ||
                 preg_match(
                     '/\bcurrent-([a-z]+-ancestor|menu-(item|parent))\b/',
                     implode(' ', $item->classes),
                 );
 
             if ($item->active) {
-                static::setParentItemActive($sorted_menu_items, $item);
+                static::setParentItemActive($sorted_menu_items, $i);
             }
 
             $active = $active || $item->active;
         }
 
         if (!$active) {
-            foreach ($sorted_menu_items as $item) {
+            foreach ($sorted_menu_items as $i => $item) {
                 $item->active = preg_match(
                     '/\bcurrent_page_(item|parent)\b/',
                     implode(' ', $item->classes),
                 );
 
                 if ($item->active) {
-                    static::setParentItemActive($sorted_menu_items, $item);
+                    static::setParentItemActive($sorted_menu_items, $i);
                 }
             }
         }
@@ -61,18 +68,21 @@ class FilterMenuItems
         return $sorted_menu_items;
     }
 
-    protected static function setParentItemActive($items, $item)
+    /**
+     * @param list<object> $items
+     */
+    protected static function setParentItemActive(array $items, int $index): void
     {
-        $current = $item;
+        $item = $items[$index];
+        for ($i = $index - 1; $i >= 0; $i--) {
+            if (!$item->menu_item_parent) {
+                break;
+            }
 
-        while (
-            $parent = array_find(
-                $items,
-                fn($item) => $item->ID === (int) $current->menu_item_parent,
-            )
-        ) {
-            $parent->active = true;
-            $current = $parent;
+            if (($items[$i]->db_id ?? -1) === (int) $item->menu_item_parent) {
+                $items[$i]->active = true;
+                $item = $items[$i];
+            }
         }
     }
 }

@@ -36,12 +36,12 @@ class ProductGTINForWooCommerce extends AbstractPluginIntegration {
         // Disable plugin hook on WP_Query.
         if ( !is_admin() ) {
             if ( isset( wpm_product_gtin_wc()->frontend ) && get_option( 'wpm_pgw_search_by_code', 'no' ) === 'yes' ) {
-                remove_action( 'pre_get_posts', array(wpm_product_gtin_wc()->frontend, 'extend_product_search'), 10 );
+                remove_action( 'pre_get_posts', [wpm_product_gtin_wc()->frontend, 'extend_product_search'], 10 );
                 if ( !dgoraAsfwFs()->is_premium() ) {
-                    add_filter( 'dgwt/wcas/native/search_query/join', array($this, 'searchQueryJoin') );
+                    add_filter( 'dgwt/wcas/native/search_query/join', [$this, 'searchQueryJoin'] );
                     add_filter(
                         'dgwt/wcas/native/search_query/search_or',
-                        array($this, 'searchQueryOr'),
+                        [$this, 'searchQueryOr'],
                         10,
                         2
                     );
@@ -76,9 +76,9 @@ class ProductGTINForWooCommerce extends AbstractPluginIntegration {
     public function searchQueryOr( $search, $like ) {
         global $wpdb;
         if ( strpos( $search, 'dgwt_wcasmsku' ) !== false ) {
-            $search .= $wpdb->prepare( " OR (dgwt_wcasmsku.meta_key=%s AND dgwt_wcasmsku.meta_value LIKE %s)", $this->eanField, $like );
+            $search .= $wpdb->prepare( ' OR (dgwt_wcasmsku.meta_key=%s AND dgwt_wcasmsku.meta_value LIKE %s)', $this->eanField, $like );
         } else {
-            $search .= $wpdb->prepare( " OR (dgwt_wcasmean.meta_key=%s AND dgwt_wcasmean.meta_value LIKE %s)", $this->eanField, $like );
+            $search .= $wpdb->prepare( ' OR (dgwt_wcasmean.meta_key=%s AND dgwt_wcasmean.meta_value LIKE %s)', $this->eanField, $like );
         }
         return $search;
     }

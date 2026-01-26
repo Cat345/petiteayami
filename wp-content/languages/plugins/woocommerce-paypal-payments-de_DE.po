@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce PayPal Payments - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-11-04 22:01:42+0000\n"
+"PO-Revision-Date: 2025-12-26 18:38:42+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -108,6 +108,7 @@ msgstr "Nur wenn erforderlich"
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
+#: modules/ppcp-fraud-protection/extensions.php:20
 #: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:89
 #: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:93
 #: modules/ppcp-settings/assets/index.js:1
@@ -342,10 +343,6 @@ msgid "Input Settings"
 msgstr "Eingabe-Einstellungen"
 
 #: modules/ppcp-axo/extensions.php:51
-msgid "Primary Color"
-msgstr "Primärfarbe"
-
-#: modules/ppcp-axo/extensions.php:51
 msgid "Font Size Base"
 msgstr "Schriftgröße Basis"
 
@@ -402,6 +399,10 @@ msgstr "Eckenradius"
 #: modules/ppcp-axo/extensions.php:51
 msgid "Padding"
 msgstr "Innenabstand"
+
+#: modules/ppcp-axo/extensions.php:51
+msgid "Primary Color"
+msgstr "Primäre Farbe"
 
 #: modules/ppcp-wc-gateway/src/WCGatewayModule.php:767
 msgid "PayPal email address"
