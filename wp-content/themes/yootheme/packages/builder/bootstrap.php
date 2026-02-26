@@ -21,12 +21,14 @@ return [
             Listener\LoadLeafletScript::class => '@handle',
             Listener\LoadGoogleMapsScript::class => '@handle',
             Listener\LoadYoutubeScript::class => '@handle',
+            Listener\LoadVimeoScript::class => '@handle',
         ],
 
         ThemeConfig::class => [
             Listener\LoadLeafletScript::class => 'config',
             Listener\LoadGoogleMapsScript::class => 'config',
             Listener\LoadYoutubeScript::class => 'config',
+            Listener\LoadVimeoScript::class => 'config',
         ],
     ],
 

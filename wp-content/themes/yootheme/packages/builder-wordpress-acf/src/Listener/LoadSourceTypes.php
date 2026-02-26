@@ -40,6 +40,12 @@ class LoadSourceTypes
         foreach (Helper::getTaxonomies() as $taxonomy) {
             static::configFields($source, $taxonomy->name, 'term', $taxonomy->name);
         }
+
+        if (is_callable('acf_get_ui_options_pages')) {
+            foreach (acf_get_ui_options_pages(['active' => true]) as $optionsPage) {
+                static::configFields($source, 'Site', 'option', $optionsPage['menu_slug']);
+            }
+        }
     }
 
     protected static function configFields(Source $source, string $type, string ...$args): void

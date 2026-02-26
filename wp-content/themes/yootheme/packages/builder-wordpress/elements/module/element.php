@@ -148,7 +148,7 @@ return [
             'type' => 'select',
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
             'options' => [
                 'None' => '',
                 'Muted' => 'muted',

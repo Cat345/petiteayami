@@ -147,7 +147,7 @@ $content_section = 12 - $img_section;
 							<?php
 							echo ( ! empty( $short_desc ) ) ? '<div class="wfocu-product-short-description">' . apply_filters( 'wfocu_the_content', $short_desc ) . '</div>' : '';
 							?>
-                            <div class="wfocu-price-wrapper">
+                            <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
                                 <div class="wfocu-product-price wfocu-product-on-sale">
 									<?php
 

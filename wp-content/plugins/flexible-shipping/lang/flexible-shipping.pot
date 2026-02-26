@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Flexible Shipping plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flexible Shipping 6.5.4\n"
+"Project-Id-Version: Flexible Shipping 6.5.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/flexible-shipping\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-20T00:16:03+00:00\n"
+"POT-Creation-Date: 2026-02-26T17:18:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: flexible-shipping\n"
@@ -17,7 +17,6 @@ msgstr ""
 #. Plugin Name of the plugin
 #: flexible-shipping.php
 #: classes/class-flexible-shipping-plugin.php:376
-#: classes/class-flexible-shipping-plugin.php:521
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:48
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:51
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:54
@@ -53,52 +52,24 @@ msgstr ""
 msgid "https://octol.io/fs-author"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:524
-#: classes/class-flexible-shipping-plugin.php:659
+#: classes/class-flexible-shipping-plugin.php:597
 #: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:20
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:97
 msgid "Flexible Shipping PRO"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:543
-#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:139
-msgid "Do you consent to sending data to the chat?"
-msgstr ""
-
-#: classes/class-flexible-shipping-plugin.php:544
-msgid "To start the chat, we need to send your inputs and technical data to the chat service."
-msgstr ""
-
-#: classes/class-flexible-shipping-plugin.php:545
-#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:141
-msgid "Accept"
-msgstr ""
-
-#: classes/class-flexible-shipping-plugin.php:546
-#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:142
-msgid "Decline"
-msgstr ""
-
-#: classes/class-flexible-shipping-plugin.php:550
-msgid "If you don’t want to give consent, you can contact our support using this: "
-msgstr ""
-
-#: classes/class-flexible-shipping-plugin.php:551
-msgid "support forum"
-msgstr ""
-
 #. Translators: link.
-#: classes/class-flexible-shipping-plugin.php:879
+#: classes/class-flexible-shipping-plugin.php:817
 #, php-format
 msgid "How can We make Flexible Shipping better for you? %1$sJust write to us.%2$s"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:962
+#: classes/class-flexible-shipping-plugin.php:900
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:188
 msgid "Settings"
 msgstr ""
 
-#: classes/class-flexible-shipping-plugin.php:970
+#: classes/class-flexible-shipping-plugin.php:908
 msgid "Buy PRO"
 msgstr ""
 
@@ -795,6 +766,8 @@ msgstr ""
 
 #: src/WPDesk/FS/Plugin/PluginLinks.php:26
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:181
+#: assets-src/rules-settings/js/components/rules-settings.js:582
+#: assets/js/rules-settings.js:132
 msgid "Support"
 msgstr ""
 
@@ -1667,7 +1640,7 @@ msgid "%1$s%2$s%3$s shipping method duplication error. Please try again later."
 msgstr ""
 
 #: src/WPDesk/FS/TableRate/ShippingMethod/Duplicate/DuplicateScript.php:68
-#: assets-src/rules-settings/js/components/rules-settings.js:504
+#: assets-src/rules-settings/js/components/rules-settings.js:530
 #: assets/js/rules-settings.js:132
 msgid "Duplicate"
 msgstr ""
@@ -2042,8 +2015,20 @@ msgstr ""
 msgid "New conversation"
 msgstr ""
 
+#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:139
+msgid "Do you consent to sending data to the chat?"
+msgstr ""
+
 #: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:140
 msgid "To start the chat, we need to send your inputs and technical data to the chat service. Read more in our Privacy Policy."
+msgstr ""
+
+#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:141
+msgid "Accept"
+msgstr ""
+
+#: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:142
+msgid "Decline"
 msgstr ""
 
 #: vendor_prefixed/octolize/wp-octolize-docs-chat/src/Chat/ChatSettings.php:144
@@ -3278,130 +3263,130 @@ msgid "Invalid rules table config! JSON parse failed with message: %s"
 msgstr ""
 
 #: assets-src/rules-settings/js/components/rules-settings.js:362
-#: assets-src/rules-settings/js/components/rules-settings.js:376
+#: assets-src/rules-settings/js/components/rules-settings.js:388
 #: assets/js/rules-settings.js:132
 msgid "Invalid rules table config!"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:385
+#: assets-src/rules-settings/js/components/rules-settings.js:400
 #: assets/js/rules-settings.js:132
 msgid "Rules table successfully pasted."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:393
+#: assets-src/rules-settings/js/components/rules-settings.js:408
 #: assets/js/rules-settings.js:132
 msgid "Rules table successfully imported."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:400
+#: assets-src/rules-settings/js/components/rules-settings.js:415
 #: assets/js/rules-settings.js:132
 msgid "Rules table configuration successfully used."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:439
+#: assets-src/rules-settings/js/components/rules-settings.js:454
 #: assets/js/rules-settings.js:132
 msgid "Conditions"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:440
+#: assets-src/rules-settings/js/components/rules-settings.js:455
 #: assets/js/rules-settings.js:132
 msgid "Costs"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:442
+#: assets-src/rules-settings/js/components/rules-settings.js:458
 #: assets/js/rules-settings.js:132
 msgid "Special action"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:466
+#: assets-src/rules-settings/js/components/rules-settings.js:482
 #: assets/js/rules-settings.js:132
 msgid "You can"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:469
+#: assets-src/rules-settings/js/components/rules-settings.js:486
 #: assets/js/rules-settings.js:132
 msgid "save time with AI ✦"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:469
-#: assets-src/rules-settings/js/components/rules-settings.js:473
+#: assets-src/rules-settings/js/components/rules-settings.js:486
+#: assets-src/rules-settings/js/components/rules-settings.js:491
 #: assets/js/rules-settings.js:132
 msgid "or"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:472
+#: assets-src/rules-settings/js/components/rules-settings.js:490
 #: assets/js/rules-settings.js:132
 msgid "add the first rule"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:473
+#: assets-src/rules-settings/js/components/rules-settings.js:493
 #: assets/js/rules-settings.js:132
 msgid "use one of the ready-made scenarios"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:482
+#: assets-src/rules-settings/js/components/rules-settings.js:504
 #: assets/js/rules-settings.js:132
 msgid "Add rule"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:488
+#: assets-src/rules-settings/js/components/rules-settings.js:510
 #: assets/js/rules-settings.js:132
 msgid "Selected rules:"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:496
+#: assets-src/rules-settings/js/components/rules-settings.js:520
 #: assets/js/rules-settings.js:132
 msgid "Delete"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:515
+#: assets-src/rules-settings/js/components/rules-settings.js:541
 #: assets/js/rules-settings.js:132
 msgid "Rules table"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:520
+#: assets-src/rules-settings/js/components/rules-settings.js:546
 #: assets/js/rules-settings.js:132
 msgid "Paste JSON from clipboard"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:525
+#: assets-src/rules-settings/js/components/rules-settings.js:551
 #: assets/js/rules-settings.js:132
 msgid "Import JSON file"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:530
+#: assets-src/rules-settings/js/components/rules-settings.js:556
 #: assets/js/rules-settings.js:132
 msgid "Save JSON file"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:534
+#: assets-src/rules-settings/js/components/rules-settings.js:560
 #: assets/js/rules-settings.js:132
 msgid "Use ready-made scenarios"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:553
-#: assets-src/rules-settings/js/components/rules-settings.js:562
+#: assets-src/rules-settings/js/components/rules-settings.js:601
+#: assets-src/rules-settings/js/components/rules-settings.js:612
 #: assets/js/rules-settings.js:132
 msgid "Save time with AI ✦"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:609
-#: assets-src/rules-settings/js/components/rules-settings.js:616
+#: assets-src/rules-settings/js/components/rules-settings.js:662
+#: assets-src/rules-settings/js/components/rules-settings.js:671
 #: assets/js/rules-settings.js:132
 msgid "PRO Features"
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:611
+#: assets-src/rules-settings/js/components/rules-settings.js:665
 #: assets/js/rules-settings.js:132
 msgid "Tick this checkbox to display the features and shipping cost calculation conditions coming with the plugin's PRO version."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:621
+#: assets-src/rules-settings/js/components/rules-settings.js:677
 #: assets/js/rules-settings.js:132
 msgid "Show the options available in the PRO version."
 msgstr ""
 
-#: assets-src/rules-settings/js/components/rules-settings.js:625
+#: assets-src/rules-settings/js/components/rules-settings.js:681
 #: assets/js/rules-settings.js:132
 msgid "Learn more about PRO version →"
 msgstr ""

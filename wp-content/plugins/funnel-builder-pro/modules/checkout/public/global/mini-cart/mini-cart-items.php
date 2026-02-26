@@ -82,8 +82,7 @@ $className = 'wfacp_mini_cart_items_' . $widget_id;
 						$enabled_delete_class = "wfacp_delete_active";
 					}
 					?>
-                    <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . $enabled_delete_class; ?>"
-                        cart_key="<?php echo $cart_item_key ?>">
+                    <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ) . ' ' . $enabled_delete_class; ?>" cart_key="<?php echo $cart_item_key ?>" data-item-key="<?php echo $aero_item_key ?>">
                         <td class="product-name-area">
 							<?php
 							$hideImageCls = '';
@@ -122,14 +121,29 @@ $className = 'wfacp_mini_cart_items_' . $widget_id;
   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" fill="currentColor"/>
 </svg>';
 
-									$product_id=$_product->get_ID();
-									$html       = sprintf( '<span class="wfacp_delete_item_wrap"><a href="javascript:void(0)" class="%s" data-cart_key="%s" data-item-key="%s" data-product_id="%s">%s</a></span>', $item_class, $cart_item_key, $aero_item_key, $product_id,$item_icon );
+									$product_id = $_product->get_ID();
+									$html       = sprintf( '<span class="wfacp_delete_item_wrap"><a href="javascript:void(0)" class="%s" data-cart_key="%s" data-item-key="%s" data-product_id="%s">%s</a></span>', $item_class, $cart_item_key, $aero_item_key, $product_id, $item_icon );
 								}
 
 								echo "<div class='wfacp_cart_title_sec'>";
 								echo "<span class='wfacp_mini_cart_item_title'>";
-								echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
-
+								/**
+								 * Display Product name based on the product variation.
+								 * Filter wfacp_mini_cart_show_variation_details: default false. Return true for new design (labeled variation + select option link).
+								 * Default: compact format "Hoodie - Small, Black" via get_name().
+								 * When filter true: product name + "Size: small, Color: black" on separate line + select option link.
+								 */
+								$show_new_mini_cart_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+								$product_name              = $_product->get_name();
+								$variation                 = [];
+								if ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
+									$variation = WFACP_Common::get_single_variation_html( $_product, $cart_item, true );
+									if ( $show_new_mini_cart_design ) {
+										$product_name = $_product->get_title();
+									}
+								}
+								echo apply_filters( 'woocommerce_cart_item_name', $product_name, $cart_item, $cart_item_key );
+								do_action( 'wfacp_after_mini_cart_title', $cart_item, $cart_item_key );
 								echo apply_filters( 'woocommerce_checkout_cart_item_quantity', '<strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
 
 								if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_mini_cart_widget', false, $cart_item, $cart_item_key ) ) {
@@ -140,9 +154,24 @@ $className = 'wfacp_mini_cart_items_' . $widget_id;
 								}
 								echo wc_get_formatted_cart_item_data( $cart_item );
 
+								do_action( 'wfacp_after_mini_cart_attributes', $cart_item, $cart_item_key );
+								/**
+								 * Display Variations and select option button.
+								 * Variation HTML (labeled format) and select option link only when wfacp_mini_cart_show_variation_details returns true.
+								 */
+								if ( is_array( $variation ) && count( $variation ) > 0 ) {
+									if ( $show_new_mini_cart_design && isset( $variation['variation'] ) && ! empty( $variation['variation'] ) ) {
+										echo $variation['variation'];
+									}
+
+									if ( $show_new_mini_cart_design && isset( $variation['select_option'] ) && ! empty( $variation['select_option'] ) ) {
+										echo $variation['select_option'];
+									}
+								}
+
 
 								echo '</span> ';
-
+								do_action( 'wfacp_after_cart_formatted_item_data', $cart_item, $cart_item_key );
 
 								echo '</div> ';
 
@@ -184,17 +213,8 @@ $className = 'wfacp_mini_cart_items_' . $widget_id;
 									} else {
 										do_action( 'wfacp_display_quantity_increment_placeholder', true, $cart_item, $item_quantity, $aero_item_key, $cart_item_key );
 									}
-
 								}
-
-
-								/**
-								 * Display Low Stock Trigger
-								 */
-
-								do_action( 'wfacp_mini_cart_after_product_title', $_product );
-
-
+								do_action( 'wfacp_after_mini_cart_quantity_incrementer', $cart_item, $cart_item_key );
 								?>
                             </div>
                         </td>
@@ -227,6 +247,7 @@ $className = 'wfacp_mini_cart_items_' . $widget_id;
                         </td>
                     </tr>
 					<?php
+					do_action( 'wfacp_after_mini_cart_item_row', $cart_item, $cart_item_key, $show_product_image );
 				}
 			}
 		}

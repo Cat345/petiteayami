@@ -38,7 +38,7 @@ return [
                 'logo.text' => [
                     'label' => 'Logo Text',
                     'description' =>
-                        'The logo text will be used, if no logo image has been picked. If an image has been picked, it will be used as an aria-label attribute on the link.',
+                        'The logo text will be used, if no logo image has been picked. If an image has been picked, it will be used as an alt attribute on the image.',
                 ],
                 'logo.image' => [
                     'label' => 'Logo Image',

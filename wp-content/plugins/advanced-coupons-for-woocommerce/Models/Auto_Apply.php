@@ -205,6 +205,19 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
                 // Validate coupon.
                 $checked = $discounts->is_coupon_valid( $coupon );
 
+                // Convert WP_Error to false for consistent boolean handling.
+                if ( is_wp_error( $checked ) ) {
+                    /**
+                     * Fires when an auto-apply coupon is invalid.
+                     *
+                     * @since 4.0.6.1
+                     * @param WC_Coupon $coupon The coupon object that failed validation.
+                     * @param WP_Error  $checked The WP_Error object containing validation error details.
+                     */
+                    do_action( 'acfw_auto_apply_coupon_invalid', $coupon, $checked );
+                    $checked = false;
+                }
+
                 /**
                  * If an individual-use coupon was already applied,
                  * only allow other coupons that are explicitly allowed alongside it.

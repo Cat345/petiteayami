@@ -126,10 +126,19 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 								echo "<div class='wfacp_cart_title_sec'>";
 								echo "<span class='wfacp_mini_cart_item_title'>";
 
+								/**
+								 * Filter wfacp_mini_cart_show_variation_details: default false. Return true for new design (labeled variation).
+								 * Default: compact format "Hoodie - Small, Black" via get_name().
+								 * When filter true: product name + "Size: small, Color: black" on separate line.
+								 */
+								$show_new_collapsible_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+								$product_name                = $_product->get_name();
+								if ( $show_new_collapsible_design && ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) ) {
+									$product_name = $_product->get_title();
+								}
+								echo apply_filters( 'woocommerce_cart_item_name', $product_name, $cart_item, $cart_item_key );
 
-								echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
-
-
+								do_action( 'wfacp_after_mini_cart_title', $cart_item, $cart_item_key );
 								echo apply_filters( 'woocommerce_checkout_cart_item_quantity', '&nbsp;<strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
 								if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_mini_cart', false, $cart_item, $cart_item_key ) ) {
 									/**
@@ -138,10 +147,11 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 									do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 								}
 								echo wc_get_formatted_cart_item_data( $cart_item );
-
+							
+								do_action( 'wfacp_after_mini_cart_attributes', $cart_item, $cart_item_key );
 
 								echo '</span> ';
-
+									do_action( 'wfacp_after_cart_formatted_item_data', $cart_item, $cart_item_key );
 
 								echo "</div>";
 
@@ -181,7 +191,7 @@ if ( is_null( WC()->cart ) || ! WC()->cart instanceof WC_Cart ) {
 										do_action( 'wfacp_display_quantity_increment_placeholder', true, $cart_item, $item_quantity, $aero_item_key, $cart_item_key );
 									}
 								}
-
+								do_action( 'wfacp_after_mini_cart_quantity_incrementer', $cart_item, $cart_item_key );
 								/**
 								 * Display Low Stock Trigger
 								 */

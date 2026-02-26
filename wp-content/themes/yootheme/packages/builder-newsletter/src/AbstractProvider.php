@@ -101,12 +101,12 @@ abstract class AbstractProvider
                 throw new \Exception("Call to undefined method {$method}");
         }
 
-        $encoded = json_decode($response->getBody(), true);
-        $success = $response->isSuccessful() && $encoded;
+        $decoded = json_decode($response->getBody(), true);
+        $success = $response->isSuccessful() && $decoded;
 
         return [
             'success' => $success,
-            'data' => $success ? $encoded : $this->findError($response, $encoded),
+            'data' => $success ? $decoded : $this->findError($response, $decoded),
         ];
     }
 

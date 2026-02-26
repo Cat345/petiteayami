@@ -1,9 +1,11 @@
 <?php
 /**
- * Facebook for WooCommerce.
+ * Meta for WooCommerce.
  */
 
 namespace WooCommerce\Facebook\Framework;
+
+use WC_Facebookcommerce_Utils;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -284,7 +286,7 @@ class AdminNoticeHandler {
 		<?php
 		$javascript = ob_get_clean();
 
-		wc_enqueue_js( $javascript );
+		WC_Facebookcommerce_Utils::enqueue_inline_js( $javascript );
 	}
 
 

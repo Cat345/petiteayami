@@ -5,7 +5,7 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @package FacebookCommerce
+ * @package MetaCommerce
  */
 
 namespace WooCommerce\Facebook\Products;
@@ -134,7 +134,11 @@ class Sync {
 	 */
 	public function create_or_update_products( array $product_ids ) {
 		foreach ( $product_ids as $product_id ) {
-			$this->requests[ $this->get_product_index( $product_id ) ] = self::ACTION_UPDATE;
+			$index = $this->get_product_index( $product_id );
+			// Don't overwrite a pending DELETE with an UPDATE — deletion takes priority.
+			if ( ! isset( $this->requests[ $index ] ) || self::ACTION_DELETE !== $this->requests[ $index ] ) {
+				$this->requests[ $index ] = self::ACTION_UPDATE;
+			}
 		}
 	}
 
@@ -254,18 +258,39 @@ class Sync {
 	/**
 	 * Determines whether a sync is currently in progress.
 	 *
+	 * This method uses caching to avoid expensive database queries.
+	 * The cache is automatically invalidated when jobs are created, updated, or completed.
+	 * On frontend requests, this always returns false to avoid expensive queries.
+	 *
 	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
 	public static function is_sync_in_progress() {
+		// On frontend, skip the check entirely - visitors don't need sync status
+		if ( ! is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
+			return false;
+		}
 
+		// Check cache first
+		$cache_key = 'wc_facebook_sync_in_progress';
+		$cached    = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return 'yes' === $cached;
+		}
+
+		// Query for processing jobs
 		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs(
 			array(
 				'status' => 'processing',
 			)
 		);
 
-		return ! empty( $jobs );
+		$in_progress = ! empty( $jobs );
+
+		// Cache the result - invalidated when job status changes
+		set_transient( $cache_key, $in_progress ? 'yes' : 'no', 0 );
+
+		return $in_progress;
 	}
 }

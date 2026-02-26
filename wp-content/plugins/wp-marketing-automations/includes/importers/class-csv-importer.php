@@ -130,6 +130,12 @@ class CSV_Importer extends Importer {
 		}
 		
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
+		
+		// Ensure allowed directory exists before validation
+		if ( ! file_exists( $allowed_dir ) ) {
+			wp_mkdir_p( $allowed_dir );
+		}
+		
 		$real_path   = realpath( $file );
 		$real_allowed = realpath( $allowed_dir );
 		
@@ -309,6 +315,12 @@ class CSV_Importer extends Importer {
 		}
 		
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
+		
+		// Ensure allowed directory exists before validation
+		if ( ! file_exists( $allowed_dir ) ) {
+			wp_mkdir_p( $allowed_dir );
+		}
+		
 		$real_path   = realpath( $csv_file );
 		$real_allowed = realpath( $allowed_dir );
 		
@@ -368,6 +380,12 @@ class CSV_Importer extends Importer {
 		
 		// Validate file path to prevent directory traversal
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
+		
+		// Ensure allowed directory exists before validation
+		if ( ! file_exists( $allowed_dir ) ) {
+			wp_mkdir_p( $allowed_dir );
+		}
+		
 		$real_path   = realpath( $file );
 		$real_allowed = realpath( $allowed_dir );
 		

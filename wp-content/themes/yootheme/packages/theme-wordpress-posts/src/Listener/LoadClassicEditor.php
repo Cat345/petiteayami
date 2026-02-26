@@ -4,7 +4,9 @@ namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Builder\Wordpress\PostHelper;
 use YOOtheme\File;
+use YOOtheme\Metadata;
 use YOOtheme\Url;
+use function YOOtheme\app;
 
 class LoadClassicEditor
 {
@@ -19,13 +21,12 @@ class LoadClassicEditor
             return;
         }
 
-        wp_enqueue_script(
-            'posts-builder',
-            Url::to('~assets/admin/js/posts-classic.js', [], is_ssl()),
-            [],
-            false,
-            true,
-        );
+        /** @var Metadata $metadata */
+        $metadata = app(Metadata::class);
+        $metadata->set('script:posts-classic', [
+            'src' => '~assets/admin/js/posts-classic.js',
+            'type' => 'module',
+        ]);
 
         add_action('edit_form_after_title', function ($post) {
             if (current_user_can('edit_theme_options')) {

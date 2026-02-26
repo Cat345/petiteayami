@@ -316,7 +316,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		}
 
 
-		public function set_override_checkout_page_id($id) {
+		public function set_override_checkout_page_id( $id ) {
 			$this->override_checkout_page_id = $id;
 		}
 

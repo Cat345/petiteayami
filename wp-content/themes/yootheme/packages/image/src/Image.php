@@ -7,6 +7,7 @@ use YOOtheme\Image\ImageGif;
 use YOOtheme\Image\ImageQuery;
 use YOOtheme\Image\ImageStockPhoto;
 use YOOtheme\Image\ImageSvg;
+use YOOtheme\Image\ImageVimeo;
 use YOOtheme\Image\ImageYoutube;
 
 class Image implements Stringable
@@ -42,7 +43,7 @@ class Image implements Stringable
     }
 
     /**
-     * @return ImageGif|ImageQuery|ImageStockPhoto|ImageSvg|ImageYoutube|null
+     * @return ImageGif|ImageQuery|ImageStockPhoto|ImageSvg|ImageYoutube|ImageVimeo|null
      */
     public static function create(string $file): ?self
     {

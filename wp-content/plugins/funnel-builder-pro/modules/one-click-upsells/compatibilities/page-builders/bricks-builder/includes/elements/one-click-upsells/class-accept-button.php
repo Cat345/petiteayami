@@ -328,6 +328,8 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 				$this->set_attribute( 'button', 'data-key', $product_key );
 
 			}
+			$product = \WFOCU_Common::default_selected_product( $product_key );
+			do_action( 'wfocu_add_custom_html_above_accept_button', $product->get_id(), $product_key );
 			?>
             <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
                 <div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
@@ -352,9 +354,9 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 			$this->set_attribute( 'subtitle', 'class', 'bricks-button-subtitle' );
 
 			$this->set_attribute( 'icon-align', 'class', array(
-					'bricks-button-icon',
-					'bricks-button-icon-align-' . $icon_position,
-				) );
+				'bricks-button-icon',
+				'bricks-button-icon-align-' . $icon_position,
+			) );
 
 			?>
             <span style="width:100%;" <?php echo $this->render_attributes( 'content-wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>

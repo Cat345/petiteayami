@@ -553,7 +553,7 @@ return [
         ],
         'lightbox_video_autoplay' => [
             'label' => 'Video Mode',
-            'description' => 'Enable autoplay or use the video like an animated image (autoplay, loop, no controls and muted). ',
+            'description' => 'Enable autoplay or use the video like an animated image (autoplay, loop, no controls and muted).',
             'type' => 'select',
             'options' => [
                 'None' => '',

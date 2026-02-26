@@ -12,6 +12,15 @@ global $product;
 
 
 add_action( 'wfacp_qv_summary', 'woocommerce_template_single_title', 5 );
+add_action( 'wfacp_qv_summary', function () {
+	echo "<div class=wfacp_qv_title_wrap>";
+	echo '<div class="wfacp_qv-close wfacp_qv"></div>';
+}, 4 );
+add_action( 'wfacp_qv_summary', function () {
+	echo "</div>";
+}, 6 );
+
+
 //add_action( 'wfacp_qv_summary', 'woocommerce_template_single_rating', 10 );
 add_action( 'wfacp_qv_summary', 'woocommerce_template_single_price', 10 );
 add_action( 'wfacp_qv_summary', [ WFACP_Core()->public, 'woocommerce_template_single_excerpt' ], 20 );
@@ -30,7 +39,7 @@ add_action( 'wfacp_qv_summary', function () {
 
 remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
 // hide update qty input field for single variation and simple product type
-//add_action( 'wfacp_woocommerce_simple_add_to_cart', [ WFACP_Core()->public, 'woocommerce_simple_add_to_cart' ] );
+add_action( 'wfacp_woocommerce_simple_add_to_cart', [ WFACP_Core()->public, 'woocommerce_simple_add_to_cart' ] );
 add_action( 'woocommerce_single_variation', [ WFACP_Core()->public, 'woocommerce_single_variation_add_to_cart_button' ], 20 );
 
 add_action( 'wfac_qv_images', function () {
@@ -58,6 +67,7 @@ add_filter( 'woocommerce_available_variation', [ WFACP_Core()->public, 'force_pu
 ?>
 <div id="wfacp_qr_model_wrap" class=" wfacp_qv-inner-modal <?php echo $productType; ?>" data-item-key="<?php echo $item_key; ?>" data-cart-key="<?php echo $cart_key; ?>">
     <div class="wfacp_qv-container woocommerce single-product">
+
         <div class="wfacp_qv-top-panel">
             <div class="wfacp_qv-close wfacp_qv xooqv-cross"></div>
             <div class="wfacp_qv-preloader wfacp_qv-mpl">
@@ -66,7 +76,7 @@ add_filter( 'woocommerce_available_variation', [ WFACP_Core()->public, 'force_pu
         </div>
         <div class="wfacp_qv-main">
             <div>
-                <div class="wfacp_qr_wrap product">
+                <div class="wfacp_qr_wrap product wfacp_qv_sec">
                     <div class="wfacp_qv-images">
 						<?php do_action( 'wfac_qv_images' ); ?>
 						<?php do_action( 'wfacp_qv_images' ); ?>
@@ -79,17 +89,18 @@ add_filter( 'woocommerce_available_variation', [ WFACP_Core()->public, 'force_pu
 						 * some themes like flatsome changes the normal behaviour of components
 						 *
 						 */
+						do_action( 'wfacp_qv_summary' );
 						?>
-						<?php
 
-						do_action( 'wfacp_qv_summary' ); ?>
                     </div>
 
                     <div class="wfacp_clear"></div>
                 </div>
             </div>
         </div>
-        <div class="wfacp_option_btn"><?php _e( 'Choose an option', 'woocommerce' ); ?></div>
+
+    </div>
+    <div class="wfacp_option_btn">
+        <button type="button" class="alt"><?php _e( 'Choose an option', 'woocommerce' ); ?></button>
     </div>
 </div>
-

@@ -70,9 +70,9 @@ class Plugin_Constants {
      * @since 2.0
      * @access public
      *
-     * @param Abstract_Main_Plugin_Class $main_plugin Main plugin object.
+     * @param Abstract_Main_Plugin_Class|null $main_plugin Main plugin object.
      */
-    public function __construct( Abstract_Main_Plugin_Class $main_plugin = null ) {
+    public function __construct( ?Abstract_Main_Plugin_Class $main_plugin = null ) {
         $main_plugin_file_path = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'advanced-coupons-for-woocommerce' . DIRECTORY_SEPARATOR . 'advanced-coupons-for-woocommerce.php';
         $plugin_dir_path       = plugin_dir_path( $main_plugin_file_path );
         $plugin_dir_url        = plugin_dir_url( $main_plugin_file_path );
@@ -85,7 +85,7 @@ class Plugin_Constants {
             // Configuration Constants.
             'TOKEN'                                      => 'acfwp',
             'INSTALLED_VERSION'                          => 'acfwp_installed_version',
-            'VERSION'                                    => '4.0.6',
+            'VERSION'                                    => '4.0.6.1',
             'TEXT_DOMAIN'                                => 'advanced-coupons-for-woocommerce',
             'THEME_TEMPLATE_PATH'                        => 'advanced-coupons-for-woocommerce',
             'META_PREFIX'                                => '_acfw_',

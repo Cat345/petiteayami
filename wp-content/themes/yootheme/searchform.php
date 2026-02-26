@@ -5,11 +5,8 @@
 
 namespace YOOtheme;
 
-/**
- * @var Config $config
- * @var View   $view
- */
-[$config, $view] = app(Config::class, View::class);
+/** @var Config $config */
+$config = app(Config::class);
 
 $fields = [];
 $postTypes = $config->get('~theme.search_filter', []);
@@ -27,7 +24,6 @@ $result = get_view('~theme/templates/search', [
     'position' => get_current_sidebar() ?? '',
     'attrs' => [
 
-        'id' => 'search-' . $view->uid(),
         'action' => home_url('/'),
         'method' => 'get',
         'role' => 'search',

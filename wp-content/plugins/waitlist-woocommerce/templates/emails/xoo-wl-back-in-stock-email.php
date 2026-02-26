@@ -8,7 +8,7 @@
  * maintain compatibility. We try to do this as little as possible, but it does
  * happen.
  * @see     https://docs.xootix.com/waitlist-for-woocommerce/
- * @version 2.8.5
+ * @version 2.8.7
  */
 
 if ( ! defined( 'ABSPATH' ) ) { 
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 										<?php if( $enBuyBtn === 'yes' ): ?>
 										<tr>
-											<td align="center">
+											<td align="center" style="padding-bottom: 15px;">
 												<?php echo $emailObj->button_markup( $buy_now_text, $product_link ); ?>
 											</td>
 										</tr>

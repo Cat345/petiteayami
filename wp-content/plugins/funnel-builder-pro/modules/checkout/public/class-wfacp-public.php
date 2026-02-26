@@ -1580,6 +1580,7 @@ if ( ! class_exists( 'WFACP_Public' ) ) {
 						$custom_data['_wfacp_product_key'] = $index;
 						$custom_data['_wfacp_options']     = $data;
 						$attributes                        = apply_filters( 'wfacp_product_attributes', $attributes, $product_obj, $product_id, $variation_id, $custom_data );
+						
 						$cart_key                          = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $attributes, $custom_data );
 
 						if ( is_string( $cart_key ) ) {

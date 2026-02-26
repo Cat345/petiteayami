@@ -10,7 +10,6 @@ use WP_User;
 use YOOtheme\Arr;
 use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Source\Helper;
-use YOOtheme\Config;
 use YOOtheme\Path;
 use YOOtheme\Str;
 use YOOtheme\View;
@@ -950,9 +949,8 @@ class PostType
                 link_pages();
         }
 
-        if (!has_blocks($content) && !app(Config::class)('~theme.disable_wpautop')) {
-            // trim leading whitespace, because ` </div>` results in `</p></div>
-            $content = wpautop(preg_replace('/^\s+<\//m', '</', $content));
+        if (!has_blocks($content)) {
+            $content = Helper::applyAutoP($content);
         }
 
         return apply_filters('yootheme_source_post_content', $content, $post, $args);
@@ -968,7 +966,7 @@ class PostType
         $args += ['show_excerpt' => true, 'show_content' => true];
 
         if ($args['show_excerpt'] && has_excerpt($post)) {
-            return get_the_excerpt($post);
+            return static::excerpt($post);
         }
 
         $extended = get_extended($post->post_content);
@@ -992,7 +990,7 @@ class PostType
      */
     public static function excerpt($post)
     {
-        return get_the_excerpt($post);
+        return Helper::applyAutoP(get_the_excerpt($post));
     }
 
     /**

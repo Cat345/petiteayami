@@ -134,7 +134,7 @@ if ( true === $product_override_global ) {
                                 </div>
 							<?php } ?>
                             <div class="wfocu-product-info-col">
-                                <div class="wfocu-price-wrapper">
+                                <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
                                     <div class="wfocu-product-price wfocu-product-on-sale">
 										<?php
 

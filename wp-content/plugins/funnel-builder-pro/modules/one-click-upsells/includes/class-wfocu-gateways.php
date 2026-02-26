@@ -170,7 +170,9 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'fkwcs_stripe_pix',
 				'fkwcs_stripe_cashapp',
 				'fkwcppcp_paypal',
-				'airwallex_card'
+				'fkwcs_stripe_mbway',
+				'fkwcs_stripe_eps',
+				'fkwcs_stripe_blik'
 			);
 
 			$gateways = apply_filters( 'wfocu_wc_get_supported_gateways', array(
@@ -397,13 +399,13 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		 */
 		public function save_paypal_meta_data( $posted, $order ) {
 			if ( ! empty( $posted['payment_type'] ) ) {
-				$order->update_meta_data( 'Payment type', wc_clean( $posted['payment_type'] ) );
+				$order->update_meta_data( 'Payment type', bwf_clean( $posted['payment_type'] ) );
 			}
 			if ( ! empty( $posted['txn_id'] ) ) {
-				$order->set_transaction_id( wc_clean( $posted['txn_id'] ) );
+				$order->set_transaction_id( bwf_clean( $posted['txn_id'] ) );
 			}
 			if ( ! empty( $posted['payment_status'] ) ) {
-				$order->update_meta_data( '_paypal_status', wc_clean( $posted['payment_status'] ) );
+				$order->update_meta_data( '_paypal_status', bwf_clean( $posted['payment_status'] ) );
 			}
 			$order->save_meta_data();
 		}

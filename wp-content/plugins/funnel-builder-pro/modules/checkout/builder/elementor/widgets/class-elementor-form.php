@@ -73,7 +73,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 		private function coupon_fields() {
 
 			$this->add_tab( __( 'Coupon', 'woocommerce' ), 1 );
-			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text', 'woofunnels-aero-checkout' ), __( 'Apply', 'woocommerce' ));
+			$this->add_text( 'form_coupon_button_text', __( 'Coupon Button Text', 'woofunnels-aero-checkout' ), __( 'Apply', 'woocommerce' ) );
 			$this->end_tab();
 
 
@@ -88,13 +88,13 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$this->add_tab( __( 'Order summary', 'woocommerce' ), 5 );
 			$this->add_switcher( 'order_summary_enable_product_image', __( 'Enable Image', 'woofunnels-aero-checkout' ), '', '', "yes", 'yes', [], '', '', 'wfacp_elementor_device_hide' );
 
-			$this->ajax_session_settings[]='order_summary_enable_product_image';
+			$this->ajax_session_settings[] = 'order_summary_enable_product_image';
 			/**
 			 * -----------------------------Strike Through Price Setting on the mini cart-------------------------------------
 			 */
 
 			$this->price_strike_through_content_settings( 'order_summary_field' );
-			
+
 			$this->end_tab();
 		}
 
@@ -112,7 +112,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			 * Display Notice link in the checkout design
 			 */
 
-			$notice_html=WFACP_Common::get_notice_html_in_editor();
+			$notice_html = WFACP_Common::get_notice_html_in_editor();
 
 			foreach ( $steps as $step_key => $fieldsets ) {
 
@@ -153,15 +153,12 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 					$this->add_tab( $section_data['name'], 5 );
 					$this->register_fields( $section_data['fields'] );
-					$this->add_control(
-						'wfacp_section_notice_'.$step_key.'_'.$section_key,
-						[
-							'label' => "",
-							'type' => \Elementor\Controls_Manager::RAW_HTML,
-							'raw' => $notice_html,
-							'content_classes' => 'elementor-raw-html-widget', // Ensure it renders the HTML properly
-						]
-					);
+					$this->add_control( 'wfacp_section_notice_' . $step_key . '_' . $section_key, [
+						'label'           => "",
+						'type'            => \Elementor\Controls_Manager::RAW_HTML,
+						'raw'             => $notice_html,
+						'content_classes' => 'elementor-raw-html-widget', // Ensure it renders the HTML properly
+					] );
 
 					$this->end_tab();
 
@@ -345,9 +342,6 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$this->add_switcher_without_responsive( 'order_summary_enable_product_image_collapsed', __( 'Enable Image', 'woofunnels-aero-checkout' ), '', '', "yes", 'yes', [], '', '', 'wfacp_elementor_device_hide' );
 
 
-
-
-
 			$enable_callapse_order_summary_condition = [];
 
 
@@ -369,9 +363,8 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 
 			$this->ajax_session_settings[] = 'order_summary_enable_product_image_collapsed';
-			
 
-			
+
 			$this->ajax_session_settings[] = 'collapse_coupon_button_text';
 			$this->ajax_session_settings[] = 'form_coupon_button_text';
 
@@ -391,7 +384,6 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 			$this->ajax_session_settings[] = 'enable_order_field_collapsed';
 			$this->ajax_session_settings[] = 'enable_order_field_collapsed_tablet';
 			$this->ajax_session_settings[] = 'enable_order_field_collapsed_mobile';
-
 
 
 			/**
@@ -1246,7 +1238,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 		}
 
 		private function payment_method_styling() {
-			$this->add_tab( __( 'Payment Method' ,'woocommerce'), 2 );
+			$this->add_tab( __( 'Payment Method', 'woocommerce' ), 2 );
 
 			$payment_method_typo = [
 				'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods p',
@@ -1768,7 +1760,7 @@ if ( ! class_exists( 'El_WFACP_Form_Widget' ) ) {
 
 		/* ----------------Privacy Policy & Term Conditions----------------------- */
 		private function privacy_policy_styling() {
-			$this->add_tab( __( 'Privacy policy' ,'woocommerce'), 2 );
+			$this->add_tab( __( 'Privacy policy', 'woocommerce' ), 2 );
 
 //		$privacy_policy_selector = $this->get_privacy_policy_selector();
 //		extract( $privacy_policy_selector );

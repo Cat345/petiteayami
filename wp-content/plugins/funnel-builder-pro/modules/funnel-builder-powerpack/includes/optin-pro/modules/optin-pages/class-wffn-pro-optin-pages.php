@@ -432,7 +432,7 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages' ) ) {
 
 		public function add_internal_css( $css, $customizations ) {
 			$heading_color     = isset( $customizations['popup_heading_color'] ) ? "color:" . $customizations['popup_heading_color'] . ";" : "";
-			$heading_font_size = isset( $customizations['popup_heading_font_size'] ) ? "font-size:" . $customizations['popup_heading_font_size'] . "px;line-height:" . ( $customizations['popup_heading_font_size'] + 8 ) . "px;" : "";
+			$heading_font_size = isset( $customizations['popup_heading_font_size'] ) && '' !== $customizations['popup_heading_font_size'] ? "font-size:" . $customizations['popup_heading_font_size'] . "px;line-height:" . ( (int) $customizations['popup_heading_font_size'] + 8 ) . "px;" : "";
 
 			$heading_font_family = isset( $customizations['popup_heading_font_family'] ) ? "font-family:" . $customizations['popup_heading_font_family'] . ";" : "";
 
@@ -442,7 +442,7 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages' ) ) {
 
 			$sub_heading_color = isset( $customizations['popup_sub_heading_color'] ) ? "color:" . $customizations['popup_sub_heading_color'] . ";" : "";
 
-			$sub_heading_font_size = isset( $customizations['popup_sub_heading_font_size'] ) ? "font-size:" . $customizations['popup_sub_heading_font_size'] . "px;line-height:" . ( $customizations['popup_sub_heading_font_size'] + 8 ) . "px;" : "";
+			$sub_heading_font_size = isset( $customizations['popup_sub_heading_font_size'] ) && '' !== $customizations['popup_sub_heading_font_size'] ? "font-size:" . $customizations['popup_sub_heading_font_size'] . "px;line-height:" . ( (int) $customizations['popup_sub_heading_font_size'] + 8 ) . "px;" : "";
 
 			$sub_heading_font_family = isset( $customizations['popup_sub_heading_font_family'] ) ? "font-family:" . $customizations['popup_sub_heading_font_family'] . ";" : "";
 
@@ -456,7 +456,7 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages' ) ) {
 			$transition            = ( ! is_admin() ) ? 'transition: all 5s ease-in-out;' : '';
 			$popup_bar_width       = "width:" . $customizations['popup_bar_width'] . '%;';
 			$popup_bar_height      = "height:" . $customizations['popup_bar_height'] . 'px;';
-			$popup_bar_font_size   = "font-size:" . $customizations['popup_bar_font_size'] . "px;line-height:" . ( $customizations['popup_bar_font_size'] + 8 ) . "px;";
+			$popup_bar_font_size   = isset( $customizations['popup_bar_font_size'] ) && '' !== $customizations['popup_bar_font_size'] ? "font-size:" . $customizations['popup_bar_font_size'] . "px;line-height:" . ( (int) $customizations['popup_bar_font_size'] + 8 ) . "px;" : "";
 			$popup_bar_font_family = "font-family:" . $customizations['popup_bar_font_family'] . ";";
 			$popup_bar_inner_gap   = "padding:" . $customizations['popup_bar_inner_gap'] . "px;";
 			$popup_bar_text_color  = "color:" . $customizations['popup_bar_text_color'] . ";";
@@ -467,7 +467,7 @@ if ( ! class_exists( 'WFFN_Pro_Optin_Pages' ) ) {
 
 			$css['.bwf_pp_bar_wrap .bwf_pp_bar'] = $popup_bar_font_size . $popup_bar_font_family . $popup_bar_text_color . $popup_bar_width . $popup_bar_color;
 
-			$popup_footer_font_size     = "font-size:" . $customizations['popup_footer_font_size'] . "px;line-height:" . ( $customizations['popup_footer_font_size'] + 8 ) . "px;";
+			$popup_footer_font_size     = isset( $customizations['popup_footer_font_size'] ) && '' !== $customizations['popup_footer_font_size'] ? "font-size:" . $customizations['popup_footer_font_size'] . "px;line-height:" . ( (int) $customizations['popup_footer_font_size'] + 8 ) . "px;" : "";
 			$popup_footer_font_family   = "font-family:" . $customizations['popup_footer_font_family'] . ";";
 			$popup_footer_text_color    = "color:" . $customizations['popup_footer_text_color'] . ";";
 			$css['body .bwf_pp_footer'] = $popup_footer_font_size . $popup_footer_font_family . $popup_footer_text_color;

@@ -1183,7 +1183,13 @@ var BWFAN_Public;
         }, 500);
     });
 
+    // If unsubscribe form exists, don't run one-click unsubscribe
     if (0 !== $('form#bwfan_unsubscribe_fields').length) {
+        return;
+    }
+
+    // If manage profile form exists, don't run one-click unsubscribe (this is NOT the unsubscribe page)
+    if (0 !== $('#bwfan_manage_profile_update').length || 0 !== $('#bwfan_manage_profile_fields').length) {
         return;
     }
 

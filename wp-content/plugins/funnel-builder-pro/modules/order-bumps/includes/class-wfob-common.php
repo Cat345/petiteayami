@@ -1846,9 +1846,67 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					return [ $item_key, $item_data ];
 				}
 			}
+            return null;
 
-			return null;
+	}
+
+	public static function handle_variable_product( $product ) {
+
+		$variation_attributes = [];
+		if ( in_array( $product->get_type(), self::get_variation_product_type() ) ) {
+			$product_id           = $product->get_parent_id();
+			$variation_id         = $product->get_id();
+			$variation_attributes = $product->get_attributes();
+			// Find Blank Attribute Any Any Case
+			$blank_attribute = array_filter( $variation_attributes, function ( $v ) {
+				return is_null( $v ) || empty( $v );
+			} );
+			// If Any-Any case found them map Remaining Attribute
+			if ( ! empty( $blank_attribute ) ) {
+				$parent_product       = wc_get_product( $product_id );
+				$variation_attributes = self::map_variation_attributes( $variation_attributes, $parent_product->get_variation_attributes() );
+			}
+
+		} else if ( in_array( $product->get_type(), self::get_variable_product_type() ) ) {
+			/**
+			 * @var $product \WC_Product_Variable
+			 */
+			$product_attributes = $product->get_variation_attributes();
+			$variations         = $product->get_visible_children();
+			if ( ! empty( $product_attributes ) && ! empty( $variations ) ) {
+				$variation_id         = $variations[0];
+				$variation            = wc_get_product( $variation_id );
+				$variation_attributes = $variation->get_attributes();
+				//Handle Any Any Case
+				$variation_attributes = self::map_variation_attributes( $variation_attributes, $product_attributes );
+			}
+
 		}
+
+		return [ 'attributes' => $variation_attributes, 'variation_id' => $variation_id ];
+	}
+
+	public static function map_variation_attributes( $variation_attr, $product_attr ) {
+		$new_product_attr = [];
+		foreach ( $product_attr as $k => $item ) {
+			$k                      = strtolower( $k );//Lowering the Attribute keys
+			$k                      = str_replace( ' ', '-', $k );
+			$new_product_attr[ $k ] = $item;
+		}
+		$output = [];
+		foreach ( $variation_attr as $key => $attr ) {
+			if ( empty( $attr ) ) {
+				$key  = strtolower( $key );
+				$key  = str_replace( ' ', '-', $key );
+				$attr = $new_product_attr[ $key ][0];
+			}
+			$output[ 'attribute_' . $key ] = $attr;
+		}
+
+		return $output;
+	}
+
+
 
 		/**
 		 * Set Product price like regular, sale price on basis of discount

@@ -61,7 +61,7 @@ class WFACP_Compatibility_Subscription {
 	 *
 	 */
 	public function allow_product_purchasable() {
-		return true;
+		return "no";
 	}
 
 	/**

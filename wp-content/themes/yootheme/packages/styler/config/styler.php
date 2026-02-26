@@ -1061,7 +1061,7 @@ return [
         ],
         [
             'type' => 'select-custom',
-            'vars' => '*navbar-border-mode',
+            'vars' => '@navbar-border-mode',
             'options' => [
                 'None' => '',
                 'Bottom (Not if transparent)' => 'bottom-transparent',
@@ -1075,7 +1075,7 @@ return [
         ],
         [
             'type' => 'select-custom',
-            'vars' => '*navbar-border-vertical-mode',
+            'vars' => '@navbar-border-vertical-mode',
             'options' => [
                 'None' => '',
                 'Partial (Navs only)' => 'partial',

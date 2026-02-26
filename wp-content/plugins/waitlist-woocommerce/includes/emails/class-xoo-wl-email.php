@@ -246,15 +246,22 @@ abstract class Xoo_Wl_Email{
 	abstract public function get_template();
 
 
-	public function parse_placeholders( $text ){
+	public function parse_placeholders( $text ) {
+
+		$this->placeholders = apply_filters(
+			'xoo_wl_email_placeholders',
+			$this->placeholders,
+			$this,
+			$text
+		);
 
 		foreach ( $this->placeholders as $key => $value ) {
 			$text = str_replace( $key, $value, $text );
 		}
 
 		return $text;
-
 	}
+
 
 	public function get_sender_name(){
 		return apply_filters( 'xoo_wl_sender_name_'.$this->id, xoo_wl_helper()->get_email_option( 's-name' ) );

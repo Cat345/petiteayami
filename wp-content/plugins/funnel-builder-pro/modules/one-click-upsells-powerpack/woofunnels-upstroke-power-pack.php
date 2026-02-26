@@ -64,6 +64,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'add_licence_support_file' ) );
 			add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 			add_action( 'wfocu_loaded', array( $this, 'load_upstroke_powerpack' ), 999 );
+			add_action( 'plugins_loaded', [ $this, 'load_sublium' ], 100 );
 			add_action( 'wfocu_load_rule_files', array( $this, 'load_rule_files' ) );
 			add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
 
@@ -108,6 +109,16 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			if ( count( $this->old_plugins ) > 0 ) {
 				add_action( 'admin_notices', array( $this, 'old_plugins_notices' ) );
 			}
+		}
+
+		public function load_sublium() {
+			if ( ! class_exists( '\Sublium_WCS\Plugin', false ) ) {
+				return;
+			}
+			
+			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-sublium-subscriptions.php';
+			include_once plugin_dir_path( __FILE__ ) . 'addons/funnelkit/class-wfocu-sublium-compatibility.php';
+
 		}
 
 		public function old_plugins_notices() {
@@ -171,7 +182,9 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 
 			/** add new rule for all thing subscription */
 			include_once plugin_dir_path( __FILE__ ) . 'addons/rules/wfocu-rule-ats-order-subs.php';
+			include_once plugin_dir_path( __FILE__ ) . 'addons/rules/wfocu-rule-sublium-order-subs.php';
 		}
+
 		public static function is_hpos_enabled() {
 			return ( class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && method_exists( '\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() );
 		}

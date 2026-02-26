@@ -7,7 +7,6 @@ $el = $this->el('div');
 // Form
 $form = $this->el('form', [
 
-    'id' => "search-{$this->uid()}",
     'action' => home_url('/'),
     'method' => 'get',
     'role' => 'search',

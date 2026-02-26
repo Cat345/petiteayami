@@ -29,14 +29,14 @@ class EducationalCampaignPattern extends Pattern {
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
       <!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Product Name] is a placeholder for the product name */
-      __('How to Get the Most from [Product Name]', 'mailpoet') . '</h1>
+      /* translators: PRODUCT NAME is placeholder text that merchants replace with their own content. */
+      __('How to Get the Most from PRODUCT NAME', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [product] is a placeholder for the product name */
-      __('Our latest guide walks you through expert tips to make the most out of your [product].', 'mailpoet') . '</p>
+      /* translators: PRODUCT NAME is placeholder text that merchants replace with their own content. */
+      __('Our latest guide walks you through expert tips to make the most out of your PRODUCT NAME.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:heading -->
@@ -61,8 +61,8 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
-      __('[Brief description]', 'mailpoet') . '</p>
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
       <!-- /wp:column -->
@@ -83,8 +83,8 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
-      __('[Brief description]', 'mailpoet') . '</p>
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
       <!-- /wp:column -->
@@ -120,8 +120,8 @@ class EducationalCampaignPattern extends Pattern {
 
       <!-- wp:paragraph -->
       <p>' .
-      /* translators: Placeholder text for a brief step description */
-      __('[Brief description]', 'mailpoet') . '</p>
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('BRIEF DESCRIPTION', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
       </div>
       <!-- /wp:column -->
@@ -131,7 +131,7 @@ class EducationalCampaignPattern extends Pattern {
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Read the guide', 'mailpoet') . '</a></div>
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button has-custom-font-size" style="font-size:16px;padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Read the guide', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->

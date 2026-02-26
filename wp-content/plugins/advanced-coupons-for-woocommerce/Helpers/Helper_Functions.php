@@ -63,10 +63,10 @@ class Helper_Functions {
      * @since 2.0
      * @access public
      *
-     * @param Abstract_Main_Plugin_Class $main_plugin Main plugin object.
-     * @param Plugin_Constants           $constants   Plugin constants object.
+     * @param Abstract_Main_Plugin_Class|null $main_plugin Main plugin object.
+     * @param Plugin_Constants|null            $constants   Plugin constants object.
      */
-    public function __construct( Abstract_Main_Plugin_Class $main_plugin = null, Plugin_Constants $constants ) {
+    public function __construct( ?Abstract_Main_Plugin_Class $main_plugin = null, ?Plugin_Constants $constants = null ) {
         $this->_constants = $constants;
 
         if ( $main_plugin ) {

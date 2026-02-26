@@ -37,7 +37,7 @@ msgctxt "default GMT offset or timezone string"
 msgid "0"
 msgstr "3"
 
-#: wp-admin/about.php:141
+#: wp-admin/about.php:172
 msgid "WordPress 6.9 includes a broad set of performance enhancements. A better <abbr>LCP</abbr> (Largest Contentful Paint) metric is achieved through improved loading of conditional and inlined stylesheets, script loading with fetchpriority support, and additional core optimizations. Editor advances include fixes for layout shifts caused by the Video block and faster loading of the terms selector."
 msgstr "WordPress 6.9 включает в себя широкий набор улучшений производительности. Улучшение показателя <abbr>LCP</abbr> (наибольшая отрисовка содержимого) достигается за счет улучшенной загрузки условных и встроенных таблиц стилей, загрузки сценариев с поддержкой приоритета и дополнительных оптимизаций. Улучшения в редакторе включают исправления смещений макета, вызванные блоком «Видео», и более быструю загрузку селектора терминов."
 
@@ -117,60 +117,60 @@ msgstr "Преобразование формата не определено"
 msgid "%s has failed to upload."
 msgstr "Не удалось загрузить %s."
 
-#: wp-admin/about.php:150
+#: wp-admin/about.php:181
 msgid "70+ accessibility fixes and enhancements focus on central areas of the WordPress experience. From globally hiding CSS-generated content from assistive technology and improvements to screen reader announcements and user experience, to fixing cursor position and keeping typing focus when clicking on an autocomplete suggestion item."
 msgstr "Более 70 исправлений и улучшений специальных возможностей сосредоточены на основных областях работы WordPress. От глобального сокрытия содержимого, созданного CSS, от вспомогательных технологий и улучшений, объявлений для чтения с экрана и пользовательского опыта, до фиксации положения курсора и сохранения фокуса при вводе при нажатии на предложения автозаполнения."
 
-#: wp-admin/about.php:125
+#: wp-admin/about.php:156
 msgid "A new typography option for text-based blocks, starting with the Paragraph and Heading blocks, that automatically adjusts font size to fill its container perfectly. Ideal for banners, callouts, and standout moments in your design. No manual tweaks, just an instant clean design."
 msgstr "Новый вариант оформления текстовых блоков, начиная с блоков «Абзац» и «Заголовок», который автоматически регулирует размер шрифта для идеального заполнения контейнера. Идеально подходит для баннеров, выносок и ярких моментов вашего дизайна. Никаких ручных настроек, просто чистый дизайн, сразу."
 
-#: wp-admin/about.php:124
+#: wp-admin/about.php:155
 msgid "Content that adapts."
 msgstr "Содержимое, которое адаптируется."
 
-#: wp-admin/about.php:122
+#: wp-admin/about.php:153
 msgid "Fit text to container"
 msgstr "Вмещение текста в контейнер"
 
-#: wp-admin/about.php:105
+#: wp-admin/about.php:136
 msgid "Access the Command Palette from any part of your site, whether you&#8217;re writing your latest post, deep in design in the Site Editor, or browsing your plugins. Everything you need, just a few keystrokes away."
 msgstr "Получите доступ к палитре команд из любой части вашего сайта, независимо от того, пишете ли вы свежую запись, занимаетесь оформлением в редакторе сайта или просматриваете плагины. Все, что вам нужно, всего в нескольких нажатиях клавиш."
 
-#: wp-admin/about.php:104
+#: wp-admin/about.php:135
 msgid "Your tools are always at hand."
 msgstr "Ваши инструменты всегда под рукой."
 
-#: wp-admin/about.php:102
+#: wp-admin/about.php:133
 msgid "Command Palette, everywhere"
 msgstr "Палитра команд. Везде."
 
-#: wp-admin/about.php:95
+#: wp-admin/about.php:126
 msgid "Building layouts is now more intuitive and flexible with clear drag handles and a live preview that shows exactly what you&#8217;re moving—a faster way to build pages."
 msgstr "Создание макетов теперь стало более интуитивным и гибким благодаря понятным маркерам перетаскивания и предварительному просмотру в реальном времени, который точно показывает, что вы перемещаете. Это более быстрый способ создания страниц."
 
-#: wp-admin/about.php:94
+#: wp-admin/about.php:125
 msgid "Design flows naturally."
 msgstr "Естественный поток оформления."
 
-#: wp-admin/about.php:92
+#: wp-admin/about.php:123
 msgid "Visual drag and drop"
 msgstr "Визуальное перетаскивание"
 
-#: wp-admin/about.php:75
+#: wp-admin/about.php:106
 msgid "With notes attached directly to blocks, your team can stay aligned, track changes, and turn feedback into action all in one place. Whether you&#8217;re working on copy or refining design, collaboration happens seamlessly on the canvas itself."
 msgstr "Благодаря заметкам, прикрепленным непосредственно к блокам, команда сайта может работать согласованно, отслеживать изменения и превращать отзывы в действия — и все это в одном месте. Независимо от того, работаете ли вы над текстом или дорабатываете дизайн, совместная работа происходит без проблем прямо на холсте."
 
-#: wp-admin/about.php:74
+#: wp-admin/about.php:105
 msgid "Leave feedback right where you’re working."
 msgstr "Отправляйте обратную связь прямо там, где работаете."
 
-#: wp-admin/about.php:72
+#: wp-admin/about.php:103
 msgctxt "about page section title"
 msgid "Notes"
 msgstr "Заметки"
 
-#: wp-admin/about.php:66
+#: wp-admin/about.php:97
 msgid "WordPress 6.9 introduces a more intuitive way to create content, together. Every detail is designed to fit your creative flow, from Notes that let you collaborate directly in the editor to a powerful Command Palette that helps you reach every part of your site."
 msgstr "WordPress 6.9 представляет более интуитивный способ совместного создания содержимого. Каждая деталь разработана так, чтобы соответствовать вашему творческому потоку: от заметок, которые позволяют вам сотрудничать непосредственно в редакторе, до мощной палитры команд, которая поможет вам охватить каждую часть сайта."
 
@@ -451,12 +451,12 @@ msgid "Skip to Editor"
 msgstr "Перейти в редактор"
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:245
+#: wp-admin/about.php:276
 msgid "WordPress %s Field Guide"
 msgstr "Полевое руководство WordPress %s"
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:218
+#: wp-admin/about.php:249
 msgid "WordPress %s Release Notes"
 msgstr "Примечания к выпуску WordPress %s"
 
@@ -615,7 +615,7 @@ msgstr "Если вы автор плагина, узнайте больше о 
 msgid "If you are a plugin author, you can learn more about <a href=\"https://developer.wordpress.org/plugins/privacy/adding-the-personal-data-eraser-to-your-plugin/\">how to add the Personal Data Eraser to a plugin</a>."
 msgstr "Если вы автор плагина, узнайте больше о том, <a href=\"https://developer.wordpress.org/plugins/privacy/adding-the-personal-data-eraser-to-your-plugin/\">как добавить удаление персональных данных в плагин</a>."
 
-#: wp-admin/about.php:171
+#: wp-admin/about.php:202
 msgid "See everything new"
 msgstr "Смотрите всё новое"
 
@@ -625,11 +625,11 @@ msgid "https://wordpress.org/download/releases/%s/"
 msgstr "https://ru.wordpress.org/download/releases/%s/"
 
 #. translators: %s: Version number.
-#: wp-admin/about.php:163
+#: wp-admin/about.php:194
 msgid "For a comprehensive overview of all the new features and enhancements in WordPress %s, please visit the feature-showcase website."
 msgstr "Чтобы получить полный обзор всех новых функций и улучшений WordPress %s, посетите веб-сайт с демонстрацией функций."
 
-#: wp-admin/about.php:157
+#: wp-admin/about.php:188
 msgid "And much more"
 msgstr "И многое другое"
 
@@ -773,11 +773,11 @@ msgstr "Установить сейчас"
 msgid "Created by a worldwide team of passionate individuals"
 msgstr "Создано силами международной команды увлечённых энтузиастов"
 
-#: wp-admin/about.php:149
+#: wp-admin/about.php:180
 msgid "Accessibility improvements"
 msgstr "Улучшения доступности"
 
-#: wp-admin/about.php:140
+#: wp-admin/about.php:171
 msgid "Performance updates"
 msgstr "Обновления производительности"
 
@@ -847,12 +847,12 @@ msgid "When using Bulk Edit, you can change the metadata (categories, author, et
 msgstr "При использовании массового редактирования вы можете изменить метаданные (рубрики, автора и др.) сразу для всех выбранных записей. Чтобы удалить сообщение из группы, просто нажмите кнопку %s<span class=\"screen-reader-text\">удалить</span> рядом с его именем в появившейся области массового редактирования."
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:228
+#: wp-admin/about.php:259
 msgid "Read the WordPress %s Release Notes for information on installation, enhancements, fixed issues, release contributors, learning resources, and the list of file changes."
 msgstr "Прочитайте примечания к выпуску WordPress %s, чтобы получить информацию об установке, улучшениях, исправленных проблемах, участниках выпуска, образовательных ресурсах и списке измененных файлов."
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:255
+#: wp-admin/about.php:286
 msgid "Explore the WordPress %s Field Guide. Learn about the changes in this release with detailed developer notes to help you build with WordPress."
 msgstr "Ознакомьтесь с Полевым руководством по %s. Узнайте об изменениях в этом выпуске с подробными примечаниями для разработчиков, которые помогут вам работать с WordPress."
 
@@ -871,6 +871,11 @@ msgstr "Используемая вашим сервером версия PHP - 
 #: wp-admin/includes/class-plugin-upgrader.php:353
 msgid "Your WordPress version is %1$s, however the new plugin version requires %2$s."
 msgstr "Используемая у вас версия WordPress - %1$s, однако обновленная версия плагина требует %2$s."
+
+#. translators: %s: WordPress version.
+#: wp-admin/about.php:85
+msgid "https://wordpress.org/support/wordpress-version/version-%s/"
+msgstr "https://wordpress.org/support/wordpress-version/version-%s/"
 
 #: wp-admin/contribute.php:112 wp-admin/credits.php:66 wp-admin/credits.php:74
 msgid "https://make.wordpress.org/contribute/"
@@ -1194,15 +1199,15 @@ msgid "Current time"
 msgstr "Текущее время"
 
 #. translators: Hidden accessibility text.
-#: wp-admin/includes/class-wp-comments-list-table.php:599
+#: wp-admin/includes/class-wp-comments-list-table.php:600
 msgid "Ordered by Comment Date, descending."
 msgstr "Упорядочено по дате комментария, по убыванию."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:555
+#: wp-admin/includes/class-wp-comments-list-table.php:556
 msgid "Table ordered by Post Replied To."
 msgstr "Таблица упорядочена по комментируемой записи."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:554
+#: wp-admin/includes/class-wp-comments-list-table.php:555
 msgid "Table ordered by Comment Author."
 msgstr "Таблица упорядочена по авторам комментариев."
 
@@ -1335,7 +1340,7 @@ msgid "Be the future of WordPress"
 msgstr "Станьте будущим WordPress"
 
 #. translators: 1: Learn WordPress link, 2: Workshops link.
-#: wp-admin/about.php:196
+#: wp-admin/about.php:227
 msgid "<a href=\"%1$s\">Learn WordPress</a> is a free resource for new and experienced WordPress users. Learn is stocked with how-to videos on using various features in WordPress, <a href=\"%2$s\">interactive workshops</a> for exploring topics in-depth, and lesson plans for diving deep into specific areas of WordPress."
 msgstr "<a href=\"%1$s\">Learn WordPress</a> – это бесплатный ресурс для новых и опытных пользователей WordPress. В Learn есть видеоролики с инструкциями по использованию различных функций WordPress, <a href=\"%2$s\">интерактивные мероприятия</a> для подробного изучения тем и планы уроков для углублённого изучения определенных областей WordPress."
 
@@ -1481,12 +1486,12 @@ msgid "<a href=\"https://wordpress.org/documentation/article/customizer/\">Docum
 msgstr "<a href=\"https://wordpress.org/documentation/article/customizer/\">Документация по интерфейсу настройки тем</a>"
 
 #. translators: The localized WordPress download URL.
-#: wp-admin/about.php:336
+#: wp-admin/about.php:367
 msgid "https://wordpress.org/download/"
 msgstr "https://ru.wordpress.org/download/releases/"
 
 #. translators: %s: The major version of WordPress for this branch.
-#: wp-admin/about.php:333
+#: wp-admin/about.php:364
 msgid "This is the final release of WordPress %s"
 msgstr "Это последний выпуск WordPress %s"
 
@@ -1807,12 +1812,12 @@ msgid "Reach out to WordPress Core developers to ensure you'll never have this p
 msgstr "Обратитесь к разработчикам ядра WordPress, чтобы убедиться, что у вас больше никогда не возникнет эта проблема."
 
 #. translators: 1: WordPress version number, 2: Link to update WordPress
-#: wp-admin/about.php:330
+#: wp-admin/about.php:361
 msgid "Important! Your version of WordPress (%1$s) will stop receiving security updates in the near future. To keep your site secure, please <a href=\"%2$s\">update to the latest version of WordPress</a>."
 msgstr "Важно! Ваша версия WordPress (%1$s) прекратит получать обновления безопасности в ближайшем будущем. Чтобы ваш сайт оставался в безопасности, <a href=\"%2$s\">обновите WordPress до последней версии</a>."
 
 #. translators: 1: WordPress version number, 2: Link to update WordPress
-#: wp-admin/about.php:327
+#: wp-admin/about.php:358
 msgid "Important! Your version of WordPress (%1$s) is no longer supported, you will not receive any security updates for your website. To keep your site secure, please <a href=\"%2$s\">update to the latest version of WordPress</a>."
 msgstr "Важно! Ваша версия WordPress (%1$s) более не поддерживается, ваш сайт больше не будет получать обновления безопасности. Чтобы ваш сайт оставался в безопасности, <a href=\"%2$s\">обновите WordPress до последней версии</a>."
 
@@ -1822,7 +1827,7 @@ msgid "https://make.wordpress.org/core/wordpress-%s-field-guide/"
 msgstr "https://make.wordpress.org/core/wordpress-%s-field-guide/"
 
 #. translators: %s: Version number.
-#: wp-admin/about.php:187
+#: wp-admin/about.php:218
 msgid "Learn more about WordPress %s"
 msgstr "Узнайте больше о WordPress %s"
 
@@ -2729,7 +2734,7 @@ msgstr "Добавить новый пароль приложения"
 msgid "Required to create an Application Password, but not to update the user."
 msgstr "Требуется для создания паролей приложений, но не для обновления данных пользователя."
 
-#: wp-admin/about.php:271
+#: wp-admin/about.php:302
 msgid "Go to Updates"
 msgstr "Перейти к обновлениям"
 
@@ -3494,7 +3499,7 @@ msgstr "Переместить %s окно вниз"
 msgid "Move %s box up"
 msgstr "Переместить %s окно вверх"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:385
+#: wp-admin/includes/class-wp-comments-list-table.php:386
 msgctxt "comment"
 msgid "Not spam"
 msgstr "Не спам"
@@ -3867,7 +3872,7 @@ msgstr "Пока нет информации..."
 msgid "The uploaded file exceeds the %1$s directive in %2$s."
 msgstr "Загруженный файл превышает директиву %1$s в %2$s."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:227
+#: wp-admin/includes/class-wp-comments-list-table.php:228
 msgid "No comments found in Trash."
 msgstr "В корзине нет комментариев."
 
@@ -8128,16 +8133,16 @@ msgctxt "attachment filter"
 msgid "Trash"
 msgstr "Корзина"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:843
+#: wp-admin/includes/class-wp-comments-list-table.php:844
 msgid "Quick edit this comment inline"
 msgstr "Изменить свойства этого комментария"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:831
+#: wp-admin/includes/class-wp-comments-list-table.php:832
 #: wp-admin/includes/dashboard.php:759
 msgid "Edit this comment"
 msgstr "Изменить этот комментарий"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:794
+#: wp-admin/includes/class-wp-comments-list-table.php:795
 msgid "Restore this comment from the spam"
 msgstr "Восстановить этот комментарий из спама"
 
@@ -8201,7 +8206,7 @@ msgid "(Currently set to: %s)"
 msgstr "(Сейчас отображает меню «%s»)"
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:301
+#: wp-admin/about.php:332
 msgid "<strong>Version %s</strong> addressed one security issue."
 msgstr "В <strong>версии %s</strong> решена проблема с безопасностью."
 
@@ -8214,15 +8219,15 @@ msgstr "https://ru.gravatar.com/"
 msgid "Profile Picture"
 msgstr "Аватар"
 
-#: wp-admin/about.php:298
+#: wp-admin/about.php:329
 msgid "Maintenance and Security Releases"
 msgstr "Технические обновления безопасности"
 
-#: wp-admin/about.php:295
+#: wp-admin/about.php:326
 msgid "Security Releases"
 msgstr "Обновления безопасности"
 
-#: wp-admin/about.php:292
+#: wp-admin/about.php:323
 msgid "Maintenance Releases"
 msgstr "Технические обновления"
 
@@ -8621,13 +8626,13 @@ msgstr "Ожидающих комментариев нет"
 msgid "Failed to initialize a SFTP subsystem session with the SSH2 Server %s"
 msgstr "Не удалось установить сеанс связи подсистемы SFTP с сервером SSH2 %s"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:488
+#: wp-admin/includes/class-wp-comments-list-table.php:489
 msgctxt "column name"
 msgid "Submitted on"
 msgstr "Отправлено"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:281
+#: wp-admin/includes/class-wp-comments-list-table.php:282
 msgctxt "comments"
 msgid "Trash <span class=\"count\">(%s)</span>"
 msgid_plural "Trash <span class=\"count\">(%s)</span>"
@@ -8636,7 +8641,7 @@ msgstr[1] "Корзина <span class=\"count\">(%s)</span>"
 msgstr[2] "Корзина <span class=\"count\">(%s)</span>"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:274
+#: wp-admin/includes/class-wp-comments-list-table.php:275
 msgctxt "comments"
 msgid "Spam <span class=\"count\">(%s)</span>"
 msgid_plural "Spam <span class=\"count\">(%s)</span>"
@@ -8645,7 +8650,7 @@ msgstr[1] "Спам <span class=\"count\">(%s)</span>"
 msgstr[2] "Спам <span class=\"count\">(%s)</span>"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:267
+#: wp-admin/includes/class-wp-comments-list-table.php:268
 msgctxt "comments"
 msgid "Approved <span class=\"count\">(%s)</span>"
 msgid_plural "Approved <span class=\"count\">(%s)</span>"
@@ -8654,7 +8659,7 @@ msgstr[1] "Одобренные <span class=\"count\">(%s)</span>"
 msgstr[2] "Одобренные <span class=\"count\">(%s)</span>"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:260
+#: wp-admin/includes/class-wp-comments-list-table.php:261
 msgctxt "comments"
 msgid "Pending <span class=\"count\">(%s)</span>"
 msgid_plural "Pending <span class=\"count\">(%s)</span>"
@@ -8663,7 +8668,7 @@ msgstr[1] "Ожидающие <span class=\"count\">(%s)</span>"
 msgstr[2] "Ожидающие <span class=\"count\">(%s)</span>"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:246
+#: wp-admin/includes/class-wp-comments-list-table.php:247
 msgctxt "comments"
 msgid "All <span class=\"count\">(%s)</span>"
 msgid_plural "All <span class=\"count\">(%s)</span>"
@@ -8869,7 +8874,7 @@ msgstr "Выберите значок сайта"
 
 #. translators: Hidden accessibility text.
 #: wp-admin/includes/class-wp-application-passwords-list-table.php:258
-#: wp-admin/includes/class-wp-comments-list-table.php:913
+#: wp-admin/includes/class-wp-comments-list-table.php:914
 #: wp-admin/includes/class-wp-list-table.php:689
 #: wp-admin/includes/class-wp-list-table.php:1822
 #: wp-admin/includes/update.php:933
@@ -9193,7 +9198,7 @@ msgstr "Отправлен"
 
 #. translators: Column name or table row header.
 #: wp-admin/comment.php:201
-#: wp-admin/includes/class-wp-comments-list-table.php:485
+#: wp-admin/includes/class-wp-comments-list-table.php:486
 msgid "In response to"
 msgstr "В ответ на"
 
@@ -9293,7 +9298,7 @@ msgid "All categories"
 msgstr "Все рубрики"
 
 #. translators: Hidden accessibility text.
-#: wp-admin/includes/class-wp-comments-list-table.php:521
+#: wp-admin/includes/class-wp-comments-list-table.php:522
 msgid "Filter by comment type"
 msgstr "Фильтр по типу комментариев"
 
@@ -9544,7 +9549,7 @@ msgstr "Пользователям клавиатуры: Работая в ви�
 msgid "A red bar on the left means the comment is waiting for you to moderate it."
 msgstr "Красная полоска слева означает, что комментарий ожидает вашей проверки."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:526
+#: wp-admin/includes/class-wp-comments-list-table.php:527
 msgid "All comment types"
 msgstr "Все типы комментариев"
 
@@ -10915,7 +10920,7 @@ msgid "Contextual Help Tab"
 msgstr "Вкладка контекстной помощи"
 
 #. translators: Hidden accessibility text.
-#: wp-admin/includes/class-wp-comments-list-table.php:935
+#: wp-admin/includes/class-wp-comments-list-table.php:936
 msgid "Select comment"
 msgstr "Выбрать комментарий"
 
@@ -11439,7 +11444,7 @@ msgstr "Извините, мне нужен файл %s в качестве ис
 msgid "To allow use of this page to automatically repair database problems, please add the following line to your %s file. Once this line is added to your config, reload this page."
 msgstr "Чтобы разрешить использование этой страницы для автоматического ремонта базы данных, добавьте в ваш файл %s следующую строку. После добавления перезагрузите страницу."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:225
+#: wp-admin/includes/class-wp-comments-list-table.php:226
 msgid "No comments awaiting moderation."
 msgstr "Нет комментариев, ожидающих проверки."
 
@@ -11550,14 +11555,15 @@ msgstr "Введите адрес e-mail существующего пользо
 msgid "Show Toolbar when viewing site"
 msgstr "Показывать верхнюю панель при просмотре сайта"
 
+#. translators: %s: HelpHub URL.
 #. translators: %s: Documentation URL.
-#: wp-admin/about.php:324
+#: wp-admin/about.php:82 wp-admin/about.php:355
 msgid "For more information, see <a href=\"%s\">the release notes</a>."
 msgstr "Дополнительную информацию можно найти в <a href=\"%s\">заметке о выпуске</a>."
 
 #. translators: 1: WordPress version number, 2: Plural number of bugs. More
 #. than one security issue.
-#: wp-admin/about.php:318
+#: wp-admin/about.php:349
 msgid "<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug."
 msgid_plural "<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs."
 msgstr[0] "В <strong>версии %1$s</strong> решены несколько проблем с безопасностью и исправлена %2$s ошибка."
@@ -11566,7 +11572,7 @@ msgstr[2] "В <strong>версии %1$s</strong> решены несколько
 
 #. translators: 1: WordPress version number, 2: Plural number of bugs. Singular
 #. security issue.
-#: wp-admin/about.php:312
+#: wp-admin/about.php:343
 msgid "<strong>Version %1$s</strong> addressed a security issue and fixed %2$s bug."
 msgid_plural "<strong>Version %1$s</strong> addressed a security issue and fixed %2$s bugs."
 msgstr[0] "В <strong>версии %1$s</strong> решена проблема с безопасностью и исправлена %2$s ошибка."
@@ -11574,7 +11580,7 @@ msgstr[1] "В <strong>версии %1$s</strong> решена проблема �
 msgstr[2] "В <strong>версии %1$s</strong> решена проблема с безопасностью и исправлены %2$s ошибок."
 
 #. translators: 1: WordPress version number, 2: Plural number of bugs.
-#: wp-admin/about.php:306
+#: wp-admin/about.php:70 wp-admin/about.php:337
 msgid "<strong>Version %1$s</strong> addressed %2$s bug."
 msgid_plural "<strong>Version %1$s</strong> addressed %2$s bugs."
 msgstr[0] "В <strong>версии %1$s</strong> исправлена %2$s ошибка."
@@ -11582,19 +11588,19 @@ msgstr[1] "В <strong>версии %1$s</strong> исправлены %2$s ош�
 msgstr[2] "В <strong>версии %1$s</strong> исправлены %2$s ошибок."
 
 #. translators: %s: WordPress version number.
-#: wp-admin/about.php:303
+#: wp-admin/about.php:334
 msgid "<strong>Version %s</strong> addressed some security issues."
 msgstr "В <strong>версии %s</strong> решены несколько проблем с безопасностью."
 
-#: wp-admin/about.php:297
+#: wp-admin/about.php:65 wp-admin/about.php:328
 msgid "Maintenance and Security Release"
 msgstr "Техническое обновление безопасности"
 
-#: wp-admin/about.php:294
+#: wp-admin/about.php:325
 msgid "Security Release"
 msgstr "Обновление безопасности"
 
-#: wp-admin/about.php:291
+#: wp-admin/about.php:322
 msgid "Maintenance Release"
 msgstr "Техническое обновление"
 
@@ -11867,15 +11873,15 @@ msgstr "<strong>&laquo;Редактировать&raquo;</strong> &#8212; отк
 msgid "Because this is a multisite installation, you may add accounts that already exist on the Network by specifying a username or email, and defining a role. For more options, such as specifying a password, you have to be a Network Administrator and use the hover link under an existing user&#8217;s name to Edit the user profile under Network Admin > All Users."
 msgstr "Поскольку это сеть сайтов, можно добавлять существующие в ней учётные записи, указав имя пользователя или e-mail и выбрав роль. Чтобы иметь больше возможностей &#8212; например, назначать пароль &#8212; нужно быть администратором сети и использовать ссылку для редактирования профиля пользователя, которая появляется под его именем в разделе &laquo;Управление сетью&raquo; &rarr; &laquo;Все пользователи&raquo;."
 
-#: wp-admin/about.php:65
+#: wp-admin/about.php:96
 msgid "Welcome to WordPress 6.9"
 msgstr "Добро пожаловать в WordPress 6.9"
 
-#: wp-admin/about.php:278
+#: wp-admin/about.php:309
 msgid "Go to Dashboard &rarr; Home"
 msgstr "Перейти на страницу &laquo;Консоль&raquo; &rarr; &laquo;Главная&raquo;"
 
-#: wp-admin/about.php:271
+#: wp-admin/about.php:302
 msgid "Go to Dashboard &rarr; Updates"
 msgstr "Перейти на страницу &laquo;Консоль&raquo; &rarr; &laquo;Обновления&raquo;"
 
@@ -12561,7 +12567,7 @@ msgid "Choose what to export"
 msgstr "Выберите материалы для экспорта"
 
 #. translators: %s: Number of comments.
-#: wp-admin/includes/class-wp-comments-list-table.php:253
+#: wp-admin/includes/class-wp-comments-list-table.php:254
 msgctxt "comments"
 msgid "Mine <span class=\"count\">(%s)</span>"
 msgid_plural "Mine <span class=\"count\">(%s)</span>"
@@ -12574,7 +12580,7 @@ msgstr[2] "Мои <span class=\"count\">(%s)</span>"
 msgid "%s &#8212; WordPress"
 msgstr "%s &#8212; WordPress"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:555
+#: wp-admin/includes/class-wp-comments-list-table.php:556
 msgctxt "column name"
 msgid "In Response To"
 msgstr "В ответ на"
@@ -13107,12 +13113,12 @@ msgstr "Эта функция удалит изображение заголов
 msgid "Default Images"
 msgstr "Изображения по умолчанию"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:814
+#: wp-admin/includes/class-wp-comments-list-table.php:815
 #: wp-admin/includes/dashboard.php:785
 msgid "Delete this comment permanently"
 msgstr "Удалить этот комментарий навсегда"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:804
+#: wp-admin/includes/class-wp-comments-list-table.php:805
 msgid "Restore this comment from the Trash"
 msgstr "Восстановить этот комментарий из корзины"
 
@@ -13189,7 +13195,7 @@ msgid "Clear"
 msgstr "Очистить"
 
 #: wp-admin/comment.php:135
-#: wp-admin/includes/class-wp-comments-list-table.php:379
+#: wp-admin/includes/class-wp-comments-list-table.php:380
 msgctxt "comment"
 msgid "Mark as spam"
 msgstr "Пометить как спам"
@@ -13228,7 +13234,7 @@ msgstr "Вы используете версию %1$s. Обновить до %2$
 msgid "Enabled"
 msgstr "Включено"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:795
+#: wp-admin/includes/class-wp-comments-list-table.php:796
 msgctxt "comment"
 msgid "Not Spam"
 msgstr "Не спам"
@@ -13576,7 +13582,7 @@ msgstr "Обновления WordPress"
 msgid "Edit menu item"
 msgstr "Изменить пункт меню"
 
-#: wp-admin/about.php:278
+#: wp-admin/about.php:309
 msgid "Go to Dashboard"
 msgstr "Перейти на страницу &laquo;Консоль&raquo;"
 
@@ -14932,7 +14938,7 @@ msgstr "Массовое редактирование"
 msgid "Relationship"
 msgstr "Отношение"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:481
+#: wp-admin/includes/class-wp-comments-list-table.php:482
 #: wp-admin/includes/class-wp-post-comments-list-table.php:26
 msgctxt "column name"
 msgid "Comment"
@@ -14957,7 +14963,7 @@ msgctxt "column name"
 msgid "Title"
 msgstr "Заголовок"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:844
+#: wp-admin/includes/class-wp-comments-list-table.php:845
 #: wp-admin/includes/class-wp-posts-list-table.php:1509
 #: wp-admin/includes/class-wp-terms-list-table.php:510
 msgid "Quick&nbsp;Edit"
@@ -15749,36 +15755,36 @@ msgstr "[Ожидает проверки]"
 msgid "From %1$s on %2$s %3$s"
 msgstr "%1$s к записи %2$s %3$s"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:822
+#: wp-admin/includes/class-wp-comments-list-table.php:823
 #: wp-admin/includes/dashboard.php:793
 msgid "Move this comment to the Trash"
 msgstr "Переместить этот комментарий в корзину"
 
 #. translators: "Mark as spam" link.
-#: wp-admin/includes/class-wp-comments-list-table.php:787
+#: wp-admin/includes/class-wp-comments-list-table.php:788
 #: wp-admin/includes/dashboard.php:777
 msgctxt "verb"
 msgid "Spam"
 msgstr "Спам"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:785
+#: wp-admin/includes/class-wp-comments-list-table.php:786
 #: wp-admin/includes/dashboard.php:775
 msgid "Mark this comment as spam"
 msgstr "Пометить этот комментарий как спам"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:853
+#: wp-admin/includes/class-wp-comments-list-table.php:854
 #: wp-admin/includes/dashboard.php:767
 msgid "Reply to this comment"
 msgstr "Ответить на комментарий"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:750
-#: wp-admin/includes/class-wp-comments-list-table.php:775
+#: wp-admin/includes/class-wp-comments-list-table.php:751
+#: wp-admin/includes/class-wp-comments-list-table.php:776
 #: wp-admin/includes/dashboard.php:752
 msgid "Unapprove this comment"
 msgstr "Отклонить этот комментарий"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:758
-#: wp-admin/includes/class-wp-comments-list-table.php:767
+#: wp-admin/includes/class-wp-comments-list-table.php:759
+#: wp-admin/includes/class-wp-comments-list-table.php:768
 #: wp-admin/includes/dashboard.php:744
 msgid "Approve this comment"
 msgstr "Одобрить этот комментарий"
@@ -16233,21 +16239,21 @@ msgstr "Поле удалено."
 msgid "Custom field updated."
 msgstr "Поле изменено."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:229
+#: wp-admin/includes/class-wp-comments-list-table.php:230
 msgid "No comments found."
 msgstr "Комментариев не найдено."
 
-#: wp-admin/includes/class-wp-comments-list-table.php:437
+#: wp-admin/includes/class-wp-comments-list-table.php:438
 #: wp-admin/includes/class-wp-media-list-table.php:222
 #: wp-admin/includes/class-wp-posts-list-table.php:606
 msgid "Empty Trash"
 msgstr "Очистить корзину"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:437
+#: wp-admin/includes/class-wp-comments-list-table.php:438
 msgid "Empty Spam"
 msgstr "Очистить спам"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:429
+#: wp-admin/includes/class-wp-comments-list-table.php:430
 #: wp-admin/includes/class-wp-links-list-table.php:123
 #: wp-admin/includes/class-wp-media-list-table.php:217
 #: wp-admin/includes/class-wp-posts-list-table.php:599
@@ -16255,21 +16261,21 @@ msgstr "Очистить спам"
 msgid "Filter"
 msgstr "Фильтр"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:513
+#: wp-admin/includes/class-wp-comments-list-table.php:514
 #: wp-admin/includes/class-wp-posts-list-table.php:1944
 msgid "Pings"
 msgstr "Уведомления"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:375
-#: wp-admin/includes/class-wp-comments-list-table.php:759
-#: wp-admin/includes/class-wp-comments-list-table.php:768
+#: wp-admin/includes/class-wp-comments-list-table.php:376
+#: wp-admin/includes/class-wp-comments-list-table.php:760
+#: wp-admin/includes/class-wp-comments-list-table.php:769
 #: wp-admin/includes/dashboard.php:745
 msgid "Approve"
 msgstr "Одобрить"
 
-#: wp-admin/includes/class-wp-comments-list-table.php:371
-#: wp-admin/includes/class-wp-comments-list-table.php:751
-#: wp-admin/includes/class-wp-comments-list-table.php:776
+#: wp-admin/includes/class-wp-comments-list-table.php:372
+#: wp-admin/includes/class-wp-comments-list-table.php:752
+#: wp-admin/includes/class-wp-comments-list-table.php:777
 #: wp-admin/includes/dashboard.php:753
 msgid "Unapprove"
 msgstr "Отклонить"
@@ -16347,7 +16353,7 @@ msgid "View &#8220;%s&#8221;"
 msgstr "Посмотреть &laquo;%s&raquo;"
 
 #: wp-admin/edit-form-comment.php:242
-#: wp-admin/includes/class-wp-comments-list-table.php:815
+#: wp-admin/includes/class-wp-comments-list-table.php:816
 #: wp-admin/includes/class-wp-media-list-table.php:810
 #: wp-admin/includes/class-wp-posts-list-table.php:1539
 #: wp-admin/includes/dashboard.php:786 wp-admin/includes/media.php:1736

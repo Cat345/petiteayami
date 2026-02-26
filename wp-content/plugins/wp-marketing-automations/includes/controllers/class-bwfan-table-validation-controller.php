@@ -110,6 +110,7 @@ class BWFAN_Table_Validation_Controller {
 	 * @return bool
 	 */
 	public static function create_missing_tables( $missing_tables ) {
+		self::load_table_classes();
 		$db_errors = [];
 		global $wpdb;
 

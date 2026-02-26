@@ -169,6 +169,9 @@ class Script_Loader extends Base_Model implements Model_Interface {
             'cashback_amount_label'     => __( 'Cashback amount', 'advanced-coupons-for-woocommerce' ),
         );
 
+        // BOGO deals validation error messages.
+        $data['same_products_specific_products_error_msg'] = __( '"Same Products" GET type is not compatible with "Specific Products" BUY type. Please select a different combination.', 'advanced-coupons-for-woocommerce' );
+
         return $data;
     }
 

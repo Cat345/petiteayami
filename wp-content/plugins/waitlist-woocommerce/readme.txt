@@ -4,39 +4,46 @@ Donate link: https://www.paypal.me/xootix
 Tags: back in stock, email notification, out of stock, waiting list
 Requires at least: 3.0.1
 Tested up to: 6.9
-Stable tag: 2.8.5
+Stable tag: 2.8.8
 Requires Plugins: woocommerce
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Do not miss customers if your product is out of stock, inform them as soon as product arrives in stock
+Build a waiting list for your products and notify customers by email based on product availability.
+
 == Description ==
- [Live Demo](http://demo.xootix.com/waitlist-for-woocommerce/)
+[Live Demo](http://demo.xootix.com/waitlist-for-woocommerce/)
 
-Waitlist for woocommerce lets you track demand for out-of-stock items, ensuring your customers feel informed, and therefore more likely to buy.
-
-[How to translate?](https://wordpress.org/plugins/waitlist-woocommerce/faq/)
+Waitlist for WooCommerce allows you to create product waiting lists, send email notifications, and track demand. Use this data to make smarter inventory decisions and focus on products your customers care about most.
 
 ### Features And Options:
-* Notify customers via email when an out-of-stock item becomes available for purchase.
-* Track users list and quantity.
-* Two templates design - Popup & Inline form
-* Email Log
-* Enable/Disable guest users.
-* Customizable Waitlist Form fields
-* Shortcode to generate waitlist button/form anywhere
+* 👁️ Control waitlist button visibility by stock status (out of stock, backorder, or in stock) or by specific products.
+* 📧 Notify customers via email when an item becomes available for purchase
+* 📊 Track registered users, guest entries, and interest quantity
+* 🎨 Two template designs – Popup & Inline form
+* 📨 Email log to review sent notifications
+* 👤 Option to enable or disable guest users
+* ⚙️ Customizable waitlist form fields
+* 🔗 Shortcode to display the waitlist button or form anywhere
+* 🚀 Lightweight and seamless integration with WooCommerce
 
 
 ### Add-ons:
+* [Waitlist manager](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) - Enable unsubscribe links in emails for easy opt-out.
+Provide users with a dedicated dashboard to view and manage all their waitlisted products (GDPR-compliant).
+
+* [Email Booster](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) - Send notification emails to customers and admins (or a specified email address) when someone joins a waitlist.
+Automatically send Back in Stock emails when a product’s stock status changes to In Stock.
+
 * [Custom Form Fields](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) - Add extra fields to the waitlist form to collect additional data from users. Customize these fields and change the form's appearance from the 'Fields' page
 
-* [Email Booster](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) -- Send a notification email to the customer and the admin (or a specified email address) when someone joins the waitlist.
-- Auto send "back in stock email" when stock status is updated to "in stock"
 
 * [Export/Import Waitlist](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) - Easily export and import waitlist users and their data into a CSV or Excel file
 
-* [Notify on Phone](http://xootix.com/plugins/waitlist-for-woocommerce#sp-addons) - Send a text message to users whenever a product arrives back in stock.
 
+
+
+[How to translate?](https://wordpress.org/plugins/waitlist-woocommerce/faq/)
 
 == Installation ==
 
@@ -70,6 +77,16 @@ Everything is already setup.Just activate the plugin & you are done.
 4. The Waitlist admin settings page.
 
 == Changelog ==
+
+= 2.8.8 =
+* Fix: Add field button not showing
+* New add-on - Unsubscribe and manage waitlist
+
+= 2.8.7 =
+* Fix: Email styling
+
+= 2.8.6 =
+* New stock status filter
 
 = 2.8.5 =
 * New waitlist design and filters

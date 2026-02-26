@@ -24,7 +24,6 @@ class AddAdminMenuButton
     {
         $menu_slug = Path::relative(get_admin_url(), Url::route('customizer'));
 
-        add_action('admin_print_styles', fn() => $this->getStyle($menu_slug));
         add_menu_page(
             '',
             $this->config->get('theme.name', ''),
@@ -34,13 +33,15 @@ class AddAdminMenuButton
             '',
             59,
         );
+
+        wp_add_inline_style('admin-bar', $this->getStyle($menu_slug));
     }
 
-    protected function getStyle(string $menu_slug): void
+    protected function getStyle(string $menu_slug): string
     {
         $id = preg_replace('/[^\w:.]/', '-', get_plugin_page_hookname($menu_slug, ''));
-        $font = get_template_directory_uri() . '/packages/theme-wordpress/fonts/icon.ttf';
-        $style = <<<CSS
+        $font = Url::to('~theme/packages/theme-wordpress/fonts/icon.ttf');
+        return <<<CSS
             @font-face {
                 font-family: YOOtheme;
                 font-display: swap;
@@ -53,7 +54,5 @@ class AddAdminMenuButton
                 font-family: YOOtheme;
             }
         CSS;
-
-        echo preg_replace('/\s+/', ' ', '<style>' . trim($style) . '</style>') . "\n";
     }
 }

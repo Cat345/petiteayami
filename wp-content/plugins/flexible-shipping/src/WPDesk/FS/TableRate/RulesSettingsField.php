@@ -110,20 +110,22 @@ class RulesSettingsField {
 		$is_pro_activated = defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' );
 
 		$rules_table_settings = [
-			'rules_settings'          => $rules_settings,
-			'table_settings'          => $table_settings,
-			'translations'            => $translations,
-			'available_conditions'    => $available_conditions,
-			'cost_settings_fields'    => $cost_settings_fields,
-			'special_action_fields'   => $special_action_fields,
-			'additional_cost_fields'  => $additional_cost_fields,
-			'preconfigured_scenarios' => $preconfigured_scenarios,
-			'is_pro_activated'        => $is_pro_activated,
-			'pro_features_data'       => $pro_features_data,
-			'paste_available'         => true,
-			'ai_button_available'     => true,
-			'ai_button_url'           => 'https://octol.io/fs-rules-table-ai',
-			'shop_settings'           => $shop_settings,
+			'rules_settings'           => $rules_settings,
+			'table_settings'           => $table_settings,
+			'translations'             => $translations,
+			'available_conditions'     => $available_conditions,
+			'cost_settings_fields'     => $cost_settings_fields,
+			'special_action_fields'    => $special_action_fields,
+			'additional_cost_fields'   => $additional_cost_fields,
+			'preconfigured_scenarios'  => $preconfigured_scenarios,
+			'is_pro_activated'         => $is_pro_activated,
+			'pro_features_data'        => $pro_features_data,
+			'paste_available'          => true,
+			'ai_button_available'      => false,
+			'ai_button_url'            => 'https://octol.io/fs-rules-table-ai',
+			'support_link_available'   => true,
+			'support_link_url'         => 'https://octol.io/fs-rules-table-support',
+			'shop_settings'            => $shop_settings,
 		];
 
 		$rules_table_settings = apply_filters( 'flexible-shipping/rules-table/settings', $rules_table_settings, $this->shipping_method_settings );
@@ -135,11 +137,11 @@ class RulesSettingsField {
 
 	private function get_shop_settings() {
 		return [
-			'currency' => get_woocommerce_currency(),
-			'currency_symbol' => get_woocommerce_currency_symbol(),
-			'locale' => get_user_locale(),
-			'weight_unit' => get_option( 'woocommerce_weight_unit' ),
-			'dimension_unit' => get_option( 'woocommerce_dimension_unit' ),
+			'currency'           => get_woocommerce_currency(),
+			'currency_symbol'    => get_woocommerce_currency_symbol(),
+			'locale'             => get_user_locale(),
+			'weight_unit'        => get_option( 'woocommerce_weight_unit' ),
+			'dimension_unit'     => get_option( 'woocommerce_dimension_unit' ),
 			'price_num_decimals' => wc_get_price_decimals(),
 		];
 	}
@@ -236,7 +238,7 @@ class RulesSettingsField {
 	 * @return array
 	 */
 	private function get_field_value(): array {
-		$value = ! isset( $this->value ) ? ( $this->settings['default'] ?? [] ) : $this->value;
+		$value = ! isset( $this->value ) ? ( $this->settings[ 'default' ] ?? [] ) : $this->value;
 		if ( ! is_array( $value ) ) {
 			$value = [];
 		}
@@ -251,13 +253,13 @@ class RulesSettingsField {
 	 */
 	private function process_select_options_for_conditions( array $settings, $available_conditions ) {
 		foreach ( $settings as $rule_key => $rule ) {
-			$conditions = isset( $rule['conditions'] ) && is_array( $rule['conditions'] ) ? $rule['conditions'] : [];
+			$conditions = isset( $rule[ 'conditions' ] ) && is_array( $rule[ 'conditions' ] ) ? $rule[ 'conditions' ] : [];
 			foreach ( $conditions as $condition_key => $condition ) {
-				if ( isset( $available_conditions[ $condition['condition_id'] ] ) ) {
-					$settings[ $rule_key ]['conditions'][ $condition_key ] = $available_conditions[ $condition['condition_id'] ]->prepare_settings( $condition );
+				if ( isset( $available_conditions[ $condition[ 'condition_id' ] ] ) ) {
+					$settings[ $rule_key ][ 'conditions' ][ $condition_key ] = $available_conditions[ $condition[ 'condition_id' ] ]->prepare_settings( $condition );
 				}
 			}
-			$settings[ $rule_key ]['conditions'] = array_values( $settings[ $rule_key ]['conditions'] );
+			$settings[ $rule_key ][ 'conditions' ] = array_values( $settings[ $rule_key ][ 'conditions' ] );
 		}
 
 		return $settings;

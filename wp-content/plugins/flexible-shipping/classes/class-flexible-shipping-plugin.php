@@ -511,69 +511,7 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		add_action( 'woocommerce_init', [ $this, 'init_external_plugin_access' ] );
 
-		add_action( 'admin_init', [ $this, 'init_octolize_docs_chat' ] );
-
 		$this->hooks_on_hookable_objects();
-	}
-
-	public function init_octolize_docs_chat() {
-		$plugin_slug = 'flexible-shipping';
-		$plugin_name = __( 'Flexible Shipping', 'flexible-shipping' );
-		if ( defined( 'FLEXIBLE_SHIPPING_PRO_VERSION' ) ) {
-			$plugin_slug = 'flexible-shipping-pro';
-			$plugin_name = __( 'Flexible Shipping PRO', 'flexible-shipping' );
-		}
-
-		$show_strategy = new OrStrategy(
-			new ShippingMethodStrategy( WPDesk_Flexible_Shipping_Settings::METHOD_ID )
-		);
-		$show_strategy->addCondition(
-			new ShippingMethodInstanceStrategy(
-				new \WC_Shipping_Zones(),
-				ShippingMethodSingle::SHIPPING_METHOD_ID
-			)
-		);
-
-		add_filter(
-			'octolize_docs_chat_settings_' . $plugin_slug,
-			function ( $settings, $data ) use ( $plugin_name ) {
-				$chat_settings = new ChatSettings();
-				$chat_settings->set_consent(
-					[
-						'title'              => __( 'Do you consent to sending data to the chat?', 'flexible-shipping' ),
-						'message'            => __( 'To start the chat, we need to send your inputs and technical data to the chat service.', 'flexible-shipping' ),
-						'accept'             => __( 'Accept', 'flexible-shipping' ),
-						'decline'            => __( 'Decline', 'flexible-shipping' ),
-						'privacy_policy_url' => ' ',
-						'privacy_link_label' => ' ',
-						'support_url'        => 'https://wordpress.org/support/plugin/flexible-shipping/',
-						'support_text'       => __( 'If you don’t want to give consent, you can contact our support using this: ', 'flexible-shipping' ),
-						'support_link_label' => __( 'support forum', 'flexible-shipping' ),
-					]
-				);
-				$chat_settings->set_plugin( $plugin_name );
-				$chat_settings->set_plugin_settings( ( new WPDesk_Flexible_Shipping_Settings() )->settings );
-				$instance_id = $data['instance_id'] ?? '';
-				$chat_settings->set_current_page( $instance_id ? 'Shipping method' : 'Plugin Settings' );
-				if ( $instance_id ) {
-					$shipping_method = \WC_Shipping_Zones::get_shipping_method( (int) $instance_id );
-					$chat_settings->set_shipping_method_settings( $shipping_method->instance_settings );
-				}
-
-				return $chat_settings->get_settings();
-			},
-			10,
-			2
-		);
-
-		(
-		new HookableChatObjects(
-			$plugin_slug,
-			$this->plugin_url,
-			$this->plugin_info->get_version(),
-			$show_strategy
-		)
-		)->hooks();
 	}
 
 	private function init_checkout_blocks() {

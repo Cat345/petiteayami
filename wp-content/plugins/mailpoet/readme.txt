@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 5.18.0
+Stable tag: 5.21.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,9 +227,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.18.0 - 2026-01-19 =
-* Improved: Built-in captcha now appears inline within subscription forms;
-* Improved: More information logged when key validation fails;
-* Fixed: Fix the total recipients count in the email editor.
+= 5.21.3 - 2026-02-24 =
+* Updated: Bump the minimum required WooCommerce version to 10.4 and tested up to version to 10.5;
+* Updated: Merged settings panels in the block email editor;
+* Updated: Replace bracket placeholders with uppercase text in email patterns.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

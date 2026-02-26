@@ -94,6 +94,10 @@ foreach ($items as $item) {
             $link['href'] = $item->url;
         }
 
+        if (!$config('~menu.scrollspyNav') && str_contains((string) $item->url, '#')) {
+            $link['uk-scroll'] = true;
+        }
+
         if (!empty($item->target)) {
             $link['target'] = $item->target;
         }

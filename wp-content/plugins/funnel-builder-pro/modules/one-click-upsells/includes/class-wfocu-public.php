@@ -405,6 +405,17 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				}
 				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Entering: ' . __FUNCTION__ ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Backtrace for maybe_setup_upsell::' . wp_debug_backtrace_summary() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_wp_debug_backtrace_summary
+				
+				// Set transient lock when status change happens via rest_pre_dispatch to prevent duplicate setup
+				// This prevents duplicate upsell setup when webhook arrives simultaneously with user return
+				if ( 'rest_pre_dispatch' === current_action() ) {
+					$upsell_setup_lock_key = 'wfocu_mollie_upsell_setup_' . $order_id;
+					if ( ! get_transient( $upsell_setup_lock_key ) ) {
+						set_transient( $upsell_setup_lock_key, '1', 5 );
+						WFOCU_Core()->log->log( 'Order #' . $order_id . ': Set transient lock for upsell setup (rest_pre_dispatch)' );
+					}
+				}
+				
 				do_action( 'wfocu_front_pre_init_funnel_hooks', $wc_get_order );
 
 				$this->porder            = WFOCU_WC_Compatibility::get_order_id( $wc_get_order );

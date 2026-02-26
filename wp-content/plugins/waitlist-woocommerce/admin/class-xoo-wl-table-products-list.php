@@ -141,41 +141,54 @@ class Xoo_WL_Table_Products_List extends WP_List_Table {
 
 		$search = sanitize_text_field( $_REQUEST['s'] ?? '' );
 
-		if ( $search !== '' ) {
+		$stock_status = sanitize_text_field( $_GET['stock_status'] ?? '' );
 
-			/* Search by product ID */
-			if ( is_numeric( $search ) ) {
+		$product_ids = null;
 
-				$where_args[] = array(
-					'key'   => 'product_id',
-					'value' => absint( $search ),
-				);
+		/**
+		 * Build a single product query if needed
+		 */
+		if ( $search !== '' || $stock_status !== '' ) {
 
-			} else {
+			$args = array(
+				'post_type'      => 'product',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			);
 
-				/* Search product titles */
-				$product_ids = get_posts( array(
-					'post_type'      => 'product',
-					'posts_per_page' => -1,
-					'fields'         => 'ids',
-					's'              => $search,
-				) );
+			/* Search */
+			if ( $search !== '' ) {
+				if ( is_numeric( $search ) ) {
 
-				if ( $product_ids ) {
-					$where_args[] = array(
-						'key'     => 'product_id',
-						'compare' => 'IN',
-						'value'   => $product_ids,
-					);
+					// Direct product ID search → skip WP_Query
+					$product_ids = array( absint( $search ) );
+
 				} else {
-					/* No match → empty result */
-					$where_args[] = array(
-						'key'   => 'product_id',
-						'value' => 0,
-					);
+					$args['s'] = $search;
 				}
 			}
+
+			/* Stock status */
+			if ( $stock_status !== '' ) {
+				$args['meta_query'][] = array(
+					'key'   => '_stock_status',
+					'value' => $stock_status,
+				);
+			}
+
+			/* Run query only if needed */
+			if ( $product_ids === null ) {
+				$product_ids = get_posts( $args );
+			}
+
+			$where_args[] = array(
+				'key'     => 'product_id',
+				'compare' => 'IN',
+				'value'   => $product_ids ?: array( 0 ),
+			);
 		}
+
+
 
 
 		/* 🔹 Count query (must include filters) */
@@ -240,5 +253,33 @@ class Xoo_WL_Table_Products_List extends WP_List_Table {
 		);
 		exit;
 	}
+
+
+	protected function extra_tablenav( $which ) {
+
+		if ( $which !== 'top' ) {
+			return;
+		}
+
+		$current = sanitize_text_field( $_GET['stock_status'] ?? '' );
+		$statuses = wc_get_product_stock_status_options();
+		?>
+		<div class="alignleft actions">
+			<select name="stock_status">
+				<option value=""><?php esc_html_e( 'All stock statuses', 'woocommerce' ); ?></option>
+
+				<?php foreach ( $statuses as $status => $label ) : ?>
+					<option value="<?php echo esc_attr( $status ); ?>" <?php selected( $current, $status ); ?>>
+						<?php echo esc_html( $label ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+
+			<?php submit_button( __( 'Filter' ), '', 'filter_action', false ); ?>
+		</div>
+		<?php
+	}
+
+
 
 }

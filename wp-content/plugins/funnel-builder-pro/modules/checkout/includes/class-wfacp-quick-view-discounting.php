@@ -11,22 +11,34 @@ if ( ! class_exists( 'WFACP_Discount_At_Quick_view' ) ) {
 			add_action( 'wfac_qv_images', [ $this, 'prepare_data' ] );
 			add_filter( 'woocommerce_product_variation_get_price', array( $this, 'wcct_trigger_get_price' ), 999, 2 );
 			add_filter( 'woocommerce_product_variation_get_sale_price', array( $this, 'wcct_trigger_get_price' ), 999, 2 );
+			add_action( 'wfacp_before_quick_view_ajax', [ $this, 'map_attributes' ] );
 		}
 
+		public function map_attributes($post) {
 
+			$cart_key = $post['cart_key']??'';
+			if ( empty( $cart_key ) ) {
+				return;
+			}
+			$item = WC()->cart->get_cart_item( $cart_key );
+			foreach ( $item['variation'] as $a_name => $a_val ) {
+				$_REQUEST[ $a_name ] = $a_val;
+			}
+		}
 		public function prepare_data() {
 
-			if ( isset( $_REQUEST['wfacp_id'] ) ) {
-				$this->wfob_id  = absint( $_REQUEST['wfacp_id'] );
-				$this->item_key = $_REQUEST['data']['item_key'];
-				$bump_products  = WFACP_Common::get_page_product( $this->wfob_id );
-
-				if ( isset( $bump_products[ $this->item_key ] ) ) {
-					$this->item_data = $bump_products[ $this->item_key ];
-				}
-
+			if ( ! isset( $_REQUEST['wfacp_id'] ) ) {
+				return;
 			}
-
+			$this->wfob_id = absint( $_REQUEST['wfacp_id'] );
+			if ( ! isset( $_REQUEST['data']['item_key'] ) ) {
+				return;
+			}
+			$this->item_key = $_REQUEST['data']['item_key'];
+			$bump_products  = WFACP_Common::get_page_product( $this->wfob_id );
+			if ( isset( $bump_products[ $this->item_key ] ) ) {
+				$this->item_data = $bump_products[ $this->item_key ];
+			}
 		}
 
 		public function wcct_trigger_get_price( $get_price, $product_global ) {

@@ -390,12 +390,7 @@ class WidgetsListener
 
         // add 'uk-panel' to text widget content div class
         if ($type === 'text') {
-            $content = substr_replace(
-                $content,
-                'uk-panel ',
-                strpos($content, 'class="textwidget"') + strlen('class="'),
-                0,
-            );
+            $content = str_replace('class="textwidget', 'class="uk-panel textwidget', $content);
         }
 
         if (

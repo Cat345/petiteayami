@@ -183,6 +183,7 @@ class StyleFontLoader
         $fonts = [];
 
         foreach ($this->parseFontFaces($source) as $fontface) {
+            $src = [];
             $font = [];
 
             foreach ($this->parseFontProperties($fontface) as $name => $value) {

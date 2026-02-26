@@ -5,7 +5,7 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @package FacebookCommerce
+ * @package MetaCommerce
  */
 
 namespace WooCommerce\Facebook;
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * The rollout switches is used to control available
- * features in the Facebook for WooCommerce plugin.
+ * features in the Meta for WooCommerce plugin.
  */
 class RolloutSwitches {
 	/** @var \WC_Facebookcommerce commerce handler */
@@ -30,8 +30,10 @@ class RolloutSwitches {
 	public const SWITCH_WOO_ALL_PRODUCTS_SYNC_ENABLED       = 'woo_all_products_sync_enabled';
 	public const SWITCH_OFFER_MANAGEMENT_ENABLED            = 'offer_management_enabled';
 	public const SWITCH_MULTIPLE_IMAGES_ENABLED             = 'woo_variant_multiple_images_enabled';
+	public const SWITCH_WOOCOMMERCE_ENABLE_RICH_ORDER       = 'woocommerce_enable_rich_order';
 	public const SWITCH_CONTENT_ID_MIGRATION_ENABLED        = 'enable_woocommerce_content_id_migration';
 	public const SWITCH_LANGUAGE_OVERRIDE_FEED_ENABLED      = 'wooc_language_override_feed';
+	public const SWITCH_ISOLATED_PIXEL_EXECUTION_ENABLED    = 'enable_woocommerce_isolated_pixel_execution';
 	private const SETTINGS_KEY                              = 'wc_facebook_for_woocommerce_rollout_switches';
 	public const CAPI_EVENT_LOGGING_ENABLED                 = 'enable_woocommerce_capi_event_logging';
 
@@ -40,10 +42,12 @@ class RolloutSwitches {
 		self::SWITCH_WOO_ALL_PRODUCTS_SYNC_ENABLED,
 		self::SWITCH_OFFER_MANAGEMENT_ENABLED,
 		self::SWITCH_MULTIPLE_IMAGES_ENABLED,
+		self::SWITCH_WOOCOMMERCE_ENABLE_RICH_ORDER,
 		self::WHATSAPP_UTILITY_MESSAGING_BETA_EXPERIENCE,
 		self::CAPI_EVENT_LOGGING_ENABLED,
 		self::SWITCH_CONTENT_ID_MIGRATION_ENABLED,
 		self::SWITCH_LANGUAGE_OVERRIDE_FEED_ENABLED,
+		self::SWITCH_ISOLATED_PIXEL_EXECUTION_ENABLED,
 	);
 
 	public function __construct( \WC_Facebookcommerce $plugin ) {

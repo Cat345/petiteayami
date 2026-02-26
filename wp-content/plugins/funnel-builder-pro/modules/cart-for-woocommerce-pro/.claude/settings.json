@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(php -l:*)",
+      "Bash(composer phpcs:*)",
+      "Bash(composer phpcbf:*)",
+      "Bash(npm install)",
+      "Bash(grunt:*)",
+      "Bash(npx:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(rm -f:*)",
+      "Bash(rm -rf:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Read(.claude/**)",
+      "Read(docs/**)",
+      "Read(bin/agents/**)",
+      "Edit(**)",
+      "Write(**)",
+      "Read(**)"
+    ]
+  }
+}

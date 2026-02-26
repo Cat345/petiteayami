@@ -32,20 +32,25 @@ if ( ! class_exists( 'BWFAN_Model_Links' ) ) {
 
 		/**
 		 * Check link hash and cleaned url exists or not
-		 *
-		 * @param string $clean_url
+		 * 
 		 * @param string $l_hash
-		 *
-		 * @return mixed
+		 * @param string $clean_url
+		 * @return array|object|null
 		 */
-		public static function is_link_hash_exists( $clean_url = '', $l_hash = '' ) {
-			if ( empty( $l_hash ) || empty( $clean_url ) ) {
-				return false;
+		public static function is_link_hash_exists( $l_hash = '', $clean_url = '' ) {
+			if ( empty( $l_hash ) ) {
+				return [];
 			}
 
 			global $wpdb;
+			$query = "SELECT `ID`,`url` FROM {$wpdb->prefix}bwfan_links WHERE `l_hash` = %s";
+			$args  = [ $l_hash ];
+			if ( ! empty( $clean_url ) ) {
+				$query .= " AND `clean_url` = %s";
+				$args[] = $clean_url;
+			}
 
-			return $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$wpdb->prefix}bwfan_links WHERE `l_hash` = %s AND `clean_url` = %s", $l_hash, $clean_url ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			return $wpdb->get_row( $wpdb->prepare( $query, $args ), ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 		}
 
 		/**

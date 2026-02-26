@@ -63,7 +63,7 @@ return [
 
             $meta->set('script:newsletter', [
                 'src' => '~assets/site/js/newsletter.js',
-                'defer' => true,
+                'type' => 'module',
             ]);
         },
     ],

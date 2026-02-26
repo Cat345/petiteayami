@@ -9,7 +9,9 @@ use WP_Query;
 use WP_Taxonomy;
 use WP_Term;
 use YOOtheme\Builder\DateHelper;
+use YOOtheme\Config;
 use YOOtheme\Event;
+use function YOOtheme\app;
 
 class Helper
 {
@@ -249,5 +251,15 @@ class Helper
         $posts = get_posts($query);
 
         return empty($args['order_reverse']) ? $posts : array_reverse($posts);
+    }
+
+    public static function applyAutoP(string $content): string
+    {
+        if (app(Config::class)('~theme.disable_wpautop')) {
+            return $content;
+        }
+
+        // trim leading whitespace, because ` </div>` results in `</p></div>
+        return wpautop(preg_replace('/^\s+<\//m', '</', $content));
     }
 }

@@ -4200,35 +4200,35 @@ ul.product_list_widget {
 
 .tm-element-woo-filter .tm-element-filter-columns {
 
-    .woocommerce-widget-layered-nav-list { column-gap: @column-gutter; }
+    :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand) { column-gap: @column-gutter; }
 
     /* Desktop and bigger */
     @media (min-width: @breakpoint-large) {
-        .woocommerce-widget-layered-nav-list { column-gap: @column-gutter-l; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand) { column-gap: @column-gutter-l; }
     }
 
-    .woocommerce-widget-layered-nav-list:has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
+    :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
 
     /* Phone landscape and bigger */
     @media (min-width: @breakpoint-small) {
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
     }
 
     /* Tablet landscape and bigger */
     @media (min-width: @breakpoint-medium) {
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-3})) { column-count: 4; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-3})) { column-count: 4; }
     }
 
     /* Desktop and bigger */
     @media (min-width: @breakpoint-large) {
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-3})) { column-count: 4; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-4})) { column-count: 5; }
-        .woocommerce-widget-layered-nav-list:has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-5})) { column-count: 6; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{woocommerce-filter-element-column-count-break})) { column-count: 2; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-2})) { column-count: 3; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-3})) { column-count: 4; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-4})) { column-count: 5; }
+        :is(.woocommerce-widget-layered-nav-list, .wc-brand-list-layered-nav-product_brand):has(> :nth-child(@{internal-woocommerce-filter-element-column-count-break-5})) { column-count: 6; }
     }
 
 }

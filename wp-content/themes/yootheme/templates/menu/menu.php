@@ -38,7 +38,7 @@ if (in_array($type, ['iconnav', 'subnav', 'nav'])) {
 } elseif (in_array($position, ['navbar', 'navbar-split', 'navbar-push', 'navbar-mobile'])) {
 
     $type = 'navbar';
-    $scrollspyNav = $config(($config('~menu.position') === 'navbar-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
+    $scrollspyNav = $config(($position === 'navbar-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
 
     if (in_array($position, ['navbar', 'navbar-split', 'navbar-push']) && in_array($config("$header.layout"), ['stacked-center-split-a', 'stacked-center-split-b'])) {
 
@@ -67,7 +67,7 @@ if (in_array($type, ['iconnav', 'subnav', 'nav'])) {
     } else {
 
         $type = 'navbar';
-        $scrollspyNav = $config(($config('~menu.position') === 'header-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
+        $scrollspyNav = $config(($position === 'header-mobile' ? $mobile . '.navbar' : $navbar). '.sticky');
 
     }
 
@@ -77,13 +77,7 @@ if (in_array($type, ['iconnav', 'subnav', 'nav'])) {
     $type = 'subnav';
     $scrollspyNav = false;
 
-// Default on Dialog
-} elseif (in_array($position, ['dialog', 'dialog-push', 'dialog-mobile', 'dialog-mobile-push'])) {
-
-    $type = 'nav';
-    $scrollspyNav = in_array($config('~menu.position'), ['dialog', 'dialog-push']) && !$config("$dialog.offcanvas.overlay");
-
-// Default on Sidebar, Top, Bottom, Builder 1-6
+// Default on Sidebar, Top, Bottom, Builder 1-6 and Dialog ('dialog', 'dialog-push', 'dialog-mobile', 'dialog-mobile-push')
 } else {
 
     $type = 'nav';
@@ -190,7 +184,7 @@ if ($scrollspyNav && array_any($items, fn($item) => str_contains((string) $item-
     $attrs['uk-scrollspy-nav'] = 'closest: li; scroll: true;';
 
     if ($type !== 'nav') {
-        $attrs['uk-scrollspy-nav'] .= ' target: ' . (!empty($isSplitMenu) ? '!.uk-navbar-center .uk-navbar-nav ' : '') . '> * > a[href];';
+        $attrs['uk-scrollspy-nav'] .= ' target: ' . (!empty($isSplitMenu) ? '!.uk-navbar .uk-navbar-nav ' : '') . '> * > a[href];';
     }
 }
 

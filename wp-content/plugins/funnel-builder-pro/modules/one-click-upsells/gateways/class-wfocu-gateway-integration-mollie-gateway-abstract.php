@@ -383,18 +383,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 							}
 							do_action( 'wfocu_mollie_after_upsell_payment', $is_batching_on, $new_order, $response );
 
-							if ( false === $is_batching_on ) {
-								$order_note = sprintf( __( 'Upsell Offer Accepted | Offer ID: %s (Transaction ID: %s)', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $get_transaction_id );
-								$order->add_order_note( $order_note );
-							}
+						if ( false === $is_batching_on ) {
+							$order_note = sprintf( __( 'Upsell Offer Accepted | Offer ID: %1$s (Transaction ID: %2$s)', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $get_transaction_id );
+							$order->add_order_note( $order_note );
+						}
 						}
 					}
 
-				} catch ( Exception $e ) {
-					$is_successful = false;
-					$order_note    = sprintf( __( 'Offer payment failed for offer ID %s. Reason: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $e->getMessage() );
-					$this->handle_api_error( $order_note, $order_note, $order );
-				}
+			} catch ( Exception $e ) {
+				$is_successful = false;
+				$order_note    = sprintf( __( 'Offer payment failed for offer ID %1$s. Reason: %2$s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $e->getMessage() );
+				$this->handle_api_error( $order_note, $order_note, $order );
+			}
 
 				if ( ! $is_successful && false === $is_batching_on ) {
 					remove_action( 'wfocu_front_create_new_order_on_failure', array( $wfocu_public, 'handle_new_order_creation_on_failure' ) );
@@ -491,7 +491,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 							$new_order->update_meta_data( '_mollie_order_id', $transaction_id );
 							$new_order->update_meta_data( '_mollie_payment_id', $transaction_id );
 							$new_order->save();
-							$order_note = sprintf( __( 'Upsell Offer Accepted | Offer ID: %s (Transaction ID: %s)', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $transaction_id );
+							$order_note = sprintf( __( 'Upsell Offer Accepted | Offer ID: %1$s (Transaction ID: %2$s)', 'upstroke-woocommerce-one-click-upsell-mollie' ), $get_offer_id, $transaction_id );
 							$order->add_order_note( $order_note );
 						} else {
 							$get_order->update_meta_data( 'wfocu_ideal_order_current', $transaction_id );
@@ -571,7 +571,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				}
 
 			} catch ( Mollie\Api\Exceptions\ApiException $e ) {
-				throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%s) could not be used or found in %s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+				throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%1\$s) could not be used or found in %2\$s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			}
 
 			WFOCU_Core()->log->log( "Mollie $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") Offer payment Request data:" . print_r( $data, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -581,7 +581,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				if ( $validMandate ) {
 					$payment = WFOCU_Mollie_Helper_Compat::get_api_client( WFOCU_Mollie_Helper::instance()->container, $this->test_mode )->payments->create( $data );
 				} else {
-					throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%s) does not have a valid mandate in %s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( "The customer (%1\$s) does not have a valid mandate in %2\$s. ", 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_html( $customer_id ), esc_html( $this->key ) ), 101, $this->get_key() );// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				}
 			} catch ( Mollie\Api\Exceptions\ApiException $e ) {
 				throw new WFOCU_Payment_Gateway_Exception( esc_html( $e->getMessage() ), 101, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
@@ -746,9 +746,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				return;
 			}
 
-			$order_id = sanitize_text_field( $_GET['order_id'] );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$key      = sanitize_text_field( $_GET['key'] );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$item_key = sanitize_text_field( $_GET['item_key'] );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order_id = sanitize_text_field( wp_unslash( $_GET['order_id'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$key      = sanitize_text_field( wp_unslash( $_GET['key'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$item_key = sanitize_text_field( wp_unslash( $_GET['item_key'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			$data_helper = WFOCU_Mollie_Helper_Compat::get_data_helper( WFOCU_Mollie_Helper::instance()->container );
 			$order       = wc_get_order( $order_id );
@@ -797,19 +797,19 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				if ( $batch_item_key === $item_key ) {
 					switch ( $payment->status ) {
 						case 'paid':
-							$order->add_order_note( __( 'Payment completed for order item: ' . $order_Item->get_name(), 'upstroke-woocommerce-one-click-upsell-mollie' ) );
+							$order->add_order_note( sprintf( __( 'Payment completed for order item: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $order_Item->get_name() ) );
 							break;
 
 						case 'failed':
-							$order->add_order_note( __( 'Payment failed for order item: ' . $order_Item->get_name(), 'upstroke-woocommerce-one-click-upsell-mollie' ) );
+							$order->add_order_note( sprintf( __( 'Payment failed for order item: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $order_Item->get_name() ) );
 							break;
 
 						case 'expired':
-							$order->add_order_note( __( 'Payment expired for order item: ' . $order_Item->get_name(), 'upstroke-woocommerce-one-click-upsell-mollie' ) );
+							$order->add_order_note( sprintf( __( 'Payment expired for order item: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $order_Item->get_name() ) );
 							break;
 
 						case 'cancelled':
-							$order->add_order_note( __( 'Payment cancelled for order item: ' . $order_Item->get_name(), 'upstroke-woocommerce-one-click-upsell-mollie' ) );
+							$order->add_order_note( sprintf( __( 'Payment cancelled for order item: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $order_Item->get_name() ) );
 							break;
 					}
 					break;
@@ -885,7 +885,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 
 			$order_id = WFOCU_WC_Compatibility::get_order_id( $order );
 
-			$reason = __( " - Reason: refunded offer ID: $offer_id , Transaction ID: $txn_id and amount: $amount", 'upstroke-woocommerce-one-click-upsell-mollie' );
+			$reason = sprintf( __( ' - Reason: refunded offer ID: %1$s , Transaction ID: %2$s and amount: %3$s', 'upstroke-woocommerce-one-click-upsell-mollie' ), $offer_id, $txn_id, $amount );
 
 			try {
 				$order = wc_get_order( $order_id );
@@ -945,9 +945,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 					'description' => $reason
 				) );
 
-				WFOCU_Core()->log->log( "Mollie $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") refund Offer refunded response: " . print_r( $refund, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			WFOCU_Core()->log->log( "Mollie $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . ") refund Offer refunded response: " . print_r( $refund, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
-				$order->add_order_note( sprintf( /* translators: Placeholder 1: currency, placeholder 2: refunded amount, placeholder 3: optional refund reason, placeholder 4: payment ID, placeholder 5: refund ID */ __( 'Refunded %s%s%s - Payment: %s, Refund: %s', 'upstroke-woocommerce-one-click-upsell-mollie' ), WFOCU_Mollie_Helper_Compat::get_data_helper( WFOCU_Mollie_Helper::instance()->container )->getOrderCurrency( $order ), $amount, ( ! empty( $reason ) ? ' (reason: ' . $reason . ')' : '' ), $refund->paymentId, $refund->id ) );
+			$order->add_order_note( sprintf( /* translators: Placeholder 1: currency, placeholder 2: refunded amount, placeholder 3: optional refund reason, placeholder 4: payment ID, placeholder 5: refund ID */ __( 'Refunded %1$s%2$s%3$s - Payment: %4$s, Refund: %5$s', 'upstroke-woocommerce-one-click-upsell-mollie' ), WFOCU_Mollie_Helper_Compat::get_data_helper( WFOCU_Mollie_Helper::instance()->container )->getOrderCurrency( $order ), $amount, ( ! empty( $reason ) ? ' (reason: ' . $reason . ')' : '' ), $refund->paymentId, $refund->id ) );
 
 				return $refund->id;
 			} catch ( \Mollie\Api\Exceptions\ApiException $e ) {
@@ -1150,10 +1150,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 					 * We are ready to prevent the IPN but we need to check here if this could be the case of user never returning back to the site
 					 * in this case no primary order will be moved and hence no schedule action will run
 					 * We need to move to the status now, so that we could fire delayed webhook
+					 * 
+					 * Also check if user has already returned and upsell setup is in progress to prevent duplicate status change
 					 */
-
-					if ( $order->get_status() !== 'wfocu-pri-order' && ! in_array( $order->get_status(), wc_get_is_paid_statuses(), true ) ) {
+					$upsell_setup_lock_key = 'wfocu_mollie_upsell_setup_' . $order_id;
+					if ( $order->get_status() !== 'wfocu-pri-order' && ! in_array( $order->get_status(), wc_get_is_paid_statuses(), true ) && ! get_transient( $upsell_setup_lock_key ) ) {
+						// User hasn't returned yet, so we need to set the status to ensure delayed webhook can fire
 						WFOCU_Core()->orders->maybe_set_funnel_running_status( $order );
+					} elseif ( get_transient( $upsell_setup_lock_key ) ) {
+						WFOCU_Core()->log->log( "Mollie $this->key (" . ( $this->test_mode ? 'test' : 'live' ) . "): Upsell setup already in progress for order $order_id (user returned). Skipping duplicate status change from webhook." );
 					}
 				} else {
 					WFOCU_Mollie_Helper_Compat::onWebHookAction( WFOCU_Mollie_Helper::instance()->container, $this->get_wc_gateway() );
@@ -1240,7 +1245,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Mollie_Gateway_Abstract' ) ) {
 				$payment_object->{$method_name}( $order, $payment, $payment_method_title );
 			} else {
 				WFOCU_Core()->log->log( "Mollie: method $method_name doesn\'t exist for order id: $order_id" );
-				$order->add_order_note( sprintf( /* translators: Placeholder 1: payment method title, placeholder 2: payment status, placeholder 3: payment ID */ __( '%s payment %s (%s), not processed.', 'mollie-payments-for-woocommerce' ), $this->get_wc_gateway()->method_title, $payment->status, $payment->id . ( $payment->mode === 'test' ? ( ' - ' . __( 'test mode', 'mollie-payments-for-woocommerce' ) ) : '' ) ) );
+				$order->add_order_note( sprintf( /* translators: Placeholder 1: payment method title, placeholder 2: payment status, placeholder 3: payment ID */ __( '%1$s payment %2$s (%3$s), not processed.', 'mollie-payments-for-woocommerce' ), $this->get_wc_gateway()->method_title, $payment->status, $payment->id . ( $payment->mode === 'test' ? ( ' - ' . __( 'test mode', 'mollie-payments-for-woocommerce' ) ) : '' ) ) );
 			}
 		}
 

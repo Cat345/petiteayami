@@ -453,11 +453,26 @@ class FieldsType
 
     /**
      * @param WC_Product $product
-     * @return string
+     * @return ?string
      */
     public static function sku($product)
     {
-        return $product->get_sku();
+        $sku = $product->get_sku();
+
+        if (empty($sku)) {
+            return null;
+        }
+
+        return HtmlElement::tag(
+            'div',
+            [
+                'class' => [
+                    'tm-source-woo-sku',
+                    'tm-source-page' => Helper::isPageSource($product),
+                ],
+            ],
+            $sku,
+        );
     }
 
     /**

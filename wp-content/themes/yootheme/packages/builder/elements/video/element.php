@@ -2,6 +2,7 @@
 
 namespace YOOtheme;
 
+use YOOtheme\Builder\Listener\LoadVimeoScript;
 use YOOtheme\Builder\Listener\LoadYoutubeScript;
 use YOOtheme\Theme\I18nConfig;
 use YOOtheme\Theme\ThemeConfig;
@@ -43,45 +44,57 @@ return [
 
             $node->props['consent'] = false;
 
-            if (preg_match(ViewHelper::REGEX_YOUTUBE, $node->props['video'] ?? '', $matches)) {
-                if (!$node->props['poster']) {
-                    $quality = 'maxresdefault';
-                    $node->props[
-                        'poster'
-                    ] = "https://img.youtube.com/vi/{$matches['id']}/{$quality}.jpg";
-                }
+            $types = [LoadYoutubeScript::TYPE => ViewHelper::REGEX_YOUTUBE, LoadVimeoScript::TYPE => ViewHelper::REGEX_VIMEO];
 
-                /**
-                 * @var I18nConfig $i18n
-                 * @var ThemeConfig $theme
-                 * @var Metadata $metadata
-                 */
-                [$i18n, $theme, $metadata] = app(
-                    I18nConfig::class,
-                    ThemeConfig::class,
-                    Metadata::class,
-                );
+            foreach ($types as $type => $regexp) {
+                if (preg_match($regexp, $node->props['video'] ?? '', $matches)) {
+                    if (!$node->props['poster']) {
+                        switch ($type) {
+                            case LoadYoutubeScript::TYPE:
+                                $playIcon = 'consent_icon_youtube.svg';
+                                $node->props['poster'] = "https://img.youtube.com/vi/{$matches['id']}/maxresdefault.jpg";
+                                break;
+                            case LoadVimeoScript::TYPE:
+                                $playIcon = 'consent_icon_vimeo.svg';
+                                $node->props['poster'] = $node->props['video'];
+                                break;
+                        }
 
-                foreach ($theme->scripts as &$script) {
-                    if ($script['type'] !== LoadYoutubeScript::TYPE) {
-                        continue;
+                        $node->props['play_icon'] = $node->props['play_icon'] ?: "~assets/images/{$playIcon}";
                     }
 
-                    $metadata->set('script:video-consent', [
-                        'src' => '~assets/site/js/video.js',
-                        'type' => 'module',
-                    ]);
+                    /**
+                     * @var I18nConfig $i18n
+                     * @var ThemeConfig $theme
+                     * @var Metadata $metadata
+                     */
+                    [$i18n, $theme, $metadata] = app(
+                        I18nConfig::class,
+                        ThemeConfig::class,
+                        Metadata::class,
+                    );
 
-                    $script['active'] = true;
+                    foreach ($theme->scripts as &$script) {
+                        if ($script['type'] !== $type) {
+                            continue;
+                        }
 
-                    $node->props += $script['element'] ?? [];
-                    $node->props['consent'] = true;
-                    $node->props['consent_accept_button'] = $i18n->get('consent.button_accept');
+                        $metadata->set('script:video-consent', [
+                            'src' => '~assets/site/js/video.js',
+                            'type' => 'module',
+                        ]);
 
-                    $service = "{$script['category']}.{$script['service']}";
-                    $node->attrs['data-video-consent'] = $service;
+                        $script['active'] = true;
 
-                    break;
+                        $node->props += $script['element'] ?? [];
+                        $node->props['consent'] = true;
+                        $node->props['consent_accept_button'] = $i18n->get('consent.button_accept');
+
+                        $service = "{$script['category']}.{$script['service']}";
+                        $node->attrs['data-video-consent'] = $service;
+
+                        break;
+                    }
                 }
             }
 

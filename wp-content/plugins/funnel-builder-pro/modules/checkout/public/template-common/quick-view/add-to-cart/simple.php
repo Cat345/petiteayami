@@ -13,7 +13,7 @@ if ( ! $product->is_purchasable() ) {
 
 
 $page_settings = WFACP_Common::get_page_settings( WFACP_Common::get_id() );
-if ( wc_string_to_bool( $page_settings['hide_quantity_switcher'] ) ) {
+if ( wc_string_to_bool( isset( $page_settings['hide_quantity_switcher'] ) ? $page_settings['hide_quantity_switcher'] : "no" ) ) {
 	return;
 }
 $btn_name = esc_html( $product->single_add_to_cart_text() );

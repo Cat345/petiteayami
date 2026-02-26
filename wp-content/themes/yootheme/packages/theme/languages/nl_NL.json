@@ -743,6 +743,7 @@
     "Enable active state": "Activeer actieve status",
     "Enable autoplay": "Automatisch starten inschakelen",
     "Enable autoplay immediately, start as soon as the video enters the viewport or only on hover.": "Schakel automatisch afspelen direct in, start zodra de video in beeld komt of alleen bij het hoveren met de muis.",
+    "Enable autoplay or use the video like an animated image (autoplay, loop, no controls and muted).": "Schakel automatisch afspelen in of gebruik de video als een animatie (automatisch afspelen, herhalen, geen bedieningselementen en gedempt).",
     "Enable autoplay or use the video like an animated image (autoplay, loop, no controls and muted). ": "Schakel automatisch afspelen in of gebruik de video als een animatie (automatisch afspelen, herhalen, geen bedieningselementen en gedempt). ",
     "Enable cache-friendly URLs": "Schakel cachevriendelijke URL's in",
     "Enable click mode": "Schakel de klikmodus in",

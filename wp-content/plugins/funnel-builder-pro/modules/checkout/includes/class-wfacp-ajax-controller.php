@@ -108,9 +108,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			} elseif ( method_exists( __CLASS__, $action ) ) {
 				self::$output_resp = self::$action( $input_data );
 			}
-			$bump_action_data['wfacp_id']  = $_REQUEST['wfacp_id'];
+			$aero_id                       = isset( $_REQUEST['wfacp_id'] ) ? $_REQUEST['wfacp_id'] : 0;
+			$bump_action_data['wfacp_id']  = $aero_id;
 			self::$bump_action_data        = $action;
-			self::$output_resp['wfacp_id'] = $bump_action_data['wfacp_id'];
+			self::$output_resp['wfacp_id'] = $aero_id;
 			//JS callback ID
 			self::$output_resp['callback_id'] = isset( $bump_action_data['callback_id'] ) ? $bump_action_data['callback_id'] : '';
 
@@ -894,6 +895,83 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			return $resp;
 		}
 
+
+		public static function update_variation_data( $post ) {
+
+			$resp = array(
+				'msg'    => '',
+				'status' => false,
+			);
+
+			if ( ! WFACP_Common::cart_has_removed_bumps() ) {
+				WC()->cart->set_removed_cart_contents( [] );
+			}
+
+			$wfacp_id = absint( $post['wfacp_id'] );
+			WFACP_Common::set_id( $wfacp_id );
+			$product_variation_id = absint( isset( $post['variation_id'] ) ? $post['variation_id'] : 0 );
+			$product_qty          = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
+			$cart_key             = ( $post['cart_key'] );
+			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : [];
+			$plan_id              = isset( $post['sublium-option-plan'] ) ? absint( $post['sublium-option-plan'] ) : 0;
+
+			$cart = WC()->cart;
+			if ( isset( $post['sublium-front-radio-input'] ) && $post['sublium-front-radio-input'] == 'one-time' ) {
+				$plan_id = 0;
+			}
+			// Get the current cart item
+			$cart_item = $cart->get_cart_item( $cart_key );
+			if ( empty( $cart_item ) ) {
+				return false;
+			}
+
+			//wp_send_json([$cart_item, $attributes]);
+
+			if ( isset( $attributes ) ) {
+				foreach ( $attributes as $key => $value ) {
+					$cart_item['attributes'][ $key ] = $value;
+					// Also update individual attribute keys for compatibility
+					$cart_item[ $key ] = $value;
+				}
+			}
+
+			$cart_item['quantity'] = intval( $product_qty );
+
+			// Update variation data if variation_id is provided
+			if ( $product_variation_id > 0 ) {
+				$cart_item['variation_id'] = $product_variation_id;
+
+				// Get the variation product object
+				$variation_product = wc_get_product( $product_variation_id );
+				if ( $variation_product && $variation_product->is_type( 'variation' ) ) {
+					// Update variation attributes array
+					$cart_item['variation'] = wc_get_product_variation_attributes( $product_variation_id );
+
+					// Update the product data object
+					$cart_item['data'] = $variation_product;
+
+					// Update data_hash to prevent WooCommerce from removing the item
+					$cart_item['data_hash'] = wc_get_cart_item_data_hash( $variation_product );
+				}
+			} elseif ( ! empty( $attributes ) && isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] > 0 ) {
+				// If attributes changed but variation_id didn't, still need to update hash
+				$variation_product = $cart_item['data'];
+				if ( $variation_product && $variation_product->is_type( 'variation' ) ) {
+					// Update variation attributes array
+					$cart_item['variation'] = $attributes;
+
+					// Update data_hash to prevent WooCommerce from removing the item
+					$cart_item['data_hash'] = wc_get_cart_item_data_hash( $variation_product );
+				}
+			}
+
+			$cart->cart_contents[ $cart_key ] = $cart_item;
+			$cart->set_session();
+			$resp['status'] = true;
+
+			return $resp;
+		}
+
 		/**
 		 * Switch products it self other add to cart product
 		 */
@@ -1312,45 +1390,46 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			];
 			if ( isset( $_POST['data'] ) && ( $post = $_POST['data'] ) && isset( $post['wfacp_id'] ) && $post['wfacp_id'] > 0 && isset( $post['product_id'] ) && $post['product_id'] > 0 ) {
 				$wfacp_id = absint( $post['wfacp_id'] );
-				$item_key = $post['item_key'];
+				$item_key = isset( $post['item_key'] ) ? $post['item_key'] : '';
 				$cart_key = isset( $post['cart_key'] ) ? $post['cart_key'] : '';
 				WFACP_Common::set_id( $wfacp_id );
-				$save_product_list = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id() );
-				if ( isset( $save_product_list[ $item_key ] ) ) {
-					$product_id = absint( $post['product_id'] );
-					$params     = array(
-						'p'         => $product_id,
-						'post_type' => array( 'product', 'product_variation' ),
-					);
-					$query      = new WP_Query( $params );
 
-					global $wfacp_product, $wfacp_post, $wfacp_qv_data;
-					$wfacp_qv_data = $post;
-					include_once __DIR__ . '/class-wfacp-quick-view-discounting.php';
-					if ( $query->have_posts() ) {
-						while ( $query->have_posts() ) {
-							$query->the_post();
-							ob_start();
-							global $post, $product;
-							if ( in_array( $product->get_type(), WFACP_Common::get_variation_product_type() ) ) {
-								$wfacp_product = $product;
-								$wfacp_post    = $post;
+				$product_id = absint( $post['product_id'] );
+				$params     = array(
+					'p'         => $product_id,
+					'post_type' => array( 'product', 'product_variation' ),
+				);
+				$query      = new WP_Query( $params );
 
-								$parent_id = $product->get_parent_id();
-								$product   = null;
-								$post      = get_post( $parent_id );
-								$product   = wc_get_product( $parent_id );
+				global $wfacp_product, $wfacp_post, $wfacp_qv_data;
+				$wfacp_qv_data = $post;
+				
+				include_once __DIR__ . '/class-wfacp-quick-view-discounting.php';
+				do_action('wfacp_before_quick_view_ajax', $post);
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						$query->the_post();
+						ob_start();
+						global $post, $product;
+						if ( in_array( $product->get_type(), WFACP_Common::get_variation_product_type() ) ) {
+							$wfacp_product = $product;
+							$wfacp_post    = $post;
 
-							}
-							require_once( WFACP_TEMPLATE_COMMON . '/quick-view/qv-template.php' );
-							$html           = ob_get_clean();
-							$resp['status'] = true;
-							$resp['html']   = $html;
-							break;
+							$parent_id = $product->get_parent_id();
+							$product   = null;
+							$post      = get_post( $parent_id );
+							$product   = wc_get_product( $parent_id );
+
 						}
+						require_once( WFACP_TEMPLATE_COMMON . '/quick-view/qv-template.php' );
+						$html           = ob_get_clean();
+						$resp['status'] = true;
+						$resp['html']   = $html;
+						break;
 					}
-					wp_reset_postdata();
 				}
+				wp_reset_postdata();
+
 				self::send_resp( $resp );
 			}
 		}
@@ -1964,7 +2043,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
 				$source = $_SERVER['HTTP_REFERER'];
 			}
-			$pixel = WFACP_Analytics_Pixel::get_instance();
+			$pixel        = WFACP_Analytics_Pixel::get_instance();
 			$access_token = $pixel->get_conversion_api_access_token();
 
 			$access_token = explode( ',', $access_token );
@@ -1994,10 +2073,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 			foreach ( $get_each_pixel_id as $key => $pixel_id ) {
 				if ( empty( $access_token[ $key ] ) ) {
-                    continue;
+					continue;
 				}
 
-                BWF_Facebook_Sdk_Factory::setup( trim( $pixel_id ), trim( $access_token[ $key ] ) );
+				BWF_Facebook_Sdk_Factory::setup( trim( $pixel_id ), trim( $access_token[ $key ] ) );
 
 				$get_test = $pixel->get_conversion_api_test_event_code();
 				$get_test = explode( ',', $get_test );

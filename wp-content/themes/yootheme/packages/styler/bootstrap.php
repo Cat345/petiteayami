@@ -4,6 +4,7 @@ namespace YOOtheme\Theme\Styler;
 
 use YOOtheme\Config;
 use YOOtheme\Path;
+use YOOtheme\Theme\Updater;
 
 return [
     'theme' => fn(Config $config) => $config->loadFile(__DIR__ . '/config/theme.php'),
@@ -24,6 +25,12 @@ return [
     'events' => [
         'customizer.init' => [Listener\LoadStylerData::class => '@handle'],
         'styler.imports' => [Listener\LoadStylerImports::class => ['@handle', 10]],
+    ],
+
+    'extend' => [
+        Updater::class => function (Updater $updater) {
+            $updater->add(__DIR__ . '/updates.php');
+        },
     ],
 
     'services' => [

@@ -61,7 +61,6 @@ if ( ! class_exists( 'BWFABT_DB_Tables' ) ) {
 		 * @since 2.0
 		 */
 		public function add_if_needed() {
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			$tables_list = $this->get_tables_list();
 
 			if ( empty( $tables_list ) ) {
@@ -95,6 +94,7 @@ if ( ! class_exists( 'BWFABT_DB_Tables' ) ) {
 		 *  Warning: check if it exists first, which could cause SQL errors.
 		 */
 		public function ab_experiments() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			$collate = '';
 			global $wpdb;
 			try {

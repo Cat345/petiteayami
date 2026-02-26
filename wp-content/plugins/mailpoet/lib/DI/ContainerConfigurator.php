@@ -40,6 +40,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationAnalytics::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\AutomationPreviewEmbed::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\AutomationFlowEmbed::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\DynamicSegments::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\ExperimentalFeatures::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\FormEditor::class)->setPublic(true);
@@ -615,6 +616,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewsletterCoupon::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\GATracking::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Preview\WooCommerceDummyData::class)->setPublic(true);
     // Newsletter templates
     $container->autowire(\MailPoet\NewsletterTemplates\NewsletterTemplatesRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\NewsletterTemplates\TemplateImageLoader::class)->setPublic(true);

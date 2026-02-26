@@ -75,9 +75,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 		 */
 		public function maybe_collect_response_paypal( $order, $response ) {
 
-			if ( false === is_null( $response ) ) {
-				$this->cc_call_response = $response;
-			}
+				if ( ! is_null( $response ) ) {
+					$this->cc_call_response = $response;
+				}
 
 		}
 
@@ -99,7 +99,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 						/**
 						 * Checking if we have successfully captured the response
 						 */
-						$response_class = class_exists( '\WC_Braintree\API\Responses\WC_Braintree_API_Credit_Card_Transaction_Response' ) ? '\WC_Braintree\API\Responses\WC_Braintree_API_Credit_Card_Transaction_Response' : 'WC_Braintree_API_Credit_Card_Transaction_Response';
+						$response_class = class_exists( '\WC_Braintree\API\Responses\WC_Braintree_API_PayPal_Transaction_Response' ) ? '\WC_Braintree\API\Responses\WC_Braintree_API_PayPal_Transaction_Response' : 'WC_Braintree_API_PayPal_Transaction_Response';
 
 						if ( ! $this->cc_call_response instanceof $response_class ) {
 							return;
@@ -251,45 +251,26 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 					// an existing registered user with a saved payment token
 					$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $order->payment->token );
 
-					// account last four
-					$order->payment->account_number = $token->get_last_four();
-
-					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
-
-						// card type
-						$order->payment->card_type = $token->get_card_type();
-
-						// exp month/year
-						$order->payment->exp_month = $token->get_exp_month();
-						$order->payment->exp_year  = $token->get_exp_year();
-
-					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
-
-						// account type (checking/savings)
-						$order->payment->account_type = $token->get_account_type();
+					// PayPal account email (PayPal doesn't have last four like credit cards)
+					if ( $this->get_wc_gateway()->is_paypal_gateway() && method_exists( $token, 'get_payer_email' ) ) {
+						$order->payment->account_number = $token->get_payer_email();
+					} else {
+						// account last four for other payment types
+						$order->payment->account_number = $token->get_last_four();
 					}
 				} else {
 
 					// a guest user means that token data must be set from the original order
 
-					// account number
-					$order->payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
-
-					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
-
-						// card type
-						$order->payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
-						$expiry_date               = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_expiry_date' );
-						// expiry date
-						if ( ! empty( $expiry_date ) ) {
-							list( $exp_year, $exp_month ) = explode( '-', $expiry_date );
-							$order->payment->exp_month = $exp_month;
-							$order->payment->exp_year  = $exp_year;
+					// PayPal payer email (PayPal doesn't have last four like credit cards)
+					if ( $this->get_wc_gateway()->is_paypal_gateway() ) {
+						$payer_email = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payer_email' );
+						if ( ! empty( $payer_email ) ) {
+							$order->payment->account_number = $payer_email;
 						}
-					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
-
-						// account type
-						$order->payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
+					} else {
+						// account number for other payment types
+						$order->payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
 					}
 				}
 			}
@@ -369,11 +350,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 				/**  use new payment method (nonce) */
 				$this->request_data['paymentMethodNonce'] = $order->payment->nonce;
 
-				// set cardholder name when adding a credit card, note this isn't possible
-				// when using a 3DS nonce
-				if ( 'credit_card' === $order->payment->type && empty( $order->payment->use_3ds_nonce ) ) {
-					$this->request_data['creditCard'] = array( 'cardholderName' => $order->get_formatted_billing_full_name() );
-				}
+				
 			}
 
 			// add recurring flag to transactions that are subscription renewals

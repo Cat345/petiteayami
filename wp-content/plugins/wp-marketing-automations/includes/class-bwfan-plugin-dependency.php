@@ -381,4 +381,21 @@ class BWFAN_Plugin_Dependency {
 
 		return in_array( 'breakdance/plugin.php', self::$active_plugins, true ) || array_key_exists( 'breakdance/plugin.php', self::$active_plugins );
 	}
+
+	/**
+	 * Checking if Sublium is active
+	 *
+	 * @return bool
+	 */
+	public static function sublium_active_check() {
+		if ( ! self::$active_plugins ) {
+			self::init();
+		}
+
+		if ( function_exists( 'sublium_init' ) ) {
+			return true;
+		}
+
+		return in_array( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php', self::$active_plugins, true ) || array_key_exists( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php', self::$active_plugins );
+	}
 }

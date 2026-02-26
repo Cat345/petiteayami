@@ -73,7 +73,7 @@ if ($config("$section.video") && !$config("$section.image")) {
     if ($iframe = $this->iframeVideo($config("$section.video"))) {
 
         $attrs_video['class'][] = 'uk-disabled';
-
+        $attrs_video['inert'] = true;
         $attrs_video['src'] = $iframe;
 
         $video = "<iframe{$this->attrs($attrs_video)}></iframe>";

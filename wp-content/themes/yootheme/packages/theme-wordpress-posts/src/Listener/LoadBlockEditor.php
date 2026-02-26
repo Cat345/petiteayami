@@ -2,8 +2,10 @@
 
 namespace YOOtheme\Theme\Wordpress\Listener;
 
+use YOOtheme\Config;
 use YOOtheme\File;
 use YOOtheme\Url;
+use function YOOtheme\app;
 
 class LoadBlockEditor
 {
@@ -18,11 +20,12 @@ class LoadBlockEditor
             return;
         }
 
+        // This needs to use the native wp_enqueue_script function. Otherwise, the script won't be added within the block editor's iframe
         wp_enqueue_script(
             'posts-builder',
             Url::to('~assets/admin/js/posts-block.js', [], is_ssl()),
             [],
-            false,
+            app(Config::class)->get('theme.version'),
             true,
         );
 

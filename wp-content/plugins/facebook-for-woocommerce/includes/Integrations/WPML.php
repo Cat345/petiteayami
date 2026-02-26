@@ -3,8 +3,10 @@ declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Integrations;
 
+use WooCommerce\Facebook\WPMLLanguageStatus;
+
 /**
- * WPML integration for Facebook for WooCommerce.
+ * WPML integration for Meta for WooCommerce.
  *
  * Handles integration with the WPML multilingual plugin to manage
  * product synchronization based on language settings.
@@ -437,11 +439,10 @@ class WPML extends Abstract_Localization_Integration {
 		}
 
 		// Count how many languages are set to VISIBLE
-		// FB_WPML_Language_Status::VISIBLE = 1
 		$visible_languages = array_filter(
 			$wpml_settings,
 			function ( $status ) {
-				return 1 === $status;
+				return WPMLLanguageStatus::VISIBLE === $status;
 			}
 		);
 

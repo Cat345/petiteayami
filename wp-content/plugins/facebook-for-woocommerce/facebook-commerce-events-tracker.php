@@ -5,13 +5,14 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @package FacebookCommerce
+ * @package MetaCommerce
  */
 
 use WooCommerce\Facebook\Events\Event;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Logger;
+use WooCommerce\Facebook\Integrations\CostOfGoods\CostOfGoods;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -29,6 +30,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 	 * This class is responsible for tracking events and sending them to Facebook.
 	 */
 	class WC_Facebookcommerce_EventsTracker {
+		/** @var bool disable VO while product is not GA */
+		const IS_VO_ENABLED = false;
+
+		/** @var string URL for the client-side CAPI param builder script */
+		const CAPI_PARAM_BUILDER_JS_URL = 'https://capi-automation.s3.us-east-2.amazonaws.com/public/client_js/capiParamBuilder/clientParamBuilder.bundle.js';
 
 		/** @var \WC_Facebookcommerce_Pixel instance */
 		private $pixel;
@@ -51,11 +57,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/** @var bool whether the pixel should be enabled */
 		private $is_pixel_enabled;
 
+		/** @var CostOfGoods CostOfGoods provider instance. Used to calculate the profit margin */
+		private $cogs_provider;
+
 		/**
 		 * @var \FacebookAds\ParamBuilder|null shared ParamBuilder instance
 		 */
 		private static $param_builder = null;
 
+		/**
+		 * Order meta keys used by the tracker.
+		 */
+		const META_PURCHASE_TRACKED_BROWSER = '_meta_purchase_tracked_browser';
+		const META_PURCHASE_TRACKED_SERVER  = '_meta_purchase_tracked_server';
+		const META_EVENT_ID                 = '_meta_event_id';
 
 		/**
 		 * Events tracker constructor.
@@ -73,8 +88,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->aam_settings   = $aam_settings;
 			$this->tracked_events = array();
 
+			// Initialize external JS hooks early so script is enqueued before wp_enqueue_scripts fires.
+			\WC_Facebookcommerce_Pixel::init_external_js_hooks();
+
 			$this->param_builder_server_setup();
 			$this->add_hooks();
+			$this->cogs_provider = new CostOfGoods();
 		}
 
 		public static function get_param_builder() {
@@ -259,7 +278,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			wp_enqueue_script(
 				'facebook-capi-param-builder',
-				'https://capi-automation.s3.us-east-2.amazonaws.com/public/client_js/capiParamBuilder/clientParamBuilder.bundle.js',
+				self::CAPI_PARAM_BUILDER_JS_URL,
 				array(),
 				null,
 				true
@@ -974,6 +993,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			// Log which hook triggered this purchase event.
+			$hook_name = current_action();
+
+			// Determine if this is a browser or server event.
+			$is_browser = 'woocommerce_thankyou' === $hook_name;
+
+			// Capture whether CAPI has already been sent before we set any meta.
+			$capi_already_sent = $order->meta_exists( self::META_PURCHASE_TRACKED_SERVER );
+
+			// If the event is triggered by a hook that is not related to the browser, it is a server event.
+			$meta_flag = $is_browser ? self::META_PURCHASE_TRACKED_BROWSER : self::META_PURCHASE_TRACKED_SERVER;
+
 			// Get the status of the order to ensure we track the actual purchases and not the ones that have a failed payment.
 			$order_state = $order->get_status();
 
@@ -982,28 +1013,42 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// use a session flag to ensure this Purchase event is not tracked multiple times
-			$purchase_tracked_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked_' . $order_id;
+			// Return if this Purchase event has already been tracked for this context (browser or server).
+			if (
+				( $is_browser && $order->meta_exists( self::META_PURCHASE_TRACKED_BROWSER ) ) ||
+				( ! $is_browser && $order->meta_exists( self::META_PURCHASE_TRACKED_SERVER ) )
+			) {
+				return;
+			}
+
+			// Use a session flag to ensure this Purchase event is not tracked multiple times along multiple processes.
+			$purchase_tracked_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked_' . $order_id . '_' . ( $is_browser ? 'browser' : 'server' );
 
 			// Return if this Purchase event has already been tracked.
-			if ( 'yes' === get_transient( $purchase_tracked_flag ) || $order->meta_exists( '_meta_purchase_tracked' ) ) {
+			if ( 'yes' === get_transient( $purchase_tracked_flag ) ) {
 				return;
+			}
+
+			// Ensure a single event_id is shared across browser and server for deduplication.
+			$event_id = $order->get_meta( self::META_EVENT_ID );
+
+			if ( empty( $event_id ) ) {
+				$temp_event = new Event( [] );
+				$event_id   = $temp_event->get_id();
+				$order->add_meta_data( self::META_EVENT_ID, $event_id, true );
 			}
 
 			// Mark the order as tracked for the session.
 			set_transient( $purchase_tracked_flag, 'yes', 45 * MINUTE_IN_SECONDS );
 
-			// Set a flag to ensure this Purchase event is not going to be sent across different sessions.
-			$order->add_meta_data( '_meta_purchase_tracked', true, true );
+			// Mark the order as tracked for the context (browser or server).
+			$order->add_meta_data( $meta_flag, true, true );
 
 			// Save the metadata.
 			$order->save();
 
-			// Log which hook triggered this purchase event.
-			$hook_name = current_action();
-
 			Logger::log(
-				'Purchase event fired for order ' . $order_id . ' by hook ' . $hook_name . '.',
+				'Purchase event fired for order ' . $order_id . ' by hook ' . $hook_name . ' (context: ' . ( $is_browser ? 'browser' : 'server' ) . ').',
 				array(),
 				array(
 					'should_send_log_to_meta'        => false,
@@ -1016,6 +1061,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$contents      = array();
 			$product_ids   = array( array() );
 			$product_names = array();
+			$products      = array();
 
 			foreach ( $order->get_items() as $item ) {
 
@@ -1030,6 +1076,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					}
 
 					$quantity = $item->get_quantity();
+					$products[] = array(
+						'product' => $product,
+						'qty' => $quantity,
+					);
+
 					$content  = new \stdClass();
 
 					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
@@ -1038,6 +1089,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					$contents[] = $content;
 				}
 			}
+
 			// Advanced matching information is extracted from the order
 			$event_data = array(
 				'event_name'  => $event_name,
@@ -1051,13 +1103,31 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'order_id'     => $order_id,
 				),
 				'user_data'   => $this->get_user_data_from_billing_address( $order ),
+				'event_id'    => $event_id,
 			);
+
+			if ( self::IS_VO_ENABLED ) {
+				$cogs = $this->cogs_provider->calculate_cogs_for_products( $products );
+
+				if ( false !== $cogs ) {
+					$order_value_excluding_tax_including_discounts = $order->get_total()
+						- $order->get_total_tax()
+						- $order->get_shipping_total()
+						- $order->get_shipping_tax();
+
+					$net_profit = $order_value_excluding_tax_including_discounts - $cogs;
+					if ( $net_profit > 0 ) {
+						$event_data['custom_data']['net_revenue'] = \WC_Facebookcommerce_Utils::truncate_float_number( $net_profit, 2 );
+					}
+				}
+			}
 
 			$event = new Event( $event_data );
 
-			$this->send_api_event( $event );
-
-			$event_data['event_id'] = $event->get_id();
+			// Send CAPI event if not already sent. Events with the same event_id get deduplicated on Meta's side.
+			if ( ! $capi_already_sent ) {
+				$this->send_api_event( $event );
+			}
 
 			$this->pixel->inject_event( $event_name, $event_data );
 

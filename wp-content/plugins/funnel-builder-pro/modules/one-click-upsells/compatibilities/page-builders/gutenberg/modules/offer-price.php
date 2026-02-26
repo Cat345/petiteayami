@@ -46,6 +46,7 @@ if ( ! class_exists( 'WFOCU_Guten_Offer_Price' ) ) {
 
 
             <div class="wp-block-wrap">
+                <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
                 <div class="wp-offer-price-inner">
 					<?php
 					/** Price */
@@ -89,6 +90,7 @@ if ( ! class_exists( 'WFOCU_Guten_Offer_Price' ) ) {
 						echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} ?>
 
+                </div>
                 </div>
             </div>
 			<?php

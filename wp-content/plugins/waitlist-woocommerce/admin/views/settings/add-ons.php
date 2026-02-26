@@ -13,13 +13,14 @@ $addons = array(
 		'link' 	=> $link
 	),
 
-	'export' => array(
-		'title' => 'Export/Import Users',
-		'icon' 	=> 'dashicons-move',
-		'desc' 	=> 'Export & Import waitlist users & all the data in a CSV/Excel file.',
+	'manage' => array(
+		'title' => 'Unsubscribe/Manage Waitlist',
+		'icon' 	=> 'dashicons-admin-users',
+		'desc' 	=> 'Enable unsubscribe links in emails for easy opt-out. <br> Give users a dedicated view to see and manage all their waitlisted products. [GDPR-compliant]',
 		'link' 	=> $link
 	),
 
+	
 	'fields' => array(
 		'title' 	=> 'Custom Form fields',
 		'icon' 		=> 'dashicons-plus',
@@ -28,12 +29,15 @@ $addons = array(
 	),
 
 
-	'notify_phone' => array(
-		'title' => 'Notify on Phone',
-		'icon' 	=> 'dashicons-phone',
-		'desc' 	=> 'Send a text message to users whenever a product arrives back in stock.',
+	'export' => array(
+		'title' => 'Export/Import Users',
+		'icon' 	=> 'dashicons-move',
+		'desc' 	=> 'Export & Import waitlist users & all the data in a CSV/Excel file.',
 		'link' 	=> $link
 	),
+
+
+
 
 );
 

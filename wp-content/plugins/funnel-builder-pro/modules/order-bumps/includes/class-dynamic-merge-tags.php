@@ -61,7 +61,7 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 					//if match found
 					if ( $matches && is_array( $matches ) && count( $matches ) > 0 ) {
 
-                  
+
 						foreach ( $matches[0] as $exact_match ) {
 
 							//preserve old match
@@ -205,18 +205,18 @@ if ( ! class_exists( 'WFOB_Product_Switcher_Merge_Tags' ) ) {
 			if ( $price > $regular_org ) {
 				return '';
 			}
-			$temp_percentage = ( ( ( $price / $regular_org ) * 100 ) );
-			if ( $temp_percentage > 0 ) {
-				$percentage = 100 - ( ( $price / $regular_org ) * 100 );
-			} else {
-				return '';
-			}
-			$t = absint( $percentage );
-			if ( ( $percentage / $t ) > 0 ) {
-				$percentage = number_format( $percentage, 2 );
-				$percentage = str_replace( '.00', '', $percentage );
-			}
-			unset( $t );
+		$temp_percentage = ( ( ( $price / $regular_org ) * 100 ) );
+		if ( $temp_percentage > 0 ) {
+			$percentage = 100 - ( ( $price / $regular_org ) * 100 );
+		} else {
+			return '';
+		}
+		$t = absint( $percentage );
+		if ( $t > 0 && ( $percentage / $t ) > 0 ) {
+			$percentage = number_format( $percentage, 2 );
+			$percentage = str_replace( '.00', '', $percentage );
+		}
+		unset( $t );
 
 			return $percentage . '%';
 		}

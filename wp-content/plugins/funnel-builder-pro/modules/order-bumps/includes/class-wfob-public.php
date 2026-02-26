@@ -19,7 +19,7 @@ class WFOB_Public {
 	protected function __construct() {
 		add_action( 'wp_loaded', [ $this, 'make_cart_empty' ], 99 );
 		add_action( 'wp', [ $this, 'attach_hooks' ] );
-		add_action( 'woocommerce_before_calculate_totals', [ $this, 'calculate_totals' ], PHP_INT_MAX );
+		add_action( 'woocommerce_before_calculate_totals', [ $this, 'calculate_totals' ] );
 		add_action( 'woocommerce_cart_loaded_from_session', [ $this, 'calculate_totals' ], 2 );
 		add_action( 'wp', [ $this, 'reset_wc_session' ] );
 

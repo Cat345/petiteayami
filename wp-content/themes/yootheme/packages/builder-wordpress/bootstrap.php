@@ -3,10 +3,11 @@
 namespace YOOtheme\Builder\Wordpress;
 
 use YOOtheme\Builder;
-use YOOtheme\File;
 use YOOtheme\Builder\Listener\LoadGoogleMapsScript;
 use YOOtheme\Builder\Listener\LoadLeafletScript;
+use YOOtheme\Builder\Listener\LoadVimeoScript;
 use YOOtheme\Builder\Listener\LoadYoutubeScript;
+use YOOtheme\File;
 use YOOtheme\View;
 
 return [
@@ -22,6 +23,7 @@ return [
             LoadLeafletScript::class => ['@body', 10],
             LoadGoogleMapsScript::class => ['@body', 10],
             LoadYoutubeScript::class => ['@body', 10],
+            LoadVimeoScript::class => ['@body', 10],
         ],
     ],
 

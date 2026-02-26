@@ -19,6 +19,7 @@ if ($props['link']) {
         ],
 
         'href' => $props['link'],
+        'uk-scroll' => !$element['scrollspy_nav'] && str_contains((string) $props['link'], '#'),
         'target' => $props['link_target'] ? '_blank' : false,
         'download' => $props['link_download'],
         'rel' => [

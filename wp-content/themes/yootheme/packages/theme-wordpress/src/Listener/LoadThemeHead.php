@@ -27,8 +27,7 @@ class LoadThemeHead
     {
         $this->config->add('~theme', [
             'site_url' => trailingslashit(home_url()), // eventually update site_url with language parameter (Polylang)
-            'direction' => is_rtl() ? 'rtl' : 'lrt',
-            'page_class' => '', // TODO: implement page class builder
+            'direction' => is_rtl() ? 'rtl' : 'ltr',
         ]);
 
         if ($this->config->get('~theme.disable_wpautop')) {

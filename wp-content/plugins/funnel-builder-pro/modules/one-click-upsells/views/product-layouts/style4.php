@@ -153,7 +153,7 @@ $get_product_element_order = apply_filters( 'wfocu_product_layout_order', array(
 										break;
 									case 'price':
 										?>
-                                        <div class="wfocu-price-wrapper">
+                                        <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
                                             <div class="wfocu-product-price wfocu-product-on-sale">
 												<?php
 

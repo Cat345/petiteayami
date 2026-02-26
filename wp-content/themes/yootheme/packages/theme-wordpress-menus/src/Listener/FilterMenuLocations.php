@@ -27,12 +27,19 @@ class FilterMenuLocations
             return $locations;
         }
 
+        $previous = $locations;
         $locations = [];
         $positions = $this->config->get('~theme.menu.positions', []);
 
         // get menu locations from theme config
         foreach ($positions as $name => $position) {
             if (!empty($position['menu'])) {
+                // in some installations there is corrupted data where the term's name
+                // is stored in the position instead of its id
+                if (!is_int($position['menu'])) {
+                    return $previous;
+                }
+
                 $locations[$name] = $position['menu'];
             }
         }

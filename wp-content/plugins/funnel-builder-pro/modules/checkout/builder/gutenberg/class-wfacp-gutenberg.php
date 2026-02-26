@@ -292,7 +292,7 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ), true ) ) {
 				return $categories;
 			}
-			
+
 			return array_merge( array(
 				array(
 					'slug'  => 'woofunnels',
@@ -787,7 +787,8 @@ if ( ! class_exists( 'WFACP_GutenBerg' ) ) {
 			$stylesheet_file = '/wfacp-block-front.css';
 			$script_file     = '/wfacp-block-front.js';
 
-			wp_enqueue_style( 'wfacp-block-front', $wfacp_assets_dir . $stylesheet_file, [ 'wp-block-library', 'wp-block-library-theme' ], time() );
+			// Removed wp-block-library dependencies as they're not required and cause issues when themes dequeue them
+			wp_enqueue_style( 'wfacp-block-front', $wfacp_assets_dir . $stylesheet_file, [], time() );
 
 			//Load block font
 			require_once( __DIR__ . '/font/fonts.php' );

@@ -3,11 +3,17 @@
 namespace YOOtheme;
 
 return [
-    '5.0.3' => function ($config) {
+    '5.0.15' => function ($config) {
+        $rename = [
+            'script-google-tagmanager' => 'script-google-analytics',
+            'script-maps-leaflet' => 'script-maps-openstreetmap',
+        ];
 
-        foreach ($config['scripts'] ?? [] as &$script) {
-            if ($script['type'] === 'script-google-tagmanager') {
-                $script['type'] = 'script-google-analytics';
+        foreach ($config['scripts'] ?? [] as $key => $script) {
+            foreach ($rename as $from => $to) {
+                if ($script['type'] === $from) {
+                    $config['scripts'][$key]['type'] = $to;
+                }
             }
         }
 
@@ -24,12 +30,10 @@ return [
                 : ['type' => 'script-maps-openstreetmap'],
         ];
 
-        $script = $config['custom_js'] ?? '';
+        $script = trim($config['custom_js'] ?? '');
         unset($config['custom_js']);
 
         if ($script) {
-            $script = trim($script);
-
             // Check for </script> for backwards compatibility
             if (!str_starts_with($script, '<') || str_starts_with($script, '</script>')) {
                 $script = "<script>{$script}</script>";

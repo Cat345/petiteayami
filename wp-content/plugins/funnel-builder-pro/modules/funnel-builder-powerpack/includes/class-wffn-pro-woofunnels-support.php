@@ -31,10 +31,16 @@ if ( ! class_exists( 'WFFN_Pro_WooFunnels_Support' ) ) {
 				return 1;
 			} );
 
-			add_action( 'admin_menu', array( $this, 'add_menus' ), 81 );
-			add_action( 'admin_init', array( $this, 'maybe_handle_onboarding_wizard_licence_check' ), 1 );
-			add_action( 'wffn_wizard_steps', array( $this, 'wizard_activation_step' ) );
-		}
+		add_action( 'admin_menu', array( $this, 'add_menus' ), 81 );
+		add_action( 'admin_init', array( $this, 'maybe_handle_onboarding_wizard_licence_check' ), 1 );
+		add_action( 'wffn_wizard_steps', array( $this, 'wizard_activation_step' ) );
+
+		// Register Pro usage collector filter hook with higher priority than Lite (10) and Basic (20)
+		// This ensures Pro can override Lite/Basic registration
+		// Use wrapper function to prevent "class not found" errors
+		add_filter( 'woofunnels_register_usage_collectors', array( $this, 'register_pro_usage_collector' ), 50, 1 );
+
+	}
 
 		/**
 		 * @return WFFN_Pro_WooFunnels_Support|null
@@ -45,6 +51,36 @@ if ( ! class_exists( 'WFFN_Pro_WooFunnels_Support' ) ) {
 			}
 
 			return self::$_instance;
+		}
+
+		/**
+		 * Register Pro usage collector via filter hook
+		 * Wrapper function that loads class file if needed
+		 * Core filter already handles compatibility checks
+		 *
+		 * @param array $collectors Existing collectors
+		 * @return array
+		 */
+		public function register_pro_usage_collector( $collectors ) {
+			// Try to load the class file if it hasn't been loaded yet
+			if ( ! class_exists( 'WFFN_Usage_Collector_Pro' ) ) {
+				// Try to load the Pro usage collector class file
+				$usage_collector_file = defined( 'WFFN_PRO_PLUGIN_DIR' ) ? WFFN_PRO_PLUGIN_DIR . '/includes/class-wffn-usage-collector-pro.php' : '';
+				if ( empty( $usage_collector_file ) ) {
+					$usage_collector_file = WP_PLUGIN_DIR . '/funnel-builder-pro/modules/funnel-builder-powerpack/includes/class-wffn-usage-collector-pro.php';
+				}
+
+				if ( file_exists( $usage_collector_file ) ) {
+					require_once $usage_collector_file;
+				}
+			}
+
+			// Register if Pro usage collector class exists
+			// Core filter already handles compatibility checks
+			if ( class_exists( 'WFFN_Usage_Collector_Pro' ) ) {
+				return WFFN_Usage_Collector_Pro::add_to_registry( $collectors );
+			}
+			return $collectors;
 		}
 
 		public function woofunnels_page() {

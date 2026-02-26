@@ -1,0 +1,85 @@
+/*
+
+Name: Oakville
+Background: White
+Color: Blue
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/default.jpg
+
+Style: white-green
+Name: White Green
+Background: White
+Color: Green
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/white-green.jpg
+
+Style: white-red
+Name: White Red
+Background: White
+Color: Red
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/white-red.jpg
+
+Style: white-pink
+Name: White Pink
+Background: White
+Color: Pink
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/white-pink.jpg
+
+Style: white-turquoise
+Name: White Turquoise
+Background: White
+Color: Turquoise
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/white-turquoise.jpg
+
+Style: white-bordeaux
+Name: White Bordeaux
+Background: White
+Color: Red
+Type: Skeuomorphic
+Preview: https://yootheme.com/api/style/oakville/white-bordeaux.jpg
+
+*/
+
+// Platform
+@import "platform.less";
+
+// UIkit Core
+@import "../vendor/assets/uikit/src/less/uikit.less";
+
+// UIkit Theme
+@import "../vendor/assets/uikit-themes/master/_import.less";
+@import "../vendor/assets/uikit-themes/master-oakville/_import.less";
+
+// Theme
+@import "theme.less";
+
+
+// Variables
+// ========================================================================
+
+//
+// Headerbar
+//
+
+@theme-headerbar-color-mode:                            dark;
+@theme-headerbar-top-background:                        @global-background;
+@theme-headerbar-bottom-background:                     @global-background;
+
+
+//
+// WooCommerce
+//
+
+@woocommerce-cart-page-layout:                          columns;
+@woocommerce-order-page-layout:                         columns;
+
+
+// Style
+// ========================================================================
+
+@import (optional) "../vendor/assets/uikit-themes/master-oakville/styles/@{internal-style}.less";
+
+@internal-style: ~'';

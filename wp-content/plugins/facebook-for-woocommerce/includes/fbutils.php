@@ -5,7 +5,7 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @package FacebookCommerce
+ * @package MetaCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -60,13 +60,51 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Prints deferred events into page header.
 		 *
+		 * Supports both legacy (JS code string) and isolated execution (event data array) formats.
+		 * - Legacy format (switch OFF): Outputs inline <script> tag with JS code
+		 * - Isolated format (switch ON): Uses WC_Facebookcommerce_Pixel::enqueue_event()
+		 *
 		 * @since 3.1.6
 		 */
 		public static function print_deferred_events() {
 			$deferred_events = static::load_deferred_events();
 
-			if ( ! empty( $deferred_events ) ) {
-				echo '<script>' . implode( PHP_EOL, $deferred_events ) . '</script>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped --- Printing hardcoded JS tracking code.
+			if ( empty( $deferred_events ) ) {
+				return;
+			}
+
+			// Check if isolated pixel execution is enabled
+			$is_isolated_execution_enabled = facebook_for_woocommerce()->get_rollout_switches()->is_switch_enabled(
+				\WooCommerce\Facebook\RolloutSwitches::SWITCH_ISOLATED_PIXEL_EXECUTION_ENABLED
+			);
+
+			// Separate events by type
+			$legacy_events   = array();
+			$isolated_events = array();
+
+			foreach ( $deferred_events as $event ) {
+				if ( is_array( $event ) ) {
+					$isolated_events[] = $event;
+				} else {
+					$legacy_events[] = $event;
+				}
+			}
+
+			// Handle isolated execution events (event data arrays) - only if switch is enabled
+			if ( $is_isolated_execution_enabled ) {
+				foreach ( $isolated_events as $event ) {
+					WC_Facebookcommerce_Pixel::enqueue_event(
+						$event['name'],
+						$event['params'],
+						$event['method'] ?? 'track',
+						$event['eventId'] ?? ''
+					);
+				}
+			}
+
+			// Handle legacy events (JS code strings) - combine into single script tag
+			if ( ! empty( $legacy_events ) ) {
+				echo '<script>' . implode( PHP_EOL, $legacy_events ) . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped --- Printing hardcoded JS tracking code.
 			}
 		}
 
@@ -95,12 +133,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Adds event into the list of events to be saved/rendered.
 		 *
+		 * Supports both legacy (JS code string) and isolated execution (event data array) formats:
+		 * - Legacy format (switch OFF): Pass JS code string from get_event_code()
+		 * - Isolated format (switch ON): Pass event data array with keys: name, params, method, eventId
+		 *
 		 * @since 3.1.6
 		 *
-		 * @param string $code Generated JS code string w/o a script tag.
+		 * @param string|array $event Event data - either JS code string (legacy) or event data array (isolated).
 		 */
-		public static function add_deferred_event( string $code ): void {
-			static::$deferred_events[] = $code;
+		public static function add_deferred_event( $event ): void {
+			static::$deferred_events[] = $event;
 		}
 
 		/**
@@ -138,20 +180,35 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 		/**
-		 * WooCommerce 2.1 support for wc_enqueue_js.
+		 * Enqueue inline js directly.
 		 *
 		 * @since 1.2.1
 		 *
 		 * @param string $code
 		 */
-		public static function wc_enqueue_js( $code ) {
+		public static function enqueue_inline_js( $code ) {
 			global $wc_queued_js;
 
-			// Immediately renders code in the footer.
-			if ( function_exists( 'wc_enqueue_js' ) && empty( $wc_queued_js ) ) {
-				wc_enqueue_js( $code );
-			} else {
+			$handle = 'facebook-for-woocommerce-inline';
+
+			if ( ! function_exists( 'wp_add_inline_script' ) ) {
 				$wc_queued_js = $code . "\n" . $wc_queued_js;
+			} else {
+				static $registered = false;
+				if ( ! $registered ) {
+					if ( ! wp_script_is( $handle, 'registered' ) ) {
+						$version = defined( 'WC_VERSION' ) ? WC_VERSION : false;
+						wp_register_script( $handle, '', array(), $version, true );
+					}
+					wp_enqueue_script( $handle );
+					$registered = true;
+				}
+
+				if ( ! is_string( $code ) || '' === trim( $code ) ) {
+					return;
+				}
+
+				wp_add_inline_script( $handle, $code );
 			}
 		}
 
@@ -183,15 +240,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @return string
 		 */
 		public static function get_fb_retailer_id( $woo_product ) {
-			$woo_id = $woo_product->get_id();
-
-			/*
-			* Call $woo_product->get_id() instead of ->id to account for Variable
-			* products, which have their own variant_ids.
-			*/
-			$fb_retailer_id = $woo_product->get_sku() ?
-				$woo_product->get_sku() . '_' . $woo_id :
-				self::FB_RETAILER_ID_PREFIX . $woo_id;
+			$woo_id = (string) $woo_product->get_id();
 
 			/**
 			 * Filter facebook retailer id value.
@@ -203,7 +252,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			 * @param string     Facebook Retailer ID.
 			 * @param WC_Product WooCommerce product.
 			 */
-			return apply_filters( 'wc_facebook_fb_retailer_id', $fb_retailer_id, $woo_product );
+			return apply_filters( 'wc_facebook_fb_retailer_id', $woo_id, $woo_product );
 		}
 
 		/**
@@ -247,7 +296,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			$product = wc_get_product( $wpid );
 
 			if ( ! $product ) {
-				return 'Invalid product ID';
+				return [];
 			}
 
 			return $product->get_category_ids();
@@ -480,6 +529,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			}
 
 			return true;
+		}
+
+		/**
+		 * Truncates a float value to the number of points.
+		 *
+		 * @param float $value input value
+		 * @param int   $points number of floating points
+		 * @return float
+		 */
+		public static function truncate_float_number( float $value, int $points = 2 ) {
+			$zeros = pow( 10, $points );
+			return floor( $value * $zeros ) / $zeros;
 		}
 
 		/**
@@ -838,7 +899,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 					 * The Facebook API expects a comma-separated list of attributes in `additional_variant_attribute` field.
 					 * https://developers.facebook.com/docs/marketing-api/catalog/reference/
 					 * This means that WooCommerce product attributes included in this field should avoid the comma (`,`) character.
-					 * Facebook for WooCommerce replaces any `,` with a space by default.
+					 * Meta for WooCommerce replaces any `,` with a space by default.
 					 * This filter allows a site to provide a different replacement string.
 					 *
 					 * @since 2.5.0

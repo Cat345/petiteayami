@@ -145,7 +145,6 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				$this->track_click_utm_parameters = apply_filters( 'bwfan_track_click_utm_parameters', $this->track_click_utm_parameters, $data );
 				$this->body                       = $body;
 				$this->engagement_mode            = $mode === self::$MODE_EMAIL ? 'email' : ( $mode === self::$MODE_SMS ? 'sms' : 'whatsapp' );
-
 				// Pre-load template cache links to avoid database queries for cached links
 				BWFAN_Core()->conversation->template = self::$template;
 				$cached_links = array();
@@ -221,9 +220,31 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 				uksort( $url_replacements, function( $a, $b ) {
 					return strlen( $b ) - strlen( $a );
 				} );
+				$url_replacements_keys = array_keys( $url_replacements );
 
-				// Replace all URLs in one operation (sorted order prevents partial matches)
-				$body = str_replace( array_keys( $url_replacements ), array_values( $url_replacements ), $body );
+				/** For email mode, replace only href with href="url" or href='url' */
+				if ( 'email' === $this->engagement_mode ) {
+					/**
+					 * Use a single regex pass to replace URLs in href attributes.
+					 * Matches: href="url", href='url', or href=url (no quotes), preserving the original quote style.
+					 */
+					$body = preg_replace_callback(
+						'#href=(["\']?)([^"\'>\s]+)\1#i',
+						function ( $matches ) use ( $url_replacements ) {
+							$quote = $matches[1];
+							$url   = $matches[2];
+							if ( isset( $url_replacements[ $url ] ) ) {
+								return 'href=' . $quote . $url_replacements[ $url ] . $quote;
+							}
+							// No replacement for this URL; return the original match.
+							return $matches[0];
+						},
+						$body
+					);
+				} else {
+					// Replace all URLs in one operation (sorted order prevents partial matches) for other modes
+					$body = str_replace( $url_replacements_keys, array_values( $url_replacements ), $body );
+				}
 			}
 
 				// Batch update template with all new links at once

@@ -155,6 +155,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			add_filter( 'wffn_conversion_tracking_persistant', '__return_true' );
 		}
 
+
 		public function localization() {
 			load_plugin_textdomain( 'funnel-builder-pro', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
 		}
@@ -204,6 +205,11 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			require __DIR__ . '/includes/class-wffn-rest-import-export.php';
 			require __DIR__ . '/includes/exporter/class-wffn-abstract-exporter.php';
 			require __DIR__ . '/includes/exporter/class-wffn-exporter.php';
+
+			// Pro tracking classes will be lazy-loaded on demand via autoloader
+			// They register themselves via filter hook when class file is loaded
+			// Only load scheduler if tracking is actually needed (lazy load)
+			// Scheduler will be instantiated on first tracking call if Pro is active
 		}
 
 		/**
@@ -239,14 +245,14 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 
 		/**
 		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 * 
+		 *
 		 * @param string $title The title to sanitize
 		 * @return string The sanitized title
 		 */
 		private function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );
-			
+
 			return $title;
 		}
 

@@ -4,6 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+import base64
 import random
 import re
 import time
@@ -11,11 +12,10 @@ from typing import Final, List, Optional, Union
 from urllib.parse import parse_qs, urlparse
 
 from .model import CookieSettings, FbcParamConfigs
-
 from .util import EtldPlusOneResolver
 
 DEFAULT_1PC_AGE: Final[int] = 90 * 24 * 3600  # 90 days
-LANGUAGE_TOKEN: Final[str] = "Ag"
+LANGUAGE_TOKEN: Final[str] = "Ag"  # Python
 SUPPORTED_LANGUAGES_TOKENS: Final[List[str]] = ["AQ", "Ag", "Aw", "BA", "BQ", "Bg"]
 MIN_PAYLOAD_SPLIT_LENGTH: Final[int] = 4
 MAX_PAYLOAD_LENGTH_WITH_LANGUAGE_TOKEN: Final[int] = 5
@@ -23,6 +23,13 @@ IPV4_REGEX: Final[str] = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
 IPV6_SEG_REGEX: Final[str] = "^([0-9a-fA-F]{0,4}:)+"
 FBC_COOKIE_NAME: Final[str] = "_fbc"
 FBP_COOKIE_NAME: Final[str] = "_fbp"
+FBCLID_QUERY_PARAMS: Final[str] = "fbclid"
+
+# Appendix constants - matches JavaScript Constants.js
+DEFAULT_FORMAT: Final[int] = 0x01
+LANGUAGE_TOKEN_INDEX: Final[int] = 0x02  # Python language token index
+APPENDIX_LENGTH_V1: Final[int] = 2
+APPENDIX_LENGTH_V2: Final[int] = 8
 
 
 class ParamBuilder:
@@ -35,7 +42,7 @@ class ParamBuilder:
         Initial the params
         """
         self.fbc_param_configs: List[FbcParamConfigs] = [
-            FbcParamConfigs("fbclid", "", "clickID")
+            FbcParamConfigs(FBCLID_QUERY_PARAMS, "", "clickID")
         ]
         self.fbc: Optional[str] = None
         self.fbp: Optional[str] = None
@@ -46,6 +53,10 @@ class ParamBuilder:
         self.etld_plus_one: Optional[str] = None
         self.domain_list: Optional[List] = None
         self.etld_plus_one_resolver: Optional[EtldPlusOneResolver] = None
+        ## Appendix with version number
+        self.appendix_new: str = self._get_appendix(True)
+        self.appendix_normal: str = self._get_appendix(False)
+
         if isinstance(input, List):
             self.domain_list = []
             for domain in input:
@@ -53,6 +64,50 @@ class ParamBuilder:
                     self.domain_list.append(self._extract_host_from_http_host(domain))
         elif isinstance(input, EtldPlusOneResolver):
             self.etld_plus_one_resolver = input
+
+    def _get_version(self) -> str:
+        """
+        Extract version from release_config module
+        """
+        try:
+            from .release_config import VERSION
+
+            return VERSION
+        except Exception:
+            # Fallback version on any error
+            return "1.0.0"
+
+    def _get_appendix(self, is_new: bool) -> str:
+        try:
+            version = self._get_version()
+            version_parts = version.split(".")
+            major = int(version_parts[0])
+            minor = int(version_parts[1])
+            patch = int(version_parts[2])
+
+            is_new_byte = 0x01 if is_new else 0x00
+
+            bytes_array = [
+                DEFAULT_FORMAT,
+                LANGUAGE_TOKEN_INDEX,
+                is_new_byte,
+                major,
+                minor,
+                patch,
+            ]
+
+            # Convert to bytes and then to base64url-safe string
+            byte_data = bytes(bytes_array)
+            base64_encoded = base64.b64encode(byte_data).decode("ascii")
+            # Make it URL-safe by replacing characters
+            base64url_safe = (
+                base64_encoded.replace("+", "-").replace("/", "_").rstrip("=")
+            )
+            return base64url_safe
+        except Exception as e:
+            # Fallback to default appendix
+            print(f"Unable to parse version number, fallback: {e}")
+            return LANGUAGE_TOKEN
 
     def _pre_process_cookies(
         self, cookies: dict[str, str], cookie_name: str
@@ -68,15 +123,18 @@ class ParamBuilder:
         ):
             return None
 
-        if (
-            len(cookie_split) == MAX_PAYLOAD_LENGTH_WITH_LANGUAGE_TOKEN
-            and cookie_split[MAX_PAYLOAD_LENGTH_WITH_LANGUAGE_TOKEN - 1]
-            not in SUPPORTED_LANGUAGES_TOKENS
-        ):
-            return None
+        # Validation for appendix
+        if len(cookie_split) == MAX_PAYLOAD_LENGTH_WITH_LANGUAGE_TOKEN:
+            appendix_value = cookie_split[MAX_PAYLOAD_LENGTH_WITH_LANGUAGE_TOKEN - 1]
+            # Backward compatible with legacy appendix
+            if len(appendix_value) == APPENDIX_LENGTH_V1:
+                if appendix_value not in SUPPORTED_LANGUAGES_TOKENS:
+                    return None
+            elif len(appendix_value) != APPENDIX_LENGTH_V2:
+                return None
 
         if len(cookie_split) == MIN_PAYLOAD_SPLIT_LENGTH:
-            updated_cookie = cookie_value + "." + LANGUAGE_TOKEN
+            updated_cookie = cookie_value + "." + self.appendix_normal
             self.cookies_to_set_dict[cookie_name] = CookieSettings(
                 cookie_name, updated_cookie, self.etld_plus_one, DEFAULT_1PC_AGE
             )
@@ -128,15 +186,22 @@ class ParamBuilder:
         prefix: str,
         value: str,
     ) -> str:
-        is_click_id = current_query == "fbclid"
-        existing_payload = (
-            (existing_payload or "")
-            + ("" if is_click_id else "_")
-            + prefix
-            + ("" if is_click_id else "_")
-            + value
+        is_click_id = current_query == FBCLID_QUERY_PARAMS
+        separator = "" if is_click_id else "_"
+        # Prevent duplication
+        if (
+            existing_payload is not None
+            and f"{separator}{prefix}{separator}" in existing_payload
+        ):
+            return existing_payload
+
+        new_segment = f"{prefix}{separator}{value}"
+
+        return (
+            f"{existing_payload}{separator}{new_segment}"
+            if existing_payload
+            else new_segment
         )
-        return existing_payload
 
     def process_request(
         self,
@@ -205,7 +270,7 @@ class ParamBuilder:
             + "."
             + new_fbc_payload
             + "."
-            + LANGUAGE_TOKEN
+            + self.appendix_new
         )
         # TODO: update etld+1 to get proper etld+1.
         udpated_cookie_setting = CookieSettings(
@@ -232,7 +297,7 @@ class ParamBuilder:
             + "."
             + new_fbp_payload
             + "."
-            + LANGUAGE_TOKEN
+            + self.appendix_new
         )
         udpated_cookie_setting = CookieSettings(
             FBP_COOKIE_NAME, new_fbp, self.etld_plus_one, DEFAULT_1PC_AGE

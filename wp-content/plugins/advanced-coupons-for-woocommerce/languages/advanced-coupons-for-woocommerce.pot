@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Rymera Web Co
+# Copyright (C) 2026 Rymera Web Co
 # This file is distributed under the same license as the Advanced Coupons for WooCommerce Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.5.1\n"
+"Project-Id-Version: Advanced Coupons for WooCommerce Premium 4.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/advanced-coupons-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-21T01:54:08+00:00\n"
+"POT-Creation-Date: 2026-01-30T03:28:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: advanced-coupons-for-woocommerce\n"
@@ -82,7 +82,7 @@ msgstr ""
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:437
+#: Models/Auto_Apply.php:450
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -140,7 +140,7 @@ msgstr ""
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:432
+#: Models/Auto_Apply.php:445
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -218,12 +218,12 @@ msgstr ""
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
 
-#: Models/Auto_Apply.php:447
+#: Models/Auto_Apply.php:460
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr ""
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:457
+#: Models/Auto_Apply.php:470
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr ""
@@ -1324,37 +1324,37 @@ msgid "The reminder has been successfully emailed to customer_account"
 msgstr ""
 
 #: Models/Module_Settings.php:433
-#: Models/Script_Loader.php:378
+#: Models/Script_Loader.php:381
 msgid "Utilities"
 msgstr ""
 
 #: Models/Module_Settings.php:439
-#: Models/Script_Loader.php:283
+#: Models/Script_Loader.php:286
 msgid "Rebuild/Clear Auto Apply Coupons Cache"
 msgstr ""
 
 #: Models/Module_Settings.php:441
-#: Models/Script_Loader.php:284
+#: Models/Script_Loader.php:287
 msgid "Manually rebuild and validate all auto apply coupons within the cache or clear the cache entirely."
 msgstr ""
 
 #: Models/Module_Settings.php:446
-#: Models/Script_Loader.php:306
+#: Models/Script_Loader.php:309
 msgid "Rebuild/Clear Apply Notification Coupons Cache"
 msgstr ""
 
 #: Models/Module_Settings.php:448
-#: Models/Script_Loader.php:307
+#: Models/Script_Loader.php:310
 msgid "Manually rebuild and validate all apply notification coupons within the cache or clear the cache entirely."
 msgstr ""
 
 #: Models/Module_Settings.php:453
-#: Models/Script_Loader.php:329
+#: Models/Script_Loader.php:332
 msgid "Reset coupons usage limit"
 msgstr ""
 
 #: Models/Module_Settings.php:455
-#: Models/Script_Loader.php:330
+#: Models/Script_Loader.php:333
 msgid "Manually run cron for resetting usage limit for all applicable coupons."
 msgstr ""
 
@@ -1389,7 +1389,7 @@ msgid "Would you like to read the Advanced Coupons Premium getting started guide
 msgstr ""
 
 #: Models/Notices.php:159
-msgid "Read The Getting Started Guide &rarr;"
+msgid "Read The Getting Started Guide →"
 msgstr ""
 
 #: Models/Objects/Virtual_Coupon.php:381
@@ -1578,103 +1578,107 @@ msgstr ""
 msgid "Cashback amount"
 msgstr ""
 
-#: Models/Script_Loader.php:236
+#: Models/Script_Loader.php:173
+msgid "\"Same Products\" GET type is not compatible with \"Specific Products\" BUY type. Please select a different combination."
+msgstr ""
+
+#: Models/Script_Loader.php:239
 #: Models/SLMW/License.php:401
 #: views/slmw/view-license-settings-page.php:21
 msgid "License is Active"
 msgstr ""
 
-#: Models/Script_Loader.php:237
+#: Models/Script_Loader.php:240
 #: Models/SLMW/License.php:402
 #: views/slmw/view-license-settings-page.php:23
 msgid "Not Activated Yet"
 msgstr ""
 
-#: Models/Script_Loader.php:241
-#: Models/Script_Loader.php:248
+#: Models/Script_Loader.php:244
+#: Models/Script_Loader.php:251
 #: views/slmw/view-license-settings-page.php:28
 #: views/slmw/view-license-settings-page.php:37
 msgid "Premium Version"
 msgstr ""
 
-#: Models/Script_Loader.php:242
+#: Models/Script_Loader.php:245
 #: views/slmw/view-license-settings-page.php:29
 msgid "You are currently using Advanced Coupons for WooCommerce Premium version. The premium version gives you a massive range of extra extra features for your WooCommerce coupons so you can promote your store better. As the Premium version functions like an add-on, you must have Advanced Coupons for WooCommerce Free installed and activated along with WooCommerce (which is required for both)."
 msgstr ""
 
-#: Models/Script_Loader.php:247
+#: Models/Script_Loader.php:250
 #: views/slmw/view-license-settings-page.php:33
 msgid "Plan"
 msgstr ""
 
-#: Models/Script_Loader.php:251
+#: Models/Script_Loader.php:254
 #: views/slmw/view-license-settings-page.php:34
 msgid "Version"
 msgstr ""
 
-#: Models/Script_Loader.php:257
+#: Models/Script_Loader.php:260
 #: views/notices/view-no-license-notice.php:83
 #: views/slmw/view-license-settings-page.php:45
 msgid "License Key:"
 msgstr ""
 
-#: Models/Script_Loader.php:258
+#: Models/Script_Loader.php:261
 #: views/slmw/view-license-settings-page.php:49
 msgid "Activation Email:"
 msgstr ""
 
-#: Models/Script_Loader.php:259
+#: Models/Script_Loader.php:262
 #: Models/SLMW/License.php:397
 #: views/notices/view-no-license-notice.php:92
 #: views/slmw/view-license-settings-page.php:53
 msgid "Activate Key"
 msgstr ""
 
-#: Models/Script_Loader.php:261
+#: Models/Script_Loader.php:264
 #: views/slmw/view-license-settings-page.php:61
 msgid "Can’t find your key?"
 msgstr ""
 
-#: Models/Script_Loader.php:263
+#: Models/Script_Loader.php:266
 #: views/notices/view-no-license-notice.php:103
 msgid "Login to your account"
 msgstr ""
 
-#: Models/Script_Loader.php:289
-#: Models/Script_Loader.php:312
+#: Models/Script_Loader.php:292
+#: Models/Script_Loader.php:315
 msgid "Rebuild cache"
 msgstr ""
 
-#: Models/Script_Loader.php:294
-#: Models/Script_Loader.php:317
+#: Models/Script_Loader.php:297
+#: Models/Script_Loader.php:320
 msgid "Clear cache"
 msgstr ""
 
-#: Models/Script_Loader.php:335
+#: Models/Script_Loader.php:338
 msgid "Trigger reset cron"
 msgstr ""
 
-#: Models/Script_Loader.php:346
+#: Models/Script_Loader.php:349
 msgid "Refetch Plugin Update Data"
 msgstr ""
 
-#: Models/Script_Loader.php:347
+#: Models/Script_Loader.php:350
 msgid "This will refetch the plugin update data. Useful for debugging failed plugin update operations."
 msgstr ""
 
-#: Models/Script_Loader.php:352
+#: Models/Script_Loader.php:355
 msgid "Refetch Update Data"
 msgstr ""
 
-#: Models/Script_Loader.php:360
+#: Models/Script_Loader.php:363
 msgid "Check license status"
 msgstr ""
 
-#: Models/Script_Loader.php:361
+#: Models/Script_Loader.php:364
 msgid "Check the current status of your Advanced Coupons premium license."
 msgstr ""
 
-#: Models/Script_Loader.php:366
+#: Models/Script_Loader.php:369
 msgid "Check License Status"
 msgstr ""
 

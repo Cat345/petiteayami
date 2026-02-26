@@ -35,6 +35,10 @@ class Embed extends Abstract_Block_Renderer {
  'domains' => array( 'youtube.com', 'youtu.be' ),
  'base_url' => 'https://www.youtube.com/',
  ),
+ 'videopress' => array(
+ 'domains' => array( 'videopress.com', 'video.wordpress.com' ),
+ 'base_url' => 'https://videopress.com/',
+ ),
  );
  private function get_all_supported_providers(): array {
  return array_merge( array_keys( self::AUDIO_PROVIDERS ), array_keys( self::VIDEO_PROVIDERS ) );
@@ -184,6 +188,8 @@ class Embed extends Abstract_Block_Renderer {
  return __( 'Listen on ReverbNation', 'woocommerce' );
  case 'youtube':
  return __( 'Watch on YouTube', 'woocommerce' );
+ case 'videopress':
+ return __( 'Watch on VideoPress', 'woocommerce' );
  default:
  return __( 'Listen to the audio', 'woocommerce' );
  }
@@ -202,9 +208,7 @@ class Embed extends Abstract_Block_Renderer {
  if ( $body_element ) {
  $text_content = $body_element->textContent; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
  // Look for HTTP/HTTPS URLs in the text content.
- if ( preg_match( '/(?<![a-zA-Z0-9.-])https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}[a-zA-Z0-9\/?=&%-]*(?![a-zA-Z0-9.-])/', $text_content, $matches ) ) {
- $url = $matches[0];
- }
+ $url = Html_Processing_Helper::extract_url_from_text( $text_content );
  }
  }
  }
@@ -256,7 +260,34 @@ class Embed extends Abstract_Block_Renderer {
  private function is_video_provider( string $provider ): bool {
  return array_key_exists( $provider, self::VIDEO_PROVIDERS );
  }
+ private function url_matches_provider( string $url, string $provider ): bool {
+ if ( ! $this->is_valid_url( $url ) ) {
+ return false;
+ }
+ $parsed_url = wp_parse_url( $url );
+ if ( ! isset( $parsed_url['host'] ) ) {
+ return false;
+ }
+ $url_host = strtolower( $parsed_url['host'] );
+ // Get allowed domains for this provider.
+ $all_providers = $this->get_all_provider_configs();
+ $allowed_domains = $all_providers[ $provider ]['domains'] ?? array();
+ foreach ( $allowed_domains as $allowed_domain ) {
+ $allowed_domain = strtolower( $allowed_domain );
+ if ( $url_host === $allowed_domain || str_ends_with( $url_host, '.' . $allowed_domain ) ) {
+ return true;
+ }
+ }
+ return false;
+ }
  private function render_video_embed( string $url, string $provider, array $parsed_block, Rendering_Context $rendering_context, string $block_content ): string {
+ // Validate URL matches the detected provider to prevent SSRF.
+ // Provider can come from user-controlled providerNameSlug attribute,
+ // so we must verify the URL actually belongs to that provider's domains.
+ if ( ! $this->url_matches_provider( $url, $provider ) ) {
+ $fallback_attr = $this->create_fallback_attributes( $url, $url );
+ return $this->render_link_fallback( $fallback_attr, $block_content, $parsed_block, $rendering_context );
+ }
  // Try to get video thumbnail URL.
  $poster_url = $this->get_video_thumbnail_url( $url, $provider );
  // If no poster available, fall back to a simple link.
@@ -269,6 +300,7 @@ class Embed extends Abstract_Block_Renderer {
  'blockName' => 'core/video',
  'attrs' => array(
  'poster' => $poster_url,
+ 'videoUrl' => $url,
  ),
  'innerHTML' => '<figure class="wp-block-video wp-block-embed is-type-video is-provider-' . esc_attr( $provider ) . '"><div class="wp-block-embed__wrapper">' . esc_url( $url ) . '</div></figure>',
  );
@@ -287,9 +319,11 @@ class Embed extends Abstract_Block_Renderer {
  return $video_result;
  }
  private function get_video_thumbnail_url( string $url, string $provider ): string {
- // Currently only YouTube supports thumbnail extraction.
  if ( 'youtube' === $provider ) {
  return $this->get_youtube_thumbnail( $url );
+ }
+ if ( 'videopress' === $provider ) {
+ return $this->get_videopress_thumbnail( $url );
  }
  // For other providers, we don't have thumbnail extraction implemented.
  // Return empty to trigger link fallback.
@@ -307,5 +341,44 @@ class Embed extends Abstract_Block_Renderer {
  // Return YouTube thumbnail URL.
  // Using 0.jpg format as shown in the example.
  return 'https://img.youtube.com/vi/' . $video_id . '/0.jpg';
+ }
+ private function get_videopress_thumbnail( string $url ): string {
+ // Generate a cache key based on the URL.
+ $cache_key = 'wc_email_vp_thumb_' . md5( $url );
+ // Check for cached thumbnail URL.
+ $cached_thumbnail = get_transient( $cache_key );
+ if ( false !== $cached_thumbnail ) {
+ // Return cached value (empty string means previous lookup failed).
+ return is_string( $cached_thumbnail ) ? $cached_thumbnail : '';
+ }
+ // Use WP_oEmbed::get_data() to fetch thumbnail from oEmbed endpoint.
+ // URL is pre-validated by render_video_embed() via url_matches_provider(),
+ // ensuring only VideoPress domains reach this point (SSRF mitigation).
+ $oembed = new \WP_oEmbed();
+ $oembed_data = $oembed->get_data( $url );
+ // Default TTL matches WordPress oEmbed cache (1 day).
+ $cache_ttl = (int) apply_filters( 'oembed_ttl', DAY_IN_SECONDS, $url, array(), '' );
+ // get_data() returns object|false, so check for false or non-object.
+ if ( false === $oembed_data || ! is_object( $oembed_data ) ) {
+ // Cache empty result to avoid repeated failed lookups.
+ set_transient( $cache_key, '', $cache_ttl );
+ return '';
+ }
+ // Extract thumbnail_url from oEmbed response.
+ if ( ! isset( $oembed_data->thumbnail_url ) ) {
+ // Cache empty result.
+ set_transient( $cache_key, '', $cache_ttl );
+ return '';
+ }
+ $thumbnail_url = $oembed_data->thumbnail_url;
+ // Validate the thumbnail URL.
+ if ( ! empty( $thumbnail_url ) && $this->is_valid_url( $thumbnail_url ) ) {
+ // Cache the valid thumbnail URL.
+ set_transient( $cache_key, $thumbnail_url, $cache_ttl );
+ return $thumbnail_url;
+ }
+ // Cache empty result for invalid URLs.
+ set_transient( $cache_key, '', $cache_ttl );
+ return '';
  }
 }

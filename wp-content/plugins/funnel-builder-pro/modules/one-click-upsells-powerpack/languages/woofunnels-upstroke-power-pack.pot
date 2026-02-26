@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Funnelkit
+# Copyright (C) 2026 Funnelkit
 # This file is distributed under the same license as the UpStroke PowerPack plugin.
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-24T14:12:24+00:00\n"
+"POT-Creation-Date: 2026-02-12T15:41:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woofunnels-upstroke-power-pack\n"
@@ -36,11 +36,24 @@ msgstr ""
 msgid "Funnelkit"
 msgstr ""
 
+#: addons/funnelkit/class-wfocu-sublium-compatibility.php:384
+#: class-woofunnels-support-wfocu-power-pack.php:211
+msgid "All Products Subscription Plan List"
+msgstr ""
+
+#: addons/funnelkit/class-wfocu-sublium-compatibility.php:394
+msgid "Sublium Plans Selector"
+msgstr ""
+
+#: addons/funnelkit/class-wfocu-sublium-compatibility.php:564
+msgid "Sublium"
+msgstr ""
+
 #: addons/multiple-products/class-woofunnels-upstroke-multiple-products.php:111
 #: addons/subscriptions/class-woofunnels-upstroke-subscriptions.php:52
-#: woofunnels-upstroke-power-pack.php:117
-#: woofunnels-upstroke-power-pack.php:139
-#: woofunnels-upstroke-power-pack.php:229
+#: woofunnels-upstroke-power-pack.php:128
+#: woofunnels-upstroke-power-pack.php:150
+#: woofunnels-upstroke-power-pack.php:242
 msgid "Attention"
 msgstr ""
 
@@ -2324,33 +2337,33 @@ msgstr ""
 msgid "UpStroke Subscriptions requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin."
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:473
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:491
 msgid "All Products For Subscription"
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:591
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:609
 msgid "{{product.vars_subs_count}} Subscriptions plans <a class='have_scheme_expand'>(Expand</a> / <a class='have_scheme_close'>Close)</a> "
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:599
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:617
 msgid "Default"
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:600
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:618
 msgid "Attributes"
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:601
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:619
 msgid "Price"
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:602
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:620
 msgid "Discount"
 msgstr ""
 
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:684
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:769
-#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:876
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:702
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:787
+#: addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php:896
 msgid "one time"
 msgstr ""
 
@@ -2362,38 +2375,34 @@ msgstr ""
 msgid "Product Recurring Total String"
 msgstr ""
 
-#: class-woofunnels-support-wfocu-power-pack.php:211
-msgid "All Products Subscription Plan List"
-msgstr ""
-
-#: woofunnels-upstroke-power-pack.php:82
+#: woofunnels-upstroke-power-pack.php:83
 msgid "Dynamic Shipping"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:88
+#: woofunnels-upstroke-power-pack.php:89
 msgid "Multiple Products"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:94
+#: woofunnels-upstroke-power-pack.php:95
 msgid "Woocommerce Reports"
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:100
+#: woofunnels-upstroke-power-pack.php:101
 msgid "Subscriptions"
 msgstr ""
 
 #. translators: %1$s: Plugin name %2$s Plugin name
-#: woofunnels-upstroke-power-pack.php:120
+#: woofunnels-upstroke-power-pack.php:131
 #, php-format
 msgid "Old version of \"UpStroke: %1$s\" is installed and active. Please deactivate it to run updated \"Upstroke PowerPack - %2$s\" module"
 msgstr ""
 
 #. translators: %1$s: Min required upstroke version
-#: woofunnels-upstroke-power-pack.php:142
+#: woofunnels-upstroke-power-pack.php:153
 #, php-format
 msgid "UpStroke PowerPack requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin."
 msgstr ""
 
-#: woofunnels-upstroke-power-pack.php:231
+#: woofunnels-upstroke-power-pack.php:244
 msgid "UpStroke PowerPack contains a \"UpStroke: WooCommerce One Click Upsells\" addons and would only work if it is installed and activated. Please install and activate it first."
 msgstr ""

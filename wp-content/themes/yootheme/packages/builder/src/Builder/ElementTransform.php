@@ -129,6 +129,8 @@ class ElementTransform
         }
 
         $node->attrs['class'][] = 'uk-position-{position} [uk-width-1-1 {@position: absolute}]';
+
+        $node->attrs['style'] = (array) ($node->attrs['style'] ?? []);
         $node->attrs['style'][] = 'left: {position_left}; {@!position_right}';
         $node->attrs['style'][] = 'right: {position_right}; {@!position_left}';
         $node->attrs['style'][] = 'top: {position_top}; {@!position_bottom}';

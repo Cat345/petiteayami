@@ -118,7 +118,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 
                     <div class="wfocu-element wfocu-element wfocu-widget wfocu-widget-wfocu_price">
                         <div class="wfocu-widget-container">
-                            <div class="wfocu-price-wrapper">
+                            <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 								<?php
 
 								if ( $product instanceof WC_Product ) {
@@ -191,33 +191,33 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 			.wfocu-price-wrapper .wfocu-reg-label {
 				font-size: 16px;
 				line-height: 1.5;
-			}			
+			}
 			.wfocu-price-wrapper .signup_details_wrap .signup_price_label,
 			.wfocu-price-wrapper .wfocu-regular-price *,
 			.wfocu-price-wrapper .wfocu-reg-label {
 				color: #8d8e92;
-			}		
+			}
 			.wfocu-price-wrapper .recurring_details_wrap .recurring_price_label {
 				font-size: 16px;
 				line-height: 1.5;
 				color: #414349;
-			}			
+			}
 			.wfocu-price-wrapper .wfocu-offer-label {
 				font-size: 16px;
 				line-height: 1.5;
 				color: #414349;
-			}			
+			}
 			.wfocu-price-wrapper .signup_details_wrap span.amount,
 			.wfocu-price-wrapper .signup_details_wrap span.amount span {
 				font-size: 16px;
 				line-height: 1.5;
 				color: #414349;
-			}			
+			}
 			.wfocu-price-wrapper .wfocu-sale-price span.woocommerce-Price-currencySymbol,
 			.wfocu-price-wrapper .wfocu-sale-price span *,
 			.wfocu-price-wrapper .wfocu-sale-price span bdi {
 				color: #414349;
-			}			
+			}
 			.wfocu-price-wrapper .recurring_details_wrap span,
 			.wfocu-price-wrapper .recurring_details_wrap .subscription-details {
 				color: #414349;
@@ -232,17 +232,17 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 			.wfocu-button-wrapper a {
 				display: inline-block;
 				padding-bottom: 0;
-			}		
+			}
 			span.wfocu-button-icon.et-pb-icon {
 				font-size: 18px;
 				line-height: 18px;
 				color: #fff;
-			}			
+			}
 			.wfocu-reject-button-wrap span.wfocu-button-icon {
 				font-size: 16px;
 				line-height: 16px;
 				color: #fff;
-			}			
+			}
 			.wfocu-button-icon.et-pb-icon {
 				display: inline-block;;
 			}
@@ -251,15 +251,15 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 				color: #fff;
 				display: block;
 				font-weight: bold;
-			}			
+			}
 			.wfocu_proqty_inline .wfocu-prod-qty-wrapper label {
 				width: 250px;
 				float: left;
 				padding-right: 2px;
-			}			
+			}
 			.wfocu_proqty_inline .wfocu-prod-qty-wrapper label + span.wfocu-select-wrapper {
 				padding-left: 2px;
-			}			
+			}
 			.oxy-wfocu-offer-price{
 				width:100%;
 			}

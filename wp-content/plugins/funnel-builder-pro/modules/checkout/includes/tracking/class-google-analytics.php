@@ -283,7 +283,7 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 				$shipping_cost = 0;
 				if ( isset( $package['rates'] ) && ! empty( $package['rates'] ) ) {
 					foreach ( $package['rates'] as $rate ) {
-						if ( $rate->get_id() === $shipping_method ) {
+						if ( !empty( $shipping_method ) && $rate->get_id() === $shipping_method ) {
 							$shipping_cost = $rate->get_cost();
 							break;
 						}

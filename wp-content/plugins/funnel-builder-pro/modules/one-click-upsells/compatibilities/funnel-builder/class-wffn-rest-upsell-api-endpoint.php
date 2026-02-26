@@ -596,7 +596,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 				$all_data          = wffn_rest_api_helpers()->get_step_post( $offer_id, true );
 				$resp['step_data'] = is_array( $all_data ) && isset( $all_data['step_data'] ) ? $all_data['step_data'] : false;
 				$resp['step_list'] = is_array( $all_data ) && isset( $all_data['step_list'] ) ? $all_data['step_list'] : false;
-
+				$output = apply_filters( 'wfocu_offer_after_product_added', $output, $offer_data, $offer_id, $funnel_id );
 				$resp['data'] = $output;
 			}
 
@@ -793,13 +793,13 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 					$basic   = ! empty( $wfocu_rules['basic'] ) ? $this->strip_group_rule_keys( $wfocu_rules['basic'] ) : array();
 					$product = ! empty( $wfocu_rules['product'] ) ? $this->strip_group_rule_keys( $wfocu_rules['product'] ) : array();
 
-					$formatted_rules = array_merge_recursive( $product, $basic );
+					$formatted_rules  = array_merge_recursive( $product, $basic );
 					$remove_rule_keys = [];
 
 					/**
 					 * remove all rule in selected list which is need to index order and check for 'custom-html' type
 					 */
-					if( ! empty( $list_rules ) ) {
+					if ( ! empty( $list_rules ) ) {
 						foreach ( $list_rules as $item ) {
 							if ( ! empty( $item['fields'] ) && is_array( $item['fields'] ) ) {
 								foreach ( $item['fields'] as $field ) {
@@ -899,16 +899,16 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 				$wfocu_advanced_rules = apply_filters( 'wfocu_wfocu_rule_get_rule_types', array() );
 				$wfocu_products_rules = apply_filters( 'wfocu_wfocu_rule_get_rule_types_product', array() );
 
-				$wfocu_products_rules[__( 'Products', 'woofunnels-upstroke-one-click-upsell' ) ] = $wfocu_products_rules[__( 'Order', 'woofunnels-upstroke-one-click-upsell' )];
-				unset( $wfocu_products_rules[__( 'Order', 'woofunnels-upstroke-one-click-upsell' )] );
+				$wfocu_products_rules[ __( 'Products', 'woofunnels-upstroke-one-click-upsell' ) ] = $wfocu_products_rules[ __( 'Order', 'woofunnels-upstroke-one-click-upsell' ) ];
+				unset( $wfocu_products_rules[ __( 'Order', 'woofunnels-upstroke-one-click-upsell' ) ] );
 
-				if ( ! empty( $wfocu_advanced_rules[__( 'Default', 'woofunnels-upstroke-one-click-upsell' )] ) ) {
-					unset( $wfocu_advanced_rules[__( 'Default', 'woofunnels-upstroke-one-click-upsell' )] );
+				if ( ! empty( $wfocu_advanced_rules[ __( 'Default', 'woofunnels-upstroke-one-click-upsell' ) ] ) ) {
+					unset( $wfocu_advanced_rules[ __( 'Default', 'woofunnels-upstroke-one-click-upsell' ) ] );
 				}
 
-				$rule_set                              = array_merge_recursive( $wfocu_products_rules, $wfocu_advanced_rules );
-				$rule_set[__( 'Default', 'woofunnels-upstroke-one-click-upsell' )]['general_always'] = $rule_set[__( 'Default', 'woofunnels-upstroke-one-click-upsell' )]['general_always_2'];
-				unset( $rule_set[__( 'Default', 'woofunnels-upstroke-one-click-upsell' )]['general_always_2'] );
+				$rule_set                                                                              = array_merge_recursive( $wfocu_products_rules, $wfocu_advanced_rules );
+				$rule_set[ __( 'Default', 'woofunnels-upstroke-one-click-upsell' ) ]['general_always'] = $rule_set[ __( 'Default', 'woofunnels-upstroke-one-click-upsell' ) ]['general_always_2'];
+				unset( $rule_set[ __( 'Default', 'woofunnels-upstroke-one-click-upsell' ) ]['general_always_2'] );
 				$rule_set = $this->format_rules_select( $rule_set );
 
 				if ( ! empty( $rule_set ) ) {
@@ -1053,10 +1053,9 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 
 							if ( class_exists( 'WFOCU_WC_ATTS_Compatibility' ) && method_exists( 'WFOCU_WC_ATTS_Compatibility', 'get_scheme_plan_data' ) ) {
 								$wcs_att_compatibility = new WFOCU_WC_ATTS_Compatibility();
-
 								if ( $wcs_att_compatibility->is_enable() ) {
 									$offer->schemes = ! empty( $offer->schemes ) ? $offer->schemes : new stdClass();
-									$offer_schemes  = $wcs_att_compatibility->get_scheme_plan_data( $offer, $offer_id, $funnel_id );
+									$offer_schemes  = $wcs_att_compatibility->get_scheme_plan_data( $product, $offer, $offer_id, $funnel_id );
 								}
 							}
 
@@ -1121,6 +1120,19 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 								];
 							}
 
+							/**
+							 * Filter product details data before merging with offer fields
+							 *
+							 * @param array $product_details Product details array
+							 * @param WC_Product $product Product object
+							 * @param int $offer_id Offer ID
+							 * @param int $funnel_id Funnel ID
+							 * @param string $key Product hash key
+							 *
+							 * @since 1.0.0
+							 */
+							$product_details = apply_filters( 'wfocu_offer_product_details', $product_details, $product, $offer_id, $funnel_id, $key );
+
 							$offer_product = array_merge( $product_details, $offer_fields[ $key ] );
 							$products[]    = $offer_product;
 						}
@@ -1146,6 +1158,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 					$offer_values->qty_max                      = ! empty( $settings->qty_max ) ? $settings->qty_max : 0;
 					$offer_values->skip_exist                   = ( ! empty( $settings->skip_exist ) && true === wc_string_to_bool( $settings->skip_exist ) ) ? ( array ) 'true' : [];
 					$offer_values->skip_purchased               = ( ! empty( $settings->skip_purchased ) && true === wc_string_to_bool( $settings->skip_purchased ) ) ? ( array ) 'true' : [];
+					$offer_values->allow_one_time_purchase      = ( ! empty( $settings->allow_one_time_purchase ) && true === wc_string_to_bool( $settings->allow_one_time_purchase ) ) ? ( array ) 'true' : [];
 
 					$offer->ship_dynamic = ! empty( $settings->ship_dynamic ) ? $settings->ship_dynamic : false;
 					$offer->InitialValue = $offer_values;
@@ -1380,7 +1393,80 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 				]
 			];
 
+			// Add allow_one_time_purchase setting if products have Sublium plans
+			if ( $this->has_sublium_plans( $offer_id ) ) {
+				$offer_settings_fields[] = [
+					'type'   => 'checklist',
+					'key'    => 'allow_one_time_purchase',
+					'label'  => __( 'One Time Purchase', 'funnel-builder-powerpack' ),
+					'hint'   => '',
+					'values' => [
+						0 => [
+							'value' => "true",
+							'name'  => __( 'Allow buyer to purchase this product as a one-time purchase instead of subscription', 'funnel-builder-powerpack' ),
+						],
+					],
+				];
+			}
+
 			return $offer_settings_fields;
+		}
+
+		/**
+		 * Check if any products in the offer have Sublium subscription plans
+		 *
+		 * @param int $offer_id Offer ID
+		 *
+		 * @return bool True if any product has Sublium plans
+		 */
+		private function has_sublium_plans( $offer_id ) {
+			if ( ! class_exists( '\Sublium_WCS\Includes\Helpers\Plan' ) ) {
+				return false;
+			}
+
+			$offer_meta = get_post_meta( $offer_id, '_wfocu_setting', true );
+			if ( empty( $offer_meta ) || ! is_object( $offer_meta ) ) {
+				return false;
+			}
+
+			if ( empty( $offer_meta->products ) || ! is_object( $offer_meta->products ) ) {
+				return false;
+			}
+
+			// Check each product in the offer
+			foreach ( $offer_meta->products as $hash_key => $product_id ) {
+				$product_id = absint( $product_id );
+				if ( $product_id <= 0 ) {
+					continue;
+				}
+
+				$product = wc_get_product( $product_id );
+				if ( ! $product instanceof WC_Product ) {
+					continue;
+				}
+
+				// Check if product has Sublium plans
+				$plans = \Sublium_WCS\Includes\Helpers\Plan::get_plans_by_product( $product );
+				if ( ! empty( $plans ) && is_array( $plans ) && count( $plans ) > 0 ) {
+					return true;
+				}
+
+				// For variable products, check variations
+				if ( $product->is_type( 'variable' ) ) {
+					$variation_ids = $product->get_children();
+					foreach ( $variation_ids as $variation_id ) {
+						$variation = wc_get_product( absint( $variation_id ) );
+						if ( $variation instanceof WC_Product_Variation ) {
+							$variation_plans = \Sublium_WCS\Includes\Helpers\Plan::get_plans_by_product( $variation );
+							if ( ! empty( $variation_plans ) && is_array( $variation_plans ) && count( $variation_plans ) > 0 ) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 
 		// List Offers for Upsells.
@@ -1456,7 +1542,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 				} else if ( $duplicate_id > 0 ) {
 					$new_offer_id = WFOCU_Core()->offers->duplicate_offer( $duplicate_id, '', $upsell_id );
 
-					if( empty( $builder )) {
+					if ( empty( $builder ) ) {
 						$offer_post = get_post( $duplicate_id );
 						if ( ! empty( $offer_post ) && ! empty( $offer_post->post_content ) ) {
 							$update_offer_post               = get_post( $new_offer_id );
@@ -1930,6 +2016,7 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 				$product_image   = ! empty( wp_get_attachment_thumb_url( $product->get_image_id() ) ) ? wp_get_attachment_thumb_url( $product->get_image_id() ) : WFFN_PLUGIN_URL . '/admin/assets/img/product_default_icon.jpg';
 				$regular_price   = ! empty( $product->get_regular_price() ) ? $product->get_regular_price() : 0;
 				$sale_price      = ! empty( $product->get_sale_price() ) ? $product->get_sale_price() : 0;
+
 				$product_details = [
 					'key'                  => $posted_product['key'],
 					'id'                   => $posted_product['id'],
@@ -1948,8 +2035,19 @@ if ( ! class_exists( 'WFFN_REST_UPSELL_API_EndPoint' ) ) {
 					'radioVarient'         => $default_variation,
 					'discount_amount'      => 0,
 					'discount_type'        => 'percentage_on_reg',
-					'quantity'             => 1
+					'quantity'             => 1,
 				];
+
+				/**
+				 * Filter product schema data before returning
+				 *
+				 * @param array $product_details Product details array
+				 * @param WC_Product $product Product object
+				 * @param array $posted_product Posted product data
+				 *
+				 * @since 1.0.0
+				 */
+				$product_details = apply_filters( 'wfocu_offer_product_schema', $product_details, $product, $posted_product );
 
 				return $product_details;
 			}

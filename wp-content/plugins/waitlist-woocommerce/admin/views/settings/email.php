@@ -5,7 +5,7 @@ $option_name = 'xoo-wl-email-options';
 
 $email_content = '<p style="margin: 0 0 16px 0;">You requested to be notified when [product_link] was back in stock and available for order.We are extremely pleased to announce that the product is now available for purchase. Please act fast, as the item may only be available in limited quantities.</p>';
 
-$footer_content = '<p><i>Thank you for choosing '.esc_html( get_option( 'blogname' ) ).'. If you have any questions, feel free to contact us at support@'.esc_html( get_option( 'blogname' ) ).'.</i></p>';
+$footer_content = '<p style="margin: 0 0 0 0;"><i>Thank you for choosing '.esc_html( get_option( 'blogname' ) ).'. If you have any questions, feel free to contact us at support@'.esc_html( get_option( 'blogname' ) ).'.</i></p>';
 
 $placeholders = array();
 
@@ -67,7 +67,7 @@ $settings = array(
 				'editor_height' => 100,	
 			)
 		),
-		'default' 		=> '<p style="margin: 0 0 30px 0;"><u>Your Product is Now In Stock</u></p>',
+		'default' 		=> '<p style="margin: 0 0 20px 0;"><u>Your Product is Now In Stock</u></p>',
 		'desc' 			=> '<a href="#xoo-wl-placeholder-nfo">List of Placeholders</a>',
 	),
 

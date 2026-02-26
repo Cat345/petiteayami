@@ -103,8 +103,9 @@ class BWFAN_API_Get_Recovered_Carts extends BWFAN_API_Base {
 		$products    = array();
 		$order_items = $order->get_items();
 		foreach ( $order_items as $product ) {
+			$product_data = $product->get_data();
 			$products[] = array(
-				'name'  => $product->get_name(),
+				'name'  => apply_filters( 'bwfan_get_formatted_cart_item_name', $product_data['name'], $product_data ),
 				'qty'   => $product->get_quantity(),
 				'price' => number_format( $order->get_line_subtotal( $product ), 2, '.', '' ),
 			);

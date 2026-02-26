@@ -291,6 +291,19 @@ return [
                         'Heading H6' => 'h6',
                     ],
                 ],
+                'consent.modal_title_element' => [
+                    'label' => 'Title HTML Element',
+                    'type' => 'select',
+                    'options' => [
+                        'h1' => 'h1',
+                        'h2' => 'h2',
+                        'h3' => 'h3',
+                        'h4' => 'h4',
+                        'h5' => 'h5',
+                        'h6' => 'h6',
+                        'div' => 'div',
+                    ],
+                ],
                 'consent.modal_content_style' => [
                     'label' => 'Content Style',
                     'type' => 'select',
@@ -354,6 +367,19 @@ return [
                         'Heading H4' => 'h4',
                         'Heading H5' => 'h5',
                         'Heading H6' => 'h6',
+                    ],
+                ],
+                 'consent.modal_category_title_element' => [
+                    'label' => 'Category Title HTML Element',
+                    'type' => 'select',
+                    'options' => [
+                        'h1' => 'h1',
+                        'h2' => 'h2',
+                        'h3' => 'h3',
+                        'h4' => 'h4',
+                        'h5' => 'h5',
+                        'h6' => 'h6',
+                        'div' => 'div',
                     ],
                 ],
                 'consent.modal_category_content_style' => [

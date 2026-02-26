@@ -653,7 +653,7 @@ class BWFAN_Manage_Profile {
         $this->set_data();
         $settings = $this->get_global_settings();
         $lists    = isset( $settings['bwfan_profile_lists'] ) ? $settings['bwfan_profile_lists'] : [];
-        $heading  = ! empty( $settings['bwfan_profile_lists_text'] ) ? $settings['bwfan_profile_lists_text'] : __( 'Manage List', 'wp-marketing-automations' );
+        $heading  = ! empty( $settings['bwfan_profile_lists_text'] ) ? $settings['bwfan_profile_lists_text'] : __( 'Manage Lists', 'wp-marketing-automations' );
         if ( empty( $lists ) || ! is_array( $lists ) ) {
             return false;
         }
@@ -735,7 +735,7 @@ class BWFAN_Manage_Profile {
         $this->set_data();
         $settings = $this->get_global_settings();
         $fields   = isset( $settings['bwfan_profile_manage_fields'] ) ? $settings['bwfan_profile_manage_fields'] : [];
-        $heading  = ! empty( $settings['bwfan_profile_fields_text'] ) ? $settings['bwfan_profile_fields_text'] : __( 'Update Profile', 'wp-marketing-automations' );
+        $heading  = ! empty( $settings['bwfan_profile_fields_text'] ) ? $settings['bwfan_profile_fields_text'] : __( 'Manage Fields', 'wp-marketing-automations' );
         if ( empty( $fields ) || ! is_array( $fields ) ) {
             return false;
         }
@@ -743,6 +743,23 @@ class BWFAN_Manage_Profile {
 
         return $this->profile_fields_html( $heading, $fields );
     }
+
+	/**
+	 * Get the contact column fields label
+	 *
+	 * @return array
+	 */
+    public function get_contact_column_fields_label() {
+		return apply_filters( 'bwfan_manage_profile_contact_column_fields_label', array(
+			'company'    => __( 'Company', 'wp-marketing-automations' ),
+			'address-1'  => __( 'Address 1', 'wp-marketing-automations' ),
+			'address-2'  => __( 'Address 2', 'wp-marketing-automations' ),
+			'city'       => __( 'City', 'wp-marketing-automations' ),
+			'postcode'   => __( 'Postcode', 'wp-marketing-automations' ),
+			'gender'     => __( 'Gender', 'wp-marketing-automations' ),
+			'dob'        => __( 'Date of Birth', 'wp-marketing-automations' ),
+		) );
+	}
 
     /**
      * Prints the profile fields html.
@@ -758,14 +775,15 @@ class BWFAN_Manage_Profile {
         }
 		$settings = $this->get_global_settings();
         $col_fields  = $this->get_contact_column_fields();
-        $fields_data = array_map( function ( $field ) use ( $col_fields ) {
+		$col_fields_label = $this->get_contact_column_fields_label();
+        $fields_data = array_map( function ( $field ) use ( $col_fields, $col_fields_label ) {
             if ( ! in_array( $field, array_keys( $col_fields ), true ) ) {
                 $field = BWFAN_Model_Fields::get_field_by_slug( $field );
                 if ( empty( $field ) ) {
                     return false;
                 }
                 $type     = $field['type'];
-                $name     = $field['name'];
+                $name     = ! empty( $col_fields_label[ $field['slug'] ] ) ? $col_fields_label[ $field['slug'] ] : $field['name'];
                 $slug     = $field['slug'];
                 $field_id = $field['ID'];
                 $value    = $this->crm_contact instanceof BWFCRM_Contact ? $this->crm_contact->get_field_by_slug( $field['slug'] ) : '';

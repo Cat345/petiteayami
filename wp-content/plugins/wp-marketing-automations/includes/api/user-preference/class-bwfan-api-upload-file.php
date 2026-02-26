@@ -42,6 +42,11 @@ class BWFAN_API_Upload_File extends BWFAN_API_Base {
 		// Use constant for allowed path instead of user input
 		$allowed_path = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
 
+		// Ensure allowed directory exists before validation
+		if ( ! file_exists( $allowed_path ) ) {
+			wp_mkdir_p( $allowed_path );
+		}
+
 		// Validate path is within allowed directory using realpath
 		$real_path     = realpath( $path );
 		$real_allowed  = realpath( $allowed_path );

@@ -1,9 +1,9 @@
-=== Advanced Coupons – Enhanced WooCommerce Coupons & Store Credit ===
+=== Advanced Coupons for WooCommerce Coupons & Store Credit ===
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
-Tags: woocommerce coupons, bogo coupons, store credit, url coupons, bogo
+Tags: woocommerce coupons, bogo coupons, store credit, bogo, smart coupons
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: trunk
+Stable tag: 4.7.1.1
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ Enhance WooCommerce coupons with new coupon types, BOGO coupons, store credit, d
 
 == DESCRIPTION ==
 
-Add extended smart coupons features with Advanced Coupons! It's the free plugin that makes your WooCommerce coupons better.
+Add smarter coupon features with Advanced Coupons! It's the free plugin that makes your WooCommerce coupons better.
 
 = The best WooCommerce Coupons plugin for BOGO, store credit, url coupons + more! =
 
@@ -24,7 +24,7 @@ That's why we built this 100% free Advanced Coupons plugin so you can get featur
 
 ***<a href="https://advancedcouponsplugin.com/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Advanced Coupons for WooCommerce</a> (Free Version)*** gives you extra features on your WooCommerce coupons so they can market your store better.
 
-= FREE EXTRA COUPON FEATURES =
+= FREE SMART WOOCOMMERCE COUPON FEATURES =
 
 We made WooCommerce coupons better so you can:
 
@@ -379,6 +379,10 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.7.1.1 =
+* Improvement: Enhance WPML support for different domain language formats in URL translation
+* Bug Fix: Implement missing coupon access validation for users
 
 = 4.7.1 =
 * Bug Fix: BOGO coupon not working when a regular coupon is already applied

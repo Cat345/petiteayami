@@ -70,6 +70,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 
 		public static function pr( $arr ) {
 			echo '<br /><pre>';
+
 			print_r( $arr );
 			echo '</pre><br />';
 		}
@@ -3389,7 +3390,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 		}
 
 		$options = $field['options'];
-		
+
 		// Convert comma-separated string to array for select2/multiselect fields
 		if ( in_array( $field['type'], [ 'select2', 'multiselect' ], true ) && is_string( $meta_value ) ) {
 			$meta_value = explode( ',', $meta_value );
@@ -3401,7 +3402,7 @@ if ( ! class_exists( 'WFACP_Common_Helper' ) ) {
 				$trimmed_item = trim( $item );
 				return isset( $options[ $trimmed_item ] ) ? $options[ $trimmed_item ] : $trimmed_item;
 			}, $meta_value );
-			
+
 			return implode( ', ', $mapped_values );
 		}
 

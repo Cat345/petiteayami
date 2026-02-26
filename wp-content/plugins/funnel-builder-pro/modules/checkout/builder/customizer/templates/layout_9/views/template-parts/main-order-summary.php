@@ -80,12 +80,15 @@ $wc_version = WC()->version;
 					do_action( 'woocommerce_review_order_before_cart_contents' );
 					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 						$_product = apply_filters( 'woocommerce_cart_item_product1', $cart_item['data'], $cart_item, $cart_item_key );
+
+						$aero_item_key          = isset($cart_item['_wfacp_product_key']) ? $cart_item['_wfacp_product_key'] : '';
 						if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 							?>
-                            <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key ?>">
+                            <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key ?>" data-item-key="<?php echo $aero_item_key ?>">
                                 <td class="product-name-area">
 									<?php
 									$hideImageCls = '';
+
 
 									if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 										$hideImageCls = 'wfacp_summary_img_true';
@@ -102,10 +105,32 @@ $wc_version = WC()->version;
                                         </div>
 									<?php } ?>
                                     <div class="product-name  <?php echo $hideImageCls; ?> ">
-                                        <span class="wfacp_order_summary_item_name"><?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); ?></span>
+                                        <span class="wfacp_order_summary_item_name">
+                                            <?php
+											/**
+											 * Filter wfacp_mini_cart_show_variation_details: default false. Return true for new design (labeled variation + select option link).
+											 * Default: compact format "Hoodie - Small, Black" via get_name().
+											 * When filter true: product name + "Size: small, Color: black" on separate line + select option link.
+											 */
+											$show_new_order_summary_design = apply_filters( 'wfacp_mini_cart_show_variation_details', false, $cart_item, $cart_item_key );
+											$product_name                 = $_product->get_name();
+											$variation                   = [];
+											if ( in_array( $_product->get_type(), WFACP_Common::get_variation_product_type() ) || true === apply_filters( 'wfacp_show_select_options_for_cart_item', false, $cart_item, $cart_item_key ) ) {
+												$variation = WFACP_Common::get_single_variation_html( $_product, $cart_item, true );
+												if ( $show_new_order_summary_design ) {
+													$product_name = $_product->get_title();
+												}
+											}
+
+											echo apply_filters( 'woocommerce_cart_item_name', $product_name, $cart_item, $cart_item_key );
+											do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
+
+                                            ?>
+                                        </span>
 										<?php
 
 										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
+
 										if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_order_summary', false, $cart_item, $cart_item_key ) ) {
 											/**
 											 * added in 2.0.0
@@ -113,18 +138,29 @@ $wc_version = WC()->version;
 											do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 										}
 
+										
 										if ( version_compare( $wc_version, '3.3.0', '>=' ) ) {
-											echo wc_get_formatted_cart_item_data( $cart_item );
+												echo wc_get_formatted_cart_item_data( $cart_item );
 										} else {
-											echo WC()->cart->get_item_data( $cart_item );
+												echo WC()->cart->get_item_data( $cart_item );
 										}
+										
 
 										/**
 										 * Display Low Stock Trigger
+										 * Variation HTML and select option link only when wfacp_mini_cart_show_variation_details returns true.
 										 */
+										if ( is_array( $variation ) && count( $variation ) > 0 ) {
+											if ( $show_new_order_summary_design && isset( $variation['variation'] ) && ! empty( $variation['variation'] ) ) {
+												echo $variation['variation'];
+											}
 
+											if ( $show_new_order_summary_design && isset( $variation['select_option'] ) && ! empty( $variation['select_option'] ) ) {
+												echo $variation['select_option'];
+											}
+										}
 										do_action( 'wfacp_order_summary_field_after_product_title', $_product );
-
+										do_action( 'wfacp_order_summary_cart_item_formatted_data', $cart_item, $cart_item_key, $_product );
 										?>
                                     </div>
                                 </td>
@@ -172,8 +208,7 @@ $wc_version = WC()->version;
 				<?php foreach ( WFACP_Common::get_coupons() as $code => $coupon ) : ?>
                     <tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
                         <th <?php echo $colspan_attr; ?>><?php $instance->wc_cart_totals_coupon_label( $coupon ) ?></th>
-                        <td><?php wc_cart_totals_coupon_html( $coupon );
-							do_action( 'wfacp_after_coupon_html', $coupon ); ?></td>
+                        <td><?php wc_cart_totals_coupon_html( $coupon );							do_action( 'wfacp_after_coupon_html', $coupon ); ?></td>
                     </tr>
 				<?php endforeach; ?>
 

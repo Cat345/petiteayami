@@ -69,7 +69,7 @@ class AcfHelper
     /**
      * @param array<string, mixed> $group
      */
-    protected static function matchGroup(array $group, string $type, string $name): bool
+    public static function matchGroup(array $group, string $type, string $name): bool
     {
         foreach ($group['location'] as $rules) {
             foreach ($rules ?: [] as $rule) {
@@ -86,6 +86,9 @@ class AcfHelper
                         in_array($rule['param'], ['user_role', 'user_form'])) ||
                     ($type === 'attachment' &&
                         $rule['param'] === 'attachment' &&
+                        $rule['operator'] === '==') ||
+                    ($type === 'option' &&
+                        $rule['param'] === 'options_page' &&
                         $rule['operator'] === '==')
                 ) {
                     return true;

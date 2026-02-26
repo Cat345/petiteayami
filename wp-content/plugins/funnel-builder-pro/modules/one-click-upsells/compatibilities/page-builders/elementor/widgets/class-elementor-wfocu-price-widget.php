@@ -598,7 +598,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Price_Widget' ) ) {
 			$this->add_render_attribute( 'button', 'class', 'elementor-button elementor-button-link wfocu_upsell' );
 
 			if ( isset( $settings['selected_product'] ) ) {
-				$this->add_render_attribute( 'button', 'data-key', $settings['selected_product'] );
+				$this->add_render_attribute( 'wrapper', 'data-key', $settings['selected_product'] );
 			}
 
 			if ( ! empty( $settings['button_css_id'] ) ) {
@@ -632,7 +632,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Price_Widget' ) ) {
             <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
                 <div class="elementor-element elementor-element elementor-widget elementor-widget-wfocu_price" data-element_type="wfocu_price.default">
                     <div class="elementor-widget-container">
-                        <div class="elementor-price-wrapper">
+                        <div class="elementor-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 							<?php
 
 							/** Price */

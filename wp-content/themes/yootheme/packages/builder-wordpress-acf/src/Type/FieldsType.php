@@ -3,6 +3,8 @@
 namespace YOOtheme\Builder\Wordpress\Acf\Type;
 
 use WP_Post;
+use WP_Term;
+use WP_User;
 use YOOtheme\Builder\Source;
 use YOOtheme\Builder\Wordpress\Acf\AcfHelper;
 use YOOtheme\Builder\Wordpress\Source\Helper;
@@ -378,8 +380,8 @@ class FieldsType
     }
 
     /**
-     * @param WP_Post $post
-     * @return WP_Post
+     * @param WP_Post|WP_User|WP_Term|array<string, mixed> $post
+     * @return WP_Post|WP_User|WP_Term|array<string, mixed>
      */
     public static function field($post)
     {
@@ -387,8 +389,8 @@ class FieldsType
     }
 
     /**
-     * @param WP_Post $post
-     * @param array<string, mixed> $args
+     * @param WP_Post|WP_User|WP_Term|array<string, mixed> $post
+     * @param array<string, mixed>    $args
      *
      * @return mixed
      */
@@ -401,6 +403,15 @@ class FieldsType
                 $field['name'] === $parent['name']
             ) {
                 $field = $parent;
+            }
+
+            if (
+                is_array($post) &&
+                $field['parent'] &&
+                ($group = acf_get_field_group($field['parent'])) &&
+                AcfHelper::matchGroup($group, 'option', '')
+            ) {
+                $post = 'options';
             }
 
             return static::getField($post, $field, $args);

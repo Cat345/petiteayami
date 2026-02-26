@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-01-07 15:54:03+0000\n"
+"PO-Revision-Date: 2026-02-08 20:09:20+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -9,36 +9,208 @@ msgstr ""
 "Language: de\n"
 "Project-Id-Version: WooCommerce - WooCommerce Payments\n"
 
+#: client/disputes/new-evidence/evidence-matrix.ts:87
+msgid "Cancellation logs"
+msgstr "Stornierungsprotokolle"
+
+#: includes/payment-methods/Configs/Definitions/WechatPayDefinition.php:77
+msgid "A digital wallet for customers with mainland China WeChat Pay wallets. Regional versions like WeChat Pay HK are not supported."
+msgstr "Ein digitales Wallet für Kunden mit WeChat Pay-Wallets in Festlandchina. Regionale Versionen wie WeChat Pay HK werden nicht unterstützt."
+
+#: includes/payment-methods/Configs/Definitions/AlipayDefinition.php:77
+msgid "A digital wallet for customers with mainland China Alipay accounts. Regional versions like AlipayHK are not supported."
+msgstr "Ein digitales Wallet für Kunden mit Alipay-Konten in Festlandchina. Regionale Versionen wie AlipayHK werden nicht unterstützt."
+
+#: client/settings/notification-settings/notifications-email-input.tsx:43
+msgid "Provide an email address where you would like to receive communications about your WooPayments account."
+msgstr "Gib eine E-Mail-Adresse an, unter der du Mitteilungen zu deinem WooPayments-Konto erhalten möchtest."
+
+#: client/settings/notification-settings/notifications-email-input.tsx:42
+msgid "Notifications email"
+msgstr "Benachrichtigungs-E-Mail-Adresse"
+
+#: client/settings/notification-settings/notifications-email-input.tsx:37
+msgid "Please enter a valid email address."
+msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
+
+#: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:16
+msgid "Buyers who can provide correct post code on file with the issuing bank are more likely to be the actual account holder."
+msgstr "Käufer, die die bei der ausstellenden Bank hinterlegte Postleitzahl angeben können, sind mit größerer Wahrscheinlichkeit der tatsächliche Kontoinhaber."
+
+#: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:14
+msgid "This filter compares the post code submitted by the customer against the post code on file with the card issuer. The payment will be blocked if the two post codes do not match."
+msgstr "Dieser Filter vergleicht die vom Kunden übermittelte Postleitzahl mit der beim Kartenanbieter hinterlegten Postleitzahl. Die Zahlung wird blockiert, wenn die beiden Postleitzahlen nicht übereinstimmen."
+
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:34
+msgid "%1$s, and %2$s buttons"
+msgstr "%1$s- und %2$s-Buttons"
+
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:27
+msgid "%1$s and %2$s buttons"
+msgstr "%1$s- und %2$s-Buttons"
+
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:22
+msgid "%s button"
+msgstr "%s-Button"
+
+#: client/disputes/strings.ts:173
+msgid "This transaction is being reviewed under Visa’s network compliance rules."
+msgstr "Diese Transaktion wird gemäß den Netzwerkkonformitätsregeln von Visa geprüft."
+
+#: client/disputes/new-evidence/recommended-document-fields.ts:30
+msgid "Submit any files you find relevant to this dispute."
+msgstr "Reiche alle Dateien ein, die für diese Reklamation relevant sind."
+
+#: client/disputes/new-evidence/recommended-document-fields.ts:29
+msgid "Upload evidence"
+msgstr "Nachweis hochladen"
+
+#: client/disputes/new-evidence/evidence-matrix.ts:160
+msgid "Prior undisputed transaction history"
+msgstr "Verlauf früherer nicht reklamierter Transaktionen"
+
+#: includes/notes/class-wc-payments-notes-canceled-auth-remediation.php:81
+msgid "Go to Tools page"
+msgstr "Zur Tools-Seite"
+
+#: includes/notes/class-wc-payments-notes-canceled-auth-remediation.php:70
+msgid "Some orders with canceled payment authorizations have incorrect data that may cause negative values in your WooCommerce Analytics. This affects stores using manual capture (authorize and capture separately). Run the fix tool to correct this."
+msgstr "Einige Bestellungen mit stornierten Zahlungsautorisierungen weisen falsche Daten auf, die zu negativen Werten in deiner WooCommerce-Analyse führen können. Dies betrifft Shops, die manuelle Erfassung verwenden (Autorisierung und Erfassung separat). Führe das Fehlerbehebungs-Tool aus, um dies zu korrigieren."
+
+#: includes/notes/class-wc-payments-notes-canceled-auth-remediation.php:68
+msgid "WooPayments: Fix incorrect order data"
+msgstr "WooPayments: Korrigiere falsche Bestelldaten"
+
+#. translators: %s: base description
+#: includes/class-wc-payments-status.php:367
+msgid "%s <strong>Status: Running...</strong> Check the Action Scheduler for details."
+msgstr "%s <strong>Status: Wird ausgeführt ...</strong> Details findest du im Aktionsplaner."
+
+#. translators: 1: base description, 2: number of orders processed so far
+#: includes/class-wc-payments-status.php:359
+msgid "%1$s <strong>Status: Running...</strong> Processed %2$d orders so far. Check the Action Scheduler for details."
+msgstr "%1$s <strong>Status: Wird ausgeführt ...</strong> Bisher %2$d Bestellungen verarbeitet. Details findest du im Aktionsplaner."
+
+#. translators: %s: base description
+#: includes/class-wc-payments-status.php:347
+msgid "%s <strong>Status: Completed.</strong> No affected orders found."
+msgstr "%s <strong>Status: Abgeschlossen.</strong> Keine betroffenen Bestellungen gefunden."
+
+#. translators: 1: base description, 2: number of orders processed, 3: number
+#. of orders remediated
+#: includes/class-wc-payments-status.php:338
+msgid "%1$s <strong>Status: Completed.</strong> Processed %2$d orders, remediated %3$d."
+msgstr "%1$s <strong>Status: Abgeschlossen.</strong> %2$d Bestellungen verarbeitet, %3$d korrigiert."
+
+#: includes/class-wc-payments-status.php:326
+msgid "This tool removes incorrect refund records and fee data from orders where payment authorization was canceled (not captured). This fixes negative values appearing in WooCommerce Analytics for stores using manual capture."
+msgstr "Dieses Tool entfernt falsche Rückerstattungseinträge und Gebührendaten aus Bestellungen, bei denen die Zahlungsautorisierung storniert (nicht erfasst) wurde. Dadurch werden negative Werte entfernt, die in WooCommerce Analytics für Shops mit manueller Erfassung angezeigt werden."
+
+#: includes/class-wc-payments-status.php:317
+msgid "Run"
+msgstr "Starten"
+
+#: includes/class-wc-payments-status.php:295
+#: includes/class-wc-payments-status.php:314
+msgid "Running..."
+msgstr "Läuft ..."
+
+#. translators: %s: error message
+#: includes/class-wc-payments-status.php:276
+msgid "Error scheduling dry run: %s"
+msgstr "Fehler beim Planen des Testlaufs: %s"
+
+#: includes/class-wc-payments-status.php:271
+msgid "Dry run has been scheduled and will run in the background. Check WooCommerce > Status > Logs for results (source: wcpay-fee-remediation)."
+msgstr "Der Testlauf wurde geplant und wird im Hintergrund ausgeführt. Ergebnisse findests du unter WooCommerce > Status > Protokolle (Quelle: wcpay-fee-remediation)."
+
+#. translators: %s: error message
+#: includes/class-wc-payments-status.php:232
+msgid "Error scheduling remediation: %s"
+msgstr "Fehler beim Planen der Behebung: %s"
+
+#: includes/class-wc-payments-status.php:227
+msgid "Remediation has been scheduled and will run in the background. You can monitor progress in the Action Scheduler."
+msgstr "Die Behebung wurde geplant und wird im Hintergrund ausgeführt. Du kannst den Fortschritt im Aktionsplaner überwachen."
+
+#: includes/class-wc-payments-status.php:220
+#: includes/class-wc-payments-status.php:264
+msgid "Remediation is already in progress. Check the Action Scheduler for status."
+msgstr "Die Behebung läuft bereits. Den Status findest du im Aktionsplaner."
+
+#: includes/class-wc-payments-status.php:213
+#: includes/class-wc-payments-status.php:257
+msgid "Remediation has already been completed."
+msgstr "Die Behebung wurde bereits abgeschlossen."
+
+#: includes/class-wc-payments-status.php:204
+#: includes/class-wc-payments-status.php:248
+msgid "You do not have permission to run this tool."
+msgstr "Du hast keine Berechtigung, dieses Tool auszuführen."
+
+#: includes/class-wc-payments-status.php:128
+msgid "This will update order metadata and delete incorrect refund records for affected orders. This fixes negative values in WooCommerce Analytics. Make sure you have a recent backup before proceeding. Continue?"
+msgstr "Dadurch werden die Bestellmetadaten aktualisiert und falsche Rückerstattungseinträge für betroffene Bestellungen gelöscht. Dadurch werden negative Werte in WooCommerce Analytics behoben. Stelle sicher, dass du ein aktuelles Backup hast, bevor du fortfährst. Fortfahren?"
+
+#: includes/class-wc-payments-status.php:125
+msgid "Fix canceled authorization analytics"
+msgstr "Abgebrochene Autorisierungsanalysen beheben"
+
+#: includes/class-wc-payments-status.php:120
+msgid "Preview what orders would be affected by the canceled authorization fix without making any changes. Results are logged to WooCommerce > Status > Logs."
+msgstr "Zeige in der Vorschau an, welche Bestellungen von der stornierten Autorisierungskorrektur betroffen wären, ohne Änderungen vorzunehmen. Die Ergebnisse werden unter WooCommerce > Status > Protokolle erfasst."
+
+#: includes/class-wc-payments-status.php:118
+msgid "Preview canceled authorization fix (Dry Run)"
+msgstr "Vorschau der Korrektur für abgebrochene Autorisierung (Testlauf)"
+
+#. translators: %s: expected type (bool, array, or string)
+#: includes/admin/class-wc-rest-payments-settings-option-controller.php:108
+msgid "Invalid value type; expected %s"
+msgstr "Ungültiger Werttyp; %s erwartet"
+
+#: includes/admin/class-wc-rest-payments-settings-controller.php:480
+msgid "Error: Communications email is required."
+msgstr "Fehler: Kommunikations-E-Mail-Adresse ist erforderlich."
+
+#: includes/admin/class-wc-rest-payments-settings-controller.php:274
+msgid "If Amazon Pay should be enabled."
+msgstr "Ob Amazon Pay aktiviert sein soll."
+
+#: includes/admin/class-wc-rest-payments-settings-controller.php:205
+msgid "Email address used for WooPayments communications."
+msgstr "E-Mail-Adresse, die für die Kommunikation mit WooPayments verwendet wird."
+
 #. translators: %s: error message
 #: includes/woopay/class-woopay-session.php:1131
 msgid "WooPay checkout encountered a fatal error: %s"
 msgstr "Beim Bezahlen mit WooPay ist ein schwerwiegender Fehler aufgetreten: %s"
 
-#: includes/payment-methods/Configs/Definitions/AmazonPayDefinition.php:75
+#: includes/payment-methods/Configs/Definitions/AmazonPayDefinition.php:77
 msgid "Offer customers a fast, secure checkout experience with Amazon Pay."
 msgstr "Biete Kunden mit Amazon Pay ein schnelles, sicheres Bezahlerlebnis."
 
-#: includes/class-wc-payment-gateway-wcpay.php:540
+#: includes/class-wc-payment-gateway-wcpay.php:552
 msgid "Express checkout methods on checkout page"
 msgstr "Express-Bezahlmethoden auf der Bezahlseite"
 
-#: includes/class-wc-payment-gateway-wcpay.php:529
+#: includes/class-wc-payment-gateway-wcpay.php:541
 msgid "Express checkout methods on cart page"
 msgstr "Express-Bezahlmethoden auf der Warenkorb-Seite"
 
-#: includes/class-wc-payment-gateway-wcpay.php:518
+#: includes/class-wc-payment-gateway-wcpay.php:530
 msgid "Express checkout methods on product page"
 msgstr "Express-Bezahlmethoden auf der Produktseite"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:317
+#: includes/admin/class-wc-rest-payments-settings-controller.php:327
 msgid "Express checkout methods enabled on checkout page."
 msgstr "Express-Bezahlmethoden auf der Bezahlseite aktiviert."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:308
+#: includes/admin/class-wc-rest-payments-settings-controller.php:318
 msgid "Express checkout methods enabled on cart page."
 msgstr "Express-Bezahlmethoden auf der Warenkorb-Seite aktiviert."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:299
+#: includes/admin/class-wc-rest-payments-settings-controller.php:309
 msgid "Express checkout methods enabled on product page."
 msgstr "Express-Bezahlmethoden auf der Produktseite aktiviert."
 
@@ -110,14 +282,6 @@ msgstr ""
 msgid "By enabling this feature, you agree to {{stripeLink}}Stripe{{/stripeLink}} and{{appleLink}} Apple{{/appleLink}}'s terms of use."
 msgstr ""
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:51
-msgid "Order notes or the history of related orders. This should clearly show successful renewals before the dispute."
-msgstr ""
-
-#: client/disputes/new-evidence/recommended-document-fields.ts:50
-msgid "Subscription logs"
-msgstr ""
-
 #: client/data/pm-promotions/resolvers.ts:68
 msgid "Error retrieving promotions. Please try again later."
 msgstr "Fehler beim Abrufen der Werbeaktionen. Bitte versuche es später erneut."
@@ -138,12 +302,12 @@ msgstr "Fehler beim Aktivieren der Werbeaktion. Bitte versuche es erneut."
 msgid "Promotion activated successfully!"
 msgstr "Werbeaktion erfolgreich aktiviert!"
 
-#: client/components/spotlight/index.tsx:74
+#: client/components/spotlight/index.tsx:73
 msgid "Dialog opened: %s"
 msgstr "Dialog geöffnet: %s"
 
 #. translators: 1: wallet name, 2: card brand
-#: includes/class-wc-payments-token-service.php:399
+#: includes/class-wc-payments-token-service.php:484
 msgctxt "Payment token with wallet"
 msgid "%1$s %2$s"
 msgstr ""
@@ -164,7 +328,7 @@ msgstr "Ungültige Benutzer-ID."
 msgid "You do not have permission to perform this action."
 msgstr "Du verfügst nicht über die Rechte zum Ausführen dieses Vorgangs."
 
-#: includes/class-wc-payments-pm-promotions-service.php:879
+#: includes/class-wc-payments-pm-promotions-service.php:865
 msgid "See terms"
 msgstr "Geschäftsbedingungen ansehen"
 
@@ -178,30 +342,20 @@ msgstr ""
 msgid "The promotion unique identifier."
 msgstr "Die eindeutige Kennung der Werbeaktion."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:154
-msgid "A screenshot of the refund policy for the provided service."
-msgstr "Ein Screenshot des Rückgaberechts für die bereitgestellte Dienstleistung."
-
-#: client/disputes/new-evidence/recommended-document-fields.ts:148
-msgid "Receipt(s) for any other order(s) from this customer."
-msgstr "Beleg(e) für andere Bestellungen von diesem Kunden."
-
-#: client/disputes/new-evidence/recommended-document-fields.ts:147
+#: client/disputes/new-evidence/evidence-matrix.ts:50
 msgid "Any additional receipts"
 msgstr "Alle zusätzlichen Belege"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:133
-msgid "A confirmation that the refund was processed."
-msgstr "Eine Bestätigung, dass die Rückerstattung verarbeitet wurde."
-
-#: client/disputes/new-evidence/recommended-document-fields.ts:132
+#: client/disputes/new-evidence/evidence-matrix.ts:23
 msgid "Refund receipt"
 msgstr "Beleg"
 
-#: includes/class-wc-payment-gateway-wcpay.php:524
-#: includes/class-wc-payment-gateway-wcpay.php:535
-#: includes/class-wc-payment-gateway-wcpay.php:546
-#: includes/payment-methods/Configs/Definitions/AmazonPayDefinition.php:54
+#: includes/class-wc-payment-gateway-wcpay.php:536
+#: includes/class-wc-payment-gateway-wcpay.php:547
+#: includes/class-wc-payment-gateway-wcpay.php:558
+#: includes/payment-methods/Configs/Definitions/AmazonPayDefinition.php:56
+#: client/constants/payment-method.ts:50
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:53
 msgid "Amazon Pay"
 msgstr "Amazon Pay"
 
@@ -211,16 +365,12 @@ msgid "Subscription set to manual renewal because %s is a non-reusable payment m
 msgstr "Abonnement auf manuelle Verlängerung gesetzt, da es sich bei %s um eine nicht wiederverwendbare Zahlungsmethode handelt."
 
 #: client/payment-details/dispute-details/dispute-awaiting-response-details.tsx:159
-msgid "By checking this box, you acknowledge that challenging this Visa compliance dispute incurs a $500 USD fee, which will be refunded only if you win the case."
-msgstr "Wenn du dieses Kästchen aktivierst, bestätigst du, dass für die Anfechtung dieser Reklamation bezüglich der Visa-Compliance eine Gebühr in Höhe von 500 USD anfällt, die nur erstattet wird, wenn du den Fall gewinnst."
+msgid "By checking this box, you acknowledge that challenging this Visa compliance dispute incurs a $500 USD network fee, which will be refunded if you win the dispute."
+msgstr "Wenn du dieses Kästchen aktivierst, bestätigst du, dass für die Anfechtung dieser Visa-Reklamation eine Netzwerkgebühr in Höhe von 500 USD anfällt, die zurückerstattet wird, wenn du die Reklamation gewinnst."
 
 #: client/payment-details/dispute-details/dispute-awaiting-response-details.tsx:107
 msgid "Learn more about Visa compliance disputes"
 msgstr "Weitere Informationen zu Reklamationen im Zusammenhang mit Visa-Compliance"
-
-#: client/disputes/strings.ts:173
-msgid "The customer’s bank claims this transaction doesn’t conform to Visa’s network rules."
-msgstr "Die Bank des Kunden behauptet, dass diese Transaktion nicht den Netzwerkregeln von Visa entspricht."
 
 #: client/disputes/strings.ts:171
 msgid "Your customer’s bank claims this payment violates Visa’s rules."
@@ -231,8 +381,8 @@ msgstr "Die Bank deines Kunden behauptet, dass diese Zahlung gegen die Visa-Rege
 msgid "Non-compliant"
 msgstr "Nicht konform"
 
-#: client/disputes/new-evidence/index.tsx:574
-#: client/payment-details/dispute-details/dispute-steps.tsx:88
+#: client/disputes/new-evidence/index.tsx:584
+#: client/payment-details/dispute-details/dispute-steps.tsx:93
 msgid "<strong>The outcome of this dispute will be determined by Visa.</strong> WooPayments has no influence over the decision and is not liable for any chargebacks."
 msgstr "<strong>Visa entscheidet über das Ergebnis dieser Reklamation.</strong> WooPayments hat keinen Einfluss auf die Entscheidung und haftet nicht für Rückbuchungen."
 
@@ -240,7 +390,7 @@ msgstr "<strong>Visa entscheidet über das Ergebnis dieser Reklamation.</strong>
 msgid "Payout scheduling becomes available after the standard 7-day waiting period for new accounts is complete. {{learnMoreLink}}Learn more{{/learnMoreLink}}"
 msgstr "Die Auszahlungsplanung wird verfügbar, nachdem die standardmäßige 7-tägige Wartezeit für neue Konten abgeschlossen ist. {{learnMoreLink}}Weitere Informationen{{/learnMoreLink}}"
 
-#: includes/class-wc-payments-status.php:131
+#: includes/class-wc-payments-status.php:146
 msgid "You do not have permission to delete orders."
 msgstr "Du hast keine Berechtigung, um Bestellungen zu löschen"
 
@@ -272,18 +422,18 @@ msgid "Built-in subscriptions functionality has been removed. Here's what to do"
 msgstr "Die integrierten Abonnement-Funktionen wurden entfernt. Gehe folgendermaßen vor"
 
 #. translators: %s: error message
-#: includes/class-wc-payments-status.php:172
+#: includes/class-wc-payments-status.php:187
 msgid "Error deleting test orders: %s"
 msgstr "Fehler beim Löschen von Testbestellungen: %s"
 
 #. translators: %d: number of orders deleted
-#: includes/class-wc-payments-status.php:161
+#: includes/class-wc-payments-status.php:176
 msgid "%d test order has been permanently deleted."
 msgid_plural "%d test orders have been permanently deleted."
 msgstr[0] "%d Testbestellung wurde dauerhaft gelöscht."
 msgstr[1] "%d Testbestellungen wurden dauerhaft gelöscht."
 
-#: includes/class-wc-payments-status.php:148
+#: includes/class-wc-payments-status.php:163
 msgid "No test orders found."
 msgstr "Keine Testbestellungen gefunden."
 
@@ -324,7 +474,7 @@ msgstr "Weitere Informationen zu Sandbox-Konten"
 msgid "{{div}}{{strong}}You're using a sandbox test account.{{/strong}} To accept real payments from shoppers, you will need to first {{resetAccountLink}}reset your account{{/resetAccountLink}} and, then, provide additional details about your business.{{/div}}{{learnMoreIcon/}}"
 msgstr "{{div}}{{strong}}Du verwendest ein Sandbox-Testkonto.{{/strong}} Um echte Zahlungen von Käufern erhalten zu können, musst du zuerst {{resetAccountLink}}dein Konto zurücksetzen{{/resetAccountLink}} und dann weitere Angaben zu deinem Geschäft machen.{{/div}}{{learnMoreIcon/}}"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:226
+#: includes/admin/class-wc-rest-payments-settings-controller.php:231
 msgid "If Apple Pay / Google Pay should be enabled as an option in the payment methods list."
 msgstr "Ob Apple Pay / Google Pay als Option in der Liste der Zahlungsmethoden aktiviert werden soll."
 
@@ -390,13 +540,13 @@ msgstr "Weitere Informationen zu Testkonten"
 msgid "You are using a test account."
 msgstr "Du verwendest ein Testkonto. "
 
-#: client/disputes/new-evidence/index.tsx:571
-#: client/payment-details/dispute-details/dispute-steps.tsx:190
+#: client/disputes/new-evidence/index.tsx:581
+#: client/payment-details/dispute-details/dispute-steps.tsx:195
 msgid "<strong>The outcome of this dispute will be determined by the cardholder's bank.</strong> WooPayments has no influence over the decision and is not liable for any chargebacks."
 msgstr "<strong>Die Konsequenz dieser Reklamation wird von der Bank des Karteninhabers bestimmt.</strong> WooPayments hat keinen Einfluss auf die Entscheidung und haftet nicht für Rückbuchungen."
 
-#: client/disputes/new-evidence/index.tsx:570
-#: client/payment-details/dispute-details/dispute-steps.tsx:189
+#: client/disputes/new-evidence/index.tsx:580
+#: client/payment-details/dispute-details/dispute-steps.tsx:194
 msgid "<strong>The outcome of this dispute will be determined by %1$s.</strong> WooPayments has no influence over the decision and is not liable for any chargebacks."
 msgstr "<strong>Die Konsequenz dieser Reklamation wird von %1$s bestimmt.</strong> WooPayments hat keinen Einfluss auf die Entscheidung und haftet nicht für Rückbuchungen."
 
@@ -424,7 +574,7 @@ msgstr "(Heute letzte Chance!)"
 msgid "The cardholder claims they did not receive the product."
 msgstr "Der Karteninhaber hat angegeben, dass er das Produkt nicht erhalten hat."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:270
+#: client/disputes/new-evidence/recommended-document-fields.ts:281
 msgid "A receipt from the shipping carrier or a tracking number, for example."
 msgstr "Zum Beispiel ein Beleg vom Versanddienstleister oder eine Sendungsverfolgungsnummer."
 
@@ -438,55 +588,61 @@ msgstr "Anfrage: Antwort erforderlich"
 msgid "Response needed"
 msgstr "Antwort erforderlich"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:237
+#: client/disputes/new-evidence/recommended-document-fields.ts:256
 msgid "A screenshot of your store's terms of service."
 msgstr "Ein Screenshot der Geschäftsbedingungen deines Shops."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:236
+#: client/disputes/new-evidence/evidence-matrix.ts:141
+#: client/disputes/new-evidence/recommended-document-fields.ts:255
 msgid "Terms of service"
 msgstr "Geschäftsbedingungen"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:84
+#: client/disputes/new-evidence/recommended-document-fields.ts:162
+msgid "Any documents showing the billing history, subscription status, or cancellation logs, for example."
+msgstr "Alle Dokumente, die z. B. den Rechnungsverlauf, den Abonnementstatus oder Stornierungsprotokolle anzeigen."
+
+#: client/disputes/new-evidence/recommended-document-fields.ts:90
 msgid "Any other relevant documents that will support your case."
 msgstr "Weitere relevante Dokumente, die deinen Fall unterstützen."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:211
+#: client/disputes/new-evidence/recommended-document-fields.ts:230
 msgid "Any relevant documents showing the customer's signature, such as signed proof of delivery."
 msgstr "Relevante Dokumente mit der Unterschrift des Kunden, z. B. ein unterzeichneter Zustellungsnachweis."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:78
+#: client/disputes/new-evidence/recommended-document-fields.ts:84
 msgid "Any correspondence with the customer regarding this purchase."
 msgstr "Korrespondenz mit dem Kunden in Bezug auf diesen Kauf."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:127
+#: client/disputes/new-evidence/recommended-document-fields.ts:78
 msgid "A copy of the customer's receipt, which can be found in the receipt history for this transaction."
 msgstr "Eine Kopie des Kundenbelegs, die im Belegverlauf für diese Transaktion zu finden ist."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:225
+#: client/disputes/new-evidence/recommended-document-fields.ts:244
 msgid "Such as billing history, subscription status, or cancellation logs."
 msgstr "Beispiel: Rechnungsverlauf, Abonnementstatus oder Kündigungsprotokolle."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:231
+#: client/disputes/new-evidence/recommended-document-fields.ts:250
 msgid "A screenshot of your store's refund policy."
 msgstr "Ein Screenshot der Richtlinie deines Shops zum Rückgaberecht."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:197
+#: client/disputes/new-evidence/recommended-document-fields.ts:216
 msgid "A screenshot of the item condition."
 msgstr "Ein Screenshot des Artikelzustands."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:83
+#: client/disputes/new-evidence/evidence-matrix.ts:166
+#: client/disputes/new-evidence/recommended-document-fields.ts:89
 msgid "Other documents"
 msgstr "Andere Dokumente"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:224
+#: client/disputes/new-evidence/recommended-document-fields.ts:243
 msgid "Proof of active subscription"
 msgstr "Nachweis des aktiven Abonnements"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:196
+#: client/disputes/new-evidence/recommended-document-fields.ts:215
 msgid "Item condition"
 msgstr "Artikelzustand"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:210
+#: client/disputes/new-evidence/recommended-document-fields.ts:229
 msgid "Customer's signature"
 msgstr "Unterschrift des Kunden"
 
@@ -518,15 +674,16 @@ msgstr "WooCommerce Subscriptions installieren"
 msgid "NO VAT"
 msgstr "KEINE MwSt."
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:126
+#: client/disputes/new-evidence/evidence-matrix.ts:129
+#: client/disputes/new-evidence/recommended-document-fields.ts:77
 msgid "Order receipt"
 msgstr "Bestellbeleg"
 
-#: includes/class-wc-payments-onboarding-service.php:831
+#: includes/class-wc-payments-onboarding-service.php:851
 msgid "Failed to activate the account: account does not exist."
 msgstr "Konto konnte nicht aktiviert werden: Konto existiert nicht."
 
-#: includes/class-wc-payments-onboarding-service.php:776
+#: includes/class-wc-payments-onboarding-service.php:796
 msgid "Failed to reset the account: account does not exist."
 msgstr "Konto konnte nicht zurückgesetzt werden: Konto existiert nicht."
 
@@ -742,18 +899,18 @@ msgstr "Weitere Informationen zu Zahlungsanfragen"
 msgid "Please see this document for more information"
 msgstr "Weitere Informationen findest du in diesem Dokument"
 
-#: includes/class-wc-payments-onboarding-service.php:669
-#: includes/class-wc-payments-onboarding-service.php:771
-#: includes/class-wc-payments-onboarding-service.php:826
+#: includes/class-wc-payments-onboarding-service.php:689
+#: includes/class-wc-payments-onboarding-service.php:791
+#: includes/class-wc-payments-onboarding-service.php:846
 msgid "Your store is not connected to WordPress.com. Please connect it first."
 msgstr "Dein Shop ist nicht mit Wordpress.com verbunden. Bitte stelle zuerst eine Verbindung her."
 
-#: includes/class-wc-payments-onboarding-service.php:295
-#: includes/class-wc-payments-onboarding-service.php:674
+#: includes/class-wc-payments-onboarding-service.php:318
+#: includes/class-wc-payments-onboarding-service.php:694
 msgid "Onboarding initialization is already in progress. Please wait for it to finish."
 msgstr "Die Onboarding-Initialisierung wird bereits durchgeführt. Bitte warte, bis sie abgeschlossen ist."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3841
+#: includes/class-wc-payment-gateway-wcpay.php:3939
 msgid "You cannot add a new payment method so soon after the previous one. Please try again later."
 msgstr "Du kannst so kurz nach der vorherigen keine neue Zahlungsmethode hinzufügen. Bitte versuche es später erneut."
 
@@ -798,10 +955,6 @@ msgid "Enable International IP Address filter"
 msgstr "Filter für internationale IP-Adressen aktivieren"
 
 #: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:14
-msgid "This filter compares the street number and the post code submitted by the customer against the data on file with the card issuer. When enabled the payment will be blocked."
-msgstr "Dieser Filter vergleicht die vom Kunden übermittelte Hausnummer und Postleitzahl mit den beim Kartenanbieter hinterlegten Daten. Bei Aktivierung wird die Zahlung blockiert."
-
-#: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:14
 msgid "Enable AVS Mismatch filter"
 msgstr "Filter für AVS-Abweichungen aktivieren"
 
@@ -813,11 +966,11 @@ msgstr "Dieser Filter sucht nach Unterschieden zwischen den Versand- und den Rec
 msgid "Enable Address Mismatch filter"
 msgstr "Filter für Adressabweichungen aktivieren"
 
-#: includes/class-wc-payments-onboarding-service.php:855
+#: includes/class-wc-payments-onboarding-service.php:875
 msgid "Failed to disable test drive account."
 msgstr "Das Testkonto konnte nicht deaktiviert werden."
 
-#: includes/class-wc-payments-onboarding-service.php:787
+#: includes/class-wc-payments-onboarding-service.php:807
 msgid "Failed to delete account."
 msgstr "Konto konnte nicht gelöscht werden."
 
@@ -874,8 +1027,8 @@ msgstr "Die für die ursprüngliche Zahlung verwendete Karte wurde als verloren 
 msgid "Cash App Afterpay"
 msgstr "Bargeld-App Afterpay"
 
-#: includes/class-wc-payment-gateway-wcpay.php:1045
-#: includes/class-wc-payment-gateway-wcpay.php:1050
+#: includes/class-wc-payment-gateway-wcpay.php:1068
+#: includes/class-wc-payment-gateway-wcpay.php:1073
 msgid "Return to payments"
 msgstr "Zurück zu den Zahlungen"
 
@@ -946,10 +1099,6 @@ msgstr "ausstehend"
 #: includes/class-wc-payments-order-service.php:1548
 msgid "unsuccessful"
 msgstr "nicht erfolgreich"
-
-#: includes/admin/class-wc-rest-payments-settings-option-controller.php:87
-msgid "Invalid value type; must be either boolean or array"
-msgstr "Ungültiger Werttyp; muss entweder boolesch oder ein Array sein"
 
 #: includes/payment-methods/Configs/Definitions/MultibancoDefinition.php:77
 msgid "A voucher based payment method for your customers in Portugal."
@@ -1043,11 +1192,11 @@ msgstr "Bestellnummer %s"
 msgid "Your order is on hold until payment is received. Please follow the payment instructions by the expiry date."
 msgstr "Deine Bestellung ist ausgesetzt, bis die Zahlung eingegangen ist. Bitte befolge die Zahlungsanweisungen bis zum Ablaufdatum."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3629
+#: includes/class-wc-payment-gateway-wcpay.php:3727
 msgid "Payment method updated for all your current subscriptions."
 msgstr "Die Zahlungsmethode wurde für alle deine Abonnements geändert."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3626
+#: includes/class-wc-payment-gateway-wcpay.php:3724
 msgid "Payment method updated."
 msgstr "Zahlungsmethode aktualisiert."
 
@@ -1064,17 +1213,9 @@ msgstr "Onlineshop"
 msgid "Sales channel"
 msgstr "Vertriebskanal"
 
-#: includes/payment-methods/Configs/Definitions/AlipayDefinition.php:77
-msgid "Alipay is a popular wallet in China, operated by Ant Financial Services Group, a financial services provider affiliated with Alibaba."
-msgstr "Alipay ist ein beliebtes Onlinebezahlsystem in China, das von der Ant Financial Services Group betrieben wird, einem Finanzdienstleister und Partner von Alibaba."
-
-#: client/disputes/index.tsx:318 client/transactions/list/index.tsx:454
+#: client/disputes/index.tsx:317 client/transactions/list/index.tsx:454
 msgid "We’re processing your export. 🎉 The file will download automatically and be emailed to %s."
 msgstr "Dein Export wird verarbeitet. 🎉 Die Datei wird automatisch heruntergeladen und per E-Mail an %s gesendet."
-
-#: includes/payment-methods/Configs/Definitions/WechatPayDefinition.php:77
-msgid "A digital wallet popular with customers from China."
-msgstr "Eine bei Kunden aus China beliebte digitale Wallet."
 
 #: includes/payment-methods/Configs/Definitions/GrabPayDefinition.php:77
 msgid "A popular digital wallet for cashless payments in Singapore."
@@ -1126,7 +1267,7 @@ msgid "The payment amount is too small to be processed."
 msgstr "Der Zahlungsbetrag ist zu gering, um verarbeitet zu werden."
 
 #. translators: %s: formatted minimum amount with currency
-#: includes/class-wc-payment-gateway-wcpay.php:3361
+#: includes/class-wc-payment-gateway-wcpay.php:3459
 msgid "The minimum amount to capture is %s."
 msgstr "Der zu erfassende Mindestbetrag beträgt %s."
 
@@ -1232,6 +1373,10 @@ msgstr "Bankreferenz-ID"
 msgid "•••"
 msgstr "•••"
 
+#: includes/class-wc-payments-status.php:291
+msgid "Completed"
+msgstr "Abgeschlossen"
+
 #: client/transactions/list/index.tsx:212
 msgid "Payout date"
 msgstr "Auszahlungsdatum"
@@ -1265,22 +1410,26 @@ msgstr "Bei dieser Zahlung ist das Risiko geringer, dass es sich um eine betrüg
 msgid "Adjust risk filters"
 msgstr "Risikofilter anpassen"
 
-#: includes/class-wc-payments-onboarding-service.php:399
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:63
+msgid "Some appearance settings may be overridden in the express payment section of the Cart & Checkout blocks."
+msgstr "Einige Designeinstellungen werden im Abschnitt „Express-Zahlung“ der Warenkorb- und Bezahlen-Blöcke möglicherweise überschrieben."
+
+#: includes/class-wc-payments-onboarding-service.php:425
 msgid "Failed to finalize onboarding session."
 msgstr "Die Onboarding-Sitzung konnte nicht abgeschlossen werden."
 
 #. translators: link to Stripe testing page
-#: includes/class-wc-payments-checkout.php:368
-#: includes/class-wc-payments-checkout.php:477
+#: includes/class-wc-payments-checkout.php:348
+#: includes/class-wc-payments-checkout.php:457
 msgid "Click to copy the test number to clipboard"
 msgstr "Klicke, um die Testnummer in die Zwischenablage zu kopieren"
 
 #. translators: 1: WooPayments.
-#: includes/admin/class-wc-payments-admin.php:1222
+#: includes/admin/class-wc-payments-admin.php:1223
 msgid "Please <b>complete your %1$s setup</b> to continue using it."
 msgstr "Bitte <b>schließe die%1$s Einrichtung ab</b>, um es weiter zu verwenden."
 
-#: includes/class-wc-payments-checkout.php:368
+#: includes/class-wc-payments-checkout.php:348
 #: client/components/copy-button/index.tsx:19
 msgid "Copy to clipboard"
 msgstr "In die Zwischenablage kopieren"
@@ -1307,30 +1456,30 @@ msgid_plural "%1$s requires the %2$s currencies. In order to enable the payment 
 msgstr[0] "Für %1$s wird die Währung %2$s benötigt. Um diese Zahlungsmethode zu aktivieren, musst du diese Währung zu deinem Shop hinzufügen."
 msgstr[1] "Für %1$s werden die Währungen %2$s benötigt. Um diese Zahlungsmethode zu aktivieren, musst du diese Währungen zu deinem Shop hinzufügen."
 
-#: includes/class-wc-payments-webhook-processing-service.php:827
+#: includes/class-wc-payments-webhook-processing-service.php:830
 msgid "The mandate used for this renewal payment is invalid. You may need to bring the customer back to your store and ask them to resubmit their payment information."
 msgstr "Der für diese Verlängerungszahlung verwendete Auftrag ist ungültig. Du musst den Kunden möglicherweise zurück in deinen Shop holen und ihn auffordern, seine Zahlungsinformationen noch einmal zu übermitteln."
 
 #. translators: %s: WooPayments.
-#: includes/class-wc-payments-account.php:1735
+#: includes/class-wc-payments-account.php:1746
 msgid "There was a problem setting up your %s account. Please try again."
 msgstr "Es gab ein Problem beim Einrichten deines %s-Kontos. Bitte versuche es erneut."
 
 #. translators: 1: anchor opening markup 2: closing anchor markup
-#: includes/class-wc-payments-account.php:1685
+#: includes/class-wc-payments-account.php:1696
 msgid "Another account setup session is already in progress. Please finish it or %1$sclick here to start again%2$s."
 msgstr "Eine andere Kontoeinrichtungssitzung läuft bereits. Beende diese oder %1$sklicke hier, um noch einmal zu beginnen%2$s."
 
 #. translators: 1: WooPayments.
-#: includes/class-wc-payments-account.php:1536
+#: includes/class-wc-payments-account.php:1547
 msgid "Please <b>complete your %1$s setup</b> to process transactions."
 msgstr "<b>Schließe die Einrichtung von %1$s ab</b>, um Transaktionen zu verarbeiten."
 
-#: includes/class-wc-payments.php:2091
+#: includes/class-wc-payments.php:2118
 msgid "is required to create an WooPay account."
 msgstr "ist erforderlich, um ein WooPay-Konto zu erstellen."
 
-#: includes/class-wc-payments.php:2091
+#: includes/class-wc-payments.php:2118
 msgid "Mobile Number"
 msgstr "Mobiltelefonnummer"
 
@@ -1370,7 +1519,7 @@ msgstr "Deine %1$s einrichten"
 msgid "WooPay blog_token is currently misconfigured."
 msgstr "WooPay blog_token ist derzeit fehlerhaft konfiguriert."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:259
+#: includes/admin/class-wc-rest-payments-settings-controller.php:264
 msgid "1-click checkout button border radius."
 msgstr "Rahmenradius für den Button „Bezahlen per 1-Klick“."
 
@@ -1382,29 +1531,29 @@ msgstr "Rahmenradius für den Button „Bezahlen per 1-Klick“."
 #: includes/wc-payment-api/class-wc-payments-api-client.php:854
 #: includes/wc-payment-api/class-wc-payments-api-client.php:879
 #: includes/wc-payment-api/class-wc-payments-api-client.php:912
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1304
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1372
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1404
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1429
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1456
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1481
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1506
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1530
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1555
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1580
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1623
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1648
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1674
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1699
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1725
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1752
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1781
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1960
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1992
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2036
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2122
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2408
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2442
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1317
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1385
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1417
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1442
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1469
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1494
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1519
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1543
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1568
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1593
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1636
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1661
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1687
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1712
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1738
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1765
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1794
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1973
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2005
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2049
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2135
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2421
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2455
 msgid "Route param validation failed."
 msgstr "Die Validierung des Routenparameters ist fehlgeschlagen."
 
@@ -1430,20 +1579,20 @@ msgid "Puerto Rico"
 msgstr "Puerto Rico"
 
 #. translators: %s: WooPay,
-#: includes/class-wc-payment-gateway-wcpay.php:4421
+#: includes/class-wc-payment-gateway-wcpay.php:4527
 msgid "Payments made simple — including %s, a new express checkout feature."
 msgstr "Zahlungen leicht gemacht – einschließlich %s, einer neuen Funktion für Express-Zahlungen."
 
 #. translators: %1$s: WooPayments
-#: includes/class-wc-payment-gateway-wcpay.php:4411
+#: includes/class-wc-payment-gateway-wcpay.php:4517
 msgid "%1$s gives your store flexibility to accept credit cards, debit cards, and Apple Pay. Enable popular local payment methods and other digital wallets like Google Pay to give customers even more choice."
 msgstr "Mit %1$s bist du flexibler und kannst in deinem Shop Zahlungen per Kreditkarte, Debitkarte und Apple Pay akzeptieren. Außerdem kannst du beliebte lokale Zahlungsmethoden und andere digitale Wallets wie Google Pay aktivieren, um deinen Kunden noch mehr Zahlungsmöglichkeiten anzubieten."
 
-#: client/constants/payment-method.ts:52 client/payment-methods-icons.tsx:37
+#: client/payment-methods-icons.tsx:37
 msgid "Cartes Bancaires"
 msgstr "Cartes Bancaires"
 
-#: client/components/account-status/account-tools/strings.tsx:13
+#: client/components/account-details/account-tools/strings.tsx:13
 msgid "You are using a test account. If you are experiencing problems completing account setup, or wish to test with a different email/country associated with your account, you can reset your account and start from the beginning."
 msgstr "Du verwendest ein Testkonto. Wenn du Probleme bei der Einrichtung deines Kontos hast oder Tests mit einer anderen E-Mail-Adresse/einem anderen Land durchführen möchtest, die/das mit deinem Konto verbunden ist, kannst du dein Konto zurücksetzen und von vorne beginnen."
 
@@ -1451,17 +1600,17 @@ msgstr "Du verwendest ein Testkonto. Wenn du Probleme bei der Einrichtung deines
 msgid "Payouts are currently paused because a recent payout failed. Please {{updateLink}}update your bank account details{{/updateLink}}."
 msgstr "Auszahlungen sind derzeit pausiert, weil eine kürzliche Auszahlung fehlgeschlagen ist. Bitte {{updateLink}}aktualisiere deine Kontodetails{{/updateLink}}."
 
-#: includes/class-wc-payments-webhook-processing-service.php:645
+#: includes/class-wc-payments-webhook-processing-service.php:648
 msgid "Payment dispute and fees have been deducted from your next payout"
 msgstr "Zahlungsreklamationen und Gebühren wurden von deiner nächsten Auszahlung abgezogen"
 
 #. translators: %1: charge ID
-#: includes/class-wc-payments-webhook-processing-service.php:906
+#: includes/class-wc-payments-webhook-processing-service.php:909
 msgid "The refund amount is not valid for charge ID: %1$s"
 msgstr "Der Rückerstattungsbetrag ist für die folgende Abbuchungs-ID nicht gültig: %1$s"
 
 #. translators: %1$: order id.
-#: includes/class-wc-payment-gateway-wcpay.php:2403
+#: includes/class-wc-payment-gateway-wcpay.php:2480
 msgid "A refund cannot be found for order: %1$s"
 msgstr "Für die folgende Bestellung wurde keine Rückerstattung gefunden: %1$s"
 
@@ -1524,7 +1673,7 @@ msgid "Clearpay"
 msgstr "Clearpay"
 
 #. translators: %s: metadata. We do not need to translate WooPayMeta
-#: includes/class-wc-payment-gateway-wcpay.php:1550
+#: includes/class-wc-payment-gateway-wcpay.php:1577
 msgid "We're not able to process this payment. Please try again later. WooPayMeta: intent_meta_order_id: %1$s, order_id: %2$s"
 msgstr "Wir konnten diese Zahlung nicht verarbeiten. Bitte versuche es später erneut. WooPayMeta: intent_meta_order_id: %1$s, order_id: %2$s"
 
@@ -1561,21 +1710,21 @@ msgstr "Beim Rückerstatten der Zahlung Nr. %s ist ein Fehler aufgetreten. Bitt
 msgid "Refunded payment #%s."
 msgstr "Zahlung Nr. %s rückerstattet."
 
-#: client/components/account-status/account-tools/strings.tsx:14
+#: client/components/account-details/account-tools/strings.tsx:14
 msgid "Payments and payouts are disabled until account setup is completed. If you are experiencing problems completing account setup, or need to change the email/country associated with your account, you can reset your account and start from the beginning."
 msgstr "Zahlungen und Auszahlungen sind deaktiviert, bis die Einrichtung des Kontos abgeschlossen ist. Wenn du Probleme bei der Einrichtung deines Kontos hast oder die mit deinem Konto verknüpfte Angabe von E-Mail-Adresse/Land ändern musst, kannst du dein Konto zurücksetzen und von vorne beginnen."
 
-#: client/components/account-status/account-tools/strings.tsx:11
+#: client/components/account-details/account-tools/strings.tsx:11
 msgid "Account Tools"
 msgstr "Tools für Konten"
 
-#: client/components/account-status/account-tools/strings.tsx:15
+#: client/components/account-details/account-tools/strings.tsx:15
 #: client/connect-account-page/strings.tsx:19
 #: client/overview/modal/reset-account/strings.tsx:13
 msgid "Reset account"
 msgstr "Konto zurücksetzen"
 
-#: includes/class-wc-payments-status.php:238
+#: includes/class-wc-payments-status.php:464
 msgid "Enabled APMs"
 msgstr "Alternative Zahlungsmethoden"
 
@@ -1591,7 +1740,7 @@ msgstr "Dieser Filter ist deaktiviert, da du im Moment an alle Länder verkaufst
 msgid "Invalid product id"
 msgstr "Ungültige Produkt-ID"
 
-#: includes/class-wc-payment-gateway-wcpay.php:511
+#: includes/class-wc-payment-gateway-wcpay.php:523
 msgid "Small"
 msgstr "Klein"
 
@@ -1599,12 +1748,16 @@ msgstr "Klein"
 msgid "Contact Support"
 msgstr "Support kontaktieren"
 
-#: includes/class-wc-payment-gateway-wcpay.php:516
+#: includes/class-wc-payment-gateway-wcpay.php:528
 msgid "By placing this order, you agree to our [terms] and understand our [privacy_policy]."
 msgstr "Mit Aufgabe dieser Bestellung stimmst du unseren [Geschäftsbedingungen] zu und bestätigst, dass du unsere [Datenschutzerklärung] zur Kenntnis genommen hast."
 
+#: client/payment-details/summary/refund-modal/index.tsx:64
+msgid "Other"
+msgstr "Sonstiges"
+
 #. translators: This is an error API response.
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2714
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2727
 msgid "Error: The payment could not be captured because the requested capture amount is greater than the amount you can capture for this charge."
 msgstr "Fehler: Die Zahlung konnte nicht erfasst werden, weil der angeforderte Erfassungsbetrag größer ist als der zulässige Betrag."
 
@@ -1612,7 +1765,7 @@ msgstr "Fehler: Die Zahlung konnte nicht erfasst werden, weil der angeforderte E
 msgid "Accepting…"
 msgstr "Wird akzeptiert …"
 
-#: includes/class-wc-payment-gateway-wcpay.php:4500
+#: includes/class-wc-payment-gateway-wcpay.php:4615
 msgid "A valid shipping address is required for Afterpay payments."
 msgstr "Für Afterpay-Zahlungen ist eine gültige Lieferadresse erforderlich."
 
@@ -1819,123 +1972,123 @@ msgstr "Beachte bitte die folgenden Informationen, bevor du den Vorgang fortsetz
 msgid "Continue with challenge"
 msgstr "Anfechtung fortsetzen"
 
-#: includes/class-wc-payments-status.php:357
+#: includes/class-wc-payments-status.php:583
 msgid "Whether debug logging is enabled and working or not."
 msgstr "Ob die Fehlerprotokollierung aktiviert ist und funktioniert oder nicht."
 
-#: includes/class-wc-payments-status.php:356
+#: includes/class-wc-payments-status.php:582
 msgid "Logging"
 msgstr "Protokollieren"
 
-#: includes/class-wc-payments-status.php:350
+#: includes/class-wc-payments-status.php:576
 msgid "Whether the tax documents section is enabled or not."
 msgstr "Ob der Abschnitt mit Steuerdokumenten aktiviert ist oder nicht."
 
-#: includes/class-wc-payments-status.php:340
+#: includes/class-wc-payments-status.php:566
 msgid "Whether the store has the Auth & Capture feature enabled or not."
 msgstr "Ob für den Shop die Funktion „Autorisieren und Erfassen“ aktiviert ist oder nicht."
 
-#: includes/class-wc-payments-status.php:339
+#: includes/class-wc-payments-status.php:565
 msgid "Auth and Capture"
 msgstr "Autorisieren und Erfassen"
 
-#: includes/class-wc-payments-status.php:335
+#: includes/class-wc-payments-status.php:561
 msgid "Whether the store has the Multi-currency feature enabled or not."
 msgstr "Ob für den Shop die Funktion für Multiwährungen aktiviert ist oder nicht."
 
-#: includes/class-wc-payments-status.php:293
+#: includes/class-wc-payments-status.php:519
 msgid "The advanced fraud protection filters currently enabled."
 msgstr "Die derzeit aktivierten erweiterten Betrugsschutzfilter."
 
-#: includes/class-wc-payments-status.php:292
+#: includes/class-wc-payments-status.php:518
 msgid "Enabled Fraud Filters"
 msgstr "Aktivierte Betrugsschutzfilter"
 
-#: includes/class-wc-payments-status.php:287
+#: includes/class-wc-payments-status.php:513
 msgid "The current fraud protection level the payment gateway is using."
 msgstr "Die aktuelle Betrugsschutzstufe, die das Zahlungs-Gateway verwendet."
 
-#: includes/class-wc-payments-status.php:286
+#: includes/class-wc-payments-status.php:512
 msgid "Fraud Protection Level"
 msgstr "Betrugsschutzstufe"
 
-#: includes/class-wc-payments-status.php:275
+#: includes/class-wc-payments-status.php:501
 msgid "Whether the store has Payment Request enabled or not."
 msgstr "Ob der Shop die Zahlungsaufforderung aktiviert hat oder nicht."
 
-#: includes/class-wc-payments-status.php:274
+#: includes/class-wc-payments-status.php:500
 msgid "Apple Pay / Google Pay Express Checkout"
 msgstr "Express-Zahlung für Apple Pay/Google Pay"
 
-#: includes/class-wc-payments-status.php:268
+#: includes/class-wc-payments-status.php:494
 msgid "Whether there are extensions active that are have known incompatibilities with the functioning of the new WooPay Express Checkout."
 msgstr "Ob es aktive Erweiterungen gibt, die bekannte Inkompatibilitäten mit der Funktionsweise der neuen WooPay-Express-Zahlung aufweisen."
 
-#: includes/class-wc-payments-status.php:267
+#: includes/class-wc-payments-status.php:493
 msgid "WooPay Incompatible Extensions"
 msgstr "WooPay – inkompatible Erweiterungen"
 
-#: includes/class-wc-payments-status.php:257
+#: includes/class-wc-payments-status.php:483
 msgid "Whether the new WooPay Express Checkout is enabled or not."
 msgstr "Ob die neue WooPay-Express-Zahlung aktiviert ist oder nicht."
 
-#: includes/class-wc-payments-status.php:252
+#: includes/class-wc-payments-status.php:478
 msgid "Not active"
 msgstr "Nicht aktiv"
 
-#: includes/class-wc-payments-status.php:252
+#: includes/class-wc-payments-status.php:478
 msgid "Not eligible"
 msgstr "Nicht berechtigt"
 
 #. translators: %s: WooPayments
-#: includes/class-wc-payments-status.php:249
+#: includes/class-wc-payments-status.php:475
 msgid "WooPay is not available, as a %s feature, or the store is not yet eligible."
 msgstr "WooPay ist nicht als %s-Funktion verfügbar oder der Shop ist noch nicht qualifiziert."
 
-#: includes/class-wc-payments-status.php:245
-#: includes/class-wc-payments-status.php:256
+#: includes/class-wc-payments-status.php:471
+#: includes/class-wc-payments-status.php:482
 msgid "WooPay Express Checkout"
 msgstr "WooPay-Express-Zahlung"
 
-#: includes/class-wc-payments-status.php:239
+#: includes/class-wc-payments-status.php:465
 msgid "What payment methods are enabled for the store."
 msgstr "Welche Zahlungsmethoden für den Shop aktiviert sind."
 
-#: includes/class-wc-payments-status.php:234
+#: includes/class-wc-payments-status.php:460
 msgid "Whether the payment gateway has test payments enabled or not."
 msgstr "Ob das Zahlungs-Gateway Testzahlungen aktiviert hat oder nicht."
 
-#: includes/class-wc-payments-status.php:230
+#: includes/class-wc-payments-status.php:456
 msgid "Needs setup"
 msgstr "Einrichtung erforderlich"
 
-#: includes/class-wc-payments-status.php:229
+#: includes/class-wc-payments-status.php:455
 msgid "Is the payment gateway ready and enabled for use on your store?"
 msgstr "Ist das Zahlungs-Gateway bereit und für die Nutzung in deinem Shop aktiviert?"
 
-#: includes/class-wc-payments-status.php:228
+#: includes/class-wc-payments-status.php:454
 msgid "Payment Gateway"
 msgstr "Zahlungs-Gateway"
 
-#: includes/class-wc-payments-status.php:220
+#: includes/class-wc-payments-status.php:446
 msgid "The merchant account ID you are currently using to process payments with."
 msgstr "Die Konto-ID des Verkäufers, die du derzeit für die Verarbeitung von Zahlungen verwendest."
 
-#: includes/class-wc-payments-status.php:215
+#: includes/class-wc-payments-status.php:441
 msgid "The corresponding wordpress.com blog ID for this store."
 msgstr "Die zugehörige wordpress.com-Blog-ID für diesen Shop."
 
-#: includes/class-wc-payments-status.php:214
+#: includes/class-wc-payments-status.php:440
 msgid "WPCOM Blog ID"
 msgstr "WPCOM-Blog-ID"
 
 #. translators: %s: WooPayments
-#: includes/class-wc-payments-status.php:207
+#: includes/class-wc-payments-status.php:433
 msgid "Can your store connect securely to wordpress.com? Without a proper WPCOM connection %s can't function!"
 msgstr "Kann dein Shop eine sichere Verbindung zu wordpress.com herstellen? %s funktioniert ohne korrekte WPCOM-Verbindung nicht!"
 
 #. translators: %s: WooPayments
-#: includes/class-wc-payments-status.php:197
+#: includes/class-wc-payments-status.php:423
 msgid "The current version of the %s extension."
 msgstr "Die aktuelle Version der %s-Erweiterung."
 
@@ -1947,7 +2100,7 @@ msgstr "Die Zahlung kann für abgeschlossene oder verarbeitete Bestellungen nich
 msgid "Error retrieving file."
 msgstr "Fehler beim Abrufen der Datei."
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1208
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1221
 msgid "Onboarding field data could not be retrieved"
 msgstr "Einführungsfelddaten konnten nicht abgerufen werden"
 
@@ -2013,19 +2166,19 @@ msgstr "Reklamiert am"
 msgid "Dispute Amount"
 msgstr "Reklamierter Betrag"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:294
+#: includes/admin/class-wc-rest-payments-settings-controller.php:304
 msgid "The number of subscriptions migrated from Stripe Billing to on-site billing."
 msgstr "Die Anzahl der Abonnements, die von Stripe Billing auf die interne Abrechnung umgestellt werden."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:289
+#: includes/admin/class-wc-rest-payments-settings-controller.php:299
 msgid "The number of subscriptions using Stripe Billing"
 msgstr "Die Anzahl der Abonnements, die Stripe Billing verwenden"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:284
+#: includes/admin/class-wc-rest-payments-settings-controller.php:294
 msgid "Whether there is a Stripe Billing off-site to on-site billing migration in progress."
 msgstr "Ob eine Umstellung von externem Stripe Billing zur internen Abrechnung läuft."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:279
+#: includes/admin/class-wc-rest-payments-settings-controller.php:289
 msgid "If Stripe Billing is enabled."
 msgstr "Ob Stripe Billing aktiviert ist."
 
@@ -2075,7 +2228,7 @@ msgstr "Stripe Billing-Abonnements migrieren"
 msgid "Payments and payouts are disabled for this account until setup is completed."
 msgstr "Zahlungen und Auszahlungen sind für dieses Konto deaktiviert, bis die Einrichtung abgeschlossen ist."
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1252
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1265
 msgid "Link type is required"
 msgstr "Link-Typ ist erforderlich"
 
@@ -2292,7 +2445,7 @@ msgstr "Japan"
 msgid "United Arab Emirates"
 msgstr "Vereinigte Arabische Emirate"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:417
+#: includes/admin/class-wc-rest-payments-settings-controller.php:427
 msgid "Error: Invalid Japanese phone number: "
 msgstr "Fehler: Ungültige japanische Telefonnummer: "
 
@@ -2300,7 +2453,7 @@ msgstr "Fehler: Ungültige japanische Telefonnummer: "
 msgid "This subscription has been successfully migrated to a WooPayments tokenized subscription."
 msgstr "Das Abonnement wurde erfolgreich zu einem Abonnement mit WooPayments-Token migriert."
 
-#: includes/class-wc-payment-gateway-wcpay.php:683
+#: includes/class-wc-payment-gateway-wcpay.php:695
 msgid "We're not able to process this payment due to the order ID mismatch. Please try again later."
 msgstr "Wir können diese Zahlung nicht verarbeiten, da die Bestellnummer nicht übereinstimmt. Bitte versuche es später erneut."
 
@@ -2379,7 +2532,7 @@ msgid "Risk filtering is only available for orders processed using credit cards 
 msgstr "Der Risikofilter ist nur für Bestellungen verfügbar, die über Kreditkarten mit %s abgewickelt werden."
 
 #. translators: %1$s: WooCommerce, %2$s: WooPayments, a1: documentation URL
-#: includes/class-wc-payments.php:1569
+#: includes/class-wc-payments.php:1585
 msgid "The %1$s version you have installed is not compatible with %2$s for a Norwegian business. Please update %1$s to version 7.5 or above. You can do that via the <a1>the plugins page.</a1>"
 msgstr "Die %1$s-Version, die du installiert hast, ist nicht mit %2$s für ein norwegisches Unternehmen kompatibel. Bitte aktualisiere %1$s auf Version 7.5 oder höher. Das kannst du auf der <a1>Plugin-Seite</a1> tun."
 
@@ -2471,7 +2624,7 @@ msgid "%1$s requires <a>%2$s</a> to be installed and active."
 msgstr "Zur Installation und Aktivierung von %1$s ist <a>%2$s</a> erforderlich."
 
 #. translators: %s: WooPayments
-#: includes/class-wc-payment-gateway-wcpay.php:3700
+#: includes/class-wc-payment-gateway-wcpay.php:3798
 msgid "A %s payment method was not provided"
 msgstr "Es wurde keine %s-Zahlungsmethode angegeben"
 
@@ -2480,7 +2633,7 @@ msgid "Respond to %d active disputes"
 msgstr "Auf %d aktive Reklamationen antworten"
 
 #. translators: %s: WooPayments
-#: includes/admin/class-wc-rest-payments-settings-controller.php:219
+#: includes/admin/class-wc-rest-payments-settings-controller.php:224
 msgid "If %s express checkouts should be enabled."
 msgstr "Ob %s-Express-Zahlungen aktiviert sein sollen."
 
@@ -2520,7 +2673,7 @@ msgid "If %s should be enabled."
 msgstr "Ob %s aktiviert sein soll."
 
 #. translators: %s: WooPayments
-#: includes/admin/class-wc-payments-admin.php:1275
+#: includes/admin/class-wc-payments-admin.php:1276
 msgid "This represents the fee %s collects for the transaction."
 msgstr "Dies ist die von %s für die Transaktion erhobene Gebühr."
 
@@ -2528,6 +2681,14 @@ msgstr "Dies ist die von %s für die Transaktion erhobene Gebühr."
 #: includes/admin/class-wc-payments-admin.php:263
 msgid "The selected currency is not available for the country set in your %s account."
 msgstr "Die ausgewählte Währung ist für das in deinem %s-Konto angegebene Land nicht verfügbar."
+
+#: client/constants/payment-method.ts:60
+msgid "Union Pay"
+msgstr "UnionPay"
+
+#: client/constants/payment-method.ts:59
+msgid "Stripe Account"
+msgstr "Stripe-Konto"
 
 #: includes/class-wc-payments-order-success-page.php:84
 #: includes/class-wc-payments-order-success-page.php:584
@@ -2539,11 +2700,31 @@ msgstr "Multibanco"
 msgid "Klarna"
 msgstr "Klarna"
 
+#: client/constants/payment-method.ts:53
+msgid "In-Person Card Payment"
+msgstr "Persönliche Kartenzahlung"
+
+#: client/constants/payment-method.ts:52
+msgid "Card Payment"
+msgstr "Kartenzahlung"
+
 #: includes/payment-methods/Configs/Definitions/AlipayDefinition.php:56
 msgid "Alipay"
 msgstr "Alipay"
 
-#: client/constants/payment-method.ts:59 client/payment-methods-icons.tsx:43
+#: client/constants/payment-method.ts:49
+msgid "ACSS Debit"
+msgstr "ACSS-Lastschrift"
+
+#: client/constants/payment-method.ts:48
+msgid "ACH Debit"
+msgstr "ACH-Lastschrift"
+
+#: client/constants/payment-method.ts:47
+msgid "ACH Credit Transfer"
+msgstr "ACH-Überweisung"
+
+#: client/payment-methods-icons.tsx:43
 msgid "Visa"
 msgstr "Visa"
 
@@ -2551,24 +2732,23 @@ msgstr "Visa"
 msgid "UnionPay"
 msgstr "UnionPay"
 
-#: client/constants/payment-method.ts:56 client/payment-methods-icons.tsx:41
+#: client/payment-methods-icons.tsx:41
 msgid "Mastercard"
 msgstr "MasterCard"
 
-#: client/constants/payment-method.ts:55 client/payment-methods-icons.tsx:40
-#: client/payment-methods-map.tsx:21
+#: client/payment-methods-icons.tsx:40 client/payment-methods-map.tsx:21
 msgid "JCB"
 msgstr "JCB"
 
-#: client/constants/payment-method.ts:54 client/payment-methods-icons.tsx:39
+#: client/payment-methods-icons.tsx:39
 msgid "Discover"
 msgstr "Entdecken"
 
-#: client/constants/payment-method.ts:53 client/payment-methods-icons.tsx:38
+#: client/payment-methods-icons.tsx:38
 msgid "Diners Club"
 msgstr "Diners Club"
 
-#: client/constants/payment-method.ts:49 client/payment-methods-icons.tsx:36
+#: client/payment-methods-icons.tsx:36
 msgid "American Express"
 msgstr "American Express"
 
@@ -2595,19 +2775,19 @@ msgstr "Wenn du nicht beweisen kannst, dass das Abonnement des Kunden storniert 
 
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
-#: includes/class-wc-payments.php:2047
+#: includes/class-wc-payments.php:2074
 msgid "The %1$s version you have installed is not compatible with %2$s for a Czech Republic business. Please update %1$s to version 7.8 or above (you are using %3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr "Die %1$s-Version, die du installiert hast, ist nicht mit %2$s für tschechische Unternehmen kompatibel. Bitte aktualisiere %1$s auf Version 7.8 oder höher (du verwendest aktuell Version %3$s). Du kannst dies auf der <a1>Plugin-Seite</a1> tun."
 
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
-#: includes/class-wc-payments.php:2043
+#: includes/class-wc-payments.php:2070
 msgid "The %1$s version you have installed is not compatible with %2$s for a Swedish business. Please update %1$s to version 7.8 or above (you are using %3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr "Die %1$s-Version, die du installiert hast, ist nicht mit %2$s für schwedische Unternehmen kompatibel. Bitte aktualisiere %1$s auf Version 7.8 oder höher (du verwendest aktuell Version %3$s). Du kannst dies auf der <a1>Plugin-Seite</a1> tun."
 
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
-#: includes/class-wc-payments.php:2039
+#: includes/class-wc-payments.php:2066
 msgid "The %1$s version you have installed is not compatible with %2$s for a Hungarian business. Please update %1$s to version 7.8 or above (you are using %3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr "Die %1$s-Version, die du installiert hast, ist nicht mit %2$s für ungarische Unternehmen kompatibel. Bitte aktualisiere %1$s auf Version 7.8 oder höher (du verwendest aktuell Version %3$s). Du kannst dies auf der <a1>Plugin-Seite</a1> tun."
 
@@ -2687,7 +2867,7 @@ msgstr "Afterpay"
 msgid "Affirm"
 msgstr "Affirm"
 
-#: includes/class-wc-payments-status.php:221
+#: includes/class-wc-payments-status.php:447
 msgid "Not connected"
 msgstr "Nicht verbunden"
 
@@ -2724,8 +2904,6 @@ msgstr "Kroatien"
 msgid "Bulgaria"
 msgstr "Bulgarien"
 
-#: client/components/deposits-status/index.tsx:64
-#: client/components/payments-status/index.tsx:26
 #: client/settings/payment-methods-list/use-payment-method-availability.tsx:79
 msgid "Pending verification"
 msgstr "Verifizierung ausstehend"
@@ -2777,7 +2955,7 @@ msgstr "Deine Auszahlungen sind {{strong}}vorübergehend ausgesetzt{{/strong}}. 
 msgid "Dispatch date"
 msgstr "Versanddatum"
 
-#: includes/class-wc-payment-gateway-wcpay.php:1125
+#: includes/class-wc-payment-gateway-wcpay.php:1148
 msgid "Invalid phone number."
 msgstr "Ungültige Telefonnummer."
 
@@ -2872,7 +3050,7 @@ msgstr "&#x1F6AB; Eine Zahlung über %1$s wurde durch einen oder mehrere Risikof
 msgid "&#x26D4; A payment of %1$s was <strong>held for review</strong> by one or more risk filters.<br><br><a>View more details</a>."
 msgstr "⛔ Eine Zahlung über %1$s wurde durch einen oder mehrere Risikofilter <strong>zur Überprüfung zurückgehalten</strong>.<br><br><a>Mehr Informationen anzeigen</a>."
 
-#: includes/admin/class-wc-payments-admin.php:1280
+#: includes/admin/class-wc-payments-admin.php:1281
 msgid "Transaction Fee:"
 msgstr "Transaktionsgebühr:"
 
@@ -3061,10 +3239,6 @@ msgstr "Da der Kartensicherheitscode nur auf der Karte steht und nicht auf Quitt
 msgid "CVC Verification"
 msgstr "Sicherheitscode-Verifizierung"
 
-#: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:16
-msgid "Buyers who can provide the street number and post code on file with the issuing bank are more likely to be the actual account holder. AVS matches, however, are not a guarantee."
-msgstr "Käufer, die die bei der ausstellenden Bank hinterlegte Hausnummer und Postleitzahl angeben können, sind mit größerer Wahrscheinlichkeit der tatsächliche Kontoinhaber. AVS-Übereinstimmungen sind jedoch keine Garantie."
-
 #: client/settings/fraud-protection/advanced-settings/cards/avs-mismatch.tsx:13
 msgid "AVS Mismatch"
 msgstr "AVS-Abweichung"
@@ -3158,7 +3332,7 @@ msgstr "Dänemark"
 msgid "Cyprus"
 msgstr "Zypern"
 
-#: includes/core/server/request/class-create-and-confirm-setup-intention.php:105
+#: includes/core/server/request/class-create-and-confirm-setup-intention.php:121
 msgid "Intentions require at least one payment method"
 msgstr "Absichten erfordern mindestens eine Zahlungsmethode"
 
@@ -3205,6 +3379,10 @@ msgstr "<strong>Testmodus:</strong> Verwende die Testkontonummer <number>AT61190
 msgid "<strong>Test mode:</strong> use the test account number <number>000123456</number>. Other payment methods may redirect to a Stripe test page to authorize payment. More test card numbers are listed <a>here</a>."
 msgstr "<strong>Testmodus:</strong> Verwende die Testkontonummer <number>000123456</number>. Andere Zahlungsmethoden leiten dich möglicherweise zur Autorisierung der Zahlung zu einer Stripe-Testseite weiter. Weitere Testkartennummern sind <a>hier</a> aufgeführt."
 
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:62
+msgid "These settings will also apply to the %s on your store."
+msgstr "Diese Einstellungen gelten auch für den %s in deinem Store."
+
 #: client/overview/task-list/tasks/update-business-details-task.tsx:97
 msgid "More details"
 msgstr "Weitere Details"
@@ -3245,15 +3423,15 @@ msgid "The customer must authorize this payment via a notification sent to them 
 msgstr "Der Kunde muss diese Zahlung durch eine Mitteilung der kartenausgebenden Bank autorisieren. Die Autorisierung muss vor dem %1$s um %2$s abgeschlossen sein, wenn versucht wird, die Karte zu belasten."
 
 #. translators: %s Stripe error message.
-#: includes/class-wc-payments-webhook-processing-service.php:838
+#: includes/class-wc-payments-webhook-processing-service.php:841
 msgid "With the following message: <code>%s</code>"
 msgstr "Mit der folgenden Meldung: <code>%s</code>"
 
-#: includes/class-wc-payments-webhook-processing-service.php:833
+#: includes/class-wc-payments-webhook-processing-service.php:836
 msgid "For recurring payment greater than mandate amount or INR 15000, payment was not approved by the card holder."
 msgstr "Bei wiederkehrenden Zahlungen, die über dem Mandatsbetrag oder über 15.000 INR liegen, wurde die Zahlung vom Karteninhaber nicht genehmigt."
 
-#: includes/class-wc-payments-webhook-processing-service.php:831
+#: includes/class-wc-payments-webhook-processing-service.php:834
 msgid "The customer's bank could not send pre-debit notification for the payment."
 msgstr "Die Bank des Kunden konnte keine Benachrichtigung über die Vorablastschrift für die Zahlung senden."
 
@@ -3300,7 +3478,7 @@ msgstr "Konversion beim Bezahlen steigern"
 msgid "Got it"
 msgstr "Verstanden"
 
-#: includes/class-wc-payments-token-service.php:367
+#: includes/class-wc-payments-token-service.php:452
 msgid "Stripe Link email"
 msgstr "Stripe-Link-E-Mail"
 
@@ -3313,19 +3491,19 @@ msgid "Enable secure checkout"
 msgstr "Sicheres Bezahlen aktivieren"
 
 #. Translators: %d is the numeric ID of the product without a price.
-#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:751
+#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:856
 msgid "Express checkout does not support products without prices! Please add a price to product #%d"
 msgstr "Express-Zahlungen sind für Produkte ohne Preise nicht verfügbar! Bitte füge Produkt #%d einen Preis hinzu"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:213
+#: includes/admin/class-wc-rest-payments-settings-controller.php:218
 msgid "Monthly anchor for deposit scheduling when interval is set to monthly"
 msgstr "Monatlicher Anker für Anzahlungszeitpläne, wenn das Intervall auf monatlich festgelegt ist"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:209
+#: includes/admin/class-wc-rest-payments-settings-controller.php:214
 msgid "Weekly anchor for deposit scheduling when interval is set to weekly"
 msgstr "Wöchentlicher Anker für Anzahlungszeitpläne, wenn das Intervall auf wöchentlich festgelegt ist"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:205
+#: includes/admin/class-wc-rest-payments-settings-controller.php:210
 msgid "An interval for deposit scheduling."
 msgstr "Ein Intervall für Anzahlungszeitpläne."
 
@@ -3374,22 +3552,22 @@ msgctxt "used in admin pointer script params in javascript as type pointer conte
 msgid "%1$sChoose Subscription%2$s%3$s%4$s adds two new subscription product types - %5$sSimple subscription%6$s and %7$sVariable subscription%8$s.%9$s"
 msgstr "%1$sWähle „Abonnement“%2$s%3$s %4$s fügt zwei neue Abonnement-Produkttypen hinzu – %5$sEinfaches Abonnement%6$s und %7$sVariables Abonnement%8$s.%9$s"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:274
+#: includes/admin/class-wc-rest-payments-settings-controller.php:284
 msgid "Store logo to display to WooPay customers."
 msgstr "Shop-Logo, das WooPay-Kunden angezeigt wird."
 
-#: includes/admin/class-wc-payments-admin.php:1248
+#: includes/admin/class-wc-payments-admin.php:1249
 #: includes/class-wc-payments-order-success-page.php:297
 msgid "Card ending in"
 msgstr "Kartennummer endet auf"
 
-#: includes/admin/class-wc-payments-admin.php:1244
+#: includes/admin/class-wc-payments-admin.php:1245
 msgid "Paid with"
 msgstr "Bezahlt mit"
 
-#: includes/class-wc-payment-gateway-wcpay.php:525
-#: includes/class-wc-payment-gateway-wcpay.php:536
-#: includes/class-wc-payment-gateway-wcpay.php:547
+#: includes/class-wc-payment-gateway-wcpay.php:537
+#: includes/class-wc-payment-gateway-wcpay.php:548
+#: includes/class-wc-payment-gateway-wcpay.php:559
 #: includes/payment-methods/Configs/Definitions/LinkDefinition.php:55
 msgid "Link"
 msgstr "Link"
@@ -3414,19 +3592,20 @@ msgstr "Bestätigen"
 msgid "Confirm your business details"
 msgstr "Angaben zu deinem Unternehmen bestätigen"
 
-#: includes/class-wc-payments-account.php:2493
+#: includes/class-wc-payments-account.php:2504
 msgid "Failed to update Account locale. "
 msgstr "Kontoregion konnte nicht aktualisiert werden. "
 
-#: includes/class-wc-payment-gateway-wcpay.php:2360
+#: includes/class-wc-payment-gateway-wcpay.php:2437
 msgid "You shall refund this payment in the same application where the payment was made."
 msgstr "Du solltest diese Zahlung in derselben Anwendung zurückerstatten, in der die Zahlung vorgenommen wurde."
 
-#: includes/class-wc-payment-gateway-wcpay.php:523
-#: includes/class-wc-payment-gateway-wcpay.php:534
-#: includes/class-wc-payment-gateway-wcpay.php:545
+#: includes/class-wc-payment-gateway-wcpay.php:535
+#: includes/class-wc-payment-gateway-wcpay.php:546
+#: includes/class-wc-payment-gateway-wcpay.php:557
 #: includes/class-wc-payments-woopay-button-handler.php:334
 #: client/payment-methods-icons.tsx:45
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:47
 #: client/settings/express-checkout/woopay-item.tsx:38
 msgid "WooPay"
 msgstr "WooPay"
@@ -3444,11 +3623,11 @@ msgstr "Keine Auswahl"
 msgid "<strong>Notice:</strong> It appears that your 'wp-config.php' file might be using dynamic site URL values. Dynamic site URLs could cause %s to enter Safe Mode. <dynamicSiteUrlSupportLink>Learn how to set a static site URL.</dynamicSiteUrlSupportLink>"
 msgstr "<strong>Hinweis:</strong> Es sieht so aus, als würde deine Datei „wp-config.php“ dynamische Website-URL-Werte verwenden. Dynamische Website-URLs könnten dazu führen, dass %s in den abgesicherten Modus wechselt. <dynamicSiteUrlSupportLink>Erfahre, wie du eine statische Website-URL festlegen kannst.</dynamicSiteUrlSupportLink>"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:269
+#: includes/admin/class-wc-rest-payments-settings-controller.php:279
 msgid "Custom message to display to WooPay customers."
 msgstr "Benutzerdefinierte Nachricht für WooPay-Kunden."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:264
+#: includes/admin/class-wc-rest-payments-settings-controller.php:269
 msgid "If WooPay should be enabled."
 msgstr "Ob WooPay aktiviert werden soll."
 
@@ -3478,15 +3657,15 @@ msgstr "Dies ist der Beleg für deine Bestellnummer%s:"
 msgid "Hi %s,"
 msgstr "Hallo %s,"
 
-#: includes/emails/class-wc-payments-email-ipp-receipt.php:363
+#: includes/emails/class-wc-payments-email-ipp-receipt.php:367
 msgid "Thanks for using {site_url}!"
 msgstr "Vielen Dank, dass Sie {site_url} verwenden!"
 
-#: includes/emails/class-wc-payments-email-ipp-receipt.php:155
+#: includes/emails/class-wc-payments-email-ipp-receipt.php:159
 msgid "Your receipt for order: #{order_number}"
 msgstr "Dein Beleg für die Bestellung: Nummer{order_number}"
 
-#: includes/emails/class-wc-payments-email-ipp-receipt.php:145
+#: includes/emails/class-wc-payments-email-ipp-receipt.php:149
 msgid "Your {site_title} Receipt"
 msgstr "Dein {site_title} Beleg"
 
@@ -3524,7 +3703,7 @@ msgid "No valid event name or type."
 msgstr "Kein gültiger Veranstaltungsname oder -typ."
 
 #: includes/class-wc-payments-woopay-button-handler.php:199
-#: includes/class-wc-payments.php:1780 includes/class-woopay-tracker.php:95
+#: includes/class-wc-payments.php:1807 includes/class-woopay-tracker.php:95
 #: includes/woopay/class-woopay-session.php:631
 #: includes/woopay/class-woopay-session.php:678
 #: includes/woopay/class-woopay-session.php:704
@@ -3550,8 +3729,9 @@ msgstr "Dein Darlehensantrag wurde genehmigt!"
 msgid "Powered by WooCommerce"
 msgstr "Bereitgestellt durch WooCommerce"
 
-#: includes/class-wc-payment-gateway-wcpay.php:522
-#: includes/class-wc-payment-gateway-wcpay.php:533
+#: includes/class-wc-payment-gateway-wcpay.php:534
+#: includes/class-wc-payment-gateway-wcpay.php:545
+#: client/settings/express-checkout-settings/express-checkout-settings-notices.tsx:50
 #: client/settings/express-checkout/apple-google-pay-item.tsx:26
 msgid "Apple Pay / Google Pay"
 msgstr "Apple Pay/Google Pay"
@@ -3608,22 +3788,24 @@ msgid "EPS"
 msgstr "EPS"
 
 #: client/connect-account-page/strings.tsx:113
+#: client/settings/notification-settings/notifications-email-input.tsx:46
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: includes/class-wc-payments.php:1847
+#: includes/class-wc-payments.php:1874
 msgid "Contact information"
 msgstr "Kontaktinformationen"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:444
+#: includes/admin/class-wc-rest-payments-settings-controller.php:454
 msgid "Error: Invalid address format!"
 msgstr "Fehler: Ungültiges Adressformat!"
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:408
+#: includes/admin/class-wc-rest-payments-settings-controller.php:418
 msgid "Error: Invalid phone number: "
 msgstr "Fehler: Ungültige Telefonnummer: "
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:384
+#: includes/admin/class-wc-rest-payments-settings-controller.php:394
+#: includes/admin/class-wc-rest-payments-settings-controller.php:487
 msgid "Error: Invalid email address: "
 msgstr "Fehler: Ungültige E-Mail-Adresse: "
 
@@ -3723,27 +3905,27 @@ msgstr "BECS-Lastschrift"
 msgid "There was a problem creating your subscription. %1$s doesn't meet the %2$sminimum recurring amount%3$s this payment method can process."
 msgstr "Bei der Erstellung deines Abonnements ist ein Problem aufgetreten. %1$s entspricht nicht dem %2$sminimalen wiederkehrenden Betrag%3$s, der mit dieser Zahlungsmethode verarbeitet werden kann."
 
-#: includes/class-wc-payments-webhook-processing-service.php:825
+#: includes/class-wc-payments-webhook-processing-service.php:828
 msgid "You have exceeded the number of allowed verification attempts."
 msgstr "Du hast die maximale Anzahl von Verifizierungsversuchen überschritten."
 
-#: includes/class-wc-payments-webhook-processing-service.php:823
+#: includes/class-wc-payments-webhook-processing-service.php:826
 msgid "Microdeposit transfers failed. Please check the account, institution and transit numbers."
 msgstr "Mikroüberweisung nicht erfolgreich. Überprüfe das Konto, das Geldinstitut und die Transitnummern."
 
-#: includes/class-wc-payments-webhook-processing-service.php:821
+#: includes/class-wc-payments-webhook-processing-service.php:824
 msgid "The customer's bank account could not be located."
 msgstr "Das Bankkonto des Kunden konnte nicht ermittelt werden."
 
-#: includes/class-wc-payments-webhook-processing-service.php:819
+#: includes/class-wc-payments-webhook-processing-service.php:822
 msgid "The customer's account has insufficient funds to cover this payment."
 msgstr "Das Kundenkonto verfügt nicht über ausreichende Mittel zur Abwicklung der Zahlung."
 
-#: includes/class-wc-payments-webhook-processing-service.php:817
+#: includes/class-wc-payments-webhook-processing-service.php:820
 msgid "The customer has notified their bank that this payment was unauthorized."
 msgstr "Der Kunde hat seine Bank darüber informiert, dass diese Zahlung nicht durch ihn autorisiert wurde."
 
-#: includes/class-wc-payments-webhook-processing-service.php:815
+#: includes/class-wc-payments-webhook-processing-service.php:818
 msgid "The customer's bank account has been closed."
 msgstr "Das Bankkonto des Kunden wurde geschlossen."
 
@@ -3803,11 +3985,11 @@ msgstr "ZWISCHENSUMME"
 msgid "SKU"
 msgstr "Artikelnummer"
 
-#: includes/class-wc-payment-gateway-wcpay.php:799
+#: includes/class-wc-payment-gateway-wcpay.php:811
 msgid "Next we’ll ask you to share a few details about your business to create your account."
 msgstr "Als Nächstes bitten wir dich um ein paar Details zu deinem Unternehmen, um dein Konto zu erstellen."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3242
+#: includes/class-wc-payment-gateway-wcpay.php:3340
 msgid "Failed to update Stripe account. "
 msgstr "Stripe-Konto konnte nicht aktualisiert werden. "
 
@@ -3873,25 +4055,25 @@ msgstr "Die ausgewählte Zahlungsmethode erfordert eine Gesamtsumme von mindeste
 msgid "You have installed a development version of %s which requires files to be built. From the plugin directory, run <code>npm run build:client</code> to build and minify assets. Alternatively, you can download a pre-built version of the plugin from the <a1>WordPress.org repository</a1> or by visiting the <a2>releases page in the GitHub repository</a2>."
 msgstr "Du hast eine Entwicklungsversion von %s installiert, für die Dateien erstellt werden müssen. Führe vom Plugin-Verzeichnis aus <code>npm run build:client</code> aus, um Dateien zu erstellen und zu minifizieren. Alternativ kannst du eine vorkonfigurierte Version des Plugins aus dem <a1>WordPress.org-Verzeichnis</a1> oder von der <a2>Releases-Seite im GitHub-Verzeichnis</a2> herunterladen."
 
-#: includes/class-wc-payment-gateway-wcpay.php:1228
+#: includes/class-wc-payment-gateway-wcpay.php:1251
 msgid "We couldn’t verify the postal code in the billing address. If the issue persists, suggest the customer to reach out to the card issuing bank."
 msgstr "Die Postleitzahl in der Rechnungsadresse konnte nicht verifiziert werden. Falls das Problem weiterhin besteht, schlage dem Kunden vor, seine kartenausstellende Bank zu kontaktieren."
 
 #. translators: %1: the failed payment amount, %2: error message
-#: includes/class-wc-payment-gateway-wcpay.php:1223
+#: includes/class-wc-payment-gateway-wcpay.php:1246
 msgid "A payment of %1$s <strong>failed</strong>. %2$s"
 msgstr "Zahlung von %1$s <strong>fehlgeschlagen</strong>. %2$s"
 
 #. translators: %1: the dispute message, %2: the dispute details URL
-#: includes/class-wc-payments-webhook-processing-service.php:656
+#: includes/class-wc-payments-webhook-processing-service.php:659
 msgid "%1$s. See <a href=\"%2$s\">dispute overview</a> for more details."
 msgstr "%1$s. Im <a href=\"%2$s\">Reklamationsüberblick</a> findest du weitere Details."
 
-#: includes/class-wc-payments-webhook-processing-service.php:651
+#: includes/class-wc-payments-webhook-processing-service.php:654
 msgid "Payment dispute has been updated"
 msgstr "Zahlungsreklamation wurde aktualisiert"
 
-#: includes/class-wc-payments-webhook-processing-service.php:648
+#: includes/class-wc-payments-webhook-processing-service.php:651
 msgid "Payment dispute funds have been reinstated"
 msgstr "Geld für Zahlungsreklamation wurde dem Konto gutgeschrieben"
 
@@ -3905,29 +4087,29 @@ msgid "Dispute has been closed with status %1$s. See <a>dispute overview</a> for
 msgstr "Reklamation wurde mit dem Status %1$s geschlossen. Im <a>Reklamationsüberblick</a> findest du weitere Details."
 
 #: includes/admin/class-wc-rest-payments-orders-controller.php:191
-#: includes/emails/class-wc-payments-email-ipp-receipt.php:102
+#: includes/emails/class-wc-payments-email-ipp-receipt.php:106
 msgid "WooCommerce In-Person Payments"
 msgstr "WooCommerce In-Person Payments"
 
-#: includes/class-wc-payments-status.php:219
+#: includes/class-wc-payments-status.php:445
 msgid "Account ID"
 msgstr "Konto-ID"
 
-#: includes/class-wc-payments-status.php:210
+#: includes/class-wc-payments-status.php:436
 #: client/merchant-feedback-prompt/index.tsx:87
 msgid "No"
 msgstr "Nein"
 
-#: includes/class-wc-payments-status.php:210
+#: includes/class-wc-payments-status.php:436
 #: client/merchant-feedback-prompt/index.tsx:79
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/class-wc-payments-status.php:203
+#: includes/class-wc-payments-status.php:429
 msgid "Connected to WPCOM"
 msgstr "Mit WPCOM verbunden"
 
-#: includes/class-wc-payments-status.php:193
+#: includes/class-wc-payments-status.php:419
 msgid "Version"
 msgstr "Version"
 
@@ -3984,7 +4166,7 @@ msgstr " Die Einstellung wird nicht auf {{a}}persönliche Zahlungen{{/a}} angewe
 msgid "Are you sure?"
 msgstr "Bist du sicher?"
 
-#: includes/class-wc-payment-gateway-wcpay.php:1512
+#: includes/class-wc-payment-gateway-wcpay.php:1539
 #: includes/payment-methods/class-cc-payment-method.php:104
 msgid "Credit / Debit Cards"
 msgstr "Kredit-/Debitkarten"
@@ -3994,11 +4176,11 @@ msgstr "Kredit-/Debitkarten"
 msgid "Payment cannot be captured for partially or fully refunded orders."
 msgstr "Für teilweise oder vollständig rückerstattete Bestellungen kann keine Zahlung gebucht werden."
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1396
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1409
 msgid "Price ID is required"
 msgstr "Preis-ID ist erforderlich"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1364
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1377
 msgid "Product ID is required"
 msgstr "Produkt-ID ist erforderlich"
 
@@ -4089,7 +4271,7 @@ msgstr "Währungs-Umschalter-Widget"
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1917
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1930
 msgid "Address country and line 1 are required."
 msgstr "Für die Adresse müssen Land und Adresszeile 1 angegeben werden."
 
@@ -4098,16 +4280,16 @@ msgstr "Für die Adresse müssen Land und Adresszeile 1 angegeben werden."
 msgid "We're not able to process this request. Please refresh the page and try again."
 msgstr "Diese Anfrage kann nicht verarbeitet werden. Bitte aktualisiere die Seite und versuche es erneut."
 
-#: includes/class-wc-payments-account.php:1629
+#: includes/class-wc-payments-account.php:1640
 msgid "There was a duplicate attempt to initiate account setup. Please wait a few seconds and try again."
 msgstr "Es gab zwei Versuche, die Kontoeinrichtung zu starten. Bitte warte ein paar Sekunden und versuche es dann erneut."
 
 #. translators: %1: the failed payment amount
-#: includes/class-wc-payment-gateway-wcpay.php:1257
+#: includes/class-wc-payment-gateway-wcpay.php:1280
 msgid "A payment of %1$s <strong>failed</strong> to complete because of too many failed transactions. A rate limiter was enabled for the user to prevent more attempts temporarily."
 msgstr "Eine Zahlung von %1$s <strong> konnte nicht durchgeführt werden</strong>, da zu viele Transaktionen fehlgeschlagen sind. Es wurde eine Ratenbegrenzung für den Benutzer aktiviert, um weitere Versuche vorübergehend zu verhindern."
 
-#: includes/class-wc-payment-gateway-wcpay.php:1143
+#: includes/class-wc-payment-gateway-wcpay.php:1166
 msgid "Your payment was not processed."
 msgstr "Deine Zahlung wurde nicht verarbeitet."
 
@@ -4152,7 +4334,7 @@ msgstr "Erste Schritte"
 msgid "Total"
 msgstr "Summe"
 
-#: includes/class-wc-payment-gateway-wcpay.php:2332
+#: includes/class-wc-payment-gateway-wcpay.php:2409
 msgid "The refund amount is not valid."
 msgstr "Der Erstattungsbetrag ist nicht gültig."
 
@@ -4189,8 +4371,8 @@ msgctxt "an email notification"
 msgid "Enable/disable"
 msgstr "Aktivieren/Deaktivieren"
 
-#: includes/class-wc-payment-gateway-wcpay.php:4130
-#: includes/class-wc-payment-gateway-wcpay.php:4140
+#: includes/class-wc-payment-gateway-wcpay.php:4228
+#: includes/class-wc-payment-gateway-wcpay.php:4238
 msgid "Unable to update UPE appearance values at this time."
 msgstr "UPE-Designwerte können gerade nicht aktualisiert werden."
 
@@ -4322,7 +4504,7 @@ msgstr "{{title}}Statusmitteilung{{/title}} {{rule /}} {{filter /}}"
 msgid "Refunding manually requires reimbursing your customer offline via cash, check, etc. The refund amounts entered here will only be used to balance your analytics."
 msgstr "Bei einer manuellen Rückerstattung musst du deinen Kunden den Betrag offline per Bargeld, Scheck usw. erstatten. Die hier eingegebenen Rückerstattungsbeträge werden nur zum Ausgleich deiner Statistiken verwendet."
 
-#: includes/class-wc-payment-gateway-wcpay.php:1881
+#: includes/class-wc-payment-gateway-wcpay.php:1928
 msgid "Payment method successfully added."
 msgstr "Zahlungsmethode erfolgreich hinzugefügt."
 
@@ -4368,7 +4550,7 @@ msgstr "Australien"
 
 #. translators: The text encapsulated in `**` can be replaced with "Apple Pay"
 #. or "Google Pay". Please translate this text, but don't remove the `**`.
-#: includes/express-checkout/class-wc-payments-express-checkout-button-handler.php:131
+#: includes/express-checkout/class-wc-payments-express-checkout-button-handler.php:146
 msgid "To complete your transaction with **the selected payment method**, you must log in or create an account with our site."
 msgstr "Um deine Transaktion mit **der ausgewählten Zahlungsmethode** abzuschließen, musst du dich auf unserer Website anmelden oder ein Konto einrichten."
 
@@ -4398,31 +4580,31 @@ msgstr "Steigere deinen Umsatz aus dem Ausland, indem du deinen Kunden in deinem
 msgid "Sell worldwide in multiple currencies"
 msgstr "Verkaufe weltweit in mehreren Währungen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:513
+#: includes/class-wc-payment-gateway-wcpay.php:525
 msgid "Large"
 msgstr "Groß"
 
-#: includes/class-wc-payment-gateway-wcpay.php:512
+#: includes/class-wc-payment-gateway-wcpay.php:524
 msgid "Medium"
 msgstr "Mittel"
 
-#: includes/class-wc-payment-gateway-wcpay.php:507
+#: includes/class-wc-payment-gateway-wcpay.php:519
 msgid "Select the size of the button."
 msgstr "Wähle die Größe des Button aus."
 
-#: includes/class-wc-payment-gateway-wcpay.php:505
+#: includes/class-wc-payment-gateway-wcpay.php:517
 msgid "Size of the button displayed for Express Checkouts"
 msgstr "Größe des Button, der für Express-Zahlungen angezeigt wird."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:250
+#: includes/admin/class-wc-rest-payments-settings-controller.php:255
 msgid "1-click checkout button themes."
 msgstr "Button-Themes für die Option „Bezahlen per 1-Klick“."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:240
+#: includes/admin/class-wc-rest-payments-settings-controller.php:245
 msgid "1-click checkout button sizes."
 msgstr "Button-Größen für die Option „Bezahlen per 1-Klick“."
 
-#: includes/admin/class-wc-rest-payments-settings-controller.php:231
+#: includes/admin/class-wc-rest-payments-settings-controller.php:236
 msgid "1-click checkout button types."
 msgstr "Button-Arten für die Option „Bezahlen per 1-Klick“."
 
@@ -4461,7 +4643,7 @@ msgstr "Titel:"
 msgid "Let your customers switch between your enabled currencies"
 msgstr "Kunden ermöglichen, zwischen deinen aktivierten Währungen zu wechseln"
 
-#: includes/class-wc-payment-gateway-wcpay.php:449
+#: includes/class-wc-payment-gateway-wcpay.php:461
 msgid "Book"
 msgstr "Buch"
 
@@ -4476,7 +4658,7 @@ msgid "Continue"
 msgstr "Weiter"
 
 #. translators: localized exception message
-#: includes/class-wc-payment-gateway-wcpay.php:2069
+#: includes/class-wc-payment-gateway-wcpay.php:2116
 msgid "UPE payment failed: %s"
 msgstr "UPE-Zahlung fehlgeschlagen: %s"
 
@@ -4552,7 +4734,7 @@ msgstr "Bestellung nicht gefunden"
 #: includes/subscriptions/templates/html-woo-payments-deactivate-warning.php:57
 #: client/components/cancel-authorization-button/index.tsx:20
 #: client/deposits/instant-payouts/modal.tsx:41
-#: client/disputes/new-evidence/index.tsx:643
+#: client/disputes/new-evidence/index.tsx:690
 #: client/onboarding/steps/embedded-kyc.tsx:71 client/onboarding/strings.tsx:85
 #: client/order/order-status-change-strategies/index.tsx:85
 #: client/overview/modal/reset-account/strings.tsx:28
@@ -4605,8 +4787,8 @@ msgstr "Löschen"
 msgid "Sofort"
 msgstr "Sofort"
 
-#: includes/class-wc-payments-token-service.php:351
-#: includes/class-wc-payments-token-service.php:415
+#: includes/class-wc-payments-token-service.php:436
+#: includes/class-wc-payments-token-service.php:500
 msgid "SEPA IBAN"
 msgstr "SEPA IBAN"
 
@@ -4616,7 +4798,7 @@ msgid "SEPA IBAN ending in %s"
 msgstr "SEPA IBAN mit der Endung %s"
 
 #. translators: %1: intent ID
-#: includes/class-wc-payments-webhook-processing-service.php:790
+#: includes/class-wc-payments-webhook-processing-service.php:793
 msgid "Could not find order via intent ID: %1$s"
 msgstr "Bestellung konnte über die Zahlungsabsichts-ID nicht gefunden werden: %1$s"
 
@@ -4961,7 +5143,7 @@ msgstr "E-Mail-Adresse"
 msgid "Customer"
 msgstr "Kunde"
 
-#: client/disputes/new-evidence/index.tsx:390
+#: client/disputes/new-evidence/index.tsx:400
 #: client/payment-details/dispute-details/dispute-summary-row.tsx:35
 msgid "Reason"
 msgstr "Grund"
@@ -4979,15 +5161,11 @@ msgstr "Nachweis einreichen"
 msgid "Upload file"
 msgstr "Datei hochladen"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:153
-msgid "Refund policy"
-msgstr "Rückgaberecht"
-
-#: client/disputes/new-evidence/recommended-document-fields.ts:77
+#: client/disputes/new-evidence/recommended-document-fields.ts:83
 msgid "Customer communication"
 msgstr "Kommunikation mit dem Kunden"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:269
+#: client/disputes/new-evidence/recommended-document-fields.ts:280
 msgid "Proof of shipping"
 msgstr "Versandnachweis"
 
@@ -5034,7 +5212,7 @@ msgstr "Art"
 msgid "Date"
 msgstr "Datum"
 
-#: client/components/spotlight/index.tsx:153
+#: client/components/spotlight/index.tsx:155
 #: client/merchant-feedback-prompt/negative-modal.tsx:52
 #: client/merchant-feedback-prompt/positive-modal.tsx:53
 msgid "Close"
@@ -5104,26 +5282,25 @@ msgstr "Anfrage: geschlossen"
 msgid "Inquiry: Under review"
 msgstr "Anfrage: wird geprüft"
 
-#: includes/class-wc-payments-status.php:230
-#: includes/class-wc-payments-status.php:235
-#: includes/class-wc-payments-status.php:262
-#: includes/class-wc-payments-status.php:281
-#: includes/class-wc-payments-status.php:336
-#: includes/class-wc-payments-status.php:344
-#: includes/class-wc-payments-status.php:351
-#: client/components/deposits-status/index.tsx:37
-#: client/components/payments-status/index.tsx:21
+#: includes/class-wc-payments-status.php:456
+#: includes/class-wc-payments-status.php:461
+#: includes/class-wc-payments-status.php:488
+#: includes/class-wc-payments-status.php:507
+#: includes/class-wc-payments-status.php:562
+#: includes/class-wc-payments-status.php:570
+#: includes/class-wc-payments-status.php:577
+#: includes/class-wc-payments-status.php:584
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: includes/class-wc-payments-status.php:230
-#: includes/class-wc-payments-status.php:235
-#: includes/class-wc-payments-status.php:262
-#: includes/class-wc-payments-status.php:281
-#: includes/class-wc-payments-status.php:336
-#: includes/class-wc-payments-status.php:344
-#: includes/class-wc-payments-status.php:351
-#: client/components/payments-status/index.tsx:16
+#: includes/class-wc-payments-status.php:456
+#: includes/class-wc-payments-status.php:461
+#: includes/class-wc-payments-status.php:488
+#: includes/class-wc-payments-status.php:507
+#: includes/class-wc-payments-status.php:562
+#: includes/class-wc-payments-status.php:570
+#: includes/class-wc-payments-status.php:577
+#: includes/class-wc-payments-status.php:584
 msgid "Enabled"
 msgstr "Aktiviert"
 
@@ -5131,22 +5308,18 @@ msgstr "Aktiviert"
 msgid "Rejected"
 msgstr "Abgelehnt"
 
-#: client/components/deposits-status/index.tsx:25
-#: client/deposits/details/index.tsx:85
-msgid "Unknown"
-msgstr "Unbekannt"
-
 #: includes/fraud-prevention/class-order-fraud-and-risk-meta-box.php:149
-#: client/disputes/new-evidence/index.tsx:397
+#: client/disputes/new-evidence/index.tsx:407
 #: client/onboarding/steps/embedded-kyc.tsx:65
-#: client/payment-details/dispute-details/dispute-steps.tsx:186
+#: client/payment-details/dispute-details/dispute-steps.tsx:16
 #: client/payment-details/dispute-details/dispute-summary-row.tsx:42
+#: client/settings/notification-settings/index.tsx:17
 #: client/utils/account-fees.tsx:130
 msgid "Learn more"
 msgstr "Erfahre mehr"
 
 #. translators: This is an error API response.
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2756
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2769
 msgctxt "API error message to throw as Exception"
 msgid "Error: %1$s"
 msgstr "Fehler: %1$s"
@@ -5161,19 +5334,19 @@ msgstr "HTTP-Anfrage fehlgeschlagen. Grund: %1$s"
 msgid "Site is not connected to WordPress.com"
 msgstr "Website ist nicht mit WordPress.com verbunden"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2751
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2764
 msgid "Server error. Please try again."
 msgstr "Server Fehler! Bitte versuchen sie es nocheinmal!"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2683
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2696
 msgid "Unable to decode response from WooCommerce Payments API"
 msgstr "Antwort von WooCommerce Payments API kann nicht entschlüsselt werden"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:2566
+#: includes/wc-payment-api/class-wc-payments-api-client.php:2579
 msgid "Unable to encode body for request to WooCommerce Payments API."
 msgstr "Text für Anfrage an WooCommerce Payments API kann nicht verschlüsselt werden"
 
-#: includes/wc-payment-api/class-wc-payments-api-client.php:1296
+#: includes/wc-payment-api/class-wc-payments-api-client.php:1309
 msgid "Customer ID is required"
 msgstr "Kunden-ID erforderlich"
 
@@ -5185,7 +5358,8 @@ msgstr "Maximale Dateigröße überschritten."
 msgid "SEPA Direct Debit"
 msgstr "SEPA-Lastschrift"
 
-#: client/disputes/new-evidence/recommended-document-fields.ts:230
+#: client/disputes/new-evidence/evidence-matrix.ts:135
+#: client/disputes/new-evidence/recommended-document-fields.ts:249
 msgid "Store refund policy"
 msgstr "Richtlinie des Shops zum Rückgaberecht"
 
@@ -5272,35 +5446,35 @@ msgstr "Die Zahlungsautorisierung ist <strong>abgelaufen</strong> (<a>%1$s</a>).
 msgid "Discount"
 msgstr "Rabatt"
 
-#: includes/express-checkout/class-wc-payments-express-checkout-button-display-handler.php:114
+#: includes/express-checkout/class-wc-payments-express-checkout-button-display-handler.php:115
 msgid "OR"
 msgstr "ODER"
 
-#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:611
+#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:716
 #: client/deposits/strings.ts:18
 msgid "Pending"
 msgstr "Ausstehend"
 
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:121
-#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:604
+#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:709
 msgid "Shipping"
 msgstr "Versand"
 
 #: includes/class-wc-payments-captured-event-note.php:572
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:112
-#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:596
+#: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:701
 #: includes/in-person-payments/templates/html-in-person-payment-receipt.php:185
 #: client/payment-details/utils/tax-descriptions.ts:52
 msgid "Tax"
 msgstr "Steuer"
 
 #. translators: %1$s Name.
-#: includes/class-wc-payments-customer-service.php:355
+#: includes/class-wc-payments-customer-service.php:313
 msgid "Name: %1$s, Guest"
 msgstr "Name: %1$s, Gast"
 
 #. translators: %1$s Name, %2$s Username.
-#: includes/class-wc-payments-customer-service.php:351
+#: includes/class-wc-payments-customer-service.php:309
 msgid "Name: %1$s, Username: %2$s"
 msgstr "Name: %1$s, Benutzername: %2$s"
 
@@ -5316,17 +5490,17 @@ msgstr "Fehler bei der Domain-Verifizierung für Apple Pay"
 msgid "Your domain has been verified with Apple Pay!"
 msgstr "Deine Domain wurde mit Apple Pay verifiziert!"
 
-#: includes/class-wc-payments-account.php:2207
+#: includes/class-wc-payments-account.php:2218
 msgid "There was a problem processing your account data. Please try again."
 msgstr "Beim Verarbeiten deiner Kontodaten ist ein Problem aufgetreten. Bitte versuch es noch einmal."
 
 #. translators: %s: error message.
-#: includes/class-wc-payments-account.php:1586
+#: includes/class-wc-payments-account.php:1597
 msgid "There was a problem connecting your store to WordPress.com: \"%s\""
 msgstr "Es gab ein Problem beim Verbinden deines Shops mit WordPress.com: „%s“"
 
 #. translators: %s: WooPayments
-#: includes/class-wc-payments-account.php:1471
+#: includes/class-wc-payments-account.php:1482
 msgid "Connection to WordPress.com failed. Please connect to WordPress.com to start using %s."
 msgstr "Verbindung zu WordPress.com fehlgeschlagen. Stelle bitte eine Verbindung zu WordPress.com her, um %s zu verwenden."
 
@@ -5338,45 +5512,45 @@ msgstr "Verbindungsstatus konnte nicht erkannt werden"
 msgid "Clear"
 msgstr "Löschen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:3834
+#: includes/class-wc-payment-gateway-wcpay.php:3932
 msgid "We're not able to add this payment method. Please refresh the page and try again."
 msgstr "Wir können diese Zahlungsmethode nicht hinzufügen. Bitte aktualisiere die Seite und versuche es erneut."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3725
+#: includes/class-wc-payment-gateway-wcpay.php:3823
 msgid "Failed to add the provided payment method. Please try again later"
 msgstr "Die angegebene Zahlungsmethode kann nicht hinzugefügt werden. Bitte versuche es später erneut"
 
-#: includes/class-wc-payment-gateway-wcpay.php:3714
+#: includes/class-wc-payment-gateway-wcpay.php:3812
 msgid "We're not able to add this payment method. Please try again later"
 msgstr "Wir können diese Zahlungsmethode nicht hinzufügen. Bitte versuche es später erneut"
 
 #. translators: %1: transaction ID of the payment or a translated string
 #. indicating an unknown ID.
-#: includes/class-wc-payment-gateway-wcpay.php:3654
+#: includes/class-wc-payment-gateway-wcpay.php:3752
 msgid "A payment with ID <code>%1$s</code> was used in an attempt to pay for this order. This payment intent ID does not match any payments for this order, so it was ignored and the order was not updated."
 msgstr "Eine Zahlung mit der ID <code>%1$s</code> wurde verwendet, um zu versuchen, diese Bestellung zu bezahlen. Diese Zahlungsabsichts-ID stimmt mit keiner Zahlung für diese Bestellung überein. Sie wurde daher ignoriert und die Bestellung wurde nicht aktualisiert."
 
 #. translators: This will be used to indicate an unknown value for an ID.
-#: includes/class-wc-payment-gateway-wcpay.php:3545
+#: includes/class-wc-payment-gateway-wcpay.php:3643
 msgid "unknown"
 msgstr "unbekannt"
 
-#: includes/class-payment-information.php:280
-#: includes/class-wc-payment-gateway-wcpay.php:1665
-#: includes/class-wc-payment-gateway-wcpay.php:2007
-#: includes/class-wc-payment-gateway-wcpay.php:3536
-#: includes/class-wc-payment-gateway-wcpay.php:3549
-#: includes/class-wc-payment-gateway-wcpay.php:3561
+#: includes/class-payment-information.php:291
+#: includes/class-wc-payment-gateway-wcpay.php:1697
+#: includes/class-wc-payment-gateway-wcpay.php:2054
+#: includes/class-wc-payment-gateway-wcpay.php:3634
+#: includes/class-wc-payment-gateway-wcpay.php:3647
+#: includes/class-wc-payment-gateway-wcpay.php:3659
 msgid "We're not able to process this payment. Please try again later."
 msgstr "Wir konnten diese Zahlung nicht verarbeiten. Bitte versuche es später erneut."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3479
+#: includes/class-wc-payment-gateway-wcpay.php:3577
 #: includes/class-wc-payments-order-service.php:1388
 msgid "Canceling authorization <strong>failed</strong> to complete."
 msgstr "Der Abbruch der Autorisierung <strong>konnte nicht</strong> abgeschlossen werden."
 
 #. translators: %1: error message
-#: includes/class-wc-payment-gateway-wcpay.php:3464
+#: includes/class-wc-payment-gateway-wcpay.php:3562
 msgid "Canceling authorization <strong>failed</strong> to complete with the following message: <code>%1$s</code>."
 msgstr "Der Abbruch der Autorisierung <strong>konnte nicht</strong> abgeschlossen werden. Die Fehlermeldung lautet: <code>%1$s</code>."
 
@@ -5385,15 +5559,15 @@ msgstr "Der Abbruch der Autorisierung <strong>konnte nicht</strong> abgeschlosse
 msgid "Payment authorization was successfully <strong>cancelled</strong> (<a>%1$s</a>)."
 msgstr "Die Zahlungsautorisierung wurde erfolgreich <strong>abgebrochen</strong> (<a>%1$s</a>)."
 
-#: includes/class-wc-payment-gateway-wcpay.php:3305
+#: includes/class-wc-payment-gateway-wcpay.php:3403
 msgid "Cancel authorization"
 msgstr "Autorisierung abbrechen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:3304
+#: includes/class-wc-payment-gateway-wcpay.php:3402
 msgid "Capture charge"
 msgstr "Belastung buchen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:3272
+#: includes/class-wc-payment-gateway-wcpay.php:3370
 msgid "Customer bank statement is invalid. Statement should be between 5 and 22 characters long, contain at least single Latin character and does not contain special characters: ' \" * &lt; &gt;"
 msgstr "Der Bankauszug des Kunden ist ungültig. Der Auszug sollte zwischen 5 und 22 Zeichen lang sein, mindestens einen einzigen lateinischen Buchstaben enthalten und keine Sonderzeichen enthalten:  ' \" * &lt; &gt;"
 
@@ -5403,29 +5577,29 @@ msgid "Base fee"
 msgstr "Grundgebühr"
 
 #. translators: %1: the successfully charged amount, %2: error message
-#: includes/class-wc-payment-gateway-wcpay.php:2386
+#: includes/class-wc-payment-gateway-wcpay.php:2463
 msgid "A refund of %1$s failed to complete: %2$s"
 msgstr "Eine Rückerstattung von %1$s konnte nicht abgeschlossen werden: %2$s"
 
 #. translators: an error message which will appear if a user tries to refund an
 #. order which is has been authorized but not yet charged.
-#: includes/class-wc-payment-gateway-wcpay.php:2318
+#: includes/class-wc-payment-gateway-wcpay.php:2395
 msgid "This payment is not captured yet. To cancel this order, please go to 'Order Actions' > 'Cancel authorization'. To proceed with a refund, please go to 'Order Actions' > 'Capture charge' to charge the payment card, and then trigger a refund via the 'Refund' button."
 msgstr "Diese Zahlung ist noch nicht abgeschlossen. Wenn du diese Bestellung stornieren möchtest, gehe bitte auf „Aktionen für Bestellungen“ > „Autorisierung abbrechen“. Wenn du eine Rückerstattung in die Wege leiten willst, gehe bitte auf „Aktionen für Bestellungen“ > „Belastung buchen“, um die Zahlungskarte zu belasten und dann eine Rückerstattung über den entsprechenden Button auszulösen."
 
 #. translators: %1: the last 4 digit of the credit card
-#: includes/class-wc-payment-gateway-wcpay.php:1500
+#: includes/class-wc-payment-gateway-wcpay.php:1527
 msgid "Payment method is changed to: <strong>Credit card ending in %1$s</strong>."
 msgstr "Zahlungsmethode wurde geändert in: <strong>Kreditkarte, die mit %1$s</strong> endet."
 
 #. translators: %1: the failed payment amount, %2: error message
-#: includes/class-wc-payment-gateway-wcpay.php:1206
+#: includes/class-wc-payment-gateway-wcpay.php:1229
 #: includes/compat/subscriptions/trait-wc-payment-gateway-wcpay-subscriptions.php:394
 msgid "A payment of %1$s <strong>failed</strong> to complete with the following message: <code>%2$s</code>."
 msgstr "Eine Zahlung von %1$s <strong>konnte nicht</strong> abgeschlossen werden. Die Fehlermeldung lautet: <code>%2$s</code>."
 
-#: includes/class-wc-payment-gateway-wcpay.php:1135
-#: includes/class-wc-payment-gateway-wcpay.php:3527
+#: includes/class-wc-payment-gateway-wcpay.php:1158
+#: includes/class-wc-payment-gateway-wcpay.php:3625
 msgid "We're not able to process this payment. Please refresh the page and try again."
 msgstr "Wir konnten diese Zahlung nicht verarbeiten. Bitte aktualisiere die Seite und versuche es erneut."
 
@@ -5433,7 +5607,7 @@ msgstr "Wir konnten diese Zahlung nicht verarbeiten. Bitte aktualisiere die Seit
 msgid "There was an error while processing this request. If you continue to see this notice, please contact the admin."
 msgstr "Bei der Bearbeitung dieser Anfrage ist ein Fehler aufgetreten. Wenn dieser Hinweis weiterhin angezeigt wird, wende dich bitte an den Admin."
 
-#: includes/class-wc-payment-gateway-wcpay.php:1079
+#: includes/class-wc-payment-gateway-wcpay.php:1102
 msgid "Save payment information to my account for future purchases."
 msgstr "Zahlungsinformationen in meinem Konto für zukünftige Käufe speichern."
 
@@ -5441,91 +5615,91 @@ msgstr "Zahlungsinformationen in meinem Konto für zukünftige Käufe speichern.
 msgid "There was a problem processing the payment. Please check your email inbox and refresh the page to try again."
 msgstr "Es ist ein Problem bei der Bearbeitung der Zahlung aufgetreten. Prüfe deinen E-Mail-Posteingang und lade die Seite erneut, um es noch einmal zu versuchen."
 
-#: includes/class-wc-payment-gateway-wcpay.php:495
+#: includes/class-wc-payment-gateway-wcpay.php:507
 msgid "Select pages"
 msgstr "Seiten auswählen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:492
+#: includes/class-wc-payment-gateway-wcpay.php:504
 msgid "Checkout"
 msgstr "Bezahlen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:491
+#: includes/class-wc-payment-gateway-wcpay.php:503
 msgid "Cart"
 msgstr "Warenkorb"
 
-#: includes/class-wc-payment-gateway-wcpay.php:490
+#: includes/class-wc-payment-gateway-wcpay.php:502
 msgid "Product"
 msgstr "Produkt"
 
-#: includes/class-wc-payment-gateway-wcpay.php:481
+#: includes/class-wc-payment-gateway-wcpay.php:493
 msgid "Select where you would like to display the button."
 msgstr "Wähle aus, wo der Button angezeigt werden soll."
 
-#: includes/class-wc-payment-gateway-wcpay.php:479
+#: includes/class-wc-payment-gateway-wcpay.php:491
 msgid "Button locations"
 msgstr "Button-Positionen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:475
+#: includes/class-wc-payment-gateway-wcpay.php:487
 msgid "Buy now"
 msgstr "Jetzt kaufen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:474
+#: includes/class-wc-payment-gateway-wcpay.php:486
 msgid "Enter the custom text you would like the button to have."
 msgstr "Gib den individuellen Text ein, der auf dem Button angezeigt werden soll."
 
-#: includes/class-wc-payment-gateway-wcpay.php:472
+#: includes/class-wc-payment-gateway-wcpay.php:484
 msgid "Custom button label"
 msgstr "Individuelle Button-Beschriftung"
 
-#: includes/class-wc-payment-gateway-wcpay.php:467
+#: includes/class-wc-payment-gateway-wcpay.php:479
 msgid "Enter the height you would like the button to be in pixels. Width will always be 100%."
 msgstr "Gib die gewünschte Höhe des Buttons in Pixel ein. Die Breite ist immer 100 %."
 
-#: includes/class-wc-payment-gateway-wcpay.php:465
+#: includes/class-wc-payment-gateway-wcpay.php:477
 msgid "Button height"
 msgstr "Button-Höhe"
 
-#: includes/class-wc-payment-gateway-wcpay.php:461
+#: includes/class-wc-payment-gateway-wcpay.php:473
 msgid "Light-Outline"
 msgstr "Leichter Umriss"
 
-#: includes/class-wc-payment-gateway-wcpay.php:455
+#: includes/class-wc-payment-gateway-wcpay.php:467
 msgid "Select the button theme you would like to show."
 msgstr "Wähle das Button-Theme, das du anzeigen möchtest."
 
-#: includes/class-wc-payment-gateway-wcpay.php:453
+#: includes/class-wc-payment-gateway-wcpay.php:465
 msgid "Button theme"
 msgstr "Button-Theme"
 
-#: includes/class-wc-payment-gateway-wcpay.php:448
+#: includes/class-wc-payment-gateway-wcpay.php:460
 msgid "Donate"
 msgstr "Spenden"
 
-#: includes/class-wc-payment-gateway-wcpay.php:447
+#: includes/class-wc-payment-gateway-wcpay.php:459
 msgid "Buy"
 msgstr "Kaufen"
 
-#: includes/class-wc-payment-gateway-wcpay.php:442
+#: includes/class-wc-payment-gateway-wcpay.php:454
 msgid "Select the button type you would like to show."
 msgstr "Wähle den Button-Typ, den du anzeigen möchtest."
 
-#: includes/class-wc-payment-gateway-wcpay.php:440
+#: includes/class-wc-payment-gateway-wcpay.php:452
 msgid "Button type"
 msgstr "Button-Typ"
 
-#: includes/class-wc-payment-gateway-wcpay.php:435
+#: includes/class-wc-payment-gateway-wcpay.php:447
 msgid "Payment request buttons"
 msgstr "Zahlungsaufforderungs-Buttons"
 
-#: includes/class-wc-payment-gateway-wcpay.php:429
+#: includes/class-wc-payment-gateway-wcpay.php:441
 msgid "When enabled debug notes will be added to the log."
 msgstr "Wenn aktivierte Fehlersuchehinweise dem Protokoll hinzugefügt werden."
 
-#: includes/class-wc-payment-gateway-wcpay.php:428
+#: includes/class-wc-payment-gateway-wcpay.php:440
 msgid "Debug log"
 msgstr "Debug Log (Fehlerprotokoll)"
 
-#: includes/class-wc-payment-gateway-wcpay.php:423
+#: includes/class-wc-payment-gateway-wcpay.php:435
 msgid "Simulate transactions using test card numbers."
 msgstr "Simuliere Transaktionen mit Testkartennummern."
 
@@ -5533,46 +5707,46 @@ msgstr "Simuliere Transaktionen mit Testkartennummern."
 msgid "Enable test mode"
 msgstr "Testmodus aktivieren"
 
-#: includes/class-wc-payment-gateway-wcpay.php:415
+#: includes/class-wc-payment-gateway-wcpay.php:427
 msgid "If enabled, users will be able to pay with a saved card during checkout. Card details are saved on our platform, not on your store."
 msgstr "Wenn dies aktiviert ist, können die Benutzer mit einer gespeicherten Karte bezahlen. Kartendaten werden auf unserer Plattform gespeichert, nicht in deinem Store."
 
-#: includes/class-wc-payment-gateway-wcpay.php:413
+#: includes/class-wc-payment-gateway-wcpay.php:425
 msgid "Enable payment via saved cards"
 msgstr "Zahlung mit gespeicherten Karten aktivieren"
 
-#: includes/class-wc-payment-gateway-wcpay.php:412
+#: includes/class-wc-payment-gateway-wcpay.php:424
 msgid "Saved cards"
 msgstr "Gespeicherte Karten"
 
-#: includes/class-wc-payment-gateway-wcpay.php:408
+#: includes/class-wc-payment-gateway-wcpay.php:420
 msgid "Charge must be captured within 7 days of authorization, otherwise the authorization and order will be canceled."
 msgstr "Die Belastung muss innerhalb von 7 Tagen nach Autorisierung gebucht werden, sonst werden die Autorisierung und Bestellung storniert."
 
-#: includes/class-wc-payment-gateway-wcpay.php:406
+#: includes/class-wc-payment-gateway-wcpay.php:418
 msgid "Issue an authorization on checkout, and capture later."
 msgstr "Erstelle beim Bezahlen eine Autorisierung und buche diese später."
 
-#: includes/class-wc-payment-gateway-wcpay.php:405
+#: includes/class-wc-payment-gateway-wcpay.php:417
 msgid "Manual capture"
 msgstr "Manuelle Buchung"
 
-#: includes/class-wc-payment-gateway-wcpay.php:400
+#: includes/class-wc-payment-gateway-wcpay.php:412
 msgid "Edit the way your store name appears on your customers’ bank statements (read more about requirements <a>here</a>)."
 msgstr "Bearbeite die Art und Weise, wie der Name deines Stores auf den Bankauszügen des Kunden angezeigt wird (<a>hier</a> findest du weitere Informationen zu Anforderungen)."
 
 #. translators: %1: ID being fetched
-#: includes/class-wc-payments-webhook-processing-service.php:709
+#: includes/class-wc-payments-webhook-processing-service.php:712
 msgid "%1$s not found in array"
 msgstr "%1$s im Array nicht gefunden"
 
 #. translators: %1: charge ID
-#: includes/class-wc-payments-webhook-processing-service.php:297
-#: includes/class-wc-payments-webhook-processing-service.php:363
-#: includes/class-wc-payments-webhook-processing-service.php:577
-#: includes/class-wc-payments-webhook-processing-service.php:607
-#: includes/class-wc-payments-webhook-processing-service.php:637
-#: includes/class-wc-payments-webhook-processing-service.php:885
+#: includes/class-wc-payments-webhook-processing-service.php:300
+#: includes/class-wc-payments-webhook-processing-service.php:366
+#: includes/class-wc-payments-webhook-processing-service.php:580
+#: includes/class-wc-payments-webhook-processing-service.php:610
+#: includes/class-wc-payments-webhook-processing-service.php:640
+#: includes/class-wc-payments-webhook-processing-service.php:888
 msgid "Could not find order via charge ID: %1$s"
 msgstr "Bestellung konnte über Abbuchungs-ID %1$s nicht gefunden werden"
 

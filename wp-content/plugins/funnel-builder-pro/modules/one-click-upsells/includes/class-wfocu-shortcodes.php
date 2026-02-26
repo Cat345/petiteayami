@@ -85,6 +85,8 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 		}
 
 		public function wfocu_variation_selector_form_output( $atts ) {
+			
+
 			$atts = shortcode_atts( array(
 				'key'     => 1,
 				'label'   => __( 'No, thanks', 'woofunnels-upstroke-one-click-upsell' ),

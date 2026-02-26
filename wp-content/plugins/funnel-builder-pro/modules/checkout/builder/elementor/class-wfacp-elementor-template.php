@@ -90,29 +90,48 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			add_action( 'wfacp_internal_css', [ $this, 'primary_colors' ], 10 );
 
 
-		/**
-		 * Mini Cart Strike Through Discounted Price
-		 */
+			/**
+			 * Mini Cart Strike Through Discounted Price
+			 */
 
-		add_filter( 'wfacp_order_summary_field_enable_strike_through_price', [ $this, 'order_summary_field_enable_strike_through_price' ] );
-		add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', [ $this, 'collapsible_mini_cart_enable_strike_through_price' ] );
-		add_filter( 'wfacp_mini_cart_enable_strike_through_price', [ $this, 'mini_cart_enable_strike_through_price' ] );
+			add_filter( 'wfacp_order_summary_field_enable_strike_through_price', [ $this, 'order_summary_field_enable_strike_through_price' ] );
+			add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', [ $this, 'collapsible_mini_cart_enable_strike_through_price' ] );
+			add_filter( 'wfacp_mini_cart_enable_strike_through_price', [ $this, 'mini_cart_enable_strike_through_price' ] );
 
-		/**
-		 * Display Low Stock Trigger Message
-		 */
-		add_action( 'wfacp_mini_cart_after_product_title', [ $this, 'mini_cart_low_stock_trigger' ] );
-		add_action( 'wfacp_order_summary_field_after_product_title', [ $this, 'order_summary_field_after_product_title' ] );
-		add_action( 'wfacp_collapsible_mini_cart_after_product_title', [ $this, 'collapsible_mini_cart_field_after_product_title' ] );
+			/**
+			 * Display Low Stock Trigger Message
+			 */
+			add_action( 'wfacp_mini_cart_after_product_title', [ $this, 'mini_cart_low_stock_trigger' ] );
+			add_action( 'wfacp_order_summary_field_after_product_title', [ $this, 'order_summary_field_after_product_title' ] );
+			add_action( 'wfacp_collapsible_mini_cart_after_product_title', [ $this, 'collapsible_mini_cart_field_after_product_title' ] );
 
-		/**
-		 * Display Saving Price Row After Order Total in mini cart
-		 */
-		add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'mini_cart_saving_price' ], 9999 );
-		add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', [ $this, 'order_summary_field_saving_price' ], 9999 );
-		add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'collapsible_mini_cart_saving_price' ], 9999 );
+			/**
+			 * Display Saving Price Row After Order Total in mini cart
+			 */
+			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'mini_cart_saving_price' ], 9999 );
+			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', [ $this, 'order_summary_field_saving_price' ], 9999 );
+			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'collapsible_mini_cart_saving_price' ], 9999 );
+			$this->delete_elementor_cache();
+		}
 
+		private function delete_elementor_cache() {
+			try {
+				$checkout_id = WFACP_Common::get_id();
+				$checkout_id = absint( $checkout_id );
 
+				if ( $checkout_id > 0 && class_exists( '\Elementor\Core\Base\Document' ) ) {
+					$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
+					if ( ! empty( $cache_meta_key ) ) {
+						delete_post_meta( $checkout_id, $cache_meta_key );
+					}
+				}
+			} catch ( \Throwable $e ) {
+				// Log error silently to avoid breaking the checkout process.
+				// Using \Throwable catches both Exception and Error (PHP 7.0+).
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'WFACP Elementor cache deletion error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
+			}
 		}
 
 		public function display_button_icon_step_1( $current ) {
@@ -448,7 +467,6 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 			$key = 'payment_button_back_' . $i . '_text';
 
 
-
 			if ( isset( $this->form_data[ $key ] ) ) {
 				return trim( $this->form_data[ $key ] );
 			}
@@ -578,7 +596,7 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 		public function get_elementor_localize_data() {
 			$localData = [];
-            
+
 			if ( isset( $this->form_data['wfacp_make_button_sticky_on_mobile'] ) ) {
 				$localData['wfacp_make_button_sticky_on_mobile'] = $this->form_data['wfacp_make_button_sticky_on_mobile'];
 			}
@@ -1373,130 +1391,128 @@ if ( ! class_exists( 'WFACP_Elementor_Template' ) ) {
 
 
 		}
-	/**
-	 *
-	 * Check this Mini cart Strike Through enable or disabled from editor
-	 *
-	 * @return mixed
-	 */
-	public function order_summary_field_enable_strike_through_price() {
 
-		if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'yes' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
-			return true;
+		/**
+		 *
+		 * Check this Mini cart Strike Through enable or disabled from editor
+		 *
+		 * @return mixed
+		 */
+		public function order_summary_field_enable_strike_through_price() {
+
+			if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'yes' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
+				return true;
+			}
+
+			return false;
 		}
 
-		return false;
-	}
+		public function collapsible_mini_cart_enable_strike_through_price() {
 
-	public function collapsible_mini_cart_enable_strike_through_price() {
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
+				return true;
+			}
 
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
-			return true;
+			return false;
 		}
 
-		return false;
-	}
-
-	public function mini_cart_enable_strike_through_price() {
+		public function mini_cart_enable_strike_through_price() {
 
 
-		if ( isset( $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) {
-			return true;
+			if ( isset( $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) {
+				return true;
+			}
+
+			return false;
 		}
 
-		return false;
-	}
+		public function mini_cart_low_stock_trigger( $_product ) {
 
-	public function mini_cart_low_stock_trigger( $_product ) {
+			if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
 
-		if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
+				$stock_quantity = $_product->get_stock_quantity();
 
-			$stock_quantity = $_product->get_stock_quantity();
+				if ( $stock_quantity !== null ) {
 
-			if ( $stock_quantity !== null ) {
-
-				echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . "</div>";
+					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . "</div>";
+				}
 			}
 		}
-	}
 
-	public function order_summary_field_after_product_title( $_product ) {
+		public function order_summary_field_after_product_title( $_product ) {
 
-		if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'yes' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
+			if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'yes' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
 
-			$stock_quantity = $_product->get_stock_quantity();
+				$stock_quantity = $_product->get_stock_quantity();
 
-			if ( $stock_quantity !== null ) {
+				if ( $stock_quantity !== null ) {
 
-				echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . "</div>";
+					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . "</div>";
+				}
 			}
 		}
-	}
 
-	public function collapsible_mini_cart_field_after_product_title( $_product ) {
+		public function collapsible_mini_cart_field_after_product_title( $_product ) {
 
 
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
 
-			$stock_quantity = $_product->get_stock_quantity();
+				$stock_quantity = $_product->get_stock_quantity();
 
-			if ( $stock_quantity !== null ) {
+				if ( $stock_quantity !== null ) {
 
-				echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . "</div>";
+					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . "</div>";
+				}
 			}
 		}
-	}
 
-	public function mini_cart_saving_price() {
+		public function mini_cart_saving_price() {
 
-		if ( isset( $this->mini_cart_data['mini_cart_enable_saving_price_message'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_saving_price_message'] && isset( $this->mini_cart_data['mini_cart_saving_price_message'] ) ) {
-			$price_message = $this->mini_cart_data['mini_cart_saving_price_message'];
-			WFACP_Common::display_save_price( $price_message );
+			if ( isset( $this->mini_cart_data['mini_cart_enable_saving_price_message'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_saving_price_message'] && isset( $this->mini_cart_data['mini_cart_saving_price_message'] ) ) {
+				$price_message = $this->mini_cart_data['mini_cart_saving_price_message'];
+				WFACP_Common::display_save_price( $price_message );
+			}
+
 		}
 
-	}
+		public function order_summary_field_saving_price() {
 
-	public function order_summary_field_saving_price() {
+			if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'yes' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
+				$price_message = $this->form_data['order_summary_field_saving_price_message'];
+				WFACP_Common::display_save_price( $price_message );
+			}
 
-		if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'yes' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
-			$price_message = $this->form_data['order_summary_field_saving_price_message'];
-			WFACP_Common::display_save_price( $price_message );
 		}
 
-	}
+		public function collapsible_mini_cart_saving_price() {
 
-	public function collapsible_mini_cart_saving_price() {
+			if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
+				$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
+				WFACP_Common::display_save_price( $price_message );
+			}
 
-		if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
-			$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
-			WFACP_Common::display_save_price( $price_message );
 		}
 
-	}
+		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
+			$field_key = 'enable_order_field_collapsed';
 
-	public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
-		$field_key = 'enable_order_field_collapsed';
-		
-		if ( $device === 'tablet' ) {
-			$field_key .= '_tablet';
-		} elseif ( $device === 'mobile' ) {
-			$field_key .= '_mobile';
+			if ( $device === 'tablet' ) {
+				$field_key .= '_tablet';
+			} elseif ( $device === 'mobile' ) {
+				$field_key .= '_mobile';
+			}
+
+			if ( isset( $this->form_data[ $field_key ] ) && 'yes' == $this->form_data[ $field_key ] ) {
+				return true;
+			}
+
+			return false;
 		}
 
-		if ( isset( $this->form_data[ $field_key ] ) && 'yes' == $this->form_data[ $field_key ] ) {
-			return true;
+		public function should_hide_order_summary_by_default() {
+			// Check if any device has collapsed enabled
+			return $this->enable_order_field_collapsed_by_default( 'desktop' ) || $this->enable_order_field_collapsed_by_default( 'tablet' ) || $this->enable_order_field_collapsed_by_default( 'mobile' );
 		}
-		
-		return false;
-	}
-	
-	public function should_hide_order_summary_by_default() {
-		// Check if any device has collapsed enabled
-		return $this->enable_order_field_collapsed_by_default( 'desktop' ) ||
-			   $this->enable_order_field_collapsed_by_default( 'tablet' ) ||
-			   $this->enable_order_field_collapsed_by_default( 'mobile' );
-	}
-	
 
 
 	}

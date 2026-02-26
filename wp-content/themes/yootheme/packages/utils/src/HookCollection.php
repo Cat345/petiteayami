@@ -81,7 +81,7 @@ class HookCollection
     {
         $this->hooks[$name] = array_filter(
             $this->hooks[$name] ?? [],
-            fn($hook) => $hook[1] === $callback,
+            fn($hook) => $hook[1] !== $callback,
         );
     }
 

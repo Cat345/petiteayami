@@ -24,14 +24,20 @@ import org.junit.jupiter.api.Test;
 public class CookieUtilsTest {
   int SAMPLE_SUBDOMAIN_INDEX = 1;
   String SAMPLE_ETLD_PLUS_ONE = "test.com";
+  String SDK_VERSION = "1.0.1";
   CookieUtils cookieUtils =
       new CookieUtils(
           new ArrayList<FbcParamConfig>(
               Arrays.asList(
-                  new FbcParamConfig(Constants.FBCLID_STRING, "", Constants.CLICK_ID_STRING))));
+                  new FbcParamConfig(Constants.FBCLID_STRING, "", Constants.CLICK_ID_STRING))),
+          SDK_VERSION);
+
   Map<String, CookieSetting> updatedCookiesMap = new HashMap<>();
   Map<String, String> cookies = new HashMap<>();
   Map<String, String[]> queryMap = new HashMap<>();
+
+  String APPENDIX_IS_NEW = "AQMBAQAB";
+  String APPENDIX_IS_NORMAL = "AQMAAQAB";
 
   @BeforeEach
   void setup() {
@@ -70,9 +76,9 @@ public class CookieUtilsTest {
     assertThat(updatedCookiesMap.size()).isEqualTo(0);
     // Valid existing cookie w/o language token, add language token and update the cookie
     assertThat(cookieUtils.preprocessCookies(cookies, Constants.FBC_COOKIE_NAME, updatedCookiesMap))
-        .isEqualTo("fb.1.1234.fbcTest.Aw");
+        .isEqualTo("fb.1.1234.fbcTest." + APPENDIX_IS_NORMAL);
     assertThat(updatedCookiesMap.get(Constants.FBC_COOKIE_NAME).getValue())
-        .isEqualTo("fb.1.1234.fbcTest.Aw");
+        .isEqualTo("fb.1.1234.fbcTest." + APPENDIX_IS_NORMAL);
     assertThat(updatedCookiesMap.size()).isEqualTo(1);
   }
 
@@ -111,7 +117,7 @@ public class CookieUtilsTest {
         cookieUtils.getUpdatedFbcCookie("fb.1.123456.test123", "test456", updatedCookiesMap);
     assertThat(result).isNotNull();
     String cookieValue = result.getValue();
-    assertTrue(cookieValue.matches("^fb.1.[0-9]+.test456.Aw$"));
+    assertTrue(cookieValue.matches(String.format("^fb.1.[0-9]+.test456.%s$", APPENDIX_IS_NEW)));
     assertThat(result.getDomain()).isEqualTo("test.com");
   }
 
@@ -132,7 +138,7 @@ public class CookieUtilsTest {
     assertThat(result).isNotNull();
     assertThat(result.getDomain()).isEqualTo("test.bar.com");
     String cookieValue = result.getValue();
-    assertTrue(cookieValue.matches("^fb.2.[0-9]+.test456.Aw$"));
+    assertTrue(cookieValue.matches(String.format("^fb.2.[0-9]+.test456.%s$", APPENDIX_IS_NEW)));
   }
 
   @Test
@@ -145,7 +151,8 @@ public class CookieUtilsTest {
     assertThat(result.getName()).isEqualTo(Constants.FBP_COOKIE_NAME);
     assertThat(result.getDomain()).isEqualTo("bar.com");
     String cookieValue = result.getValue();
-    assertTrue(cookieValue.matches("^fb.1.[0-9]+.[0-9]+.Aw$"));
+    assertTrue(
+        cookieValue.matches(String.format("^fb\\.1\\.[0-9]+\\.[0-9]+\\.%s$", APPENDIX_IS_NEW)));
   }
 
   @Test
@@ -154,5 +161,61 @@ public class CookieUtilsTest {
     Map<String, String[]> queries = new HashMap<String, String[]>();
     CookieSetting result = cookieUtils.getUpdatedFbpCookie("fbp_test", updatedCookiesMap);
     assertThat(result).isNull();
+  }
+
+  @Test
+  @DisplayName("Testing getNewFbcPayloadFromQuery with customized params config")
+  void testGetNewFbcPayloadWithCustomizedParamsConfig() {
+    CookieUtils cookieUtilsWithParamsConfig =
+        new CookieUtils(
+            new ArrayList<FbcParamConfig>(
+                Arrays.asList(
+                    new FbcParamConfig(Constants.FBCLID_STRING, "", Constants.CLICK_ID_STRING),
+                    new FbcParamConfig("example", "test", "placeholder"))),
+            SDK_VERSION);
+    // Not needed query
+    queryMap.put("whatevertest", new String[] {"test123"});
+    assertThat(cookieUtilsWithParamsConfig.getNewFbcPayloadFromQuery(queryMap, null)).isNull();
+    // Matched the customized params config
+    queryMap.put("example", new String[] {"test123"});
+    assertThat(cookieUtilsWithParamsConfig.getNewFbcPayloadFromQuery(queryMap, null))
+        .isEqualTo("test_test123");
+    // with fbclid
+    assertThat(
+            cookieUtilsWithParamsConfig.getNewFbcPayloadFromQuery(queryMap, "test.com?fbclid=bar"))
+        .isEqualTo("bar_test_test123");
+    queryMap.put(Constants.FBCLID_STRING, new String[] {"test456"});
+    assertThat(
+            cookieUtilsWithParamsConfig.getNewFbcPayloadFromQuery(queryMap, "test.com?fbclid=bar"))
+        .isEqualTo("test456_test_test123");
+    // duplication name
+    queryMap.put(Constants.FBCLID_STRING, new String[] {"test456_test_abc"});
+    assertThat(
+            cookieUtilsWithParamsConfig.getNewFbcPayloadFromQuery(queryMap, "test.com?fbclid=bar"))
+        .isEqualTo("test456_test_abc");
+  }
+
+  @Test
+  @DisplayName("Testing different version number with different appendix")
+  void testAppendixVersionNumber() {
+    String V1_15_24_NEW = "AQMBAQ8Y";
+    CookieUtils cookieUtilsWithParamsConfig =
+        new CookieUtils(
+            new ArrayList<FbcParamConfig>(
+                Arrays.asList(
+                    new FbcParamConfig(Constants.FBCLID_STRING, "", Constants.CLICK_ID_STRING))),
+            "1.15.24"); // Test version number
+    // Same fbc value, no update
+    CookieSetting fbcResult =
+        cookieUtilsWithParamsConfig.getUpdatedFbcCookie(
+            "fb.1.1234.sameFbcValue", "sameFbcValue", updatedCookiesMap);
+    assertThat(fbcResult).isNull();
+
+    CookieSetting fbpResult =
+        cookieUtilsWithParamsConfig.getUpdatedFbpCookie(null, updatedCookiesMap);
+    System.out.println(fbpResult.getValue());
+    assertThat(fbpResult).isNotNull();
+    String fbpValue = fbpResult.getValue();
+    assertTrue(fbpValue.matches(String.format("^fb.0.[0-9]+.[0-9]+.%s$", V1_15_24_NEW)));
   }
 }

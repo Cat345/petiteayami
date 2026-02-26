@@ -1,5 +1,103 @@
 # Changelog
 
+## 5.0.18 (February 26, 2026)
+
+### Added
+
+- Add 6 FC Greenfield styles to style library
+- Add ACF options pages as site source (WordPress)
+
+### Changed
+
+- Use image filename for cached images in addition to the hash
+
+### Fixed
+
+- Fix applying wpautop to post excerpt and taxonomy description source (WordPress)
+
+## 5.0.17 (February 24, 2026)
+
+### Fixed
+
+- Fix regression with component template (Joomla)
+
+## 5.0.16 (February 23, 2026)
+
+### Fixed
+
+- Fix error.php file not being overridable in child theme (Joomla)
+- Fix resolving filenames with spaces in Media File and Media custom fields sources (Joomla)
+
+## 5.0.15 (February 19, 2026)
+
+### Added
+
+- Add prebuilt script for Vimeo
+- Add consent placeholder for Vimeo videos
+- Add Vimeo thumbnail as placeholder fallback for on click and consent mode to Video element
+
+### Fixed
+
+- Fix columns for brands filter in WooCommerce Filter element
+- Fix search navbar border mode in style customizer
+
+## 5.0.14 (February 12, 2026)
+
+### Fixed
+
+- Fix consent script throws error on click
+- Fix update that renames Google Tag Manager script type to Google Analytics
+
+## 5.0.13 (February 10, 2026)
+
+### Fixed
+
+- Fix text alignment options in Search Ordering element (Joomla)
+- Fix render body scripts last in <body> tag (Joomla)
+
+## 5.0.12 (February 7, 2026)
+
+### Fixed
+
+- Fix regression when clicking the manage settings button in the consent banner
+- Fix the dropdown alignment of the WooCommerce Filter element (WordPress)
+
+## 5.0.11 (February 6, 2026)
+
+### Fixed
+
+- Fix clicking the consent button when there is an image within the button
+- Fix rendering a Map element in a Builder module on the bottom position (Joomla)
+
+## 5.0.10 (February 3, 2026)
+
+### Fixed
+
+- Fix saving in article edit view removes builder layout (Joomla)
+- Fix applying smooth scroll for Stacked Center Split B header position
+
+## 5.0.9 (January 29, 2026)
+
+### Fixed
+
+- Fix article event type source when progressive caching is enabled (Joomla)
+- Fix loading template language files with active child theme (Joomla)
+- Fix missing YOOtheme button in block editor view (WordPress)
+
+## 5.0.8 (January 28, 2026)
+
+### Added
+
+- Add 6 Oakville styles to style library
+- Add HTML element options for headings to consent manager
+- Add YOOtheme button to create a builder layout to builder module edit view (Joomla)
+
+### Fixed
+
+- Fix smooth scrolling in nav menus
+- Fix hue color picker
+- Fix WooCommerce product SKU source not updating on variable products (WordPress)
+
 ## 5.0.7 (January 23, 2026)
 
 ### Added

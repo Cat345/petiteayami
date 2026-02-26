@@ -164,7 +164,7 @@ if ( ! class_exists( 'WFOCU_Offer_Price' ) ) {
 
                     <div class="wfocu-element wfocu-element wfocu-widget wfocu-widget-wfocu_price">
                         <div class="wfocu-widget-container">
-                            <div class="wfocu-price-wrapper">
+                            <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 								<?php
 								if ( isset( WFOCU_Core()->template_loader->product_data->products ) ) {
 

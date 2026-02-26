@@ -41,6 +41,9 @@ class TaxonomyType
                             'label' => trans('Description'),
                             'filters' => ['limit', 'preserve'],
                         ],
+                        'extensions' => [
+                            'call' => __CLASS__ . '::description',
+                        ],
                     ],
 
                     'link' => [
@@ -49,7 +52,7 @@ class TaxonomyType
                             'label' => trans('Link'),
                         ],
                         'extensions' => [
-                            'call' => __CLASS__ . '::resolveLink',
+                            'call' => __CLASS__ . '::link',
                         ],
                     ],
                 ],
@@ -122,7 +125,7 @@ class TaxonomyType
                 ],
                 'extensions' => [
                     'call' => [
-                        'func' => __CLASS__ . '::resolveParent',
+                        'func' => __CLASS__ . '::parent',
                         'args' => ['taxonomy' => $taxonomy->name],
                     ],
                 ],
@@ -173,7 +176,7 @@ class TaxonomyType
                 ],
                 'extensions' => [
                     'call' => [
-                        'func' => __CLASS__ . '::resolveChildren',
+                        'func' => __CLASS__ . '::children',
                         'args' => ['taxonomy' => $taxonomy->name],
                     ],
                 ],
@@ -475,7 +478,7 @@ class TaxonomyType
 
                 'extensions' => [
                     'call' => [
-                        'func' => __CLASS__ . '::resolvePosts',
+                        'func' => __CLASS__ . '::posts',
                         'args' => ['post_type' => $type->name],
                     ],
                 ],
@@ -483,10 +486,15 @@ class TaxonomyType
         ];
     }
 
+    public static function description(WP_Term $term): ?string
+    {
+        return $term->description ? Helper::applyAutoP($term->description) : null;
+    }
+
     /**
      * @return string
      */
-    public static function resolveLink(WP_Term $term)
+    public static function link(WP_Term $term)
     {
         return get_term_link($term);
     }
@@ -495,7 +503,7 @@ class TaxonomyType
      * @param array<string, mixed> $args
      * @return ?WP_Term
      */
-    public static function resolveParent(WP_Term $term, array $args)
+    public static function parent(WP_Term $term, array $args)
     {
         return $term->parent
             ? get_term($term->parent)
@@ -506,7 +514,7 @@ class TaxonomyType
      * @param array<string, mixed> $args
      * @return array<WP_Term>
      */
-    public static function resolveChildren(WP_Term $term, array $args)
+    public static function children(WP_Term $term, array $args)
     {
         $args += [
             'order' => 'term_order',
@@ -527,7 +535,7 @@ class TaxonomyType
      * @param array<string, mixed> $args
      * @return array<WP_Post>
      */
-    public static function resolvePosts(WP_Term $term, array $args)
+    public static function posts(WP_Term $term, array $args)
     {
         $args['terms'] = [$term->term_id];
         $args[strtr($term->taxonomy, '-', '_') . '_include_children'] =

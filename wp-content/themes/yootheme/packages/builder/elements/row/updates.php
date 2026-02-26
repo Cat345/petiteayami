@@ -161,11 +161,7 @@ return [
 
         if (!empty($node->props['order_last']) && count($node->children) > 1) {
             $lastChild = array_last($node->children);
-
-            if (is_array($lastChild->props)) {
-                $lastChild->props = (object) $lastChild->props;
-            }
-
+            $lastChild->props = (object) ($lastChild->props ?? []);
             $lastChild->props->order_first = $node->props['breakpoint'] ?: 'xs';
         }
 

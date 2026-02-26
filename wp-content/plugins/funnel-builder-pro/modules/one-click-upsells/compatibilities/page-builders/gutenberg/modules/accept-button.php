@@ -19,11 +19,18 @@ if ( ! class_exists( 'WFOCU_Guten_Accept_Button' ) ) {
 		}
 
 		public function html( $settings, $content = '' ) {
+
 			$sel_product_key     = isset( $settings['product'] ) ? $settings['product'] : '';
 			$product_key         = WFOCU_Common::default_selected_product_key( $sel_product_key );
-			$settings['product'] = ( $product_key !== false ) ? $product_key : $sel_product_key;
+			$_product_key        = ( $product_key !== false ) ? $product_key : $sel_product_key;
+			$product             = WFOCU_Common::default_selected_product( $_product_key );
+			$settings['product'] = $_product_key;
+			ob_start();
+			do_action( 'wfocu_add_custom_html_above_accept_button', $product->get_id(), $_product_key );
+			$custom_html = ob_get_clean();
 
-			return BWFBlocksUpsell_Render_Block::do_button_block( $settings, $content );
+			return $custom_html . BWFBlocksUpsell_Render_Block::do_button_block( $settings, $content );
+
 
 		}
 

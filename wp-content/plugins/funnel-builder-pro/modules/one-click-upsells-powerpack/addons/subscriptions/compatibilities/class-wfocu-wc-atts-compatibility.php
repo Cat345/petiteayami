@@ -126,6 +126,7 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		 * @param string $product_key
 		 */
 		public function schemes_template_html( $product_id, $product_key = '' ) {
+
 			if ( ! $this->is_enable() || false === apply_filters( 'wfocu_show_scheme_list', true, $product_id, $product_key ) ) {
 				return;
 			}
@@ -222,191 +223,208 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		 * @return array|void
 		 */
 		public function get_subscription_products_options( $product_id, $offer_data = '', $product_key = '', $is_front = false ) {
+			try {
 
-			if ( ! $this->is_enable() ) {
-				return;
-			}
-
-			$product = wc_get_product( $product_id );
-			$options = array();
-
-			$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-
-			if ( ! is_array( $subscription_schemes ) || count( $subscription_schemes ) === 0 ) {
-				return;
-			}
-
-			$force_subscription = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
-			$base_scheme        = WCS_ATT_Product_Schemes::get_base_subscription_scheme( $product );
-
-			if ( $offer_data === '' ) {
-
-				if ( isset( WFOCU_Core()->template_loader ) && isset( WFOCU_Core()->template_loader->product_data ) ) {
-
-					$offer_data = WFOCU_Core()->template_loader->product_data;
-
-				} else {
-					$get_offer_id = ( isset( $_REQUEST['offer_id'] ) ) ? $_REQUEST['offer_id'] : WFOCU_Core()->data->get( 'current_offer' ); //phpcs:ignore
-
-					$offer_data = WFOCU_Core()->offers->get_offer_meta( $get_offer_id );
+				if ( ! $this->is_enable() ) {
+					return;
 				}
 
+				$product = wc_get_product( $product_id );
+				$options = array();
 
-			}
+				$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
 
-			$default_scheme    = '';
-			$org_regular_price = '';
-			$org_sale_price    = '';
-
-			// Filter default key.
-
-			// Option selected by default.
-			// Non-recurring (one-time) option.
-			if ( false === $force_subscription ) {
-
-				$none_string = _x( 'one time', 'product subscription selection - negative response', 'woocommerce-all-products-for-subscriptions' );
-				$options[]   = array(
-					'class'             => 'one-time-option',
-					'description'       => apply_filters( 'wcsatt_single_product_one_time_option_description', $none_string, $product ),
-					'value'             => 'one_time',
-					'price'             => '',
-					'selected'          => 'one_time' === $default_scheme,
-					'org_regular_price' => $org_regular_price,
-					'org_sale_price'    => $org_sale_price,
-					'data'              => [],
-				);
-			}
-
-			if ( ! empty( $offer_data ) ) {
-
-				if ( $product_key === '' ) {
-					foreach ( $offer_data->products as $key => $value ) {
-						if ( absint( $value ) === absint( $product_id ) ) {
-							$product_key    = $key;
-							$default_scheme = isset( $offer_data->fields->{$product_key}->default_scheme ) ? $offer_data->fields->{$product_key}->default_scheme : '';
-							if ( isset( $options[0]['selected'] ) ) {
-								$options[0]['selected'] = 'one_time' === $default_scheme;
-							}
-							break;
-						}
-					}
-				} else {
-					$default_scheme = isset( $offer_data->fields->{$product_key}->default_scheme ) ? $offer_data->fields->{$product_key}->default_scheme : '';
-					if ( isset( $options[0]['selected'] ) ) {
-						$options[0]['selected'] = 'one_time' === $default_scheme;
-					}
-
+				if ( ! is_array( $subscription_schemes ) || count( $subscription_schemes ) === 0 ) {
+					return;
 				}
 
-				if ( true === $is_front ) {
-					if ( ! isset( $offer_data->schemes ) || ! isset( $offer_data->schemes->{$product_key} ) ) {
-						$subscription_schemes = [];
-						$options              = [];
+				$force_subscription = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+				$base_scheme        = WCS_ATT_Product_Schemes::get_base_subscription_scheme( $product );
+
+				if ( $offer_data === '' ) {
+
+					if ( isset( WFOCU_Core()->template_loader ) && isset( WFOCU_Core()->template_loader->product_data ) ) {
+
+						$offer_data = WFOCU_Core()->template_loader->product_data;
+
 					} else {
-						if ( ! array_key_exists( "one_time", $offer_data->schemes->{$product_key} ) ) {
-							$options = [];
-						}
-						$subscription_schemes = array_intersect_key( $subscription_schemes, $offer_data->schemes->{$product_key} );
+						$get_offer_id = ( isset( $_REQUEST['offer_id'] ) ) ? $_REQUEST['offer_id'] : WFOCU_Core()->data->get( 'current_offer' ); //phpcs:ignore
 
+						$offer_data = WFOCU_Core()->offers->get_offer_meta( $get_offer_id );
 					}
+
+
+				}
+				$default_scheme    = '';
+				$org_regular_price = '';
+				$org_sale_price    = '';
+				$main_product_rg_price=$product->get_regular_price();
+				if($product instanceof WC_Product_Variable) {
+					$org_regular_price = $product->get_variation_regular_price( 'max' );
+					$org_sale_price    = $product->get_variation_price( 'max' );
+					if(absint($main_product_rg_price)===0) {
+						$main_product_rg_price = $product->get_price();
+					}
+
 				}
 
-			}
-
-			// Subscription options.
-
-			if ( ! is_array( $subscription_schemes ) || count( $subscription_schemes ) === 0 ) {
-				return;
-			}
-
-			foreach ( $subscription_schemes as $subscription_scheme ) {
 
 
-				$option_price_html_args = array(
-					'context'         => 'radio',
-					'append_discount' => true
-				);
+				// Filter default key.
 
+				// Option selected by default.
+				// Non-recurring (one-time) option.
+				if ( false === $force_subscription ) {
 
-				$scheme_key       = $subscription_scheme->get_key();
-				$is_base_scheme   = $base_scheme->get_key() === $scheme_key;
-				$price            = number_format( (float) WCS_ATT_Product_Prices::get_price( $product, $scheme_key ), 2, '.', '' );
-				$has_price_filter = $subscription_scheme->has_price_filter();
-
-
-				/**
-				 * 'wcsatt_single_product_subscription_option_price_html_args' filter
-				 *
-				 * Use this filter to override subscription plan price strings.
-				 *
-				 * For example, add [ 'append_discount' => true ] to append discounts to plan prices.
-				 *
-				 * @param array $option_price_html_args
-				 * @param WCS_ATT_Scheme $subscription_scheme
-				 * @param WC_Product $product
-				 * @param WC_Product|null $parent_product
-				 */
-
-
-				$is_nyp = class_exists( 'WCS_ATT_Integration_NYP' ) && WC_Name_Your_Price_Helpers::is_nyp( $product );
-
-				if ( $is_nyp ) {
-					WCS_ATT_Integration_NYP::before_subscription_option_get_price_html();
+					$none_string = _x( 'one time', 'product subscription selection - negative response', 'woocommerce-all-products-for-subscriptions' );
+					$options[]   = array(
+						'class'             => 'one-time-option',
+						'description'       => apply_filters( 'wcsatt_single_product_one_time_option_description', $none_string, $product ),
+						'value'             => 'one_time',
+						'price'             => '',
+						'selected'          => 'one_time' === $default_scheme,
+						'org_regular_price' => $org_regular_price,
+						'org_sale_price'    => $org_sale_price,
+						'data'              => [],
+					);
 				}
 
-				// Get price.
-				$sub_price_html = WCS_ATT_Product_Prices::get_price_html( $product, $scheme_key, $option_price_html_args );
 				if ( ! empty( $offer_data ) ) {
-					$offer_option                  = $offer_data->fields->{$product_key};
-					$offer_option->discount_amount = isset( $offer_data->schemes->{$product_key}[ $scheme_key ]->discount_amount ) ? $offer_data->schemes->{$product_key}[ $scheme_key ]->discount_amount : $offer_option->discount_amount;
 
-					$price_data = $this->get_product_price( $subscription_scheme->get_data(), $offer_option, $product, $sub_price_html );
+					if ( $product_key === '' ) {
+						foreach ( $offer_data->products as $key => $value ) {
+							if ( absint( $value ) === absint( $product_id ) ) {
+								$product_key    = $key;
+								$default_scheme = isset( $offer_data->fields->{$product_key}->default_scheme ) ? $offer_data->fields->{$product_key}->default_scheme : '';
+								if ( isset( $options[0]['selected'] ) ) {
+									$options[0]['selected'] = 'one_time' === $default_scheme;
+								}
+								break;
+							}
+						}
+					} else {
+						$default_scheme = isset( $offer_data->fields->{$product_key}->default_scheme ) ? $offer_data->fields->{$product_key}->default_scheme : '';
+						if ( isset( $options[0]['selected'] ) ) {
+							$options[0]['selected'] = 'one_time' === $default_scheme;
+						}
 
-					if ( is_array( $price_data ) && count( $price_data ) > 0 ) {
-						$sub_price_html    = $price_data['price_html'];
-						$price             = $price_data['price'];
-						$org_regular_price = $price_data['org_regular_price'];
-						$org_sale_price    = $price_data['org_sale_price'];
 					}
+
+					if ( true === $is_front ) {
+						if ( ! isset( $offer_data->schemes ) || ! isset( $offer_data->schemes->{$product_key} ) ) {
+							$subscription_schemes = [];
+							$options              = [];
+						} else {
+							if ( ! array_key_exists( "one_time", $offer_data->schemes->{$product_key} ) ) {
+								$options = [];
+							}
+							$subscription_schemes = array_intersect_key( $subscription_schemes, $offer_data->schemes->{$product_key} );
+
+						}
+					}
+
 				}
 
-				if ( $is_nyp ) {
-					WCS_ATT_Integration_NYP::after_subscription_option_get_price_html();
+				// Subscription options.
+
+				if ( ! is_array( $subscription_schemes ) || count( $subscription_schemes ) === 0 ) {
+					return;
 				}
 
-				$option_data = array(
-					'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false ),
-					'option_has_price'      => false,
-					'subscription_scheme'   => array_merge( $subscription_scheme->get_data(), array(
-						'is_prorated'      => WCS_ATT_Sync::is_first_payment_prorated( $product, $scheme_key ),
-						'is_base'          => $is_base_scheme,
-						'has_price_filter' => $has_price_filter
-					) ),
-				);
+				foreach ( $subscription_schemes as $subscription_scheme ) {
 
-				$parent_product = null;
 
-				$option_data = apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product, $parent_product );
+					$option_price_html_args = array(
+						'context'         => 'radio',
+						'append_discount' => true
+					);
 
-                $option_data = array_filter($option_data, function($value, $key) {
-					return strpos($key, '_html') === false;
-				}, ARRAY_FILTER_USE_BOTH);
 
-				$option = array(
-					'class'             => 'subscription-option',
-					'value'             => $scheme_key,
-					'description'       => html_entity_decode( $sub_price_html ),
-					'data'              => $option_data,
-					'price'             => $price,
-					'selected'          => $scheme_key === $default_scheme,
-					'org_regular_price' => $org_regular_price,
-					'org_sale_price'    => $org_sale_price,
-				);
+					$scheme_key       = $subscription_scheme->get_key();
+					$is_base_scheme   = $base_scheme->get_key() === $scheme_key;
+					$price            = number_format( (float) WCS_ATT_Product_Prices::get_price( $product, $scheme_key ), 2, '.', '' );
+					$has_price_filter = $subscription_scheme->has_price_filter();
 
-				$options[] = $option;
+
+					/**
+					 * 'wcsatt_single_product_subscription_option_price_html_args' filter
+					 *
+					 * Use this filter to override subscription plan price strings.
+					 *
+					 * For example, add [ 'append_discount' => true ] to append discounts to plan prices.
+					 *
+					 * @param array $option_price_html_args
+					 * @param WCS_ATT_Scheme $subscription_scheme
+					 * @param WC_Product $product
+					 * @param WC_Product|null $parent_product
+					 */
+
+
+					$is_nyp = class_exists( 'WCS_ATT_Integration_NYP' ) && WC_Name_Your_Price_Helpers::is_nyp( $product );
+
+					if ( $is_nyp ) {
+						WCS_ATT_Integration_NYP::before_subscription_option_get_price_html();
+					}
+
+					// Get price.
+					$sub_price_html = WCS_ATT_Product_Prices::get_price_html( $product, $scheme_key, $option_price_html_args );
+					if ( ! empty( $offer_data ) ) {
+						$offer_option                  = $offer_data->fields->{$product_key};
+						$offer_option->discount_amount = isset( $offer_data->schemes->{$product_key}[ $scheme_key ]->discount_amount ) ? $offer_data->schemes->{$product_key}[ $scheme_key ]->discount_amount : $offer_option->discount_amount;
+
+						$price_data = $this->get_product_price( $subscription_scheme->get_data(), $offer_option, $product, $sub_price_html );
+
+						//WFFN_Common::pr($price_data);
+						if ( is_array( $price_data ) && count( $price_data ) > 0 ) {
+							$sub_price_html    = $price_data['price_html'];
+							$price             = $price_data['price'];
+							$org_regular_price = $price_data['org_regular_price'];
+							$org_sale_price    = $price_data['org_sale_price'];
+						}
+					}
+
+					if ( $is_nyp ) {
+						WCS_ATT_Integration_NYP::after_subscription_option_get_price_html();
+					}
+
+					$option_data = array(
+						'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false ),
+						'option_has_price'      => false,
+						'subscription_scheme'   => array_merge( $subscription_scheme->get_data(), array(
+							'is_prorated'      => WCS_ATT_Sync::is_first_payment_prorated( $product, $scheme_key ),
+							'is_base'          => $is_base_scheme,
+							'has_price_filter' => $has_price_filter
+						) ),
+					);
+
+					$parent_product = null;
+
+					$option_data = apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product, $parent_product );
+
+					$option_data = array_filter( $option_data, function ( $value, $key ) {
+						return strpos( $key, '_html' ) === false;
+					}, ARRAY_FILTER_USE_BOTH );
+
+					$option = array(
+						'class'             => 'subscription-option',
+						'value'             => $scheme_key,
+						'description'       => html_entity_decode( $sub_price_html ),
+						'data'              => $option_data,
+						'price'             => $price,
+						'selected'          => $scheme_key === $default_scheme,
+						'org_regular_price' => $org_regular_price>0?$org_regular_price:$main_product_rg_price,
+						'org_sale_price'    => $org_sale_price>0?$org_sale_price:$product->get_price(),
+					);
+
+					$options[] = $option;
+				}
+
+				return $options;
+			} catch ( Error|Exception $e ) {
+
+				return [];
 			}
 
-			return $options;
 		}
 
 		/**
@@ -587,49 +605,49 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		public function list_schemes_admin_offer() {
 
 			?>
-			<div v-if="product.vars_subs_count>0" class="have_scheme">
+            <div v-if="product.vars_subs_count>0" class="have_scheme">
 				<?php _e( "{{product.vars_subs_count}} Subscriptions plans <a class='have_scheme_expand'>(Expand</a> / <a class='have_scheme_close'>Close)</a> ", 'woofunnels-upstroke-power-pack' ) ?>
-			</div>
-			<table width="100%" class="scheme_products" id="scheme_product_id" v-bind:data-index="index" v-if="product.vars_subs_count>0" border="1">
-				<thead>
-				<tr>
-					<th>
-						<input type="checkbox" v-on:change="disable_enable_scheme(index,$event)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes_enable]'" class="disable_enable_scheme">
-					</th>
-					<th><?php _e( 'Default', 'woofunnels-upstroke-power-pack' ); ?></th>
-					<th><?php _e( 'Attributes', 'woofunnels-upstroke-power-pack' ); ?></th>
-					<th><?php _e( 'Price', 'woofunnels-upstroke-power-pack' ); ?></th>
-					<th><?php _e( 'Discount', 'woofunnels-upstroke-power-pack' ); ?></th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr v-for="(scheme, var_index) in product.schemes" v-bind:id="scheme.vid" class="product_scheme_row">
-					<td>
-						<input type="checkbox" v-model="scheme.is_enable" v-on:change="disable_enable_scheme_row(index,$event,var_index)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][is_enable]'" class="scheme_check" v-bind:data-scheme="var_index">
-					</td>
-					<td>
-						<input type="radio" v-model="scheme.default_scheme" name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:value="var_index" v-bind:data-scheme="var_index" class="default_scheme">
-					</td>
-					<td>
-						<div class="variation_attributes">
-							<p v-for="(attr_i ,attribute) in scheme.attributes"> {{attribute}} : {{attr_i}}</p>
-						</div>
-					</td>
-					<td>
-						<div class=" product_options">
-							<p v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'"><span v-html="scheme.description"></span></p>
-							<p v-else><span v-bind:class="'wfocu_of_price_subs_'+index+'_'+var_index" v-html="scheme.description"></span></p>
-						</div>
-					</td>
-					<td>
-						<input v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'" name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" readonly class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
-						<input v-else name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" v-bind:data-scheme="var_index" :readonly="(!scheme.is_enable)" class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
-						<!-- This Hidden input placed here just to make sure the vue instance update himself on change of the modal data -->
-						<input style="display:none;" name="hidden_v" disabled v-model="hidden_v" type="number" step="0.01">
-					</td>
-				</tr>
-				</tbody>
-			</table>
+            </div>
+            <table width="100%" class="scheme_products" id="scheme_product_id" v-bind:data-index="index" v-if="product.vars_subs_count>0" border="1">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" v-on:change="disable_enable_scheme(index,$event)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes_enable]'" class="disable_enable_scheme">
+                    </th>
+                    <th><?php _e( 'Default', 'woofunnels-upstroke-power-pack' ); ?></th>
+                    <th><?php _e( 'Attributes', 'woofunnels-upstroke-power-pack' ); ?></th>
+                    <th><?php _e( 'Price', 'woofunnels-upstroke-power-pack' ); ?></th>
+                    <th><?php _e( 'Discount', 'woofunnels-upstroke-power-pack' ); ?></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(scheme, var_index) in product.schemes" v-bind:id="scheme.vid" class="product_scheme_row">
+                    <td>
+                        <input type="checkbox" v-model="scheme.is_enable" v-on:change="disable_enable_scheme_row(index,$event,var_index)" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][is_enable]'" class="scheme_check" v-bind:data-scheme="var_index">
+                    </td>
+                    <td>
+                        <input type="radio" v-model="scheme.default_scheme" name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][default_scheme]'" v-bind:value="var_index" v-bind:data-scheme="var_index" class="default_scheme">
+                    </td>
+                    <td>
+                        <div class="variation_attributes">
+                            <p v-for="(attr_i ,attribute) in scheme.attributes"> {{attribute}} : {{attr_i}}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class=" product_options">
+                            <p v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'"><span v-html="scheme.description"></span></p>
+                            <p v-else><span v-bind:class="'wfocu_of_price_subs_'+index+'_'+var_index" v-html="scheme.description"></span></p>
+                        </div>
+                    </td>
+                    <td>
+                        <input v-if="typeof scheme.value !== 'undefined' && scheme.value == 'one_time'" name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" readonly class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
+                        <input v-else name="scheme_discount" v-model="products[index].schemes[var_index].discount_amount" type="number" step="0.01" v-bind:name="'offers['+current_offer_id+'][products]['+index+'][schemes]['+var_index+'][discount_amount]'" v-bind:data-scheme="var_index" :readonly="(!scheme.is_enable)" class="scheme_discount" oninput="this.value = Math.abs(this.value)" v-on:keyup="update_offer_price($event,index)">
+                        <!-- This Hidden input placed here just to make sure the vue instance update himself on change of the modal data -->
+                        <input style="display:none;" name="hidden_v" disabled v-model="hidden_v" type="number" step="0.01">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
 
 			<?php
@@ -832,14 +850,14 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 		 *
 		 * @return mixed
 		 */
-		public function get_scheme_plan_data( $offer_data, $offer_id, $funnel_id ) {
+		public function get_scheme_plan_data( $product, $offer_data, $offer_id, $funnel_id ) {
 
 			$schemes     = array();
 			$scheme_save = array();
 
 			foreach ( $offer_data->products as $hash_key => $pid ) {
 				$pro = wc_get_product( $pid );
-				if ( $pro instanceof WC_Product ) {
+				if ( $pro instanceof WC_Product && $pro->get_id() === $product->get_id() ) {
 
 					$get_plans = $this->get_subscription_products_options( $pro->get_id(), $offer_data );
 
@@ -850,6 +868,8 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 						foreach ( $get_plans as $plan ) {
 							$description_text = preg_replace( '/<del.*?<\/del>/', '', $plan['description'] );
 							$description_text = preg_replace( '/<ins>.*?<\/ins>/', '', $description_text );
+
+
 
 
 							$scheme_id                           = $plan['value'];
@@ -941,26 +961,25 @@ if ( ! class_exists( 'WFOCU_WC_ATTS_Compatibility' ) ) {
 			/**
 			 * save settings in 3.0 U1
 			 */
-            if ( ! empty( $offers ) && ! empty( $offers['products'] ) && count( $offers['products'] ) > 0 ) {
+			if ( ! empty( $offers ) && ! empty( $offers['products'] ) && count( $offers['products'] ) > 0 ) {
+				$offers_setting->schemes = new stdClass();
+				foreach ( $offers['products'] as $pro ) {
+					$hash_key                = $pro['id'];
+					if ( isset( $pro['schemes'] ) && count( $pro['schemes'] ) > 0 ) {
+						$offers_setting->schemes->{$hash_key} = array();
+						foreach ( $pro['schemes'] as $scheme_id => $settings ) {
+							if ( isset( $pro['checkVarient'] ) && in_array( $settings['value'], $pro['checkVarient'] ) ) {
+								$offers_setting->schemes->{$hash_key}[ $settings['value'] ]                  = new stdClass();
+								$offers_setting->schemes->{$hash_key}[ $settings['value'] ]->value           = $settings['value'];
+								$offers_setting->schemes->{$hash_key}[ $settings['value'] ]->discount_amount = $settings['discount_amount'];
+								$offers_setting->schemes->{$hash_key}[ $settings['value'] ]                  = apply_filters( 'wfocu_schemes_offers_setting_data', $offers_setting->schemes->{$hash_key}[ $settings['value'] ] );
+							}
+						}
 
-	            foreach ( $offers['products'] as $pro ) {
-		            $hash_key                = $pro['id'];
-		            $offers_setting->schemes = new stdClass();
-		            if ( isset( $pro['schemes'] ) && count( $pro['schemes'] ) > 0 ) {
-			            $offers_setting->schemes->{$hash_key} = array();
-			            foreach ( $pro['schemes'] as $scheme_id => $settings ) {
-				            if ( isset( $pro['checkVarient'] ) && in_array( $settings['value'], $pro['checkVarient'] ) ) {
-					            $offers_setting->schemes->{$hash_key}[ $settings['value'] ]                  = new stdClass();
-					            $offers_setting->schemes->{$hash_key}[ $settings['value'] ]->value           = $settings['value'];
-					            $offers_setting->schemes->{$hash_key}[ $settings['value'] ]->discount_amount = $settings['discount_amount'];
-					            $offers_setting->schemes->{$hash_key}[ $settings['value'] ]                  = apply_filters( 'wfocu_schemes_offers_setting_data', $offers_setting->schemes->{$hash_key}[ $settings['value'] ] );
-				            }
-			            }
-
-			            $offers_setting->fields->{$hash_key}->default_scheme = isset( $pro['radioVarient'] ) ? $pro['radioVarient'] : '';
-		            }
-	            }
-            }
+						$offers_setting->fields->{$hash_key}->default_scheme = isset( $pro['radioVarient'] ) ? $pro['radioVarient'] : '';
+					}
+				}
+			}
 
 			return $offers_setting;
 

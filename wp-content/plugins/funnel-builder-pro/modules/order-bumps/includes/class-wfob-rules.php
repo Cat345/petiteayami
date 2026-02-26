@@ -163,6 +163,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 					'cart_coupons'            => __( 'Cart Coupons', 'woofunnels-order-bump' ),
 					'order_coupon_text_match' => __( 'Coupons - Text Match', 'woofunnels-order-bump' ),
 					'cart_shipping_method'    => __( 'Cart Shipping Method', 'woofunnels-order-bump' ),
+					'cart_sublium'           => __( 'Sublium', 'woofunnels-order-bump' ),
 				),
 				__( 'Customer', 'woofunnels-order-bump' )  => array(
 					'customer_user'               => __( 'Customer', 'woofunnels-order-bump' ),

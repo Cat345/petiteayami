@@ -74,7 +74,9 @@ class ImageController
     {
         Memory::raise();
 
-        $image = ImageDriver::fromFile($params['src']);
+        $file = Event::emit('image.resolve|filter', $params['src']);
+
+        $image = ImageDriver::fromFile($file);
 
         if (!$image) {
             throw new Exception(404, "Image '{$params['src']}' not found");
@@ -126,7 +128,7 @@ class ImageController
     protected function verifyHash(string $file, array $params): bool
     {
         $query = array_intersect_key($params, array_flip(get_class_methods(ImageDriver::class)));
-        $query += ['cachekey' => pathinfo($file, PATHINFO_FILENAME)];
+        $query += ['cachekey' => array_last(explode('-', pathinfo($file, PATHINFO_FILENAME)))];
 
         if ($params['cache'] ?? false) {
             $query['cache'] = $params['cache'];

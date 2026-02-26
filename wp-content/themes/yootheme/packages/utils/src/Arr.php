@@ -489,8 +489,8 @@ abstract class Arr
     public static function columns(array $array, int $columns): array
     {
         $count = count($array);
-        $columns = min($count, $columns);
-        $rows = (int) ceil($count / $columns);
+        $columns = max(1, min($count, $columns));
+        $rows = max(1, (int) ceil($count / $columns));
         $remainder = $count % $columns;
 
         if (!$remainder) {

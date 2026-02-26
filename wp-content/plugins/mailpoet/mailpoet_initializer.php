@@ -12,8 +12,11 @@ if (empty($mailpoetPlugin)) exit;
 
 require_once($mailpoetPlugin['autoloader']);
 
-// setup Tracy Debugger in dev mode and only for PHP version > 7.1
-$tracyPath = __DIR__ . '/tools/vendor/tracy.phar';
+if (PHP_VERSION_ID >= 80200) {
+  $tracyPath = __DIR__ . '/tools/vendor/tracy.phar';
+} else {
+  $tracyPath = __DIR__ . '/tools/vendor/tracy-legacy.phar';
+}
 if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
   require_once $tracyPath;
 
@@ -56,6 +59,40 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
     add_action('admin_enqueue_scripts', 'render_tracy', PHP_INT_MAX, 0);
     session_start();
     Debugger::enable(Debugger::DEVELOPMENT);
+
+    // Fix Tracy info panel error: when Composer\Autoload\ClassLoader is loaded
+    // from a plugin without autoload_psr4.php (e.g., Query Monitor), Tracy's
+    // info panel fails with "Undefined variable $baseDir". Wrap the panel to
+    // suppress this specific error.
+    $bar = Debugger::getBar();
+    $origInfoPanel = $bar->getPanel('Tracy:info');
+    $bar->addPanel(new class($origInfoPanel) implements \Tracy\IBarPanel {
+      private $inner;
+
+      public function __construct(
+        \Tracy\IBarPanel $inner
+      ) {
+        $this->inner = $inner;
+      }
+
+      public function getTab(): string {
+        return $this->inner->getTab();
+      }
+
+      public function getPanel(): string {
+        $prev = set_error_handler(function ($severity, $message, $file) use (&$prev) {
+          if (strpos($message, 'Undefined variable') !== false && strpos($file, 'info.panel.phtml') !== false) {
+            return true;
+          }
+          return $prev ? $prev($severity, $message, $file, func_get_arg(3)) : false;
+        });
+        try {
+          return $this->inner->getPanel();
+        } finally {
+          restore_error_handler();
+        }
+      }
+    }, 'Tracy:info');
 
     if (getenv('MAILPOET_DISABLE_TRACY_PANEL')) {
       Debugger::$showBar = false;

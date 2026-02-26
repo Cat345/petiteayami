@@ -113,7 +113,7 @@ msgstr "24 Horas"
 #: Models/Add_Products.php:807
 #: Models/Add_Products.php:860
 #: Models/Apply_Notification.php:216
-#: Models/Auto_Apply.php:432
+#: Models/Auto_Apply.php:445
 #: Models/BOGO/Admin.php:332
 #: Models/Shipping_Overrides.php:659
 #: Models/Shipping_Overrides.php:706
@@ -136,7 +136,7 @@ msgstr "La cantidad de %s no se puede modificar."
 #: Models/Add_Products.php:815
 #: Models/Add_Products.php:865
 #: Models/Apply_Notification.php:221
-#: Models/Auto_Apply.php:437
+#: Models/Auto_Apply.php:450
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
 #: Models/Shipping_Overrides.php:667
@@ -191,12 +191,12 @@ msgstr "La caché de cupones de notificación de Appy se ha borrado con éxito."
 msgid "Appy notification coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "La caché de cupones de notificación de Appy se ha reconstruido con éxito. %s cupón(es) han sido validados."
 
-#: Models/Auto_Apply.php:447
+#: Models/Auto_Apply.php:460
 msgid "Auto apply coupons cache have been cleared successfully."
 msgstr "La caché de cupones de aplicación automática se ha borrado con éxito."
 
 #. Translators: %s: Count of validated auto apply coupons.
-#: Models/Auto_Apply.php:457
+#: Models/Auto_Apply.php:470
 #, php-format
 msgid "Auto apply coupons cache has been rebuilt successfully. %s coupon(s) have been validated."
 msgstr "La caché de cupones de aplicación automática se ha reconstruido con éxito. %s cupón(es) han sido validados."
@@ -1135,37 +1135,37 @@ msgid "The reminder has been successfully emailed to customer_account"
 msgstr "El recordatorio se ha enviado correctamente al cliente"
 
 #: Models/Module_Settings.php:433
-#: Models/Script_Loader.php:378
+#: Models/Script_Loader.php:381
 msgid "Utilities"
 msgstr "Utilidades"
 
 #: Models/Module_Settings.php:439
-#: Models/Script_Loader.php:283
+#: Models/Script_Loader.php:286
 msgid "Rebuild/Clear Auto Apply Coupons Cache"
 msgstr "Reconstruir/Limpiar la Caché de Cupones de Aplicación Automática"
 
 #: Models/Module_Settings.php:441
-#: Models/Script_Loader.php:284
+#: Models/Script_Loader.php:287
 msgid "Manually rebuild and validate all auto apply coupons within the cache or clear the cache entirely."
 msgstr "Reconstruya y valide manualmente todos los cupones de aplicación automática dentro de la caché o limpie la caché por completo."
 
 #: Models/Module_Settings.php:446
-#: Models/Script_Loader.php:306
+#: Models/Script_Loader.php:309
 msgid "Rebuild/Clear Apply Notification Coupons Cache"
 msgstr "Reconstruir/Limpiar la Caché de Cupones de Notificación de Aplicación"
 
 #: Models/Module_Settings.php:448
-#: Models/Script_Loader.php:307
+#: Models/Script_Loader.php:310
 msgid "Manually rebuild and validate all apply notification coupons within the cache or clear the cache entirely."
 msgstr "Reconstruir y validar manualmente todos los cupones de notificación de aplicación dentro de la caché o limpiar la caché por completo."
 
 #: Models/Module_Settings.php:453
-#: Models/Script_Loader.php:329
+#: Models/Script_Loader.php:332
 msgid "Reset coupons usage limit"
 msgstr "Restablecer el límite de uso de cupones"
 
 #: Models/Module_Settings.php:455
-#: Models/Script_Loader.php:330
+#: Models/Script_Loader.php:333
 msgid "Manually run cron for resetting usage limit for all applicable coupons."
 msgstr "Ejecutar manualmente el cron para restablecer el límite de uso de todos los cupones aplicables."
 
@@ -1198,10 +1198,6 @@ msgstr "Gracias por comprar Advanced Coupons para WooCommerce. El complemento Ad
 #: Models/Notices.php:153
 msgid "Would you like to read the Advanced Coupons Premium getting started guide?"
 msgstr "¿Le gustaría leer la guía de inicio de Advanced Coupons Premium?"
-
-#: Models/Notices.php:159
-msgid "Read The Getting Started Guide &rarr;"
-msgstr "Leer la Guía de Inicio &rarr;"
 
 #: Models/Objects/Virtual_Coupon.php:671
 msgid "Creating the new virtual coupon was unsuccessful."
@@ -1317,7 +1313,7 @@ msgstr "Sábado"
 msgid "Sunday"
 msgstr "Domingo"
 
-#: Models/Script_Loader.php:259
+#: Models/Script_Loader.php:262
 #: Models/SLMW/License.php:397
 #: views/notices/view-no-license-notice.php:92
 #: views/slmw/view-license-settings-page.php:53
@@ -1332,13 +1328,13 @@ msgstr "Activando. Por favor, espere..."
 msgid "Please fill in activation email and license key"
 msgstr "Por favor, complete el correo electrónico de activación y la clave de licencia"
 
-#: Models/Script_Loader.php:236
+#: Models/Script_Loader.php:239
 #: Models/SLMW/License.php:401
 #: views/slmw/view-license-settings-page.php:21
 msgid "License is Active"
 msgstr "Licencia Activa"
 
-#: Models/Script_Loader.php:237
+#: Models/Script_Loader.php:240
 #: Models/SLMW/License.php:402
 #: views/slmw/view-license-settings-page.php:23
 msgid "Not Activated Yet"
@@ -1376,72 +1372,72 @@ msgstr "Porcentaje de Cashback"
 msgid "Cashback amount"
 msgstr "Monto de Cashback"
 
-#: Models/Script_Loader.php:241
-#: Models/Script_Loader.php:248
+#: Models/Script_Loader.php:244
+#: Models/Script_Loader.php:251
 #: views/slmw/view-license-settings-page.php:28
 #: views/slmw/view-license-settings-page.php:37
 msgid "Premium Version"
 msgstr "Versión Premium"
 
-#: Models/Script_Loader.php:242
+#: Models/Script_Loader.php:245
 #: views/slmw/view-license-settings-page.php:29
 msgid "You are currently using Advanced Coupons for WooCommerce Premium version. The premium version gives you a massive range of extra extra features for your WooCommerce coupons so you can promote your store better. As the Premium version functions like an add-on, you must have Advanced Coupons for WooCommerce Free installed and activated along with WooCommerce (which is required for both)."
 msgstr "Actualmente está utilizando la versión Premium de Advanced Coupons para WooCommerce. La versión Premium le ofrece una amplia gama de funciones adicionales para sus cupones de WooCommerce, de modo que pueda promocionar mejor su tienda. Como la versión Premium funciona como un complemento, debe tener instalado y activado Advanced Coupons para WooCommerce Free junto con WooCommerce (que es necesario para ambos)."
 
-#: Models/Script_Loader.php:247
+#: Models/Script_Loader.php:250
 #: views/slmw/view-license-settings-page.php:33
 msgid "Plan"
 msgstr "Plan"
 
-#: Models/Script_Loader.php:251
+#: Models/Script_Loader.php:254
 #: views/slmw/view-license-settings-page.php:34
 msgid "Version"
 msgstr "Versión"
 
-#: Models/Script_Loader.php:257
+#: Models/Script_Loader.php:260
 #: views/notices/view-no-license-notice.php:83
 #: views/slmw/view-license-settings-page.php:45
 msgid "License Key:"
 msgstr "Clave de Licencia:"
 
-#: Models/Script_Loader.php:258
+#: Models/Script_Loader.php:261
 #: views/slmw/view-license-settings-page.php:49
 msgid "Activation Email:"
 msgstr "Correo Electrónico de Activación:"
 
-#: Models/Script_Loader.php:261
+#: Models/Script_Loader.php:264
 #: views/slmw/view-license-settings-page.php:61
 msgid "Can’t find your key?"
 msgstr "¿No encuentra su clave?"
 
-#: Models/Script_Loader.php:263
+#: Models/Script_Loader.php:266
 #: views/notices/view-no-license-notice.php:103
 msgid "Login to your account"
 msgstr "Inicie sesión en su cuenta"
 
-#: Models/Script_Loader.php:289
-#: Models/Script_Loader.php:312
+#: Models/Script_Loader.php:292
+#: Models/Script_Loader.php:315
 msgid "Rebuild cache"
 msgstr "Reconstruir caché"
 
-#: Models/Script_Loader.php:294
-#: Models/Script_Loader.php:317
+#: Models/Script_Loader.php:297
+#: Models/Script_Loader.php:320
 msgid "Clear cache"
 msgstr "Limpiar caché"
 
-#: Models/Script_Loader.php:335
+#: Models/Script_Loader.php:338
 msgid "Trigger reset cron"
 msgstr "Activar cron de restablecimiento"
 
-#: Models/Script_Loader.php:346
+#: Models/Script_Loader.php:349
 msgid "Refetch Plugin Update Data"
 msgstr "Volver a obtener datos de actualización del plugin"
 
-#: Models/Script_Loader.php:347
+#: Models/Script_Loader.php:350
 msgid "This will refetch the plugin update data. Useful for debugging failed plugin update operations."
 msgstr "Esto volverá a recuperar los datos de actualización del plugin. Útil para depurar operaciones de actualización de plugins fallidas."
 
-#: Models/Script_Loader.php:352
+#: Models/Script_Loader.php:355
 msgid "Refetch Update Data"
 msgstr "Volver a recuperar los datos de actualización"
 
@@ -2150,15 +2146,15 @@ msgstr ""
 msgid "Repeat deals are not yet supported using this combination of Trigger and Apply types. "
 msgstr ""
 
-#: Models/Script_Loader.php:360
+#: Models/Script_Loader.php:363
 msgid "Check license status"
 msgstr ""
 
-#: Models/Script_Loader.php:361
+#: Models/Script_Loader.php:364
 msgid "Check the current status of your Advanced Coupons premium license."
 msgstr ""
 
-#: Models/Script_Loader.php:366
+#: Models/Script_Loader.php:369
 msgid "Check License Status"
 msgstr ""
 
@@ -2514,4 +2510,12 @@ msgstr ""
 
 #: Models/BOGO/Types/Same_Products.php:302
 msgid "Same Products"
+msgstr ""
+
+#: Models/Notices.php:159
+msgid "Read The Getting Started Guide →"
+msgstr ""
+
+#: Models/Script_Loader.php:173
+msgid "\"Same Products\" GET type is not compatible with \"Specific Products\" BUY type. Please select a different combination."
 msgstr ""

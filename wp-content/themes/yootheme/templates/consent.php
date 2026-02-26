@@ -143,7 +143,7 @@ $modal = $this->el('form', [
 
 ]);
 
-$modal_title = $this->el('h2', [
+$modal_title = $this->el($props['modal_title_element'], [
 
     'class' => [
         'uk-{modal_title_style}',
@@ -161,7 +161,7 @@ $modal_content = $this->el('p', [
 
 ]);
 
-$modal_category_title = $this->el('h3', [
+$modal_category_title = $this->el($props['modal_category_title_element'], [
 
     'class' => [
         'uk-{modal_category_title_style}',
@@ -233,7 +233,7 @@ $modal_accordion_icon = $this->el('div', [
     ],
 
     'uk-accordion-icon' => $props['modal_accordion_icon_width'] ? [
-        "width: {modal_accordion_icon_width}; height: {modal_accordion_icon_width}",
+        'width: {modal_accordion_icon_width}; height: {modal_accordion_icon_width}',
     ] : true,
 
 ]);

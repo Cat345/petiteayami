@@ -55,9 +55,6 @@ class LoadThemeHead
         );
 
         if ($this->config->get('app.isCustomizer')) {
-            $this->metadata->set('script:customizer-site', [
-                'src' => '~assets/site/js/customizer.js',
-            ]);
             $this->metadata->set('style:customizer-site', [
                 'href' => '~assets/site/css/customizer.css',
             ]);

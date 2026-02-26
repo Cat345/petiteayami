@@ -1,3 +1,3 @@
-/*! YOOtheme Pro v5.0.7 | https://yootheme.com */
+/*! YOOtheme Pro v5.0.18 | https://yootheme.com */
 
 const{on:a,$:r,css:i,$$:c,isTag:l}=window.UIkit.util,s="[data-map]",d=".js-consent-overlay",p="data-map-consent",m=`[${p}]`;a(document,"DOMContentLoaded",()=>{r(`${s}[type="text/plain"]`)&&i(c(d),"visibility","")}),a(document,"click",m,o=>{if(!l(o.target,"button"))return;const{consent:t}=window.yootheme;if(t){const e=o.current.dataset.mapConsent;t.setConsent(e,"allow"),t.loadScriptTags(),t.saveState()}else u(c(s))});function u(o){for(const t of o){const e=document.createRange().createContextualFragment(t.outerHTML).firstElementChild;e.removeAttribute("type");for(const n of["src","type"])t.dataset[n]&&(e[n]=t.dataset[n],delete e.dataset[n]);t.replaceWith(e)}}

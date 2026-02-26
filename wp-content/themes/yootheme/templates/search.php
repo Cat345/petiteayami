@@ -75,7 +75,7 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
             ['prefix' => "template-{$template['id']}", 'template' => $template['type'], 'search' => ['searchword' => $search['value'] ?? '']],
         );
 
-        $id = "{$attrs['id']}-search-results";
+        $id = "search-results-{$this->uid()}";
         $search['uk-search'] = json_encode([
             'target' => "#{$id}",
             'mode' => !str_starts_with($search_layout, 'input') ? $search_layout : false,
@@ -84,15 +84,16 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
 
         $attrs_livesearch = ['class' => ['uk-margin uk-hidden-empty']];
 
-        app(Metadata::class)->set('script:theme-search', ['src' => '~assets/site/js/search.js', 'defer' => true]);
+        app(Metadata::class)->set('script:theme-search', ['src' => '~assets/site/js/search.js', 'type' => 'module']);
     }
 
     if (!str_starts_with($search_layout, 'input')) {
 
+        $containerId = "search-container-{$this->uid()}";
         $toggle = [
             'class' => [($area == 'navbar' ? 'uk-navbar-toggle' : 'uk-search-toggle uk-display-block')],
             'id' => $area == 'navbar' && !empty($tag['id']) ? $tag['id'] : null,
-            'href' => in_array($search_layout, ['dropbar', 'modal']) ? "#{$attrs['id']}-search" : true,
+            'href' => in_array($search_layout, ['dropbar', 'modal']) ? "#{$containerId}" : true,
         ];
 
         if ($search_layout == 'modal' && $config("$header.search_modal.width") == 'full') {
@@ -172,7 +173,7 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
         $outside = $config("$site.layout") == 'boxed' && $config("$site.boxed.header_outside");
 
         $attrs_dropbar = [];
-        $attrs_dropbar['id'] = "{$attrs['id']}-search";
+        $attrs_dropbar['id'] = $containerId ?? false;
         $attrs_dropbar['class'][] = str_ends_with($position, '-mobile') ? 'uk-dropbar' : 'uk-dropbar uk-dropbar-large';
         $attrs_dropbar['class'][] = $config("$header.search_dropbar.padding_remove_horizontal") ? 'uk-padding-remove-horizontal' : '';
         $attrs_dropbar['class'][] = $config("$header.search_dropbar.padding_remove_vertical") ? 'uk-padding-remove-vertical' : '';
@@ -235,7 +236,7 @@ if (preg_match('/^(logo|navbar|header)/', $position)) {
 
             'uk-modal' => true,
 
-            'id' => "{$attrs['id']}-search",
+            'id' => $containerId,
 
             'class' => [
                 'uk-modal',

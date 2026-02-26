@@ -5,11 +5,12 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @package FacebookCommerce
+ * @package MetaCommerce
  */
 
 require_once __DIR__ . '/fbutils.php';
 
+use WooCommerce\Facebook\CollectionPage;
 use WooCommerce\Facebook\Feed\ShippingProfilesFeed;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Handlers\PluginRender;
@@ -335,7 +336,7 @@ class WC_Facebook_Product {
 		if ( is_callable( 'get_post' ) ) {
 			return get_post( $this->id );
 		} else {
-			return $this->get_post_data();
+			return null;
 		}
 	}
 
@@ -763,7 +764,10 @@ class WC_Facebook_Product {
 
 		// If no description is found from meta or variation, get from post
 		if ( empty( $description ) ) {
-			$post         = $this->get_post_data();
+			$post = $this->get_post_data();
+			if ( ! $post ) {
+				return apply_filters( 'facebook_for_woocommerce_fb_product_description', '', $this->id );
+			}
 			$post_content = WC_Facebookcommerce_Utils::clean_string( $post->post_content );
 			$post_excerpt = WC_Facebookcommerce_Utils::clean_string( $post->post_excerpt );
 			$post_title   = WC_Facebookcommerce_Utils::clean_string( $post->post_title );
@@ -839,7 +843,10 @@ class WC_Facebook_Product {
 		}
 
 		// Use the product's short description (excerpt) from WooCommerce
-		$post         = $this->get_post_data();
+		$post = $this->get_post_data();
+		if ( ! $post ) {
+			return apply_filters( 'facebook_for_woocommerce_fb_product_short_description', '', $this->id );
+		}
 		$post_excerpt = WC_Facebookcommerce_Utils::clean_string( $post->post_excerpt );
 
 		if ( ! empty( $post_excerpt ) ) {
@@ -1801,8 +1808,8 @@ class WC_Facebook_Product {
 		$product_data['gender']    = $this->get_fb_gender();
 		$product_data['material']  = Helper::str_truncate( $this->get_fb_material(), 100 );
 		// Generate and add collection URI
-		$collection_uri = site_url( '/fbcollection/' );
-		$product_data['custom_label_4'] = $collection_uri;
+		$collection_uri = site_url( CollectionPage::ENDPOINT_PATH );
+		$product_data[ CollectionPage::PRODUCT_FEED_FIELD ] = $collection_uri;
 		if ( $this->get_type() === 'variation' ) {
 			$parent_id      = $this->woo_product->get_parent_id();
 			$parent_product = wc_get_product( $parent_id );
@@ -2285,7 +2292,7 @@ class WC_Facebook_Product {
 		// If using WPML, set the product to hidden unless it is in the
 		// default language. WPML >= 3.2 Supported.
 		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-			if ( class_exists( 'WC_Facebook_WPML_Injector' ) && WC_Facebook_WPML_Injector::should_hide( $id ) ) {
+			if ( class_exists( \WooCommerce\Facebook\WPMLInjector::class ) && \WooCommerce\Facebook\WPMLInjector::should_hide( $id ) ) {
 				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 		}

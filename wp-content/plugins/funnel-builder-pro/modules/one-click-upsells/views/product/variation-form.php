@@ -20,6 +20,7 @@ if ( empty( $data['product']->variations_data['available_variations'] ) ) {
 	//@todo show some notice text here so that we could tell store admin why variables are not visible.
 	return;
 }
+
 ?>
 	<div class="wfocu-product-attr-wrapper" <?php echo (isset($data['display'] ) && $data['display'] === 'no')? "style='display:none;'":"" ?>>
 		<form class="wfocu_variation_selector_form" data-key="<?php echo $data['key']; ?>">

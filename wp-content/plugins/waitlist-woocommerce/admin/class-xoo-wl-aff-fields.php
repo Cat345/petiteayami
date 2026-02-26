@@ -12,10 +12,12 @@ if( class_exists( 'Xoo_Aff_fields' ) ){
 
 
 		public function add_wl_predefined_fields(){
+
 			$this->fields = xoo_wl()->aff->fields;
 			$this->predefined_field_useremail();
 			$this->predefined_field_quantity();
 			$this->fields->field_groups['others']['title'] = 'Fields';
+			$this->fields->field_groups['others']['add_field'] = true;
 		}
 
 
@@ -70,7 +72,7 @@ if( class_exists( 'Xoo_Aff_fields' ) ){
 					'active' 	=> 'yes',
 					'required' 	=> 'yes',
 					'unique_id' 	=> $field_id,
-				)			
+				)	
 			);
 
 		}

@@ -674,7 +674,7 @@ class WPML_Support implements Model_Interface {
                         /**
                          * There are 3 types of language format:
                          * 1. Directory format: http://example.com/en/
-                         * 2. Subdomain format: http://en.example.com/
+                         * 2. Different domain per language (includes subdomains): http://example.fr/ or http://fr.example.com/
                          * 3. Query format: http://example.com/?lang=en
                          */
                         $format = '';
@@ -691,6 +691,29 @@ class WPML_Support implements Model_Interface {
                                 '<code>%s</code>',
                                 $translated_url
                             );
+                        } elseif ( 2 === $language_format ) {
+                            // Different domain per language format.
+                            $language_domains = $sitepress->get_setting( 'language_domains' );
+                            if ( is_array( $language_domains ) && ! empty( $language_domains[ $key ] ) ) {
+                                $parsed_url      = wp_parse_url( $redirect_url );
+                                $language_domain = $language_domains[ $key ];
+
+                                // Remove protocol if present in the language domain.
+                                $language_domain = preg_replace( '#^https?://#', '', $language_domain );
+
+                                // Construct the translated URL with the language-specific domain.
+                                $translated_url = sprintf(
+                                    '%s://%s%s',
+                                    isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] : 'https',
+                                    $language_domain,
+                                    isset( $parsed_url['path'] ) ? $parsed_url['path'] : ''
+                                );
+
+                                $format = sprintf(
+                                    '<code>%s</code>',
+                                    $translated_url
+                                );
+                            }
                         } elseif ( 3 === $language_format ) {
                             $format = sprintf( '<code>%s?lang=%s</code>', $redirect_url, $key );
                         }

@@ -695,3 +695,7 @@ td.xoo-wl-tr-notice a{
 input#xoo-wl-search-search-input {
     max-width: 200px;
 }
+
+.xoo-wl-prod-stockstatus.xoo-wl-prod-stock-onbackorder {
+    background-color: #67b8fd69;
+}

@@ -1,0 +1,151 @@
+/*
+
+Name: FC Greenfield
+Background: White
+Color: Red
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/default.jpg
+
+Style: white-green
+Background: White
+Color: Green
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/white-green.jpg
+
+Style: white-blue
+Background: White
+Color: Blue
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/white-blue.jpg
+
+Style: white-lightblue
+Background: White
+Color: Lightblue
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/white-lightblue.jpg
+
+Style: white-yellow
+Background: White
+Color: Yellow
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/white-yellow.jpg
+
+Style: dark-blue
+Background: Dark
+Color: Blue
+Type: Material
+Preview: https://yootheme.com/api/style/fc-greenfield/dark-blue.jpg
+
+*/
+
+// Platform
+@import "platform.less";
+
+// UIkit Core
+@import "../vendor/assets/uikit/src/less/uikit.less";
+
+// UIkit Theme
+@import "../vendor/assets/uikit-themes/master/_import.less";
+@import "../vendor/assets/uikit-themes/master-fc-greenfield/_import.less";
+
+// Theme
+@import "theme.less";
+
+
+// Variables
+// ========================================================================
+
+//
+// Inverse
+//
+
+@inverse-theme-box-decoration-default-background:       @global-inverse-color;
+@inverse-theme-box-decoration-primary-background:       @global-inverse-color;
+@inverse-theme-box-decoration-secondary-background:     @global-inverse-color;
+
+//
+// Mask
+//
+
+@internal-theme-mask-default-image:                     "../vendor/assets/uikit-themes/master-fc-greenfield/images/mask-default-image.svg";
+
+//
+// Box Decoration
+//
+
+@theme-box-decoration-z-index:                          2;
+
+@theme-box-decoration-default-transform-horizontal:     30px;
+@theme-box-decoration-default-transform-vertical:       -30px;
+
+@theme-box-decoration-primary-transform-horizontal:     -30px;
+@theme-box-decoration-primary-transform-vertical:       30px;
+
+@theme-box-decoration-secondary-transform-horizontal:   30px;
+@theme-box-decoration-secondary-transform-vertical:     30px;
+
+@theme-box-decoration-default-background:               @global-primary-background;
+@theme-box-decoration-primary-background:               @global-primary-background;
+@theme-box-decoration-secondary-background:             @global-primary-background;
+
+//
+// New
+//
+
+.hook-box-decoration-default() {
+
+    &::before {
+        top: auto;
+        left: auto;
+        width: 50px;
+        height: 160px;
+        .svg-fill("../../../../uikit-themes/master-fc-greenfield/images/box-decoration-image.svg", "#000", @theme-box-decoration-default-background);
+        background-repeat: no-repeat;
+        background-color: transparent;
+    }
+
+}
+
+.hook-box-decoration-primary() {
+
+    &::before {
+        width: 50px;
+        height: 160px;
+        .svg-fill("../../../../uikit-themes/master-fc-greenfield/images/box-decoration-image.svg", "#000", @theme-box-decoration-primary-background);
+        background-repeat: no-repeat;
+        background-color: transparent;
+    }
+
+}
+
+.hook-box-decoration-secondary() {
+
+    &::before {
+        left: auto;
+        width: 50px;
+        height: 160px;
+        .svg-fill("../../../../uikit-themes/master-fc-greenfield/images/box-decoration-image.svg", "#000", @theme-box-decoration-default-background);
+        background-repeat: no-repeat;
+        background-color: transparent;
+    }
+
+}
+
+//
+// WooCommerce
+//
+
+@woocommerce-shop-page-title-font-size:                 24px;
+
+@woocommerce-rating-color:                              @global-secondary-background;
+
+@woocommerce-cart-page-layout:                          columns;
+@woocommerce-order-page-layout:                         columns;
+
+
+// Style
+// ========================================================================
+
+@import (optional) "../vendor/assets/uikit-themes/master-fc-greenfield/styles/@{internal-style}.less";
+
+@internal-style: ~'';

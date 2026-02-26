@@ -77,6 +77,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 				display: none;
 			}
 
+			body #wfacp-sec-wrapper #billing_email_field .wcpay-stripelink-modal-trigger{
+				right: 15px;
+			}
+
 			</style>
 <?php
 		}
@@ -95,28 +99,47 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			return $field;
 		}
 
-		public function enqueue_scripts() {
-			if ( is_null( WC()->cart ) || WC()->cart->needs_payment() ) {
-				return;
-			}
-			$gateways = WC()->payment_gateways()->get_available_payment_gateways();
-
-			if ( ! isset( $gateways['woocommerce_payments'] ) ) {
-				return;
-			}
-
-			$gateway = $gateways['woocommerce_payments'];
-
-			/**
-			 * @var $gateway WC_Payment_Gateway_WCPay
-			 */
-			if ( method_exists( $gateway, 'get_payment_fields_js_config' ) ) {
-				wp_localize_script( 'wcpay-checkout', 'wcpay_config', $gateway->get_payment_fields_js_config() );
-				wp_enqueue_script( 'wcpay-checkout' );
-				wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), [], WC_Payments::get_file_version( 'dist/checkout.css' ) );
-			}
-
+	public function enqueue_scripts() {
+		// Early return if cart doesn't exist or doesn't need payment
+		if ( is_null( WC()->cart ) || ! WC()->cart->needs_payment() ) {
+			return;
 		}
+
+		// Check if WooPayments is active and available
+		if ( ! defined( 'WCPAY_PLUGIN_FILE' ) || ! class_exists( 'WC_Payments' ) ) {
+			return;
+		}
+
+		$gateways = WC()->payment_gateways()->get_available_payment_gateways();
+		if ( ! isset( $gateways['woocommerce_payments'] ) ) {
+			return;
+		}
+
+		$gateway = $gateways['woocommerce_payments'];
+
+		/**
+		 * @var $gateway WC_Payment_Gateway_WCPay
+		 */
+		if ( method_exists( $gateway, 'get_payment_fields_js_config' ) ) {
+			wp_localize_script( 'wcpay-checkout', 'wcpay_config', $gateway->get_payment_fields_js_config() );
+			wp_enqueue_script( 'wcpay-checkout' );
+			wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), [], WC_Payments::get_file_version( 'dist/checkout.css' ) );
+		}
+
+		// Enqueue blocks-checkout.css for Stripe link modal styling
+		// Call WooPayments' get_payment_method_script_handles() to ensure proper CSS enqueuing
+		// This fixes the issue where Stripe link modal appears distorted due to missing CSS
+		if ( class_exists( 'WC_Payments_Blocks_Payment_Method' ) && ! wp_style_is( 'wc-blocks-checkout-style', 'enqueued' ) ) {
+			$blocks_payment_method = new WC_Payments_Blocks_Payment_Method();
+			$blocks_payment_method->initialize();
+
+			// Temporarily ensure is_checkout() returns true so the CSS gets enqueued
+			// This is safe because we're only on Funnelkit checkout pages when this function runs
+			add_filter( 'woocommerce_is_checkout', '__return_true', 999 );
+			$blocks_payment_method->get_payment_method_script_handles();
+			remove_filter( 'woocommerce_is_checkout', '__return_true', 999 );
+		}
+	}
 
 		/**
 		 * @param $price_data

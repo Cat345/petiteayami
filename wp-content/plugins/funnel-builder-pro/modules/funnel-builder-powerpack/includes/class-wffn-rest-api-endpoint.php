@@ -6,18 +6,17 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 		#[AllowDynamicProperties]
 		class WFFN_REST_API_EndPoint extends WFFN_REST_Controller {
 
-			private static $ins = null;
-			protected $namespace = 'funnelkit-app';
-			protected $rest_base = 'funnel-analytics';
+			private static $ins       = null;
+			protected $namespace      = 'funnelkit-app';
+			protected $rest_base      = 'funnel-analytics';
 			protected $rest_base_lite = 'funnels';
 			/**
 			 * WFFN_REST_API_EndPoint constructor.
 			 */
 			public function __construct() {
 
-				add_action( 'rest_api_init', [ $this, 'register_endpoint' ], 12 );
-				add_action( 'wffn_top_sales_funnels', [ $this, 'get_top_sales_funnels' ], 10, 2 );
-
+				add_action( 'rest_api_init', array( $this, 'register_endpoint' ), 12 );
+				add_action( 'wffn_top_sales_funnels', array( $this, 'get_top_sales_funnels' ), 10, 2 );
 			}
 
 			/**
@@ -25,7 +24,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			 */
 			public static function get_instance() {
 				if ( null === self::$ins ) {
-					self::$ins = new self;
+					self::$ins = new self();
 				}
 
 				return self::$ins;
@@ -37,284 +36,335 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				 * if we received funnel id 0 those api return data for global analytics
 				 */
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/overview/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/overview/',
 					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_overview' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
+						array(
+							'args'                => $this->get_stats_collection(),
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_overview' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/stats/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/stats/',
 					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_stats' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
+						array(
+							'args'                => $this->get_stats_collection(),
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_stats' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/steps/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/steps/',
 					array(
-						'args'                => $this->get_stats_collection_for_steps(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_steps' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
+						array(
+							'args'                => $this->get_stats_collection_for_steps(),
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_steps' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/conversion/stats/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/conversion/stats/',
 					array(
-						'args'                => $this->get_stats_collection(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_conversion_stats' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
+						array(
+							'args'                => $this->get_stats_collection(),
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_conversion_stats' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/conversion/campaign-data/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/conversion/campaign-data/',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_campaign_data' ),
+							'args'                => array(
+								'after'  => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'before' => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'utms'   => array(
+									'description'       => __( 'steps', 'funnel-builder-powerpack' ),
+									'type'              => 'string',
+									'validate_callback' => 'rest_validate_request_arg',
+									'sanitize_callback' => array( $this, 'sanitize_custom' ),
+								),
+							),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/referrer/',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_conversion_referrer' ),
+							'args'                => array(
+								'after'  => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'before' => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+							),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/global/referrer/',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_conversion_referrer' ),
+							'args'                => array(
+								'after'  => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'before' => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+							),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/(?P<id>[\d]+)/referrer-social-stats/',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_conversion_social_data' ),
+							'args'                => array(
+								'after'  => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'before' => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+							),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/global/referrer-social-stats/',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_conversion_social_data' ),
+							'args'                => array(
+								'after'  => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+								'before' => array(
+									'type'              => 'string',
+									'format'            => 'date-time',
+									'validate_callback' => 'rest_validate_request_arg',
+									'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+								),
+							),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/global/funnel-list/',
+					array(
+						array(
+							'args'                => $this->get_stats_collection_for_steps(),
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_global_funnel_list' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						),
+					)
+				);
+
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base . '/global/utms/',
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_campaign_data' ),
+						'callback'            => array( $this, 'get_global_utms' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
 						'args'                => array(
-							'after'  => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+							'page_no'     => array(
+								'required'          => true,
+								'validate_callback' => function ( $param, $request, $key ) {
+									return is_numeric( $param );
+								},
 							),
-							'before' => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+							'funnel_id'   => array(
+								'required'          => false,
+								'validate_callback' => function ( $param, $request, $key ) {
+									return is_numeric( $param );
+								},
 							),
-							'utms'   => array(
-								'description'       => __( 'steps', 'funnel-builder-powerpack' ),
-								'type'              => 'string',
-								'validate_callback' => 'rest_validate_request_arg',
-								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							's'           => array(
+								'required'          => false,
+								'validate_callback' => function ( $param, $request, $key ) {
+									return is_string( $param );
+								},
+							),
+							'limit'       => array(
+								'required'          => true,
+								'validate_callback' => function ( $param, $request, $key ) {
+									return is_numeric( $param );
+								},
+							),
+							'total_count' => array(
+								'required'          => true,
+								'validate_callback' => function ( $param, $request, $key ) {
+									return in_array( $param, array( 'yes', 'no' ) );
+								},
 							),
 						),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
-
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/referrer/', array(
+					)
+				);
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base_lite . '/category/',
 					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_conversion_referrer' ),
-						'args'                => array(
-							'after'  => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+						array(
+							'methods'             => WP_REST_Server::CREATABLE,
+							'callback'            => array( $this, 'create_funnel_category' ),
+							'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+							'args'                => array(
+								'name' => array(
+									'description'       => __( 'Funnel Add Category', 'funnel-builder' ),
+									'type'              => 'string',
+									'required'          => true,
+									'validate_callback' => 'rest_validate_request_arg',
+								),
 							),
-							'before' => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
-							)
 						),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
-
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/referrer/', array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_conversion_referrer' ),
-						'args'                => array(
-							'after'  => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+						array(
+							'methods'             => WP_REST_Server::DELETABLE,
+							'callback'            => array( $this, 'delete_funnel_category' ),
+							'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+							'args'                => array(
+								'slug' => array(
+									'description'       => __( 'Funnel Delete Category', 'funnel-builder' ),
+									'type'              => 'string',
+									'required'          => true,
+									'validate_callback' => 'rest_validate_request_arg',
+								),
 							),
-							'before' => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
-							)
 						),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/referrer-social-stats/', array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_conversion_social_data' ),
-						'args'                => array(
-							'after'  => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+						array(
+							'methods'             => WP_REST_Server::EDITABLE,
+							'callback'            => array( $this, 'rename_category' ),
+							'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+							'args'                => array(
+								'old_slug' => array(
+									'description'       => __( 'Old category slug to rename', 'funnel-builder' ),
+									'type'              => 'string',
+									'required'          => true,
+									'validate_callback' => 'rest_validate_request_arg',
+								),
+								'new_name' => array(
+									'description'       => __( 'New category name', 'funnel-builder' ),
+									'type'              => 'string',
+									'required'          => true,
+									'validate_callback' => 'rest_validate_request_arg',
+								),
 							),
-							'before' => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
-							)
 						),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
-
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/referrer-social-stats/', array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_conversion_social_data' ),
-						'args'                => array(
-							'after'  => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published after a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => array( $this, 'get_funnel_categories' ),
+							'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+							'args'                => array(
+								'search' => array(
+									'description'       => __( 'Search term to filter categories', 'funnel-builder' ),
+									'type'              => 'string',
+									'required'          => false,
+									'validate_callback' => 'rest_validate_request_arg',
+								),
 							),
-							'before' => array(
-								'type'              => 'string',
-								'format'            => 'date-time',
-								'validate_callback' => 'rest_validate_request_arg',
-								'description'       => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woofunnels-upstroke-one-click-upsell' ),
-							)
 						),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
+					)
+				);
 
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/funnel-list/', array(
-					array(
-						'args'                => $this->get_stats_collection_for_steps(),
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_global_funnel_list' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					),
-				) );
-
-				register_rest_route( $this->namespace, '/' . $this->rest_base . '/global/utms/', [
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => [ $this, 'get_global_utms' ],
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [
-						'page_no'     => [
-							'required'          => true,
-							'validate_callback' => function ( $param, $request, $key ) {
-								return is_numeric( $param );
-							},
-						],
-						'funnel_id'   => [
-							'required'          => false,
-							'validate_callback' => function ( $param, $request, $key ) {
-								return is_numeric( $param );
-							},
-						],
-						's'           => [
-							'required'          => false,
-							'validate_callback' => function ( $param, $request, $key ) {
-								return is_string( $param );
-							},
-						],
-						'limit'       => [
-							'required'          => true,
-							'validate_callback' => function ( $param, $request, $key ) {
-								return is_numeric( $param );
-							},
-						],
-						'total_count' => [
-							'required'          => true,
-							'validate_callback' => function ( $param, $request, $key ) {
-								return in_array( $param, [ 'yes', 'no' ] );
-							},
-						],
-					],
-				] );
-				register_rest_route( $this->namespace, '/' . $this->rest_base_lite . '/category/', array(
+				register_rest_route(
+					$this->namespace,
+					'/' . $this->rest_base_lite . '/assign-categories/',
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => array( $this, 'create_funnel_category' ),
+						'callback'            => array( $this, 'assign_categories_to_funnels' ),
 						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
 						'args'                => array(
-							'name' => array(
-								'description'       => __( 'Funnel Add Category', 'funnel-builder' ),
-								'type'              => 'string',
+							'funnel_ids' => array(
+								'description'       => __( 'Funnel ID Assign Category', 'funnel-builder' ),
 								'required'          => true,
-								'validate_callback' => 'rest_validate_request_arg'
+								'type'              => '',
+								'validate_callback' => 'rest_validate_request_arg',
 							),
-						),
-					),
-					array(
-						'methods'             => WP_REST_Server::DELETABLE,
-						'callback'            => array( $this, 'delete_funnel_category' ),
-						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-						'args'                => array(
-							'slug' => array(
-								'description'       => __( 'Funnel Delete Category', 'funnel-builder' ),
-								'type'              => 'string',
+							'categories' => array(
+								'description'       => __( 'Funnel Assign Category Slug', 'funnel-builder' ),
 								'required'          => true,
-								'validate_callback' => 'rest_validate_request_arg'
-							),
-						),
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => array( $this, 'rename_category' ),
-						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-						'args'                => array(
-							'old_slug' => array(
-								'description'       => __( 'Old category slug to rename', 'funnel-builder' ),
-								'type'              => 'string',
-								'required'          => true,
-								'validate_callback' => 'rest_validate_request_arg'
-							),
-							'new_name' => array(
-								'description'       => __( 'New category name', 'funnel-builder' ),
-								'type'              => 'string',
-								'required'          => true,
-								'validate_callback' => 'rest_validate_request_arg'
-							),
-						),
-					),
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => array( $this, 'get_funnel_categories' ),
-						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-						'args'                => array(
-							'search' => array(
-								'description'       => __( 'Search term to filter categories', 'funnel-builder' ),
-								'type'              => 'string',
-								'required'          => false,
+								'type'              => 'array',
 								'validate_callback' => 'rest_validate_request_arg',
 							),
 						),
-					),
-				) );
-
-				register_rest_route( $this->namespace, '/' . $this->rest_base_lite . '/assign-categories/', array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'assign_categories_to_funnels' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'funnel_ids' => array(
-							'description'       => __( 'Funnel ID Assign Category', 'funnel-builder' ),
-							'required'          => true,
-							'type'              => '',
-							'validate_callback' => 'rest_validate_request_arg'
-						),
-						'categories' => array(
-							'description'       => __( 'Funnel Assign Category Slug', 'funnel-builder' ),
-							'required'          => true,
-							'type'              => 'array',
-							'validate_callback' => 'rest_validate_request_arg'
-						),
-					),
-				) );
-
+					)
+				);
 			}
 
 			/**
@@ -344,34 +394,42 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$search     = sanitize_text_field( $data->get_param( 'search' ) );
 					$categories = WFFN_Category_DB::get_categories();
 					if ( ! empty( $search ) ) {
-						$categories = array_filter( $categories, function ( $name, $slug ) use ( $search ) {
-							return ( strpos( strtolower( $name ), strtolower( $search ) ) !== false || strpos( strtolower( $slug ), strtolower( $search ) ) !== false );
-						}, ARRAY_FILTER_USE_BOTH );
+						$categories = array_filter(
+							$categories,
+							function ( $name, $slug ) use ( $search ) {
+								return ( strpos( strtolower( $name ), strtolower( $search ) ) !== false || strpos( strtolower( $slug ), strtolower( $search ) ) !== false );
+							},
+							ARRAY_FILTER_USE_BOTH
+						);
 					}
-					$category_data = [];
+					$category_data = array();
 					foreach ( $categories as $slug => $name ) {
 						$count = WFFN_Category_DB::get_category_funnel_count( $slug );
 
-						$category_data[] = [
+						$category_data[] = array(
 							'slug'  => $slug,
 							'name'  => $name,
 							'count' => $count,
-						];
+						);
 					}
 
-					return rest_ensure_response( [
-						'result'  => [
-							'items' => $category_data
-						],
-						'status'  => true,
-						'message' => __( 'Category Fetched Successfully ', 'funnel-builder' )
-					] );
-				} catch ( Exception|Error $e ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( $e->getMessage(), 'funnel-builder' )
-					] );
+					return rest_ensure_response(
+						array(
+							'result'  => array(
+								'items' => $category_data,
+							),
+							'status'  => true,
+							'message' => __( 'Category Fetched Successfully ', 'funnel-builder' ),
+						)
+					);
+				} catch ( Exception | Error $e ) {
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( $e->getMessage(), 'funnel-builder' ),
+						)
+					);
 				}
 			}
 
@@ -393,26 +451,32 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$category_slug = sanitize_title( $category_name );
 				$category_slug = str_replace( '-', '_', $category_slug );
 				if ( WFFN_Category_DB::category_exists( $category_slug ) ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( 'Category already exists ', 'funnel-builder' )
-					] );
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( 'Category already exists ', 'funnel-builder' ),
+						)
+					);
 				}
 				$result = WFFN_Category_DB::add_or_update_category( $category_name, $category_slug );
 
 				if ( $result ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => true,
-						'message' => __( 'Category created successfully ', 'funnel-builder' )
-					] );
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => true,
+							'message' => __( 'Category created successfully ', 'funnel-builder' ),
+						)
+					);
 				} else {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( 'Failed to create category ', 'funnel-builder' )
-					] );
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( 'Failed to create category ', 'funnel-builder' ),
+						)
+					);
 				}
 			}
 
@@ -428,7 +492,13 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$category_slug = sanitize_text_field( $data->get_param( 'slug' ) );
 
 					if ( ! WFFN_Category_DB::category_exists( $category_slug ) ) {
-						return rest_ensure_response( [ 'result' => [], 'success' => false, 'message' => __( 'Category not found ', 'funnel-builder' ) ] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'success' => false,
+								'message' => __( 'Category not found ', 'funnel-builder' ),
+							)
+						);
 					}
 
 					$result = WFFN_Category_DB::delete_category( $category_slug );
@@ -436,35 +506,43 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					if ( ! $result ) {
 						$message = WFFN_Category_DB::get_message();
 
-						return rest_ensure_response( [
-							'result'  => [],
-							'status'  => false,
-							'message' => __( $message, 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'status'  => false,
+								'message' => __( $message, 'funnel-builder' ),
+							)
+						);
 					}
 
 					$remove_from_funnels = WFFN_Category_DB::remove_category_from_funnels( $category_slug );
 
 					if ( ! $remove_from_funnels ) {
-						return rest_ensure_response( [
-							'result'  => [],
-							'status'  => false,
-							'message' => __( 'Failed to remove category ', 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'status'  => false,
+								'message' => __( 'Failed to remove category ', 'funnel-builder' ),
+							)
+						);
 					}
 
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => true,
-						'message' => __( 'Category deleted successfully ', 'funnel-builder' )
-					] );
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => true,
+							'message' => __( 'Category deleted successfully ', 'funnel-builder' ),
+						)
+					);
 
-				} catch ( Exception|Error $e ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( 'An error occurred ', 'funnel-builder' )
-					] );
+				} catch ( Exception | Error $e ) {
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( 'An error occurred ', 'funnel-builder' ),
+						)
+					);
 				}
 			}
 
@@ -486,29 +564,34 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$new_slug = sanitize_title( $new_name );
 						$new_slug = str_replace( '-', '_', $new_slug );
 
-						return rest_ensure_response( [
-							'result'  => [
-								'newslug' => $new_slug
-							],
-							'status'  => true,
-							'message' => __( 'Category renamed successfully ', 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(
+									'newslug' => $new_slug,
+								),
+								'status'  => true,
+								'message' => __( 'Category renamed successfully ', 'funnel-builder' ),
+							)
+						);
 					} else {
 						$message = WFFN_Category_DB::get_message();
 
-						return rest_ensure_response( [
-							'result'  => [],
-							'status'  => false,
-							'message' => __( $message, 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'status'  => false,
+								'message' => __( $message, 'funnel-builder' ),
+							)
+						);
 					}
-
-				} catch ( Exception|Error $e ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( 'An error occurred ', 'funnel-builder' )
-					] );
+				} catch ( Exception | Error $e ) {
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( 'An error occurred ', 'funnel-builder' ),
+						)
+					);
 				}
 			}
 
@@ -524,34 +607,42 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$funnel_ids = $data->get_param( 'funnel_ids' );
 					$categories = $data->get_param( 'categories' );
 
-					$categories = array_map( function ( $category ) {
-						if ( is_array( $category ) && isset( $category['slug'], $category['name'] ) ) {
-							return [
-								'slug' => sanitize_text_field( $category['slug'] ),
-								'name' => sanitize_text_field( $category['name'] )
-							];
-						}
+					$categories = array_map(
+						function ( $category ) {
+							if ( is_array( $category ) && isset( $category['slug'], $category['name'] ) ) {
+									return array(
+										'slug' => sanitize_text_field( $category['slug'] ),
+										'name' => sanitize_text_field( $category['name'] ),
+									);
+							}
 
-						return [];
-					}, $categories );
+							return array();
+						},
+						$categories
+					);
 
-					$categories_slugs = array_map( function ( $category ) {
-						return $category['slug'];
-					}, $categories );
+					$categories_slugs = array_map(
+						function ( $category ) {
+							return $category['slug'];
+						},
+						$categories
+					);
 					foreach ( $categories as $key => $category ) {
 						if ( $category['slug'] === '0' ) {
 							$category_name = sanitize_text_field( $category['name'] );
 							$category_slug = sanitize_title( $category_name );
 							$category_slug = str_replace( '-', '_', $category_slug );
 
-							$create_category_response = $this->create_funnel_category( (object) [ 'name' => $category_name ] );
+							$create_category_response = $this->create_funnel_category( (object) array( 'name' => $category_name ) );
 
 							if ( isset( $create_category_response->data['status'] ) && $create_category_response->data['status'] === false ) {
-								return rest_ensure_response( [
-									'result'  => [],
-									'status'  => false,
-									'message' => __( $create_category_response->data['message'] . $category_name, 'funnel-builder' )
-								] );
+								return rest_ensure_response(
+									array(
+										'result'  => array(),
+										'status'  => false,
+										'message' => __( $create_category_response->data['message'] . $category_name, 'funnel-builder' ),
+									)
+								);
 							}
 							$categories[ $key ]['slug'] = sanitize_title( $category_slug );
 
@@ -567,32 +658,37 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$result     = WFFN_Category_DB::assign_categories_to_funnels( $funnel_ids, $categories_slugs );
 					}
 					if ( $result ) {
-						return rest_ensure_response( [
-							'result'  => [],
-							'status'  => true,
-							'message' => __( 'Categories assigned to funnels successfully ', 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'status'  => true,
+								'message' => __( 'Categories assigned to funnels successfully ', 'funnel-builder' ),
+							)
+						);
 					} else {
-						return rest_ensure_response( [
-							'result'  => [],
-							'status'  => false,
-							'message' => __( 'Failed to assign categories to funnels ', 'funnel-builder' )
-						] );
+						return rest_ensure_response(
+							array(
+								'result'  => array(),
+								'status'  => false,
+								'message' => __( 'Failed to assign categories to funnels ', 'funnel-builder' ),
+							)
+						);
 					}
-
-				} catch ( Exception|Error $e ) {
-					return rest_ensure_response( [
-						'result'  => [],
-						'status'  => false,
-						'message' => __( $e->getMessage(), 'funnel-builder' )
-					] );
+				} catch ( Exception | Error $e ) {
+					return rest_ensure_response(
+						array(
+							'result'  => array(),
+							'status'  => false,
+							'message' => __( $e->getMessage(), 'funnel-builder' ),
+						)
+					);
 				}
 			}
 
 			public function get_overview( $request ) {
 				$resp = array(
 					'status' => false,
-					'data'   => []
+					'data'   => array(),
 				);
 				$data = $this->prepare_item_for_response( $request );
 
@@ -609,7 +705,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			public function get_stats( $request ) {
 				$resp = array(
 					'status' => false,
-					'data'   => []
+					'data'   => array(),
 				);
 				$data = $this->prepare_item_for_response( $request, 'interval' );// phpcs:ignore WordPress.Security.NonceVerification.Missing
 
@@ -644,7 +740,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$start_date = '';
 						$end_date   = '';
 					}
-
 				} else {
 					$start_date = ( isset( $item['after'] ) && '' !== $item['after'] ) ? $item['after'] : self::default_date( WEEK_IN_SECONDS )->format( self::$sql_datetime_format );
 					$end_date   = ( isset( $item['before'] ) && '' !== $item['before'] ) ? $item['before'] : self::default_date()->format( self::$sql_datetime_format );
@@ -681,10 +776,10 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$total_convert_seconds = 0;
 				}
 
-				$result    = [];
+				$result    = array();
 				$intervals = array();
 				if ( ! empty( $is_interval ) ) {
-					$result['intervals']     = [];
+					$result['intervals']     = array();
 					$result['interval_type'] = isset( $interval_type ) ? $interval_type : '';
 					$overall                 = isset( $item['overall'] ) ? true : false;
 					$intervals_all           = $this->intervals_between( $start_date, $end_date, $int_request, $overall );
@@ -717,7 +812,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$get_total_contact    = is_array( $get_total_contacts ) ? $this->maybe_interval_exists( $get_total_contacts, 'time_interval', $interval ) : 0;
 						$total_convert_second = is_array( $total_convert_seconds ) ? $this->maybe_interval_exists( $total_convert_seconds, 'time_interval', $interval ) : 0;
 
-
 						$get_total_visit             = is_array( $get_total_visit ) ? $get_total_visit[0]['unique_views'] : 0;
 						$get_total_order             = is_array( $get_total_order ) ? $get_total_order[0]['total_orders'] : 0;
 						$get_total_contact           = is_array( $get_total_contact ) ? $get_total_contact[0]['contacts'] : 0;
@@ -744,7 +838,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$result['intervals'][] = $intervals;
 
 					}
-
 				} else {
 
 					$unique_visits         = is_array( $get_total_visits ) && ! is_null( $get_total_visits[0]['unique_views'] ) ? $get_total_visits[0]['unique_views'] : 0;
@@ -776,7 +869,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$average_order_value = 0;
 					}
 
-					$result = [
+					$result = array(
 						'unique_visits'       => is_null( $unique_visits ) ? 0 : $unique_visits,
 						'contacts'            => $get_total_contacts,
 						'total_orders'        => is_null( $total_orders ) ? 0 : $total_orders,
@@ -787,28 +880,27 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						'convert_time'        => $total_convert_seconds,
 						'average_order_value' => $average_order_value,
 						'revenue_per_visit'   => $revenue_per_visit,
-					];
+					);
 				}
 
 				return $result;
-
 			}
 
 			public function get_unique_visits( $funnel_id, $start_date, $end_date, $is_interval = '', $int_request = '' ) {
 
 				global $wpdb;
 				$table          = $wpdb->prefix . 'wfco_report_views';
-				$date_col       = "date";
+				$date_col       = 'date';
 				$interval_query = '';
 				$group_by       = '';
-				$date           = ( '' !== $start_date && '' !== $end_date ) ? " AND `" . $date_col . "` >= '" . esc_sql( $start_date ) . "' AND `" . $date_col . "` < '" . esc_sql( $end_date ) . "' " : '';
-				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? " AND object_id != " . $funnel_id . " " : " AND object_id = " . $funnel_id . " ";
+				$date           = ( '' !== $start_date && '' !== $end_date ) ? ' AND `' . $date_col . "` >= '" . esc_sql( $start_date ) . "' AND `" . $date_col . "` < '" . esc_sql( $end_date ) . "' " : '';
+				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND object_id != ' . $funnel_id . ' ' : ' AND object_id = ' . $funnel_id . ' ';
 
 				if ( 'interval' === $is_interval ) {
 					$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 					$interval_query = $get_interval['interval_query'];
 					$interval_group = $get_interval['interval_group'];
-					$group_by       = " GROUP BY " . $interval_group;
+					$group_by       = ' GROUP BY ' . $interval_group;
 
 				}
 
@@ -825,20 +917,20 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 
 			public function get_convert_time( $funnel_id, $start_date, $end_date, $is_interval = '', $int_request = '' ) {
 				global $wpdb;
-				$date_col       = "timestamp";
+				$date_col       = 'timestamp';
 				$interval_query = '';
 				$group_by       = '';
-				$date           = ( '' !== $start_date && '' !== $end_date ) ? " AND `" . $date_col . "` >= '" . esc_sql( $start_date ) . "' AND `" . $date_col . "` < '" . esc_sql( $end_date ) . "' " : '';
+				$date           = ( '' !== $start_date && '' !== $end_date ) ? ' AND `' . $date_col . "` >= '" . esc_sql( $start_date ) . "' AND `" . $date_col . "` < '" . esc_sql( $end_date ) . "' " : '';
 
 				if ( 'interval' === $is_interval ) {
 					$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 					$interval_query = $get_interval['interval_query'];
 					$interval_group = $get_interval['interval_group'];
-					$group_by       = " GROUP BY " . $interval_group;
+					$group_by       = ' GROUP BY ' . $interval_group;
 
 				}
-				$query = "SELECT (CASE WHEN SUM( TIMESTAMPDIFF( SECOND, first_click, timestamp ) ) != 0 THEN SUM( TIMESTAMPDIFF( SECOND, first_click, timestamp ) )/COUNT(id) ELSE 0 END ) as 'seconds' " . $interval_query . " 
-        FROM " . $wpdb->prefix . "bwf_conversion_tracking WHERE 1=1 " . $date . " AND funnel_id = " . $funnel_id . $group_by . " ORDER BY funnel_id ASC";
+				$query = "SELECT (CASE WHEN SUM( TIMESTAMPDIFF( SECOND, first_click, timestamp ) ) != 0 THEN SUM( TIMESTAMPDIFF( SECOND, first_click, timestamp ) )/COUNT(id) ELSE 0 END ) as 'seconds' " . $interval_query . ' 
+        FROM ' . $wpdb->prefix . 'bwf_conversion_tracking WHERE 1=1 ' . $date . ' AND funnel_id = ' . $funnel_id . $group_by . ' ORDER BY funnel_id ASC';
 				$data  = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -855,22 +947,22 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			public function get_total_orders( $funnel_id, $start_date, $end_date, $is_interval = '', $int_request = '' ) {
 				global $wpdb;
 				$table          = $wpdb->prefix . 'bwf_conversion_tracking';
-				$date_col       = "tracking.timestamp";
+				$date_col       = 'tracking.timestamp';
 				$interval_query = '';
 				$group_by       = '';
 				$limit          = '';
-				$total_orders   = [];
-				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? " AND tracking.funnel_id != " . $funnel_id . " " : " AND tracking.funnel_id = " . $funnel_id . " ";
+				$total_orders   = array();
+				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND tracking.funnel_id != ' . $funnel_id . ' ' : ' AND tracking.funnel_id = ' . $funnel_id . ' ';
 
 				if ( 'interval' === $is_interval ) {
 					$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 					$interval_query = $get_interval['interval_query'];
 					$interval_group = $get_interval['interval_group'];
-					$group_by       = " GROUP BY " . $interval_group;
+					$group_by       = ' GROUP BY ' . $interval_group;
 
 				}
 
-				$date = ( '' !== $start_date && '' !== $end_date ) ? " AND " . $date_col . " >= '" . $start_date . "' AND " . $date_col . " < '" . $end_date . "' " : '';
+				$date = ( '' !== $start_date && '' !== $end_date ) ? ' AND ' . $date_col . " >= '" . $start_date . "' AND " . $date_col . " < '" . $end_date . "' " : '';
 
 				if ( class_exists( 'WFACP_Contacts_Analytics' ) && version_compare( WFACP_VERSION, '2.0.7', '>' ) ) {
 					$total_orders = $wpdb->get_results( "SELECT count(DISTINCT tracking.source) as total_orders " . $interval_query . "  FROM `" . $table . "` as tracking JOIN `" . $wpdb->prefix . "bwf_contact` as cust ON cust.id=tracking.contact_id WHERE 1=1 AND tracking.type=2 " . $date . $funnel_query . $group_by . " ORDER BY tracking.id ASC $limit", ARRAY_A );//phpcs:ignore
@@ -892,66 +984,70 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				/**
 				 * get revenue
 				 */ global $wpdb;
-				$total_revenue_aero    = [];
-				$total_revenue_bump    = [];
-				$total_revenue_upsells = [];
+				$total_revenue_aero    = array();
+				$total_revenue_bump    = array();
+				$total_revenue_upsells = array();
 
 				/**
 				 * get revenue
 				 */
 				$table          = $wpdb->prefix . 'bwf_conversion_tracking';
-				$date_col       = "conv.timestamp";
+				$date_col       = 'conv.timestamp';
 				$interval_query = '';
 				$group_by       = '';
-				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? " AND conv.funnel_id != " . $funnel_id . " " : " AND conv.funnel_id = " . $funnel_id . " ";
+				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND conv.funnel_id != ' . $funnel_id . ' ' : ' AND conv.funnel_id = ' . $funnel_id . ' ';
 
 				if ( 'interval' === $is_interval ) {
 					$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 					$interval_query = $get_interval['interval_query'];
 					$interval_group = $get_interval['interval_group'];
-					$group_by       = " GROUP BY " . $interval_group;
+					$group_by       = ' GROUP BY ' . $interval_group;
 
 				}
 
-				$date = ( '' !== $start_date && '' !== $end_date ) ? " AND " . esc_sql( $date_col ) . " >= '" . $start_date . "' AND " . $date_col . " < '" . esc_sql( $end_date ) . "' " : '';
+				$date = ( '' !== $start_date && '' !== $end_date ) ? ' AND ' . esc_sql( $date_col ) . " >= '" . $start_date . "' AND " . $date_col . " < '" . esc_sql( $end_date ) . "' " : '';
 
 				if ( class_exists( 'WFACP_Core' ) ) {
-					$query              = "SELECT SUM(conv.value) as total, SUM(conv.checkout_total) as sum_aero " . $interval_query . "  FROM `" . $table . "` as conv WHERE 1=1 " . $date . $funnel_query . $group_by . " ORDER BY conv.id ASC";
+					$query              = 'SELECT SUM(conv.value) as total, SUM(conv.checkout_total) as sum_aero ' . $interval_query . '  FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
 					$total_revenue_aero = $wpdb->get_results( $query, ARRAY_A );
 					if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 						$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 						if ( true === $db_error['db_error'] ) {
-							$total_revenue_aero = [];
+							$total_revenue_aero = array();
 							WFFN_Core()->logger->log( 'failed fetch data #' . print_r( $db_error, true ), 'wffn-failed-actions', true ); // phpcs:ignore
 						}
 					}
 				}
 
 				if ( class_exists( 'WFOB_Core' ) ) {
-					$query              = "SELECT SUM(conv.bump_total) as sum_bump " . $interval_query . "  FROM `" . $table . "` as conv WHERE 1=1 " . $date . $funnel_query . $group_by . " ORDER BY conv.id ASC";
+					$query              = 'SELECT SUM(conv.bump_total) as sum_bump ' . $interval_query . '  FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
 					$total_revenue_bump = $wpdb->get_results( $query, ARRAY_A );
 					if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 						$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 						if ( true === $db_error['db_error'] ) {
-							$total_revenue_bump = [];
+							$total_revenue_bump = array();
 							WFFN_Core()->logger->log( 'failed fetch data #' . print_r( $db_error, true ), 'wffn-failed-actions', true ); // phpcs:ignore
 						}
 					}
 				}
 
 				if ( class_exists( 'WFOCU_Core' ) ) {
-					$query                 = "SELECT SUM(conv.offer_total) as sum_upsells " . $interval_query . "  FROM `" . $table . "` as conv WHERE 1=1 " . $date . $funnel_query . $group_by . " ORDER BY conv.id ASC";
+					$query                 = 'SELECT SUM(conv.offer_total) as sum_upsells ' . $interval_query . '  FROM `' . $table . '` as conv WHERE 1=1 ' . $date . $funnel_query . $group_by . ' ORDER BY conv.id ASC';
 					$total_revenue_upsells = $wpdb->get_results( $query, ARRAY_A );
 					if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 						$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 						if ( true === $db_error['db_error'] ) {
-							$total_revenue_upsells = [];
+							$total_revenue_upsells = array();
 							WFFN_Core()->logger->log( 'failed fetch data #' . print_r( $db_error, true ), 'wffn-failed-actions', true ); // phpcs:ignore
 						}
 					}
 				}
 
-				return array( 'aero' => $total_revenue_aero, 'bump' => $total_revenue_bump, 'upsell' => $total_revenue_upsells );
+				return array(
+					'aero'   => $total_revenue_aero,
+					'bump'   => $total_revenue_bump,
+					'upsell' => $total_revenue_upsells,
+				);
 			}
 
 			public function get_stats_collection() {
@@ -1028,27 +1124,27 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 
 				if ( true === self::maybe_store_checkout_config( $funnel ) ) {
 					if ( true === $funnel->is_funnel_has_native_checkout() ) {
-						$bumps           = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
-						$native_checkout = array(
+						$bumps                  = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
+						$native_checkout        = array(
 							'id'       => 0,
 							'type'     => WFFN_Common::store_native_checkout_slug(),
-							'substeps' => [],
+							'substeps' => array(),
 						);
-						$native_checkout_record          = array(
+						$native_checkout_record = array(
 							'type'            => WFFN_Common::store_native_checkout_slug(),
 							'object_id'       => 0,
 							'object_name'     => __( 'Store Checkout', 'funnel-builder' ),
 							'revenue'         => 0,
 							'conversions'     => 0,
 							'views'           => 0,
-							'substeps'        => [],
+							'substeps'        => array(),
 							'conversion_rate' => 0,
 						);
 						if ( is_array( $bumps ) && count( $bumps ) > 0 ) {
-							$native_checkout['substeps'] = $bumps;
+							$native_checkout['substeps']        = $bumps;
 							$native_checkout_record['substeps'] = $bumps;
 						}
-						array_unshift($get_records, $native_checkout_record );
+						array_unshift( $get_records, $native_checkout_record );
 						array_unshift( $steps, $native_checkout );
 					}
 				}
@@ -1060,7 +1156,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 							if ( $this->check_type( $step['type'] ) === $data['type'] && absint( $step['id'] ) === absint( $data['object_id'] ) ) {
 								$records[] = $data;
 								$key       = array_search( $data['object_id'], wp_list_pluck( $get_records, 'object_id' ) );//phpcs:ignore
-
 
 								if ( $key !== false && isset( $get_records[ $key ] ) ) {
 									unset( $get_records[ $key ] );
@@ -1089,9 +1184,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					'msg'    => __( 'success', 'funnel-builder-powerpack' ),
 					'data'   => array(
 						'records'     => array_merge( $records, $get_records ),
-						'funnel_data' => WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id )
+						'funnel_data' => WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id ),
 
-					)
+					),
 				);
 
 				return rest_ensure_response( $resp );
@@ -1123,9 +1218,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 
 			public function prepare_analytics_data( $funnel, $funnel_id, $start_date, $end_date ) {
-				$data      = [];
-				$ids       = [];
-				$get_steps = [];
+				$data      = array();
+				$ids       = array();
+				$get_steps = array();
 				if ( $funnel instanceof WFFN_Funnel && 0 < $funnel->get_id() ) {
 
 					$is_wc     = wffn_is_wc_active();
@@ -1156,7 +1251,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$step_ids = implode( ',', $ids );
 
 				global $wpdb;
-				$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND date BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : "";
+				$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND date BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
 				/**
 				 * Get conversion data form report view table
 				 * landing - 2 view, 3 convert
@@ -1165,7 +1260,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				 * optin - 8 view
 				 * optin ty - 10 view, 11 convert
 				 */
-				$get_query = "SELECT object_id, SUM(CASE WHEN type IN( 2, 4, 5, 8, 10 ) THEN `no_of_sessions` END) AS 'views' ,SUM(CASE WHEN type IN( 3, 11 ) THEN `no_of_sessions` END) AS 'conversions' FROM  `" . $wpdb->prefix . "wfco_report_views` WHERE object_id IN (" . esc_sql( $step_ids ) . ") " . $date_range . " GROUP BY object_id";
+				$get_query = "SELECT object_id, SUM(CASE WHEN type IN( 2, 4, 5, 8, 10 ) THEN `no_of_sessions` END) AS 'views' ,SUM(CASE WHEN type IN( 3, 11 ) THEN `no_of_sessions` END) AS 'conversions' FROM  `" . $wpdb->prefix . 'wfco_report_views` WHERE object_id IN (' . esc_sql( $step_ids ) . ') ' . $date_range . ' GROUP BY object_id';
 				$conv_data = $wpdb->get_results( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -1186,7 +1281,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$get_steps = $this->update_data_with_step_item( $get_steps, $conv_data );
 
 				if ( ! is_array( $get_steps ) || count( $get_steps ) === 0 ) {
-					return [];
+					return array();
 				}
 
 				return array_values( $get_steps );
@@ -1220,10 +1315,10 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 
 			public function map_defult_step_value( $get_steps ) {
-				$data = [
-					'step_data' => [],
-					'step_ids'  => []
-				];
+				$data = array(
+					'step_data' => array(),
+					'step_ids'  => array(),
+				);
 				if ( is_array( $get_steps ) && count( $get_steps ) > 0 ) {
 
 					foreach ( $get_steps as $step ) {
@@ -1237,7 +1332,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 							'revenue'         => isset( $step['revenue'] ) ? $step['revenue'] : 0,
 							'conversions'     => isset( $step['conversions'] ) ? $step['conversions'] : 0,
 							'views'           => isset( $step['views'] ) ? $step['views'] : 0,
-							'substeps'        => isset( $step['substeps'] ) ? $step['substeps'] : [],
+							'substeps'        => isset( $step['substeps'] ) ? $step['substeps'] : array(),
 							'conversion_rate' => 0,
 						);
 
@@ -1245,7 +1340,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						 * add source revenue in checkout step
 						 */
 						if ( 'checkout' === $step_type ) {
-							$step_data['source_revenue'] = isset( $step['source_revenue'] ) ? $step['source_revenue'] : [];
+							$step_data['source_revenue'] = isset( $step['source_revenue'] ) ? $step['source_revenue'] : array();
 						}
 
 						if ( isset( $step['is_variant'] ) && isset( $step['control'] ) && absint( $step['control'] ) !== 0 ) {
@@ -1281,7 +1376,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				}
 
 				return $data;
-
 			}
 
 			/**
@@ -1315,9 +1409,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					 * merge variant data in control and remove from list
 					 */
 					if ( isset( $item['control_id'] ) ) {
-						$data[ $item['control_id'] ]['views']           += $item['views'];
-						$data[ $item['control_id'] ]['conversions']     += $item['conversions'];
-						$data[ $item['control_id'] ]['revenue']         += $item['revenue'];
+						$data[ $item['control_id'] ]['views']          += $item['views'];
+						$data[ $item['control_id'] ]['conversions']    += $item['conversions'];
+						$data[ $item['control_id'] ]['revenue']        += $item['revenue'];
 						$data[ $item['control_id'] ]['conversion_rate'] = $this->get_percentage( $data[ $item['control_id'] ]['views'], $data[ $item['control_id'] ]['conversions'] );
 						unset( $data[ $item['object_id'] ] );
 					}
@@ -1334,7 +1428,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				global $wpdb;
 
 				$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND date BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
-				$sql_query  = "SELECT optin.step_id as 'id', COUNT(optin.id) as 'conversions' FROM " . $wpdb->prefix . 'bwf_optin_entries' . " AS optin WHERE optin.funnel_id=" . $funnel_id . " " . $date_range . " GROUP by optin.step_id ORDER BY optin.step_id ASC";
+				$sql_query  = "SELECT optin.step_id as 'id', COUNT(optin.id) as 'conversions' FROM " . $wpdb->prefix . 'bwf_optin_entries' . ' AS optin WHERE optin.funnel_id=' . $funnel_id . ' ' . $date_range . ' GROUP by optin.step_id ORDER BY optin.step_id ASC';
 
 				$get_all_records = $wpdb->get_results( $sql_query, ARRAY_A );//phpcs:ignore
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -1382,7 +1476,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				global $wpdb;
 
 				$conv_range = ( '' !== $start_date && '' !== $end_date ) ? " AND timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
-				$sql_query  = "SELECT conv.step_id AS 'id', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . "  AS conv WHERE type=2 AND conv.step_id != 0 AND conv.funnel_id=" . $funnel_id . " " . $conv_range . " GROUP BY conv.step_id, conv.source_id ORDER BY conv.step_id ASC";
+				$sql_query  = "SELECT conv.step_id AS 'id', conv.source_id AS 'source_id', SUM(conv.checkout_total) AS 'amount', COUNT(conv.id) AS 'conversions',  conv.timestamp AS 'date', 'wc_checkout' AS 'type' FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . '  AS conv WHERE type=2 AND conv.step_id != 0 AND conv.funnel_id=' . $funnel_id . ' ' . $conv_range . ' GROUP BY conv.step_id, conv.source_id ORDER BY conv.step_id ASC';
 
 				$aero_result = $wpdb->get_results( $sql_query, ARRAY_A );//phpcs:ignore
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -1397,7 +1491,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					return $steps;
 				}
 
-				$get_all_records = [];
+				$get_all_records = array();
 
 				foreach ( $aero_result as $entry ) {
 					$object_id = $entry['id'];
@@ -1413,7 +1507,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 							'source_revenue' => array(),
 							'revenue'        => 0,
 							'conversions'    => 0,
-							'type'           => $entry['type']
+							'type'           => $entry['type'],
 						);
 					}
 					// Add sources
@@ -1437,7 +1531,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 							'type'      => $tag,
 							'source_id' => ( empty( $entry['source_id'] ) || ( absint( $entry['source_id'] ) === 0 ) ) ? 0 : $entry['source_id'],
 							'amount'    => $entry['amount'],
-							'order'     => $entry['conversions']
+							'order'     => $entry['conversions'],
 						);
 
 					}
@@ -1474,7 +1568,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					return $steps;
 				}
 
-				$upsells = [];
+				$upsells = array();
 				foreach ( $steps as $step ) {
 					if ( isset( $step['type'] ) && $step['type'] === 'upsell' ) {
 						$upsells[] = $step['object_id'];
@@ -1484,7 +1578,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				global $wpdb;
 
 				$date_range      = ( '' !== $start_date && '' !== $end_date ) ? " AND event.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
-				$sql_query       = "SELECT DISTINCT(event.object_id) as 'object_id' FROM " . $wpdb->prefix . 'wfocu_event' . " as event LEFT JOIN " . $wpdb->prefix . 'wfocu_session' . " as session ON event.sess_id = session.id WHERE (event.action_type_id = 1) AND session.fid=" . $funnel_id . " " . $date_range . "  order by event.object_id asc";
+				$sql_query       = "SELECT DISTINCT(event.object_id) as 'object_id' FROM " . $wpdb->prefix . 'wfocu_event' . ' as event LEFT JOIN ' . $wpdb->prefix . 'wfocu_session' . ' as session ON event.sess_id = session.id WHERE (event.action_type_id = 1) AND session.fid=' . $funnel_id . ' ' . $date_range . '  order by event.object_id asc';
 				$get_all_records = $wpdb->get_col( $sql_query );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -1498,7 +1592,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				if ( is_array( $get_all_records ) && count( $get_all_records ) > 0 ) {
 					$upsells = array_merge( $upsells, $get_all_records );
 				} else {
-					$get_all_records = [];
+					$get_all_records = array();
 				}
 
 				/**
@@ -1507,14 +1601,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$upsell_ids = array_unique( $upsells );
 
 				if ( count( $upsell_ids ) > 0 ) {
-					$upsells = [];
+					$upsells = array();
 					foreach ( $upsell_ids as $upsell ) {
 						if ( ! isset( $steps[ $upsell ] ) ) {
-							$upsells[ $upsell ] = [
+							$upsells[ $upsell ] = array(
 								'type'     => 'upsell',
 								'id'       => $upsell,
 								'substeps' => array(),
-							];
+							);
 						}
 					}
 
@@ -1529,12 +1623,12 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						$get_steps = get_post_meta( $upsell_id, '_funnel_steps', true );
 
 						if ( ! is_array( $get_steps ) || count( $get_steps ) === 0 ) {
-							$get_steps = [];
+							$get_steps = array();
 						}
 
 						$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND events.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
-						$sql_query  = "SELECT COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS 'conversions', COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS 'views', object_id  as 'object_id', object_id  as 'id', SUM(value) as 'revenue' FROM " . $wpdb->prefix . 'wfocu_event' . "  as events INNER JOIN " . $wpdb->prefix . 'wfocu_event_meta' . " AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) 
-			                        AND ( ( events_meta__funnel_id.meta_key   = '_funnel_id' AND events_meta__funnel_id.meta_value = $upsell_id )) AND (events.action_type_id = '2' OR events.action_type_id = '4' ) " . $date_range . "  GROUP BY events.object_id";
+						$sql_query  = "SELECT COUNT(CASE WHEN action_type_id = 4 THEN 1 END) AS 'conversions', COUNT(CASE WHEN action_type_id = 2 THEN 1 END) AS 'views', object_id  as 'object_id', object_id  as 'id', SUM(value) as 'revenue' FROM " . $wpdb->prefix . 'wfocu_event' . '  as events INNER JOIN ' . $wpdb->prefix . 'wfocu_event_meta' . " AS events_meta__funnel_id ON ( events.ID = events_meta__funnel_id.event_id ) 
+			                        AND ( ( events_meta__funnel_id.meta_key   = '_funnel_id' AND events_meta__funnel_id.meta_value = $upsell_id )) AND (events.action_type_id = '2' OR events.action_type_id = '4' ) " . $date_range . '  GROUP BY events.object_id';
 
 						$get_all_records = $wpdb->get_results( $sql_query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 						if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -1553,14 +1647,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 							return $steps;
 						}
 
-						$offer_data = [];
+						$offer_data = array();
 						foreach ( $get_steps as $step_data ) {
 							$item_id    = $step_data['id'];
-							$item       = [
+							$item       = array(
 								'type'     => 'offer',
 								'id'       => $item_id,
 								'substeps' => array(),
-							];
+							);
 							$control_id = get_post_meta( $item_id, '_bwf_ab_variation_of', true );
 							if ( ! empty( $control_id ) ) {
 								$item['control']    = $control_id;
@@ -1577,8 +1671,6 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						if ( is_array( $get_offers ) && count( $get_offers ) > 0 ) {
 							$steps[ $upsell_id ]['offers'] = $get_offers;
 						}
-
-
 					}
 				}
 
@@ -1590,7 +1682,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					return $steps;
 				}
 
-				$substeps = [];
+				$substeps = array();
 				foreach ( $steps as $step ) {
 					if ( isset( $step['type'] ) && $step['type'] === 'checkout' && isset( $step['substeps'] ) && count( $step['substeps'] ) > 0 ) {
 						$substeps = array_merge( $substeps, $step['substeps']['wc_order_bump'] );
@@ -1605,36 +1697,51 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$substeps     = is_array( $global_bumps ) && isset( $global_bumps['wc_order_bump'] ) ? array_merge( $substeps, $global_bumps ) : $substeps;
 				}
 
+				/**
+				 * Get AB variants of bumps
+				 */
+				$ob_step = WFFN_Pro_Core()->substeps->get_integration_object( 'wc_order_bump' );
+				if ( $ob_step instanceof WFFN_Pro_Substep ) {
+					$bump_variants = array();
+					foreach ( $substeps as $bump_id ) {
+						$bump_id     = absint( $bump_id );
+						$variant_ids = $ob_step->maybe_get_ab_variants( $bump_id );
+						if ( is_array( $variant_ids ) && count( $variant_ids ) > 0 ) {
+							$bump_variants = array_merge( $bump_variants, $variant_ids );
+						}
+					}
+					$substeps = array_merge( $substeps, $bump_variants );
+				}
+
 				if ( count( $substeps ) === 0 ) {
 					return $steps;
 				}
 
 				global $wpdb;
-				$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
+				$date_range = ( '' !== $start_date && '' !== $end_date ) ? " AND bump.date BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "' " : '';
 
 				$get_all_records = array();
-				
-				foreach ($substeps as $bump_id) {
-					$bump_id = intval($bump_id);
-					
-					$bump_sql = "SELECT 
-						" . $bump_id . " as 'object_id',
+
+				foreach ( $substeps as $bump_id ) {
+					$bump_id = intval( $bump_id );
+
+					$bump_sql = 'SELECT 
+						' . $bump_id . " as 'object_id',
 						" . $bump_id . " as 'id',
-						COUNT(CASE WHEN conv.bump_total > 0 AND (conv.bump_accepted LIKE '%" . $bump_id . "%') THEN 1 END) AS 'conversions', 
-						SUM(CASE WHEN (conv.bump_accepted LIKE '%" . $bump_id . "%') THEN conv.bump_total ELSE 0 END) as 'revenue',
-						COUNT(CASE WHEN (conv.bump_accepted LIKE '%" . $bump_id . "%' OR conv.bump_rejected LIKE '%" . $bump_id . "%') THEN 1 END) as 'views', 
+						COUNT(CASE WHEN bump.converted = 1 THEN 1 END) AS 'conversions', 
+						SUM(CASE WHEN bump.converted = 1 THEN CAST(bump.total AS DECIMAL(10,2)) ELSE 0 END) as 'revenue',
+						COUNT(bump.ID) as 'views', 
 						'bump' as 'type' 
-						FROM " . $wpdb->prefix . 'bwf_conversion_tracking' . " AS conv 
-						WHERE conv.funnel_id = " . $funnel_id . " 
-						AND conv.type = 2 
-						" . $date_range;
-					
-					$bump_result = $wpdb->get_results($bump_sql, ARRAY_A);
-					if (!empty($bump_result)) {
+						FROM " . $wpdb->prefix . 'wfob_stats' . ' AS bump 
+						WHERE bump.fid = ' . $funnel_id . ' 
+						AND bump.bid = ' . $bump_id . ' 
+						' . $date_range;
+
+					$bump_result = $wpdb->get_results( $bump_sql, ARRAY_A );
+					if ( ! empty( $bump_result ) ) {
 						$get_all_records[] = $bump_result[0];
 					}
 				}
-				
 
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -1657,14 +1764,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				 * for run same code for create sum
 				 */
 
-				$bump_data = [];
+				$bump_data = array();
 				foreach ( $substeps as $item_id ) {
 					$item_id    = absint( $item_id );
-					$item       = [
+					$item       = array(
 						'type'     => 'bump',
 						'id'       => $item_id,
 						'substeps' => array(),
-					];
+					);
 					$control_id = get_post_meta( $item_id, '_bwf_ab_variation_of', true );
 					if ( ! empty( $control_id ) ) {
 						$item['control']    = $control_id;
@@ -1695,29 +1802,28 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			public function get_total_contacts( $funnel_id, $start_date, $end_date, $is_interval = '', $int_request = '' ) {
 				global $wpdb;
 				$table          = $wpdb->prefix . 'bwf_conversion_tracking';
-				$date_col       = "timestamp";
+				$date_col       = 'timestamp';
 				$interval_query = '';
 				$group_by       = '';
-				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? " AND funnel_id != " . esc_sql( $funnel_id ) . " " : " AND funnel_id = " . esc_sql( $funnel_id ) . " ";
+				$funnel_query   = ( 0 === intval( $funnel_id ) ) ? ' AND funnel_id != ' . esc_sql( $funnel_id ) . ' ' : ' AND funnel_id = ' . esc_sql( $funnel_id ) . ' ';
 
 				if ( 'interval' === $is_interval ) {
 					$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 					$interval_query = $get_interval['interval_query'];
 					$interval_group = $get_interval['interval_group'];
-					$group_by       = " GROUP BY " . $interval_group;
+					$group_by       = ' GROUP BY ' . $interval_group;
 				}
 
 				$date = ( '' !== $start_date && '' !== $end_date ) ? " AND `timestamp` >= '" . esc_sql( $start_date ) . "' AND `timestamp` < '" . esc_sql( $end_date ) . "' " : '';
 
-				$query        = "SELECT COUNT( DISTINCT contact_id ) as contacts " . $interval_query . " FROM `" . $table . "` WHERE 1=1 " . $date . " " . $funnel_query . " " . $group_by;
+				$query        = 'SELECT COUNT( DISTINCT contact_id ) as contacts ' . $interval_query . ' FROM `' . $table . '` WHERE 1=1 ' . $date . ' ' . $funnel_query . ' ' . $group_by;
 				$get_contacts = $wpdb->get_results( $query, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
 
 				if ( is_array( $get_contacts ) && count( $get_contacts ) > 0 ) {
 					return $get_contacts;
 				}
 
-				return [];
+				return array();
 			}
 
 			public function get_conversion_stats( $request ) {
@@ -1737,7 +1843,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$item_data       = array(
 					'total_orders'    => 0,
 					'total_revenue'   => 0,
-					'average_revenue' => 0
+					'average_revenue' => 0,
 				);
 				$social_platform = array(
 					'facebook'  => $item_data,
@@ -1746,12 +1852,12 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					'tiktok'    => $item_data,
 					'youtube'   => $item_data,
 					'linkedIn'  => $item_data,
-					'others'    => $item_data
+					'others'    => $item_data,
 				);
-				$data            = [
+				$data            = array(
 					'checkout' => $social_platform,
-					'optin'    => $social_platform
-				];
+					'optin'    => $social_platform,
+				);
 
 				/*
 				 * filter data base on type like optin and orders
@@ -1760,19 +1866,17 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 
 					foreach ( $get_conversion as $item ) {
 						if ( isset( $data[ $item['type'] ] ) ) {
-							$platform_name                                              = $this->get_referrer_nice_name( $item['referrer'] );
-							$data[ $item['type'] ][ $platform_name ]['total_orders']    += (float) $item['total_orders'];
-							$data[ $item['type'] ][ $platform_name ]['total_revenue']   += (float) $item['total_revenue'];
+							$platform_name = $this->get_referrer_nice_name( $item['referrer'] );
+							$data[ $item['type'] ][ $platform_name ]['total_orders']   += (float) $item['total_orders'];
+							$data[ $item['type'] ][ $platform_name ]['total_revenue']  += (float) $item['total_revenue'];
 							$data[ $item['type'] ][ $platform_name ]['average_revenue'] = $this->get_percentage( $data[ $item['type'] ][ $platform_name ]['total_revenue'], $data[ $item['type'] ][ $platform_name ]['total_orders'] );
 
 						}
 					}
-
 				}
 
 				$response['state']       = $data;
 				$response['funnel_data'] = WFFN_REST_Funnels::get_instance()->get_funnel_data( $request['id'] );
-
 
 				return rest_ensure_response( $response );
 			}
@@ -1786,11 +1890,11 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 
 				$type_args = array(
 					'filter_key' => $filter_key,
-					'group_by'   => " GROUP BY id ",
+					'group_by'   => ' GROUP BY id ',
 				);
 
 				if ( 'order' === $type ) {
-					$type_args['other_filters'] = " AND source != 0 ";
+					$type_args['other_filters'] = ' AND source != 0 ';
 				}
 
 				$get_conversion = $this->get_conversion_data( $request, $type_args );
@@ -1815,17 +1919,20 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			 * @return WP_Error|WP_HTTP_Response|WP_REST_Response
 			 */
 			public function get_conversion_referrer( $request ) {
-				$data      = array( 'conversions' => [], 'total_records' => 0 );
+				$data      = array(
+					'conversions'   => array(),
+					'total_records' => 0,
+				);
 				$funnel_id = ( isset( $request['id'] ) && '' !== $request['id'] ) ? intval( $request['id'] ) : 0;
 
 				$args = array(
-					'funnel_id' => $funnel_id
+					'funnel_id' => $funnel_id,
 				);
 
 				$case_string          = WFFN_Conversion_Data::get_instance()->get_conversion_cases_string();
 				$type_args            = array(
 					'filter_key' => " {$case_string} , COUNT(case when type=2 then 1 else null end)as total_orders, ",
-					'group_by'   => " GROUP BY referrers",
+					'group_by'   => ' GROUP BY referrers',
 					'filters'    => isset( $request['filters'] ) ? $request['filters'] : '',
 				);
 				$data['filters_list'] = $this->filters_list( $args );
@@ -1862,15 +1969,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 
 				$type_args = array(
 					'filter_key' => $filter_key,
-					'group_by'   => " GROUP BY id ",
+					'group_by'   => ' GROUP BY id ',
 				);
 
 				if ( 'order' === $type ) {
-					$type_args['other_filters'] = " AND source != 0 ";
+					$type_args['other_filters'] = ' AND source != 0 ';
 				}
 
-
-				$request = [];
+				$request = array();
 				if ( false === $global ) {
 					$request['id'] = $funnel_id;
 				}
@@ -1880,14 +1986,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 
 
-			public function get_conversion_count( $funnel_id = 0, $global = false, $filters = [] ) {
+			public function get_conversion_count( $funnel_id = 0, $global = false, $filters = array() ) {
 				$case_string = WFFN_Conversion_Data::get_instance()->get_conversion_cases_string();
 				$type_args   = array(
 					'filter_key' => " {$case_string} , COUNT(case when type=2 then 1 else null end)as total_orders, ",
-					'group_by'   => " GROUP BY referrers ",
+					'group_by'   => ' GROUP BY referrers ',
 					'filters'    => $filters,
 				);
-				$request     = [];
+				$request     = array();
 				if ( false === $global ) {
 					$request['id'] = $funnel_id;
 				}
@@ -1896,13 +2002,13 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				return $this->get_conversion_data( $request, $type_args );
 			}
 
-			public function get_conversion_export_data( $request, $filters = [] ) {
+			public function get_conversion_export_data( $request, $filters = array() ) {
 				$case_string = WFFN_Conversion_Data::get_instance()->get_conversion_cases_string();
 
 				$type_args = array(
 					'filter_key' => " {$case_string} , COUNT(case when type=2 then 1 else null end)as total_orders, ",
-					'group_by'   => " GROUP BY referrers",
-					'filters'    => $filters
+					'group_by'   => ' GROUP BY referrers',
+					'filters'    => $filters,
 				);
 
 				return $this->get_conversion_data( $request, $type_args );
@@ -1913,9 +2019,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				global $wpdb;
 				$table     = $wpdb->prefix . 'bwf_conversion_tracking';
 				$funnel_id = ( isset( $request['id'] ) && '' !== $request['id'] ) ? intval( $request['id'] ) : 0;
-				$date_col  = "timestamp";
+				$date_col  = 'timestamp';
 
-				$search_filters = [];
+				$search_filters = array();
 				if ( isset( $request['filters'] ) ) {
 					$search_filters = $this->prepare_filters( $request['filters'] );
 				}
@@ -1923,18 +2029,17 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				/*
 				 * Get total count for pagination
 				 */
-				$where_conditions = [ "1=1" ];
+				$where_conditions = array( '1=1' );
 				if ( ! empty( $search_filters['funnels']['data'] ) ) {
-					$where_conditions[] = "funnel_id IN (" . esc_sql( $search_filters['funnels']['data'] ) . ") ";
+					$where_conditions[] = 'funnel_id IN (' . esc_sql( $search_filters['funnels']['data'] ) . ') ';
 				} elseif ( $funnel_id > 0 ) {
-					$where_conditions[] = "funnel_id =" . esc_sql( $funnel_id );
+					$where_conditions[] = 'funnel_id =' . esc_sql( $funnel_id );
 				} else {
-					$where_conditions[] = "funnel_id != 0";
+					$where_conditions[] = 'funnel_id != 0';
 				}
 				if ( isset( $search_filters['period'] ) ) {
 					$where_conditions[] = "{$date_col} >= '" . esc_sql( $search_filters['period']['data']['after'] ) . "' AND {$date_col} < '" . esc_sql( $search_filters['period']['data']['before'] ) . "'";
 				}
-
 
 				if ( isset( $search_filters['search'] ) && ! empty( $search_filters['search']['data'] ) ) {
 					$referrer = $search_filters['search']['data'];
@@ -1944,8 +2049,8 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$is_other  = false;
 
 					if ( ! in_array( 'all', $referrer, true ) ) {
-						$referrer_where = [];
-						$domain_string  = [];
+						$referrer_where = array();
+						$domain_string  = array();
 
 						foreach ( $referrer as $ref ) {
 
@@ -1984,20 +2089,17 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						}
 						$where_conditions[] = '(' . implode( ' OR ', $referrer_where ) . ')';
 					}
-
-
 				}
-
 
 				$where_query = implode( ' AND ', $where_conditions );
 
 				$refs = WFFN_Common::get_refs( true );
 
-				$new_results = [];
+				$new_results = array();
 				foreach ( $refs as $ref_Key => $ref ) {
 
-					$ref_index                 = strtolower( str_replace( " ", "-", $ref_Key ) );
-					$new_results[ $ref_index ] = [
+					$ref_index                 = strtolower( str_replace( ' ', '-', $ref_Key ) );
+					$new_results[ $ref_index ] = array(
 						'ref_key'           => $ref_index,
 						'referrers'         => $ref_Key,
 						'percentage_orders' => 0,
@@ -2006,11 +2108,10 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						'optins'            => 0,
 						'total_revenue'     => 0,
 						'average_revenue'   => 0,
-					];
+					);
 				}
 				$case_string = WFFN_Conversion_Data::get_instance()->get_conversion_cases_string( true );
 				$sql         = "select {$case_string} ,count(case when type=1 then 1 else null end)as total_optins,count(case when type=2 then 1 else null end)as number_of_order,ROUND( SUM(value), 2 ) as total_revenue, ROUND( SUM(value), 2 ) as total_revenue, COALESCE(ROUND(SUM(value) / NULLIF(COUNT(case when type=2 then 1 else null end), 0), 2), 0) as average_revenue from {$table} WHERE {$where_query} GROUP by referrers";
-
 
 				$results = $wpdb->get_results( $sql, ARRAY_A );//phpcs:ignore
 				if ( empty( $results ) ) {
@@ -2020,10 +2121,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$total_order  = array_sum( wp_list_pluck( $results, 'number_of_order' ) );
 				$total_optins = array_sum( wp_list_pluck( $results, 'total_optins' ) );
 
-
 				foreach ( $results as $result ) {
 					$referrer = empty( $result['referrers'] ) ? 'direct' : $result['referrers'];
-					$referrer = strtolower( str_replace( " ", "-", $referrer ) );
+					$referrer = strtolower( str_replace( ' ', '-', $referrer ) );
 					if ( isset( $new_results[ $referrer ] ) ) {
 						$new_results[ $referrer ]['percentage_orders'] = $this->get_percentage( $total_order, absint( $result['number_of_order'] ) );
 						$new_results[ $referrer ]['percentage_optins'] = $this->get_percentage( $total_optins, absint( $result['total_optins'] ) );
@@ -2035,13 +2135,12 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				}
 
 				return rest_ensure_response( $new_results );
-
 			}
 
 			public function get_conversion_data( $request, $type_args = array() ) {
 				global $wpdb;
 				$table            = $wpdb->prefix . 'bwf_conversion_tracking';
-				$date_col         = "timestamp";
+				$date_col         = 'timestamp';
 				$funnel_id        = ( isset( $request['id'] ) && '' !== $request['id'] ) ? intval( $request['id'] ) : 0;
 				$need_total_count = isset( $request['only_total_count'] );
 				$limit            = isset( $request['limit'] ) ? $request['limit'] : 10;
@@ -2049,13 +2148,12 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$group_by         = isset( $type_args['group_by'] ) ? $type_args['group_by'] : '';
 				$filter_key       = isset( $type_args['filter_key'] ) ? $type_args['filter_key'] : '';
 				$other_filters    = isset( $type_args['other_filters'] ) ? $type_args['other_filters'] : '';
-				$search_filters   = [];
+				$search_filters   = array();
 				if ( ! empty( $type_args['filters'] ) ) {
 					$search_filters = $this->prepare_filters( $type_args['filters'] );
 				}
 
-
-				$where_conditions = [ "1=1" ];
+				$where_conditions = array( '1=1' );
 				$order_by_id      = ' ORDER BY id ASC ';
 				if ( ! empty( $group_by ) ) {
 					$order_by_id = '';
@@ -2065,9 +2163,9 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				 * Get total count for pagination
 				 */
 				if ( ! empty( $search_filters['funnels']['data'] ) ) {
-					$where_conditions[] = "funnel_id IN (" . esc_sql( $search_filters['funnels']['data'] ) . ") ";
+					$where_conditions[] = 'funnel_id IN (' . esc_sql( $search_filters['funnels']['data'] ) . ') ';
 				} elseif ( $funnel_id > 0 ) {
-					$where_conditions[] = "funnel_id =" . esc_sql( $funnel_id );
+					$where_conditions[] = 'funnel_id =' . esc_sql( $funnel_id );
 				}
 				if ( isset( $search_filters['period'] ) ) {
 					$where_conditions[] = "{$date_col} >= '" . esc_sql( $search_filters['period']['data']['after'] ) . "' AND {$date_col} < '" . esc_sql( $search_filters['period']['data']['before'] ) . "'";
@@ -2080,8 +2178,8 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$other_set = $refs_all;
 					$is_other  = false;
 					if ( ! in_array( 'all', $referrer, true ) ) {
-						$referrer_where = [];
-						$domain_string  = [];
+						$referrer_where = array();
+						$domain_string  = array();
 
 						foreach ( $referrer as $ref ) {
 
@@ -2110,9 +2208,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 								$referrer_where[] = "(referrer NOT REGEXP '{$regex}') ";
 
 							}
-
 						}
-
 
 						if ( ! empty( $domain_string ) ) {
 							$domain_string    = implode( '|', WFACP_Common::array_flatten( $domain_string ) );
@@ -2122,16 +2218,13 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						}
 						$where_conditions[] = '(' . implode( ' OR ', $referrer_where ) . ')';
 					}
-
-
 				}
-
 
 				$where_query = implode( ' AND ', $where_conditions );
 				if ( ! empty( $other_filters ) ) {
 					$where_query .= " {$other_filters}";
 				}
-				$count_query = "SELECT " . $filter_key . " ROUND( AVG(value), 2 ) as average_revenue FROM " . $table . " WHERE {$where_query}  " . $group_by;
+				$count_query = 'SELECT ' . $filter_key . ' ROUND( AVG(value), 2 ) as average_revenue FROM ' . $table . " WHERE {$where_query}  " . $group_by;
 
 				$count_result = $wpdb->get_results( $count_query, ARRAY_A ); //phpcs:ignore
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -2141,13 +2234,13 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					}
 				}
 				if ( $need_total_count ) {
-					return [ 'total_count' => count( $count_result ) ];
+					return array( 'total_count' => count( $count_result ) );
 				}
 
 				/**
 				 * Get data query
 				 */
-				$query = "SELECT " . $filter_key . " ROUND( SUM(value), 2 ) as total_revenue, COALESCE(ROUND(SUM(value) / NULLIF(COUNT(case when type=2 then 1 else null end), 0), 2), 0) as average_revenue,count(case when type=1 then 1 else null end)as total_optins, COUNT(`id`) as total_count FROM " . $table . " WHERE {$where_query} {$group_by}  {$order_by_id} ORDER BY total_count DESC LIMIT {$offset}, {$limit}";
+				$query = 'SELECT ' . $filter_key . ' ROUND( SUM(value), 2 ) as total_revenue, COALESCE(ROUND(SUM(value) / NULLIF(COUNT(case when type=2 then 1 else null end), 0), 2), 0) as average_revenue,count(case when type=1 then 1 else null end)as total_optins, COUNT(`id`) as total_count FROM ' . $table . " WHERE {$where_query} {$group_by}  {$order_by_id} ORDER BY total_count DESC LIMIT {$offset}, {$limit}";
 
 				$result = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
@@ -2195,7 +2288,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			 * @return mixed
 			 */
 			public function maybe_add_ab_variants( $steps ) {
-				$temp_steps = [];
+				$temp_steps = array();
 				foreach ( $steps as $step ) {
 					$step_type = $step['type'];
 					$step_id   = $step['id'];
@@ -2204,12 +2297,19 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						continue;
 					}
 					$temp_steps[] = $step;
-					$variant_ids  = $get_step->maybe_get_ab_variants( $step_id );
+					remove_all_filters( 'pre_get_posts' );
+					$variant_ids = $get_step->maybe_get_ab_variants( $step_id );
 					if ( is_array( $variant_ids ) && count( $variant_ids ) > 0 ) {
 						foreach ( $variant_ids as $variant_id ) {
 							$ab_control = get_post_meta( $variant_id, '_bwf_ab_control', true );
 							if ( empty( $ab_control ) ) {
-								$temp_steps[] = array( 'type' => $step_type, 'control' => $step_id, 'is_variant' => 'yes', 'id' => (string) $variant_id, 'substeps' => [] );
+								$temp_steps[] = array(
+									'type'       => $step_type,
+									'control'    => $step_id,
+									'is_variant' => 'yes',
+									'id'         => (string) $variant_id,
+									'substeps'   => array(),
+								);
 							}
 						}
 					}
@@ -2234,20 +2334,20 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			public function filters_list( $args = array() ) {
 				$filters = array(
 					array(
-						"type"  => "sticky",
-						"rules" => array(
+						'type'  => 'sticky',
+						'rules' => array(
 							array(
-								"slug"          => "period",
-								"title"         => __( "Time Period", 'funnel-builder' ),
-								"type"          => "date-range",
-								"op_label"      => __( "Time Period", 'funnel-builder' ),
-								"required"      => array( "rule", "data" ),
-								"readable_text" => "{{value /}}",
+								'slug'          => 'period',
+								'title'         => __( 'Time Period', 'funnel-builder' ),
+								'type'          => 'date-range',
+								'op_label'      => __( 'Time Period', 'funnel-builder' ),
+								'required'      => array( 'rule', 'data' ),
+								'readable_text' => '{{value /}}',
 							),
 							array(
 								'slug'          => 'search',
 								'title'         => __( 'Referrer' ),
-								"type"          => "checklist",
+								'type'          => 'checklist',
 								'multiple'      => true,
 								'options'       => WFFN_Common::get_refs( true, true ),
 								'op_label'      => __( 'Referrer' ),
@@ -2255,8 +2355,8 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 								'readable_text' => '{{rule /}} - {{value /}}',
 								'is_pro'        => true,
 							),
-						)
-					)
+						),
+					),
 				);
 
 				if ( ! isset( $args['funnel_id'] ) || intval( $args['funnel_id'] ) === 0 ) {
@@ -2273,67 +2373,67 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				if ( isset( $args['utm_id'] ) ) {
 					$utm_filter          = array(
 						array(
-							"slug"            => "utm_campaign",
-							"title"           => __( "UTM Campaign" ),
-							"type"            => "search",
-							"op_label"        => __( "UTM Campaign" ),
-							"required"        => array( "data" ),
-							"api"             => "/funnel-utms/?utm_key=utm_campaign&s={{search}}",
-							"readable_text"   => "{{rule /}} - {{value /}}",
-							"default_options" => array()
+							'slug'            => 'utm_campaign',
+							'title'           => __( 'UTM Campaign' ),
+							'type'            => 'search',
+							'op_label'        => __( 'UTM Campaign' ),
+							'required'        => array( 'data' ),
+							'api'             => '/funnel-utms/?utm_key=utm_campaign&s={{search}}',
+							'readable_text'   => '{{rule /}} - {{value /}}',
+							'default_options' => array(),
 						),
 						array(
-							"slug"            => "utm_source",
-							"title"           => __( "UTM Source" ),
-							"type"            => "search",
-							"op_label"        => __( "UTM Source" ),
-							"required"        => array( "data" ),
-							"api"             => "/funnel-utms/?utm_key=utm_source&s={{search}}",
-							"readable_text"   => "{{rule /}} - {{value /}}",
-							"default_options" => array()
+							'slug'            => 'utm_source',
+							'title'           => __( 'UTM Source' ),
+							'type'            => 'search',
+							'op_label'        => __( 'UTM Source' ),
+							'required'        => array( 'data' ),
+							'api'             => '/funnel-utms/?utm_key=utm_source&s={{search}}',
+							'readable_text'   => '{{rule /}} - {{value /}}',
+							'default_options' => array(),
 						),
 						array(
-							"slug"            => "utm_medium",
-							"title"           => __( "UTM Medium" ),
-							"type"            => "search",
-							"op_label"        => __( "UTM Medium" ),
-							"required"        => array( "data" ),
-							"api"             => "/funnel-utms/?utm_key=utm_medium&s={{search}}",
-							"readable_text"   => "{{rule /}} - {{value /}}",
-							"default_options" => array()
+							'slug'            => 'utm_medium',
+							'title'           => __( 'UTM Medium' ),
+							'type'            => 'search',
+							'op_label'        => __( 'UTM Medium' ),
+							'required'        => array( 'data' ),
+							'api'             => '/funnel-utms/?utm_key=utm_medium&s={{search}}',
+							'readable_text'   => '{{rule /}} - {{value /}}',
+							'default_options' => array(),
 						),
 						array(
-							"slug"            => "utm_content",
-							"title"           => __( "UTM Content" ),
-							"type"            => "search",
-							"op_label"        => __( "UTM Content" ),
-							"required"        => array( "data" ),
-							"api"             => "/funnel-utms/?utm_key=utm_content&s={{search}}",
-							"readable_text"   => "{{rule /}} - {{value /}}",
-							"default_options" => array()
+							'slug'            => 'utm_content',
+							'title'           => __( 'UTM Content' ),
+							'type'            => 'search',
+							'op_label'        => __( 'UTM Content' ),
+							'required'        => array( 'data' ),
+							'api'             => '/funnel-utms/?utm_key=utm_content&s={{search}}',
+							'readable_text'   => '{{rule /}} - {{value /}}',
+							'default_options' => array(),
 						),
 						array(
-							"slug"            => "utm_term",
-							"title"           => __( "UTM Term" ),
-							"type"            => "search",
-							"op_label"        => __( "UTM Term" ),
-							"required"        => array( "data" ),
-							"api"             => "/funnel-utms/?utm_key=utm_term&s={{search}}",
-							"readable_text"   => "{{rule /}} - {{value /}}",
-							"default_options" => array()
+							'slug'            => 'utm_term',
+							'title'           => __( 'UTM Term' ),
+							'type'            => 'search',
+							'op_label'        => __( 'UTM Term' ),
+							'required'        => array( 'data' ),
+							'api'             => '/funnel-utms/?utm_key=utm_term&s={{search}}',
+							'readable_text'   => '{{rule /}} - {{value /}}',
+							'default_options' => array(),
 						),
 						array(
-							"slug"          => "conversions",
-							"title"         => __( "Conversions" ),
-							"type"          => "select",
-							"val_label"     => __( "Type" ),
-							"required"      => array( "data" ),
-							"options"       => array(
-								"all"    => __( "All" ),
-								"orders" => __( "Orders" ),
-								"optins" => __( "Optins" )
+							'slug'          => 'conversions',
+							'title'         => __( 'Conversions' ),
+							'type'          => 'select',
+							'val_label'     => __( 'Type' ),
+							'required'      => array( 'data' ),
+							'options'       => array(
+								'all'    => __( 'All' ),
+								'orders' => __( 'Orders' ),
+								'optins' => __( 'Optins' ),
 							),
-							"readable_text" => "{{value /}}"
+							'readable_text' => '{{value /}}',
 						),
 					);
 					$filters[0]['rules'] = array_merge( $filters[0]['rules'], $utm_filter );
@@ -2348,7 +2448,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					$filters = json_decode( $filters, true );
 				}
 
-				$single_data = [];
+				$single_data = array();
 				if ( ! is_array( $filters ) || count( $filters ) === 0 ) {
 					return $single_data;
 				}
@@ -2369,7 +2469,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$response = array(
 					'status'  => true,
 					'msg'     => __( 'success', 'funnel-builder-powerpack' ),
-					'funnels' => $this->get_all_funnels( $request )
+					'funnels' => $this->get_all_funnels( $request ),
 				);
 
 				return rest_ensure_response( $response );
@@ -2388,14 +2488,14 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				$page_no     = isset( $request['page_no'] ) ? intval( $request['page_no'] ) : 1;
 				$funnel_type = isset( $request['funnel_type'] ) ? $request['funnel_type'] : 'sale';
 				$offset      = intval( $limit ) * intval( $page_no - 1 );
-				$limit_str   = ( $page_no > 0 ) ? " LIMIT " . ( $offset ) . " , " . $limit : '';
+				$limit_str   = ( $page_no > 0 ) ? ' LIMIT ' . ( $offset ) . ' , ' . $limit : '';
 
 				global $wpdb;
-				$sales_funnels = [];
-				$lead_funnels  = [];
+				$sales_funnels = array();
+				$lead_funnels  = array();
 				$all_funnels   = array(
 					'data'        => array(),
-					'total_count' => 0
+					'total_count' => 0,
 				);
 
 				/**
@@ -2403,7 +2503,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 				 */
 				if ( 'sale' === $funnel_type ) {
 
-					$funnel_count = "SELECT COUNT( id) AS total_count FROM " . $wpdb->prefix . "bwf_funnels WHERE steps LIKE '%wc_%'";
+					$funnel_count = 'SELECT COUNT( id) AS total_count FROM ' . $wpdb->prefix . "bwf_funnels WHERE steps LIKE '%wc_%'";
 					$funnel_count = $wpdb->get_var( $funnel_count );//phpcs:ignore
 
 					if ( empty( $funnel_count ) || absint( $funnel_count ) === 0 ) {
@@ -2415,8 +2515,8 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 					 */
 					$report_range = ( '' !== $start_date && '' !== $end_date ) ? " AND conv.timestamp >= '" . esc_sql( $start_date ) . "' AND conv.timestamp < '" . esc_sql( $end_date ) . "' " : '';
 
-					$f_query = "SELECT funnel.id as fid, funnel.title as title, SUM( conv.value ) as total, 0 as views, COUNT(conv.ID) as conversion, 0 as conversion_rate
-FROM " . $wpdb->prefix . "bwf_funnels AS funnel LEFT JOIN " . $wpdb->prefix . "bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 " . $report_range . "
+					$f_query = 'SELECT funnel.id as fid, funnel.title as title, SUM( conv.value ) as total, 0 as views, COUNT(conv.ID) as conversion, 0 as conversion_rate
+FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id  AND conv.type = 2 ' . $report_range . "
 WHERE 1=1 AND funnel.steps LIKE '%wc_%' GROUP BY funnel.id ORDER BY SUM( conv.value ) DESC " . $limit_str;
 
 					$get_funnels = $wpdb->get_results( $f_query, ARRAY_A ); //phpcs:ignore
@@ -2441,7 +2541,7 @@ WHERE 1=1 AND funnel.steps LIKE '%wc_%' GROUP BY funnel.id ORDER BY SUM( conv.va
 
 					$all_funnels = array(
 						'data'        => $sales_funnels,
-						'total_count' => $funnel_count
+						'total_count' => $funnel_count,
 					);
 
 				}
@@ -2451,8 +2551,7 @@ WHERE 1=1 AND funnel.steps LIKE '%wc_%' GROUP BY funnel.id ORDER BY SUM( conv.va
 				 */
 				if ( 'lead' === $funnel_type ) {
 
-
-					$lead_count = "SELECT COUNT( id) AS total_count FROM " . $wpdb->prefix . "bwf_funnels WHERE steps NOT LIKE '%wc_%'";
+					$lead_count = 'SELECT COUNT( id) AS total_count FROM ' . $wpdb->prefix . "bwf_funnels WHERE steps NOT LIKE '%wc_%'";
 					$lead_count = $wpdb->get_var( $lead_count );//phpcs:ignore
 
 					if ( empty( $lead_count ) || absint( $lead_count ) === 0 ) {
@@ -2464,8 +2563,8 @@ WHERE 1=1 AND funnel.steps LIKE '%wc_%' GROUP BY funnel.id ORDER BY SUM( conv.va
 					 */
 					$report_range = ( '' !== $start_date && '' !== $end_date ) ? " AND conv.timestamp >= '" . esc_sql( $start_date ) . "' AND conv.timestamp < '" . esc_sql( $end_date ) . "' " : '';
 
-					$l_query = "SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as conversion, 0 as conversion_rate
-FROM " . $wpdb->prefix . "bwf_funnels AS funnel LEFT JOIN " . $wpdb->prefix . "bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 " . $report_range . "
+					$l_query = 'SELECT funnel.id as fid, funnel.title as title, 0 as total, 0 as views, COUNT(conv.id) as conversion, 0 as conversion_rate
+FROM ' . $wpdb->prefix . 'bwf_funnels AS funnel LEFT JOIN ' . $wpdb->prefix . 'bwf_conversion_tracking AS conv ON funnel.id = conv.funnel_id AND conv.type = 1 ' . $report_range . "
 WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(conv.id) DESC " . $limit_str;
 
 					$l_funnels = $wpdb->get_results( $l_query, ARRAY_A ); //phpcs:ignore
@@ -2488,16 +2587,14 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 					 */
 					$lead_funnels = $this->get_funnel_views_data( $lead_funnels, $start_date, $end_date );
 
-
 					$all_funnels = array(
 						'data'        => $lead_funnels,
-						'total_count' => $lead_count
+						'total_count' => $lead_count,
 					);
 
 				}
 
 				return $all_funnels;
-
 			}
 
 			/**
@@ -2525,9 +2622,9 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 			public function get_top_sales_funnels( $total_sale, $ids ) {
 				global $wpdb;
 				$ids          = esc_sql( implode( ',', $ids ) );
-				$report_query = "SELECT report.object_id as fid, report.views AS views, COUNT( DISTINCT stats.ID) as conversion, (CASE WHEN report.views != 0 THEN ROUND(COUNT( DISTINCT stats.ID) * 100/report.views, 2 ) ELSE 0 END) as conversion_rate FROM ( SELECT object_id, type, SUM( no_of_sessions ) AS views FROM " . $wpdb->prefix . "wfco_report_views WHERE type = 7 GROUP by object_id ORDER BY object_id ) AS report
-				JOIN " . $wpdb->prefix . "wfacp_stats AS stats ON report.object_id = stats.fid
-				WHERE report.object_id IN (" . $ids . ") AND report.type = 7 GROUP BY report.object_id ORDER BY FIELD(report.object_id," . $ids . ")";
+				$report_query = 'SELECT report.object_id as fid, report.views AS views, COUNT( DISTINCT stats.ID) as conversion, (CASE WHEN report.views != 0 THEN ROUND(COUNT( DISTINCT stats.ID) * 100/report.views, 2 ) ELSE 0 END) as conversion_rate FROM ( SELECT object_id, type, SUM( no_of_sessions ) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 GROUP by object_id ORDER BY object_id ) AS report
+				JOIN ' . $wpdb->prefix . 'wfacp_stats AS stats ON report.object_id = stats.fid
+				WHERE report.object_id IN (' . $ids . ') AND report.type = 7 GROUP BY report.object_id ORDER BY FIELD(report.object_id,' . $ids . ')';
 
 				$report_data = $wpdb->get_results( $report_query, ARRAY_A ); //phpcs:ignore
 				if ( is_array( $report_data ) && count( $report_data ) > 0 ) {
@@ -2546,7 +2643,6 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 				}
 
 				return $total_sale;
-
 			}
 
 			public function get_funnel_views_data( $funnels, $start_date, $end_date ) {
@@ -2555,7 +2651,7 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 				$ids = array_unique( wp_list_pluck( $funnels, 'fid' ) );
 
 				$report_range = ( '' !== $start_date && '' !== $end_date ) ? " AND date >= '" . $start_date . "' AND date < '" . $end_date . "' " : '';
-				$view_query   = "SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM " . $wpdb->prefix . "wfco_report_views WHERE type = 7 AND object_id IN (" . esc_sql( implode( ',', $ids ) ) . ") " . $report_range . " GROUP BY object_id";
+				$view_query   = 'SELECT object_id as fid , SUM(COALESCE(no_of_sessions, 0)) AS views FROM ' . $wpdb->prefix . 'wfco_report_views WHERE type = 7 AND object_id IN (' . esc_sql( implode( ',', $ids ) ) . ') ' . $report_range . ' GROUP BY object_id';
 				$report_data  = $wpdb->get_results( $view_query, ARRAY_A ); //phpcs:ignore
 				if ( method_exists( 'WFFN_Common', 'maybe_wpdb_error' ) ) {
 					$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
@@ -2564,25 +2660,27 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 							/**
 							 * prepare data for sales funnels and add views and conversion
 							 */
-							$funnels = array_map( function ( $item ) use ( $report_data ) {
-								$search_view = array_search( intval( $item['fid'] ), array_map( 'intval', wp_list_pluck( $report_data, 'fid' ) ), true );
-								if ( false !== $search_view && isset( $report_data[ $search_view ]['views'] ) && absint( $report_data[ $search_view ]['views'] ) > 0 ) {
-									$item['views']           = absint( $report_data[ $search_view ]['views'] );
-									$item['conversion_rate'] = $this->get_percentage( absint( $item['views'] ), $item['conversion'] );
-								} else {
-									$item['views']           = '0';
-									$item['conversion']      = '0';
-									$item['conversion_rate'] = '0';
-								}
+							$funnels = array_map(
+								function ( $item ) use ( $report_data ) {
+									$search_view = array_search( intval( $item['fid'] ), array_map( 'intval', wp_list_pluck( $report_data, 'fid' ) ), true );
+									if ( false !== $search_view && isset( $report_data[ $search_view ]['views'] ) && absint( $report_data[ $search_view ]['views'] ) > 0 ) {
+											$item['views']           = absint( $report_data[ $search_view ]['views'] );
+											$item['conversion_rate'] = $this->get_percentage( absint( $item['views'] ), $item['conversion'] );
+									} else {
+										$item['views']           = '0';
+										$item['conversion']      = '0';
+										$item['conversion_rate'] = '0';
+									}
 
-								return $item;
-							}, $funnels );
+									return $item;
+								},
+								$funnels
+							);
 						}
 					}
 				}
 
 				return $funnels;
-
 			}
 
 			/**
@@ -2599,17 +2697,27 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 				$utm_id = ! empty( $request['id'] ) ? (int) $request['id'] : 0;
 
 				// Define required Filters
-				$required_filters = [ 'period', 'utm_campaign', 'utm_source', 'utm_medium', 'utm_content', 'utm_term', 'funnels', 'conversions' ];
-				$all_filters      = $this->filters_list( [ 'utm_id' => $utm_id, 'funnel_id' => ( isset( $request['funnel_id'] ) ) ? $request['funnel_id'] : 0 ] );
-				$filtered_rules   = array_filter( $all_filters[0]['rules'] ?? [], fn( $rule ) => in_array( $rule['slug'], $required_filters, true ) );
+				$required_filters = array( 'period', 'utm_campaign', 'utm_source', 'utm_medium', 'utm_content', 'utm_term', 'funnels', 'conversions' );
+				$all_filters      = $this->filters_list(
+					array(
+						'utm_id'    => $utm_id,
+						'funnel_id' => ( isset( $request['funnel_id'] ) ) ? $request['funnel_id'] : 0,
+					)
+				);
+				$filtered_rules   = array_filter( $all_filters[0]['rules'] ?? array(), fn( $rule ) => in_array( $rule['slug'], $required_filters, true ) );
 
 				usort( $filtered_rules, fn( $a, $b ) => array_search( $a['slug'], $required_filters ) <=> array_search( $b['slug'], $required_filters ) );
 
-				$response = [
-					'filters_list' => [ [ 'type' => 'sticky', 'rules' => array_values( $filtered_rules ) ] ],
-					'records'      => [],
-					'total_count'  => 0
-				];
+				$response = array(
+					'filters_list' => array(
+						array(
+							'type'  => 'sticky',
+							'rules' => array_values( $filtered_rules ),
+						),
+					),
+					'records'      => array(),
+					'total_count'  => 0,
+				);
 
 				$utm_campaigns = apply_filters( 'wffn_utm_campaign_campaigns', $request );
 				if ( isset( $utm_campaigns['records'], $utm_campaigns['total_count'] ) ) {
@@ -2624,7 +2732,6 @@ WHERE 1=1 AND funnel.steps NOT LIKE '%wc_%' GROUP BY funnel.id ORDER BY COUNT(co
 
 				return rest_ensure_response( $response );
 			}
-
 		}
 
 		WFFN_REST_API_EndPoint::get_instance();

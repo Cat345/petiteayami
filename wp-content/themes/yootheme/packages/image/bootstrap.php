@@ -22,6 +22,11 @@ return [
             Listener\CreateImageGif::class => 'handle',
             Listener\CreateImageStockPhoto::class => 'handle',
             Listener\CreateImageYouTube::class => 'handle',
+            Listener\CreateImageVimeo::class => 'handle',
+        ],
+
+        'image.resolve' => [
+            Listener\CreateImageVimeo::class => 'resolve',
         ],
 
         'html.image' => [
@@ -47,6 +52,6 @@ return [
             Listener\LoadBackgroundImageStyle::class => 'handle',
         ],
 
-        'url.resolve' => [Listener\LoadImageUrl::class => 'resolve'],
+        'url.resolve' => [Listener\LoadImageUrl::class => ['resolve', 10]],
     ],
 ];

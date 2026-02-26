@@ -691,9 +691,9 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 				'default'      => $default,
 			];
 
-		if ( ! empty( $description ) ) {
-			$args['description'] = $description;
-		}
+			if ( ! empty( $description ) ) {
+				$args['description'] = $description;
+			}
 
 			if ( ! empty( $device_args ) ) {
 				$args['device_args'] = $device_args;
@@ -906,11 +906,11 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			$this->add_switcher_without_responsive( $field_key . '_enable_saving_price_message', __( 'Total Saving Message', 'woofunnels-aero-checkout' ), '', '', 'no', 'yes', [], 'no', 'no', 'wfacp_elementor_device_hide', [] );
 			$this->add_textarea( $field_key . '_saving_price_message', __( 'Message', 'woofunnels-aero-checkout' ), __( 'You saved {{saving_amount}} ({{saving_percentage}}) on this order', 'woofunnels-aero-checkout' ), [ $field_key . '_enable_saving_price_message' => 'yes' ] );
 
-			$this->ajax_session_settings[]= $field_key . '_enable_strike_through_price';
-			$this->ajax_session_settings[]= $field_key . '_enable_low_stock_trigger';
-			$this->ajax_session_settings[]= $field_key . '_low_stock_message';
-			$this->ajax_session_settings[]= $field_key . '_enable_saving_price_message';
-			$this->ajax_session_settings[]= $field_key . '_saving_price_message';
+			$this->ajax_session_settings[] = $field_key . '_enable_strike_through_price';
+			$this->ajax_session_settings[] = $field_key . '_enable_low_stock_trigger';
+			$this->ajax_session_settings[] = $field_key . '_low_stock_message';
+			$this->ajax_session_settings[] = $field_key . '_enable_saving_price_message';
+			$this->ajax_session_settings[] = $field_key . '_saving_price_message';
 		}
 
 		public function price_strike_through_style_settings( $field_key, $selector = '' ) {
@@ -931,7 +931,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 				$selector . ' .product-total del span.woocommerce-Price-currencySymbol',
 			];
 
-			$fields_options      = [
+			$fields_options = [
 				'font_weight' => [
 					'default' => '500',
 				],
@@ -968,7 +968,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			];
 			$this->add_heading( __( 'Low Stock Message', 'woofunnels-aero-checkout' ) );
 			$this->add_typography( $field_key . '_low_stock_message_typo', implode( ',', $mini_cart_low_stock_message ), $fields_options );
-			$this->add_color( $field_key . '_low_stock_message_color', $mini_cart_low_stock_message ,'#e15334');
+			$this->add_color( $field_key . '_low_stock_message_color', $mini_cart_low_stock_message, '#e15334' );
 
 
 			/**

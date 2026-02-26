@@ -706,9 +706,10 @@ if ( ! class_exists( 'WFOCU_Admin' ) ) {
 							'jump_to_offer'                => array(
 								'label' => __( 'Dynamic Offer Path', 'woofunnels-upstroke-one-click-upsell' ),
 							),
-							'jump_on_accepted'             => array(
-								'label' => __( 'On acceptance, redirect buyers to', 'woofunnels-upstroke-one-click-upsell' ),
+							'allow_one_time_purchase'             => array(
+								'label' => __( 'Allow one time purchase', 'woofunnels-upstroke-one-click-upsell' ),
 							),
+
 							'jump_on_rejected'             => array(
 								'label' => __( 'On rejection, redirect buyers to', 'woofunnels-upstroke-one-click-upsell' ),
 							),

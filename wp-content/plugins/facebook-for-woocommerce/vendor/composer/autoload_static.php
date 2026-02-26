@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb893d11fc146c4af223557f99ee67187
+class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
 {
     public static $prefixLengthsPsr4 = array (
         'W' =>
@@ -14,7 +14,6 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         ),
         'F' =>
         array (
-            'Firebase\\JWT\\' => 13,
             'FacebookAds\\' => 12,
         ),
         'C' =>
@@ -40,10 +39,6 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'WooCommerce\\Facebook\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes',
-        ),
-        'Firebase\\JWT\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'FacebookAds\\' =>
         array (
@@ -182,14 +177,6 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'Composer\\Installers\\ZikulaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZikulaInstaller.php',
         'FacebookAds\\ETLDPlus1Resolver' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/ETLDPlus1Resolver.php',
         'FacebookAds\\ParamBuilder' => __DIR__ . '/..' . '/facebook/capi-param-builder-php/php/capi-param-builder/src/ParamBuilder.php',
-        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
-        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
-        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
-        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
-        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
-        'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
-        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
-        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'WooCommerce\\Facebook\\AJAX' => __DIR__ . '/../..' . '/includes/AJAX.php',
         'WooCommerce\\Facebook\\API' => __DIR__ . '/../..' . '/includes/API.php',
         'WooCommerce\\Facebook\\API\\Catalog\\Request' => __DIR__ . '/../..' . '/includes/API/Catalog/Request.php',
@@ -296,6 +283,7 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'WooCommerce\\Facebook\\Admin\\Tasks\\Setup' => __DIR__ . '/../..' . '/includes/Admin/Tasks/Setup.php',
         'WooCommerce\\Facebook\\Admin\\WhatsApp_Integration_Settings' => __DIR__ . '/../..' . '/includes/Admin/WhatsApp_Integration_Settings.php',
         'WooCommerce\\Facebook\\Checkout' => __DIR__ . '/../..' . '/includes/Checkout.php',
+        'WooCommerce\\Facebook\\CollectionPage' => __DIR__ . '/../..' . '/includes/CollectionPage.php',
         'WooCommerce\\Facebook\\Commerce' => __DIR__ . '/../..' . '/includes/Commerce.php',
         'WooCommerce\\Facebook\\Debug\\ProfilingLogger' => __DIR__ . '/../..' . '/includes/Debug/ProfilingLogger.php',
         'WooCommerce\\Facebook\\Debug\\ProfilingLoggerProcess' => __DIR__ . '/../..' . '/includes/Debug/ProfilingLoggerProcess.php',
@@ -304,6 +292,9 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'WooCommerce\\Facebook\\Events\\Normalizer' => __DIR__ . '/../..' . '/includes/Events/Normalizer.php',
         'WooCommerce\\Facebook\\ExternalVersionUpdate\\Update' => __DIR__ . '/../..' . '/includes/ExternalVersionUpdate/Update.php',
         'WooCommerce\\Facebook\\FBSignedData\\FBPublicKey' => __DIR__ . '/../..' . '/includes/FBSignedData/FBPublicKey.php',
+        'WooCommerce\\Facebook\\FBSignedData\\JWTCodec' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTCodec.php',
+        'WooCommerce\\Facebook\\FBSignedData\\JWTExpiredException' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTExpiredException.php',
+        'WooCommerce\\Facebook\\FBSignedData\\JWTSignatureInvalidException' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTSignatureInvalidException.php',
         'WooCommerce\\Facebook\\FBSignedData\\PublicKeyStorageHelper' => __DIR__ . '/../..' . '/includes/FBSignedData/PublicKeyStorageHelper.php',
         'WooCommerce\\Facebook\\Feed\\AbstractFeed' => __DIR__ . '/../..' . '/includes/Feed/AbstractFeed.php',
         'WooCommerce\\Facebook\\Feed\\AbstractFeedFileWriter' => __DIR__ . '/../..' . '/includes/Feed/AbstractFeedFileWriter.php',
@@ -357,7 +348,13 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'WooCommerce\\Facebook\\Handlers\\WhatsAppExtension' => __DIR__ . '/../..' . '/includes/Handlers/WhatsAppExtension.php',
         'WooCommerce\\Facebook\\Integrations\\Abstract_Localization_Integration' => __DIR__ . '/../..' . '/includes/Integrations/Abstract_Localization_Integration.php',
         'WooCommerce\\Facebook\\Integrations\\Bookings' => __DIR__ . '/../..' . '/includes/Integrations/Bookings.php',
+        'WooCommerce\\Facebook\\Integrations\\CostOfGoods\\AbstractCogsProvider' => __DIR__ . '/../..' . '/includes/Integrations/CostOfGoods/AbstractCogsProvider.php',
+        'WooCommerce\\Facebook\\Integrations\\CostOfGoods\\CostOfGoods' => __DIR__ . '/../..' . '/includes/Integrations/CostOfGoods/CostOfGoods.php',
+        'WooCommerce\\Facebook\\Integrations\\CostOfGoods\\IncorrectCogsInputStructure' => __DIR__ . '/../..' . '/includes/Integrations/CostOfGoods/IncorrectCogsInputStructure.php',
+        'WooCommerce\\Facebook\\Integrations\\CostOfGoods\\WPFactoryCogsProvider' => __DIR__ . '/../..' . '/includes/Integrations/CostOfGoods/WPFactoryCogsProvider.php',
+        'WooCommerce\\Facebook\\Integrations\\CostOfGoods\\WooCCogsProvider' => __DIR__ . '/../..' . '/includes/Integrations/CostOfGoods/WooCCogsProvider.php',
         'WooCommerce\\Facebook\\Integrations\\Facebook_Fields_Translation_Trait' => __DIR__ . '/../..' . '/includes/Integrations/Facebook_Fields_Translation_Trait.php',
+        'WooCommerce\\Facebook\\Integrations\\IntegrationIsNotAvailableException' => __DIR__ . '/../..' . '/includes/Integrations/IntegrationIsNotAvailableException.php',
         'WooCommerce\\Facebook\\Integrations\\IntegrationRegistry' => __DIR__ . '/../..' . '/includes/Integrations/IntegrationRegistry.php',
         'WooCommerce\\Facebook\\Integrations\\Polylang' => __DIR__ . '/../..' . '/includes/Integrations/Polylang.php',
         'WooCommerce\\Facebook\\Integrations\\WPML' => __DIR__ . '/../..' . '/includes/Integrations/WPML.php',
@@ -393,14 +390,16 @@ class ComposerStaticInitb893d11fc146c4af223557f99ee67187
         'WooCommerce\\Facebook\\Utilities\\DebugTools' => __DIR__ . '/../..' . '/includes/Utilities/DebugTools.php',
         'WooCommerce\\Facebook\\Utilities\\Heartbeat' => __DIR__ . '/../..' . '/includes/Utilities/Heartbeat.php',
         'WooCommerce\\Facebook\\Utilities\\Tracker' => __DIR__ . '/../..' . '/includes/Utilities/Tracker.php',
+        'WooCommerce\\Facebook\\WPMLInjector' => __DIR__ . '/../..' . '/includes/WPMLInjector.php',
+        'WooCommerce\\Facebook\\WPMLLanguageStatus' => __DIR__ . '/../..' . '/includes/WPMLLanguageStatus.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb893d11fc146c4af223557f99ee67187::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb893d11fc146c4af223557f99ee67187::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitb893d11fc146c4af223557f99ee67187::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -179,7 +179,8 @@ class Attributes implements Stringable
             if ($value === '' || $value === true) {
                 $attributes[] = $name;
             } elseif (isset($value) && $value !== false) {
-                $attributes[] = $name . '="' . Html::esc($value) . '"';
+                $attributes[] =
+                    $name . '="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false) . '"';
             }
         }
 

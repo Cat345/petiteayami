@@ -61,11 +61,13 @@ class LoadThemeI18n
                     'yootheme',
                 ),
                 'text_google_maps' => __('Display external content from Google Maps.', 'yootheme'),
+                'text_vimeo' => __('Display external content from Vimeo.', 'yootheme'),
                 'text_youtube' => __('Display external content from YouTube.', 'yootheme'),
                 'service_google_advertising' => __('Google Advertising', 'yootheme'),
                 'service_google_analytics' => __('Google Analytics', 'yootheme'),
                 'service_google_maps' => __('Google Maps', 'yootheme'),
                 'service_openstreetmap' => __('OpenStreetMap', 'yootheme'),
+                'service_vimeo' => __('Vimeo', 'yootheme'),
                 'service_youtube' => __('YouTube', 'yootheme'),
             ],
         ]);

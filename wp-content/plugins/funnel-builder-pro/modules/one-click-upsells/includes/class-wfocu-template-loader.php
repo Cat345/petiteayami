@@ -347,6 +347,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				$images                     = array();
 				$all_common_attribute_slugs = array();
 				$variation_objects          = array();
+
 				if ( isset( $offer_data->variations ) && isset( $offer_data->variations->{$hash} ) && is_array( $offer_data->variations->{$hash} ) ) {
 					add_filter( 'woocommerce_available_variation', array( $this, 'add_variation_object_in_custom_variation_key' ), 10, 3 );
 
@@ -398,7 +399,8 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 							$variation['dimensions_html'],
 							$variation['weight_html'],
 						) ) );
-						$available_variations[ $variation['variation_id'] ]      = $attributes_json;
+
+						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product ,$offer_data->fields->{$hash});
 						$available_variation_stock[ $variation['variation_id'] ] = $current_stock;
 						$weight_html[ $variation['variation_id'] ]               = $variation['weight_html'];
 						$images[ $variation['variation_id'] ]                    = $variation['image_id'];
@@ -475,7 +477,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 							$variation['dimensions_html'],
 							$variation['weight_html'],
 						) ) );
-						$available_variations[ $variation['variation_id'] ]      = $attributes_json;
+						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product ,$offer_data->fields->{$hash});
 						$available_variation_stock[ $variation['variation_id'] ] = $current_stock;
 						$weight_html[ $variation['variation_id'] ]               = $variation['weight_html'];
 						$images[ $variation['variation_id'] ]                    = $variation['image_id'];

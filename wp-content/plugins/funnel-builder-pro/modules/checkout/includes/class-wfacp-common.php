@@ -2911,12 +2911,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$_price     = $pro->get_price();
 			$temp_price = floatval( $_price );
 
-
-            if(isset($product_data['quantity'] )){
-                $qty=$product_data['quantity'];
-            }else{
-	            $qty=$cart_item['quantity'];
-            }
+			if ( isset( $product_data['quantity'] ) ) {
+				$qty = $product_data['quantity'];
+			} else {
+				$qty = $cart_item['quantity'];
+			}
 
 
 			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? absint( $qty ) : 1;
@@ -2928,11 +2927,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$wfacp_product_switcher_quantity = $cart_item['quantity'];
 			} else {
 
-                if(isset($product_data['org_quantity'])){
-	                $wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
-                }else{
-	                $wfacp_product_switcher_quantity = $qty;
-                }
+				if ( isset( $product_data['org_quantity'] ) ) {
+					$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
+				} else {
+					$wfacp_product_switcher_quantity = $qty;
+				}
 
 
 			}
@@ -3258,7 +3257,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 
 			// Bail if this query doesn't match our very specific rewrite rule.
-			if ( ! isset( $query->query['page'] )  ) {
+			if ( ! isset( $query->query['page'] ) ) {
 				return;
 			}
 
@@ -3268,7 +3267,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			// If query does not match (not exactly 2 parameters or 3 with 'lang'), return early.
-			if ( !( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
+			if ( ! ( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
 				return;
 			}
 			// Add landing page step post type to existing post type array.
@@ -3439,7 +3438,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * @return bool
 		 */
 		public static function is_frontend_request() {
-			return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' ) && function_exists('WC') && ! WC()->is_rest_api_request();
+			return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' ) && function_exists( 'WC' ) && ! WC()->is_rest_api_request();
 		}
 
 
@@ -3692,104 +3691,104 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_translation_field_aero_checkout_domain() {
 			$translation_list = [
 				'All transactions are secure and encrypted. Credit card information is never stored on our servers.' => __( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'woofunnels-aero-checkout' ),
-				'All transactions are secured and encrypted.' => __( 'All transactions are secured and encrypted.', 'woofunnels-aero-checkout' ),
-				'All transactions are secured and encrypted' => __( 'All transactions are secured and encrypted', 'woofunnels-aero-checkout' ),
-				'All transactions are secure and encrypted.' => __( 'All transactions are secure and encrypted.', 'woofunnels-aero-checkout' ),
-				'We Respect Your Privacy & Information' => __( 'We Respect Your Privacy & Information', 'woofunnels-aero-checkout' ),
-				'GET YOUR FREE COPY OF AMAZING BOOK' => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
-				'Shipped in less than 3 days!' => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
-				'WHAT\'S INCLUDED IN YOUR PLAN?' => __( 'WHAT\'S INCLUDED IN YOUR PLAN?', 'woofunnels-aero-checkout' ),
-				"WHAT'S INCLUDED IN YOUR PLAN?" => __( "WHAT'S INCLUDED IN YOUR PLAN?", 'woofunnels-aero-checkout' ),
-				'* 100% Secure & Safe Payments *' => __( '* 100% Secure & Safe Payments *', 'woofunnels-aero-checkout' ),
-				'* 100% Secure &amp; Safe Payments *' => __( '* 100% Secure &amp; Safe Payments *', 'woofunnels-aero-checkout' ),
-				'Use a different shipping address' => __( 'Use a different shipping address', 'woofunnels-aero-checkout' ),
-				'Use a different Billing address' => __( 'Use a different Billing address', 'woofunnels-aero-checkout' ),
-				'Apartment, suite, unit, etc.' => __( 'Apartment, suite, unit, etc.', 'woofunnels-aero-checkout' ),
-				'Proceed To Final Step' => __( 'Proceed To Final Step', 'woofunnels-aero-checkout' ),
-				'Proceed To Next Step' => __( 'Proceed To Next Step', 'woofunnels-aero-checkout' ),
-				'Enter Customer Information' => __( 'Enter Customer Information', 'woofunnels-aero-checkout' ),
-				'Complete Your Order Now' => __( 'Complete Your Order Now', 'woofunnels-aero-checkout' ),
-				'Select Shipping Method' => __( 'Select Shipping Method', 'woofunnels-aero-checkout' ),
-				'Review Order Summary' => __( 'Review Order Summary', 'woofunnels-aero-checkout' ),
-				'Your Payment Information' => __( 'Your Payment Information', 'woofunnels-aero-checkout' ),
-				'Your payment information' => __( 'Your payment information', 'woofunnels-aero-checkout' ),
-				'Your Shipping Address' => __( 'Your Shipping Address', 'woofunnels-aero-checkout' ),
-				'Proceed to Final Step' => __( 'Proceed to Final Step', 'woofunnels-aero-checkout' ),
-				'PROCEED TO FINAL STEP' => __( 'PROCEED TO FINAL STEP', 'woofunnels-aero-checkout' ),
-				'Proceed to Next Step' => __( 'Proceed to Next Step', 'woofunnels-aero-checkout' ),
-				'PROCEED TO NEXT STEP' => __( 'PROCEED TO NEXT STEP', 'woofunnels-aero-checkout' ),
-				'Contact  Information' => __( 'Contact  Information', 'woofunnels-aero-checkout' ),
-				'CONTINUE TO SHIPPING' => __( 'CONTINUE TO SHIPPING', 'woofunnels-aero-checkout' ),
-				'CONTINUE TO PAYMENT' => __( 'CONTINUE TO PAYMENT', 'woofunnels-aero-checkout' ),
-				'Return to Information' => __( 'Return to Information', 'woofunnels-aero-checkout' ),
-				'Return to Step 1' => __( 'Return to Step 1', 'woofunnels-aero-checkout' ),
-				'Return to Step 2' => __( 'Return to Step 2', 'woofunnels-aero-checkout' ),
-				'Return to shipping' => __( 'Return to Shipping', 'woofunnels-aero-checkout' ),
-				'Return to Shipping' => __( 'Return to Shipping', 'woofunnels-aero-checkout' ),
-				'Return to information' => __( 'Return to information', 'woofunnels-aero-checkout' ),
-				'Return to Cart' => __( '« Return to Cart', 'woofunnels-aero-checkout' ),
-				'Proceed to shipping' => __( 'Proceed to shipping', 'woofunnels-aero-checkout' ),
-				'Proceed to Shipping' => __( 'Proceed to Shipping', 'woofunnels-aero-checkout' ),
-				'PROCEED TO PAYMENT' => __( 'PROCEED TO PAYMENT', 'woofunnels-aero-checkout' ),
-				'Proceed to payment' => __( 'Proceed to payment', 'woofunnels-aero-checkout' ),
-				'Proceed to Payment' => __( 'Proceed to Payment', 'woofunnels-aero-checkout' ),
-				'Payment Information' => __( 'Payment Information', 'woofunnels-aero-checkout' ),
-				'Shipping Information' => __( 'Shipping Information', 'woofunnels-aero-checkout' ),
-				'Select Payment Method' => __( 'Select Payment Method', 'woofunnels-aero-checkout' ),
-				'Customer Information' => __( 'Customer Information', 'woofunnels-aero-checkout' ),
-				'Contact Information' => __( 'Contact Information', 'woofunnels-aero-checkout' ),
-				'Enter your details' => __( 'Enter your details', 'woofunnels-aero-checkout' ),
-				'Enter basic details' => __( 'Enter basic details', 'woofunnels-aero-checkout' ),
-				'Your Billing Address' => __( 'Use a different shipping address', 'woofunnels-aero-checkout' ),
-				'Place Your Order Now' => __( 'Place Your Order Now', 'woofunnels-aero-checkout' ),
-				'Show Order Summary' => __( 'Show Order Summary', 'woofunnels-aero-checkout' ),
-				'Hide Order Summary' => __( 'Hide Order Summary', 'woofunnels-aero-checkout' ),
-				'Confirm Your Order' => __( 'Confirm Your Order', 'woofunnels-aero-checkout' ),
-				'Confirm your order' => __( 'Confirm your order', 'woofunnels-aero-checkout' ),
-				'Choose Your Product' => __( 'Choose Your Product', 'woofunnels-aero-checkout' ),
-				'Select Your Plan' => __( 'Select Your Plan', 'woofunnels-aero-checkout' ),
-				'Select your product' => __( 'Select your product', 'woofunnels-aero-checkout' ),
-				'Date Of Birth' => __( 'Date Of Birth', 'woofunnels-aero-checkout' ),
-				'Where to ship it?' => __( 'Where to ship it?', 'woofunnels-aero-checkout' ),
-				'COMPLETE PURCHASE' => __( 'COMPLETE PURCHASE', 'woofunnels-aero-checkout' ),
-				'Payment information' => __( 'Payment information', 'woofunnels-aero-checkout' ),
-				'PLACE ORDER NOW' => __( 'PLACE ORDER NOW', 'woofunnels-aero-checkout' ),
-				'Place Order Now' => __( 'Place Order Now', 'woofunnels-aero-checkout' ),
-				'Shipping Address' => __( 'Shipping Address', 'woofunnels-aero-checkout' ),
-				'Your Information' => __( 'Your Information', 'woofunnels-aero-checkout' ),
-				'Payment Methods' => __( 'Payment Methods', 'woofunnels-aero-checkout' ),
-				'Payment Method' => __( 'Payment Method', 'woofunnels-aero-checkout' ),
-				'Shipping Phone' => __( 'Shipping Phone', 'woofunnels-aero-checkout' ),
-				'Billing Details' => __( 'Billing Details', 'woofunnels-aero-checkout' ),
-				'Your Products' => __( 'Your Products', 'woofunnels-aero-checkout' ),
-				'Order Summary' => __( 'Order Summary', 'woofunnels-aero-checkout' ),
-				'NEXT STEP →' => __( 'NEXT STEP →', 'woofunnels-aero-checkout' ),
-				'Next Step' => __( 'Next Step', 'woofunnels-aero-checkout' ),
-				'Return to' => __( 'Return to', 'woofunnels-aero-checkout' ),
-				'Best Value' => __( 'Best Value', 'woofunnels-aero-checkout' ),
-				'Your Plans' => __( 'Your Plans', 'woofunnels-aero-checkout' ),
-				'Your Cart' => __( 'Your Cart', 'woofunnels-aero-checkout' ),
-				'Place order' => __( 'Place order', 'woofunnels-aero-checkout' ),
-				'Place Order' => __( 'Place Order', 'woofunnels-aero-checkout' ),
-				'place order' => __( 'place order', 'woofunnels-aero-checkout' ),
-				'PLACE ORDER' => __( 'PLACE ORDER', 'woofunnels-aero-checkout' ),
-				'NEXT STEP' => __( 'NEXT STEP', 'woofunnels-aero-checkout' ),
-				'INFORMATION' => __( 'INFORMATION', 'woofunnels-aero-checkout' ),
-				'Information' => __( 'Information', 'woofunnels-aero-checkout' ),
-				'Payment method' => __( 'Payment method', 'woofunnels-aero-checkout' ),
-				'PRODUCTS' => __( 'PRODUCTS', 'woofunnels-aero-checkout' ),
-				'Products' => __( 'Products', 'woofunnels-aero-checkout' ),
-				'SHIPPING' => __( 'SHIPPING', 'woofunnels-aero-checkout' ),
-				'Payment' => __( 'Payment', 'woofunnels-aero-checkout' ),
-				'PAYMENT' => __( 'PAYMENT', 'woofunnels-aero-checkout' ),
-				'Country' => __( 'Country', 'woofunnels-aero-checkout' ),
-				'Method' => __( 'Method', 'woofunnels-aero-checkout' ),
-				'Hide' => __( 'Hide', 'woofunnels-aero-checkout' ),
-				'Show' => __( 'Show', 'woofunnels-aero-checkout' ),
-				'Apply' => __( 'Apply', 'woofunnels-aero-checkout' ),
-				'Shipping' => __( 'Shipping', 'woofunnels-aero-checkout' ),
-				'Plan' => __( 'Plan', 'woofunnels-aero-checkout' ),
-				'PLAN' => __( 'PLAN', 'woofunnels-aero-checkout' ),
+				'All transactions are secured and encrypted.'                                                        => __( 'All transactions are secured and encrypted.', 'woofunnels-aero-checkout' ),
+				'All transactions are secured and encrypted'                                                         => __( 'All transactions are secured and encrypted', 'woofunnels-aero-checkout' ),
+				'All transactions are secure and encrypted.'                                                         => __( 'All transactions are secure and encrypted.', 'woofunnels-aero-checkout' ),
+				'We Respect Your Privacy & Information'                                                              => __( 'We Respect Your Privacy & Information', 'woofunnels-aero-checkout' ),
+				'GET YOUR FREE COPY OF AMAZING BOOK'                                                                 => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
+				'Shipped in less than 3 days!'                                                                       => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
+				'WHAT\'S INCLUDED IN YOUR PLAN?'                                                                     => __( 'WHAT\'S INCLUDED IN YOUR PLAN?', 'woofunnels-aero-checkout' ),
+				"WHAT'S INCLUDED IN YOUR PLAN?"                                                                      => __( "WHAT'S INCLUDED IN YOUR PLAN?", 'woofunnels-aero-checkout' ),
+				'* 100% Secure & Safe Payments *'                                                                    => __( '* 100% Secure & Safe Payments *', 'woofunnels-aero-checkout' ),
+				'* 100% Secure &amp; Safe Payments *'                                                                => __( '* 100% Secure &amp; Safe Payments *', 'woofunnels-aero-checkout' ),
+				'Use a different shipping address'                                                                   => __( 'Use a different shipping address', 'woofunnels-aero-checkout' ),
+				'Use a different Billing address'                                                                    => __( 'Use a different Billing address', 'woofunnels-aero-checkout' ),
+				'Apartment, suite, unit, etc.'                                                                       => __( 'Apartment, suite, unit, etc.', 'woofunnels-aero-checkout' ),
+				'Proceed To Final Step'                                                                              => __( 'Proceed To Final Step', 'woofunnels-aero-checkout' ),
+				'Proceed To Next Step'                                                                               => __( 'Proceed To Next Step', 'woofunnels-aero-checkout' ),
+				'Enter Customer Information'                                                                         => __( 'Enter Customer Information', 'woofunnels-aero-checkout' ),
+				'Complete Your Order Now'                                                                            => __( 'Complete Your Order Now', 'woofunnels-aero-checkout' ),
+				'Select Shipping Method'                                                                             => __( 'Select Shipping Method', 'woofunnels-aero-checkout' ),
+				'Review Order Summary'                                                                               => __( 'Review Order Summary', 'woofunnels-aero-checkout' ),
+				'Your Payment Information'                                                                           => __( 'Your Payment Information', 'woofunnels-aero-checkout' ),
+				'Your payment information'                                                                           => __( 'Your payment information', 'woofunnels-aero-checkout' ),
+				'Your Shipping Address'                                                                              => __( 'Your Shipping Address', 'woofunnels-aero-checkout' ),
+				'Proceed to Final Step'                                                                              => __( 'Proceed to Final Step', 'woofunnels-aero-checkout' ),
+				'PROCEED TO FINAL STEP'                                                                              => __( 'PROCEED TO FINAL STEP', 'woofunnels-aero-checkout' ),
+				'Proceed to Next Step'                                                                               => __( 'Proceed to Next Step', 'woofunnels-aero-checkout' ),
+				'PROCEED TO NEXT STEP'                                                                               => __( 'PROCEED TO NEXT STEP', 'woofunnels-aero-checkout' ),
+				'Contact  Information'                                                                               => __( 'Contact  Information', 'woofunnels-aero-checkout' ),
+				'CONTINUE TO SHIPPING'                                                                               => __( 'CONTINUE TO SHIPPING', 'woofunnels-aero-checkout' ),
+				'CONTINUE TO PAYMENT'                                                                                => __( 'CONTINUE TO PAYMENT', 'woofunnels-aero-checkout' ),
+				'Return to Information'                                                                              => __( 'Return to Information', 'woofunnels-aero-checkout' ),
+				'Return to Step 1'                                                                                   => __( 'Return to Step 1', 'woofunnels-aero-checkout' ),
+				'Return to Step 2'                                                                                   => __( 'Return to Step 2', 'woofunnels-aero-checkout' ),
+				'Return to shipping'                                                                                 => __( 'Return to Shipping', 'woofunnels-aero-checkout' ),
+				'Return to Shipping'                                                                                 => __( 'Return to Shipping', 'woofunnels-aero-checkout' ),
+				'Return to information'                                                                              => __( 'Return to information', 'woofunnels-aero-checkout' ),
+				'Return to Cart'                                                                                     => __( '« Return to Cart', 'woofunnels-aero-checkout' ),
+				'Proceed to shipping'                                                                                => __( 'Proceed to shipping', 'woofunnels-aero-checkout' ),
+				'Proceed to Shipping'                                                                                => __( 'Proceed to Shipping', 'woofunnels-aero-checkout' ),
+				'PROCEED TO PAYMENT'                                                                                 => __( 'PROCEED TO PAYMENT', 'woofunnels-aero-checkout' ),
+				'Proceed to payment'                                                                                 => __( 'Proceed to payment', 'woofunnels-aero-checkout' ),
+				'Proceed to Payment'                                                                                 => __( 'Proceed to Payment', 'woofunnels-aero-checkout' ),
+				'Payment Information'                                                                                => __( 'Payment Information', 'woofunnels-aero-checkout' ),
+				'Shipping Information'                                                                               => __( 'Shipping Information', 'woofunnels-aero-checkout' ),
+				'Select Payment Method'                                                                              => __( 'Select Payment Method', 'woofunnels-aero-checkout' ),
+				'Customer Information'                                                                               => __( 'Customer Information', 'woofunnels-aero-checkout' ),
+				'Contact Information'                                                                                => __( 'Contact Information', 'woofunnels-aero-checkout' ),
+				'Enter your details'                                                                                 => __( 'Enter your details', 'woofunnels-aero-checkout' ),
+				'Enter basic details'                                                                                => __( 'Enter basic details', 'woofunnels-aero-checkout' ),
+				'Your Billing Address'                                                                               => __( 'Use a different shipping address', 'woofunnels-aero-checkout' ),
+				'Place Your Order Now'                                                                               => __( 'Place Your Order Now', 'woofunnels-aero-checkout' ),
+				'Show Order Summary'                                                                                 => __( 'Show Order Summary', 'woofunnels-aero-checkout' ),
+				'Hide Order Summary'                                                                                 => __( 'Hide Order Summary', 'woofunnels-aero-checkout' ),
+				'Confirm Your Order'                                                                                 => __( 'Confirm Your Order', 'woofunnels-aero-checkout' ),
+				'Confirm your order'                                                                                 => __( 'Confirm your order', 'woofunnels-aero-checkout' ),
+				'Choose Your Product'                                                                                => __( 'Choose Your Product', 'woofunnels-aero-checkout' ),
+				'Select Your Plan'                                                                                   => __( 'Select Your Plan', 'woofunnels-aero-checkout' ),
+				'Select your product'                                                                                => __( 'Select your product', 'woofunnels-aero-checkout' ),
+				'Date Of Birth'                                                                                      => __( 'Date Of Birth', 'woofunnels-aero-checkout' ),
+				'Where to ship it?'                                                                                  => __( 'Where to ship it?', 'woofunnels-aero-checkout' ),
+				'COMPLETE PURCHASE'                                                                                  => __( 'COMPLETE PURCHASE', 'woofunnels-aero-checkout' ),
+				'Payment information'                                                                                => __( 'Payment information', 'woofunnels-aero-checkout' ),
+				'PLACE ORDER NOW'                                                                                    => __( 'PLACE ORDER NOW', 'woofunnels-aero-checkout' ),
+				'Place Order Now'                                                                                    => __( 'Place Order Now', 'woofunnels-aero-checkout' ),
+				'Shipping Address'                                                                                   => __( 'Shipping Address', 'woofunnels-aero-checkout' ),
+				'Your Information'                                                                                   => __( 'Your Information', 'woofunnels-aero-checkout' ),
+				'Payment Methods'                                                                                    => __( 'Payment Methods', 'woofunnels-aero-checkout' ),
+				'Payment Method'                                                                                     => __( 'Payment Method', 'woofunnels-aero-checkout' ),
+				'Shipping Phone'                                                                                     => __( 'Shipping Phone', 'woofunnels-aero-checkout' ),
+				'Billing Details'                                                                                    => __( 'Billing Details', 'woofunnels-aero-checkout' ),
+				'Your Products'                                                                                      => __( 'Your Products', 'woofunnels-aero-checkout' ),
+				'Order Summary'                                                                                      => __( 'Order Summary', 'woofunnels-aero-checkout' ),
+				'NEXT STEP →'                                                                                        => __( 'NEXT STEP →', 'woofunnels-aero-checkout' ),
+				'Next Step'                                                                                          => __( 'Next Step', 'woofunnels-aero-checkout' ),
+				'Return to'                                                                                          => __( 'Return to', 'woofunnels-aero-checkout' ),
+				'Best Value'                                                                                         => __( 'Best Value', 'woofunnels-aero-checkout' ),
+				'Your Plans'                                                                                         => __( 'Your Plans', 'woofunnels-aero-checkout' ),
+				'Your Cart'                                                                                          => __( 'Your Cart', 'woofunnels-aero-checkout' ),
+				'Place order'                                                                                        => __( 'Place order', 'woofunnels-aero-checkout' ),
+				'Place Order'                                                                                        => __( 'Place Order', 'woofunnels-aero-checkout' ),
+				'place order'                                                                                        => __( 'place order', 'woofunnels-aero-checkout' ),
+				'PLACE ORDER'                                                                                        => __( 'PLACE ORDER', 'woofunnels-aero-checkout' ),
+				'NEXT STEP'                                                                                          => __( 'NEXT STEP', 'woofunnels-aero-checkout' ),
+				'INFORMATION'                                                                                        => __( 'INFORMATION', 'woofunnels-aero-checkout' ),
+				'Information'                                                                                        => __( 'Information', 'woofunnels-aero-checkout' ),
+				'Payment method'                                                                                     => __( 'Payment method', 'woofunnels-aero-checkout' ),
+				'PRODUCTS'                                                                                           => __( 'PRODUCTS', 'woofunnels-aero-checkout' ),
+				'Products'                                                                                           => __( 'Products', 'woofunnels-aero-checkout' ),
+				'SHIPPING'                                                                                           => __( 'SHIPPING', 'woofunnels-aero-checkout' ),
+				'Payment'                                                                                            => __( 'Payment', 'woofunnels-aero-checkout' ),
+				'PAYMENT'                                                                                            => __( 'PAYMENT', 'woofunnels-aero-checkout' ),
+				'Country'                                                                                            => __( 'Country', 'woofunnels-aero-checkout' ),
+				'Method'                                                                                             => __( 'Method', 'woofunnels-aero-checkout' ),
+				'Hide'                                                                                               => __( 'Hide', 'woofunnels-aero-checkout' ),
+				'Show'                                                                                               => __( 'Show', 'woofunnels-aero-checkout' ),
+				'Apply'                                                                                              => __( 'Apply', 'woofunnels-aero-checkout' ),
+				'Shipping'                                                                                           => __( 'Shipping', 'woofunnels-aero-checkout' ),
+				'Plan'                                                                                               => __( 'Plan', 'woofunnels-aero-checkout' ),
+				'PLAN'                                                                                               => __( 'PLAN', 'woofunnels-aero-checkout' ),
 
 			];
 
@@ -3801,106 +3800,106 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_translation_field_funnel_buider_domain() {
 			$translation_list = [
 				'All transactions are secure and encrypted. Credit card information is never stored on our servers.' => __( 'All transactions are secure and encrypted. Credit card information is never stored on our servers.', 'funnel-builder' ),
-				'All transactions are secured and encrypted.' => __( 'All transactions are secured and encrypted.', 'funnel-builder' ),
-				'All transactions are secured and encrypted' => __( 'All transactions are secured and encrypted', 'funnel-builder' ),
-				'All transactions are secure and encrypted.' => __( 'All transactions are secure and encrypted.', 'funnel-builder' ),
-				'We Respect Your Privacy & Information' => __( 'We Respect Your Privacy & Information', 'funnel-builder' ),
-				'GET YOUR FREE COPY OF AMAZING BOOK' => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'funnel-builder' ),
-				'Shipped in less than 3 days!' => __( 'Shipped in less than 3 days!', 'funnel-builder' ),
-				'WHAT\'S INCLUDED IN YOUR PLAN?' => __( 'WHAT\'S INCLUDED IN YOUR PLAN?', 'funnel-builder' ),
-				"WHAT'S INCLUDED IN YOUR PLAN?" => __( "WHAT'S INCLUDED IN YOUR PLAN?", 'funnel-builder' ),
-				'* 100% Secure & Safe Payments *' => __( '* 100% Secure & Safe Payments *', 'funnel-builder' ),
-				'* 100% Secure &amp; Safe Payments *' => __( '* 100% Secure &amp; Safe Payments *', 'funnel-builder' ),
-				'Use a different shipping address' => __( 'Use a different shipping address', 'funnel-builder' ),
-				'Use a different Billing address' => __( 'Use a different Billing address', 'funnel-builder' ),
-				'Apartment, suite, unit, etc.' => __( 'Apartment, suite, unit, etc.', 'funnel-builder' ),
-				'Proceed To Final Step →' => __( 'Proceed To Final Step →', 'funnel-builder' ),
-				'Proceed To Next Step →' => __( 'Proceed To Next Step →', 'funnel-builder' ),
-				'Enter Customer Information' => __( 'Enter Customer Information', 'funnel-builder' ),
-				'Complete Your Order Now' => __( 'Complete Your Order Now', 'funnel-builder' ),
-				'« Return to Information' => __( '« Return to Information', 'funnel-builder' ),
-				'Select Shipping Method' => __( 'Select Shipping Method', 'funnel-builder' ),
-				'Review Order Summary' => __( 'Review Order Summary', 'funnel-builder' ),
-				'Your Payment Information' => __( 'Your Payment Information', 'funnel-builder' ),
-				'Your payment information' => __( 'Your payment information', 'funnel-builder' ),
-				'Your Shipping Address' => __( 'Your Shipping Address', 'funnel-builder' ),
-				'Proceed to Final Step' => __( 'Proceed to Final Step', 'funnel-builder' ),
-				'PROCEED TO FINAL STEP' => __( 'PROCEED TO FINAL STEP', 'funnel-builder' ),
-				'Proceed to Next Step' => __( 'Proceed to Next Step', 'funnel-builder' ),
-				'PROCEED TO NEXT STEP' => __( 'PROCEED TO NEXT STEP', 'funnel-builder' ),
-				'Contact  Information' => __( 'Contact  Information', 'funnel-builder' ),
-				'CONTINUE TO SHIPPING' => __( 'CONTINUE TO SHIPPING', 'funnel-builder' ),
-				'CONTINUE TO PAYMENT' => __( 'CONTINUE TO PAYMENT', 'funnel-builder' ),
-				'Return to Information' => __( 'Return to Information', 'funnel-builder' ),
-				'Return to Shipping' => __( 'Return to Shipping', 'funnel-builder' ),
-				'Return to information' => __( 'Return to information', 'funnel-builder' ),
-				'Proceed to shipping' => __( 'Proceed to shipping', 'funnel-builder' ),
-				'Proceed to Shipping' => __( 'Proceed to Shipping', 'funnel-builder' ),
-				'PROCEED TO PAYMENT' => __( 'PROCEED TO PAYMENT', 'funnel-builder' ),
-                'Proceed to payment' => __( 'Proceed to payment', 'funnel-builder' ),
-				'Proceed to Payment' => __( 'Proceed to Payment', 'funnel-builder' ),
-				'Payment Information' => __( 'Payment Information', 'funnel-builder' ),
-				'Shipping Information' => __( 'Shipping Information', 'funnel-builder' ),
-				'Select Payment Method' => __( 'Select Payment Method', 'funnel-builder' ),
-				'Customer Information' => __( 'Customer Information', 'funnel-builder' ),
-				'Contact Information' => __( 'Contact Information', 'funnel-builder' ),
-				'Enter your details' => __( 'Enter your details', 'funnel-builder' ),
-				'Enter basic details' => __( 'Enter basic details', 'funnel-builder' ),
-				'Return to Step 1' => __( 'Return to Step 1', 'funnel-builder' ),
-				'Return to Step 2' => __( 'Return to Step 2', 'funnel-builder' ),
-				'Your Billing Address' => __( 'Use a different shipping address', 'funnel-builder' ),
-				'Place Your Order Now' => __( 'Place Your Order Now', 'funnel-builder' ),
-				'Show Order Summary' => __( 'Show Order Summary', 'funnel-builder' ),
-				'Hide Order Summary' => __( 'Hide Order Summary', 'funnel-builder' ),
-				'Confirm Your Order' => __( 'Confirm Your Order', 'funnel-builder' ),
-				'Confirm your order' => __( 'Confirm your order', 'funnel-builder' ),
-				'Choose Your Product' => __( 'Choose Your Product', 'funnel-builder' ),
-				'Select Your Plan' => __( 'Select Your Plan', 'funnel-builder' ),
-				'Select your product' => __( 'Select your product', 'funnel-builder' ),
-				'Date Of Birth' => __( 'Select Your Plan', 'funnel-builder' ),
-				'Where to ship it?' => __( 'Where to ship it?', 'funnel-builder' ),
-				'Return to' => __( '« Return to', 'funnel-builder' ),
-				'« Return to Cart' => __( '« Return to Cart', 'funnel-builder' ),
-				'COMPLETE PURCHASE' => __( 'COMPLETE PURCHASE', 'funnel-builder' ),
-				'Payment information' => __( 'Payment information', 'funnel-builder' ),
-				'PLACE ORDER NOW' => __( 'PLACE ORDER NOW', 'funnel-builder' ),
-				'Place Order Now' => __( 'Place Order Now', 'funnel-builder' ),
-				'Shipping Address' => __( 'Shipping Address', 'funnel-builder' ),
-				'Your Information' => __( 'Your Information', 'funnel-builder' ),
-				'Payment Methods' => __( 'Payment Methods', 'funnel-builder' ),
-				'Payment Method' => __( 'Payment Method', 'funnel-builder' ),
-				'Shipping Phone' => __( 'Shipping Phone', 'funnel-builder' ),
-				'Billing Details' => __( 'Billing Details', 'funnel-builder' ),
-				'Your Products' => __( 'Your Products', 'funnel-builder' ),
-				'Order Summary' => __( 'Order Summary', 'funnel-builder' ),
-				'NEXT STEP →' => __( 'NEXT STEP →', 'funnel-builder' ),
-				'Next Step' => __( 'Next Step', 'funnel-builder' ),
-				'« Return to' => __( '« Return to', 'funnel-builder' ),
-				'Best Value' => __( 'Best Value', 'funnel-builder' ),
-				'Your Plans' => __( 'Your Plans', 'funnel-builder' ),
-				'Your Cart' => __( 'Your Cart', 'funnel-builder' ),
-				'Place order' => __( 'Place order', 'funnel-builder' ),
-				'Place Order' => __( 'Place Order', 'funnel-builder' ),
-				'place order' => __( 'place order', 'funnel-builder' ),
-				'PLACE ORDER' => __( 'PLACE ORDER', 'funnel-builder' ),
-				'NEXT STEP' => __( 'NEXT STEP', 'funnel-builder' ),
-				'INFORMATION' => __( 'INFORMATION', 'funnel-builder' ),
-				'Information' => __( 'Information', 'funnel-builder' ),
-				'Payment method' => __( 'Payment method', 'funnel-builder' ),
-				'PRODUCTS' => __( 'PRODUCTS', 'funnel-builder' ),
-				'Products' => __( 'Products', 'funnel-builder' ),
-				'SHIPPING' => __( 'SHIPPING', 'funnel-builder' ),
-				'Payment' => __( 'Payment', 'funnel-builder' ),
-				'PAYMENT' => __( 'PAYMENT', 'funnel-builder' ),
-				'Country' => __( 'Country', 'funnel-builder' ),
-				'Method' => __( 'Method', 'funnel-builder' ),
-				'Hide' => __( 'Hide', 'funnel-builder' ),
-				'Show' => __( 'Show', 'funnel-builder' ),
-				'Apply' => __( 'Apply', 'funnel-builder' ),
-				'Shipping' => __( 'Shipping', 'funnel-builder' ),
-				'Shiping' => __( 'Shiping', 'funnel-builder' ),
-				'Plan' => __( 'Plan', 'funnel-builder' ),
-				'PLAN' => __( 'PLAN', 'funnel-builder' ),
+				'All transactions are secured and encrypted.'                                                        => __( 'All transactions are secured and encrypted.', 'funnel-builder' ),
+				'All transactions are secured and encrypted'                                                         => __( 'All transactions are secured and encrypted', 'funnel-builder' ),
+				'All transactions are secure and encrypted.'                                                         => __( 'All transactions are secure and encrypted.', 'funnel-builder' ),
+				'We Respect Your Privacy & Information'                                                              => __( 'We Respect Your Privacy & Information', 'funnel-builder' ),
+				'GET YOUR FREE COPY OF AMAZING BOOK'                                                                 => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'funnel-builder' ),
+				'Shipped in less than 3 days!'                                                                       => __( 'Shipped in less than 3 days!', 'funnel-builder' ),
+				'WHAT\'S INCLUDED IN YOUR PLAN?'                                                                     => __( 'WHAT\'S INCLUDED IN YOUR PLAN?', 'funnel-builder' ),
+				"WHAT'S INCLUDED IN YOUR PLAN?"                                                                      => __( "WHAT'S INCLUDED IN YOUR PLAN?", 'funnel-builder' ),
+				'* 100% Secure & Safe Payments *'                                                                    => __( '* 100% Secure & Safe Payments *', 'funnel-builder' ),
+				'* 100% Secure &amp; Safe Payments *'                                                                => __( '* 100% Secure &amp; Safe Payments *', 'funnel-builder' ),
+				'Use a different shipping address'                                                                   => __( 'Use a different shipping address', 'funnel-builder' ),
+				'Use a different Billing address'                                                                    => __( 'Use a different Billing address', 'funnel-builder' ),
+				'Apartment, suite, unit, etc.'                                                                       => __( 'Apartment, suite, unit, etc.', 'funnel-builder' ),
+				'Proceed To Final Step →'                                                                            => __( 'Proceed To Final Step →', 'funnel-builder' ),
+				'Proceed To Next Step →'                                                                             => __( 'Proceed To Next Step →', 'funnel-builder' ),
+				'Enter Customer Information'                                                                         => __( 'Enter Customer Information', 'funnel-builder' ),
+				'Complete Your Order Now'                                                                            => __( 'Complete Your Order Now', 'funnel-builder' ),
+				'« Return to Information'                                                                            => __( '« Return to Information', 'funnel-builder' ),
+				'Select Shipping Method'                                                                             => __( 'Select Shipping Method', 'funnel-builder' ),
+				'Review Order Summary'                                                                               => __( 'Review Order Summary', 'funnel-builder' ),
+				'Your Payment Information'                                                                           => __( 'Your Payment Information', 'funnel-builder' ),
+				'Your payment information'                                                                           => __( 'Your payment information', 'funnel-builder' ),
+				'Your Shipping Address'                                                                              => __( 'Your Shipping Address', 'funnel-builder' ),
+				'Proceed to Final Step'                                                                              => __( 'Proceed to Final Step', 'funnel-builder' ),
+				'PROCEED TO FINAL STEP'                                                                              => __( 'PROCEED TO FINAL STEP', 'funnel-builder' ),
+				'Proceed to Next Step'                                                                               => __( 'Proceed to Next Step', 'funnel-builder' ),
+				'PROCEED TO NEXT STEP'                                                                               => __( 'PROCEED TO NEXT STEP', 'funnel-builder' ),
+				'Contact  Information'                                                                               => __( 'Contact  Information', 'funnel-builder' ),
+				'CONTINUE TO SHIPPING'                                                                               => __( 'CONTINUE TO SHIPPING', 'funnel-builder' ),
+				'CONTINUE TO PAYMENT'                                                                                => __( 'CONTINUE TO PAYMENT', 'funnel-builder' ),
+				'Return to Information'                                                                              => __( 'Return to Information', 'funnel-builder' ),
+				'Return to Shipping'                                                                                 => __( 'Return to Shipping', 'funnel-builder' ),
+				'Return to information'                                                                              => __( 'Return to information', 'funnel-builder' ),
+				'Proceed to shipping'                                                                                => __( 'Proceed to shipping', 'funnel-builder' ),
+				'Proceed to Shipping'                                                                                => __( 'Proceed to Shipping', 'funnel-builder' ),
+				'PROCEED TO PAYMENT'                                                                                 => __( 'PROCEED TO PAYMENT', 'funnel-builder' ),
+				'Proceed to payment'                                                                                 => __( 'Proceed to payment', 'funnel-builder' ),
+				'Proceed to Payment'                                                                                 => __( 'Proceed to Payment', 'funnel-builder' ),
+				'Payment Information'                                                                                => __( 'Payment Information', 'funnel-builder' ),
+				'Shipping Information'                                                                               => __( 'Shipping Information', 'funnel-builder' ),
+				'Select Payment Method'                                                                              => __( 'Select Payment Method', 'funnel-builder' ),
+				'Customer Information'                                                                               => __( 'Customer Information', 'funnel-builder' ),
+				'Contact Information'                                                                                => __( 'Contact Information', 'funnel-builder' ),
+				'Enter your details'                                                                                 => __( 'Enter your details', 'funnel-builder' ),
+				'Enter basic details'                                                                                => __( 'Enter basic details', 'funnel-builder' ),
+				'Return to Step 1'                                                                                   => __( 'Return to Step 1', 'funnel-builder' ),
+				'Return to Step 2'                                                                                   => __( 'Return to Step 2', 'funnel-builder' ),
+				'Your Billing Address'                                                                               => __( 'Use a different shipping address', 'funnel-builder' ),
+				'Place Your Order Now'                                                                               => __( 'Place Your Order Now', 'funnel-builder' ),
+				'Show Order Summary'                                                                                 => __( 'Show Order Summary', 'funnel-builder' ),
+				'Hide Order Summary'                                                                                 => __( 'Hide Order Summary', 'funnel-builder' ),
+				'Confirm Your Order'                                                                                 => __( 'Confirm Your Order', 'funnel-builder' ),
+				'Confirm your order'                                                                                 => __( 'Confirm your order', 'funnel-builder' ),
+				'Choose Your Product'                                                                                => __( 'Choose Your Product', 'funnel-builder' ),
+				'Select Your Plan'                                                                                   => __( 'Select Your Plan', 'funnel-builder' ),
+				'Select your product'                                                                                => __( 'Select your product', 'funnel-builder' ),
+				'Date Of Birth'                                                                                      => __( 'Select Your Plan', 'funnel-builder' ),
+				'Where to ship it?'                                                                                  => __( 'Where to ship it?', 'funnel-builder' ),
+				'Return to'                                                                                          => __( '« Return to', 'funnel-builder' ),
+				'« Return to Cart'                                                                                   => __( '« Return to Cart', 'funnel-builder' ),
+				'COMPLETE PURCHASE'                                                                                  => __( 'COMPLETE PURCHASE', 'funnel-builder' ),
+				'Payment information'                                                                                => __( 'Payment information', 'funnel-builder' ),
+				'PLACE ORDER NOW'                                                                                    => __( 'PLACE ORDER NOW', 'funnel-builder' ),
+				'Place Order Now'                                                                                    => __( 'Place Order Now', 'funnel-builder' ),
+				'Shipping Address'                                                                                   => __( 'Shipping Address', 'funnel-builder' ),
+				'Your Information'                                                                                   => __( 'Your Information', 'funnel-builder' ),
+				'Payment Methods'                                                                                    => __( 'Payment Methods', 'funnel-builder' ),
+				'Payment Method'                                                                                     => __( 'Payment Method', 'funnel-builder' ),
+				'Shipping Phone'                                                                                     => __( 'Shipping Phone', 'funnel-builder' ),
+				'Billing Details'                                                                                    => __( 'Billing Details', 'funnel-builder' ),
+				'Your Products'                                                                                      => __( 'Your Products', 'funnel-builder' ),
+				'Order Summary'                                                                                      => __( 'Order Summary', 'funnel-builder' ),
+				'NEXT STEP →'                                                                                        => __( 'NEXT STEP →', 'funnel-builder' ),
+				'Next Step'                                                                                          => __( 'Next Step', 'funnel-builder' ),
+				'« Return to'                                                                                        => __( '« Return to', 'funnel-builder' ),
+				'Best Value'                                                                                         => __( 'Best Value', 'funnel-builder' ),
+				'Your Plans'                                                                                         => __( 'Your Plans', 'funnel-builder' ),
+				'Your Cart'                                                                                          => __( 'Your Cart', 'funnel-builder' ),
+				'Place order'                                                                                        => __( 'Place order', 'funnel-builder' ),
+				'Place Order'                                                                                        => __( 'Place Order', 'funnel-builder' ),
+				'place order'                                                                                        => __( 'place order', 'funnel-builder' ),
+				'PLACE ORDER'                                                                                        => __( 'PLACE ORDER', 'funnel-builder' ),
+				'NEXT STEP'                                                                                          => __( 'NEXT STEP', 'funnel-builder' ),
+				'INFORMATION'                                                                                        => __( 'INFORMATION', 'funnel-builder' ),
+				'Information'                                                                                        => __( 'Information', 'funnel-builder' ),
+				'Payment method'                                                                                     => __( 'Payment method', 'funnel-builder' ),
+				'PRODUCTS'                                                                                           => __( 'PRODUCTS', 'funnel-builder' ),
+				'Products'                                                                                           => __( 'Products', 'funnel-builder' ),
+				'SHIPPING'                                                                                           => __( 'SHIPPING', 'funnel-builder' ),
+				'Payment'                                                                                            => __( 'Payment', 'funnel-builder' ),
+				'PAYMENT'                                                                                            => __( 'PAYMENT', 'funnel-builder' ),
+				'Country'                                                                                            => __( 'Country', 'funnel-builder' ),
+				'Method'                                                                                             => __( 'Method', 'funnel-builder' ),
+				'Hide'                                                                                               => __( 'Hide', 'funnel-builder' ),
+				'Show'                                                                                               => __( 'Show', 'funnel-builder' ),
+				'Apply'                                                                                              => __( 'Apply', 'funnel-builder' ),
+				'Shipping'                                                                                           => __( 'Shipping', 'funnel-builder' ),
+				'Shiping'                                                                                            => __( 'Shiping', 'funnel-builder' ),
+				'Plan'                                                                                               => __( 'Plan', 'funnel-builder' ),
+				'PLAN'                                                                                               => __( 'PLAN', 'funnel-builder' ),
 
 			];
 
@@ -3999,6 +3998,45 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return false;
+		}
+
+		public static function get_single_variation_html( $_product, $cart_item, $variation_product = false ) {
+
+			$variation_name     = '';
+			$variation_list     = [];
+			$product_attributes = method_exists( $_product, 'get_variation_attributes' ) ? $_product->get_variation_attributes() : [];
+			$product_id         = isset( $cart_item['product_id'] ) ? $cart_item['product_id'] : $_product->get_id();
+			$variation_id       = (isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] > 0) ? $cart_item['variation_id']: $product_id;
+
+
+			$select_option_label = apply_filters( 'wfacp_choose_option_text', __( 'Select options', 'woocommerce' ) );
+
+
+			$choose_label = sprintf( "<a href='#' class='wfacp_qv-button var_product wfacp_select_option' qv-id='%d' qv-var-id='%d'>%s</a>", $product_id, $variation_id, apply_filters( 'wfacp_choose_option_text', $select_option_label ) );
+			$tmp_var      = [];
+			if ( count( $product_attributes ) <= 2 ) {
+				$variation_name .= "<dl class='variation wfacp_single_variation'>";
+				foreach ( $product_attributes as $attribute_name => $value ) {
+					$name      = str_replace( 'attribute_', '', $attribute_name );
+					$label     = wc_attribute_label( $name );
+					$tmp_var[] = "<dt>$label:</dt><dd><p>" . $value . "</p></dd>";
+
+				}
+				if ( is_array( $tmp_var ) && count( $tmp_var ) > 0 ) {
+					$variation_name .= implode( ',', $tmp_var );
+				}
+				$variation_name .= '</dl>';
+			}
+
+
+			if ( true === $variation_product ) {
+				$variation_list['variation']       = $variation_name;
+				$variation_list['variation_count'] = count( $product_attributes );
+				$variation_list['select_option']   = $choose_label;
+			}
+
+
+			return $variation_list;
 		}
 
 		public static function get_advanced_field_checkbox_value( $field_value, $field, $value_contain_bool = false ) {
@@ -4117,13 +4155,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function remove_addon_dob_fields() {
-			if(class_exists('WFACP_Dob_Field')){
-				WFACP_Common::remove_actions('wfacp_loaded','WFACP_Dob_Field','init');
+			if ( class_exists( 'WFACP_Dob_Field' ) ) {
+				WFACP_Common::remove_actions( 'wfacp_loaded', 'WFACP_Dob_Field', 'init' );
 			}
 		}
-		public static function get_notice_html_in_editor($builder='elementor') {
 
-			$temp_style=[
+		public static function get_notice_html_in_editor( $builder = 'elementor' ) {
+
+			$temp_style = [
 				'background-color: #F9F9FF',
 				'padding: 16px 12px 16px 12px',
 				'border-left: 4px solid #82838E',
@@ -4134,14 +4173,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			];
 
 
-			$style=implode(';',$temp_style);
+			$style = implode( ';', $temp_style );
 
-			$slug='funnel-checkout';
-			$id=WFACP_Common::get_id();
+			$slug      = 'funnel-checkout';
+			$id        = WFACP_Common::get_id();
 			$funnel_id = get_post_meta( $id, '_bwf_in_funnel', true );
 			$step_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
 				'page'      => 'bwf',
-				'path'      => "/" . $slug . "/" . $id. "/design",
+				'path'      => "/" . $slug . "/" . $id . "/design",
 				'funnel_id' => $funnel_id,
 			], admin_url( 'admin.php' ) ) );
 
@@ -4230,7 +4269,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$total = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
 
 				$regular_price = round( $regular_price, 2 );
-				$total = round( $total, 2 );
+				$total         = round( $total, 2 );
 
 				// Only proceed if there's actually a saving
 				if ( $regular_price <= $total ) {
@@ -4256,8 +4295,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				// Output the message
 				?>
-				<tr class="wfacp-saving-amount">
-					<td colspan="2">
+                <tr class="wfacp-saving-amount">
+                    <td colspan="2">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M7.77778 8.2669C8.08461 8.2669 8.33334 8.01817 8.33334 7.71135C8.33334 7.40452 8.08461 7.15579 7.77778 7.15579C7.47096 7.15579 7.22223 7.40452 7.22223 7.71135C7.22223 8.01817 7.47096 8.2669 7.77778 8.2669Z" fill="currentColor"/>
@@ -4266,11 +4305,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
                 </svg>
                 <?php echo wp_kses_post( $total_message ); ?>
             </span>
-					</td>
-				</tr>
+                    </td>
+                </tr>
 				<?php
 			} catch ( \Throwable $e ) {
 				BWF_logger::get_instance()->log( 'Error in display_save_price: ' . $e->getMessage() );
+
 				return;
 			}
 

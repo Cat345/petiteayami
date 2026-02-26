@@ -28,14 +28,14 @@ class EventInvitationPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [Event Name] is a placeholder for the event name */
-      __('Join us for [Event Name]', 'mailpoet') . '</h1>
+      /* translators: EVENT NAME is placeholder text that merchants replace with their own content. */
+      __('Join us for EVENT NAME', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [brief description] is a placeholder for the event description */
-      __("You're invited 🎉 Join us for [brief description] and be part of our exclusive event series.", 'mailpoet') . '</p>
+      /* translators: A BRIEF DESCRIPTION OF THE EVENT is placeholder text that merchants replace with their own content. */
+      __("You're invited 🎉 Join us for A BRIEF DESCRIPTION OF THE EVENT and be part of our exclusive event series.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:image -->
@@ -43,17 +43,21 @@ class EventInvitationPattern extends Pattern {
       <!-- /wp:image -->
 
       <!-- wp:heading {"textAlign":"center","fontSize":"large"} -->
-      <h2 class="wp-block-heading has-text-align-center has-large-font-size">' . __('October 31, at 6PM', 'mailpoet') . '</h2>
+      <h2 class="wp-block-heading has-text-align-center has-large-font-size">' .
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('MONTH DAY, at TIME', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"16px"}}} -->
-      <p class="has-text-align-center" style="font-size:16px">' . __('123 Event Address, City', 'mailpoet') . '</p>
+      <p class="has-text-align-center" style="font-size:16px">' .
+      /* translators: Placeholder text that merchants replace with their own content. */
+      __('BUILDING STREET, CITY', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('RSVP now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button has-custom-font-size" style="font-size:16px;padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('RSVP now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->

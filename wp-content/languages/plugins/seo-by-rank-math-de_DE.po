@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-01-22 02:40:04+0000\n"
+"PO-Revision-Date: 2026-02-23 23:02:39+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,7 +28,7 @@ msgstr "Wir freuen uns über dein Feedback! Es ist für unsere Weiterentwicklung
 msgid "Rank Math SEO: Getting error \"%1$s\" while creating table <code>%2$s</code>. Please contact your server administrator to fix this issue."
 msgstr "Rank Math SEO: Beim Erstellen der Tabelle <code>%2$s</code> tritt der Fehler „%1$s“ auf. Bitte wende dich an deinen Serveradministrator, um dieses Problem zu beheben."
 
-#: includes/class-installer.php:256
+#: includes/class-installer.php:257
 msgid "The format of the tables array has changed. Please update your code accordingly."
 msgstr "Das Format des Tabellen-Arrays hat sich geändert. Bitte aktualisiere deinen Code entsprechend."
 
@@ -7232,7 +7232,7 @@ msgstr "Endgültig löschen"
 #: includes/modules/redirections/class-table.php:168
 #: includes/modules/sitemap/class-admin.php:379
 #: includes/modules/schema/blocks/toc/assets/js/index.js:1
-#: includes/modules/schema/blocks/toc/assets/src/list.js:81
+#: includes/modules/schema/blocks/toc/assets/src/list.js:83
 msgid "Hide"
 msgstr "Ausblenden"
 
@@ -7409,7 +7409,7 @@ msgstr "Über uns Seite"
 #: includes/modules/sitemap/settings/html-sitemap.php:58
 #: assets/admin/js/components.js:1 assets/admin/js/option-panel.js:1
 msgid "Select Page"
-msgstr "Wähle Seite"
+msgstr "Seite auswählen"
 
 #: includes/modules/local-seo/views/titles-options.php:240
 #: assets/admin/js/titleSettings.js:1
@@ -7787,7 +7787,7 @@ msgstr "Referer"
 
 #: includes/modules/404-monitor/class-table.php:222
 msgid "URI"
-msgstr "URL"
+msgstr "URI"
 
 #: includes/admin/class-bulk-actions.php:90
 #: includes/modules/404-monitor/class-table.php:210
@@ -8597,7 +8597,7 @@ msgstr "Aktiv"
 #: assets/admin/js/instantIndexingSettings.js:1 assets/admin/js/modules.js:1
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/schema/blocks/schema/assets/js/index.js:1
-#: includes/modules/schema/blocks/schema/assets/src/edit.js:65
+#: includes/modules/schema/blocks/schema/assets/src/edit.js:69
 #: includes/modules/schema/blocks/toc/assets/js/index.js:1
 #: includes/modules/schema/blocks/toc/assets/src/inspectControls.js:20
 msgid "Settings"
@@ -8637,7 +8637,7 @@ msgstr "Aktiviere die Unterstützung für die strukturierten Daten, mit denen Me
 msgid "Records the URLs on which visitors & search engines run into 404 Errors. You can also turn on Redirections to redirect the error causing URLs to other URLs."
 msgstr "Zeichnet die URLs auf, unter denen Besucher und Suchmaschinen auf 404-Fehler stoßen. Du kannst auch Umleitungen aktivieren, um die fehlerhaften URLs auf andere URLs umzuleiten."
 
-#: includes/class-installer.php:378
+#: includes/class-installer.php:379
 #: includes/settings/general/breadcrumbs.php:121
 #: assets/admin/js/generalSettings.js:1
 msgid "404 Error: page not found"
@@ -8645,7 +8645,7 @@ msgstr "Fehler 404: Seite nicht gefunden"
 
 #. translators: Search query term
 #. translators: placeholder
-#: includes/class-installer.php:377
+#: includes/class-installer.php:378
 #: includes/settings/general/breadcrumbs.php:110
 #: assets/admin/js/generalSettings.js:1
 msgid "Results for %s"
@@ -8653,13 +8653,13 @@ msgstr "Ergebnisse für %s"
 
 #. translators: Archive title
 #. translators: placeholder
-#: includes/class-installer.php:375
+#: includes/class-installer.php:376
 #: includes/settings/general/breadcrumbs.php:98
 #: assets/admin/js/generalSettings.js:1
 msgid "Archives for %s"
 msgstr "Archiv für %s"
 
-#: includes/class-installer.php:373
+#: includes/class-installer.php:374
 #: includes/settings/general/breadcrumbs.php:65
 #: assets/admin/js/generalSettings.js:1
 msgid "Home"

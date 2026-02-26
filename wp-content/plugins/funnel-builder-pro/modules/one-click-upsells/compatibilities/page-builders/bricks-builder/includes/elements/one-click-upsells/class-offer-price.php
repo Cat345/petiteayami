@@ -286,7 +286,7 @@ if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
                 <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
                     <div class="bricks-element bricks-element-wfocu_price" data-element_type="wfocu_price.default">
                         <div class="bricks-element-container">
-                            <div class="bricks-element-price-wrapper">
+                            <div class="bricks-element-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 								<?php
 								/** Price */
 								$regular_price     = isset( $settings['showRegPrice'] ) && $settings['showRegPrice'] ? WFOCU_Common::maybe_parse_merge_tags( '{{product_regular_price info="no" key="' . $product_key . '"}}' ) : 0;

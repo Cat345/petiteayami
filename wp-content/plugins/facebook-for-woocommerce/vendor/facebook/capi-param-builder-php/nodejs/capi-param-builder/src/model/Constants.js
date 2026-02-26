@@ -7,7 +7,8 @@
  */
 class Constants {
     static DEFAULT_1PC_AGE = 90 * 24 * 3600; // 90 days
-    static LANGUAGE_TOKEN = 'BA'; // nodejs
+    static LANGUAGE_TOKEN = 'BA'; // NodeJS language token
+    static LANGUAGE_TOKEN_INDEX = 0x04; // nodejs
     static SUPPORTED_PARAM_BUILDER_LANGUAGES_TOKEN = ['AQ', 'Ag', 'Aw', 'BA', 'BQ', 'Bg'];
     static MIN_PAYLOAD_SPLIT_LENGTH = 4;
     static MAX_PAYLOAD_WITH_LANGUAGE_TOKEN_SPLIT_LENGTH = 5;
@@ -17,5 +18,24 @@ class Constants {
     static CLICK_ID_STRING = 'clickid';
     static FBC_NAME_STRING = '_fbc';
     static FBP_NAME_STRING = '_fbp';
+    static FBI_NAME_STRING = '_fbi';
+    static DEFAULT_FORMAT = 0x01;
+    static APPENDIX_LENGTH_V1 = 2;
+    static APPENDIX_LENGTH_V2 = 8;
+
+    static PII_DATA_TYPE = Object.freeze({
+        PHONE: 'phone',
+        EMAIL: 'email',
+        FIRST_NAME: 'first_name',
+        LAST_NAME: 'last_name',
+        DATE_OF_BIRTH: 'date_of_birth',
+        GENDER: 'gender',
+        CITY: 'city',
+        STATE: 'state',
+        ZIP_CODE: 'zip_code',
+        COUNTRY: 'country',
+        EXTERNAL_ID: 'external_id',
+    });
 }
+
 module.exports = Constants;

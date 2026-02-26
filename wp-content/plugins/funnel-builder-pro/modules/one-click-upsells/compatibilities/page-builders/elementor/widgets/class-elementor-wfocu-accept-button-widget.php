@@ -402,7 +402,6 @@ if ( ! class_exists( 'Elementor_WFOCU_Accept_Button_Widget' ) ) {
 		 * @access protected
 		 */
 		protected function render() {
-
 			$settings = $this->get_settings_for_display();
 
 			if ( ! isset( WFOCU_Core()->template_loader->product_data->products ) ) {
@@ -441,7 +440,6 @@ if ( ! class_exists( 'Elementor_WFOCU_Accept_Button_Widget' ) ) {
 			if ( isset( $settings['hover_animation'] ) && $settings['hover_animation'] ) {
 				$this->add_render_attribute( 'button', 'class', 'elementor-animation-' . $settings['hover_animation'] );
 			}
-
 			do_action( 'wfocu_add_custom_html_above_accept_button', $product_id, $product_key );
 			?>
             <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>

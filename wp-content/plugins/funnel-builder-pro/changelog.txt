@@ -1,5 +1,25 @@
 *** FunnelKit Funnel Builder Pro ***
 
+= 3.13.3.2 (Feb 04, 2026) =
+* Improved: Checkout: Added new filter wfacp_mini_cart_show_variation_details to provide more control on variation attributes and selection option. ()
+= 3.13.3.2 (Feb 04, 2026) =
+* Improved: Checkout: Filter hooks wfacp_order_summary_field_after_product_name, wfacp_after_mini_cart_title & wfacp_after_cart_formatted_item_data for 3rd pary plugins. (#6872)
+* Improved: Upsells: Compatibility with mollie gateway updated. (#8181)
+
+ = 3.13.3.1 (Jan 27, 2026) =
+* Improved: Checkout: Compatibility with Elementor has been enhanced to better support cached pages. (#8270)
+* Improved: Checkout: Compatibility updated with WooCommerce Subscriptions v3.1.0 for a more reliable subscription flow. (#8462)
+* Improved: Order Bump: Compatibility updated with Discount Rules Pro by Flycart for smoother discount handling. (#8081)
+* Improved: Checkout: Compatibility enhanced with WooPayments to support the Stripe Link option more consistently. (#8405)
+* Improved: Checkout: Place Order button icon visibility improved in block editor templates to ensure better consistency across themes. (#8316)
+
+= 3.13.3.1 (Jan 27, 2026) =
+* Improved: Checkout: Compatibility with Elementor has been enhanced to better support cached pages. (#8270)
+* Improved: Checkout: Compatibility updated with WooCommerce Subscriptions v3.1.0 for a more reliable subscription flow. (#8462)
+* Improved: Order Bump: Compatibility updated with Discount Rules Pro by Flycart for smoother discount handling. (#8081)
+* Improved: Checkout: Compatibility enhanced with WooPayments to support the Stripe Link option more consistently. (#8405)
+* Improved: Checkout: Place Order button icon visibility improved in block editor templates to ensure better consistency across themes. (#8316)
+
 = 3.13.3 (October 24, 2025) =
 * Fixed: Upsells: Offer price block for block editor templates is showing unresolved merge tags in case of WooCommerce Subscription plugin is not installed. (#8243)
 

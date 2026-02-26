@@ -24,7 +24,7 @@ class AddAdminBarButton
      */
     public function init(): void
     {
-        add_action('wp_head', fn() => $this->printStyle());
+        wp_add_inline_style('admin-bar', $this->getStyle());
     }
 
     /**
@@ -63,10 +63,10 @@ class AddAdminBarButton
         ]);
     }
 
-    protected function printStyle(): void
+    protected function getStyle(): string
     {
-        $font = get_template_directory_uri() . '/packages/theme-wordpress/fonts/icon.ttf';
-        $style = <<<CSS
+        $font = Url::to('~theme/packages/theme-wordpress/fonts/icon.ttf');
+        return <<<CSS
             @font-face {
                 font-family: YOOtheme;
                 font-display: swap;
@@ -81,7 +81,5 @@ class AddAdminBarButton
                 top: 2px;
             }
         CSS;
-
-        echo preg_replace('/\s+/', ' ', '<style>' . trim($style) . '</style>') . "\n";
     }
 }

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Weight Based Shipping Table Rate for WooCommerce – Flexible Shipping - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-01-16 00:06:22+0000\n"
+"PO-Revision-Date: 2026-02-13 15:43:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -68,6 +68,10 @@ msgstr "Zu welchem Plugin wechselst du?"
 #: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
 msgid "Can you provide some details on the reason behind deactivation?"
 msgstr "Kannst du den Grund für die Deaktivierung näher erläutern?"
+
+#: vendor_prefixed/octolize/wp-octolize-tracker/src/DeactivationTracker/OctolizeReasonsFactory.php:36
+msgid "Please provide details"
+msgstr "Bitte gib Details an"
 
 #: vendor_prefixed/octolize/octolize-checkout-block-integration/src/Blocks/StoreEndpoint.php:57
 msgid "Field"
@@ -200,6 +204,10 @@ msgstr "Schließen"
 msgid "Tax"
 msgstr "Steuer"
 
+#: vendor_prefixed/wpdesk/wp-wpdesk-rating-petition/src/PopupPetition/PopupPetitionDisplayer.php:44
+msgid "Thank you!"
+msgstr "Vielen Dank!"
+
 #: vendor_prefixed/wpdesk/wp-forms/templates/input-image.php:46
 msgid "Set image"
 msgstr "Bild festlegen"
@@ -225,11 +233,15 @@ msgctxt "Default Condition Group"
 msgid "General"
 msgstr "Allgemein"
 
+#: vendor_prefixed/wpdesk/wp-wpdesk-fs-table-rate/src/Settings/CartCalculationOptions.php:23
+msgid "Cart value"
+msgstr "Warenkorbwert"
+
 #: src/WPDesk/FS/TableRate/Order/ItemMeta.php:62
 msgid "Description"
 msgstr "Beschreibung"
 
-#: classes/class-flexible-shipping-plugin.php:931
+#: classes/class-flexible-shipping-plugin.php:869
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-shipment/src/WPDesk/FS/Shipment/Assets.php:68
 msgid "WooCommerce"
 msgstr "WooCommerce"
@@ -282,8 +294,7 @@ msgstr "Regel %1$s:"
 msgid "%1$s per %2$s"
 msgstr "%1$s pro %2$s"
 
-#: classes/class-flexible-shipping-plugin.php:524
-#: classes/class-flexible-shipping-plugin.php:659
+#: classes/class-flexible-shipping-plugin.php:597
 #: vendor_prefixed/octolize/wp-shipping-extensions/src/ShippingExtensions/Plugin/PluginFactory.php:20
 #: vendor_prefixed/wpdesk/wp-wpdesk-fs-compatibility/src/PluginCompatibilityChecker.php:97
 msgid "Flexible Shipping PRO"
@@ -521,7 +532,7 @@ msgid "%1$sOk, you deserved it%2$s"
 msgstr "%1$sOK, ihr verdient es%2$s"
 
 #. Translators: link.
-#: classes/class-flexible-shipping-plugin.php:879
+#: classes/class-flexible-shipping-plugin.php:817
 msgid "How can We make Flexible Shipping better for you? %1$sJust write to us.%2$s"
 msgstr "Wie können wir Flexible Shipping für dich verbessern? %1$sSchreib es uns einfach.%2$s"
 
@@ -1231,13 +1242,14 @@ msgstr "https://wordpress.org/plugins/flexible-shipping/"
 msgid "Create additional shipment methods in WooCommerce and enable pricing based on cart weight or total."
 msgstr "Erstelle in WooCommerce zusätzliche Versandmethoden mit Preisen basierend auf dem Gewicht oder der Bestellsumme im Warenkorb. "
 
-#: classes/class-flexible-shipping-plugin.php:962
+#: classes/class-flexible-shipping-plugin.php:900
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:188
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: src/WPDesk/FS/Plugin/PluginLinks.php:26
 #: vendor_prefixed/wpdesk/wp-builder/src/Plugin/AbstractPlugin.php:181
+#: assets/js/rules-settings.js:132
 msgid "Support"
 msgstr "Support"
 
@@ -1293,7 +1305,6 @@ msgstr "Diese Versandmethode aktivieren"
 
 #. Plugin Name of the plugin
 #: flexible-shipping.php classes/class-flexible-shipping-plugin.php:376
-#: classes/class-flexible-shipping-plugin.php:521
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:48
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:51
 #: classes/table-rate/class-wpdesk-flexible-shipping-multilingual.php:54

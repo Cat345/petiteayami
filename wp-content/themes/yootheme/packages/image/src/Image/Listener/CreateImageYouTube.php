@@ -17,11 +17,7 @@ class CreateImageYouTube
      */
     public static function handle(string $file, callable $next): ?Image
     {
-        if (!ini_get('allow_url_fopen')) {
-            return null;
-        }
-
-        $supported = preg_match(static::REGEX, $file);
+        $supported = ini_get('allow_url_fopen') && preg_match(static::REGEX, $file);
 
         return $supported ? new ImageYoutube($file) : $next($file);
     }

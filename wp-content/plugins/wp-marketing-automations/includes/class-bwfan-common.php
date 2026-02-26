@@ -1068,6 +1068,135 @@ class BWFAN_Common {
 	}
 
 	/**
+	 * Send JSON response and close HTTP connection while keeping PHP process running
+	 * This allows background processing after the client receives the response
+	 *
+	 * @param array|mixed $response_data Response data to send as JSON
+	 * @param int         $status_code   HTTP status code (default: 200)
+	 *
+	 * @return void
+	 */
+	public static function send_response_and_close_connection( $response_data = [], $status_code = 200 ) {
+		static $already_called = false;
+
+		// Prevent duplicate calls
+		if ( $already_called ) {
+			return;
+		}
+		$already_called = true;
+
+		// Check if headers already sent - function cannot work properly in this case
+		if ( headers_sent( $file, $line ) ) {
+			return;
+		}
+
+		// Prevent script termination if client disconnects
+		ignore_user_abort( true );
+
+		// Close session to release lock (if active)
+		if ( session_status() === PHP_SESSION_ACTIVE ) {
+			session_write_close();
+		}
+
+		// Disable compression BEFORE calculating Content-Length to ensure accurate byte count
+		if ( function_exists( 'apache_setenv' ) ) {
+			@apache_setenv( 'no-gzip', '1' );
+		}
+		@ini_set( 'zlib.output_compression', 'Off' );
+
+		// Clean (discard) all existing output buffers - prevents WordPress buffered content from interfering
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+
+		// Encode response
+		$json_response = wp_json_encode( $response_data );
+
+		// Handle JSON encoding failure
+		if ( false === $json_response ) {
+			$json_response = wp_json_encode( array(
+				'success' => false,
+				'message' => 'Response encoding failed',
+			) );
+		}
+
+		// Final fallback if encoding the error message also fails
+		if ( false === $json_response ) {
+			$json_response = '{"success":false}';
+		}
+
+		// Calculate content length in bytes
+		$content_length = strlen( $json_response );
+
+		// Check again if headers already sent before trying to set them
+		// This can happen if WordPress REST API has already started sending headers
+		if ( ! headers_sent() ) {
+			// Set headers BEFORE any output
+			status_header( $status_code );
+			header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+			header( 'Content-Length: ' . $content_length );
+			header( 'Connection: close' );
+			header( 'X-Accel-Buffering: no' ); // Prevent Nginx proxy buffering
+		}
+
+		// Send output
+		echo $json_response;
+
+		// Flush output to network
+		flush();
+
+		// Close connection - FastCGI/LiteSpeed provide the cleanest methods
+		if ( function_exists( 'fastcgi_finish_request' ) ) {
+			fastcgi_finish_request();
+		} elseif ( function_exists( 'litespeed_finish_request' ) ) {
+			litespeed_finish_request();
+		}
+
+		// Prevent WordPress REST API core from trying to send headers after we've already sent them
+		// Add filter to tell WordPress we've already served the request
+		add_filter( 'rest_pre_serve_request', function( $served, $result, $request, $server ) {
+			return true; // Return true means "already served, don't send again"
+		}, 10, 4 );
+
+		// Clear headers in case WordPress still tries to send them
+		add_filter( 'rest_post_dispatch', function( $response ) {
+			$response->set_headers( [] );
+			return $response;
+		} );
+	}
+
+	/**
+	 * Close HTTP connection to client while keeping PHP process running
+	 * This allows background processing after the client receives the response
+	 *
+	 * @deprecated Use send_response_and_close_connection() instead
+	 *
+	 * @return void
+	 */
+	public static function close_http_connection() {
+		// Prevent script termination if client disconnects
+		ignore_user_abort( true );
+
+		// Close session to release lock (if active)
+		if ( session_status() === PHP_SESSION_ACTIVE ) {
+			session_write_close();
+		}
+
+		// Flush all output buffers
+		while ( ob_get_level() > 0 ) {
+			ob_end_flush();
+		}
+		flush();
+
+		// Close connection - FastCGI/LiteSpeed provide the cleanest methods
+		if ( function_exists( 'fastcgi_finish_request' ) ) {
+			fastcgi_finish_request();
+		} elseif ( function_exists( 'litespeed_finish_request' ) ) {
+			litespeed_finish_request();
+		}
+	}
+
+	/**
 	 * Return all the merge tags from a string.
 	 *
 	 * @param $text
@@ -2517,18 +2646,22 @@ class BWFAN_Common {
 			return;
 		}
 
+		// Prepare and send response immediately to prevent timeout
+		$resp = array(
+			'msg'  => '',
+			'time' => time(),
+		);
+		self::send_response_and_close_connection( $resp );
+
 		/** Delete row from automation events */
 		if ( isset( $post_parameters['a_e_id'] ) ) {
 			BWFAN_Model_Automation_Events::delete( $post_parameters['a_e_id'] );
 		}
 
-		self::capture_async_helper( $post_parameters );
+		// Now process events in background (client already received response)
+		self::capture_async_helper( $post_parameters, false );
 
-		BWFAN_Core()->logger->log( 'Automation Source Or Event data is not available, Data - ' . print_r( self::$events_async_data, true ), 'event_lifecycle' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		wp_send_json( array(
-			'msg'  => '',
-			'time' => time(),
-		) );
+		self::event_advanced_logs( "Event endpoint callback completed" );
 	}
 
 	public static function capture_async_helper( $post_parameters = [], $wp_send_json = true ) {
@@ -2762,19 +2895,32 @@ class BWFAN_Common {
 
 		self::event_advanced_logs( "V{$v} worker callback received" );
 
-		self::worker_as_run();
-
 		/** Logs */
 		$cron_check = self::is_log_enabled( 'bwfan_cron_check_logging' );
 		if ( true === $cron_check || ( defined( 'BWF_CHECK_CRON_SCHEDULE' ) && true === BWF_CHECK_CRON_SCHEDULE ) ) {
 			add_filter( 'bwf_logs_allowed', '__return_true', PHP_INT_MAX );
 			$logger_obj = BWF_Logger::get_instance();
-			$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v' . $v, 'autonami' );
+			$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - before worker run', 'fka-cron-check-v' . $v, 'autonami' );
 		}
 
+		// Prepare and send response immediately to prevent timeout
 		$resp        = array();
 		$resp['msg'] = 'success';
-		wp_send_json( $resp );
+		$resp['time'] = date_i18n( 'Y-m-d H:i:s' );
+		self::send_response_and_close_connection( $resp );
+
+		// Now run worker tasks in background (client already received response)
+		self::worker_as_run();
+
+		self::event_advanced_logs( "V{$v} worker callback completed" );
+		/** Logs */
+		if ( true === $cron_check || ( defined( 'BWF_CHECK_CRON_SCHEDULE' ) && true === BWF_CHECK_CRON_SCHEDULE ) ) {
+			if ( isset( $logger_obj ) ) {
+				$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v' . $v, 'autonami' );
+			}
+		}
+
+		return;
 	}
 
 	public static function worker_as_run() {
@@ -2793,7 +2939,9 @@ class BWFAN_Common {
 		$as_ins = ActionScheduler_QueueRunner::instance();
 
 		/** Run Action Scheduler worker */
-		$as_ins->run();
+		$result = $as_ins->run();
+
+		self::event_advanced_logs( "Actions processed: {$result}" );
 	}
 
 	/**
@@ -3029,7 +3177,8 @@ class BWFAN_Common {
 			'worker'     => true,
 			'unique_key' => get_option( 'bwfan_u_key', false ),
 		);
-		$args      = bwf_get_remote_rest_args( $body_data );
+		$args            = bwf_get_remote_rest_args( $body_data );
+		$args['timeout'] = apply_filters( 'bwfan_as_worker_timeout_v2', 2 ); // Allow time for WordPress to bootstrap and send early response
 		wp_remote_post( $url, $args );
 	}
 
@@ -3067,7 +3216,8 @@ class BWFAN_Common {
 			'worker'     => true,
 			'unique_key' => get_option( 'bwfan_u_key', false ),
 		);
-		$args      = bwf_get_remote_rest_args( $body_data );
+		$args            = bwf_get_remote_rest_args( $body_data );
+		$args['timeout'] = apply_filters( 'bwfan_as_worker_timeout_v2', 2 ); // Allow time for WordPress to bootstrap and send early response
 
 		$resp = wp_remote_post( $url, $args );
 		self::event_advanced_logs( 'V2 worker response' );
@@ -4296,6 +4446,9 @@ class BWFAN_Common {
 	public static function hit_cron_to_run_tasks() {
 		$url  = rest_url( '/autonami/v1/autonami-cron' );
 		$args = bwf_get_remote_rest_args( array(), 'GET' );
+
+		$args['timeout'] = apply_filters( 'bwfan_as_worker_timeout_v2', 2 ); // Allow time for WordPress to bootstrap and send early response
+
 		wp_remote_post( $url, $args );
 	}
 
@@ -10389,7 +10542,7 @@ class BWFAN_Common {
 		$args = array(
 			'method'    => 'GET',
 			'body'      => array(),
-			'timeout'   => 0.01,
+			'timeout'   => apply_filters( 'bwfan_as_worker_timeout_v2', 2 ), // Allow time for WordPress to bootstrap and send early response
 			'sslverify' => false,
 		);
 
@@ -12024,7 +12177,8 @@ class BWFAN_Common {
 			'github.com',
 			'discord.gg',
 			'tiktok.com',
-			'zoom.us'
+			'zoom.us',
+			'youtu.be'
 		];
 		$excluded_urls = apply_filters( 'bwfan_exclude_click_track_urls', $excluded_urls );
 
@@ -13094,21 +13248,33 @@ class BWFAN_Common {
 	 */
 	public static function run_v2_worker_tasks( $request = '' ) {
 		self::event_advanced_logs( "V2 worker callback received" );
-		self::worker_as_run();
 
 		/** Logs */
 		$cron_check = self::is_log_enabled( 'bwfan_cron_check_logging' );
 		if ( true === $cron_check || ( defined( 'BWF_CHECK_CRON_SCHEDULE' ) && true === BWF_CHECK_CRON_SCHEDULE ) ) {
 			add_filter( 'bwf_logs_allowed', '__return_true', PHP_INT_MAX );
 			$logger_obj = BWF_Logger::get_instance();
-			$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v2', 'autonami' );
+			$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - before worker run', 'fka-cron-check-v2', 'autonami' );
 		}
 
-		wp_send_json( [
+		// Prepare and send response immediately to prevent timeout
+		$resp = [
 			'msg'       => 'success',
 			'time'      => date_i18n( 'Y-m-d H:i:s' ),
 			'datastore' => get_class( ActionScheduler_Store::instance() ),
-		] );
+		];
+		self::send_response_and_close_connection( $resp );
+
+		// Now run worker tasks in background (client already received response)
+		self::worker_as_run();
+
+		self::event_advanced_logs( "V2 worker callback completed" );
+		/** Logs */
+		if ( true === $cron_check || ( defined( 'BWF_CHECK_CRON_SCHEDULE' ) && true === BWF_CHECK_CRON_SCHEDULE ) ) {
+			if ( isset( $logger_obj ) ) {
+				$logger_obj->log( date_i18n( 'Y-m-d H:i:s' ) . ' - after worker run', 'fka-cron-check-v2', 'autonami' );
+			}
+		}
 	}
 
 	/**
@@ -13132,7 +13298,7 @@ class BWFAN_Common {
 
 		/** Checking by l_hash & clean url */
 		if ( ! empty( $l_hash ) ) {
-			$is_link_exists = BWFAN_Model_Links::is_link_hash_exists( $cleaned_url, $l_hash );
+			$is_link_exists = BWFAN_Model_Links::is_link_hash_exists( $l_hash, $cleaned_url );
 
 			// if link entry not found return home url
 			if ( empty( $is_link_exists ) ) {
@@ -13140,8 +13306,7 @@ class BWFAN_Common {
 
 				return home_url();
 			}
-
-			BWFAN_Email_Conversations::$link_id = $is_link_exists;
+			BWFAN_Email_Conversations::$link_id = ! empty( $is_link_exists['ID'] ) ? $is_link_exists['ID'] : 0;
 
 			return $link;
 		}

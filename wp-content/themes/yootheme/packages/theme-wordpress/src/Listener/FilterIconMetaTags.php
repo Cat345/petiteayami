@@ -3,7 +3,8 @@
 namespace YOOtheme\Theme\Wordpress\Listener;
 
 use YOOtheme\Config;
-use YOOtheme\Theme\Listener\SetFavicons;
+use YOOtheme\Url;
+use YOOtheme\View\HtmlElement;
 
 class FilterIconMetaTags
 {
@@ -25,24 +26,23 @@ class FilterIconMetaTags
      */
     public function handle(array $tags)
     {
-        $icons = SetFavicons::load($this->config);
+        $icons = array_filter([
+            $this->load('favicon', 'icon', ['sizes' => 'any']),
+            $this->load('favicon_svg', 'icon', ['type' => 'image/svg+xml']),
+            $this->load('touchicon', 'apple-touch-icon'),
+        ]);
 
-        if (!empty(array_filter($icons))) {
-            $tags = [];
-        }
+        return empty($icons) ? $tags : $icons;
+    }
 
-        if ($icons['favicon']) {
-            $tags[] = "<link rel=\"icon\" href=\"{$icons['favicon']}\" sizes=\"any\">";
-        }
-
-        if ($icons['favicon_svg']) {
-            $tags[] = "<link rel=\"icon\" href=\"{$icons['favicon_svg']}\" type=\"image/svg+xml\">";
-        }
-
-        if ($icons['touchicon']) {
-            $tags[] = "<link rel=\"apple-touch-icon\" href=\"{$icons['touchicon']}\">";
-        }
-
-        return $tags;
+    /**
+     * @param array<string, string> $attrs
+     */
+    protected function load(string $src, string $rel, array $attrs = []): string
+    {
+        $src = $this->config->get("~theme.{$src}");
+        return $src
+            ? HtmlElement::tag('link', ['rel' => $rel, 'href' => Url::to($src)] + $attrs)
+            : '';
     }
 }

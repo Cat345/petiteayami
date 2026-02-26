@@ -339,8 +339,8 @@ return [
                 'Set percentage change in the amount of gamma correction (Between 0.01 and 10.0, where 1.0 applies no correction).',
             'type' => 'range',
             'attrs' => [
-                'min' => 0.5,
-                'max' => 2,
+                'min' => 0.01,
+                'max' => 10,
                 'step' => 0.1,
             ],
             'enable' => 'yootheme.config.google_maps_api_key',

@@ -28,8 +28,8 @@ class SaleAnnouncementPattern extends Pattern {
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":1} -->
       <h1 class="wp-block-heading">' .
-      /* translators: [X]% is a placeholder for the discount percentage */
-      __('[X]% off sitewide!', 'mailpoet') . '</h1>
+      /* translators: XX% is placeholder text that merchants replace with their own content. */
+      __('XX% off sitewide!', 'mailpoet') . '</h1>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -42,8 +42,8 @@ class SaleAnnouncementPattern extends Pattern {
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
       <p style="font-size:16px">' .
-      /* translators: [X]% is a placeholder for the discount percentage */
-      __('Get [X]% OFF EVERYTHING in the store for a limited time.', 'mailpoet') . '</p>
+      /* translators: XX% OFF EVERYTHING is placeholder text that merchants replace with their own content. */
+      __('Get XX% OFF EVERYTHING in the store for a limited time.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -53,15 +53,15 @@ class SaleAnnouncementPattern extends Pattern {
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
       <div class="wp-block-buttons">
       <!-- wp:button {"style":{"typography":{"fontSize":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
-      <div class="wp-block-button has-custom-font-size" style="font-size:16px"><a class="wp-block-button__link wp-element-button" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button has-custom-font-size" style="font-size:16px;padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20)" href="[mailpoet/site-homepage-url]">' . __('Shop now', 'mailpoet') . '</a></div>
       <!-- /wp:button -->
       </div>
       <!-- /wp:buttons -->
 
       <!-- wp:paragraph {"fontSize":"medium"} -->
       <p class="has-medium-font-size">' .
-      /* translators: [End Date] is a placeholder for the sale end date */
-      __("Don't wait too long – this offer ends on [End Date].", 'mailpoet') . '</p>
+      /* translators: MONTH DAY is placeholder text that merchants replace with their own content. */
+      __("Don't wait too long – this offer ends on MONTH DAY.", 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
     </div>
     <!-- /wp:group -->

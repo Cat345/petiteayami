@@ -62,9 +62,15 @@
 			unset( $data['meta'] );
 		}
 
+		$allowed_columns = apply_filters(
+			'xoo_wl_allowed_waitlist_columns',
+			array_keys( $defaults )
+		);
+
+
 		//Remove other keys
 		foreach ( $data as $key => $value ) {
-			if( !array_key_exists( $key, $defaults ) ){
+			if ( ! in_array( $key, $allowed_columns, true ) ){
 				unset( $data[ $key ] );
 			}
 		}
@@ -79,7 +85,13 @@
 				$user_row_id = $user_exists[0]->xoo_wl_id;
 			}
 		}
-		
+
+		$data = apply_filters(
+			'xoo_wl_waitlist_row_data',
+			$data,
+			$user_row_id
+		);
+
 
 		//If user already exists & duplication is not allowed, update the row
 		if( !$allow_duplicate_email && $user_row_id ){

@@ -728,16 +728,18 @@ abstract class Importer {
 		$update_existing        = $this->get_import_meta( 'update_existing' );
 		$update_existing_fields = $this->get_import_meta( 'update_existing_fields' );
 		$disable_events         = $this->get_import_meta( 'disable_events' );
+		
+		$contact        = new BWFCRM_Contact( $contact_data['email'], true );
+		
+		/** Check if contact exists first */
+		$contact_exists = $contact->already_exists;
 
-		// Check if contact exists first
-		$contact        = new BWFCRM_Contact( $contact_data['email'] );
-		$contact_exists = $contact->get_id() > 0;
-		// Add a disable events flag if needed
+		/** Add a disable events flag if needed */
 		if ( true === $disable_events ) {
 			$contact_data['data']['disable_events'] = true;
 		}
 
-		// Handle unsubscribe status
+		/** Handle unsubscribe status */
 		$do_unsubscribe = false;
 		if ( 3 === intval( $contact_data['data']['status'] ) ) {
 			$contact_data['data']['status'] = 1;
@@ -748,12 +750,12 @@ abstract class Importer {
 
 			/** If contact is not exists then update field */
 			if ( empty( $contact_exists ) || ! empty( $update_existing_fields ) ) {
-				// Remove creation date for existing contacts
+				/** Remove creation date for existing contacts */
 				if ( isset( $contact_data['data']['creation_date'] ) && ! empty( $contact->contact->get_creation_date() ) ) {
 					unset( $contact_data['data']['creation_date'] );
 				}
 
-				// Handle don't update blank fields setting
+				/** Handle don't update blank fields setting */
 				$dont_update_blank = $this->get_import_meta( 'dont_update_blank' );
 				if ( true === $dont_update_blank ) {
 					$contact_cols = array( 'email', 'f_name', 'l_name', 'state', 'country', 'contact_no', 'timezone', 'creation_date', 'gender', 'company', 'dob' );
@@ -761,7 +763,7 @@ abstract class Importer {
 						if ( ! isset( $contact_data['data'][ $col ] ) ) {
 							continue;
 						}
-						// Only trim if value is a string to avoid warnings
+						/** Only trim if value is a string to avoid warnings */
 						$value = is_string( $contact_data['data'][ $col ] ) ? trim( $contact_data['data'][ $col ] ) : $contact_data['data'][ $col ];
 						if ( ! empty( $value ) ) {
 							continue;
@@ -771,8 +773,9 @@ abstract class Importer {
 				}
 			}
 
+			/** If contact is not exists or update existing status is enabled then handle unsubscribe status */
 			if ( empty( $contact_exists ) || $update_existing ) {
-				// Handle unsubscribe status
+				/** Handle unsubscribe status */
 				if ( $do_unsubscribe ) {
 					$contact->unsubscribe( $disable_events );
 				} else {
@@ -782,11 +785,11 @@ abstract class Importer {
 				unset( $contact_data['data']['status'] );
 			}
 
-			// Update contact data
+			/** Set contact data in the contact object */
 			$result         = $contact->set_data( $contact_data['data'] );
 			$fields_updated = $result['fields_changed'];
 
-			// Set tags and lists
+			/** Fetch tags and lists */
 			if ( isset( $contact_data['data']['tags'] ) && ! is_array( $contact_data['data']['tags'] ) ) {
 				$tags        = explode( ',', $contact_data['data']['tags'] );
 				$column_tags = array_filter( array_map( function ( $tag ) {
@@ -813,11 +816,12 @@ abstract class Importer {
 				$lists = $contact_data['data']['lists'] ?? array();
 			}
 
+			/** Set tags and lists */
 			$to_be_assigned_tags  = array_merge( $tags, $this->get_new_tags() );
 			$to_be_assigned_lists = array_merge( $lists, $this->get_new_lists() );
 			$contact              = $this->set_contact_tags( $contact, $to_be_assigned_tags );
 			$contact              = $this->set_contact_lists( $contact, $to_be_assigned_lists );
-			
+
 			/** If contact exists and update existing status and field disabled, lists and tag is empty then mark skips contact */
 			if ( ! empty( $contact_exists ) && empty( $update_existing ) && empty( $update_existing_fields ) && empty( $to_be_assigned_tags ) && empty( $to_be_assigned_lists ) ) {
 				return [
@@ -826,11 +830,10 @@ abstract class Importer {
 				];
 			}
 
-			// Save contact data if fields were updated
-			if ( $fields_updated ) {
+			/** Save contact fields if fields were updated and contact is new or update existing fields are enabled */
+			if ( $fields_updated && ( empty( $contact_exists ) || ! empty( $update_existing_fields ) ) ) {
 				$contact->save_fields();
 			}
-
 			$contact->save();
 
 			return [
@@ -1455,12 +1458,73 @@ abstract class Importer {
 	public function handle_contact_loop_error() {}
 
 	/**
+	 * Prepare tag and list mappings (to be implemented by child classes if needed)
+	 *
+	 * @return void
+	 */
+	public function prepare_tag_list() {
+		// Default empty implementation - child classes should override if needed
+	}
+
+	/**
 	 * Get source-specific data (to be implemented by child classes)
 	 *
 	 * @param mixed $data
 	 *
 	 * @return array|WP_Error
 	 */
+	protected function get_source_specific_data( $data ) {
+		// Default implementation - child classes should override
+		if ( empty( $data ) ) {
+			return new WP_Error( 'bwfcrm_empty_data', __( 'No data provided.', 'wp-marketing-automations' ) );
+		}
+		return is_array( $data ) ? $data : array();
+	}
+
+	/**
+	 * Get the current file position (for CSV imports)
+	 *
+	 * @return int|null The current file position or null if not applicable
+	 */
+	protected function get_file_position() {
+		return $this->file_position;
+	}
+
+	/**
+	 * Get the total count of contacts to import
+	 *
+	 * @return int The total count of contacts
+	 */
+	protected function get_contacts_count() {
+		// Default implementation - child classes should override
+		return $this->get_count();
+	}
+
+	/**
+	 * Prepare terms (tags/lists) for import
+	 *
+	 * @param mixed $value The term values to prepare
+	 * @param string $type The type of terms (tags or lists)
+	 *
+	 * @return array The prepared terms
+	 */
+	protected function prepare_terms( $value, $type ) {
+		// Default implementation - child classes should override if needed
+		if ( empty( $value ) ) {
+			return array();
+		}
+
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( is_string( $value ) ) {
+			$terms = explode( ',', $value );
+			return array_filter( array_map( 'trim', $terms ) );
+		}
+
+		return array();
+	}
 
 	/**
 	 * Abstract class for importers.

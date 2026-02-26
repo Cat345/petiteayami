@@ -75,11 +75,12 @@ class LoadImageUrl
     protected static function getCacheKey(string $file, array $params): string
     {
         $key = $params['cachekey'];
+        $filename = pathinfo($file, PATHINFO_FILENAME);
         $type = empty($params['type'])
             ? pathinfo($file, PATHINFO_EXTENSION)
             : explode(',', $params['type'])[0];
 
-        return sprintf('%s/%s.%s', substr($key, 0, 2), $key, $type);
+        return sprintf('%s/%s-%s.%s', substr($key, 0, 2), $filename, $key, $type);
     }
 
     protected static function getConfig(string $key): string

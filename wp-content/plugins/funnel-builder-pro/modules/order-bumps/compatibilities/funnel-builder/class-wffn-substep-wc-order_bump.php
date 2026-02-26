@@ -196,7 +196,7 @@ if ( ! class_exists( 'WFFN_Substep_WC_Order_Bump' ) ) {
 			 * If current page is native page && If store checkout is enabled from backend && Store checkout funnel Doesn't consist any checkout
 			 * If all true the provide order bumps from funnel meta
 			 */
-			if ( empty( $posted_data['_wfacp_post_id'] ) || 0 === abs( $posted_data['_wfacp_post_id'] ) ) {
+			if ( empty( $posted_data['_wfacp_post_id'] ) || 0 === absint( $posted_data['_wfacp_post_id'] ) ) {
 
 				return $decided_bumps;
 			}

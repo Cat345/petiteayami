@@ -136,7 +136,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			add_action( 'woocommerce_checkout_update_order_review', function () {
 				add_action( 'woocommerce_after_calculate_totals', array( $this, 'check_cart_coupons' ), PHP_INT_MAX );
 			} );
-
+			
 
 		}
 
@@ -2481,7 +2481,7 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 
 		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
 			$field_key = 'enable_order_field_collapsed_by_default';
-			
+
 			if ( $device === 'tablet' ) {
 				$field_key .= '_tablet';
 			} elseif ( $device === 'mobile' ) {
@@ -2492,10 +2492,10 @@ if ( ! class_exists( 'WFACP_Template_Common' ) ) {
 			if ( isset( $this->form_data[ $field_key ] ) && 'yes' == $this->form_data[ $field_key ] ) {
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		public function should_hide_order_summary_by_default() {
 			// Check if any device has collapsed enabled
 			return $this->enable_order_field_collapsed_by_default( 'desktop' ) ||

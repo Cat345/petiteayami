@@ -11,11 +11,6 @@ return [
     ],
 
     'events' => [
-        'theme.head' => [
-            Listener\SetFavicons::class => '@handle',
-            Listener\SetBodyClass::class => '@handle',
-        ],
-
         'customizer.init' => [
             Listener\ShowNewsModal::class => '@handle',
             Listener\AvifImageSupport::class => '@handle',

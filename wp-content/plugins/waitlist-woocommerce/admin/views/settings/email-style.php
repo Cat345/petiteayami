@@ -73,8 +73,8 @@ $settings = array(
 		'section_id' 	=> 'emsy_container',
 		'id'			=> 'c-cont-padding',
 		'title' 		=> 'Content Padding',
-		'default' 		=> '20px 30px 40px 20px',
-		'desc'			=> 'Top-Right-Bottom-Left ( Default 20px 30px 40px 20px )'
+		'default' 		=> '20px 20px 20px 20px',
+		'desc'			=> 'Top-Right-Bottom-Left ( Default 20px 20px 20px 20px )'
 	),
 
 

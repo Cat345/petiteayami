@@ -278,6 +278,11 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         $contentVisibility = isset( $attributes['contentVisibility'] ) ? $attributes['contentVisibility'] : array();
         $className         = isset( $attributes['className'] ) ? $attributes['className'] : '';
 
+        // Security: Validate coupon access before rendering.
+        if ( ! $this->_can_user_view_coupon( absint( $coupon_id ) ) ) {
+            return '';
+        }
+
         $is_premium = $this->_helper_functions->is_plugin_active( Plugin_Constants::PREMIUM_PLUGIN );
         $coupon     = $is_premium ? new \ACFWP\Models\Objects\Advanced_Coupon( absint( $coupon_id ) ) : new Advanced_Coupon( absint( $coupon_id ) );
 
@@ -356,6 +361,55 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
     | Utilities
     |--------------------------------------------------------------------------
      */
+
+    /**
+     * Check if the current user can view a specific coupon.
+     *
+     * This method validates coupon access based on post status and user capabilities
+     * to prevent unauthorized access to private or draft coupons.
+     *
+     * @since 4.7.2
+     * @access private
+     *
+     * @param int $coupon_id Coupon ID.
+     * @return bool True if user can view the coupon, false otherwise.
+     */
+    private function _can_user_view_coupon( $coupon_id ) {
+        // Validate coupon ID.
+        if ( empty( $coupon_id ) ) {
+            return false;
+        }
+
+        $coupon_post = get_post( $coupon_id );
+
+        // Check if coupon exists and is valid post type.
+        if ( ! $coupon_post || 'shop_coupon' !== $coupon_post->post_type ) {
+            return false;
+        }
+
+        $post_status = $coupon_post->post_status;
+
+        // Published coupons are accessible to everyone.
+        if ( 'publish' === $post_status ) {
+            return true;
+        }
+
+        // Private coupons require 'manage_woocommerce' capability.
+        if ( 'private' === $post_status ) {
+            return current_user_can( 'manage_woocommerce' );
+        }
+
+        // Draft, pending, and other non-public statuses require edit capability or being the author.
+        if ( in_array( $post_status, array( 'draft', 'pending', 'auto-draft' ), true ) ) {
+            // Allow if user can edit this specific coupon or is the author.
+            $can_edit  = current_user_can( 'edit_post', $coupon_id );
+            $is_author = is_user_logged_in() && get_current_user_id() === (int) $coupon_post->post_author;
+            return $can_edit || $is_author;
+        }
+
+        // Trash and other statuses are not accessible via shortcode.
+        return false;
+    }
 
     /**
      * Append the sort parameters to the query arguments based on the selected 'order_by' attribute of the block.
