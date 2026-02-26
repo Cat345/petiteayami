@@ -14,3 +14,88 @@ $app->load(
         'styler,theme-wordpress*,builder-wordpress*}' .
         '/bootstrap.php,config.php}',
 );
+
+add_action( 'get_header', 'usota_storefront_remove_sidebar' );
+function usota_storefront_remove_sidebar() {
+    if ( is_product() || is_checkout() || is_cart() || is_account_page() ) {
+     
+        ?>
+        <style>
+            #tm-sidebar {
+               display: none;
+            }
+        </style>
+        <?php
+    }
+}
+
+
+
+add_filter( 'woocommerce_sale_flash', 'truemisha_custom_sale_badge', 10, 3 );
+
+function truemisha_custom_sale_badge( $html, $post, $product ) {
+
+	if ( $product->is_on_sale() && $product->get_regular_price() ) {
+
+		$regular_price = (float) $product->get_regular_price();
+		$sale_price = (float) $product->get_sale_price();
+
+		if ( $regular_price > 0 ) {
+			$percentage = round( ( $regular_price - $sale_price ) / $regular_price * 100 );
+
+			// Создаём кастомный бейдж с процентом
+			$html = '<span class="onsale">Sale -' . $percentage . '%</span>';
+		}
+	}
+
+	return $html;
+    
+}
+
+/**
+ * This snippet will stop purchase events to fire on thank you page
+ **/
+add_action( 'woocommerce_init', function () {
+
+	//get all WooCommerce integrations
+	$integrations = WC()->integrations->get_integrations();
+
+	//checking if facebook for woocommerce installed?
+	if ( isset( $integrations['facebookcommerce'] ) && $integrations['facebookcommerce'] instanceof WC_Facebookcommerce_Integration ) {
+
+		/**
+		 * For version < 1.1.0
+		 */
+		remove_action( 'woocommerce_thankyou', [
+			$integrations['facebookcommerce']->events_tracker,
+			'inject_gateway_purchase_event'
+		], $integrations['facebookcommerce']->events_tracker::FB_PRIORITY_HIGH );
+
+		/**
+		 * For version >= 1.1.0
+		 */
+		remove_action( 'woocommerce_thankyou', [
+			$integrations['facebookcommerce']->events_tracker,
+			'inject_purchase_event'
+		], 40 );
+	}else{
+		if ( function_exists('facebook_for_woocommerce') ) {
+			$event_track = facebook_for_woocommerce()->get_integration()->events_tracker;
+
+
+			/**
+			 * For version >= 1.1.0
+			 */
+			remove_action( 'woocommerce_thankyou', [
+				$event_track,
+				'inject_purchase_event'
+			], 40 );
+
+
+			remove_action( 'woocommerce_checkout_update_order_meta', [
+				$event_track,
+				'inject_purchase_event'
+			], 10 );
+		}
+	}
+}, 999 );
