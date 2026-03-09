@@ -16,7 +16,7 @@ use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTax;
 use Stripe\StripeTaxForWooCommerce\WordPress\Options;
 use Stripe\StripeTaxForWooCommerce\WordPress\TaxRegistrationsListTable;
 
-$stripe_tax_for_woocommerce_key        = Options::get_live_mode_key();
+$stripe_tax_for_woocommerce_key        = Options::get_current_mode_key();
 $stripe_tax_for_woocommerce_mode_label = __( 'Add Registration', 'stripe-tax-for-woocommerce' );
 
 $stripe_tax_for_woocommerce_tax_registration_selected_country  = 'US';
@@ -29,20 +29,12 @@ $stripe_tax_for_woocommerce_tax_maybe_hide_us_state            = '';
 $stripe_tax_for_woocommerce_tax_maybe_hide_lease_and_amusement = '';
 $stripe_tax_for_woocommerce_tax_maybe_hide_communications      = '';
 
-if ( 'US' !== $stripe_tax_for_woocommerce_tax_registration_selected_country ) {
-	$stripe_tax_for_woocommerce_tax_maybe_hide_us_state       = 'stripe_tax_for_woocommerce_hidden';
-	$stripe_tax_for_woocommerce_tax_maybe_hide_communications = 'stripe_tax_for_woocommerce_hidden';
-}
-
 $stripe_tax_for_woocommerce_tax_maybe_hide_eu = '';
 if ( ! in_array( $stripe_tax_for_woocommerce_tax_registration_selected_country, StripeTaxPluginHelper::get_tax_registration_eu_countries(), true ) ) {
 	$stripe_tax_for_woocommerce_tax_maybe_hide_eu = 'stripe_tax_for_woocommerce_hidden';
 }
 
 $stripe_tax_for_woocommerce_tax_maybe_hide_ca = '';
-if ( 'CA' !== $stripe_tax_for_woocommerce_tax_registration_selected_country ) {
-	$stripe_tax_for_woocommerce_tax_maybe_hide_ca = 'stripe_tax_for_woocommerce_hidden';
-}
 
 if ( ! in_array( $stripe_tax_for_woocommerce_tax_registration_selected_us_state, StripeTaxPluginHelper::get_tax_registration_lease_and_amusement_tax_us_states(), true ) ) {
 	$stripe_tax_for_woocommerce_tax_maybe_hide_lease_and_amusement = 'stripe_tax_for_woocommerce_hidden';
@@ -456,7 +448,7 @@ add_action(
 			<?php
 			global $current_section;
 
-			$stripe_tax_for_woocommerce_key = Options::get_live_mode_key();
+			$stripe_tax_for_woocommerce_key = Options::get_current_mode_key();
 
 			try {
 				$tax_registrations_list_table = new TaxRegistrationsListTable();

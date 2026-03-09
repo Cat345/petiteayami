@@ -2,7 +2,7 @@
 .app-button{white-space:nowrap}.app-button svg{max-height:inherit;max-width:inherit}.app-button svg circle{stroke:currentcolor}.app-button[hidden]{display:none!important}.app-button--icon-position-right.has-icon svg:last-child{margin-left:8px}.app-button--icon-with-text.has-icon{padding:6px 12px}
 .AnC9WXFuKgCBURYIRcRY{display:flex;flex-direction:column;gap:4px;justify-content:center}
 .gla-step-content{display:flex;justify-content:center}.gla-step-content .gla-step-content__container{flex:1;margin:var(--large-gap);max-width:1032px}
-.gla-step-content-header{align-items:center;display:flex;flex-direction:column;gap:12px;margin:auto;margin-bottom:var(--large-gap);max-width:600px;text-align:center}.gla-step-content-header h1{font-size:32px;padding:0}.gla-step-content-header__description{line-height:16px}
+.gla-step-content-header{align-items:center;display:flex;flex-direction:column;gap:12px;margin:auto;margin-bottom:var(--large-gap);max-width:600px;text-align:center}.gla-step-content-header h1{font-size:32px;padding:0}.gla-step-content-header__description{line-height:16px;text-wrap:balance}
 .gla-step-content-actions{display:flex;gap:20px;justify-content:flex-end}.gla-step-content-actions[hidden]{display:none}
 .gla-section-card-body{padding:var(--large-gap)}
 .gla-section-card-footer{padding:calc(var(--large-gap)/2) var(--large-gap)}.gla-section-card-footer[hidden]{display:none}

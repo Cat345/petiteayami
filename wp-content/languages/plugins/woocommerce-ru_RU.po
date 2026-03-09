@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-02-25 13:04:17+0000\n"
+"PO-Revision-Date: 2026-03-09 12:07:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6670,7 +6670,7 @@ msgstr "Информация о доступности товара."
 
 #: src/Internal/Orders/OrderStatusRestController.php:95
 msgid "Order status slug."
-msgstr "Слаг статуса заказа."
+msgstr "Ярлык статуса заказа."
 
 #: src/Internal/Orders/OrderStatusRestController.php:77
 msgid "Order statuses not found"
@@ -18578,7 +18578,7 @@ msgstr "Список недавно просмотренных товаров"
 #: includes/admin/list-tables/class-wc-admin-list-table-orders.php:150
 #: src/Internal/Admin/Orders/ListTable.php:334
 msgid "Change status to cancelled"
-msgstr "Установить статус «отменён»"
+msgstr "Изменить статус на «отменён»"
 
 #. translators: %d: Download number
 #. translators: %s: download number
@@ -18604,7 +18604,7 @@ msgstr "Управляйте транзакциями, не выходя из п
 msgid "Create and send purchase follow-up emails, newsletters, and promotional campaigns straight from your dashboard."
 msgstr "Создавайте и отправляйте электронные письма о покупке, новостные сообщения и рекламные кампании прямо в панели управления сайтом."
 
-#: src/StoreApi/Routes/V1/Batch.php:121
+#: src/StoreApi/Routes/V1/Batch.php:122
 msgid "Invalid path provided."
 msgstr "Предоставлен неверный путь."
 
@@ -29722,7 +29722,7 @@ msgstr "Срок действия этой ссылки на отчет истё
 
 #: includes/admin/meta-boxes/views/html-product-data-variations.php:107
 msgid "Set Status - On backorder"
-msgstr "Установить статус – предзаказ"
+msgstr "Назначить статус - «Предзаказ»"
 
 #: includes/admin/meta-boxes/views/html-order-download-permission.php:59
 #: src/Internal/Admin/Notes/NewSalesRecord.php:156
@@ -29781,7 +29781,7 @@ msgstr "Предзаказ"
 
 #: includes/admin/list-tables/class-wc-admin-list-table-orders.php:413
 msgid "Change status: "
-msgstr "Изменение статуса: "
+msgstr "Изменить статус: "
 
 #: includes/admin/list-tables/class-wc-admin-list-table-orders.php:405
 msgid "Completed"
@@ -29813,7 +29813,7 @@ msgstr "Изменить статус на «выполнено»"
 #: includes/admin/list-tables/class-wc-admin-list-table-orders.php:148
 #: src/Internal/Admin/Orders/ListTable.php:332
 msgid "Change status to on-hold"
-msgstr "Изменить статус на \"на удержании\""
+msgstr "Изменить статус на «на удержании»"
 
 #: includes/admin/list-tables/class-wc-admin-list-table-orders.php:147
 #: src/Internal/Admin/Orders/ListTable.php:331
@@ -31213,11 +31213,11 @@ msgstr "Включить отзывы о товарах"
 
 #: includes/admin/meta-boxes/views/html-product-data-variations.php:106
 msgid "Set Status - Out of stock"
-msgstr "Назначить статус - Нет в наличии"
+msgstr "Назначить статус - «Нет в наличии»"
 
 #: includes/admin/meta-boxes/views/html-product-data-variations.php:105
 msgid "Set Status - In stock"
-msgstr "Назначить статус - В наличии"
+msgstr "Назначить статус - «В наличии»"
 
 #: includes/admin/importers/views/html-product-csv-import-form.php:114
 msgid "Show advanced options"

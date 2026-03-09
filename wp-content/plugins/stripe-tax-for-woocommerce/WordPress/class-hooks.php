@@ -35,9 +35,12 @@ use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeOrderItemTax;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTax;
 use WC_Data;
 use WP_CLI;
+use WP_REST_Request;
+use WP_REST_Response;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTaxTaxRateMemRepo;
-use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTaxTaxRateHooks;
 use Stripe\StripeTaxForWooCommerce\WordPress\StringTaxRateIdFixerScheduledAction;
+use Stripe\StripeTaxForWooCommerce\WordPress\StripeTax_Plugin;
+use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Data;
 
 /**
  * Class for adding WordPress actions, filter, registering styles and scripts
@@ -99,7 +102,8 @@ class Hooks {
 	 */
 	protected static function get_tax_transaction() {
 		if ( is_null( static::$tax_transaction ) ) {
-			static::$tax_transaction = new TaxTransaction( Options::get_live_mode_key() );
+			// @phpstan-ignore-next-line
+			static::$tax_transaction = new TaxTransaction( Options::get_current_mode_key() );
 		}
 		return static::$tax_transaction;
 	}
@@ -127,6 +131,7 @@ class Hooks {
 	 * Register JS files required for WP Admin(backend page) and add settings names localizations.
 	 */
 	public static function action_admin_enqueue_scripts() {
+
 		wp_enqueue_script(
 			'stripe_tax_for_woocommerce_admin',
 			STRIPE_TAX_FOR_WOOCOMMERCE_ASSETS_JS_URL . 'stripe_tax_for_woocommerce_admin.js',
@@ -170,8 +175,8 @@ class Hooks {
 			'disconnect_from_stripe_message_confirmation' => __( 'Are you sure you want to disconnect Stripe Tax plugin from Stripe Account?', 'stripe-tax-for-woocommerce' ),
 		);
 
-		if ( static::is_stripe_tab_selected() ) {
-			$api_key = Options::get_live_mode_key();
+		if ( self::is_stripe_tab_selected() ) {
+			$api_key = Options::get_current_mode_key();
 
 			try {
 				$tax_registrations = new TaxRegistrations( $api_key );
@@ -215,6 +220,13 @@ class Hooks {
 			),
 			10,
 			0
+		);
+
+		add_action(
+			'woocommerce_admin_order_items_after_fees',
+			array( static::class, 'render_admin_error_message' ),
+			10,
+			1
 		);
 	}
 
@@ -292,16 +304,16 @@ class Hooks {
 	public static function action_woocommerce_product_options_tax() {
 		global $product_object;
 		try {
-			$tax_settings      = new TaxSettings( Options::get_live_mode_key() );
+			$tax_settings      = new TaxSettings( Options::get_current_mode_key() );
 			$stripe_wc_product = new ExtendedProduct( $product_object->get_id() );
-			$default_tax_code  = $tax_settings->get_tax_code();
-			$tax_codes         = ( new TaxCodeList( Options::get_live_mode_key() ) )->get_as_key_value_formatted();
+			$default_tax_code  = Options::get_tax_code();
+			$tax_codes         = ( new TaxCodeList( Options::get_current_mode_key() ) )->get_as_key_value_formatted();
 			woocommerce_wp_select(
 				array(
 					'id'          => '_stripe_tax_for_woocommerce_tax_code',
 					'value'       => isset( $stripe_wc_product->get_extended_product()['tax_code'] ) ? $stripe_wc_product->get_extended_product()['tax_code'] : 'stfwc_inherit',
 					'label'       => __( 'Stripe Tax - Product tax code', 'stripe-tax-for-woocommerce' ),
-					'options'     => array_merge( array( 'stfwc_inherit' => __( 'Default' ) . ' (' . $default_tax_code . ' - ' . TaxCodeList::format_single( $default_tax_code, Options::get_live_mode_key() ) . ')' ), $tax_codes ),
+					'options'     => array_merge( array( 'stfwc_inherit' => __( 'Default' ) . ' (' . $default_tax_code . ' - ' . TaxCodeList::format_single( $default_tax_code, Options::get_current_mode_key() ) . ')' ), $tax_codes ),
 					'desc_tip'    => 'true',
 					'description' => __( 'Choose a stripe tax code for this product.', 'stripe-tax-for-woocommerce' ),
 				)
@@ -356,9 +368,7 @@ class Hooks {
 	 * @return void
 	 */
 	protected function add_actions(): void {
-		static::admin_enqueue_scripts();
 
-		static::admin_ajax();
 		static::add_action_tax_exemptions( static::$tax_exemptions );
 		add_action(
 			'woocommerce_after_product_object_save',
@@ -377,7 +387,7 @@ class Hooks {
 				'detect_error_reporting_collect',
 			),
 			10,
-			3
+			0
 		);
 		add_action(
 			'woocommerce_hydration_dispatch_request',
@@ -386,7 +396,7 @@ class Hooks {
 				'detect_error_reporting_collect',
 			),
 			10,
-			3
+			0
 		);
 		add_action(
 			'woocommerce_hydration_request_after_callbacks',
@@ -422,82 +432,11 @@ class Hooks {
 				'action_woocommerce_order_fully_refunded',
 			),
 			20,
-			2
-		);
-		add_action(
-			'woocommerce_order_status_changed',
-			array(
-				static::class,
-				'action_woocommerce_order_status_changed',
-			),
-			20,
-			4
-		);
-		add_action(
-			'woocommerce_checkout_create_order_tax_item',
-			array(
-				static::class,
-				'action_woocommerce_checkout_create_order_tax_item',
-			),
-			5,
-			3
-		);
-		add_action(
-			'woocommerce_order_before_calculate_totals',
-			array(
-				static::class,
-				'action_calculate_totals',
-			),
-			100,
-			2
-		);
-
-		add_action(
-			'woocommerce_order_after_calculate_totals',
-			array(
-				static::class,
-				'action_calculate_totals',
-			),
-			100,
-			2
+			1
 		);
 
 		add_action( 'admin_notices', array( static::class, 'render_admin_notices' ) );
-		add_action(
-			'woocommerce_store_api_checkout_order_processed',
-			array(
-				static::class,
-				'action_update_order_custom_tags',
-			),
-			100,
-			13
-		);
-		add_action(
-			'__experimental_woocommerce_blocks_checkout_order_processed',
-			array(
-				static::class,
-				'action_update_order_custom_tags',
-			),
-			100,
-			1
-		);
-		add_action(
-			'woocommerce_blocks_checkout_order_processed',
-			array(
-				static::class,
-				'action_update_order_custom_tags',
-			),
-			100,
-			1
-		);
-		add_action(
-			'woocommerce_checkout_order_processed',
-			function ( $id_order, $posted_data, $wc_order ) {
-				static::action_update_order_custom_tags( $wc_order );
-			},
-			100,
-			3
-		);
+
 		add_action(
 			'update_option_woocommerce_prices_include_tax',
 			function ( $old_value, $value ) {
@@ -511,6 +450,56 @@ class Hooks {
 			},
 			10,
 			2
+		);
+		add_action(
+			'admin_footer',
+			function () {
+				global $pagenow, $post;
+
+				if ( in_array( $pagenow, array( 'post.php', 'post-new.php' ), true ) && 'product' === get_post_type( $post ) ) {
+					?>
+				<script>
+					jQuery(document).ready(function($) {
+						$('#_tax_status').closest('p.form-field').remove();
+						$('#_tax_class').closest('p.form-field').remove();
+
+						function removeTaxClassFromVariations() {
+							$('.form-row.form-row-full[class*="tax_class"]').remove();
+						}
+
+						// Initial call (in case variations already visible)
+						removeTaxClassFromVariations();
+
+						// Also call when new variation fields are loaded (after clicking "Add variation", etc.)
+						$(document).on('woocommerce_variations_loaded woocommerce_variations_added', function() {
+							removeTaxClassFromVariations();
+						});
+					});
+				</script>
+					<?php
+				}
+			}
+		);
+		add_action(
+			'admin_footer-edit.php',
+			function () {
+				global $typenow;
+
+				if ( 'product' === $typenow ) {
+					?>
+				<script>
+					jQuery(document).ready(function($) {
+						// Remove the tax class field from quick and bulk edit UI
+						$('fieldset.inline-edit-col-right .tax_status').closest('label').remove();
+						$('fieldset.inline-edit-col-left .tax_status').closest('label').remove();
+
+						$('fieldset.inline-edit-col-right .tax_class').closest('label').remove();
+						$('fieldset.inline-edit-col-left .tax_class').closest('label').remove();
+					});
+				</script>
+					<?php
+				}
+			}
 		);
 	}
 
@@ -548,22 +537,13 @@ class Hooks {
 				'filter_woocommerce_get_order_item_classname',
 			),
 			5,
-			3
+			2
 		);
 		add_filter(
 			'woocommerce_cart_hide_zero_taxes',
 			'__return_false',
 			20,
 			0
-		);
-		add_filter(
-			'woocommerce_after_calculate_totals',
-			array(
-				static::class,
-				'action_woocommerce_after_calculate_totals',
-			),
-			20,
-			2
 		);
 
 		// Using this to ignore Woocommerce rates to be displayed in shop.
@@ -586,11 +566,21 @@ class Hooks {
 			10,
 			1
 		);
+		// @phpstan-ignore-next-line
 		add_filter(
 			'woocommerce_order_item_get_formatted_meta_data',
 			function ( $formatted_meta ) {
+				$meta_to_hide = array(
+					'_stripe_not_subtotal_include_tax',
+					'__stripe_tax_item_subtotal_tax',
+					'__stripe_tax_price_inclusive_tax',
+					'__stripe_tax_behavior',
+					Data::CART_ITEM_REFERENCE_META_NAME,
+					Data::TAX_EXCLUDED_META_NAME,
+				);
+
 				foreach ( $formatted_meta as $key => $meta ) {
-					if ( '_stripe_not_subtotal_include_tax' === $meta->key ) {
+					if ( in_array( $meta->key, $meta_to_hide, true ) ) {
 						unset( $formatted_meta[ $key ] );
 					}
 				}
@@ -600,6 +590,35 @@ class Hooks {
 			10,
 			2
 		);
+
+		add_filter(
+			'woocommerce_get_sections_tax',
+			function ( $classes ) {
+				return array( '' => $classes[''] );
+			},
+			10,
+			1
+		);
+
+		add_filter(
+			'option_woocommerce_tax_based_on',
+			array(
+				static::class,
+				'action_option_woocommerce_tax_based_on',
+			),
+			10,
+			1
+		);
+
+		add_filter(
+			'option_woocommerce_tax_round_at_subtotal',
+			function () {
+				return 'no';
+			},
+			10,
+			0
+		);
+
 		add_filter(
 			'woocommerce_tax_settings',
 			function ( $settings ) {
@@ -619,8 +638,13 @@ class Hooks {
 				);
 			}
 		);
+	}
 
-		StripeTaxTaxRateHooks::register();
+	/**
+	 * "option_woocommerce_tax_based_on" hook handler
+	 */
+	public static function action_option_woocommerce_tax_based_on() {
+		return 'shipping';
 	}
 
 	/**
@@ -640,263 +664,6 @@ class Hooks {
 	public static function filter_woocommerce_find_rates() {
 		return array();
 	}
-
-	/**
-	 * Updates an order "_stripe_not_subtotal_include_tax" tags.
-	 *
-	 * @param \WC_Order $wc_order WooCommerce order.
-	 */
-	public static function action_update_order_custom_tags( $wc_order ) {
-		if ( ! wc_prices_include_tax() ) {
-			return;
-		}
-
-		$cart_hash = $wc_order->get_cart_hash();
-		WC()->session->set( 'stripe_tax_for_woocommerce_cart_taxes_processed_lock_' . $cart_hash, true );
-
-		static::update_order_custom_tags( $wc_order );
-	}
-
-	/**
-	 * Update an order items include taxes tag.
-	 *
-	 * @param \WC_Order $wc_order WooCommerce order.
-	 */
-	public static function update_order_custom_tags( $wc_order ) {
-		$order_line_items     = $wc_order->get_items();
-		$order_shipping_items = $wc_order->get_items( 'shipping' );
-
-		foreach ( $order_line_items as $line_item ) {
-			$line_item->update_meta_data( '_stripe_not_subtotal_include_tax', 'yes' );
-		}
-
-		foreach ( $order_shipping_items as $shipping_item ) {
-			$shipping_item->update_meta_data( '_stripe_not_subtotal_include_tax', 'yes' );
-		}
-
-		$wc_order->save();
-	}
-
-	/**
-	 * Action to be called when Stripe Tax calculation needed for WooCommerce Order.
-	 *
-	 * @param bool      $and_taxes And taxes.
-	 * @param \WC_Order $wc_order WooCommerce order.
-	 *
-	 * @throws Exception If something goes wrong.
-	 */
-	public static function action_calculate_totals( $and_taxes, $wc_order ) {
-		if ( ! Options::is_live_mode_enabled() || ! wc_tax_enabled() || ! StripeCalculationTracker::is_calculation_needed() ) {
-			return $and_taxes;
-		}
-
-		if ( ! ( $wc_order instanceof \WC_Order ) ) {
-			return $and_taxes;
-		}
-
-		$currency         = strtolower( get_woocommerce_currency() );
-		$customer_details = CalculateTax::get_customer_details_by_post();
-		if ( empty( $customer_details ) ) {
-			$customer_details = CalculateTax::get_customer_details_by_order( $wc_order );
-		}
-		if ( ( ! is_admin() && ! CalculateTax::can_calculate_tax( $customer_details ) ) ) {
-			return $and_taxes;
-		}
-
-		$line_items = CalculateTax::get_line_items_by_order( $wc_order );
-		if ( ! $line_items ) {
-			return $and_taxes;
-		}
-
-		$customer_details['taxability_override'] = CalculateTax::get_order_tax_exempt( $wc_order );
-		try {
-
-			if ( ! CalculateTax::can_calculate_tax( $customer_details ) ) {
-				return $and_taxes;
-			}
-
-			$shipping_cost = CalculateTax::get_taxable_shipping_cost_from_cart_or_order_for_api( $wc_order, $currency );
-
-			if ( CalculateTax::order_prices_include_tax( $wc_order ) ) {
-				if ( CalculateTax::order_shipping_price_include_tax( $wc_order ) ) {
-					$shipping_cost['tax_behavior'] = 'exclusive';
-				}
-			}
-
-			$calculate_tax = new CalculateTax(
-				Options::get_live_mode_key(),
-				$currency,
-				$line_items,
-				$customer_details,
-				$shipping_cost
-			);
-
-			$response = $calculate_tax->get_response();
-
-			$calculated_tax_amount   = $response->tax_amount_exclusive + $response->tax_amount_inclusive;
-			$denormalized_tax_amount = CalculateTax::get_denormalized_amount( $calculated_tax_amount, $currency );
-
-			$denormalized_amount_total = CalculateTax::get_denormalized_amount( $response->amount_total, $currency );
-
-			$calculated_shipping_amount   = $response->shipping_cost->amount;
-			$denormalized_shipping_amount = CalculateTax::get_denormalized_amount( $calculated_shipping_amount, $currency );
-
-			$calculated_shipping_tax_amount   = $response->shipping_cost->amount_tax;
-			$denormalized_shipping_tax_amount = CalculateTax::get_denormalized_amount( $calculated_shipping_tax_amount, $currency );
-
-			$wc_order->remove_order_items( 'tax' );
-
-			$line_items = $wc_order->get_items();
-
-			$cart_line_items = array();
-			foreach ( $line_items as $line_item_id => $line_item ) {
-				$key                     = $line_item->get_product_id() . '#' . $line_item->get_variation_id();
-				$cart_line_items[ $key ] = array(
-					'reference'     => $line_item->get_name() . '#' . $line_item_id,
-					'line_subtotal' => $line_item->get_subtotal(),
-					'line_total'    => $line_item->get_total(),
-				);
-			}
-
-			$cart_hash = $wc_order->get_cart_hash();
-
-			$cart_totals = null;
-
-			if ( WC()->session && CalculateTax::order_prices_include_tax( $wc_order ) ) {
-				if ( ! WC()->session->get( 'stripe_tax_for_woocommerce_cart_taxes_processed_lock_' . $cart_hash ) ) {
-					$cart_totals = WC()->session->get( 'stripe_tax_for_woocommerce_cart_taxes_' . $cart_hash );
-				}
-			}
-
-			if ( ! is_array( $cart_totals ) ) {
-				$cart_totals       = static::get_totals_from_response( $cart_line_items, $response );
-				$total_from_cart   = 0;
-				$cart_contents_tax = 0;
-			} else {
-				$total_from_cart   = $cart_totals['total'];
-				$cart_contents_tax = $cart_totals['cart_contents_tax'];
-			}
-
-			$order_item_taxes      = array();
-			$order_item_tax_totals = array();
-
-			$counter = 0;
-
-			foreach ( $line_items as $line_item ) {
-				/**
-				 * Line item.
-				 *
-				 * @var \WC_Order_Item_Product $line_item
-				 */
-				$line_item_tax_rates = CalculateTax::get_wc_rates_array_from_response_for_item( $response, $line_item );
-
-				foreach ( $line_item_tax_rates as $line_item_tax_rate_id => $line_item_tax_rate ) {
-					if ( ! array_key_exists( $line_item_tax_rate_id, $order_item_taxes ) ) {
-						$order_item_taxes[ $line_item_tax_rate_id ] = new StripeOrderItemTax();
-						$order_item_taxes[ $line_item_tax_rate_id ]->set_rate( $line_item_tax_rate_id );
-					}
-
-					$current_order_item_tax = CalculateTax::get_denormalized_amount( $line_item_tax_rate['amount'], $currency );
-
-					$order_item_taxes[ $line_item_tax_rate_id ]->set_tax_total( ( (float) ( $order_item_taxes[ $line_item_tax_rate_id ]->get_tax_total( 'edit' ) ) + $current_order_item_tax ) );
-					if ( ! array_key_exists( $counter, $order_item_tax_totals ) ) {
-						$order_item_tax_totals[ $counter ]             = array();
-						$order_item_tax_totals[ $counter ]['total']    = array();
-						$order_item_tax_totals[ $counter ]['subtotal'] = array();
-					}
-					if ( ! array_key_exists( $line_item_tax_rate_id, $order_item_tax_totals[ $counter ]['total'] ) ) {
-						$order_item_tax_totals[ $counter ]['total'][ $line_item_tax_rate_id ]    = 0.0;
-						$order_item_tax_totals[ $counter ]['subtotal'][ $line_item_tax_rate_id ] = 0.0;
-					}
-
-					$order_item_tax_totals[ $counter ]['total'][ $line_item_tax_rate_id ]    += (float) ( $current_order_item_tax );
-					$order_item_tax_totals[ $counter ]['subtotal'][ $line_item_tax_rate_id ] += (float) ( $current_order_item_tax );
-					$order_item_tax_totals[ $counter ]['inclusive']                           = $line_item_tax_rate['inclusive'];
-				}
-
-				++$counter;
-			}
-
-			foreach ( $order_item_taxes as $order_item_tax ) {
-				$wc_order->add_item( $order_item_tax );
-
-				$order_item_tax->save();
-				$wc_order->save();
-			}
-
-			foreach ( $line_items as $line_item ) {
-				$key          = $line_item->get_product_id() . '#' . $line_item->get_variation_id();
-				$line_item_id = $key;
-				if ( array_key_exists( $line_item_id, $cart_totals['cart_contents'] ) ) {
-					$item_total        = $cart_totals['cart_contents'][ $line_item_id ]['line_total'];
-					$item_subtotal     = $cart_totals['cart_contents'][ $line_item_id ]['line_subtotal'];
-					$item_taxes        = $cart_totals['cart_contents'][ $line_item_id ]['line_tax_data'];
-					$item_tax_total    = $cart_totals['cart_contents'][ $line_item_id ]['line_tax'];
-					$item_tax_subtotal = $cart_totals['cart_contents'][ $line_item_id ]['line_subtotal_tax'];
-
-					$line_item->set_subtotal( $item_subtotal );
-					$line_item->set_total( $item_total );
-					$line_item->set_taxes( $item_taxes );
-					$line_item->set_subtotal_tax( $item_tax_subtotal );
-					$line_item->set_total_tax( $item_tax_total );
-					$line_item->save();
-				}
-			}
-
-			if ( $shipping_cost ) {
-
-				$shipping_methods = $wc_order->get_shipping_methods();
-
-				CalculateTax::apply_tax_to_order_shipping_methods( $shipping_methods, $calculate_tax, $currency );
-				$wc_order->set_shipping_total( $denormalized_shipping_amount + CalculateTax::get_cart_or_order_not_taxable_shipping_total( $wc_order ) );
-				if ( 'inclusive' === $response->shipping_cost->tax_behavior ) {
-					$wc_order->set_shipping_total( CalculateTax::get_denormalized_amount( $calculated_shipping_amount - $calculated_shipping_tax_amount, $currency ) + CalculateTax::get_cart_or_order_not_taxable_shipping_total( $wc_order ) );
-				}
-				$wc_order->set_shipping_tax( $denormalized_shipping_tax_amount );
-
-				if ( $calculated_shipping_amount > 0 ) {
-					$wc_order->add_item( $calculate_tax->get_shipping_order_item_tax( $currency ) );
-				}
-			}
-
-			$wc_order->set_discount_tax( $cart_totals['discount_tax'] );
-
-			if ( $total_from_cart ) {
-				$wc_order->set_cart_tax( $cart_contents_tax );
-				$wc_order->set_total( NumberUtil::round( $total_from_cart, wc_get_price_decimals() ) );
-			} else {
-				$wc_order->set_cart_tax( $cart_totals['cart_contents_tax'] );
-				$wc_order->set_total( NumberUtil::round( $denormalized_amount_total + $wc_order->get_total_fees() + CalculateTax::get_cart_or_order_not_taxable_shipping_total( $wc_order ), wc_get_price_decimals() ) );
-			}
-
-			$wc_order->update_taxes();
-
-			$order_prices_include_tax_tag = $wc_order->get_prices_include_tax();
-
-			if ( CalculateTax::order_prices_include_tax( $wc_order ) ) {
-				if ( ! CalculateTax::order_shipping_price_include_tax( $wc_order ) ) {
-					$shipping_items = $wc_order->get_items( 'shipping' );
-
-					foreach ( $shipping_items as $shipping_item ) {
-						$shipping_line_total = $shipping_item->get_total() - $shipping_item->get_total_tax();
-						$shipping_item->set_total( $shipping_line_total );
-					}
-				}
-			}
-
-			if ( ( true === $order_prices_include_tax_tag || 'yes' === $order_prices_include_tax_tag ) || wc_prices_include_tax() ) {
-				static::update_order_custom_tags( $wc_order );
-			}
-
-			$wc_order->save();
-
-		} catch ( \Throwable $e ) {
-			static::handle_calculate_tax_error( $e );
-		}
-
-		return $and_taxes;
-	}
-
 
 	/**
 	 * Handles exceptions.
@@ -984,140 +751,6 @@ class Hooks {
 	}
 
 	/**
-	 * Creates Stripe Tax transaction when order payment made (status became "processing" or suddenly "completed").
-	 *
-	 * @param int       $order_id Order id.
-	 * @param string    $status_from From status.
-	 * @param string    $status_to To status.
-	 * @param \WC_Order $wc_order The WooCommerce order.
-	 */
-	public static function action_woocommerce_order_status_changed( $order_id, $status_from, $status_to, $wc_order ) {
-		/**
-		 * WC Order.
-		 *
-		 * @var \WC_Order $wc_order
-		 */
-
-		if ( ! Options::is_live_mode_enabled() || ! wc_tax_enabled() || apply_filters( 'stripe_tax_skip_calculation_and_transaction_on_order_status_change', false, $order_id, $status_from, $status_to, $wc_order ) ) {
-			return;
-		}
-
-		try {
-			if ( 'completed' === $status_to && 'processing' === $status_from ) {
-				return;
-			}
-
-			if ( 'processing' !== $status_to && 'completed' !== $status_to ) {
-				return;
-			}
-
-			$currency   = strtolower( get_woocommerce_currency() );
-			$line_items = CalculateTax::get_line_items_by_order( $wc_order );
-
-			$customer_details = CalculateTax::get_customer_details_by_post();
-			if ( ! $customer_details ) {
-				$customer_details = CalculateTax::get_customer_details_by_order( $wc_order );
-			}
-
-			if ( ! CalculateTax::can_calculate_tax( $customer_details ) ) {
-				return;
-			}
-
-			$customer_details['taxability_override'] = CalculateTax::get_order_tax_exempt( $wc_order );
-
-			$shipping_cost = CalculateTax::get_taxable_shipping_cost_from_cart_or_order_for_api( $wc_order, $currency );
-
-			if ( CalculateTax::order_prices_include_tax( $wc_order ) ) {
-				if ( CalculateTax::order_shipping_price_include_tax( $wc_order ) ) {
-					$shipping_cost['tax_behavior'] = 'exclusive';
-				}
-			}
-
-			$calculate_tax = new CalculateTax(
-				Options::get_live_mode_key(),
-				$currency,
-				$line_items,
-				$customer_details,
-				$shipping_cost
-			);
-
-			$response = $calculate_tax->get_response();
-
-			TaxTransaction::create_order_transaction( $order_id, $response );
-			$calculate_tax->delete();
-		} catch ( \Throwable $e ) {
-			$message_id = 'calculate_tax_error';
-			if ( $e instanceof CountrySupportException ) {
-				$message_id = 'setting_country_error';
-			}
-
-			if ( $e instanceof CountryStateException ) {
-				$message_id = 'setting_state_error';
-			}
-
-			if ( ! ErrorRenderer::get_error_object( $message_id )->message && is_admin() ) {
-				ErrorRenderer::set_error_object( $message_id, 'Stripe Tax: ' . $e->getMessage(), 'error' );
-				echo wp_kses( ErrorRenderer::get_rendered_error( $message_id ), StripeTaxPluginHelper::get_admin_allowed_html() );
-			}
-
-			StripeTaxLogger::log_error( $err );
-		}
-	}
-
-	/**
-	 * Fixes WooCommerce Tax rate ID for Stripe Tax (by making possible to use "string" keys, not only "integers").
-	 *
-	 * @param mixed $item The tax item.
-	 * @param int   $tax_rate_id Tax rate id.
-	 *
-	 * @throws \ReflectionException If something goes wrong.
-	 */
-	public static function action_woocommerce_checkout_create_order_tax_item( $item, $tax_rate_id ) {
-		if ( strpos( $tax_rate_id, 'stripe_tax_for_woocommerce_' ) !== 0 ) {
-			return;
-		}
-
-		$ref_object = new \ReflectionObject( $item );
-
-		$data_property = $ref_object->getProperty( 'data' );
-		$data_property->setAccessible( true );
-		$data = $data_property->getValue( $item );
-
-		$object_read_property = $ref_object->getProperty( 'object_read' );
-		$object_read_property->setAccessible( true );
-		$object_read = $object_read_property->getValue( $item );
-
-		$changes_property = $ref_object->getProperty( 'changes' );
-		$changes_property->setAccessible( true );
-		$changes = $changes_property->getValue( $item );
-
-		if ( array_key_exists( 'rate_id', $data ) ) {
-			if ( true === $object_read ) {
-				if ( $tax_rate_id !== $data['rate_id'] || array_key_exists( 'rate_id', $changes ) ) {
-					$changes['rate_id'] = $tax_rate_id;
-				}
-			} else {
-				$data['rate_id'] = $tax_rate_id;
-			}
-		}
-
-		$rate_percent = (float) ( explode( '__', $tax_rate_id )[2] );
-
-		if ( array_key_exists( 'rate_percent', $data ) ) {
-			if ( true === $object_read ) {
-				if ( $rate_percent !== $data['rate_percent'] || array_key_exists( 'rate_percent', $changes ) ) {
-					$changes['rate_percent'] = $rate_percent;
-				}
-			} else {
-				$data['rate_percent'] = $rate_percent;
-			}
-		}
-
-		$data_property->setValue( $item, $data );
-		$changes_property->setValue( $item, $changes );
-	}
-
-	/**
 	 * Replace WooCommerce Order Item Tax class to ours StripeOrderItemTax class
 	 *
 	 * @param class-string $classname The classname.
@@ -1131,60 +764,6 @@ class Hooks {
 		}
 
 		return $classname;
-	}
-
-	/**
-	 * Filter to alter cart totals.
-	 * Used here to set shipping taxes.
-	 *
-	 * @param \WC_Cart $wc_cart WooCommerce Cart object.
-	 */
-	public static function action_woocommerce_after_calculate_totals( \WC_Cart $wc_cart ) {
-		if ( ! Options::is_live_mode_enabled() || ! wc_tax_enabled() || ! StripeCalculationTracker::is_calculation_needed() ) {
-			return;
-		}
-
-		try {
-			$currency = strtolower( get_woocommerce_currency() );
-
-			$customer = $wc_cart->get_customer();
-
-			$line_items = CalculateTax::get_line_items_by_cart( $wc_cart );
-
-			$customer_details                        = CalculateTax::get_customer_details_by_order( $customer );
-			$customer_details['taxability_override'] = static::$tax_exemptions->get_tax_exeption( get_current_user_id() );
-
-			if ( ! CalculateTax::can_calculate_tax( $customer_details ) ) {
-				return;
-			}
-
-			$shipping_cost = CalculateTax::get_taxable_shipping_cost_from_cart_or_order_for_api( $wc_cart, $currency );
-
-			$calculate_tax = new CalculateTax(
-				Options::get_live_mode_key(),
-				$currency,
-				$line_items,
-				$customer_details,
-				$shipping_cost
-			);
-
-			$response = $calculate_tax->get_response();
-
-			$shipping_methods = StripeTaxPluginHelper::get_cart_shipping_methods( $wc_cart );
-			$shipping_methods = CalculateTax::apply_tax_to_cart_shipping_methods( $shipping_methods, $calculate_tax, $currency );
-			CalculateTax::calculate_cart_shipping( $shipping_methods, $wc_cart );
-			CalculateTax::calculate_cart_totals( $response, $wc_cart, $currency );
-
-			static::calculate_cart_contents_taxes_from_line_items( $wc_cart, $response );
-		} catch ( ApiErrorException $e ) {
-			if ( is_ajax() ) {
-				ErrorRenderer::add_stripe_wc_notice( $e->getMessage(), 'error' );
-			}
-
-			return;
-		} catch ( \Throwable $e ) {
-			return;
-		}
 	}
 
 	/**
@@ -1210,7 +789,12 @@ class Hooks {
 			if ( file_exists( __DIR__ . '/../stripe-tax-for-woocommerce.php' ) ) {
 				$plugin_data = get_plugin_data( __DIR__ . '/../stripe-tax-for-woocommerce.php' );
 
-				Stripe::setAppInfo( $plugin_data['Name'], $plugin_data['Version'] );
+				Stripe::setAppInfo(
+					$plugin_data['Name'],
+					$plugin_data['Version'],
+					null,
+					STRIPE_TAX_PARTNER_ID
+				);
 			}
 		}
 	}
@@ -1223,6 +807,9 @@ class Hooks {
 	 * @return void
 	 */
 	public function init( bool $force = false ): void {
+
+		static::admin_ajax();
+
 		add_action( 'admin_init', array( static::class, 'action_admin_init' ), 5, 0 );
 		add_action( 'woocommerce_system_status_report', array( static::class, 'system_status_report' ) );
 
@@ -1235,8 +822,9 @@ class Hooks {
 			)
 		);
 		static::admin_enqueue_styles();
+		static::admin_enqueue_scripts();
 
-		if ( static::can_init( $force ) ) {
+		if ( self::can_init( $force ) ) {
 			static::$tax_exemptions = new TaxExemptions();
 
 			static::$hooks_initialized = true;
@@ -1249,6 +837,8 @@ class Hooks {
 			static::check_migrations();
 			static::check_string_tax_rate_id_fixer();
 		}
+
+		StripeTax_Plugin::load();
 	}
 
 	/**
@@ -1275,7 +865,7 @@ class Hooks {
 			return false;
 		}
 
-		return ! empty( Options::get_live_mode_key() );
+		return ! empty( Options::get_current_mode_key() );
 	}
 
 	/**
@@ -1432,60 +1022,6 @@ class Hooks {
 			'discount_tax'        => $discount_tax,
 		);
 	}
-	/**
-	 * Calculates cart item totals.
-	 *
-	 * @param \WC_Cart  $wc_cart WooCommerce Cart object.
-	 * @param \stdClass $response Stripe Tax Api response.
-	 */
-	public static function calculate_cart_contents_taxes_from_line_items( $wc_cart, $response ) {
-		$line_items = array();
-
-		foreach ( $wc_cart->cart_contents as $item_key => $line_item ) {
-			$line_item['reference'] = $line_item['data']->get_name();
-			$key                    = $line_item['product_id'] . '#' . $line_item['variation_id'];
-
-			$line_items[ $key ] = array(
-				'reference'     => $line_item['data']->get_name(),
-				'line_subtotal' => $line_item['line_subtotal'],
-				'line_total'    => $line_item['line_total'],
-			);
-		}
-
-		$totals          = static::get_totals_from_response( $line_items, $response, true );
-		$cart_line_items = $wc_cart->cart_contents;
-
-		foreach ( $totals['cart_contents'] as $key => $cart_contents_line ) {
-			foreach ( $cart_line_items as $item_key => $cart_item ) {
-				$cart_key = $cart_item['product_id'] . '#' . $cart_item['variation_id'];
-				if ( $cart_key === $key ) {
-					break;
-				}
-			}
-			$wc_cart->cart_contents[ $item_key ]['line_total']        = $cart_contents_line['line_total'];
-			$wc_cart->cart_contents[ $item_key ]['line_subtotal']     = $cart_contents_line['line_subtotal'];
-			$wc_cart->cart_contents[ $item_key ]['line_tax_data']     = $cart_contents_line['line_tax_data'];
-			$wc_cart->cart_contents[ $item_key ]['line_subtotal_tax'] = $cart_contents_line['line_subtotal_tax'];
-			$wc_cart->cart_contents[ $item_key ]['line_tax']          = $cart_contents_line['line_tax'];
-		}
-
-		$wc_cart->set_subtotal( $totals['subtotal'] );
-		$wc_cart->set_cart_contents_total( $totals['cart_contents_total'] );
-		$wc_cart->set_cart_contents_taxes( $totals['cart_contents_taxes'] );
-		$wc_cart->set_cart_contents_tax( $totals['cart_contents_tax'] );
-		$wc_cart->set_subtotal_tax( $totals['subtotal_tax'] );
-		$wc_cart->set_discount_total( $totals['discount_total'] );
-		$wc_cart->set_discount_tax( $totals['discount_tax'] );
-
-		$cart_totals = $wc_cart->get_totals();
-
-		$totals['total']     = $cart_totals['total'];
-		$totals['total_tax'] = $cart_totals['total_tax'];
-
-		$cart_hash = $wc_cart->get_cart_hash();
-
-		WC()->session->set( 'stripe_tax_for_woocommerce_cart_taxes_' . $cart_hash, $totals );
-	}
 
 	/**
 	 * On REST requests enables error collecting mechanism.
@@ -1551,11 +1087,11 @@ class Hooks {
 						<td>
 							<?php
 							try {
-								if ( ! empty( Options::get_live_mode_key() ) ) {
+								if ( ! empty( Options::get_current_mode_key() ) ) {
 									if ( ! empty( Options::get_option( Options::OPTION_LIVE_MODE_ACCOUNT_ID ) ) ) {
 										echo esc_html( Options::get_option( Options::OPTION_LIVE_MODE_ACCOUNT_ID ) );
 									} else {
-										$stripe_client   = new StripeClient( Options::get_live_mode_key() );
+										$stripe_client   = new StripeClient( Options::get_current_mode_key() );
 										$account_service = new AccountService( $stripe_client );
 										$api_response    = $account_service->retrieve();
 										if ( ! isset( $api_response->object ) || 'account' !== $api_response->object ) {
@@ -1605,6 +1141,8 @@ class Hooks {
 
 						$new_rate_id = $order_id * 1000 + $counter;
 
+						$idx_tax_2 = null;
+
 						foreach ( $data['tax_lines'] as $idx_tax_2 => $tax_line ) {
 							if ( $tax_line['rate_id'] === $rate_id ) {
 								break;
@@ -1612,7 +1150,9 @@ class Hooks {
 						}
 
 						$data['line_items'][ $idx_line ]['taxes'][ $idx_tax ]['id'] = $new_rate_id;
-						$data['tax_lines'][ $idx_tax_2 ]['rate_id']                 = $new_rate_id;
+						if ( ! is_null( $idx_tax_2 ) ) {
+							$data['tax_lines'][ $idx_tax_2 ]['rate_id'] = $new_rate_id;
+						}
 					}
 				}
 			}
@@ -1631,6 +1171,7 @@ class Hooks {
 
 						$new_rate_id = $order_id * 1000 + $counter;
 
+						$idx_tax_2 = null;
 						foreach ( $data['tax_lines'] as $idx_tax_2 => $tax_line ) {
 							if ( $tax_line['rate_id'] === $rate_id ) {
 								break;
@@ -1638,7 +1179,10 @@ class Hooks {
 						}
 
 						$data['shipping_lines'][ $idx_line ]['taxes'][ $idx_tax ]['id'] = $new_rate_id;
-						$data['tax_lines'][ $idx_tax_2 ]['rate_id']                     = $new_rate_id;
+
+						if ( ! is_null( $idx_tax_2 ) ) {
+							$data['tax_lines'][ $idx_tax_2 ]['rate_id'] = $new_rate_id;
+						}
 					}
 				}
 			}
@@ -1647,5 +1191,23 @@ class Hooks {
 		$response->set_data( $data );
 
 		return $response;
+	}
+
+	/**
+	 * Renders a stored admin error message for a WooCommerce order.
+	 *
+	 * @param int $order_id WooCommerce order ID.
+	 */
+	public static function render_admin_error_message( $order_id ): void {
+		$msg = get_post_meta( $order_id, '_stripe_tax_last_error', true );
+
+		if ( $msg ) {
+			delete_post_meta( $order_id, '_stripe_tax_last_error' );
+
+			echo '<span class="stripe_tax_for_woocommerce_message_span_id_" id="stripe_tax_for_woocommerce_message_id_"> </span>'
+				. '<div class="stripe_tax_for_woocommerce_message stripe_tax_for_woocommerce_message_" id="stripe_tax_for_woocommerce_message_id_">'
+				. '<p>Error: <strong>' . esc_html( $msg ) . '</strong></p>'
+				. '</div>';
+		}
 	}
 }

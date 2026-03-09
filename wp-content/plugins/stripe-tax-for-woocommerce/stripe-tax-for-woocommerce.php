@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stripe Tax - Sales tax automation for WooCommerce
  * Description: Automate sales tax, VAT, and GST compliance for all your transactions.
- * Version: 1.2.4
+ * Version: 2.0.0
  * Text Domain: stripe-tax-for-woocommerce
  * Requires at least: 6.3
  * Requires PHP: 7.4
@@ -26,11 +26,12 @@ spl_autoload_register(
 		$namespace_found  = ( strpos( $class_name, $namespace ) === 0 );
 		if ( $namespace_found ) {
 			$path_without_namespace = substr( $class_name, $namespace_length );
+			$path_without_namespace = preg_replace( '/_(?=[^\/\\\\]*$)/', '-', $path_without_namespace );
 			if ( strpos( $class_name, $namespace . 'SDK\\lib\\' ) === 0 ) {
 				$path_without_namespace = str_replace( '\\', DIRECTORY_SEPARATOR, $path_without_namespace );
 				$full_path              = __DIR__ . DIRECTORY_SEPARATOR . $path_without_namespace . '.php';
 			} else {
-				$exact_class_name_position                   = strrpos( $path_without_namespace, '\\' ) + 1;
+				$exact_class_name_position                   = strrpos( $path_without_namespace, '\\' ) === false ? 0 : strrpos( $path_without_namespace, '\\' ) + 1;
 				$exact_class_name                            = substr( $path_without_namespace, $exact_class_name_position );
 				$path_without_namespace_and_exact_class_name = substr( $path_without_namespace, 0, $exact_class_name_position );
 				$path_without_namespace_and_exact_class_name = str_replace( '\\', DIRECTORY_SEPARATOR, $path_without_namespace_and_exact_class_name );
@@ -62,6 +63,7 @@ define( 'STRIPE_TAX_FOR_WOOCOMMERCE_ASSETS_IMG_URL', STRIPE_TAX_FOR_WOOCOMMERCE_
 define( 'STRIPE_TAX_FOR_WOOCOMMERCE_TEMPLATES_DIR', STRIPE_TAX_FOR_WOOCOMMERCE_DIR . 'templates' . DIRECTORY_SEPARATOR );
 define( 'STRIPE_TAX_FOR_WOOCOMMERCE_TEMPLATES_PARTS_DIR', STRIPE_TAX_FOR_WOOCOMMERCE_TEMPLATES_DIR . 'parts' . DIRECTORY_SEPARATOR );
 define( 'STRIPE_TAX_FOR_WOOCOMMERCE_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'STRIPE_TAX_PARTNER_ID', 'tailorapp%2AAZwoRQq7nwAAABn9%23EhcKFWFjY3RfMVNYZW1JTGlEQzhRYTRQMA' );
 
 register_activation_hook( __FILE__, array( PluginActivate::class, 'trigger_activate' ) );
 

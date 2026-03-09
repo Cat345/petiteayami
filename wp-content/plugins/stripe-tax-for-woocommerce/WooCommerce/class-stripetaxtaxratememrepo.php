@@ -20,7 +20,7 @@ abstract class StripeTaxTaxRateMemRepo {
 	 *
 	 * @var array
 	 */
-	protected static $tax_rates = array();
+	public static $tax_rates = array();
 
 	/**
 	 * Creates and stores a tax rate.
@@ -33,10 +33,23 @@ abstract class StripeTaxTaxRateMemRepo {
 		if ( is_null( $max_id ) ) {
 			$max_id = static::MIN_ID;
 		}
+		$crc = sprintf(
+			'%u',
+			crc32(
+				( isset( $tax_rate['country'] ) ? $tax_rate['country'] : '' ) . '-' .
+				( isset( $tax_rate['state'] ) ? $tax_rate['state'] : '' ) . '-' .
+				( isset( $tax_rate['rate'] ) ? $tax_rate['rate'] : '' ) . '-' .
+				( isset( $tax_rate['name'] ) ? $tax_rate['name'] : '' ) . '-' .
+				( isset( $tax_rate['shipping'] ) ? $tax_rate['shipping'] : '' ) . '-' .
+				( isset( $tax_rate['priority'] ) ? $tax_rate['priority'] : '' ) . '-' .
+				( isset( $tax_rate['city'] ) ? $tax_rate['city'] : '' ) . '-' .
+				( isset( $tax_rate['postal_code'] ) ? $tax_rate['postal_code'] : '' )
+			)
+		);
 
-		$id = $max_id + 1;
+		$id = $max_id + 1 + $crc;
 
-		static::$tax_rates[ $id ] = TaxRate::from_aggregate_key( $id, $tax_rate->get_aggregate_key() );
+		static::$tax_rates[ $id ] = TaxRate::clone_with_id( $id, $tax_rate );
 
 		return $id;
 	}
@@ -46,28 +59,30 @@ abstract class StripeTaxTaxRateMemRepo {
 	 *
 	 * @param TaxRate $tax_rate Tax rate to find.
 	 */
-	protected static function find_tax_rate( TaxRate $tax_rate ) {
-		$rate_aggregate_key = $tax_rate->get_aggregate_key();
-
-		foreach ( static::$tax_rates as $tax_rate_array ) {
-			if ( $tax_rate_array->get_aggregate_key() === $rate_aggregate_key ) {
-				return $tax_rate_array;
-			}
-		}
-
-		return null;
+	public static function find_tax_rate( TaxRate $tax_rate ) {
+		$result = static::find_by_properties(
+			array(
+				'country' => $tax_rate['country'],
+				'state'   => $tax_rate['state'],
+				'rate'    => $tax_rate['rate'],
+				'name'    => $tax_rate['name'],
+			)
+		);
+		return 0 === count( $result ) ? null : $result[0];
 	}
 
 	/**
 	 * Search for a given tax rate and, if not found create id.
 	 *
 	 * @param TaxRate $tax_rate Tax rate to find.
+	 * @param bool    $shipping Tax rates applies to shipping.
 	 */
-	public static function create_or_read_id( TaxRate $tax_rate ) {
+	public static function create_or_read_id( TaxRate $tax_rate, $shipping = false ) {
 		$existing_tax_rate = static::find_tax_rate( $tax_rate );
 
 		if ( $existing_tax_rate ) {
-			$rate_id = $existing_tax_rate['id'];
+			$rate_id                       = $existing_tax_rate['id'];
+			$existing_tax_rate['shipping'] = $shipping;
 		} else {
 			$rate_id = static::create( $tax_rate );
 		}
@@ -84,18 +99,20 @@ abstract class StripeTaxTaxRateMemRepo {
 	 * @param string $name Tax rate name.
 	 */
 	public static function find_or_create( $country, $state, $percentage_decimal, $name ) {
+
 		$tax_rate = new TaxRate(
-			'',
+			null,
 			$country,
 			$state,
 			(float) $percentage_decimal,
 			$name,
-			1,
+			true,
+			'',
 			'',
 			''
 		);
 
-		$rate_id = static::create_or_read_id( $tax_rate );
+		$rate_id = static::create_or_read_id( $tax_rate, false );
 
 		return $rate_id;
 	}
@@ -129,6 +146,28 @@ abstract class StripeTaxTaxRateMemRepo {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Find tax rates by their properties
+	 *
+	 * @param array $properties Tax rates properties.
+	 */
+	public static function find_by_properties( $properties ) {
+		$result = array();
+
+		foreach ( static::$tax_rates as $tax_rate ) {
+			foreach ( $properties as $property_name => $property_value ) {
+				// phpcs:ignore
+				if ( $tax_rate[ $property_name ] != $property_value ) {
+					continue 2;
+				}
+			}
+
+			$result[] = $tax_rate;
+		}
+
+		return $result;
 	}
 
 	/**

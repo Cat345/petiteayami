@@ -1,5 +1,17 @@
 # Changelog
 
+## 5.0.19 (March 3, 2026)
+
+### Added
+
+- Add `Menu Order` to order options for WooCommerce Product Categories (WordPress)
+
+### Fixed
+
+- Fix handling when 404 error page, when child theme is active (Joomla)
+- Fix saving modules resets module style config (Joomla)
+- Fix WooCommerce Custom Product Category and Custom Product Tag source label (WordPress)
+
 ## 5.0.18 (February 26, 2026)
 
 ### Added

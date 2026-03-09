@@ -1,4 +1,24 @@
 *** Stripe Tax - Sales tax automation for WooCommerce ***
+2026-03-02 - version 2.0.0
+* Replaced the "Connect to Stripe" button with an API secret key input field.
+* Implemented a logging system.
+* Renamed "Preset product tax code" to "Default tax code".
+* Disabled the "Shipping tax class" setting on the Tax tab when Stripe Tax is enabled.
+* Disabled the "Calculate tax based on" setting on the Tax tab when Stripe Tax is enabled.
+* Disabled the "Rounding" setting on the Tax tab when Stripe Tax is enabled.
+* Disabled the "Additional tax classes" setting on the Tax tab when Stripe Tax is enabled.
+* Added taxes on fees.
+* Hid the "Tax class" field on the Product page.
+* Updated response payload handling to support the new reference ID format and align cart and order tax calculations.
+* Simplified order tax calculation hook handlers.
+* Simplified cart tax calculation hook handlers.
+* Updated the "Test connection" button to use JavaScript instead of stored database values.
+* Implemented tax calculation logic based on address priority (shipping, billing, or shop address).
+* Added drop-down selectors for taxable and non-taxable fees.
+* Stopped syncing the "Preset product tax code" between the admin page and the Stripe Dashboard.
+* Added a link to the WooCommerce Tax Stripe App on the configuration screen for generating API keys.
+* Added Partner ID to the Stripe App integration.
+
 2025-10-23 - version 1.2.4
 * Fixed reversal error message for older tax transactions.
 

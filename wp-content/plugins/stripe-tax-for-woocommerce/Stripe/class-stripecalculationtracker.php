@@ -49,7 +49,7 @@ class StripeCalculationTracker {
 			function () {
 				$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 				wp_verify_nonce( $nonce );
-
+				// @phpstan-ignore-next-line
 				if ( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_REQUEST['action'] ) && 'woocommerce_calc_line_taxes' === $_REQUEST['action'] ) {
 					self::$should_calculate = true;
 				}
@@ -154,7 +154,7 @@ class StripeCalculationTracker {
 				}
 			}
 
-			return static::is_cart_ajax_context() || static::is_checkout_ajax_context() || static::is_order_received_page();
+			return self::is_cart_ajax_context() || self::is_checkout_ajax_context() || self::is_order_received_page();
 		} catch ( \Throwable $e ) {
 			// TODO: add logger after issue #41 is done.
 			return false;
@@ -180,6 +180,7 @@ class StripeCalculationTracker {
 		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 		wp_verify_nonce( $nonce );
 
+		// @phpstan-ignore-next-line
 		return defined( 'DOING_AJAX' ) && DOING_AJAX &&
 			isset( $_GET['wc-ajax'] ) &&
 			in_array( sanitize_text_field( $_GET['wc-ajax'] ), $cart_ajax_actions, true );
@@ -204,6 +205,7 @@ class StripeCalculationTracker {
 		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 		wp_verify_nonce( $nonce );
 
+		// @phpstan-ignore-next-line
 		return defined( 'DOING_AJAX' ) && DOING_AJAX &&
 			isset( $_GET['wc-ajax'] ) &&
 			in_array( sanitize_text_field( $_GET['wc-ajax'] ), $checkout_ajax_actions, true );

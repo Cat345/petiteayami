@@ -158,3 +158,94 @@ table.form-table.stripe_tax_for_woocommerce_settings p {
     margin-bottom: 50px;
 }
 
+/* container */
+.stripe_tax_for_woocommerce_switch{
+  display: inline-flex;         /* put slider + text on one line */
+  align-items: center;
+  gap: 8px;                     /* space between slider and text */
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+/* hide native checkbox without covering content */
+.stripe_tax_for_woocommerce_switch input{
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);        /* prevents overlay */
+  white-space: nowrap;
+}
+
+/* slider track */
+.stripe_tax_for_woocommerce_switch .slider{
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+  background: #2271b1;
+  border-radius: 9999px;
+  transition: background .2s ease;
+}
+
+/* slider knob */
+.stripe_tax_for_woocommerce_switch .slider::before{
+  content: "";
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+  transition: transform .2s ease;
+}
+
+/* checked state */
+.stripe_tax_for_woocommerce_switch input:checked + .slider{
+  background: hsl(207, 35%, 39%);          /* WP blue */
+}
+.stripe_tax_for_woocommerce_switch input:checked + .slider::before{
+  transform: translateX(20px);
+}
+
+/* text */
+.stripe_tax_for_woocommerce_switch .switch-text{
+  font: inherit;
+  color: #1d2327;
+  user-select: none;
+}
+
+/* When Select2 is disabled */
+.select2-container--disabled .select2-selection--single {
+  border: 1px solid rgba(220,220,222,.75) !important;
+  background-color: rgba(255,255,255,.5)!important;   /* optional: softer bg for disabled */
+  cursor: not-allowed;
+  
+}
+
+/* Select2 v4 (default theme) */
+.select2-container--disabled
+  .select2-selection--single
+  .select2-selection__arrow {
+  display: none;                /* hide the arrow */
+}
+
+/* remove the extra right space where the arrow was */
+.select2-container--disabled
+  .select2-selection--single
+  .select2-selection__rendered {
+  padding-right: 8px;           /* adjust as you like */
+  color: rgba(44,51,56,.5)!important;
+}
+
+.stripe_tax_disabled,
+.stripe_tax_disabled *
+{
+	color: #a9a9a9 !important;
+	pointer-events: none;
+}

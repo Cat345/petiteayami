@@ -12,11 +12,17 @@ defined( 'ABSPATH' ) || exit;
 
 use Exception;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\ApiErrorException;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\StripeClient;
 use Stripe\StripeTaxForWooCommerce\Stripe\StripeTaxPluginHelper;
 use Stripe\StripeTaxForWooCommerce\Stripe\TaxRegistrations;
 use Stripe\StripeTaxForWooCommerce\Stripe\TaxSettings;
 use Stripe\StripeTaxForWooCommerce\WordPress\Options;
 use WC_Settings_Page;
+
+
+if ( ! class_exists( '\WC_Settings_Page' ) && function_exists( 'WC' ) ) {
+	require_once WC()->plugin_path() . '/includes/admin/settings/class-wc-settings-page.php';
+}
 
 /**
  * Allows to configure Tax Settings in WooCommerce.
@@ -108,12 +114,15 @@ class StripeTax extends WC_Settings_Page {
 			$this->do_exit();
 		}
 
-		$api_key = Options::get_live_mode_key();
+		$api_key = Options::get_current_mode_key();
 
 		$tax_registrations = $this->get_tax_registration( $api_key );
 
 		if ( isset( $_GET['tax_registration_id'] ) ) {
-			$tax_registrations->end_immediately_registration( sanitize_text_field( wp_unslash( $_GET['tax_registration_id'] ) ) );
+			$tax_registration_id = sanitize_text_field( wp_unslash( $_GET['tax_registration_id'] ) );
+			if ( '' !== $tax_registration_id ) {
+				$tax_registrations->end_immediately_registration( $tax_registration_id );
+			}
 		}
 
 		if ( isset( $_POST['tax_registration_id'] ) ) {
@@ -137,7 +146,7 @@ class StripeTax extends WC_Settings_Page {
 			$this->do_exit();
 		}
 
-		$api_key = Options::get_live_mode_key();
+		$api_key = Options::get_current_mode_key();
 
 		if ( ! isset( $_POST['stripe_tax_for_woocommerce_tax_registration_country'] ) ) {
 			return;
@@ -466,7 +475,7 @@ class StripeTax extends WC_Settings_Page {
 	 * @return void
 	 * @throws Exception For duplicates.
 	 */
-	private function throw_duplicate_country_exception( string $country, string $region = null ): void {
+	private function throw_duplicate_country_exception( string $country, ?string $region = null ): void {
 		if ( ! is_null( $region ) && ( 'CA' === $country || 'US' === $country ) ) {
 			throw new Exception(
 				sprintf(
@@ -493,11 +502,6 @@ class StripeTax extends WC_Settings_Page {
 	 * @throws ApiErrorException In case of API error.
 	 */
 	protected function stripe_tax_for_woocommerce_save_live_mode_options(): void {
-		$live_mode_key = Options::get_live_mode_key();
-
-		if ( ! $live_mode_key ) {
-			return;
-		}
 
 		if ( isset( $_GET['add_tax_registration'] ) ) {
 			try {
@@ -522,11 +526,56 @@ class StripeTax extends WC_Settings_Page {
 			}
 		}
 
-		try {
-			$tax_settings        = $this->get_tax_settings( $live_mode_key );
-			$posted_tax_settings = $tax_settings::get_from_post_request( true );
+		$mode_type = ! empty( $_POST['stripe_tax_for_woocommerce_mode'] ) ? 1 : 0;
+		Options::update_option( Options::OPTION_MODE_TYPE, (string) $mode_type );
 
-			$tax_settings->set_settings( $posted_tax_settings );
+		$test_sec = isset( $_POST['stripe_tax_for_woocommerce_test_mode_secret_key'] )
+			? sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_test_mode_secret_key'] ) )
+			: '';
+
+		$live_sec = isset( $_POST['stripe_tax_for_woocommerce_live_mode_secret_key'] )
+			? sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_live_mode_secret_key'] ) )
+			: '';
+
+		if ( Options::MODE_TEST === $mode_type ) {
+			$secret_key = $test_sec;
+		} else {
+			$secret_key = $live_sec;
+		}
+
+		if ( ! $this->correctKeysProvided( $mode_type, $secret_key ) ) {
+			return;
+		}
+
+		Options::update_option( Options::OPTION_TEST_MODE_SECRET_KEY, $test_sec );
+
+		$valid_live_keys = null;
+		if ( Options::MODE_TEST === $mode_type ) {
+			$valid_live_keys = $this->correctKeysProvided( Options::MODE_LIVE, $live_sec, true );
+		}
+
+		if ( true === $valid_live_keys || Options::MODE_LIVE === $mode_type ) {
+			Options::update_option( Options::OPTION_LIVE_MODE_SECRET_KEY, $live_sec );
+		}
+
+		$sec_key = Options::get_current_mode_key();
+		if ( ! $sec_key ) {
+			return;
+		}
+
+		try {
+
+			$fee_tax_code = isset( $_POST['stripe_tax_for_woocommerce_fee_tax_code'] )
+				? sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_fee_tax_code'] ) )
+				: '';
+
+			Options::update_option( Options::OPTION_FEE_TAX_CODE, $fee_tax_code );
+
+			$tax_code = isset( $_POST['stripe_tax_for_woocommerce_live_mode_tax_code'] )
+			? sanitize_text_field( wp_unslash( $_POST['stripe_tax_for_woocommerce_live_mode_tax_code'] ) )
+			: '';
+
+			Options::update_option( Options::OPTION_TAX_CODE, $tax_code );
 		} catch ( \Throwable $e ) {
 			\WC_Admin_Settings::add_error( $e->getMessage() );
 		}
@@ -584,6 +633,148 @@ class StripeTax extends WC_Settings_Page {
 				break;
 		}
 	}
+
+	/**
+	 * Validate Stripe API keys against the selected mode and key format.
+	 *
+	 * @param int    $mode            Selected mode (Options::MODE_TEST|Options::MODE_LIVE).
+	 * @param string $secret_key      Stripe secret.
+	 * @param bool   $retur_error If $retur_error is true then will return error msg.
+	 * @return bool|array{error: true, error_msg: string}
+	 */
+	protected function correctKeysProvided( $mode, $secret_key, $retur_error = false ) {
+		$error_msg = '';
+		if ( ! $secret_key ) {
+			$error_msg = 'Secret Key field is mandatory';
+
+			if ( ! $retur_error ) {
+				\WC_Admin_Settings::add_error( $error_msg );
+				return false;
+			} else {
+				return array(
+					'error'     => true,
+					'error_msg' => $error_msg,
+				);
+			}
+		}
+		$needle   = $this->getKeyNeedleByMode( $mode );
+		$opposite = ( Options::MODE_LIVE === $mode ) ? Options::TEST_KEY_NEEDLE : Options::LIVE_KEY_NEEDLE;
+
+		if ( false === strpos( $secret_key, $needle ) ) {
+
+			$has_opposite = ( strpos( $secret_key, $opposite ) !== false );
+			if ( ! $has_opposite ) {
+				$error_msg = 'Invalid API key provided (wrong format).';
+			} else {
+				switch ( $mode ) {
+					case Options::MODE_LIVE:
+						$error_msg = 'Test API key provided instead of live API key.';
+						break;
+					case Options::MODE_TEST:
+						$error_msg = 'Live API key provided instead of test API key.';
+						break;
+				}
+			}
+
+			if ( ! $retur_error ) {
+				\WC_Admin_Settings::add_error( $error_msg );
+				return false;
+			} else {
+				return array(
+					'error'     => true,
+					'error_msg' => $error_msg,
+				);
+			}
+		}
+
+		$needlesk = 'sk_';
+		$needlerk = 'rk_';
+
+		if ( false === strpos( $secret_key, $needlesk ) && false === strpos( $secret_key, $needlerk ) ) {
+			$error_msg = 'Publishable key provided instead of secret key.';
+			if ( ! $retur_error ) {
+				\WC_Admin_Settings::add_error( $error_msg );
+				return false;
+			} else {
+				return array(
+					'error'     => true,
+					'error_msg' => $error_msg,
+				);
+			}
+		}
+
+		$stripe_client = new StripeClient( $secret_key );
+		try {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$account = $stripe_client->accounts->retrieve();
+		} catch ( \Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\AuthenticationException $e ) {
+			$error_msg = 'The Secret key provided is invalid (authentication failed).';
+			if ( ! $retur_error ) {
+				\WC_Admin_Settings::add_error( $error_msg );
+				return false;
+			} else {
+				return array(
+					'error'     => true,
+					'error_msg' => $error_msg,
+				);
+			}
+		} catch ( \Throwable $e ) {
+			$error_msg = 'Stripe authentication failed: ' . $e->getMessage();
+			if ( ! $retur_error ) {
+				\WC_Admin_Settings::add_error( $error_msg );
+				return false;
+			} else {
+				return array(
+					'error'     => true,
+					'error_msg' => $error_msg,
+				);
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get the expected Stripe key prefix based on the selected mode.
+	 *
+	 * Returns the appropriate key "needle" (prefix) constant for the given mode:
+	 * - LIVE mode → Options::LIVE_KEY_NEEDLE
+	 * - TEST mode → Options::TEST_KEY_NEEDLE
+	 *
+	 * @param int $mode The selected mode (Options::MODE_LIVE or Options::MODE_TEST).
+	 * @return string The corresponding key prefix (needle) or an empty string if unknown.
+	 */
+	private function getKeyNeedleByMode( $mode ) {
+		$needle = '';
+		switch ( $mode ) {
+			case Options::MODE_LIVE:
+				$needle = Options::LIVE_KEY_NEEDLE;
+				break;
+			case Options::MODE_TEST:
+				$needle = Options::TEST_KEY_NEEDLE;
+				break;
+		}
+
+		return $needle;
+	}
+
+	/**
+	 * Public helper to validate a pair of Stripe API key (secret)
+	 * against the selected mode (live/test).
+	 *
+	 * Internally proxies to the private correctKeysProvided() validator so
+	 * other components (e.g. AdminAjax::test_connection) can reuse the same
+	 * checks and error messaging.
+	 *
+	 * @param int    $mode            Selected mode. One of Options::MODE_LIVE or Options::MODE_TEST.
+	 * @param string $secret_key      Stripe secret or restricted key (sk_/rk_).
+	 * @return bool                   True if keys are valid for the given mode; false otherwise.
+	 */
+	public static function validate_keys( $mode, $secret_key ) {
+		$self = new self();
+		return $self->correctKeysProvided( $mode, $secret_key, true );
+	}
+
 
 	// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
 

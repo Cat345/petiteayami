@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-06 23:46:05+0000\n"
+"PO-Revision-Date: 2026-03-09 00:35:09+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1372,7 +1372,7 @@ msgstr "Das beste E-Commerce Plugin für WordPress zum Verkauf von digitialen Pr
 
 #: src/Admin/Pages/AboutTab.php:461
 msgid "Easy Digital Downloads"
-msgstr "Easy Digital Downloads"
+msgstr "Easy Digital Downloads"
 
 #: src/Admin/Pages/AboutTab.php:453
 msgid "WP Simple Pay Pro"
@@ -4379,7 +4379,7 @@ msgstr "Gib die E-Mail-Adresse ein, an die die Test-E-Mail gesendet werden soll.
 
 #: src/Admin/Pages/VersusTab.php:263
 msgid "Priority Support"
-msgstr "Bevorzugter Support"
+msgstr "Vorrangiger Support"
 
 #: src/Admin/Pages/VersusTab.php:257
 msgid "Limited Support"

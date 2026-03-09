@@ -1042,7 +1042,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_tax_registration_us_states(): array {
-		$all_us_states = WC()->countries->states['US'];
+		$all_us_states = WC()->countries->get_states( 'US' ) ?? array();
 
 		return array_intersect_key( $all_us_states, self::TAX_REGISTRATION_ALLOWED_US_STATES );
 	}
@@ -1053,7 +1053,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_tax_registration_ca_provinces(): array {
-		$all_ca_provinces = WC()->countries->states['CA'];
+		$all_ca_provinces = WC()->countries->get_states( 'CA' ) ?? array();
 
 		return array_intersect_key( $all_ca_provinces, self::TAX_REGISTRATION_ALLOWED_CA_PROVINCES );
 	}
@@ -1223,7 +1223,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_au_states(): array {
-		return WC()->countries->states['AU'];
+		return WC()->countries->get_states( 'AU' ) ?? array();
 	}
 
 	/**
@@ -1232,7 +1232,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_ca_provinces(): array {
-		return WC()->countries->states['CA'];
+		return WC()->countries->get_states( 'CA' ) ?? array();
 	}
 
 	/**
@@ -1241,7 +1241,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_hk_areas(): array {
-		$woo_hk_areas = WC()->countries->states['HK'];
+		$woo_hk_areas = WC()->countries->get_states( 'HK' );
 
 		return array(
 			'Hong Kong'       => $woo_hk_areas['HONG KONG'],
@@ -1256,7 +1256,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_ie_counties(): array {
-		return WC()->countries->states['IE'];
+		return WC()->countries->get_states( 'IE' ) ?? array();
 	}
 
 	/**
@@ -1265,7 +1265,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_it_provinces(): array {
-		return WC()->countries->states['IT'];
+		return WC()->countries->get_states( 'IT' ) ?? array();
 	}
 
 	/**
@@ -1274,7 +1274,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_jp_prefectures(): array {
-		$woo_jp_prefectures               = WC()->countries->states['JP'];
+		$woo_jp_prefectures               = WC()->countries->get_states( 'JP' );
 		$mapped_for_stripe_jp_prefectures = array();
 		// Replace from WooCommerce's 'JPXX' array keys to Stripe's 'XX' array keys.
 		for ( $i = 1; $i <= 47; $i++ ) {
@@ -1291,7 +1291,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_es_provinces(): array {
-		return WC()->countries->states['ES'];
+		return WC()->countries->get_states( 'ES' ) ?? array();
 	}
 
 	/**
@@ -1309,7 +1309,7 @@ class StripeTaxPluginHelper {
 	 * @return array
 	 */
 	public static function get_allowed_origin_address_us_states(): array {
-		$all_us_states = WC()->countries->states['US'];
+		$all_us_states = WC()->countries->get_states( 'US' ) ?? array();
 
 		$allowed_us_states          = array_intersect_key( $all_us_states, self::ORIGIN_ADDRESS_ALLOWED_US_STATES );
 		$add_countries_to_us_states = array(
@@ -1534,7 +1534,7 @@ class StripeTaxPluginHelper {
 		$shipping_methods = self::get_cart_shipping_methods( $wc_cart_or_order );
 
 		$taxable_shipping_methods = array();
-
+		$all_shipping_methods     = array();
 		if ( $wc_cart_or_order instanceof \WC_Cart ) {
 			$packages = $wc_cart_or_order->get_shipping_packages();
 			WC()->shipping()->calculate_shipping( $packages );
@@ -1593,7 +1593,7 @@ class StripeTaxPluginHelper {
 
 						if ( $customer_id ) {
 							$customer = new \WC_Customer( $customer_id );
-							if ( $customer && $customer->get_is_vat_exempt() ) {
+							if ( $customer->get_id() && $customer->get_is_vat_exempt() ) {
 								$is_shipping_method_taxable = false;
 							}
 						}
@@ -1622,6 +1622,7 @@ class StripeTaxPluginHelper {
 		$shipping_methods = self::get_cart_shipping_methods( $wc_cart_or_order );
 
 		$not_taxable_shipping_methods = array();
+		$all_shipping_methods         = array();
 
 		if ( $wc_cart_or_order instanceof \WC_Cart ) {
 			$packages = $wc_cart_or_order->get_shipping_packages();
@@ -1679,7 +1680,7 @@ class StripeTaxPluginHelper {
 
 						if ( $customer_id ) {
 							$customer = new \WC_Customer( $customer_id );
-							if ( $customer && $customer->get_is_vat_exempt() ) {
+							if ( $customer->get_id() && $customer->get_is_vat_exempt() ) {
 								$is_shipping_method_taxable = false;
 							}
 						}

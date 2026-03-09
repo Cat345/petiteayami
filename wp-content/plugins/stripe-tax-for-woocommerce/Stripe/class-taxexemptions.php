@@ -88,6 +88,7 @@ class TaxExemptions {
 	 * Get tax exemption link
 	 *
 	 * @return string
+	 * @phpstan-ignore-next-line
 	 */
 	private function get_tax_exemption_link(): string {
 		return 'https://stripe.com/docs/tax/zero-tax';

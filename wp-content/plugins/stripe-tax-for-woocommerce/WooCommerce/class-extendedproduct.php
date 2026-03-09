@@ -102,7 +102,9 @@ class ExtendedProduct {
 
 		if ( isset( $_POST['_stripe_tax_for_woocommerce_tax_code'] ) ) {
 			$tax_code = sanitize_text_field( wp_unslash( $_POST['_stripe_tax_for_woocommerce_tax_code'] ) );
+			/* @phpstan-ignore-next-line */
 		} elseif ( $wc_data->get_parent_id() ) {
+			/* @phpstan-ignore-next-line */
 			$tax_code = $this->get_extended_product( $wc_data->get_parent_id() )['tax_code'];
 		} else {
 			$product = $this->get_extended_product();

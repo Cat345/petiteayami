@@ -9,27 +9,18 @@ namespace Stripe\StripeTaxForWooCommerce\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
+use Stripe\StripeTaxForWooCommerce\WordPress\Hook_Handlers;
+
 /**
  * StripeTaxTaxRateHooks class.
  */
-class StripeTaxTaxRateHooks {
+class StripeTaxTaxRateHooks extends Hook_Handlers {
 	const FILTERS = array(
 		'find_rates',
 		'rate_code',
 		'rate_label',
 		'rate_compound',
 	);
-
-	/**
-	 * Register WooCommerce filters
-	 */
-	public static function register(): void {
-		add_filter( 'woocommerce_rate_code', array( static::class, 'rate_code' ), 10, 2 );
-		add_filter( 'woocommerce_rate_label', array( static::class, 'rate_label' ), 10, 2 );
-		add_filter( 'woocommerce_rate_compound', array( static::class, 'rate_compound' ), 10, 2 );
-
-		add_filter( 'woocommerce_find_rates', array( static::class, 'find_rates' ), 10, 2 );
-	}
 
 	/**
 	 * Passthrough; read-only.

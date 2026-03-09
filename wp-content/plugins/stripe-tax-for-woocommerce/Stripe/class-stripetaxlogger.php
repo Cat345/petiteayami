@@ -11,6 +11,7 @@ namespace Stripe\StripeTaxForWooCommerce\Stripe;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Stripe;
 use Throwable;
 use WC_Logger;
+use WC_Logger_Interface;
 
 /**
  * Stripe Tax Logger class.
@@ -19,7 +20,7 @@ class StripeTaxLogger {
 	/**
 	 * WC Logger instance
 	 *
-	 * @var WC_Logger
+	 * @var WC_Logger_Interface|null
 	 */
 	private static $wc_logger;
 	const WC_LOG_FILENAME = 'stripe-tax-for-woocommerce';

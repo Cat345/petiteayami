@@ -147,7 +147,7 @@ class TaxonomyType
                     'label' => trans('Child %taxonomies%', [
                         '%taxonomies%' => $taxonomy->labels->name,
                     ]),
-                    'fields' => [
+                    'arguments' => [
                         '_order' => [
                             'type' => 'grid',
                             'width' => '1-2',

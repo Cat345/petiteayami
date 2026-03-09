@@ -1,6 +1,5 @@
 {
     "- Select -": "- اختر -",
-    "- Select Module -": "- حدد الوحدة -",
     "- Select Position -": " - اختر الموضع -",
     "\"%name%\" already exists in the library, it will be overwritten when saving.": "\"%name%\" متواجد مسبقا في المكتبة. سيتم استبداله عند الحفظ.",
     "%label% Position": "موضع %label%",
@@ -11,7 +10,6 @@
     "Add a leader": "أضف زعيم",
     "Add a parallax effect or fix the background with regard to the viewport while scrolling.": "إضافة تأثير المنظر أو إصلاح الخلفية فيما يتعلق بإطار العرض أثناء التمرير.",
     "Add a parallax effect.": "إضافة تأثير المنظر.",
-    "Add custom JavaScript to your site. The <code>&lt;script&gt;</code> tag is not needed.": "أضف JavaScript خاص لموقعك. لا داعي لإضافة وسم &lt;script&gt;.",
     "Add Element": "إضافة عنصر",
     "Add extra margin to the button.": "أضف هامش إضافي إلى الزر.",
     "Add Folder": "إضافة مجلد",
@@ -64,7 +62,6 @@
     "Builder": "باني",
     "Button": "زر",
     "Button Size": "حجم الزر",
-    "Buttons": "وصفت",
     "Cache": "مخبأ",
     "Campaign Monitor API Token": "Campaign Monitor API Token",
     "Cancel": "إلغاء",

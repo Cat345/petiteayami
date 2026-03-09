@@ -48,7 +48,7 @@ class ApiRequestor {
 	}
 
 	/**
-	 * Creates a telemetry json blob for use in 'X-Stripe\StripeTaxForWooCommerce\SDK\lib-Client-Telemetry' headers.
+	 * Creates a telemetry json blob for use in 'X-Stripe-Client-Telemetry' headers.
 	 *
 	 * @static
 	 *
@@ -316,7 +316,7 @@ class ApiRequestor {
 	 * @return array
 	 */
 	private static function _defaultHeaders( $apiKey, $clientInfo = null ) {
-		$uaString = 'Stripe\StripeTaxForWooCommerce\SDK\lib/v1 PhpBindings/' . Stripe::VERSION;
+		$uaString = 'Stripe/v1 PhpBindings/' . Stripe::VERSION;
 
 		$langVersion    = \PHP_VERSION;
 		$uname_disabled = self::_isDisabled( \ini_get( 'disable_functions' ), 'php_uname' );
@@ -339,10 +339,10 @@ class ApiRequestor {
 		}
 
 		return array(
-			'X-Stripe\StripeTaxForWooCommerce\SDK\lib-Client-User-Agent' => \json_encode( $ua ),
+			'X-Stripe-Client-User-Agent' => \json_encode( $ua ),
 			'User-Agent'    => $uaString,
 			'Authorization' => 'Bearer ' . $apiKey,
-			'Stripe\StripeTaxForWooCommerce\SDK\lib-Version' => Stripe::getApiVersion(),
+			'Stripe-Version' => Stripe::getApiVersion(),
 		);
 	}
 
@@ -354,15 +354,15 @@ class ApiRequestor {
 
 		if ( ! $myApiKey ) {
 			$msg = 'No API key provided.  (HINT: set your API key using '
-				. '"Stripe\StripeTaxForWooCommerce\SDK\lib::setApiKey(<API-KEY>)".  You can generate API keys from '
-				. 'the Stripe\StripeTaxForWooCommerce\SDK\lib web interface.  See https://stripe.com/api for '
+				. '"Stripe::setApiKey(<API-KEY>)".  You can generate API keys from '
+				. 'the Stripe web interface.  See https://stripe.com/api for '
 				. 'details, or email support@stripe.com if you have any questions.';
 
 			throw new Exception\AuthenticationException( $msg );
 		}
 
 		// Clients can supply arbitrary additional keys to be included in the
-		// X-Stripe\StripeTaxForWooCommerce\SDK\lib-Client-User-Agent header via the optional getUserAgentInfo()
+		// X-Stripe-Client-User-Agent header via the optional getUserAgentInfo()
 		// method
 		$clientUAInfo = null;
 		if ( \method_exists( $this->httpClient(), 'getUserAgentInfo' ) ) {
@@ -392,11 +392,11 @@ class ApiRequestor {
 		$defaultHeaders = $this->_defaultHeaders( $myApiKey, $clientUAInfo );
 
 		if ( Stripe::$accountId ) {
-			$defaultHeaders['Stripe\StripeTaxForWooCommerce\SDK\lib-Account'] = Stripe::$accountId;
+			$defaultHeaders['Stripe-Account'] = Stripe::$accountId;
 		}
 
 		if ( Stripe::$enableTelemetry && null !== self::$requestTelemetry ) {
-			$defaultHeaders['X-Stripe\StripeTaxForWooCommerce\SDK\lib-Client-Telemetry'] = self::_telemetryJson( self::$requestTelemetry );
+			$defaultHeaders['X-Stripe-Client-Telemetry'] = self::_telemetryJson( self::$requestTelemetry );
 		}
 
 		$hasFile = false;

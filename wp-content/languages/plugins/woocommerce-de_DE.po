@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-02-24 23:10:35+0000\n"
+"PO-Revision-Date: 2026-03-08 21:18:37+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2978,8 +2978,8 @@ msgstr "&ndash;"
 #: src/Blocks/BlockTypes/Reviews/ProductReviewForm.php:191
 msgid "%d of 5 star"
 msgid_plural "%d of 5 stars"
-msgstr[0] "%d von 5 Sternen"
-msgstr[1] "%d von 5 Sternen"
+msgstr[0] "%d von 5 Sternen"
+msgstr[1] "%d von 5 Sternen"
 
 #: includes/abstracts/abstract-wc-data.php:978
 msgid "Invalid date provided."
@@ -3095,16 +3095,16 @@ msgstr "Einige Details deiner Sendung wurden kürzlich aktualisiert. Dies kann I
 msgid "Here’s the latest info we have:"
 msgstr "Hier sind die neuesten Informationen, die uns vorliegen:"
 
+#: templates/emails/email-fulfillment-details.php:31
+#: templates/emails/plain/email-fulfillment-details.php:25
+msgid "No tracking information available for this fulfillment at the moment."
+msgstr "Für diese Ausführung sind derzeit keine Informationen zur Sendungsverfolgung verfügbar."
+
 #: templates/emails/block/customer-fulfillment-deleted.php:32
 #: templates/emails/customer-fulfillment-deleted.php:32
 #: templates/emails/plain/customer-fulfillment-deleted.php:24
 msgid "We wanted to let you know that one of the previously fulfilled shipments from your order has been removed from our system. This may have been due to a correction or an update in our fulfillment records. Don’t worry — this won’t affect any items you’ve already received."
 msgstr "Wir möchten dir mitteilen, dass eine der zuvor ausgeführten Sendungen aus deiner Bestellung aus unserem System entfernt wurde. Dies ist möglicherweise auf eine Korrektur oder Aktualisierung in unseren Ausführungsprotokollen zurückzuführen. Keine Sorge – dies betrifft keine Artikel, die du bereits erhalten hast."
-
-#: templates/emails/email-fulfillment-details.php:31
-#: templates/emails/plain/email-fulfillment-details.php:25
-msgid "No tracking information available for this fulfillment at the moment."
-msgstr "Für diese Ausführung sind derzeit keine Informationen zur Sendungsverfolgung verfügbar."
 
 #: templates/emails/email-fulfillment-details.php:33
 #: templates/emails/plain/email-fulfillment-details.php:28
@@ -3879,14 +3879,6 @@ msgstr "Diese Funktion steht nicht bei <a href=\"%s\">Warenkorb- und Bezahlen-Bl
 msgid "The provided checkout link was out of date or invalid. No products were added to the cart."
 msgstr "Der angegebene Bezahlen-Link war veraltet oder ungültig. Dem Warenkorb wurden keine Produkte hinzugefügt."
 
-#. translators: %1$s: Product filter name, %2$d: Number of products
-#: src/Blocks/BlockTypes/ProductFilterCheckboxList.php:159
-#: src/Blocks/BlockTypes/ProductFilterChips.php:139
-msgid "%1$s (%2$d product)"
-msgid_plural "%1$s (%2$d products)"
-msgstr[0] "%1$s (%2$d Produkt)"
-msgstr[1] "%1$s (%2$d Produkte)"
-
 #: src/Blocks/BlockTypes/ProductButton.php:178
 #: src/Blocks/BlockTypes/ProductButton.php:367
 msgid "Added to cart"
@@ -3899,6 +3891,14 @@ msgstr "5 Minuten"
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:149
 msgid "Automate Facebook & Instagram marketing with Kliken. Launch ads and schedule a month of posts in 5 minutes—first 5 free! Plans start at just $20/mo."
 msgstr "Automatisiere Facebook- und Instagram-Marketing mit Kliken. Innerhalb von fünf Minuten Werbung veröffentlichen und einen Monat mit Beiträgen planen – die ersten fünf sind kostenlos! Abonnements schon ab 20 USD/Monat."
+
+#. translators: %1$s: Product filter name, %2$d: Number of products
+#: src/Blocks/BlockTypes/ProductFilterCheckboxList.php:159
+#: src/Blocks/BlockTypes/ProductFilterChips.php:139
+msgid "%1$s (%2$d product)"
+msgid_plural "%1$s (%2$d products)"
+msgstr[0] "%1$s (%2$d Produkt)"
+msgstr[1] "%1$s (%2$d Produkte)"
 
 #. translators: 1: price from 2: price to
 #: includes/wc-formatting-functions.php:1393
@@ -6740,13 +6740,13 @@ msgstr "Sichere und zuverlässig Zahlungen über das PayPal-Konto deines Kunden.
 msgid "Paymob is a leading payment gateway in the Middle East and Africa. Accept payments online and in-store with Paymob."
 msgstr "Paymob ist ein führendes Zahlungs-Gateway im Nahen Osten und Afrika. Akzeptiere Zahlungen online und in Geschäften mit Paymob."
 
-#: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3405
-msgid "Paymob"
-msgstr "Paymob"
-
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3372
 msgid "The Payfast extension for WooCommerce enables you to accept payments by Credit Card and EFT via one of South Africa's most popular payment gateways. No setup fees or monthly subscription costs. Selecting this extension will configure your store to use South African rands as the selected currency."
 msgstr "Mithilfe der PayFast-Erweiterung für WooCommerce kannst du über eines der beliebtesten Zahlungs-Gateways Südafrikas Zahlungen per Kreditkarte und elektronischer Überweisung entgegennehmen. Keine Einrichtungsgebühren oder monatlichen Abonnementkosten. Durch die Auswahl dieser Erweiterung wird dein Shop darauf konfiguriert, den südafrikanischen Rand als ausgewählte Währung zu verwenden."
+
+#: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3405
+msgid "Paymob"
+msgstr "Paymob"
 
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3286
 msgid "Your trusted payments partner in Asia and around the world."
@@ -14562,6 +14562,11 @@ msgstr "Der Marketingkanal, zu dem dieser Kampagnentyp gehört."
 msgid "The unique identifier for the marketing channel that this campaign belongs to."
 msgstr "Die eindeutige Kennung des Marketingkanals, zu dem diese Kampagne gehört."
 
+#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1839
+#: src/Internal/RestApi/Routes/V4/Products/Controller.php:1906
+msgid "Slug automatically generated from the product name."
+msgstr "Titelform wird automatisch aus dem Produktnamen generiert."
+
 #. translators: 1) is the number of affected actions, 2) is a link to an admin
 #. screen.
 #: packages/action-scheduler/classes/ActionScheduler_AdminView.php:220
@@ -14569,11 +14574,6 @@ msgid "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due action<
 msgid_plural "<strong>Action Scheduler:</strong> %1$d <a href=\"%2$s\">past-due actions</a> found; something may be wrong. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Read documentation &raquo;</a>"
 msgstr[0] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktion</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
 msgstr[1] "<strong>Aktionsplaner:</strong> %1$d <a href=\"%2$s\">überfällige Aktionen</a> gefunden; möglicherweise gibt es ein Problem. <a href=\"https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do\" target=\"_blank\">Dokumentation lesen »</a>"
-
-#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1839
-#: src/Internal/RestApi/Routes/V4/Products/Controller.php:1906
-msgid "Slug automatically generated from the product name."
-msgstr "Titelform wird automatisch aus dem Produktnamen generiert."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1832
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1899
@@ -18559,7 +18559,7 @@ msgstr "Ein Link zu einem Produkt."
 msgid "Product Link"
 msgstr "Produkt-Link"
 
-#: src/StoreApi/Routes/V1/Batch.php:121
+#: src/StoreApi/Routes/V1/Batch.php:122
 msgid "Invalid path provided."
 msgstr "Ungültiger Pfad angegeben."
 
@@ -24527,13 +24527,6 @@ msgstr "Über"
 msgid "Migrated action with ID %1$d in %2$s to ID %3$d in %4$s"
 msgstr "Aktion mit ID %1$d in %2$s zu ID %3$d in %4$s migriert"
 
-#. translators: %d: amount of actions
-#: packages/action-scheduler/classes/migration/Runner.php:114
-msgid "Migrating %d action"
-msgid_plural "Migrating %d actions"
-msgstr[0] "%d Aktion wird migriert"
-msgstr[1] "%d Aktionen werden migriert"
-
 #: packages/action-scheduler/classes/migration/Controller.php:183
 msgid "Action Scheduler migration in progress. The list of scheduled actions may be incomplete."
 msgstr "Aktionsplaner-Migration wird durchgeführt. Die Liste der geplanten Aktionen ist möglicherweise unvollständig."
@@ -24547,6 +24540,13 @@ msgstr "Migrierte Quellaktion %s kann nicht entfernt werden"
 #: packages/action-scheduler/classes/ActionScheduler_AdminView.php:273
 msgid "About Action Scheduler %s"
 msgstr "Über den Aktionsplaner %s"
+
+#. translators: %d: amount of actions
+#: packages/action-scheduler/classes/migration/Runner.php:114
+msgid "Migrating %d action"
+msgid_plural "Migrating %d actions"
+msgstr[0] "%d Aktion wird migriert"
+msgstr[1] "%d Aktionen werden migriert"
 
 #: packages/action-scheduler/classes/ActionScheduler_wcSystemStatus.php:113
 msgid "Version:"
@@ -27093,29 +27093,6 @@ msgstr "Änderung für folgende Aktion erfolgreich verarbeitet: %s"
 msgid "Now!"
 msgstr "Jetzt!"
 
-#. translators: %s: amount of time
-#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:174
-msgid "%s second"
-msgid_plural "%s seconds"
-msgstr[0] "%s Sekunde"
-msgstr[1] "%s Sekunden"
-
-#. translators: %s: amount of time
-#. translators: %s is the time duration in minutes
-#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:169
-#: src/Internal/StockNotifications/Emails/CustomerStockNotificationVerifyEmail.php:167
-msgid "%s minute"
-msgid_plural "%s minutes"
-msgstr[0] "%s Minute"
-msgstr[1] "%s Minuten"
-
-#. translators: %s: amount of time
-#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:164
-msgid "%s hour"
-msgid_plural "%s hours"
-msgstr[0] "%s Stunde"
-msgstr[1] "%s Stunden"
-
 #. translators: %s is a number of days.
 #. translators: %s: amount of time
 #: includes/admin/views/html-admin-page-status-report.php:828
@@ -27124,13 +27101,6 @@ msgid "%s day"
 msgid_plural "%s days"
 msgstr[0] "%s Tag"
 msgstr[1] "%s Tage"
-
-#. translators: %s: amount of time
-#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:154
-msgid "%s week"
-msgid_plural "%s weeks"
-msgstr[0] "%s Woche"
-msgstr[1] "%s Wochen"
 
 #. translators: %s: amount of time
 #: packages/action-scheduler/classes/ActionScheduler_ListTable.php:149
@@ -27321,6 +27291,36 @@ msgstr "Alle %s"
 #: packages/action-scheduler/classes/ActionScheduler_DataController.php:149
 msgid "Attempting to reduce used memory..."
 msgstr "Es wird versucht, den verwendeten Arbeitsspeicher zu reduzieren …"
+
+#. translators: %s: amount of time
+#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:174
+msgid "%s second"
+msgid_plural "%s seconds"
+msgstr[0] "%s Sekunde"
+msgstr[1] "%s Sekunden"
+
+#. translators: %s: amount of time
+#. translators: %s is the time duration in minutes
+#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:169
+#: src/Internal/StockNotifications/Emails/CustomerStockNotificationVerifyEmail.php:167
+msgid "%s minute"
+msgid_plural "%s minutes"
+msgstr[0] "%s Minute"
+msgstr[1] "%s Minuten"
+
+#. translators: %s: amount of time
+#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:164
+msgid "%s hour"
+msgid_plural "%s hours"
+msgstr[0] "%s Stunde"
+msgstr[1] "%s Stunden"
+
+#. translators: %s: amount of time
+#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:154
+msgid "%s week"
+msgid_plural "%s weeks"
+msgstr[0] "%s Woche"
+msgstr[1] "%s Wochen"
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-reports-controller.php:67
 msgid "Attributes totals."
@@ -32364,10 +32364,6 @@ msgstr "Aktualisiert"
 msgid "Deleted"
 msgstr "Gelöscht"
 
-#: includes/cli/class-wc-cli-rest-command.php:157
-msgid "Trashed"
-msgstr "Entfernt"
-
 #: includes/class-wc-product-external.php:137
 msgid "External products cannot be backordered."
 msgstr "Externe Produkte können nicht nachbestellt werden."
@@ -32400,6 +32396,10 @@ msgstr "Kein Schema-Titel für %s gefunden, REST-Kommando Registrierung überspr
 #: includes/cli/class-wc-cli-rest-command.php:358
 msgid "Make sure to include the --user flag with an account that has permissions for this action."
 msgstr "Stelle sicher, die --user Markierung mit einem Konto zu benutzen, das zu dieser Aktion berechtigt ist."
+
+#: includes/cli/class-wc-cli-rest-command.php:157
+msgid "Trashed"
+msgstr "Im Papierkorb"
 
 #. translators: %s: attribute name
 #: includes/class-wc-post-types.php:262
@@ -34973,7 +34973,7 @@ msgstr "Madagaskar-Ariary"
 
 #: includes/wc-core-functions.php:600
 msgid "Mauritanian ouguiya"
-msgstr "Mauritanischer Ouguiya"
+msgstr "Mauretanischer Ouguiya"
 
 #: includes/wc-core-functions.php:549
 msgid "Euro"
@@ -37856,6 +37856,10 @@ msgstr "Bestellhinweis."
 msgid "The date the order note was created, in the site's timezone."
 msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde (in der Zeitzone der Website)."
 
+#: includes/class-wc-rest-authentication.php:517
+msgid "Invalid nonce - nonce has already been used."
+msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:186
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:226
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:268
@@ -37876,10 +37880,6 @@ msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde (in der Zeitzone der
 #: src/StoreApi/Utilities/OrderAuthorizationTrait.php:69
 msgid "Invalid order ID."
 msgstr "Ungültige Bestell-ID."
-
-#: includes/class-wc-rest-authentication.php:517
-msgid "Invalid nonce - nonce has already been used."
-msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:788
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:214
@@ -39278,12 +39278,6 @@ msgstr "Diese findest du in der Bestellbestätigungs-E-Mail."
 msgid "To track your order please enter your Order ID in the box below and press the \"Track\" button. This was given to you on your receipt and in the confirmation email you should have received."
 msgstr "Um den Status deiner Bestellung zu verfolgen, gib bitte deine Bestellnummer ein und klicke auf „Nachverfolgen“. Die Bestellnummer steht auf dem Bestellbeleg oder in der Bestätigungsmail, die du erhalten haben solltest."
 
-#. translators: %s is product title
-#: src/Blocks/BlockTypes/Reviews/ProductReviewForm.php:71
-#: templates/single-product-reviews.php:77
-msgid "Leave a Reply to %s"
-msgstr "Schreibe eine Antwort auf %s"
-
 #: templates/single-product/meta.php:38
 msgid "Tag:"
 msgid_plural "Tags:"
@@ -39357,6 +39351,12 @@ msgstr "Perfekt"
 #: assets/client/blocks/order-confirmation-summary.js:1
 msgid "Email:"
 msgstr "E-Mail-Adresse:"
+
+#. translators: %s is product title
+#: src/Blocks/BlockTypes/Reviews/ProductReviewForm.php:71
+#: templates/single-product-reviews.php:77
+msgid "Leave a Reply to %s"
+msgstr "Antworte auf den Kommentar von %s"
 
 #: includes/shortcodes/class-wc-shortcode-my-account.php:143
 #: src/Blocks/BlockTypes/OrderConfirmation/Status.php:147
@@ -44688,14 +44688,6 @@ msgstr "Am meisten Rabatt"
 msgid "Most popular"
 msgstr "Am beliebtesten"
 
-#: includes/admin/reports/class-wc-report-coupon-usage.php:136
-#: includes/admin/reports/class-wc-report-customers.php:173
-#: includes/admin/reports/class-wc-report-sales-by-category.php:120
-#: includes/admin/reports/class-wc-report-sales-by-date.php:582
-#: includes/admin/reports/class-wc-report-sales-by-product.php:147
-msgid "Last 7 days"
-msgstr "Letzte 7 Tage"
-
 #: includes/admin/reports/class-wc-report-coupon-usage.php:135
 #: includes/admin/reports/class-wc-report-customers.php:172
 #: includes/admin/reports/class-wc-report-sales-by-category.php:119
@@ -45128,6 +45120,14 @@ msgstr "Zur letzten Seite"
 #: includes/admin/meta-boxes/views/html-product-data-variations.php:195
 msgid "Go to the next page"
 msgstr "Zur nächsten Seite"
+
+#: includes/admin/reports/class-wc-report-coupon-usage.php:136
+#: includes/admin/reports/class-wc-report-customers.php:173
+#: includes/admin/reports/class-wc-report-sales-by-category.php:120
+#: includes/admin/reports/class-wc-report-sales-by-date.php:582
+#: includes/admin/reports/class-wc-report-sales-by-product.php:147
+msgid "Last 7 days"
+msgstr "Letzte 7 Tage"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:1800
 msgid "Offline Payments"

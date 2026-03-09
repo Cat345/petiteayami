@@ -26,12 +26,29 @@ class LoadSourceTypes
 
         foreach (
             [
-                ['ProductTagsQuery', 'customProductTag', trans('Custom Product tag')],
-                ['ProductCatsQuery', 'customProductCat', trans('Custom Product category')],
+                fn() => $source->objectType(
+                    'ProductTagsQuery',
+                    fn() => static::renameLabel('customProductTag', trans('Custom Product tag')),
+                ),
+                fn() => $source->objectType(
+                    'ProductCatsQuery',
+                    fn() => static::renameLabel(
+                        'customProductCat',
+                        trans('Custom Product category'),
+                    ),
+                ),
+                fn() => $source->objectType(
+                    'ProductCat',
+                    fn() => static::addOrdering('children', 'arguments'),
+                ),
+                fn() => $source->objectType(
+                    'ProductCatsQuery',
+                    fn() => static::addOrdering('customProductCats', 'fields'),
+                ),
             ]
-            as [$name, $field, $label]
+            as $query
         ) {
-            $source->objectType($name, fn() => static::renameLabel($field, $label));
+            $source->queryType($query);
         }
 
         foreach (Helper::getAttributeTaxonomies() as $taxonomy) {
@@ -55,6 +72,32 @@ class LoadSourceTypes
         return [
             'fields' => [
                 $field => ['metadata' => compact('label')],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function addOrdering(string $field, string $key): array
+    {
+        return [
+            'fields' => [
+                $field => [
+                    'metadata' => [
+                        $key => [
+                            '_order' => [
+                                'fields' => [
+                                    'order' => [
+                                        'options' => [
+                                            trans('Menu Order') => 'menu_order',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
     }

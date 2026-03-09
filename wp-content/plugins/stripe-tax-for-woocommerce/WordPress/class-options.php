@@ -16,14 +16,28 @@ use stdClass;
  * Class used to get, store and delete any options in database
  */
 class Options {
-	const OPTION_LIVE_MODE_SECRET_KEY           = 'live_mode_secret_key';
-	const OPTION_LIVE_MODE_ENABLED              = 'live_mode_enabled';
-	const OPTION_LIVE_MODE_ACCOUNT_ID           = 'live_mode_account_id';
-	const OPTION_WOOCOMMERCE_CONNECT_LAST_ERROR = 'woocommerce_connect_last_error';
-	const OPTION_WOOCOMMERCE_CONNECT_LAST_STATE = 'woocommerce_connect_last_state';
-	const CACHE_GROUP                           = 'stripe-tax-for-woocommerce';
-	const CACHE_KEY                             = 'options';
-	const TABLE_NAME                            = STRIPE_TAX_FOR_WOOCOMMERCE_DB_PREFIX . 'options';
+	const OPTION_LIVE_MODE_SECRET_KEY             = 'live_mode_secret_key';
+	const OPTION_TEST_MODE_SECRET_KEY             = 'test_mode_secret_key';
+	const OPTION_LIVE_MODE_ENABLED                = 'live_mode_enabled';
+	const OPTION_LIVE_MODE_ACCOUNT_ID             = 'live_mode_account_id';
+	const OPTION_WOOCOMMERCE_CONNECT_LAST_ERROR   = 'woocommerce_connect_last_error';
+	const OPTION_WOOCOMMERCE_CONNECT_LAST_STATE   = 'woocommerce_connect_last_state';
+	const OPTION_MODE_TYPE                        = 'mode_type';
+	const OPTION_TAX_CODE                         = 'tax_code';
+	const OPTION_FEE_TAX_CODE                     = 'fee_tax_code';
+	const OPTION_NON_TAXABLE_FEE_TAX_CODE         = 'non_taxable_fee_tax_code';
+	const OPTION_SHIPPING_TAX_CODE                = 'shipping_tax_code';
+	const MODE_LIVE                               = 0;
+	const MODE_TEST                               = 1;
+	const TEST_KEY_NEEDLE                         = '_test_';
+	const LIVE_KEY_NEEDLE                         = '_live_';
+	const CACHE_GROUP                             = 'stripe-tax-for-woocommerce';
+	const CACHE_KEY                               = 'options';
+	const TABLE_NAME                              = STRIPE_TAX_FOR_WOOCOMMERCE_DB_PREFIX . 'options';
+	const DEFAULT_OPTION_FEE_TAX_CODE             = 'txcd_20030000';
+	const DEFAULT_OPTION_NON_TAXABLE_FEE_TAX_CODE = 'txcd_00000000';
+	const DEFAULT_OPTION_SHIPPING_TAX_CODE        = 'txcd_92010001';
+	const DEFAULT_OPTION_TAX_CODE                 = 'txcd_99999999';
 
 	/**
 	 * Initializes the cache.
@@ -173,6 +187,45 @@ class Options {
 	}
 
 	/**
+	 * Gets live/test mode secret key from database
+	 *
+	 * @return string Live/test mode secret key
+	 * @phpstan-return string
+	 */
+	public static function get_current_mode_key(): string {
+		$mode_type = static::get_mode_type();
+		switch ( $mode_type ) {
+			case static::MODE_TEST:
+				return static::get_option( static::OPTION_TEST_MODE_SECRET_KEY );
+			case static::MODE_LIVE:
+			default:
+				return static::get_option( static::OPTION_LIVE_MODE_SECRET_KEY );
+		}
+	}
+
+	/**
+	 * Gets test mode secret key from database
+	 *
+	 * @return string Test mode secret key
+	 */
+	public static function get_test_mode_key(): string {
+		return static::get_option( static::OPTION_TEST_MODE_SECRET_KEY );
+	}
+
+	/**
+	 * Gets mode type key from database
+	 *
+	 * @return self::MODE_LIVE|self::MODE_TEST
+	 */
+	public static function get_mode_type(): int {
+		$mode_type = static::get_option( static::OPTION_MODE_TYPE );
+		if ( '' === $mode_type ) {
+			$mode_type = static::MODE_LIVE;
+		}
+		return $mode_type;
+	}
+
+	/**
 	 * Gets live mode masked secret key
 	 *
 	 * @return string Live mode masked secret key
@@ -187,6 +240,39 @@ class Options {
 		}
 
 		return mb_substr( $key, 0, 8 ) . '...' . mb_substr( $key, - 4 );
+	}
+
+	/**
+	 * Gets test mode masked secret key
+	 *
+	 * @return string Test mode masked secret key
+	 */
+	public static function get_test_mode_masked_key(): string {
+		$key = static::get_test_mode_key();
+		if ( '' === $key ) {
+			return '';
+		}
+		if ( mb_strlen( $key ) <= 16 ) {
+			return str_repeat( '*', 12 );
+		}
+
+		return mb_substr( $key, 0, 8 ) . '...' . mb_substr( $key, - 4 );
+	}
+
+	/**
+	 * Gets live/test mode secret key from database
+	 *
+	 * @return string Live/test mode secret key
+	 */
+	public static function get_current_mode_masked_key(): string {
+		$mode_type = static::get_mode_type();
+		switch ( $mode_type ) {
+			case static::MODE_TEST:
+				return static::get_test_mode_masked_key();
+			case static::MODE_LIVE:
+			default:
+				return static::get_live_mode_masked_key();
+		}
 	}
 
 	/**
@@ -212,6 +298,33 @@ class Options {
 			return;
 		}
 		static::update_option( static::OPTION_LIVE_MODE_ENABLED, '0' );
+	}
+
+	/**
+	 * Get fee tax code from database
+	 *
+	 * @return string Fee tax code
+	 */
+	public static function get_tax_code(): string {
+		$tax_code = static::get_option( static::OPTION_TAX_CODE );
+		if ( '' === $tax_code ) {
+			return static::DEFAULT_OPTION_TAX_CODE;
+		}
+		return $tax_code;
+	}
+
+
+	/**
+	 * Get fee tax code from database
+	 *
+	 * @return string Fee tax code
+	 */
+	public static function get_fee_tax_code(): string {
+		$fee_tax_code = static::get_option( static::OPTION_FEE_TAX_CODE );
+		if ( '' === $fee_tax_code ) {
+			return static::DEFAULT_OPTION_FEE_TAX_CODE;
+		}
+		return $fee_tax_code;
 	}
 
 	/**

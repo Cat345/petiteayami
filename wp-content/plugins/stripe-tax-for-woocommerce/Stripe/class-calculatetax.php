@@ -17,6 +17,9 @@ use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeOrderItemTax;
 use Stripe\StripeTaxForWooCommerce\WordPress\Options;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\TaxRate;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTaxTaxRateMemRepo;
+use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Input;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Util\Util;
+
 use WC_Order_Item;
 
 /**
@@ -105,30 +108,16 @@ class CalculateTax {
 	/**
 	 * Create CalculateTax service
 	 *
-	 * @param string $api_key API key.
-	 * @param string $currency Currency.
-	 * @param array  $line_items Line items.
-	 * @param array  $customer_details Customer details.
-	 * @param array  $shipping_cost Shipping cost.
+	 * @param string       $api_key API key.
+	 * @param array|object $tax_input Tax calculation input.
 	 *
 	 * @throws Exception If data is not valid.
 	 */
-	public function __construct( string $api_key, string $currency, array $line_items, array $customer_details, array $shipping_cost = array() ) {
+	public function __construct( string $api_key, $tax_input ) {
 		$this->api_key = $api_key;
-		Validate::validate_currency( $currency );
-		Validate::validate_number_of_line_items( $line_items );
-		Validate::validate_line_items( $line_items );
-		Validate::check_customer_details_address_fields( $customer_details['address'] );
 
-		$this->request = array(
-			'currency'         => $currency,
-			'customer_details' => $customer_details,
-			'line_items'       => $line_items,
-			'expand'           => array( 'line_items', 'line_items.data.tax_breakdown' ),
-		);
-		if ( $shipping_cost ) {
-			$this->request['shipping_cost'] = $shipping_cost;
-		}
+		$this->request = $tax_input;
+
 		$this->calculate_tax_md5     = md5( wp_json_encode( $this->request ) );
 		$this->tax_registrations_md5 = md5( wp_json_encode( $this->get_tax_registration( $this->api_key )->get_registrations() ) );
 		$this->tax_settings_md5      = md5( wp_json_encode( $this->get_tax_settings( $this->api_key )->get_settings() ) );
@@ -298,10 +287,10 @@ class CalculateTax {
 	 */
 	public static function get_customer_details_by_post(): array {
 		try {
-			return static::get_customer_details_address();
+			return self::get_customer_details_address();
 		} catch ( \Throwable $e ) {
 			try {
-				return static::get_customer_details_address( true );
+				return self::get_customer_details_address( true );
 			} catch ( \Throwable $e ) {
 				return array();
 			}
@@ -418,7 +407,7 @@ class CalculateTax {
 	 * @return array Line items for Calculate Tax API or for Reversal Transaction API calls
 	 * @throws Exception If data is not correct.
 	 */
-	public static function get_line_items_by_order( $wc_order, bool $for_refund = false, \stdClass $tax_transaction_data = null ): array {
+	public static function get_line_items_by_order( $wc_order, bool $for_refund = false, ?\stdClass $tax_transaction_data = null ): array {
 		$items              = $wc_order->get_items();
 		$currency           = strtolower( get_woocommerce_currency() );
 		$line_items         = array();
@@ -441,12 +430,15 @@ class CalculateTax {
 			 * @var \WC_Order_Item_Product $product
 			 * @var \WC_Product $product
 			 */
+			// @phpstan-ignore-next-line
 			$product  = $item->get_product();
 			$quantity = ( $for_refund ? - $item->get_quantity() : $item->get_quantity() );
 			// "float" casting used, because the WooCommerce returns product properties as values of "string" type.
-			$amount            = self::get_order_item_total_amount( $item, $quantity, $for_refund );
-			$normalized_amount = self::get_normalized_amount( $amount, $currency );
+			$amount                = self::get_order_item_total_amount( $item );
+			$normalized_amount     = self::get_normalized_amount( $amount, $currency );
+			$normalized_tax_amount = 0;
 			if ( $for_refund ) {
+				// @phpstan-ignore-next-line
 				$tax_amount            = (float) ( $item->get_total_tax( 'edit' ) );
 				$normalized_tax_amount = self::get_normalized_amount( $tax_amount, $currency );
 			}
@@ -465,7 +457,7 @@ class CalculateTax {
 						$line_items[ $line_items_counter ]['tax_code'] = $stripe_product['tax_code'];
 					}
 
-					$tax_settings = new TaxSettings( Options::get_live_mode_key() );
+					$tax_settings = new TaxSettings( Options::get_current_mode_key() );
 
 					if ( ! $order_prices_include_tax ) {
 						$line_items[ $line_items_counter ]['tax_behavior'] = 'exclusive';
@@ -548,7 +540,7 @@ class CalculateTax {
 					$line_items[ $line_items_counter ]['tax_code'] = $stripe_product['tax_code'];
 				}
 
-				$tax_settings                                      = new TaxSettings( Options::get_live_mode_key() );
+				$tax_settings                                      = new TaxSettings( Options::get_current_mode_key() );
 				$line_items[ $line_items_counter ]['tax_behavior'] = $tax_settings->get_tax_behavior();
 				$items_reference_already_added[ $reference ]       = $line_items[ $line_items_counter ];
 				$items_reference_already_added[ $reference ]['counter'] = $line_items_counter;
@@ -587,6 +579,7 @@ class CalculateTax {
 	 * @return float
 	 */
 	public static function get_order_item_discount_amount( $order_item ) {
+		// @phpstan-ignore-next-line
 		return (float) wc_format_decimal( $order_item->get_subtotal() - $order_item->get_total() );
 	}
 
@@ -597,6 +590,7 @@ class CalculateTax {
 	 * @return float
 	 */
 	public static function get_order_item_total_amount( $order_item ) {
+		// @phpstan-ignore-next-line
 		return (float) $order_item->get_total( 'edit' );
 	}
 
@@ -686,7 +680,7 @@ class CalculateTax {
 
 		$normalized_shipping_total = self::get_normalized_amount( $shipping_total, $currency );
 
-		$tax_settings = new TaxSettings( Options::get_live_mode_key() );
+		$tax_settings = new TaxSettings( Options::get_current_mode_key() );
 
 		$shipping_cost = array(
 			'amount'       => $normalized_shipping_total,
@@ -727,6 +721,7 @@ class CalculateTax {
 			}
 		}
 
+		// @phpstan-ignore-next-line
 		if ( is_null( $max_key ) || $max_cost <= 0.0 ) {
 			return $shipping_methods;
 		}
@@ -831,14 +826,15 @@ class CalculateTax {
 	/**
 	 * Get Stripe Tax rates array from Stripe Tax Calculation API response.
 	 *
-	 * @param mixed                  $response Response.
-	 * @param \WC_Order_Item_Product $wc_order_item WC Order items.
+	 * @param mixed                        $response Response.
+	 * @param \WC_Order_Item_Product|false $wc_order_item WC Order items.
 	 *
 	 * @return array prepared for Woocommerce tax rates from Stripe Tax Calculation API response rates
 	 */
 	public static function get_wc_rates_array_from_response_for_item( $response, $wc_order_item = false ): array {
 		$new_item_tax_rates = array();
 		foreach ( $response->line_items->data as $datum ) {
+			$product_name = '';
 			if ( $wc_order_item ) {
 				$product      = $wc_order_item->get_product();
 				$item_id      = $wc_order_item->get_id();
@@ -962,7 +958,7 @@ class CalculateTax {
 	 * @see https://stripe.com/docs/api/tax/calculations/object#tax_calculation_object-expires_at
 	 */
 	protected function is_expired( $response ): bool {
-		if ( time() > ( $response->expires_at - 30 ) ) {
+		if ( time() > ( $response['expires_at'] - 30 ) ) {
 			return true;
 		}
 
@@ -1075,10 +1071,12 @@ class CalculateTax {
 			return null;
 		}
 
-		$response = json_decode( $results['response'] );
+		$response = json_decode( $results['response'], true );
 		if ( ! $response || $this->is_expired( $response ) ) {
 			return null;
 		}
+
+		$response = Util::convertToStripeObject( $response, array() );
 
 		return $response;
 	}
@@ -1152,10 +1150,8 @@ class CalculateTax {
 		}
 		$response = $this->get_from_api_call();
 
-		if ( $response ) {
-			$this->set_to_db( $response );
-			$this->set_to_object_cache( $response );
-		}
+		$this->set_to_db( $response );
+		$this->set_to_object_cache( $response );
 
 		return $response;
 	}
@@ -1343,7 +1339,7 @@ class CalculateTax {
 	/**
 	 * Returns true if order prices include taxes.
 	 *
-	 * @param string $wc_order WC_Order the order.
+	 * @param \WC_Order $wc_order WooCommerce Order object.
 	 */
 	public static function order_prices_include_tax( $wc_order ) {
 		$order_prices_include_tax_tag = $wc_order->get_prices_include_tax();
@@ -1362,7 +1358,7 @@ class CalculateTax {
 		if ( ! static::order_prices_include_tax( $wc_order ) ) {
 			return false;
 		}
-
+		// @phpstan-ignore-next-line
 		$shipping_items = $wc_order->get_items( 'shipping' );
 
 		foreach ( $shipping_items as $shipping_item ) {

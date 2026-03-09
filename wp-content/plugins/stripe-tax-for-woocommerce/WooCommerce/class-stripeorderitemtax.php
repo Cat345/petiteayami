@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Extends WooCommerce Order Item Tax class with support of Stripe Taxes.
+ *
+ * @phpstan-consistent-constructor
  */
 class StripeOrderItemTax extends \WC_Order_Item_Tax {
 
@@ -21,7 +23,7 @@ class StripeOrderItemTax extends \WC_Order_Item_Tax {
 	 * @param int $rate_id Rate id.
 	 */
 	public static function from_rate_id( $rate_id ) {
-		$item = new static();
+		$item = new self();
 
 		$item->set_rate_id( $rate_id );
 
@@ -41,6 +43,7 @@ class StripeOrderItemTax extends \WC_Order_Item_Tax {
 		$rate = array(
 			'rate_id'      => $tax_rate['id'],
 			'label'        => $tax_rate['name'],
+			// @phpstan-ignore-next-line
 			'rate_code'    => $tax_rate->get_code(),
 			'rate_percent' => $tax_rate['rate'],
 		);
@@ -123,10 +126,25 @@ class StripeOrderItemTax extends \WC_Order_Item_Tax {
 	}
 
 	/**
-	 * Avoid explcit rate label setting
+	 * Avoid explicit rate label setting
 	 *
 	 * @param int $rate_id Rate id.
 	 */
 	public function set_rate_label( $rate_id ) {
+	}
+
+	/**
+	 * Returns tax rate id.
+	 *
+	 * @param string $context The context.
+	 */
+	public function get_rate_id( $context = 'view' ) {
+		$rate_code = $this->data['rate_code'];
+
+		if ( strpos( $rate_code, 'stripe_tax_for_woocommerce' ) !== false ) {
+			return $rate_code;
+		}
+
+		return parent::get_rate_id( $context );
 	}
 }

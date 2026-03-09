@@ -57,6 +57,7 @@ $tax_exemption_value = get_the_author_meta( 'tax_exemption', $user->ID );
 				</option>
 			</select>
 			<p class="description">
+				<?php /* @phpstan-ignore-next-line */ ?>
 				<a href="<?php echo esc_url( $this->get_tax_exemption_link() ); ?>" target="_blank">
 					<?php
 					echo esc_html( __( 'Review our guide', 'stripe-tax-for-woocommerce' ) );

@@ -295,6 +295,7 @@ class TaxCodeList {
 	 * @throws Exception If data is not correct.
 	 */
 	public static function format_single( $tax_code, $api_key ) {
+		// @phpstan-ignore-next-line
 		$tax_code_list = new static( $api_key );
 
 		return $tax_code_list->get()[ $tax_code ]->name;

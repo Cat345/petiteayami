@@ -56,13 +56,20 @@ class Validate {
 	 * Validate Stripe API key format
 	 *
 	 * @param string $key Key.
+	 * @param int    $mode can be 0 or 1.
 	 *
 	 * @return void
 	 * @throws Exception If validation fails.
 	 */
-	public static function validate_key_format( $key ) {
-		if ( ! is_string( $key ) || 1 !== preg_match( '/^sk_live_[0-9A-Za-z]{99}$/', trim( $key ) ) ) {
-			throw new Exception( esc_html__( 'The live key must start with "sk_live_" and 99 alphanumeric characters that follow.', 'stripe-tax-for-woocommerce' ) );
+	public static function validate_key_format( $key, $mode = 0 ) {
+		if ( Options::MODE_TEST === $mode ) {
+			if ( ! is_string( $key ) || 1 !== preg_match( '/^sk_test_[0-9A-Za-z]{99}$/', trim( $key ) ) ) {
+				throw new Exception( esc_html__( 'The test key must start with sk_test_ and 99 alphanumeric characters that follow.', 'stripe-tax-for-woocommerce' ) );
+			}
+		} elseif ( Options::MODE_LIVE === $mode ) {
+			if ( ! is_string( $key ) || 1 !== preg_match( '/^sk_live_[0-9A-Za-z]{99}$/', trim( $key ) ) ) {
+				throw new Exception( esc_html__( 'The live key must start with sk_live_ and 99 alphanumeric characters that follow.', 'stripe-tax-for-woocommerce' ) );
+			}
 		}
 	}
 

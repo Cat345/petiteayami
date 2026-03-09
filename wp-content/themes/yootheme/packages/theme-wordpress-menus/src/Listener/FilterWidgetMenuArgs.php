@@ -27,7 +27,9 @@ class FilterWidgetMenuArgs
             if (str_starts_with($key, 'menu_')) {
                 $menuArgs[substr($key, 5)] = $value;
             }
-            if (in_array($key, ['text_align', 'text_align_breakpoint', 'text_align_fallback'], true)) {
+            if (
+                in_array($key, ['text_align', 'text_align_breakpoint', 'text_align_fallback'], true)
+            ) {
                 $menuArgs[$key] = $value;
             }
         }

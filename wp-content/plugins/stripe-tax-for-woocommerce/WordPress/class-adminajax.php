@@ -14,6 +14,7 @@ use Exception;
 use stdClass;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\StripeClient;
 use Stripe\StripeTaxForWooCommerce\Stripe\Validate;
+use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeTax;
 
 /**
  * Class provides AJAX functionality.
@@ -49,8 +50,7 @@ class AdminAjax {
 	 * @throws Exception If something goes wrong.
 	 */
 	public static function test_connection( ?StripeClient $stripe_client = null ) {
-		$nonce = isset( $_POST['_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ) : '';
-
+		$nonce  = isset( $_POST['_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ) : '';
 		$action = 'stripe_tax_for_woocommerce_test_connection_live_key';
 		$data   = new stdClass();
 		try {
@@ -58,10 +58,15 @@ class AdminAjax {
 				throw new Exception( __( 'Form expired. Refresh page and try again.', 'stripe-tax-for-woocommerce' ) );
 			}
 
-			wp_create_nonce( $action );
-			$key = Options::get_live_mode_key();
-			Validate::validate_key_format( $key );
-			$key = trim( $key );
+			$mode = isset( $_POST['mode'] ) ? sanitize_text_field( wp_unslash( $_POST['mode'] ) ) : Options::MODE_LIVE;
+			$key  = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+
+			$stripe_validation = StripeTax::validate_keys( $mode, $key );
+			if ( is_array( $stripe_validation ) && isset( $stripe_validation['error'] ) ) {
+				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+				throw new Exception( __( $stripe_validation['error_msg'], 'stripe-tax-for-woocommerce' ) );
+			}
+
 			if ( is_null( $stripe_client ) ) {
 				$stripe_client = new StripeClient( $key );
 			}

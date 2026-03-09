@@ -1,11 +1,13 @@
 # BEGIN LSCACHE
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
-<IfModule LiteSpeed>
+<IfModule mod_rewrite.c>
 RewriteEngine on
-CacheLookup on
-RewriteRule .* - [E=Cache-Control:no-autoflush]
 RewriteRule litespeed/debug/.*\.log$ - [F,L]
 RewriteRule \.litespeed_conf\.dat - [F,L]
+</IfModule>
+<IfModule LiteSpeed>
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
 
 ### marker ASYNC start ###
 RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
@@ -16,6 +18,7 @@ RewriteRule .* - [E=noabort:1]
 ### marker WEBP start ###
 RewriteCond %{HTTP_ACCEPT} image/webp [OR]
 RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
+RewriteCond %{HTTP_USER_AGENT} Macintosh.*Version/((1[7-9]|[2-9][0-9])|16\.([4-9]|[1-9][0-9])) [OR]
 RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
 RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
 ### marker WEBP end ###

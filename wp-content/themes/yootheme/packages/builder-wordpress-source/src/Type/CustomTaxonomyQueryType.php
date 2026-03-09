@@ -218,10 +218,6 @@ class CustomTaxonomyQueryType
 
         if (is_taxonomy_hierarchical($args['taxonomy'])) {
             $query['parent'] = $args['id'] ?? 0;
-
-            // There is a bug in WordPress (introduced in 6.0) where terms are added to cache without the 'hide_empty' filter being applied first
-            // TODO: remove once fixed in WordPress 6+
-            $query['cache_domain'] = microtime();
         }
 
         return get_terms($query);

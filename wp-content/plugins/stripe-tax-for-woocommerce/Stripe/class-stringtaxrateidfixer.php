@@ -27,7 +27,7 @@ class StringTaxRateIdFixer {
 	 */
 	public static function get_orders() {
 
-		$wc_order_ids = static::get_order_ids();
+		$wc_order_ids = self::get_order_ids();
 
 		if ( count( $wc_order_ids ) === 0 ) {
 			return array();

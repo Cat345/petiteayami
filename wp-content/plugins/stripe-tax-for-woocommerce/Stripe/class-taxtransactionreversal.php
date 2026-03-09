@@ -47,12 +47,13 @@ class TaxTransactionReversal {
 	public static function create_full_api_tax_reversal( $api_tax_transaction_id ) {
 		$details = static::get_api_tax_transaction_reference_and_order_id( $api_tax_transaction_id );
 
+		$reference = 'Refund ' . ( isset( $details['reference'] ) ? $details['reference'] : '' );
+
 		if ( ! is_array( $details ) || ! array_key_exists( 'order_id', $details ) || ! array_key_exists( 'reference', $details ) ) {
 			throw new Exception( esc_html( 'Tax transaction reversal failed for "' . $api_tax_transaction_id . '": no order_id found in reference ("' . $reference . '")' ) );
 		}
 
-		$order_id  = $details['order_id'];
-		$reference = 'Refund ' . $details['reference'];
+		$order_id = $details['order_id'];
 
 		TaxTransaction::create_full_api_tax_reversal(
 			$order_id,

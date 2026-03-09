@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-    var $test_connection_button = $('input[name="stripe_tax_for_woocommerce_button_test_connection_live_key"]');
+    var $test_connection_button = $('.js_stripe_tax_for_woocommerce_button_test_connection');
     var $tax_settings_city_input = $('#stripe_tax_for_woocommerce_id_live_mode_city');
     var $tax_settings_country_select = $('#stripe_tax_for_woocommerce_id_live_mode_country');
     var $tax_settings_postal_code_input = $('#stripe_tax_for_woocommerce_id_live_mode_postal_code');
@@ -224,6 +224,15 @@ jQuery(document).ready(function ($) {
 
     function add_message(message_id, message, type, $after) {
         remove_message(message_id);
+
+        if (message_id == 'test_connection' && type == 'success') {
+            $('.stripe_tax_for_woocommerce_message_error').remove();
+            const save_btn = document.querySelector('.woocommerce-save-button');
+            if (!save_btn.disabled) {
+                add_message('message_wrapper', 'Remember to click “Save changes”', 'info', $('.stripe_tax_for_woocommerce_step_1'));
+            }
+        }
+
         if (!(['info', 'error', 'success', 'warning'].includes(type))) {
             type = 'success';
         }
@@ -237,18 +246,36 @@ jQuery(document).ready(function ($) {
         $after.after($message);
     }
 
+	function disable_tax_option_table_row(id, visible, defaults) {
+		try {
+			let optionInput = document.querySelector("#" + id);
+			let tr = optionInput.closest("TR");
+
+			if (tr) {
+				if (visible === undefined) {
+					tr.style.display = "none";
+				} else {
+					tr.classList.add("stripe_tax_disabled");
+				}
+				
+			}
+		} catch(err) {
+		}
+	}
+
     $test_connection_button.click(function (e) {
         var $this = $(this);
         e.preventDefault();
         e.stopPropagation();
         remove_message('test_connection');
-        $test_connection_button.attr('disabled', 'disabled');
-        var $key_field = $('input[name="stripe_tax_for_woocommerce_live_key"]');
+        $this.attr('disabled', 'disabled');
+        var mode = $this.data('mode');
+        var $sk_field = $('tr.js-stripe_tax_for_woocommerce_'+ mode +'_mode .js_stripe_tax_for_woocommerce_sec_key');
         $.post(stripe_tax_for_woocommerce.ajax_url, {
-            _nonce: $('input[name="stripe_tax_for_woocommerce_nonce_test_connection_live_key"]').val(),
+            _nonce: $('input[name="stripe_tax_for_woocommerce_nonce_test_connection_' + mode + '_key"]').val(),
             action: "stripe_tax_for_woocommerce_test_connection",
-            key: $key_field.val() ? $key_field.val() : '',
-            live: '1'
+            key: ($sk_field.val() || ''),
+            mode: ( mode == 'test' ? 1 : 0 ),
         }, function (data) {
             if (data.success) {
                 add_message('test_connection', data.data.message, 'success', $this);
@@ -256,7 +283,7 @@ jQuery(document).ready(function ($) {
                 add_message('test_connection', data.data.message, 'error', $this);
             }
         }).always(function () {
-            $test_connection_button.removeAttr('disabled');
+            $this.removeAttr('disabled');
         });
     });
 
@@ -305,5 +332,85 @@ jQuery(document).ready(function ($) {
 
 	$( '.woocommerce-save-button' ).closest('form').on('submit', function(event) {
 		$( '.woocommerce-save-button' ).css('pointer-events', 'none');
-	})
+	});
+
+	disable_tax_option_table_row("woocommerce_tax_round_at_subtotal");
+	disable_tax_option_table_row("woocommerce_tax_classes");
+	disable_tax_option_table_row("woocommerce_tax_based_on", true);
+	disable_tax_option_table_row("woocommerce_shipping_tax_class");
 });
+
+
+
+(function ($) {
+  'use strict';
+
+  const stripe_settings = {
+    stripeApp: null,
+    init() {
+
+        $('#stripe_tax_for_woocommerce_message_id_stripe_tax_api_keys_message a').on('click', function (e) {
+            e.preventDefault();
+
+            const url = $(this).attr('href');
+            if (!url) return;
+
+            // Reuse the same tab/window
+            if (stripe_settings.stripeApp && !stripe_settings.stripeApp.closed) {
+                stripe_settings.stripeApp.location.href = url;
+                stripe_settings.stripeApp.focus();
+            } else {
+                // Give it a stable name so the browser reuses it
+                stripe_settings.stripeApp = window.open(url, 'stripeTaxAppWindow');
+            }
+        });
+        //Change mode live/test
+        stripe_settings.toggleMode($('#stripe_tax_for_woocommerce_id_toggle_mode'));
+        $(document).on('change', '#stripe_tax_for_woocommerce_id_toggle_mode', function (e) {
+            e.preventDefault();
+            stripe_settings.toggleMode($(this));
+        });
+
+        $(document).on('keyup', '.js_stripe_tax_for_woocommerce_live_mode', function (e) {
+          stripe_settings.setTestConnectionBtnStatus('live');
+        });
+
+        $(document).on('keyup', '.js_stripe_tax_for_woocommerce_test_mode', function (e) {
+          stripe_settings.setTestConnectionBtnStatus('test');
+        });
+
+    },
+    toggleMode(toggleCheckboxObj) {
+        if (toggleCheckboxObj.is(':checked')) {
+          $('.js-live-text').hide();
+          $('.js-sandbox-text').show();
+          $('.js-stripe_tax_for_woocommerce_test_mode').show();
+          $('.js-stripe_tax_for_woocommerce_live_mode').hide();
+        } else {
+          $('.js-live-text').show();
+          $('.js-sandbox-text').hide();
+          $('.js-stripe_tax_for_woocommerce_test_mode').hide();
+          $('.js-stripe_tax_for_woocommerce_live_mode').show();
+        }
+    },
+    setTestConnectionBtnStatus(mode) {
+      const $fields = $('.js_stripe_tax_for_woocommerce_' + mode + '_mode');
+      const $btn = $('#stripe_tax_for_woocommerce_id_btn_test_connection_' + mode + '_key');
+
+      // true if every field has a non-empty (trimmed) value
+      const allFilled = $fields.toArray().every(el => $.trim($(el).val()) !== '');
+
+      // enable when all are filled, disable otherwise
+      $btn.prop('disabled', !allFilled);
+
+    }
+  };
+
+  $(function () {
+    if ($('.stripe_tax_for_woocommerce_settings').length) {
+        stripe_settings.init();
+    }
+  });
+
+})(jQuery);
+

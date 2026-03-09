@@ -145,43 +145,12 @@ class TaxSettings {
 		}
 		$is_set_settings_success = false;
 		try {
-			Validate::validate_country_support( $this->get_country() );
-
-			$state_handlers = array(
-				'AE' => 'get_allowed_origin_address_ae_provinces',
-				'AU' => 'get_allowed_origin_address_au_states',
-				'CA' => 'get_allowed_origin_address_ca_provinces',
-				'ES' => 'get_allowed_origin_address_es_provinces',
-				'HK' => 'get_allowed_origin_address_hk_areas',
-				'IE' => 'get_allowed_origin_address_ie_counties',
-				'IT' => 'get_allowed_origin_address_it_provinces',
-				'JP' => 'get_allowed_origin_address_jp_prefectures',
-				'US' => 'get_allowed_origin_address_us_states',
-			);
-
-			if ( isset( $state_handlers[ $this->get_country() ] ) ) {
-				$handler_method = $state_handlers[ $this->get_country() ];
-				Validate::validate_country_state( $this->get_country(), $this->get_state(), StripeTaxPluginHelper::$handler_method() );
-			}
-
-			$client                                        = $this->get_stripe_client( $this->api_key );
-			$setting_service                               = new SettingsService( $client );
-			$save_setting                                  = array();
-			$save_setting['head_office[address][country]'] = $this->get_country();
-			if ( $this->get_state() ) {
-				$save_setting['head_office[address][state]'] = $this->get_state();
-			}
-			$save_setting['head_office[address][city]']        = $this->get_city();
-			$save_setting['head_office[address][line1]']       = $this->get_line1();
-			$save_setting['head_office[address][line2]']       = $this->get_line2();
-			$save_setting['head_office[address][postal_code]'] = $this->get_postal_code();
-			$save_setting['defaults[tax_code]']                = $this->get_tax_code();
+			$client                             = $this->get_stripe_client( $this->api_key );
+			$setting_service                    = new SettingsService( $client );
+			$save_setting                       = array();
+			$save_setting['defaults[tax_code]'] = $this->get_tax_code();
 			$setting_service->update( $save_setting );
 			$is_set_settings_success = true;
-		} catch ( CountrySupportException $exception ) {
-			ErrorRenderer::set_error_object( 'setting_country_error', $exception->getMessage(), 'error' );
-		} catch ( CountryStateException $exception ) {
-			ErrorRenderer::set_error_object( 'setting_state_error', $exception->getMessage(), 'error' );
 		} catch ( TaxBehaviorException $exception ) {
 			ErrorRenderer::set_error_object( 'setting_tax_behavior_error', $exception->getMessage(), 'error' );
 		} catch ( Exception $exception ) {
@@ -286,28 +255,13 @@ class TaxSettings {
 			exit;
 		}
 
-		$prefix      = 'stripe_tax_for_woocommerce_' . ( $live ? 'live' : 'test' ) . '_mode_';
-		$tax_code    = $prefix . 'tax_code';
-		$city        = $prefix . 'city';
-		$country     = $prefix . 'country';
-		$line1       = $prefix . 'line1';
-		$line2       = $prefix . 'line2';
-		$postal_code = $prefix . 'postal_code';
-		$state       = $prefix . 'state';
+		$prefix   = 'stripe_tax_for_woocommerce_' . ( $live ? 'live' : 'test' ) . '_mode_';
+		$tax_code = $prefix . 'tax_code';
 
 		$tax_settings                     = new stdClass();
 		$tax_settings->object             = 'tax.settings';
 		$tax_settings->defaults           = new stdClass();
 		$tax_settings->defaults->tax_code = sanitize_text_field( wp_unslash( $_POST[ $tax_code ] ?? null ) );
-
-		$tax_settings->head_office                       = new stdClass();
-		$tax_settings->head_office->address              = new stdClass();
-		$tax_settings->head_office->address->city        = sanitize_text_field( wp_unslash( $_POST[ $city ] ?? null ) );
-		$tax_settings->head_office->address->country     = sanitize_text_field( wp_unslash( $_POST[ $country ] ?? null ) );
-		$tax_settings->head_office->address->line1       = sanitize_text_field( wp_unslash( $_POST[ $line1 ] ?? null ) );
-		$tax_settings->head_office->address->line2       = sanitize_text_field( wp_unslash( $_POST[ $line2 ] ?? null ) );
-		$tax_settings->head_office->address->postal_code = sanitize_text_field( wp_unslash( $_POST[ $postal_code ] ?? null ) );
-		$tax_settings->head_office->address->state       = sanitize_text_field( wp_unslash( $_POST[ $state ][ $_POST[ $country ] ?? null ] ?? null ) );
 
 		return $tax_settings;
 	}

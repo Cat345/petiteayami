@@ -19,7 +19,7 @@ trait StripeClientTrait {
 	/**
 	 * StripeClient object
 	 *
-	 * @var StripeClient
+	 * @var \Stripe\StripeTaxForWooCommerce\SDK\lib\StripeClient
 	 */
 	protected $stripe_client;
 

@@ -12,9 +12,14 @@ defined( 'ABSPATH' ) || exit;
 
 use WC_Order;
 use WC_Order_Refund;
-
 use Stripe\StripeTaxForWooCommerce\Stripe\CalculateTax;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\ApiErrorException;
 use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\InvalidRequestException;
+use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Calculator;
+use Stripe\StripeTaxForWooCommerce\WordPress\Options;
+use Stripe\StripeTaxForWooCommerce\Utils\Amount_Utility;
+use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Order_Input;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Util\Util;
 use Throwable;
 
 /**
@@ -34,22 +39,28 @@ abstract class TaxTransaction {
 	/**
 	 * Create Stripe Tax Transaction from Tax Calculation
 	 *
-	 * @param int    $order_id WooCommerce Order ID.
-	 * @param object $api_tax_calculation Tax calculation.
+	 * @param int $order_id WooCommerce Order ID.
 	 *
 	 * @return \stdClass
 	 * @throws ApiErrorException In case of API error.
 	 * @see https://stripe.com/docs/api/tax/transactions/create_from_calculation
 	 */
-	public static function create_order_transaction( int $order_id, object $api_tax_calculation ) {
+	public static function create_order_transaction( int $order_id ) {
 		global $wpdb;
+
+		$order = wc_get_order( $order_id );
+		$order->calculate_totals( true );
+
+		$tax_calculation        = Calculator::$calculations[ $order_id ];
+		$tax_calculation_input  = $tax_calculation['input'];
+		$tax_calculation_result = $tax_calculation['result'];
 
 		static::reverse_order_last_transaction( $order_id );
 
 		$last_tax_transaction = static::create_api_tax_transaction(
 			$order_id,
 			'Order ' . $order_id . ' order timestamp ' . time(),
-			$api_tax_calculation
+			$tax_calculation_result
 		);
 
 		$order_refunds = static::get_order_refunds( $order_id );
@@ -59,6 +70,13 @@ abstract class TaxTransaction {
 				static::create_order_refund_reversal( $order_refund );
 			}
 		}
+		$test = Calculator::$calculations;
+		unset( Calculator::$calculations[ $order_id ] );
+		$test2 = Calculator::$calculations;
+
+		$tax_calculation_payload = $tax_calculation_input->get_payload();
+		$calculate_tax           = new CalculateTax( Options::get_current_mode_key(), $tax_calculation_payload );
+		$calculate_tax->delete();
 
 		return $last_tax_transaction;
 	}
@@ -68,10 +86,9 @@ abstract class TaxTransaction {
 	 *
 	 * @param int $order_id WooCommerce Order ID.
 	 *
-	 * @return \stdClass
 	 * @throws ApiErrorException In case of API error.
 	 */
-	public static function reverse_order_last_transaction( int $order_id ) {
+	public static function reverse_order_last_transaction( int $order_id ): void {
 		$last_tax_transaction = static::get_order_last_transaction( $order_id );
 
 		if ( ! $last_tax_transaction ) {
@@ -99,8 +116,8 @@ abstract class TaxTransaction {
 		if ( ! $order_last_transaction ) {
 			return;
 		}
-		$tax_transaction_data = $order_last_transaction->tax_transaction;
-		$line_items           = CalculateTax::get_line_items_by_order( $order_refund, true, $tax_transaction_data );
+		$tax_transaction = $order_last_transaction->tax_transaction;
+		$line_items      = static::get_tax_transaction_refund_line_items( $order_refund, $tax_transaction );
 
 		$currency = $order_refund->get_currency();
 
@@ -111,8 +128,8 @@ abstract class TaxTransaction {
 
 		if ( $shipping_total < 0.0 || $shipping_tax < 0.0 ) {
 			$shipping_cost = array(
-				'amount'     => CalculateTax::get_normalized_amount( $shipping_total, $currency ),
-				'amount_tax' => CalculateTax::get_normalized_amount( $shipping_tax, $currency ),
+				'amount'     => Amount_Utility::to_cents( $shipping_total, $currency ),
+				'amount_tax' => Amount_Utility::to_cents( $shipping_tax, $currency ),
 			);
 		}
 
@@ -125,6 +142,69 @@ abstract class TaxTransaction {
 		);
 	}
 
+	/**
+	 * Given an order and a refund order item return the original refunded order item.
+	 *
+	 * @param object $order_refund Order refund.
+	 * @param object $order_refund_item Order refund item.
+	 */
+	protected static function get_original_item_reference( $order_refund, $order_refund_item ) {
+		$order                  = wc_get_order( $order_refund->get_parent_id() );
+		$order_refunded_item_id = $order_refund_item->get_meta( '_refunded_item_id' );
+		$order_refunded_item    = $order->get_item( $order_refunded_item_id );
+
+		$reference = Order_Input::build_item_reference_by_type( $order_refunded_item );
+
+		return $reference;
+	}
+
+	/**
+	 * Given an order refund and a previously tax calculation, return tax calculation lines associated with the refund
+	 *
+	 * @param object $wc_order_refund Order refund.
+	 * @param object $tax_transaction_data Tax calculation data.
+	 */
+	public static function get_tax_transaction_refund_line_items( $wc_order_refund, object $tax_transaction_data ): array {
+		$tax_transaction_data = Util::convertToStripeObject( $tax_transaction_data, array() );
+		$items                = $wc_order_refund->get_items();
+		$currency             = $wc_order_refund->get_currency();
+		$line_items           = array();
+		$line_items_counter   = 0;
+
+		$items_reference_already_added = array();
+
+		foreach ( $items as $item ) {
+			$reference = static::get_original_item_reference( $wc_order_refund, $item );
+
+			$original_line_item_id = '';
+			// @phpstan-ignore-next-line
+			foreach ( $tax_transaction_data->line_items as $transaction_line_item ) {
+				if ( $reference === $transaction_line_item->reference ) {
+					$original_line_item_id = $transaction_line_item->id;
+					break;
+				}
+			}
+
+			if ( ! $original_line_item_id ) {
+				continue;
+			}
+
+			$quantity   = - $item->get_quantity();
+			$amount     = Amount_Utility::to_cents( $item->get_total( 'edit' ), $currency );
+			$tax_amount = Amount_Utility::to_cents( $item->get_total_tax( 'edit' ), $currency );
+
+			$line_items[ $line_items_counter ] = array(
+				'amount'             => $amount,
+				'reference'          => $reference,
+				'quantity'           => $quantity,
+				'original_line_item' => $original_line_item_id,
+				'amount_tax'         => $tax_amount,
+			);
+
+		}
+
+		return $line_items;
+	}
 	/**
 	 * Returns an order's refunds sorted by date desc
 	 *
@@ -178,7 +258,7 @@ abstract class TaxTransaction {
 			$transactions = array();
 
 			foreach ( $result as $record ) {
-				$transaction                                       = static::create_transaction_dto( $record->order_id, $record->tax_transaction, $record->tax_calculation );
+				$transaction                                       = self::create_transaction_dto( $record->order_id, $record->tax_transaction, $record->tax_calculation );
 				$transactions[ $transaction->tax_transaction->id ] = $transaction;
 			}
 		}
@@ -197,8 +277,8 @@ abstract class TaxTransaction {
 	/**
 	 * Prepends an order tax transaction to the static cache.
 	 *
-	 * @param object $order_id WooCommerce Order ID.
-	 * @param object $transaction Tax Transaction.
+	 * @param int|object $order_id WooCommerce Order ID.
+	 * @param object     $transaction Tax Transaction.
 	 */
 	protected static function prepend_transaction( $order_id, $transaction ) {
 		$api_tax_transaction = $transaction->tax_transaction;
@@ -392,16 +472,17 @@ abstract class TaxTransaction {
 					'original_transaction' => $original_api_tax_transaction_id,
 				)
 			);
+			return null;
 		}
 	}
 
 	/**
 	 * Error handler.
 	 *
-	 * @param object     $err     The error object.
+	 * @param \Throwable $err     The error object.
 	 * @param array|null $context Error context.
 	 *
-	 * @throws Exception Thrown exception.
+	 * @throws \Throwable When the error cannot be handled.
 	 */
 	protected static function on_error( $err, $context = null ) {
 		if ( ! ( $err instanceof InvalidRequestException ) ) {
@@ -458,7 +539,7 @@ abstract class TaxTransaction {
 			$reversal_references[ $reversal_tax_id ] = $api_tax_reversal->reference;
 
 			if ( $api_tax_reversal->reversal->original_transaction !== $original_transaction ) {
-				return;
+				return null;
 			}
 		}
 
@@ -504,7 +585,7 @@ abstract class TaxTransaction {
 			)
 		);
 
-		$last_transaction = static::create_transaction_dto( $order_id, $json_api_tax_transaction, $json_api_tax_calculation );
+		$last_transaction = self::create_transaction_dto( $order_id, $json_api_tax_transaction, $json_api_tax_calculation );
 
 		static::prepend_transaction( $order_id, $last_transaction );
 
@@ -525,8 +606,8 @@ abstract class TaxTransaction {
 
 		$transaction->order_id = $order_id;
 
-		$transaction->tax_transaction = json_decode( $json_api_tax_transaction );
-		$transaction->tax_calculation = json_decode( $json_api_tax_calculation );
+		$transaction->tax_transaction = Util::convertToStripeObject( json_decode( $json_api_tax_transaction, true ), array() );
+		$transaction->tax_calculation = Util::convertToStripeObject( json_decode( $json_api_tax_calculation, true ), array() );
 		$transaction->reversals       = array();
 
 		return $transaction;

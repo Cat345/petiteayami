@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class for storing and rendering errors
+ *
+ * @phpstan-consistent-constructor
  */
 class ErrorRenderer {
 

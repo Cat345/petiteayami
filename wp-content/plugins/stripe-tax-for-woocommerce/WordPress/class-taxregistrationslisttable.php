@@ -57,10 +57,8 @@ class TaxRegistrationsListTable extends WP_List_Table {
 
 	/**
 	 * Initialize WordPress list table names.
-	 *
-	 * @param array $args Construct arguments.
 	 */
-	public function __construct( $args = array() ) {
+	public function __construct() {
 		parent::__construct(
 			array(
 				'singular' => 'Tax Registration',
