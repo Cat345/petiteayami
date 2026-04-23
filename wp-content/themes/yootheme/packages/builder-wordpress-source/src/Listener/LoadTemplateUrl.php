@@ -56,7 +56,6 @@ class LoadTemplateUrl
      * @param string $url
      * @param string $text
      * @param string $format
-     * @return string
      *
      * @link https://developer.wordpress.org/reference/hooks/get_archives_link/
      */

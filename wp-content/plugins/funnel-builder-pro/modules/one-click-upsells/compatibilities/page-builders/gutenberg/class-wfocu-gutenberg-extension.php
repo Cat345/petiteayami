@@ -1,19 +1,18 @@
 <?php
 if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 	class WFOCU_Gutenberg {
-		private static $ins = null;
-		public $modules_instance = [];
-		protected $module_path = [];
-		private $post = null;
-		protected $widgets_json = [];
-		private $url = '';
+		private static $ins      = null;
+		public $modules_instance = array();
+		protected $module_path   = array();
+		private $post            = null;
+		protected $widgets_json  = array();
+		private $url             = '';
 
 		private function __construct() {
 			$this->module_path = __DIR__ . '/modules/';
 			$this->url         = plugin_dir_url( __FILE__ );
 			$this->define_constant();
 			$this->register();
-
 		}
 
 		private function define_constant() {
@@ -28,43 +27,44 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 
 		private function register() {
-			add_action( 'init', [ $this, 'init_extension' ], 21 );
-			add_action( 'plugins_loaded', [ $this, 'load_require_files' ], 21 );
+			add_action( 'init', array( $this, 'init_extension' ), 21 );
+			add_action( 'plugins_loaded', array( $this, 'load_require_files' ), 21 );
 			if ( version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) ) {
 				add_filter( 'block_categories_all', array( $this, 'add_category' ), 11, 2 );
 			} else {
 				add_filter( 'block_categories', array( $this, 'add_category' ), 11, 2 );
 			}
-			add_filter( 'admin_body_class', [ $this, 'bwf_blocks_admin_body_class' ] );
-
+			add_filter( 'admin_body_class', array( $this, 'bwf_blocks_admin_body_class' ) );
 		}
 
 		/**
 		 * Add custom category
 		 *
-		 * @param array $categories category list.
+		 * @param array   $categories category list.
 		 * @param WP_Post $post post object.
 		 */
 		public function add_category( $categories ) {
 			if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ) ) ) {
 				return $categories;
 			} else {
-				return array_merge( array(
+				return array_merge(
 					array(
-						'slug'  => 'woofunnels',
-						'title' => esc_html__( 'FunnelKit', 'woofunnels-upstroke-one-click-upsell' ),
+						array(
+							'slug'  => 'woofunnels',
+							'title' => esc_html__( 'FunnelKit', 'woofunnels-upstroke-one-click-upsell' ),
+						),
 					),
-				), $categories );
+					$categories
+				);
 			}
 		}
 
 		public function load_require_files() {
-			//load necessary files
+			// load necessary files
 			if ( ! is_admin() ) {
 				require_once __DIR__ . '/includes/functions.php';
 				require_once __DIR__ . '/includes/class-bwf-blocks-css.php';
@@ -112,24 +112,27 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				$deps    = ( isset( $assets['dependencies'] ) ? array_merge( $assets['dependencies'], array( 'jquery' ) ) : array( 'jquery' ) );
 				$version = $assets['version'];
 
-				$script_deps = array_filter( $deps, function ( $dep ) {
-					return ! is_null( $dep ) && false === strpos( $dep, 'css' );
-				} );
+				$script_deps = array_filter(
+					$deps,
+					function ( $dep ) {
+						return ! is_null( $dep ) && false === strpos( $dep, 'css' );
+					}
+				);
 
 				wp_enqueue_script( 'wfocu-gutenberg-script', $frontend_dir . $js_path, $script_deps, $version, true );
-
 
 				wp_enqueue_style( 'wfocu-default', $frontend_dir . $style_path, array(), $version );
 
 				$system_font_path = __DIR__ . '/font/standard-fonts.php';
 
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );
+				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );//@codingStandardsIgnoreLine
 
-				wp_enqueue_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-					null, null, true );
+				wp_enqueue_script(
+					'bwf-font-awesome-kit',
+					'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
+					null, null, true );//@codingStandardsIgnoreLine
 
-
-				wp_enqueue_style( 'bwf-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' );
+				wp_enqueue_style( 'bwf-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' );//@codingStandardsIgnoreLine
 
 				$offer_id             = WFOCU_Core()->template_loader->get_offer_id();
 				$offer_settings       = get_post_meta( $offer_id, '_wfocu_setting', true );
@@ -138,39 +141,104 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				$code_key             = ( ! empty( $offer_settings ) && isset( $offer_settings->products ) && count( get_object_vars( $offer_settings->products ) ) < 2 ) ? 'single' : 'multi';
 				$shortcodes           = WFOCU_Core()->admin->get_shortcodes_list();
 
-				$personalize_shortcodes = array_map( function ( $shortcode ) use ( $code_key ) {
-					$shortcode['code'] = sprintf( $shortcode['code'][ $code_key ], 1 );
+				$personalize_shortcodes = array_map(
+					function ( $shortcode ) use ( $code_key ) {
+						$shortcode['code'] = sprintf( $shortcode['code'][ $code_key ], 1 );
 
-					return $shortcode;
-				}, $shortcodes );
+						return $shortcode;
+					},
+					$shortcodes
+				);
 
-				$other_shortcodes = [
-					[ 'label' => __( 'Customer First Name' ), 'code' => '[wfocu_order_data key="customer_first_name"]' ],
-					[ 'label' => __( 'Customer Last Name' ), 'code' => '[wfocu_order_data key="customer_last_name"]' ],
-					[ 'label' => __( 'Order Number' ), 'code' => '[wfocu_order_data key="order_no"]' ],
-					[ 'label' => __( 'Order Date' ), 'code' => '[wfocu_order_data key="order_date"]' ],
-					[ 'label' => __( 'Order Total' ), 'code' => '[wfocu_order_data key="order_total"]' ],
-					[ 'label' => __( 'Order Item Count' ), 'code' => '[wfocu_order_data key="order_itemscount"]' ],
-					[ 'label' => __( 'Order Shipping Method' ), 'code' => '[wfocu_order_data key="order_shipping_method"]' ],
-					[ 'label' => __( 'Order Billing Country' ), 'code' => '[wfocu_order_data key="order_billing_country"]' ],
-					[ 'label' => __( 'Order Shipping Country' ), 'code' => '[wfocu_order_data key="order_shipping_country"]' ],
-					[ 'label' => __( 'Order Custom Meta' ), 'code' => '[wfocu_order_data key=""]' ],
-				];
+				$other_shortcodes = array(
+					array(
+						'label' => __( 'Customer First Name' ),
+						'code'  => '[wfocu_order_data key="customer_first_name"]',
+					),
+					array(
+						'label' => __( 'Customer Last Name' ),
+						'code'  => '[wfocu_order_data key="customer_last_name"]',
+					),
+					array(
+						'label' => __( 'Order Number' ),
+						'code'  => '[wfocu_order_data key="order_no"]',
+					),
+					array(
+						'label' => __( 'Order Date' ),
+						'code'  => '[wfocu_order_data key="order_date"]',
+					),
+					array(
+						'label' => __( 'Order Total' ),
+						'code'  => '[wfocu_order_data key="order_total"]',
+					),
+					array(
+						'label' => __( 'Order Item Count' ),
+						'code'  => '[wfocu_order_data key="order_itemscount"]',
+					),
+					array(
+						'label' => __( 'Order Shipping Method' ),
+						'code'  => '[wfocu_order_data key="order_shipping_method"]',
+					),
+					array(
+						'label' => __( 'Order Billing Country' ),
+						'code'  => '[wfocu_order_data key="order_billing_country"]',
+					),
+					array(
+						'label' => __( 'Order Shipping Country' ),
+						'code'  => '[wfocu_order_data key="order_shipping_country"]',
+					),
+					array(
+						'label' => __( 'Order Custom Meta' ),
+						'code'  => '[wfocu_order_data key=""]',
+					),
+				);
 
-				wp_localize_script( 'wfocu-gutenberg-script', 'bwf_funnels_data', [
-					'products'           => WFOCU_Guten_Field::get_product_lists(),
-					'post_id'            => $post->ID,
-					'i18n'               => BWF_I18N,
-					'currency'           => html_entity_decode( get_woocommerce_currency_symbol() ),
-					'qty_enabled'        => $qty_selector_enabled,
-					'bwf_g_fonts'        => bwf_get_fonts_list( 'all' ),
-					'bwf_g_font_names'   => bwf_get_fonts_list( 'name_only' ),
-					'system_font_path'   => file_exists( $system_font_path ) ? include $system_font_path : array(),
-					'product_shortcodes' => $personalize_shortcodes,
-					'other_shortcodes'   => $other_shortcodes,
-					'wp_version'         => $GLOBALS['wp_version'],
-				] );
-				wp_enqueue_script( 'bwf-jquery.flexslider', plugins_url( 'assets/js/flexslider/jquery.flexslider.min.js', WC_PLUGIN_FILE ), array(), WC_VERSION );
+				// Get products URL for quantity selector
+				$products_url = '';
+				if ( ! empty( $offer_id ) ) {
+					$upsell_id = get_post_meta( $offer_id, '_funnel_id', true );
+					$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
+
+					if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
+						$products_url = add_query_arg(
+							array(
+								'page'      => 'bwf',
+								'path'      => '/funnel-offer/' . $offer_id . '/product',
+								'funnel_id' => $funnel_id,
+							),
+							admin_url( 'admin.php' )
+						);
+					} else {
+						$products_url = add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'offers',
+								'edit'    => $upsell_id,
+							),
+							admin_url( 'admin.php' )
+						);
+					}
+				}
+
+				wp_localize_script(
+					'wfocu-gutenberg-script',
+					'bwf_funnels_data',
+					array(
+						'products'           => WFOCU_Guten_Field::get_product_lists(),
+						'post_id'            => $post->ID,
+						'i18n'               => BWF_I18N,
+						'currency'           => html_entity_decode( get_woocommerce_currency_symbol() ),
+						'qty_enabled'        => $qty_selector_enabled,
+						'products_url'       => $products_url,
+						'bwf_g_fonts'        => bwf_get_fonts_list( 'all' ),
+						'bwf_g_font_names'   => bwf_get_fonts_list( 'name_only' ),
+						'system_font_path'   => file_exists( $system_font_path ) ? include $system_font_path : array(),
+						'product_shortcodes' => $personalize_shortcodes,
+						'other_shortcodes'   => $other_shortcodes,
+						'wp_version'         => $GLOBALS['wp_version'],
+					)
+				);
+				wp_enqueue_script( 'bwf-jquery.flexslider', plugins_url( 'assets/js/flexslider/jquery.flexslider.min.js', WC_PLUGIN_FILE ), array(), WC_VERSION, true );
 
 			}
 		}
@@ -178,10 +246,10 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 		public function init_extension() {
 
 			$post_id = 0;
-			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			} else if ( isset( $_REQUEST['bwf_post_id'] ) && $_REQUEST['bwf_post_id'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$post_id = absint( $_REQUEST['bwf_post_id'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+			} elseif ( isset( $_REQUEST['bwf_post_id'] ) && $_REQUEST['bwf_post_id'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				$post_id = absint( $_REQUEST['bwf_post_id'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			}
 
 			$post = get_post( $post_id );
@@ -193,9 +261,7 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				return;
 			}
 
-			add_action( 'wp', [ $this, 'prepare_frontend_module' ], - 5 );
-
-
+			add_action( 'wp', array( $this, 'prepare_frontend_module' ), - 5 );
 		}
 
 		public function prepare_frontend_module() {
@@ -204,7 +270,6 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				return;
 			}
 			$this->post = $post;
-
 
 			if ( $post->post_type === WFOCU_Common::get_offer_post_type_slug() ) {
 
@@ -220,7 +285,6 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 
 					$this->register_scripts();
 				}
-
 			}
 
 			$this->prepare_module();
@@ -239,19 +303,22 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				return;
 			}
 
-
 			if ( 'gutenberg' !== $design->template_group ) {
 				return;
 			}
 
-			register_post_meta( '', 'bwfblock_default_font', array(
-				'show_in_rest' => true,
-				'single'       => true,
-				'type'         => 'string',
-			) );
+			register_post_meta(
+				'',
+				'bwfblock_default_font',
+				array(
+					'show_in_rest' => true,
+					'single'       => true,
+					'type'         => 'string',
+				)
+			);
 
-
-			add_action( 'enqueue_block_editor_assets', [ $this, 'admin_script_style' ] );
+			add_action( 'enqueue_block_editor_assets', array( $this, 'admin_script_style' ) );
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_editor_css_in_iframe' ) );
 			$modules = $this->get_modules();
 			if ( ! empty( $modules ) ) {
 
@@ -276,8 +343,8 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 		private function register_scripts() {
 			$style = WFOCU_Core()->assets->get_styles();
 
-			wp_enqueue_style( 'flickity', $style['flickity']['path'] );
-			wp_enqueue_style( 'flickity-common', $style['flickity-common']['path'] );
+			wp_enqueue_style( 'flickity', $style['flickity']['path'] );//@codingStandardsIgnoreLine
+			wp_enqueue_style( 'flickity-common', $style['flickity-common']['path'] );//@codingStandardsIgnoreLine
 			defined( 'BWF_I18N' ) || define( 'BWF_I18N', 'woofunnels-guten-block' );
 
 			$app_name = 'upstrokepublic';
@@ -290,59 +357,88 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 			wp_enqueue_style( 'wfocu-gutenberg-style', $frontend_dir . $style_path, array(), $version );
 
 			// load block font family
-			require_once( __DIR__ . '/font/fonts.php' );
-
+			require_once __DIR__ . '/font/fonts.php';
 		}
 
 		private function get_modules() {
-			$modules = [
-				'accept_button' => [
+			$modules = array(
+				'accept_button'      => array(
 					'name' => __( 'WF Accept Button', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'accept-button.php',
-				],
-				'reject_button' => [
+				),
+				'reject_button'      => array(
 					'name' => __( 'WF Reject Button', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'reject-button.php',
-				],
-				'accept_link'   => [
+				),
+				'accept_link'        => array(
 					'name' => __( 'WF Accept Link', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'accept-link.php',
-				],
-				'reject_link'   => [
+				),
+				'reject_link'        => array(
 					'name' => __( 'WF Reject Link', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'reject-link.php',
-				],
-				'product_title' => [
+				),
+				'product_title'      => array(
 					'name' => __( 'WF Product Title', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-title.php',
-				],
+				),
 
-				'product_images'     => [
+				'product_images'     => array(
 					'name' => __( 'WF Product Images', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-images.php',
-				],
-				'product_short_desc' => [
+				),
+				'product_short_desc' => array(
 					'name' => __( 'WF Product Short Description', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-short-desc.php',
-				],
-				'variation_selector' => [
+				),
+				'variation_selector' => array(
 					'name' => __( 'WF Variation Selector', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'variation-selector.php',
-				],
-				'qty_selector'       => [
+				),
+				'qty_selector'       => array(
 					'name' => __( 'WF Quantity Selector', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'qty-selector.php',
-				],
-				'offer_price'        => [
+				),
+				'offer_price'        => array(
 					'name' => __( 'WF Offer Price', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'offer-price.php',
-				],
+				),
 
-			];
+			);
 
 			return apply_filters( 'wfocu_gutenberg_modules', $modules, $this );
 		}
 
+
+		/**
+		 * Enqueue CSS inside the block editor iframe via enqueue_block_assets.
+		 */
+		public function enqueue_block_editor_css_in_iframe() {
+			if ( ! is_admin() ) {
+				return;
+			}
+
+			global $pagenow, $post;
+
+			if ( ! isset( $post->post_type ) || WFOCU_Common::get_offer_post_type_slug() !== $post->post_type || 'post.php' !== $pagenow ) {
+				return;
+			}
+
+			$frontend_dir = defined( 'BWF_UPSELL_REACT_ENVIRONMENT' ) ? BWF_UPSELL_REACT_ENVIRONMENT : $this->url . '/dist/';
+			$style_path   = '/upstrokeadmin.css';
+			$version      = time();
+
+			wp_enqueue_style( 'wfocu-default', $frontend_dir . $style_path, array(), $version );
+			wp_enqueue_style( 'bwf-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' ); //phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+
+			// Layer 1: Enqueue saved default font for iframe editor
+			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
+			if ( ! empty( $default_font ) ) {
+				$font_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $default_font ) . ':100,200,300,400,500,600,700,800,900';
+				wp_enqueue_style( 'bwfblock-editor-default-font', $font_url, array(), null );
+				wp_add_inline_style( 'bwfblock-editor-default-font', '.editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
+			}
+		}
 
 		public function bwf_blocks_admin_body_class( $classes ) {
 			$screen = get_current_screen();
@@ -355,20 +451,9 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 				if ( 'wfocu-boxed.php' === $template_file ) {
 					$classes .= ' bwf-editor-width-boxed';
 				}
-
 			}
 
 			return $classes;
-
-		}
-
-		public function bwf_render_default_font() {
-			global $post;
-			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
-
-			if ( ! empty( $default_font ) ) {
-				echo "<style id='bwfblock-default-font'>#editor .editor-styles-wrapper { font-family:$default_font; }</style>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
 		}
 
 		public function allow_theme_css( $is ) {
@@ -380,7 +465,6 @@ if ( ! class_exists( 'WFOCU_Gutenberg' ) ) {
 
 			return $is;
 		}
-
 	}
 
 	WFOCU_Gutenberg::get_instance();

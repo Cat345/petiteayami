@@ -8,8 +8,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_AJAX_Controller {
 		private static $bump_action_data = '';
-		private static $output_resp = [];
-		public static $posted_data = [];
+		private static $output_resp      = array();
+		public static $posted_data       = array();
 
 
 		public static function init() {
@@ -20,37 +20,34 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				self::handle_admin_ajax();
 			}
 			self::handle_public_ajax();
-
 		}
 
 
 		public static function handle_admin_ajax() {
-			add_action( 'wp_ajax_wfacp_save_global_settings', [ __CLASS__, 'save_global_settings' ] );
-			add_action( 'wp_ajax_wfacp_preview_details', [ __CLASS__, 'preview_details' ] );
-			add_action( 'wp_ajax_wfacp_add_checkout_page', [ __CLASS__, 'add_checkout_page' ] );
-			add_action( 'wp_ajax_wfacp_update_page_status', [ __CLASS__, 'update_page_status' ] );
-			add_action( 'wp_ajax_wfacp_add_product', [ __CLASS__, 'add_product' ] );
-			add_action( 'wp_ajax_wfacp_remove_product', [ __CLASS__, 'remove_product' ] );
-			add_action( 'wp_ajax_wfacp_product_search', [ __CLASS__, 'product_search' ] );
-			add_action( 'wp_ajax_wfacp_save_products', [ __CLASS__, 'save_products' ] );
-			add_action( 'wp_ajax_wfacp_save_layout', [ __CLASS__, 'save_layout' ] );
-			add_action( 'wp_ajax_wfacp_add_field', [ __CLASS__, 'add_field' ] );
-			add_action( 'wp_ajax_wfacp_delete_custom_field', [ __CLASS__, 'delete_custom_field' ] );
-			add_action( 'wp_ajax_wfacp_update_custom_field', [ __CLASS__, 'update_custom_field' ] );
-			add_action( 'wp_ajax_wfacp_save_design', [ __CLASS__, 'save_design' ] );
-			add_action( 'wp_ajax_wfacp_remove_design', [ __CLASS__, 'remove_design' ] );
-			add_action( 'wp_ajax_wfacp_save_settings', [ __CLASS__, 'save_settings' ] );
-			add_action( 'wp_ajax_wfacp_make_wpml_duplicate', [ __CLASS__, 'make_wpml_duplicate' ] );
-			add_action( 'wp_ajax_wfacp_hide_notification', [ __CLASS__, 'hide_notification' ] );
-			add_action( 'wp_ajax_wfacp_import_template', [ __CLASS__, 'import_template' ] );
-			add_action( 'wp_ajax_wfacp_activate_plugin', [ __CLASS__, 'activate_plugin' ] );
+			add_action( 'wp_ajax_wfacp_save_global_settings', array( __CLASS__, 'save_global_settings' ) );
+			add_action( 'wp_ajax_wfacp_preview_details', array( __CLASS__, 'preview_details' ) );
+			add_action( 'wp_ajax_wfacp_add_checkout_page', array( __CLASS__, 'add_checkout_page' ) );
+			add_action( 'wp_ajax_wfacp_update_page_status', array( __CLASS__, 'update_page_status' ) );
+			add_action( 'wp_ajax_wfacp_add_product', array( __CLASS__, 'add_product' ) );
+			add_action( 'wp_ajax_wfacp_remove_product', array( __CLASS__, 'remove_product' ) );
+			add_action( 'wp_ajax_wfacp_product_search', array( __CLASS__, 'product_search' ) );
+			add_action( 'wp_ajax_wfacp_save_products', array( __CLASS__, 'save_products' ) );
+			add_action( 'wp_ajax_wfacp_save_layout', array( __CLASS__, 'save_layout' ) );
+			add_action( 'wp_ajax_wfacp_add_field', array( __CLASS__, 'add_field' ) );
+			add_action( 'wp_ajax_wfacp_delete_custom_field', array( __CLASS__, 'delete_custom_field' ) );
+			add_action( 'wp_ajax_wfacp_update_custom_field', array( __CLASS__, 'update_custom_field' ) );
+			add_action( 'wp_ajax_wfacp_save_design', array( __CLASS__, 'save_design' ) );
+			add_action( 'wp_ajax_wfacp_remove_design', array( __CLASS__, 'remove_design' ) );
+			add_action( 'wp_ajax_wfacp_save_settings', array( __CLASS__, 'save_settings' ) );
+			add_action( 'wp_ajax_wfacp_make_wpml_duplicate', array( __CLASS__, 'make_wpml_duplicate' ) );
+			add_action( 'wp_ajax_wfacp_hide_notification', array( __CLASS__, 'hide_notification' ) );
+			add_action( 'wp_ajax_wfacp_import_template', array( __CLASS__, 'import_template' ) );
+			add_action( 'wp_ajax_wfacp_activate_plugin', array( __CLASS__, 'activate_plugin' ) );
 
 			add_action( 'wp_ajax_wfacp_get_form_data', array( __CLASS__, 'divi' ) );
 
-			add_action( 'wfacp_template_removed', [ __CLASS__, 'ps_setting' ] );
-			add_action( 'wp_ajax_wfacp_update_edit_url', [ __CLASS__, 'update_edit_url' ] );
-
-
+			add_action( 'wfacp_template_removed', array( __CLASS__, 'ps_setting' ) );
+			add_action( 'wp_ajax_wfacp_update_edit_url', array( __CLASS__, 'update_edit_url' ) );
 		}
 
 		public static function ps_setting( $pageiD ) {
@@ -65,13 +62,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function handle_public_ajax() {
 
-			add_action( 'woocommerce_checkout_update_order_review', [ __CLASS__, 'check_actions' ], - 10 );
-			add_action( 'bwf_global_save_settings_wfacp', [ __CLASS__, 'update_global_settings_fields' ] );
+			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'check_actions' ), - 10 );
+			add_action( 'bwf_global_save_settings_wfacp', array( __CLASS__, 'update_global_settings_fields' ) );
 
 			$endpoints = self::get_available_public_endpoints();
 			foreach ( $endpoints as $action => $function ) {
 				if ( method_exists( __CLASS__, $function ) ) {
-					add_action( 'wc_ajax_' . $action, [ __CLASS__, $function ] );
+					add_action( 'wc_ajax_' . $action, array( __CLASS__, $function ) );
 				} else {
 					do_action( 'wfacp_wc_ajax_' . $action, $function );
 				}
@@ -97,13 +94,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 			/* fetching available payment method before modifying bump */
 
-			$input_data = [];
+			$input_data = array();
 			if ( isset( $bump_action_data['data'] ) ) {
 				$input_data = $bump_action_data['data'];
 			}
 			if ( 'apply_coupon_field' == $action || 'apply_coupon_main' == $action ) {
 				self::$output_resp = self::apply_coupon( $bump_action_data );
-			} else if ( 'remove_coupon_field' == $action || 'remove_coupon_main' == $action ) {
+			} elseif ( 'remove_coupon_field' == $action || 'remove_coupon_main' == $action ) {
 				self::$output_resp = self::remove_coupon( $bump_action_data );
 			} elseif ( method_exists( __CLASS__, $action ) ) {
 				self::$output_resp = self::$action( $input_data );
@@ -111,18 +108,17 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$aero_id                       = isset( $_REQUEST['wfacp_id'] ) ? $_REQUEST['wfacp_id'] : 0;
 			$bump_action_data['wfacp_id']  = $aero_id;
 			self::$bump_action_data        = $action;
-			self::$output_resp['wfacp_id'] = $aero_id;
-			//JS callback ID
+			self::$output_resp['wfacp_id'] = $bump_action_data['wfacp_id'];
+			// JS callback ID
 			self::$output_resp['callback_id'] = isset( $bump_action_data['callback_id'] ) ? $bump_action_data['callback_id'] : '';
 
-			add_filter( 'woocommerce_update_order_review_fragments', [ __CLASS__, 'merge_fragments' ], 999 );
-
+			add_filter( 'woocommerce_update_order_review_fragments', array( __CLASS__, 'merge_fragments' ), 999 );
 		}
 
 
 		public static function merge_fragments( $fragments ) {
 
-			$data                         = [];
+			$data                         = array();
 			$data['action']               = self::$bump_action_data;
 			$data['analytics_data']       = WFACP_Common::analytics_checkout_data();
 			$extra_data                   = WFACP_Common::ajax_extra_frontend_data();
@@ -134,18 +130,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 
 		public static function get_available_public_endpoints() {
-			$endpoints = [
+			$endpoints = array(
 				'wfacp_get_divi_form_data'          => 'get_divi_form_data',
 				'wfacp_get_divi_order_summary_data' => 'get_divi_order_summary_data',
 				'wfacp_quick_view_ajax'             => 'wf_quick_view_ajax',
 				'wfacp_analytics'                   => 'analytics',
-			];
+			);
 
 			return apply_filters( 'wfacp_public_endpoints', $endpoints );
 		}
 
 		public static function get_public_endpoints() {
-			$endpoints        = [];
+			$endpoints        = array();
 			$public_endpoints = self::get_available_public_endpoints();
 			if ( count( $public_endpoints ) > 0 ) {
 				foreach ( $public_endpoints as $key => $function ) {
@@ -176,11 +172,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 					if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 						$wfacp_id = absint( $_POST['wfacp_id'] );
-						$status   = wp_update_post( [
-							'ID'         => $wfacp_id,
-							'post_title' => $post['post_title'],
-							'post_name'  => $post['post_name'],
-						] );
+						$status   = wp_update_post(
+							array(
+								'ID'         => $wfacp_id,
+								'post_title' => $post['post_title'],
+								'post_name'  => $post['post_name'],
+							)
+						);
 						if ( ! is_wp_error( $status ) ) {
 
 							update_post_meta( $wfacp_id, '_post_description', $post_description );
@@ -195,11 +193,14 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					if ( $wfacp_id !== 0 && ! is_wp_error( $wfacp_id ) ) {
 
 						$resp['status']       = true;
-						$resp['redirect_url'] = add_query_arg( array(
-							'page'     => 'wfacp',
-							'section'  => 'design',
-							'wfacp_id' => $wfacp_id,
-						), admin_url( 'admin.php' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'page'     => 'wfacp',
+								'section'  => 'design',
+								'wfacp_id' => $wfacp_id,
+							),
+							admin_url( 'admin.php' )
+						);
 						$resp['msg']          = __( 'Checkout Page Successfully Created', 'woofunnels-aero-checkout' );
 						update_post_meta( $wfacp_id, '_wfacp_version', WFACP_VERSION );
 						update_post_meta( $wfacp_id, '_post_description', $post_description );
@@ -218,12 +219,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		 */
 
 		public static function check_nonce( $admin = false ) {
-			$rsp = [
+			$rsp = array(
 				'status' => 'false',
 				'msg'    => 'Invalid Call',
-			];
+			);
 			if ( isset( $_POST['post_data'] ) ) {
-				$post_data = [];
+				$post_data = array();
 				parse_str( $_POST['post_data'], $post_data );
 				if ( ! empty( $post_data ) ) {
 					WFACP_Common::$post_data = $post_data;
@@ -245,7 +246,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function send_resp( $data = array() ) {
 			if ( ! is_array( $data ) ) {
-				$data = [];
+				$data = array();
 			}
 			wp_send_json( $data );
 		}
@@ -262,26 +263,32 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			/**
 			 * Products types that are allowed in the offers
 			 */
-			$allowed_types   = apply_filters( 'wfacp_offer_product_types', array(
-				'simple',
-				'variable',
-				'course',
-				'variation',
-				'subscription',
-				'variable-subscription',
-				'subscription_variation',
-				'virtual_subscription',
-				'bundle',
-				'yith_bundle',
-				'woosb',
-				'braintree-subscription',
-				'braintree-variable-subscription',
-			) );
+			$allowed_types   = apply_filters(
+				'wfacp_offer_product_types',
+				array(
+					'simple',
+					'variable',
+					'course',
+					'variation',
+					'subscription',
+					'variable-subscription',
+					'subscription_variation',
+					'virtual_subscription',
+					'bundle',
+					'yith_bundle',
+					'woosb',
+					'braintree-subscription',
+					'braintree-variable-subscription',
+				)
+			);
 			$product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_editable' );
 
-			$product_objects = array_filter( $product_objects, function ( $arr ) use ( $allowed_types ) {
-				return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types );
-			} );
+			$product_objects = array_filter(
+				$product_objects,
+				function ( $arr ) use ( $allowed_types ) {
+					return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types );
+				}
+			);
 
 			$products = array();
 			/**
@@ -304,7 +311,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => '',
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
 			if ( isset( $_POST['wfacp_id'] ) && count( $_POST['products'] ) > 0 ) {
 				$wfacp_id = absint( $_POST['wfacp_id'] );
@@ -398,12 +405,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => __( 'Changes saved', 'woofunnels-aero-checkout' ),
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
 			if ( isset( $_POST['products'] ) && count( $_POST['products'] ) > 0 ) {
 				$products = $_POST['products'];
 				$wfacp_id = $_POST['wfacp_id'];
-				$settings = isset( $_POST['settings'] ) ? $_POST['settings'] : [];
+				$settings = isset( $_POST['settings'] ) ? $_POST['settings'] : array();
 				foreach ( $products as $key => $val ) {
 					if ( isset( $products[ $key ]['variable'] ) ) {
 
@@ -420,10 +427,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				$old_settings = WFACP_Common::get_page_product_settings( $wfacp_id );
 				if ( $old_settings['add_to_cart_setting'] !== $_POST['settings']['add_to_cart_setting'] ) {
-					//unset default products
+					// unset default products
 					$s = get_post_meta( $wfacp_id, '_wfacp_product_switcher_setting', true );
 					if ( ! empty( $s ) ) {
-						$s['default_products'] = [];
+						$s['default_products'] = array();
 						update_post_meta( $wfacp_id, '_wfacp_product_switcher_setting', $s );
 					}
 				}
@@ -442,7 +449,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => '',
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
 			if ( isset( $_POST['wfacp_id'] ) ) {
 				$wfacp_id = $_POST['wfacp_id'];
@@ -462,7 +469,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => '',
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 				$wfacp_id                      = $_POST['wfacp_id'];
@@ -470,15 +477,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				$name                          = sanitize_title( $name );
 				$label                         = trim( $_POST['fields']['label'] );
 				$placeholder                   = trim( $_POST['fields']['placeholder'] );
-				$cssready                      = $_POST['fields']['cssready'] != '' ? explode( ',', trim( $_POST['fields']['cssready'] ) ) : [];
+				$cssready                      = $_POST['fields']['cssready'] != '' ? explode( ',', trim( $_POST['fields']['cssready'] ) ) : array();
 				$field_type                    = trim( $_POST['fields']['field_type'] );
 				$section_type                  = trim( $_POST['fields']['section_type'] );
 				$show_custom_field_at_thankyou = trim( $_POST['fields']['show_custom_field_at_thankyou'] );
 				$show_custom_field_at_email    = trim( $_POST['fields']['show_custom_field_at_email'] );
 				$default                       = trim( $_POST['fields']['default'] );
-				$options                       = $_POST['fields']['options'] != '' ? ( explode( '|', trim( $_POST['fields']['options'] ) ) ) : [];
+				$options                       = $_POST['fields']['options'] != '' ? ( explode( '|', trim( $_POST['fields']['options'] ) ) ) : array();
 
-				$new_sanitize_option = [];
+				$new_sanitize_option = array();
 				if ( is_array( $options ) && count( $options ) > 0 ) {
 					foreach ( $options as $key => $option ) {
 						$key                         = sanitize_title( trim( $option ) );
@@ -487,7 +494,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				}
 
 				$required = trim( $_POST['fields']['required'] );
-				$data     = [
+				$data     = array(
 					'label'                         => $label,
 					'data_label'                    => $label,
 					'placeholder'                   => $placeholder,
@@ -499,7 +506,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					'show_custom_field_at_thankyou' => $show_custom_field_at_thankyou,
 					'show_custom_field_at_email'    => $show_custom_field_at_email,
 					'is_wfacp_field'                => true,
-				];
+				);
 				if ( 'multiselect' == $field_type ) {
 					$data['multiselect_maximum']       = trim( $_POST['fields']['multiselect_maximum'] );
 					$data['multiselect_maximum_error'] = trim( $_POST['fields']['multiselect_maximum_error'] );
@@ -568,7 +575,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				if ( isset( $custom_fields[ $section_type ] ) && isset( $custom_fields[ $section_type ][ $index ] ) ) {
 					$find_field                               = $custom_fields[ $section_type ][ $index ];
 					$custom_fields[ $section_type ][ $index ] = wp_parse_args( $field, $find_field );
-					$options                                  = ( isset( $_POST['field']['options'] ) && count( $_POST['field']['options'] ) > 0 ) ? $_POST['field']['options'] : [];
+					$options                                  = ( isset( $_POST['field']['options'] ) && count( $_POST['field']['options'] ) > 0 ) ? $_POST['field']['options'] : array();
 					if ( is_array( $options ) && count( $options ) > 0 ) {
 						foreach ( $options as $key => $option ) {
 							unset( $options[ $key ] );
@@ -597,10 +604,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'status' => false,
 			);
 			if ( isset( $_POST['id'] ) && $_POST['id'] > 0 && isset( $_POST['post_status'] ) ) {
-				$args = [
+				$args = array(
 					'ID'          => $_POST['id'],
 					'post_status' => 'true' == $_POST['post_status'] ? 'publish' : 'draft',
-				];
+				);
 
 				$meta = get_post_meta( $_POST['id'], '_wp_page_template', true );
 				wp_update_post( $args );
@@ -617,7 +624,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		/**
 		 * Save selected design template against checkout page
 		 */
-
 		public static function save_design() {
 			self::check_nonce( true );
 			$resp = array(
@@ -626,11 +632,14 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 				$wfacp_id = absint( $_POST['wfacp_id'] );
-				WFACP_Common::update_page_design( $wfacp_id, [
-					'selected'        => $_POST['selected'],
-					'selected_type'   => $_POST['selected_type'],
-					'template_active' => $_POST['template_active'],
-				] );
+				WFACP_Common::update_page_design(
+					$wfacp_id,
+					array(
+						'selected'        => $_POST['selected'],
+						'selected_type'   => $_POST['selected_type'],
+						'template_active' => $_POST['template_active'],
+					)
+				);
 
 				$resp = array(
 					'msg'    => __( 'Template imported', 'woofunnels-aero-checkout' ),
@@ -655,12 +664,22 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				delete_post_meta( $wfacp_id, '_wfacp_selected_design' );
 				do_action( 'wfacp_template_removed', $wfacp_id );
 
-
-				//Remove Template Meta key
+				// Remove Template Meta key
 				global $wpdb;
-				$wpdb->delete( $wpdb->postmeta, [ 'meta_key' => '_et_pb_use_builder', 'post_id' => $wfacp_id ] );
-				$wpdb->delete( $wpdb->postmeta, [ 'meta_key' => 'tcb_editor_enabled', 'post_id' => $wfacp_id ] );
-
+				$wpdb->delete(
+					$wpdb->postmeta,
+					array(
+						'meta_key' => '_et_pb_use_builder',
+						'post_id'  => $wfacp_id,
+					)
+				);
+				$wpdb->delete(
+					$wpdb->postmeta,
+					array(
+						'meta_key' => 'tcb_editor_enabled',
+						'post_id'  => $wfacp_id,
+					)
+				);
 
 				$resp = array(
 					'msg'    => __( 'Design Saved Successfully', 'woofunnels-aero-checkout' ),
@@ -710,9 +729,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				'msg'    => '',
 				'status' => false,
 			);
-			$success   = [];
-			$cart_data = [];
-
+			$success   = array();
+			$cart_data = array();
 
 			$item_key = trim( $post['item_key'] );
 
@@ -721,7 +739,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 			$product_variation_id = ( isset( $post['variation_id'] ) ? absint( $post['variation_id'] ) : 0 );
 
-			$attributes = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : [];
+			$attributes = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
 
 			if ( '' != $item_key ) {
 
@@ -763,17 +781,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							if ( count( $attributes ) == 0 ) {
 								$attributes = $is_found_variation['attributes'];
 							}
-						} else {
-							if ( isset( $product['variable'] ) ) {
+						} elseif ( isset( $product['variable'] ) ) {
 								$variation_id = absint( $product['default_variation'] );
 								$attributes   = $product['default_variation_attr'];
 								$manage_stock = WFACP_Common::check_manage_stock( wc_get_product( $variation_id ), $quantity );
-								if ( false == $manage_stock ) {
-									$dvar = WFACP_Common::get_default_variation( $product_obj );
-									if ( count( $dvar ) > 0 ) {
-										$variation_id = absint( $dvar['variation_id'] );
-										$attributes   = $dvar['attributes'];
-									}
+							if ( false == $manage_stock ) {
+								$dvar = WFACP_Common::get_default_variation( $product_obj );
+								if ( count( $dvar ) > 0 ) {
+									$variation_id = absint( $dvar['variation_id'] );
+									$attributes   = $dvar['attributes'];
 								}
 							}
 						}
@@ -788,9 +804,16 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						if ( false == $stock_status ) {
 							/* Add the wc Notice */
 							$current_session_order_id = isset( WC()->session->order_awaiting_payment ) ? absint( WC()->session->order_awaiting_payment ) : 0;
-							$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
-							$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
+							// Validate product object before calling WooCommerce stock functions
+							if ( is_null( $product_obj ) || ! $product_obj instanceof WC_Product ) {
+								$resp['error']  = __( 'Sorry, this product is no longer available. Please try again.', 'woocommerce' );
+								$resp['qty']    = 1;
+								$resp['status'] = false;
 
+								return $resp;
+							}
+							$held_stock    = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
+							$resp['error'] = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
 
 							$resp['qty']    = 1;
 							$resp['status'] = false;
@@ -813,9 +836,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 							/* Add the wc Notice */
 							$current_session_order_id = isset( WC()->session->order_awaiting_payment ) ? absint( WC()->session->order_awaiting_payment ) : 0;
-							$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
-							$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
+							// Validate product object before calling WooCommerce stock functions
+							if ( is_null( $product_obj ) || ! $product_obj instanceof WC_Product ) {
+								$resp['error']  = __( 'Sorry, this product is no longer available. Please try again.', 'woocommerce' );
+								$resp['status'] = false;
 
+								return $resp;
+							}
+							$held_stock    = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
+							$resp['error'] = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
 
 							$resp['status'] = false;
 
@@ -856,9 +885,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$resp = array(
 				'msg'      => '',
 				'status'   => false,
-				'products' => [],
+				'products' => array(),
 			);
-
 
 			if ( isset( $post['item_key'] ) && '' != $post['item_key'] ) {
 				$wfacp_id = absint( $post['wfacp_id'] );
@@ -982,9 +1010,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			);
 
 			if ( ! WFACP_Common::cart_has_removed_bumps() ) {
-				WC()->cart->set_removed_cart_contents( [] );
+				WC()->cart->set_removed_cart_contents( array() );
 			}
-			$cart_data = [];
+			$cart_data = array();
 			$wfacp_id  = absint( $post['wfacp_id'] );
 			WFACP_Common::set_id( $wfacp_id );
 			WFACP_Core()->public->get_page_data( $wfacp_id );
@@ -993,8 +1021,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			$product_qty          = ( isset( $post['quantity'] ) ? $post['quantity'] : 1 );
 			$field_type           = isset( $post['field_type'] ) ? $post['field_type'] : 'radio';
 			$product_variation_id = absint( $post['variation_id'] );
-			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : [];
-			$new_item             = [];
+			$attributes           = ( isset( $post['attributes'] ) && is_array( $post['attributes'] ) ) ? $post['attributes'] : array();
+			$new_item             = array();
 			// Remove Existing Item from cart
 			$first_applied_coupons = WC()->cart->get_applied_coupons();
 			$remove_cart_item      = null;
@@ -1024,7 +1052,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						$resp['remove_item_key'] = $p_item_key;
 					}
 				}
-
 			}
 			// Add new item to cart
 			if ( isset( $post['new_item'] ) && '' != $post['new_item'] && $product_qty > 0 ) {
@@ -1055,7 +1082,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					}
 
 					try {
-						$custom_data = [];
+						$custom_data = array();
 						$product_obj = WFACP_Common::wc_get_product( $product_id, $new_item );
 
 						if ( $variation_id > 0 ) {
@@ -1063,18 +1090,16 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							if ( count( $attributes ) == 0 ) {
 								$attributes = $is_found_variation['attributes'];
 							}
-						} else {
-							if ( isset( $product['variable'] ) ) {
+						} elseif ( isset( $product['variable'] ) ) {
 								$variation_id = absint( $product['default_variation'] );
 								$attributes   = $product['default_variation_attr'];
 
 								$manage_stock = WFACP_Common::check_manage_stock( wc_get_product( $variation_id ), $quantity );
-								if ( false == $manage_stock ) {
-									$dvar = WFACP_Common::get_default_variation( $product_obj );
-									if ( count( $dvar ) > 0 ) {
-										$variation_id = absint( $dvar['variation_id'] );
-										$attributes   = $dvar['attributes'];
-									}
+							if ( false == $manage_stock ) {
+								$dvar = WFACP_Common::get_default_variation( $product_obj );
+								if ( count( $dvar ) > 0 ) {
+									$variation_id = absint( $dvar['variation_id'] );
+									$attributes   = $dvar['attributes'];
 								}
 							}
 						}
@@ -1091,9 +1116,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 						$custom_data = apply_filters( 'wfacp_switch_product_ajax_custom_data', $custom_data, $remove_cart_item, $product_obj, $post );
 
-
 						$applied_coupons = WC()->cart->get_applied_coupons();
-						$stock_status    = WFACP_Common::check_manage_stock( $product_obj, $quantity );
+						// Validate product object before checking stock and calling methods
+						if ( is_null( $product_obj ) || ! $product_obj instanceof WC_Product ) {
+							if ( ! empty( $remove_item_key ) ) {
+								WC()->cart->restore_cart_item( $remove_item_key );
+							}
+							$resp['error']  = __( 'Sorry, this product is no longer available. Please try again.', 'woocommerce' );
+							$resp['status'] = false;
+
+							return $resp;
+						}
+						$stock_status = WFACP_Common::check_manage_stock( $product_obj, $quantity );
 						if ( false == $stock_status || ! $product_obj->is_purchasable() ) {
 							if ( ! empty( $remove_item_key ) ) {
 								WC()->cart->restore_cart_item( $remove_item_key );
@@ -1103,12 +1137,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
 							$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
 
-
 							$resp['status'] = false;
 
 							return $resp;
 						} else {
-							//if new item in stock then first make cart empty then add new item;
+							// if new item in stock then first make cart empty then add new item;
 							if ( 'radio' === $field_type ) {
 								WFACP_Common::make_cart_empty();
 							}
@@ -1120,13 +1153,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							if ( ( 'radio' === $field_type && ( empty( $applied_coupons ) && ! empty( $first_applied_coupons ) ) ) || apply_filters( 'wfacp_reapply_coupon_for_switch_product', false, $cart_key, $first_applied_coupons, $field_type ) ) {
 								do_action( 'wfacp_before_apply_coupon_switch_product', $cart_key, $first_applied_coupons, $field_type );
 								$applied_coupons = $first_applied_coupons;
-								add_filter( 'woocommerce_coupon_message', function ( $msg, $msg_code ) {
-									if ( 200 == $msg_code ) {
-										return '';
-									}
+								add_filter(
+									'woocommerce_coupon_message',
+									function ( $msg, $msg_code ) {
+										if ( 200 == $msg_code ) {
+											return '';
+										}
 
-									return $msg;
-								}, 10, 2 );
+										return $msg;
+									},
+									10,
+									2
+								);
 
 								if ( ! empty( $applied_coupons ) ) {
 									foreach ( $applied_coupons as $cpn ) {
@@ -1141,8 +1179,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							$save_product_list[ $new_item ]['is_added_cart'] = $cart_key;
 
 						}
-
-
 					} catch ( Exception $e ) {
 						WC()->cart->restore_cart_item( $remove_item_key );
 						$resp['error']  = $e->getMessage();
@@ -1194,7 +1230,14 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							/**
 							 * @var $product_obj WC_Product;
 							 */
-							$product_obj  = $cart_item['data'];
+							$product_obj = $cart_item['data'];
+							// Validate product object before checking stock and calling WooCommerce stock functions
+							if ( is_null( $product_obj ) || ! $product_obj instanceof WC_Product ) {
+								$resp['error']  = __( 'Sorry, this product is no longer available. Please try again.', 'woocommerce' );
+								$resp['status'] = false;
+
+								return ( $resp );
+							}
 							$stock_status = WFACP_Common::check_manage_stock( $product_obj, $new_qty );
 							if ( false == $stock_status ) {
 
@@ -1204,7 +1247,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 								$current_session_order_id = isset( WC()->session->order_awaiting_payment ) ? absint( WC()->session->order_awaiting_payment ) : 0;
 								$held_stock               = wc_get_held_stock_quantity( $product_obj, $current_session_order_id );
 								$resp['error']            = sprintf( __( 'Sorry, we do not have enough "%1$s" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused.', 'woocommerce' ), $product_obj->get_name(), wc_format_stock_quantity_for_display( $product_obj->get_stock_quantity() - $held_stock, $product_obj ) );
-
 
 								$resp['qty']      = absint( $c_quantity / $org_qty );
 								$resp['item_key'] = $item_key;
@@ -1231,18 +1273,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		 */
 		public static function save_settings() {
 			self::check_nonce( true );
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 			if ( isset( $_POST['wfacp_id'] ) && $_POST['wfacp_id'] > 0 ) {
 				$wfacp_id = absint( $_POST['wfacp_id'] );
 				$settings = $_POST['settings'];
 				WFACP_Common::update_page_settings( $wfacp_id, $settings );
-				$resp = [
+				$resp = array(
 					'msg'    => __( 'Changes saved', 'woofunnels-aero-checkout' ),
 					'status' => true,
-				];
+				);
 			}
 			self::send_resp( $resp );
 		}
@@ -1250,7 +1292,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		/**
 		 * Save aero checkout global settings
 		 */
-
 		public static function save_global_settings() {
 			self::check_nonce( true );
 
@@ -1262,10 +1303,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		public static function update_global_settings_fields( $options ) {
 
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = [
+			$resp    = array(
 				'status' => false,
 				'msg'    => __( 'Changes saved', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -1283,10 +1324,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function preview_details() {
 			self::check_nonce( true );
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 			if ( isset( $_POST['wfacp_id'] ) && ( $_POST['wfacp_id'] ) > 0 ) {
 				$wfacp_id           = absint( $_POST['wfacp_id'] );
 				$post_data          = get_post( $wfacp_id );
@@ -1294,24 +1335,24 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				$post_status        = $post_data->post_status;
 				$guid               = get_the_permalink( $wfacp_id );
 				$productData        = WFACP_Common::get_page_product( $wfacp_id );
-				$discount_type_keys = [
+				$discount_type_keys = array(
 					'fixed_discount_reg'    => __( 'on Regular Price', 'woofunnels-aero-checkout' ),
 					'fixed_discount_sale'   => __( 'on Sale Price', 'woofunnels-aero-checkout' ),
 					'percent_discount_reg'  => '% on Regular Price',
 					'percent_discount_sale' => '% on Sale Price',
-				];
+				);
 
 				ob_start();
 				?>
-                <div class="wfacp-fp-wrap preview_sec product_preview">
+				<div class="wfacp-fp-wrap preview_sec product_preview">
 
 					<?php
 					if ( is_array( $productData ) && count( $productData ) > 0 ) {
 						?>
-                        <h3><?php _e( 'Products', 'woocommerce' ); ?></h3>
-                        <div class="wfacp-sec">
-                            <div class="wfacp-fp-offer-products">
-                                <div class="wfacp_pop_table wfacp_popup_table_wrap">
+						<h3><?php _e( 'Products', 'woocommerce' ); ?></h3>
+						<div class="wfacp-sec">
+							<div class="wfacp-fp-offer-products">
+								<div class="wfacp_pop_table wfacp_popup_table_wrap">
 
 									<?php
 									foreach ( $productData as $product_key => $product_val ) {
@@ -1325,7 +1366,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 												$discounted_val = wc_price( $discount_amount ) . ' ' . $discount_type_keys[ $discount_type ];
 											}
 										}
-										$strinCon = [];
+										$strinCon = array();
 										if ( isset( $product_val['title'] ) && $product_val['title'] != '' ) {
 											$strinCon[] = $product_val['title'];
 										}
@@ -1348,28 +1389,28 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 									}
 									?>
 
-                                </div>
-                            </div>
-                        </div>
+								</div>
+							</div>
+						</div>
 						<?php
 					} else {
 
 						?>
-                        <div class="wfacp-sec">
-                            <div class="wfacp-fp-offer-products">
-                                <div class="wfacp_pop_table wfacp_popup_table_wrap"><?php _e( 'No product is associated in the checkout form', 'woofunnels-aero-checkout' ) ?></div>
-                            </div>
-                        </div>
+						<div class="wfacp-sec">
+							<div class="wfacp-fp-offer-products">
+								<div class="wfacp_pop_table wfacp_popup_table_wrap"><?php _e( 'No product is associated in the checkout form', 'woofunnels-aero-checkout' ); ?></div>
+							</div>
+						</div>
 						<?php
 					}
 					?>
-                </div>
+				</div>
 				<?php
 				$html                = ob_get_clean();
-				$resp                = [
+				$resp                = array(
 					'msg'    => 'Settings Data saved',
 					'status' => true,
-				];
+				);
 				$resp['wfacp_id']    = $post_data;
 				$resp['post_name']   = $title;
 				$resp['launch_url']  = $guid;
@@ -1384,10 +1425,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		 */
 		public static function wf_quick_view_ajax() {
 			self::check_nonce();
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 			if ( isset( $_POST['data'] ) && ( $post = $_POST['data'] ) && isset( $post['wfacp_id'] ) && $post['wfacp_id'] > 0 && isset( $post['product_id'] ) && $post['product_id'] > 0 ) {
 				$wfacp_id = absint( $post['wfacp_id'] );
 				$item_key = isset( $post['item_key'] ) ? $post['item_key'] : '';
@@ -1437,10 +1478,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function update_cart_item_quantity( $post ) {
 
-			$resp     = [
+			$resp     = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 			$quantity = floatval( $post['quantity'] );
 
 			if ( $quantity <= 0 ) {
@@ -1476,7 +1517,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			/**
 			 * @var $product_obj WC_Product;
 			 */
-			$save_product_list = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id(), [] );
+			$save_product_list = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id(), array() );
 
 			$new_qty  = $quantity;
 			$aero_key = '';
@@ -1525,10 +1566,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function make_wpml_duplicate() {
 			self::check_nonce( true );
-			$resp = [
+			$resp = array(
 				'msg'    => __( 'Something went wrong', 'woofunnel-order-bump' ),
 				'status' => false,
-			];
+			);
 			if ( isset( $_POST['trid'] ) && $_POST['trid'] > 0 && class_exists( 'SitePress' ) && method_exists( 'SitePress', 'get_original_element_id_by_trid' ) ) {
 				$trid           = absint( $_POST['trid'] );
 				$lang           = isset( $_POST['lang'] ) ? trim( $_POST['lang'] ) : '';
@@ -1549,10 +1590,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 							// Delete _icl_lang_duplicate_of meta_key because of this meta key enable the sync process with parent product
 							delete_post_meta( $duplicate_id, '_icl_lang_duplicate_of' );
 						}
-						$resp['redirect_url'] = add_query_arg( [
-							'section'  => 'products',
-							'wfacp_id' => $duplicate_id,
-						], admin_url( 'admin.php?page=wfacp' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'section'  => 'products',
+								'wfacp_id' => $duplicate_id,
+							),
+							admin_url( 'admin.php?page=wfacp' )
+						);
 						$resp['duplicate_id'] = $duplicate_id;
 						$resp['status']       = true;
 					}
@@ -1562,11 +1606,11 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		}
 
 		public static function update_cart_multiple_page( $post ) {
-			$resp              = [
+			$resp              = array(
 				'msg'    => '',
 				'status' => false,
-			];
-			$success           = [];
+			);
+			$success           = array();
 			$switcher_products = $post['products'];
 			if ( isset( $post['coupons'] ) ) {
 				$coupons = $post['coupons'];
@@ -1584,13 +1628,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			WFACP_Core()->public->get_page_data( $wfacp_id );
 
 			if ( function_exists( 'WCCT_Core' ) && class_exists( 'WCCT_discount' ) ) {
-				add_filter( 'wcct_force_do_not_run_campaign', [ WFACP_Core()->public, 'unset_wcct_campaign' ], 10, 2 );
+				add_filter( 'wcct_force_do_not_run_campaign', array( WFACP_Core()->public, 'unset_wcct_campaign' ), 10, 2 );
 			}
 
 			$products = WFACP_Core()->public->get_product_list( $wfacp_id );
 			do_action( 'wfacp_before_add_to_cart', $products );
 
-			$added_products = [];
+			$added_products = array();
 			foreach ( $products as $index => $data ) {
 
 				$product_id   = absint( $data['id'] );
@@ -1635,8 +1679,8 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						$variation_id = absint( $data['id'] );
 					}
 					try {
-						$attributes  = [];
-						$custom_data = [];
+						$attributes  = array();
+						$custom_data = array();
 						if ( isset( $data['variable'] ) ) {
 							$variation_id                             = $data['default_variation'];
 							$attributes                               = $data['default_variation_attr'];
@@ -1679,19 +1723,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				WC()->session->set( 'wfacp_product_objects_' . WFACP_Common::get_id(), $added_products );
 				WC()->session->set( 'wfacp_product_data_' . WFACP_Common::get_id(), $products );
 				if ( is_array( $coupons ) && ! empty( $coupons ) ) {
-					remove_action( 'woocommerce_applied_coupon', [ WFACP_Core()->public, 'set_session_when_coupon_applied' ] );
-					//	WC()->cart->add_discount( $coupon );
+					remove_action( 'woocommerce_applied_coupon', array( WFACP_Core()->public, 'set_session_when_coupon_applied' ) );
+					// WC()->cart->add_discount( $coupon );
 					foreach ( $coupons as $coupon_id ) {
 						$coupon_id = trim( $coupon_id );
 						WC()->cart->add_discount( $coupon_id );
 					}
-
 				}
 				WC()->session->__unset( 'wfacp_woocommerce_applied_coupon_' . WFACP_Common::get_id() );
 				wc_clear_notices();
 				$resp = array(
 					'success' => $success,
-					'status'  => true
+					'status'  => true,
 				);
 			}
 			do_action( 'wfacp_after_add_to_cart' );
@@ -1708,13 +1751,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				remove_all_filters( 'woocommerce_coupons_enabled' );
 				do_action( 'wfacp_before_coupon_apply', $bump_action_data );
-				add_filter( 'woocommerce_coupon_message', function ( $msg, $msg_code ) {
-					if ( 200 == $msg_code ) {
-						return '';
-					}
+				add_filter(
+					'woocommerce_coupon_message',
+					function ( $msg, $msg_code ) {
+						if ( 200 == $msg_code ) {
+							return '';
+						}
 
-					return $msg;
-				}, 10, 2 );
+						return $msg;
+					},
+					10,
+					2
+				);
 				$status = true;
 				if ( apply_filters( 'wfacp_apply_coupon_via_ajax', true, $bump_action_data ) ) {
 					$status = WC()->cart->add_discount( sanitize_text_field( $bump_action_data['coupon_code'] ) );
@@ -1726,7 +1774,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 				$all_notices  = WC()->session->get( 'wc_notices', array() );
 				$notice_types = apply_filters( 'woocommerce_notice_types', array( 'error', 'success', 'notice' ) );
-				$message      = [];
+				$message      = array();
 				do_action( 'wfacp_after_coupon_apply', $bump_action_data );
 				foreach ( $notice_types as $notice_type ) {
 					if ( wc_notice_count( $notice_type ) > 0 ) {
@@ -1746,7 +1794,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				$resp = array(
 					'status'  => false,
 					'message' => array(
-						'error' => [ 'Please provide a coupon code' ],
+						'error' => array( 'Please provide a coupon code' ),
 					),
 				);
 			}
@@ -1780,10 +1828,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		}
 
 		public static function prep_fees() {
-			$fees = [];
+			$fees = array();
 
 			foreach ( WC()->cart->get_fees() as $fee ) {
-				$out         = (object) [];
+				$out         = (object) array();
 				$out->name   = $fee->name;
 				$out->amount = ( 'excl' == WFACP_Common::get_tax_display_mode() ) ? wc_price( $fee->total ) : wc_price( $fee->total + $fee->tax );
 				$fees[]      = $out;
@@ -1794,10 +1842,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function remove_cart_item( $post ) {
 
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 
 			$wfacp_id = absint( $post['wfacp_id'] );
 			if ( $wfacp_id == 0 ) {
@@ -1823,7 +1871,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					if ( $status ) {
 						if ( isset( $cart_item['_wfacp_product'] ) ) {
 							$p_item_key        = $cart_item['_wfacp_product_key'];
-							$save_product_list = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id(), [] );
+							$save_product_list = WC()->session->get( 'wfacp_product_data_' . WFACP_Common::get_id(), array() );
 							add_action( 'woocommerce_cart_item_removed', 'WFACP_Common::remove_item_deleted_items', 10, 2 );
 							WFACP_Common::order_bump_restored_start();
 							remove_action( 'woocommerce_cart_item_removed', 'WFACP_Common::remove_item_deleted_items', 10 );
@@ -1832,13 +1880,12 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 						}
 
-
 						$product           = wc_get_product( $cart_item['product_id'] );
 						$item_is_available = false;
 						// Don't show undo link if removed item is out of stock.
 						if ( $product && $product->is_in_stock() && $product->has_enough_stock( $cart_item['quantity'] ) ) {
 							$item_is_available = true;
-							$removed_notice    = "&nbsp;" . ' <a href="javascript:void(0)" class="wfacp_restore_cart_item" data-cart_key="' . $cart_item_key . '">' . __( 'Undo?', 'woocommerce' ) . '</a>';
+							$removed_notice    = '&nbsp;' . ' <a href="javascript:void(0)" class="wfacp_restore_cart_item" data-cart_key="' . esc_attr( $cart_item_key ) . '">' . __( 'Undo?', 'woocommerce' ) . '</a>';
 						} else {
 							$item_is_available = false;
 							/* Translators: %s Product title. */
@@ -1857,10 +1904,10 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 		}
 
 		public static function undo_cart_item( $post ) {
-			$resp = [
+			$resp = array(
 				'msg'    => '',
 				'status' => false,
-			];
+			);
 
 			if ( isset( $post['cart_key'] ) && '' !== $post['cart_key'] ) {
 				// Undo Cart Item.
@@ -1868,9 +1915,9 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				WC()->cart->restore_cart_item( $cart_item_key );
 				do_action( 'wfacp_restore_cart_item', $cart_item_key, $post );
 				$item                 = WC()->cart->get_cart_item( $cart_item_key );
-				$resp['restore_item'] = [];
+				$resp['restore_item'] = array();
 				if ( is_array( $item ) && $item['data'] instanceof WC_Product ) {
-					$data                 = [ 'type' => $item['data']->get_type() ];
+					$data                 = array( 'type' => $item['data']->get_type() );
 					$resp['restore_item'] = apply_filters( 'wfacp_restore_cart_item_data', $data, $item );
 				}
 				if ( isset( $item['_wfacp_product_key'] ) ) {
@@ -1889,22 +1936,22 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 
 		public static function hide_notification() {
-			$rsp = [
+			$rsp = array(
 				'status' => false,
 
-			];
+			);
 
 			if ( isset( $_POST['wfacp_id'] ) && isset( $_POST['index'] ) && isset( $_POST['message_type'] ) ) {
 				$index        = $_POST['index'];
 				$wfacp_id     = $_POST['wfacp_id'];
 				$message_type = $_POST['message_type'];
 				if ( isset( $message_type ) && 'global' == $message_type ) {
-					$notification = get_option( 'wfacp_global_notifications', [] );
+					$notification = get_option( 'wfacp_global_notifications', array() );
 				} else {
 					$notification = get_post_meta( $wfacp_id, 'notifications', true );
 				}
 				if ( ! is_array( $notification ) ) {
-					$notification = [];
+					$notification = array();
 				}
 
 				$notification[ $index ] = true;
@@ -1921,19 +1968,18 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function import_template() {
 			self::check_nonce( true );
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'woofunnels-aero-checkout' ),
-			];
+			);
 			$builder  = $_REQUEST['builder'];
 			$template = $_REQUEST['template'];
 			$wfacp_id = $_REQUEST['wfacp_id'];
 			$is_multi = $_REQUEST['is_multi'];
 
-
 			$response = WFACP_Core()->importer->import( $wfacp_id, $builder, $template, $is_multi );
 
-			//sleep(100);
+			// sleep(100);
 			if ( isset( $response['error'] ) ) {
 				$resp['status'] = false;
 				$resp['msg']    = $response['error'];
@@ -1973,7 +2019,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 
 		public static function get_divi_form_data() {
 
-
 			if ( isset( $_REQUEST['wfacp_id'] ) ) {
 				$post_id = $_REQUEST['wfacp_id'];
 				$post    = get_post( $post_id );
@@ -1990,11 +2035,14 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( '' !== $json ) {
 				$json = json_decode( $json, true );
 			} else {
-				$json = [];
+				$json = array();
 			}
 
 			$template = wfacp_template();
-			$id       = 'wfacp_divi_checkout_form';
+			if ( ! $template ) {
+				exit( 0 );
+			}
+			$id = 'wfacp_divi_checkout_form';
 			WFACP_Common::set_session( $id, $json );
 			$template->set_form_data( $json );
 			do_action( 'wfacp_get_divi_form_data', $post, $json );
@@ -2026,11 +2074,13 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				$json = json_decode( $json, true );
 			}
 			$template = wfacp_template();
-			$key      = 'wfacp_order_summary_widget';
+			if ( ! $template ) {
+				exit;
+			}
+			$key = 'wfacp_order_summary_widget';
 			WFACP_Common::set_session( $key, $json );
 			$template->get_mini_cart_widget( $key );
 			exit;
-
 		}
 
 		public static function analytics() {
@@ -2059,7 +2109,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				self::send_resp( $resp );
 			}
 
-			$user_data                      = WFACP_Common::pixel_advanced_matching_data();
+			$user_data                      = WFACP_Common::pixel_advanced_matching_data( true );
 			$user_data['client_ip_address'] = ! empty( WC_Geolocation::get_ip_address() ) ? WC_Geolocation::get_ip_address() : '127.0.0.1';
 			$user_data['client_user_agent'] = wc_get_user_agent();
 			if ( isset( $_COOKIE['_fbp'] ) && ! empty( $_COOKIE['_fbp'] ) ) {
@@ -2099,7 +2149,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						$instance->set_user_data( $user_data );
 						$instance->set_event_source_url( $source );
 
-						$fb_single_data = isset( $single_item['data'] ) ? $single_item['data'] : [];
+						$fb_single_data = isset( $single_item['data'] ) ? $single_item['data'] : array();
 						if ( isset( $fb_single_data['contents'] ) ) {
 							foreach ( $fb_single_data['contents'] as $ckey => $a ) {
 								unset( $fb_single_data['contents'][ $ckey ]['value'] );
@@ -2112,7 +2162,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					$resp['status'] = true;
 				}
 			}
-
 
 			self::send_resp( $resp );
 		}
@@ -2131,7 +2180,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			if ( function_exists( 'oxygen_add_posts_quick_action_link' ) ) {
 				$post = get_post( $id );
 				if ( ! is_null( $post ) ) {
-					$actions = oxygen_add_posts_quick_action_link( array(), $post, "array" );
+					$actions = oxygen_add_posts_quick_action_link( array(), $post, 'array' );
 					if ( is_array( $actions ) && isset( $actions['url'] ) ) {
 						$edit_url = $actions['url'];
 					}
@@ -2139,7 +2188,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 			}
 
 			if ( empty( $edit_url ) && absint( $id ) > 0 && ( $url !== '' ) ) {
-
 
 				// Get post template
 				$post_template = intval( get_post_meta( $id, 'ct_other_template', true ) );
@@ -2156,7 +2204,6 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 						if ( function_exists( 'ct_get_posts_template' ) ) {
 							$default_template = ct_get_posts_template( $id );
 						}
-
 					}
 					if ( $default_template ) {
 						$shortcodes = get_post_meta( $default_template->ID, WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), true );
@@ -2167,7 +2214,7 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 					} else {
 						$post_editable = true;
 					}
-				} else if ( $post_template == - 1 ) { // None
+				} elseif ( $post_template == - 1 ) { // None
 					$post_editable = true;
 				} else { // Custom template
 					$shortcodes = get_post_meta( $post_template, WFACP_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), true );
@@ -2179,15 +2226,15 @@ if ( ! class_exists( 'WFACP_AJAX_Controller' ) ) {
 				// Generate edit link
 				if ( $post_editable ) {
 					if ( $template_inner ) {
-						$url = add_query_arg( [ 'ct_inner' => 'true' ], $url );
+						$url = add_query_arg( array( 'ct_inner' => 'true' ), $url );
 					}
 				}
 			}
 
-			$resp = [
+			$resp = array(
 				'status' => true,
 				'url'    => ! empty( $edit_url ) ? $edit_url : $url,
-			];
+			);
 			self::send_resp( $resp );
 		}
 	}

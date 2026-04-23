@@ -1,0 +1,98 @@
+{
+  "module": {
+    "order_details_heading": "order_details_heading.innerContent.*",
+    "order_subscription_heading": "order_subscription_heading.innerContent.*",
+    "order_download_heading": "order_download_heading.innerContent.*",
+    "order_downloads_btn_text": "order_downloads_btn_text.innerContent.*",
+    "order_details_img": "order_details_img.innerContent.*",
+    "order_downloads_file": "order_downloads_file.innerContent.*",
+    "order_downloads_file_expiry": "order_downloads_file_expiry.innerContent.*",
+    "order_subscription_preview": "order_subscription_preview.innerContent.*",
+    "order_download_preview": "order_download_preview.innerContent.*",
+
+    "wfty_order_details_heading_color": "wfty_order_details_heading_typography.decoration.font.font.*.color",
+    "wfty_order_details_product_text_color": "wfty_order_details_product_typography.decoration.font.font.*.color",
+    "wfty_order_details_subtotal_text_color": "wfty_order_details_subtotal_typography.decoration.font.font.*.color",
+    "wfty_order_details_total_text_color": "wfty_order_details_total_typography.decoration.font.font.*.color",
+    "wfty_order_details_variation_text_color": "wfty_order_details_variation_typography.decoration.font.font.*.color",
+    "wfty_order_details_subscription_text_color": "wfty_order_details_subscription_text_color.decoration.font.font.*.color",
+    "wfty_order_details_download_text_color": "wfty_order_details_download_text_color.decoration.font.font.*.color",
+
+    "wfty_order_details_subs_button_text_color": "wfty_order_details_subs_button_text_color.decoration.font.font.*.color",
+    "wfty_order_details_subs_button_background_color": "wfty_order_details_subs_button_background_color.decoration.background.*.color",
+    "wfty_order_details_subs_button_text_hover_color": "wfty_order_details_subs_button_text_hover_color.decoration.font.font.*.color",
+    "wfty_order_details_subs_button_background_hover_color": "wfty_order_details_subs_button_background_hover_color.decoration.background.*.color",
+
+    "wfty_order_details_download_button_text_color": "wfty_order_details_download_button_text_color.decoration.font.font.*.color",
+    "wfty_order_details_download_button_background_color": "wfty_order_details_download_button_background_color.decoration.background.*.color",
+    "wfty_order_details_download_button_text_hover_color": "wfty_order_details_download_button_text_hover_color.decoration.font.font.*.color",
+    "wfty_order_details_download_button_background_hover_color": "wfty_order_details_download_button_background_hover_color.decoration.background.*.color",
+
+    "wfty_order_details_divider_color": "wfty_order_details_divider_color.decoration.background.*.color",
+    "wfty_order_details_divider_color_border_color": "wfty_order_details_divider_color.decoration.background.*.color",
+
+    "align": "wfty_order_details_heading_typography.decoration.font.font.*.textAlign",
+
+    "wfty_order_details_heading_typography_typograhy": "wfty_order_details_heading_typography.decoration.font.font.*",
+    "wfty_order_details_product_typography_typograhy": "wfty_order_details_product_typography.decoration.font.font.*",
+    "wfty_order_details_subtotal_typography_typograhy": "wfty_order_details_subtotal_typography.decoration.font.font.*",
+    "wfty_order_details_total_typography_typograhy": "wfty_order_details_total_typography.decoration.font.font.*",
+    "wfty_order_details_variation_typography_typograhy": "wfty_order_details_variation_typography.decoration.font.font.*",
+    "wfty_order_details_subscription_typography_typograhy": "wfty_order_details_subscription_typography.decoration.font.font.*",
+    "wfty_order_details_download_typography_typograhy": "wfty_order_details_download_typography.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "text": "module.advanced.text",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfty_order_details_heading_typography": "wfty_order_details_heading_typography.decoration.font",
+      "wfty_order_details_product_typography": "wfty_order_details_product_typography.decoration.font",
+      "wfty_order_details_subtotal_typography": "wfty_order_details_subtotal_typography.decoration.font",
+      "wfty_order_details_total_typography": "wfty_order_details_total_typography.decoration.font",
+      "wfty_order_details_variation_typography": "wfty_order_details_variation_typography.decoration.font",
+      "wfty_order_details_subscription_typography": "wfty_order_details_subscription_typography.decoration.font",
+      "wfty_order_details_download_typography": "wfty_order_details_download_typography.decoration.font"
+    },
+    "text_shadow": {
+      "default": "module.advanced.text.textShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfty_order_details_heading_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_product_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_subtotal_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_total_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_variation_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_subscription_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_order_details_download_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

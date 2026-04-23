@@ -15,7 +15,6 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 		/**
 		 * Get widget name.
 		 *
-		 *
 		 * @return string Widget name.
 		 */
 		public function get_name() {
@@ -44,12 +43,13 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 		 * Get widget categories.
 		 *
 		 * Retrieve the list of categories the widget belongs to.
+		 *
 		 * @access public
 		 *
 		 * @return array Widget categories.
 		 */
 		public function get_categories() {
-			return [ 'upstroke' ];
+			return array( 'upstroke' );
 		}
 
 
@@ -63,110 +63,130 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 		protected function register_controls() {
 			$offer_id = WFOCU_Core()->template_loader->get_offer_id();
 
-			if ( empty( $offer_id ) ) {
-				return;
-			}
-
 			$products        = array();
-			$product_options = array( '0' => '--No Product--' );
+			$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );
+
 			if ( ! empty( $offer_id ) ) {
 				$products        = WFOCU_Core()->template_loader->product_data->products;
 				$product_options = array();
 			}
 
-			$this->start_controls_section( 'section_product_title', [
-				'label' => __( 'Product Title', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => Controls_Manager::TAB_CONTENT,
-			] );
+			$this->start_controls_section(
+				'section_product_title',
+				array(
+					'label' => __( 'Product Title', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => Controls_Manager::TAB_CONTENT,
+				)
+			);
 
 			foreach ( $products as $key => $product ) {
 				$product_options[ $key ] = $product->data->get_name();
 			}
 
-			$this->add_control( 'selected_product', [
-				'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => key( $product_options ),
-				'options' => $product_options,
-			] );
+			$this->add_control(
+				'selected_product',
+				array(
+					'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'    => Controls_Manager::SELECT,
+					'default' => key( $product_options ),
+					'options' => $product_options,
+				)
+			);
 
 			do_action( 'wfocu_add_elementor_controls', $this, $offer_id, $products );
 
-			$this->add_control( 'header_size', [
-				'label'   => __( 'HTML Tag', 'elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'options' => [
-					'h1'  => 'H1',
-					'h2'  => 'H2',
-					'h3'  => 'H3',
-					'h4'  => 'H4',
-					'h5'  => 'H5',
-					'h6'  => 'H6',
-					'div' => 'div',
-					'p'   => 'p',
-				],
-				'default' => 'div',
+			$this->add_control(
+				'header_size',
+				array(
+					'label'   => __( 'HTML Tag', 'elementor' ),
+					'type'    => Controls_Manager::SELECT,
+					'options' => array(
+						'h1'  => 'H1',
+						'h2'  => 'H2',
+						'h3'  => 'H3',
+						'h4'  => 'H4',
+						'h5'  => 'H5',
+						'h6'  => 'H6',
+						'div' => 'div',
+						'p'   => 'p',
+					),
+					'default' => 'div',
 
-			] );
+				)
+			);
 
-			$this->add_responsive_control( 'text_align', [
-				'label'     => __( 'Alignment', 'elementor' ),
-				'type'      => Controls_Manager::CHOOSE,
-				'options'   => [
-					'left'   => [
-						'title' => __( 'Left', 'elementor' ),
-						'icon'  => 'eicon-text-align-left',
-					],
-					'center' => [
-						'title' => __( 'Center', 'elementor' ),
-						'icon'  => 'eicon-text-align-center',
-					],
-					'right'  => [
-						'title' => __( 'Right', 'elementor' ),
-						'icon'  => 'eicon-text-align-right',
-					],
-				],
-				'selectors' => [
-					'{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title' => 'text-align: {{VALUE}}',
-				],
-			] );
-
-			$this->end_controls_section();
-			$this->start_controls_section( 'section_price_style', [
-				'label' => __( 'Product Title', 'elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			] );
-
-			$this->_add_color( 'title_color', [
-				'label'     => __( 'Title Color', 'elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#414349',
-				'selectors' => [
-					'{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title' => 'color: {{VALUE}}',
-				],
-			] );
-
-			$this->_add_typography( Group_Control_Typography::get_type(), [
-				'name'     => 'typography',
-				'selector' => '{{WRAPPER}} .elementor-product-title-wrapper, {{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title',
-			] );
-
-			$this->add_group_control( \Elementor\Group_Control_Text_Shadow::get_type(), [
-				'name'     => 'text_shadow',
-				'selector' => '{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title',
-			] );
+			$this->add_responsive_control(
+				'text_align',
+				array(
+					'label'     => __( 'Alignment', 'elementor' ),
+					'type'      => Controls_Manager::CHOOSE,
+					'options'   => array(
+						'left'   => array(
+							'title' => __( 'Left', 'elementor' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center' => array(
+							'title' => __( 'Center', 'elementor' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'  => array(
+							'title' => __( 'Right', 'elementor' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+					),
+					'selectors' => array(
+						'{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title' => 'text-align: {{VALUE}}',
+					),
+				)
+			);
 
 			$this->end_controls_section();
+			$this->start_controls_section(
+				'section_price_style',
+				array(
+					'label' => __( 'Product Title', 'elementor' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				)
+			);
 
+			$this->_add_color(
+				'title_color',
+				array(
+					'label'     => __( 'Title Color', 'elementor' ),
+					'type'      => Controls_Manager::COLOR,
+					'default'   => '#414349',
+					'selectors' => array(
+						'{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title' => 'color: {{VALUE}}',
+					),
+				)
+			);
+
+			$this->_add_typography(
+				Group_Control_Typography::get_type(),
+				array(
+					'name'     => 'typography',
+					'selector' => '{{WRAPPER}} .elementor-product-title-wrapper, {{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title',
+				)
+			);
+
+			$this->add_group_control(
+				\Elementor\Group_Control_Text_Shadow::get_type(),
+				array(
+					'name'     => 'text_shadow',
+					'selector' => '{{WRAPPER}} .elementor-product-title-wrapper .elementor-wfocu-product-title',
+				)
+			);
+
+			$this->end_controls_section();
 		}
 
 		public function _add_typography( $group, $args, $typography_type = 'TYPOGRAPHY_1' ) {
 
 			if ( version_compare( ELEMENTOR_VERSION, '3.15.0', '>=' ) ) {
-				$args['global'] = [
+				$args['global'] = array(
 					'default' => Elementor\Core\Kits\Documents\Tabs\Global_Typography::TYPOGRAPHY_PRIMARY,
-				];
-			} else if ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
+				);
+			} elseif ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) {
 				$args['scheme'] = \Elementor\Core\Schemes\Typography::TYPOGRAPHY_1;
 			} else {
 				$args['scheme'] = \Elementor\Typography::TYPOGRAPHY_1;
@@ -199,7 +219,6 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 						$title = $product->get_title();
 					}
 				}
-
 			}
 
 			if ( empty( $title ) ) {
@@ -210,15 +229,14 @@ if ( ! class_exists( 'Elementor_WFOCU_Product_Title_Widget' ) ) {
 			$this->add_render_attribute( 'header_size', 'class', 'elementor-wfocu-product-title' );
 
 			?>
-            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 				<?php
-				$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', $settings['header_size'], $this->get_render_attribute_string( 'header_size' ), $title );
+				$header_tag = isset( $settings['header_size'] ) ? $settings['header_size'] : 'div';
+				$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', $header_tag, $this->get_render_attribute_string( 'header_size' ), $title );
 				echo $title_html;
 				?>
-            </div>
+			</div>
 			<?php
 		}
-
-
 	}
 }

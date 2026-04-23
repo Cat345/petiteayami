@@ -29,29 +29,27 @@ class FieldsType
         $isType = $type->config['metadata']['type'] ?? false;
 
         return [
-            'fields' => array_filter(
-                array_reduce(
-                    $fields,
-                    fn($fields, $field) => $fields +
-                        static::configFields(
-                            $field,
-                            [
-                                'type' => 'String',
-                                'metadata' => [
-                                    'label' => $field['label'] ?: $field['name'],
-                                    'group' => $isType ? $field['group']['title'] : null,
-                                ],
-                                'extensions' => [
-                                    'call' => [
-                                        'func' => __CLASS__ . '::resolve',
-                                        'args' => ['field' => $field['name']],
-                                    ],
+            'fields' => array_reduce(
+                $fields,
+                fn($fields, $field) => $fields +
+                    static::configFields(
+                        $field,
+                        [
+                            'type' => 'String',
+                            'metadata' => [
+                                'label' => $field['label'] ?: $field['name'],
+                                'group' => $isType ? $field['group']['title'] : null,
+                            ],
+                            'extensions' => [
+                                'call' => [
+                                    'func' => __CLASS__ . '::resolve',
+                                    'args' => ['field' => $field['name']],
                                 ],
                             ],
-                            $source,
-                        ),
-                    [],
-                ),
+                        ],
+                        $source,
+                    ),
+                [],
             ),
         ];
     }
@@ -63,20 +61,20 @@ class FieldsType
      */
     protected static function configFields(array $field, array $config, Source $source): array
     {
-        $config += ['name' => Str::snakeCase($field['name'])];
+        $config += [
+            'name' => ctype_digit($field['name'])
+                ? "_{$field['name']}"
+                : strtr($field['name'], '-', '_'),
+        ];
         $config = is_callable($callback = [__CLASS__, Str::camelCase(['config', $field['type']])])
             ? $callback($field, $config, $source)
             : static::configGenericField($field, $config, $source);
 
-        $config = Event::emit('source.acf.field|filter', $config, $field, $source);
+        $config = Event::emit('source.acf.field|filter', $config, $field, $source) ?: [];
 
-        if ($config) {
-            return array_is_list($config)
-                ? array_combine(array_column($config, 'name'), $config)
-                : [$config['name'] => $config];
-        }
-
-        return [];
+        return array_is_list($config)
+            ? array_combine(array_column($config, 'name'), $config)
+            : [$config['name'] => $config];
     }
 
     /**
@@ -179,6 +177,7 @@ class FieldsType
                     ],
                     'order_direction' => [
                         'type' => 'String',
+                        'defaultValue' => 'ASC',
                     ],
                     'order_alphanum' => [
                         'type' => 'Boolean',
@@ -207,7 +206,6 @@ class FieldsType
                                 'order_direction' => [
                                     'label' => trans('Direction'),
                                     'type' => 'select',
-                                    'default' => 'ASC',
                                     'options' => [
                                         ['text' => trans('Ascending'), 'value' => 'ASC'],
                                         ['text' => trans('Descending'), 'value' => 'DESC'],
@@ -364,7 +362,7 @@ class FieldsType
 
         if ($fields) {
             $type = Str::camelCase(['Field', $field['name']], true);
-            $source->objectType($type, compact('fields'));
+            $source->objectType($type, ['fields' => $fields]);
 
             return (static::isMultiple($field)
                 ? ['type' => ['listOf' => $type]]

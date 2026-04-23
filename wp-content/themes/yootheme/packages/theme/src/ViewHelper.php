@@ -325,7 +325,7 @@ class ViewHelper implements ViewHelperInterface
 
     public function striptags(
         ?string $str,
-        string $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del>'
+        string $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del><wbr>'
     ): string {
         return strip_tags((string) $str, $allowable_tags);
     }

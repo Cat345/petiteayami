@@ -51,9 +51,13 @@ class LoadGoogleAnalyticsScript
 
     public function handle(): void
     {
-        $this->config->update('customizer.script.types', function ($types = []): array {
-            return [...$types, ['text' => 'Google Analytics', 'value' => self::TYPE]];
-        });
+        $this->config->update(
+            'customizer.script.types',
+            fn($types = []): array => [
+                ...$types,
+                ['text' => 'Google Analytics', 'value' => self::TYPE],
+            ],
+        );
 
         $this->config->add('customizer.panels', [
             self::TYPE => [

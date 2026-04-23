@@ -42,7 +42,7 @@ class AcfHelper
         foreach (static::groups($type, $name) as $group) {
             foreach (acf_get_fields($group) as $field) {
                 if (!in_array($field['type'], $ignore) && !empty($field['name'])) {
-                    $fields[$field['name']] = $field + compact('group');
+                    $fields[$field['name']] = $field + ['group' => $group];
                 }
             }
         }

@@ -70,7 +70,11 @@ class BWFAN_Goal_Controller extends BWFAN_Base_Step_Controller {
 			}
 			/** Remove the invalid goal step from the steps */
 			unset( $automation_sids[ $step_index ] );
-			$a_ids[ $aid ] = $automation_sids;
+			if ( empty( $automation_sids ) && isset( $a_ids[ $aid ] ) ) {
+				unset( $a_ids[ $aid ] );
+			} else {
+				$a_ids[ $aid ] = $automation_sids;
+			}
 		}
 
 		$automations = array_keys( $a_ids );

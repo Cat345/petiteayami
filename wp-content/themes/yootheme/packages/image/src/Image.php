@@ -19,12 +19,12 @@ class Image implements Stringable
     /**
      * @var int|float|null
      */
-    protected $width = null;
+    protected $width;
 
     /**
      * @var int|float|null
      */
-    protected $height = null;
+    protected $height;
 
     protected bool $remote = false;
     protected bool $resizable = false;
@@ -73,7 +73,7 @@ class Image implements Stringable
      */
     public function getWidth(int $precision = 0): ?float
     {
-        return isset($this->width) ? round($this->width, $precision) : $this->width;
+        return $this->width !== null ? round($this->width, $precision) : $this->width;
     }
 
     /**
@@ -81,7 +81,7 @@ class Image implements Stringable
      */
     public function getHeight(int $precision = 0): ?float
     {
-        return isset($this->height) ? round($this->height, $precision) : $this->height;
+        return $this->height !== null ? round($this->height, $precision) : $this->height;
     }
 
     /**

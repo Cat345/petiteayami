@@ -560,8 +560,13 @@ if ( ! class_exists( 'WFOCU_Sublium_Compatibility' ) ) {
 		 * @return array Modified rule type arguments
 		 */
 		public function register_rule_type( $args ) {
-			if ( $this->is_enable() && is_array( $args ) && isset( $args['Order'] ) ) {
-				$args['Order']['order_sublium'] = __( 'Sublium', 'woofunnels-upstroke-power-pack' );
+			if ( $this->is_enable() && is_array( $args ) ) {
+				$args[ __( 'Sublium Subscription', 'sublium-subscriptions-for-woocommerce' ) ] = array(
+					'order_contain_sublium_subscription' => __( 'Order Contain Subscriptions', 'sublium-subscriptions-for-woocommerce' ),
+					'order_sublium_recurring_plan'       => __( 'Recurring Products', 'sublium-subscriptions-for-woocommerce' ),
+					'order_sublium_subscribe_and_save'   => __( 'Subscribe & Save Products', 'sublium-subscriptions-for-woocommerce' ),
+					'order_sublium_installment_plan'     => __( 'Installment Products', 'sublium-subscriptions-for-woocommerce' ),
+				);
 			}
 
 			return $args;

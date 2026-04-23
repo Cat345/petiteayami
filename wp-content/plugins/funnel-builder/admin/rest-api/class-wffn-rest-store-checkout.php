@@ -22,8 +22,8 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 		 * @var string
 		 */
 
-		protected $namespace = 'funnelkit-app';
-		protected $rest_base = 'store-checkout';
+		protected $namespace    = 'funnelkit-app';
+		protected $rest_base    = 'store-checkout';
 		protected $rest_base_id = 'store-checkout/(?P<funnel_id>[\d]+)/';
 
 		public function __construct() {
@@ -32,7 +32,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -42,190 +42,228 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 		 * Register the routes for store checkout.
 		 */
 		public function register_routes() {
-			register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base,
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_store_checkout' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_funnels_collection() ),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'create_store_checkout' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_funnels_collection() ),
+					),
 				)
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/duplicate/(?P<funnel_id>[\d]+)', array(
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/duplicate/(?P<funnel_id>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_clone_checkout' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_funnels_collection() ),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'create_clone_checkout' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_funnels_collection() ),
+					),
 				)
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/import_template', array(
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/import_template',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'import_template' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'import_template' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'funnel_id' => array(
+								'description'       => __( 'Unique funnel id.', 'funnel-builder' ),
+								'type'              => 'integer',
+								'validate_callback' => 'rest_validate_request_arg',
+								'default'           => 0,
+							),
+							'title'     => array(
+								'description'       => __( 'Funnel name.', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'template'  => array(
+								'description'       => __( 'template slug identifier', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'builder'   => array(
+								'description'       => __( 'template group identifier', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'steps'     => array(
+								'description'       => __( 'steps', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							),
+						),
+					),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id,
+				array(
+					'args' => array(
 						'funnel_id' => array(
-							'description'       => __( 'Unique funnel id.', 'funnel-builder' ),
-							'type'              => 'integer',
-							'validate_callback' => 'rest_validate_request_arg',
-							'default'           => 0,
-						),
-						'title'     => array(
-							'description'       => __( 'Funnel name.', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'template'  => array(
-							'description'       => __( 'template slug identifier', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'builder'   => array(
-							'description'       => __( 'template group identifier', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'steps'     => array(
-							'description'       => __( 'steps', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
 						),
 					),
-				),
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id, array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_store_checkout' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_store_checkout' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_store_checkout' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'status', array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'delete_store_checkout' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'update_status' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/export/', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'status',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'export_funnels' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'ids' => array(
-							'description'       => __( 'Funnel id', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					'args' => array(
+						'funnel_id' => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
 						),
 					),
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'update_status' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/import/', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/export/',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'import_funnels' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => []
-				),
-			) );
-
-			/*** Store checkout steps ****/
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)', array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'step_id'   => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
-
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_store_step' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => $this->get_delete_steps_collection()
-				),
-
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-
-			/*** sub steps ***/
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)/substeps', array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'step_id'   => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_substep' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_substeps_collection() ),
-				),
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)/substeps/(?P<substep_id>[\d]+)', array(
-				'args' => array(
-					'funnel_id'  => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'step_id'    => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'substep_id' => array(
-						'description' => __( 'Current substep id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_substep' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'type' => array(
-							'description' => __( 'Step type', 'funnel-builder' ),
-							'type'        => 'string',
-							'required'    => true,
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'export_funnels' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'ids' => array(
+								'description'       => __( 'Funnel id', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
-					)
-				),
-			) );
+					),
+				)
+			);
 
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/import/',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'import_funnels' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
 
+			/*** Store checkout steps */
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)',
+				array(
+					'args'   => array(
+						'funnel_id' => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'step_id'   => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'delete_store_step' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => $this->get_delete_steps_collection(),
+					),
+
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
+
+			/*** sub steps */
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)/substeps',
+				array(
+					'args' => array(
+						'funnel_id' => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'step_id'   => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'create_substep' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_substeps_collection() ),
+					),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'step/(?P<step_id>[\d]+)/substeps/(?P<substep_id>[\d]+)',
+				array(
+					'args' => array(
+						'funnel_id'  => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'step_id'    => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'substep_id' => array(
+							'description' => __( 'Current substep id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'delete_substep' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'type' => array(
+								'description' => __( 'Step type', 'funnel-builder' ),
+								'type'        => 'string',
+								'required'    => true,
+							),
+						),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -255,7 +293,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			if ( is_array( $steps ) && count( $steps ) > 0 ) {
 				if ( false === in_array( 'wc_checkout', wp_list_pluck( $steps, 'type' ), true ) ) {
 					$sub_steps     = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
-					$sub_step_data = [];
+					$sub_step_data = array();
 					if ( is_array( $sub_steps ) && count( $sub_steps ) > 0 ) {
 						$get_substep = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
 						if ( $get_substep instanceof WFFN_Substep ) {
@@ -268,7 +306,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 						'substeps' => $sub_step_data,
 					);
 
-					if($this->_should_display_block_incompatible_notice()) {
+					if ( $this->_should_display_block_incompatible_notice() ) {
 						$native_checkout['is_checkout_block'] = true;
 					}
 					array_unshift( $steps, $native_checkout );
@@ -277,9 +315,9 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				$steps = apply_filters( 'wffn_rest_get_funnel_steps', $steps, $funnel );
 
 			} else {
-				$steps         = [];
+				$steps         = array();
 				$sub_steps     = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
-				$sub_step_data = [];
+				$sub_step_data = array();
 				if ( is_array( $sub_steps ) && count( $sub_steps ) > 0 ) {
 					$get_substep = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
 					if ( $get_substep instanceof WFFN_Substep ) {
@@ -298,11 +336,11 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			if ( ! empty( $steps ) && is_array( $steps ) && count( $steps ) > 0 ) {
 				$is_pro = class_exists( 'WFFN_Pro_Core' );
-				remove_all_filters('pre_get_posts');
+				remove_all_filters( 'pre_get_posts' );
 				foreach ( $steps as $step ) {
 					$funnel_id_meta = get_post_meta( $step['id'], '_bwf_in_funnel', true );
-					$steps_ids      = [ $step['id'] ];
-					$variant_ids    = [];
+					$steps_ids      = array( $step['id'] );
+					$variant_ids    = array();
 
 					if ( $is_pro ) {
 						/**
@@ -313,7 +351,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 							$variant_ids = $get_step->maybe_get_ab_variants( $step['id'] );
 						}
 					}
-
 
 					$steps_ids       = empty( $funnel_id_meta ) ? array_merge( $steps_ids, $variant_ids ) : $variant_ids;
 					$get_integration = WFFN_Core()->steps->get_integration_object( $step['type'] );
@@ -355,7 +392,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			$resp        = array(
 				'status' => false,
-				'msg'    => __( 'Funnel creation failed', 'funnel-builder' )
+				'msg'    => __( 'Funnel creation failed', 'funnel-builder' ),
 			);
 			$funnel_id   = 0;
 			$posted_data = array();
@@ -374,9 +411,9 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			do_action( 'wffn_load_api_import_class' );
 
 			if ( ! function_exists( 'media_handle_sideload' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/media.php' );
-				require_once( ABSPATH . 'wp-admin/includes/file.php' );
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 
 			if ( $posted_data['funnel_id'] === 0 && $posted_data['funnel_name'] !== '' ) {
@@ -385,11 +422,13 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 				if ( $funnel instanceof WFFN_Funnel ) {
 					if ( $funnel->get_id() === 0 ) {
-						$funnel_id = $funnel->add_funnel( array(
-							'title'  => $funnel_name,
-							'desc'   => '',
-							'status' => 1,
-						) );
+						$funnel_id = $funnel->add_funnel(
+							array(
+								'title'  => $funnel_name,
+								'desc'   => '',
+								'status' => 1,
+							)
+						);
 
 						if ( $funnel_id > 0 ) {
 							$funnel->id = $funnel_id;
@@ -412,8 +451,8 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 						$resp['msg']           = __( 'Funnel create successfully', 'funnel-builder' );
 
 						if ( ( 'yes' === $default_step ) && ! empty( $builder ) && ! empty( $template ) ) {
-							$default_steps          = [ 'wc_checkout', 'wc_thankyou' ];
-							$step_data              = [];
+							$default_steps          = array( 'wc_checkout', 'wc_thankyou' );
+							$step_data              = array();
 							$step_data['funnel_id'] = $funnel_id;
 							$step_data['builder']   = $builder;
 							$step_data['template']  = $template;
@@ -422,7 +461,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 								$this->create_default_step( $step_data );
 							}
 						}
-
 					} else {
 						$resp['msg'] = __( 'Sorry, we are unable to create funnel due to some technical difficulties. Please contact support', 'funnel-builder' );
 					}
@@ -431,17 +469,23 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$resp['setup'] = WFFN_REST_Setup::get_instance()->get_status_responses( false );
 
 			return $resp;
-
 		}
 
 		public function create_clone_checkout( $request ) {
 			$resp             = array(
 				'status' => false,
-				'msg'    => __( 'Funnel creation failed', 'funnel-builder' )
+				'msg'    => __( 'Funnel creation failed', 'funnel-builder' ),
 			);
 			$funnel_id        = $request['funnel_id'];
 			$rest_funnel      = WFFN_REST_Funnels::get_instance();
-			$duplicate_funnel = $rest_funnel->duplicate_funnel( [ 'funnel_id' => $funnel_id, 'is_clone' => true, 'is_store_checkout' => true ], true );
+			$duplicate_funnel = $rest_funnel->duplicate_funnel(
+				array(
+					'funnel_id'         => $funnel_id,
+					'is_clone'          => true,
+					'is_store_checkout' => true,
+				),
+				true
+			);
 			if ( isset( $duplicate_funnel['status'] ) && true === $duplicate_funnel['status'] ) {
 				$new_funnel_id = $duplicate_funnel['funnel_id'];
 				WFFN_Common::update_store_checkout_meta( $new_funnel_id );
@@ -469,11 +513,11 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$steps       = $request->get_param( 'steps' );
 
 			$resp = array(
-				'status' => false
+				'status' => false,
 			);
 
 			if ( ! function_exists( 'wfacp_is_woocommerce_active' ) || ! wfacp_is_woocommerce_active() ) {
-				$resp['msg'] = __( "Funnel Builder needs WooCommerce to import store checkout funnels.", 'funnel-builder' );
+				$resp['msg'] = __( 'Funnel Builder needs WooCommerce to import store checkout funnels.', 'funnel-builder' );
 
 				return rest_ensure_response( $resp );
 			}
@@ -488,11 +532,13 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				$funnel      = WFFN_Core()->admin->get_funnel( $funnel_id );
 				if ( $funnel instanceof WFFN_Funnel ) {
 					if ( $funnel->get_id() === 0 ) {
-						$funnel_id = $funnel->add_funnel( array(
-							'title'  => $funnel_name,
-							'desc'   => '',
-							'status' => 1,
-						) );
+						$funnel_id = $funnel->add_funnel(
+							array(
+								'title'  => $funnel_name,
+								'desc'   => '',
+								'status' => 1,
+							)
+						);
 
 						if ( $funnel_id > 0 ) {
 							$funnel->id = $funnel_id;
@@ -534,7 +580,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				$funnel_data[0]['id'] = $funnel_id;
 
 				if ( ! function_exists( 'post_exists' ) ) {
-					require_once( ABSPATH . 'wp-admin/includes/post.php' );
+					require_once ABSPATH . 'wp-admin/includes/post.php';
 				}
 
 				do_action( 'wffn_load_api_import_class' );
@@ -561,10 +607,10 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 		public function delete_store_checkout( $request ) {
 
-			$result = [
+			$result = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
-			];
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
+			);
 
 			$funnel_id = isset( $request['funnel_id'] ) ? $request['funnel_id'] : 0;
 
@@ -581,24 +627,24 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			$this->delete_global_funnel_data();
 
-			$result = [
+			$result = array(
 				'status' => true,
 				'setup'  => WFFN_REST_Setup::get_instance()->get_status_responses( false ),
-			];
+			);
 
 			return rest_ensure_response( $result );
 		}
 
 		public function export_funnels( WP_REST_Request $request ) {
 
-			$result = [
+			$result = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
-			];
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
+			);
 
 			do_action( 'wffn_load_api_export_class' );
-			$items   = [];
-			$funnels = [];
+			$items   = array();
+			$funnels = array();
 
 			$ids = $request->get_param( 'ids' );
 			$ids = ( isset( $ids ) && $ids !== '' ) ? explode( ',', $ids ) : '';
@@ -624,16 +670,16 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				return rest_ensure_response( $result );
 			}
 
-			$funnels_to_export = [];
+			$funnels_to_export = array();
 
 			foreach ( $funnels['items'] as $key => $funnel ) {
-				$funnels_to_export[ $key ] = [];
+				$funnels_to_export[ $key ] = array();
 				/**
 				 * var WFFN_Funnel $get_funnel
 				 */
 				$get_funnel                         = $funnel['__funnel'];
 				$funnels_to_export[ $key ]['title'] = $get_funnel->get_title();
-				$funnels_to_export[ $key ]['steps'] = [];
+				$funnels_to_export[ $key ]['steps'] = array();
 
 				$steps = $get_funnel->get_steps( true );
 
@@ -647,7 +693,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 						);
 						array_unshift( $steps, $native_checkout );
 					}
-
 				}
 
 				foreach ( $steps as $k => $step ) {
@@ -674,9 +719,9 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 		}
 
 		public function import_funnels( WP_REST_Request $request ) {
-			$result = [
+			$result = array(
 				'status' => false,
-			];
+			);
 
 			$files = $request->get_file_params();
 
@@ -687,9 +732,9 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			}
 
 			if ( ! function_exists( 'media_handle_sideload' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/media.php' );
-				require_once( ABSPATH . 'wp-admin/includes/file.php' );
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 
 			if ( empty( $files ) ) {
@@ -737,7 +782,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				$id                = ! empty( $id ) ? $id : 0;
 
 				if ( 'yes' === $override_existing && $id > 0 ) {
-					$args              = [];
+					$args              = array();
 					$args['funnel_id'] = $id;
 					$this->delete_store_checkout( $args );
 				}
@@ -746,16 +791,16 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				if ( absint( $funnel_id ) > 0 ) {
 					WFFN_Common::update_store_checkout_meta( $funnel_id );
 					WFFN_Common::override_store_checkout_option( $funnel_id );
-					$result = [
+					$result = array(
 						'status'    => true,
 						'funnel_id' => $funnel_id,
-					];
+					);
 				}
 			} else {
-				$result = [
+				$result = array(
 					'message' => __( 'Error: Invalid File Format. Please contact support.', 'funnel-builder' ),
 					'status'  => false,
-				];
+				);
 			}
 
 			$result['setup'] = WFFN_REST_Setup::get_instance()->get_status_responses( false );
@@ -764,14 +809,14 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 		}
 
 		public function maybe_have_substeps_export( $step ) {
-			$sub_steps = [];
+			$sub_steps = array();
 			if ( isset( $step['substeps'] ) && ! empty( $step['substeps'] ) ) {
 				foreach ( $step['substeps'] as $key => $substeps ) {
-					$sub_steps[ $key ]  = [];
+					$sub_steps[ $key ]  = array();
 					$get_substep_object = WFFN_Core()->substeps->get_integration_object( $key );
 					if ( ! empty( $get_substep_object ) ) {
 						foreach ( $substeps as $substep ) {
-							$get_step            = [];
+							$get_step            = array();
 							$get_step['id']      = $substep;
 							$sub_steps[ $key ][] = $get_substep_object->_get_export_metadata( $get_step );
 
@@ -790,7 +835,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$resp      = array(
 				'status'  => false,
 				'result'  => '',
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
 			);
 			$funnel_id = $request->get_param( 'funnel_id' );
 			$funnel_id = ! empty( $funnel_id ) ? $funnel_id : 0;
@@ -829,7 +874,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				$get_step = WFFN_Core()->steps->get_integration_object( $type );
 				if ( $get_step instanceof WFFN_Step ) {
 
-					$bumps           = [];
+					$bumps           = array();
 					$delete_substeps = false;
 					$checkout        = 0;
 					if ( 'wc_checkout' === $type ) {
@@ -841,7 +886,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 										$bumps = $step['substeps'];
 									}
 
-									$checkout ++;
+									++$checkout;
 								}
 							}
 
@@ -852,43 +897,41 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 								$delete_substeps = true;
 							}
 						}
-
-
 					}
 
 					$deleted = $get_step->delete_step( $funnel_id, $step_id, $delete_substeps );
-
 
 					/*
 					 * update sub-steps if one single checkout exists
 					 */
 					if ( $deleted > 0 && 'wc_checkout' === $type && $checkout <= 1 ) {
 						WFFN_Common::update_substeps_store_checkout_meta( $funnel_id, $bumps );
-						$prepare_data                  = [];
-						$prepare_data['steps_list']    = [];
-						$prepare_data['steps_list'][0] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( [ 'type' => 'wc_native' ] );
+						$prepare_data                  = array();
+						$prepare_data['steps_list']    = array();
+						$prepare_data['steps_list'][0] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( array( 'type' => 'wc_native' ) );
 
 						if ( ! empty( $bumps ) ) {
 
-							$substeps_final = [];
+							$substeps_final = array();
 
 							foreach ( $bumps['wc_order_bump'] as $substep ) {
-								$substeps_final[]                       = [
+								$substeps_final[] = array(
 									'id'   => $substep,
-									'type' => 'wc_order_bump'
-								];
-								$bump_object                            = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
+									'type' => 'wc_order_bump',
+								);
+								$bump_object      = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
 								if ( $bump_object ) {
-									$bump_data                              = $bump_object->populate_substeps_data_properties(array($substep));
+									$bump_data                              = $bump_object->populate_substeps_data_properties( array( $substep ) );
 									$bump_data[0]['type']                   = 'wc_order_bump';
-									$prepare_data['steps_list'][$substep] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step($bump_data[0]);
+									$prepare_data['steps_list'][ $substep ] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( $bump_data[0] );
 								}
-								
 							}
-
-
 						}
-						$prepare_data['groups'][0]  = [ 'type' => 'wc_native', 'id' => 0, 'substeps' => isset( $substeps_final ) ? $substeps_final : [] ];
+						$prepare_data['groups'][0]  = array(
+							'type'     => 'wc_native',
+							'id'       => 0,
+							'substeps' => isset( $substeps_final ) ? $substeps_final : array(),
+						);
 						$prepare_data['steps_list'] = apply_filters( 'wffn_rest_get_funnel_steps', $prepare_data['steps_list'], false );
 						$resp                       = array_merge( $resp, $prepare_data );
 					}
@@ -899,7 +942,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$resp['count_data'] = array(
 				'steps' => $funnel->get_step_count(),
 			);
-
 
 			$resp['setup'] = WFFN_REST_Setup::get_instance()->get_status_responses( false );
 
@@ -912,7 +954,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$builder   = isset( $request['builder'] ) ? $request['builder'] : '';
 			$template  = isset( $request['template'] ) ? str_replace( '_funnel', '', $request['template'] ) : '';
 			$title     = $type === 'wc_checkout' ? __( 'Checkout Page', 'funnel-builder' ) : __( 'Thank you Page', 'funnel-builder' );
-			$resp      = [];
+			$resp      = array();
 
 			$builder_status = wffn_rest_api_helpers()->check_builder_status( $builder, $template );
 			if ( false === $builder_status['status'] ) {
@@ -927,7 +969,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 				if ( $type === 'wc_checkout' || $type === 'wc_upsells' || $type === 'wc_thankyou' ) {
 					if ( ( function_exists( 'wfocu_is_woocommerce_active' ) && ! wfocu_is_woocommerce_active() ) || ( function_exists( 'wfacp_is_woocommerce_active' ) && ! wfacp_is_woocommerce_active() ) ) {
-						$resp['msg'] = __( "Funnel Builder needs WooCommerce to run this step.", 'funnel-builder' );
+						$resp['msg'] = __( 'Funnel Builder needs WooCommerce to run this step.', 'funnel-builder' );
 
 						return $resp;
 					}
@@ -940,11 +982,11 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 					if ( ! empty( $data ) && $data->id > 0 ) {
 
 						if ( $builder !== '' && $template !== '' ) {
-							$step_args = [
+							$step_args = array(
 								'id'       => $data->id,
 								'builder'  => $builder,
-								'template' => $template
-							];
+								'template' => $template,
+							);
 							if ( $type === 'wc_checkout' ) {
 								WFFN_Common::override_store_checkout_option( $funnel_id );
 								$this->import_wc_template( $step_args );
@@ -973,10 +1015,10 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			if ( true === $result['success'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'      => $template,
-					'selected_type' => $builder
-				];
+					'selected_type' => $builder,
+				);
 				do_action( 'wffn_design_saved', $id, $builder, 'wc_thankyou' );
 
 				WFFN_Core()->thank_you_pages->update_page_design( $id, $update_design );
@@ -1004,11 +1046,11 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			if ( isset( $result['status'] ) && true === $result['status'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'        => $template,
 					'selected_type'   => $builder,
-					'template_active' => 'yes'
-				];
+					'template_active' => 'yes',
+				);
 
 				WFACP_Common::update_page_design( $id, $update_design );
 
@@ -1031,14 +1073,14 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$design       = isset( $request['design'] ) ? $request['design'] : '';
 			$duplicate_id = isset( $request['duplicate_id'] ) ? $request['duplicate_id'] : 0;
 			$inherit_id   = isset( $request['inherit_from'] ) ? $request['inherit_from'] : 0;
-			$canvas_data  = isset( $request['canvas'] ) ? $request['canvas'] : [];
+			$canvas_data  = isset( $request['canvas'] ) ? $request['canvas'] : array();
 
 			$posted_data              = array();
 			$posted_data['funnel_id'] = $funnel_id;
 			$posted_data['step_id']   = $step_id;
 			$posted_data['type']      = $type;
 			$posted_data['title']     = $title;
-			$data_package             = [];
+			$data_package             = array();
 
 			if ( is_array( $canvas_data ) && count( $canvas_data ) > 0 ) {
 				$canvas_data['type']      = $type;
@@ -1046,13 +1088,11 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			}
 
-
 			BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 
 			if ( $funnel_id > 0 && ! empty( $type ) ) {
 
 				$native_checkout = absint( $step_id ) > 0 ? false : true;
-
 
 				$get_substep = WFFN_Core()->substeps->get_integration_object( $type );
 				if ( $get_substep instanceof WFFN_Substep ) {
@@ -1064,7 +1104,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 							$posted_data['existing']          = 'true';
 							$data                             = $get_substep->add_native_store_substep( $funnel_id, $type, $posted_data );
 
-						} else if ( $duplicate_id > 0 ) {
+						} elseif ( $duplicate_id > 0 ) {
 							$data = $get_substep->duplicate_store_checkout_substep( $funnel_id, '', $type, $duplicate_id, 0, array() );
 						} else {
 							$data = $get_substep->add_native_store_substep( $funnel_id, $type, $posted_data );
@@ -1073,11 +1113,17 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 						if ( ! empty( $data ) ) {
 							if ( is_array( $data ) ) {
 								$bump_id      = $data[ $type ][0]->id;
-								$data_package = $get_substep->populate_data_properties( [ 'id' => $data[ $type ][0]->id ], $funnel_id );
+								$data_package = $get_substep->populate_data_properties( array( 'id' => $data[ $type ][0]->id ), $funnel_id );
 								$resp['data'] = $data_package;
 							} else {
 								$bump_id      = $data->id;
-								$data_package = $get_substep->populate_data_properties( [ 'id' => $data->id, 'substeps' => array( $data->type => array( $data->id ) ) ], $funnel_id );
+								$data_package = $get_substep->populate_data_properties(
+									array(
+										'id'       => $data->id,
+										'substeps' => array( $data->type => array( $data->id ) ),
+									),
+									$funnel_id
+								);
 								$resp['data'] = $data_package;
 							}
 
@@ -1098,7 +1144,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 									array_push( $global_bumps['wc_order_bump'], $bump_id );
 								}
 							} else {
-								$global_bumps                    = [];
+								$global_bumps                    = array();
 								$global_bumps['wc_order_bump'][] = $bump_id;
 							}
 
@@ -1111,9 +1157,8 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 							 * Case of existing order bump delete operation
 							 */
 							$data         = $get_substep->duplicate_single_substep( $funnel_id, '', $step_id, $type, $duplicate_id, 0, array() );
-							$data_package = $get_substep->populate_substeps_data_properties( [ $data[ $type ][0]->id ] )[0];
+							$data_package = $get_substep->populate_substeps_data_properties( array( $data[ $type ][0]->id ) )[0];
 							$resp['data'] = $data_package;
-
 
 						} else {
 							if ( $inherit_id > 0 && '' !== $title ) {
@@ -1129,10 +1174,10 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 							 */
 							$posted_data['title']                      = $title;
 							$data                                      = $get_substep->add_substep( $funnel_id, $step_id, $type, $posted_data );
-							$data_package                              = $get_substep->populate_substeps_data_properties( [ $data->id ] )[0];
+							$data_package                              = $get_substep->populate_substeps_data_properties( array( $data->id ) )[0];
 							$resp['data']                              = $data_package;
-							$resp['data']['substeps']                  = [];
-							$resp['data']['substeps']['wc_order_bump'] = [ $data_package ];
+							$resp['data']['substeps']                  = array();
+							$resp['data']['substeps']['wc_order_bump'] = array( $data_package );
 
 						}
 
@@ -1140,7 +1185,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 							$resp['status'] = true;
 						}
 					}
-
 				}
 			}
 
@@ -1155,7 +1199,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			}
 
 			return $resp;
-
 		}
 
 
@@ -1185,22 +1228,20 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 					$deleted        = $get_substep->delete_substep( $funnel_id, $step_id, $substep_id, $type );
 					$resp['status'] = ( $deleted > 0 ) ? true : false;
 				}
-			} else {
-				if ( ! is_null( get_post( $substep_id ) ) ) {
+			} elseif ( ! is_null( get_post( $substep_id ) ) ) {
 					$deleted = wp_delete_post( $substep_id );
-					if ( $deleted ) {
-						$global_bumps = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
-						if ( is_array( $global_bumps ) && count( $global_bumps ) > 0 ) {
-							foreach ( $global_bumps['wc_order_bump'] as $key => &$bump ) {
-								if ( absint( $substep_id ) === absint( $bump ) ) {
-									unset( $global_bumps['wc_order_bump'][ $key ] );
-								}
+				if ( $deleted ) {
+					$global_bumps = WFFN_Common::get_store_checkout_global_substeps( $funnel_id );
+					if ( is_array( $global_bumps ) && count( $global_bumps ) > 0 ) {
+						foreach ( $global_bumps['wc_order_bump'] as $key => &$bump ) {
+							if ( absint( $substep_id ) === absint( $bump ) ) {
+								unset( $global_bumps['wc_order_bump'][ $key ] );
 							}
-							WFFN_Common::update_substeps_store_checkout_meta( $funnel_id, $global_bumps );
-
 						}
-						$resp['status'] = true;
+						WFFN_Common::update_substeps_store_checkout_meta( $funnel_id, $global_bumps );
+
 					}
+					$resp['status'] = true;
 				}
 			}
 			$resp['setup'] = WFFN_REST_Setup::get_instance()->get_status_responses( false );
@@ -1229,7 +1270,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				'validate_callback' => 'rest_validate_request_arg',
 
 			);
-			$params['template_type']  = array(
+			$params['template_type'] = array(
 				'description'       => __( 'Choose template type.', 'funnel-builder' ),
 				'type'              => 'string',
 				'enum'              => array( 'all', 'sales', 'optin' ),
@@ -1237,28 +1278,28 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 				'validate_callback' => 'rest_validate_request_arg',
 
 			);
-			$params['template']       = array(
+			$params['template'] = array(
 				'description' => __( 'Choose template.', 'funnel-builder' ),
 				'type'        => 'string',
 
 			);
-			$params['title']          = array(
+			$params['title'] = array(
 				'description' => __( 'Funnel name.', 'funnel-builder' ),
 				'type'        => 'string',
 
 			);
-			$params['funnel_id']      = array(
+			$params['funnel_id']    = array(
 				'description' => __( 'Funnel id.', 'funnel-builder' ),
 				'type'        => 'integer',
 				'default'     => 0,
 			);
-			$params['step_type']      = array(
+			$params['step_type']    = array(
 				'description'       => __( 'Step type', 'funnel-builder' ),
 				'type'              => 'string',
 				'validate_callback' => 'rest_validate_request_arg',
 				'sanitize_callback' => array( $this, 'sanitize_custom' ),
 			);
-			$params['default_step']   = array(
+			$params['default_step'] = array(
 				'description' => __( 'Create default steps', 'funnel-builder' ),
 				'type'        => 'string',
 			);
@@ -1267,14 +1308,14 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 		}
 
 		public function get_create_substeps_collection() {
-			$params                 = array();
-			$params['type']         = array(
+			$params         = array();
+			$params['type'] = array(
 				'description' => __( 'Step type.', 'funnel-builder' ),
 				'type'        => 'string',
 				'required'    => true,
 
 			);
-			$params['title']        = array(
+			$params['title'] = array(
 				'description' => __( 'Step name.', 'funnel-builder' ),
 				'type'        => 'string',
 
@@ -1282,7 +1323,7 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 			$params['design']       = array(
 				'description' => __( 'Step Design.', 'funnel-builder' ),
 				'type'        => 'string',
-				'default'     => 'scratch'
+				'default'     => 'scratch',
 			);
 			$params['inherit_from'] = array(
 				'description' => __( 'Inherit Step.', 'funnel-builder' ),
@@ -1307,7 +1348,6 @@ if ( ! class_exists( 'WFFN_REST_Store_Checkout' ) ) {
 
 			return json_decode( $data, true );
 		}
-
 	}
 
 

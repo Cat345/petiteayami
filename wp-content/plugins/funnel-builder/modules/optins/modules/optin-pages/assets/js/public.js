@@ -173,6 +173,7 @@
                     jQuery(this).attr('disabled', 'disabled');
                     let submitting_text = jQuery(this).attr('data-subitting-text');
                     jQuery(FormElem).find("button.wfop_submit_btn .bwf_heading").html(submitting_text);
+                    jQuery(FormElem).find("button.wfop_submit_btn .bwf_subheading").hide();
 
 
                     if ("undefined" !== typeof window.intlTelInputGlobals && undefined !== jQuery(FormElem).find('input[name="wfop_optin_phone"]').get(0)) {
@@ -186,7 +187,7 @@
                     /* Add overlay Class when clicked on the button after validation */
                     $this.parents('.wffn-custom-optin-from').addClass("wffn-form-overlay");
 
-                    inst.handleLeadEvent();
+                    inst.handleLeadEvent(FormElem);
                     /**
                      * XHR synchronous requests on the main threads are deprecated. We need to make it async, and after that trigger the form submission
                      */
@@ -228,9 +229,19 @@
             });
 
         },
-        handleLeadEvent: function () {
+        handleLeadEvent: function (formElem) {
             if (1 != wffnfunnelVars.op_should_render) {
                 return;
+            }
+            
+            // Extract email from form for Pinterest tracking
+            let formEmail = null;
+            if (formElem) {
+                // Try common email field names
+                const emailInput = jQuery(formElem).find('input[type="email"], input[name*="email"], input[name*="Email"], input[name*="EMAIL"]').first();
+                if (emailInput.length > 0) {
+                    formEmail = emailInput.val();
+                }
             }
             if ('object' === typeof wffnfunnelVars.op_lead_tracking.fb.enable && 'yes' === wffnfunnelVars.op_lead_tracking.fb.enable[0] && false !== wffnfunnelVars.op_lead_tracking.fb.fb_pixels) {
                 if (typeof fbq === 'undefined') {
@@ -285,10 +296,74 @@
                 /** iterate loop **/
                 const pixelIds = wffnfunnelVars.op_lead_tracking.pint.pixels.split(',');
                 let data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent({}) : {};
-                $(pixelIds).each(function (k, v) {
-                    pintrk('load', v, {np: 'woofunnels'});
-                    pintrk('track', 'Lead', data);
-                });
+            
+                // Helper function to hash email with SHA256
+                const hashEmail = async (email) => {
+                    if (!email || typeof email !== 'string') return null;
+                    const normalizedEmail = email.toLowerCase().trim();
+                    const msgBuffer = new TextEncoder().encode(normalizedEmail);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                };
+                
+                // Add email (em) and external_id for Pinterest Enhanced Match
+                if (typeof wffnfunnelVars.op_lead_tracking.pint.advanced !== "undefined" && typeof wffnfunnelVars.op_lead_tracking.pint.advanced === "object" && wffnfunnelVars.op_lead_tracking.pint.advanced !== null && !Array.isArray(wffnfunnelVars.op_lead_tracking.pint.advanced) && Object.keys(wffnfunnelVars.op_lead_tracking.pint.advanced).length > 0) {
+                    if (wffnfunnelVars.op_lead_tracking.pint.advanced.em) {
+                        data.em = wffnfunnelVars.op_lead_tracking.pint.advanced.em;
+                    }
+                    if (wffnfunnelVars.op_lead_tracking.pint.advanced.external_id) {
+                        data.external_id = wffnfunnelVars.op_lead_tracking.pint.advanced.external_id;
+                    }
+                }
+                
+                // Generate external_id if not available
+                // Pinterest requires external_id to be a user identifier, not a timestamp
+                // Try to get from cookie first (wffn_flt), then generate a unique ID
+                if (!data.external_id) {
+                    // Helper function to get cookie value
+                    const getCookie = (name) => {
+                        const value = `; ${document.cookie}`;
+                        const parts = value.split(`; ${name}=`);
+                        if (parts.length === 2) return parts.pop().split(';').shift();
+                        return null;
+                    };
+                    
+                    const cookieExternalId = getCookie('wffn_flt');
+                    if (cookieExternalId) {
+                        data.external_id = cookieExternalId;
+                    } else {
+                        const sessionId = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9);
+                        data.external_id = sessionId;
+                    }
+                }
+                
+                // If email not in pint.advanced but available from form, hash and add it
+                if (!data.em && formEmail) {
+                    hashEmail(formEmail).then(hashedEmail => {
+                        if (hashedEmail) {
+                            data.em = hashedEmail;
+                        }
+                      
+                        $(pixelIds).each(function (k, v) {
+                            pintrk('load', v, {np: 'woofunnels'});
+                            pintrk('track', 'Lead', data);
+                        });
+                    }).catch(err => {
+                        console.log('Pinterest Optin Lead - Error hashing email:', JSON.stringify(err, null, 2));
+                        // Fallback: track without email
+                        $(pixelIds).each(function (k, v) {
+                            pintrk('load', v, {np: 'woofunnels'});
+                            pintrk('track', 'Lead', data);
+                        });
+                    });
+                } else {
+                    
+                    $(pixelIds).each(function (k, v) {
+                        pintrk('load', v, {np: 'woofunnels'});
+                        pintrk('track', 'Lead', data);
+                    });
+                }
             }
 
 

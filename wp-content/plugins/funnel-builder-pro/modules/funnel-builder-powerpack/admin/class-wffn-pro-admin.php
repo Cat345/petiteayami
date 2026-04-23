@@ -207,7 +207,8 @@ if ( ! class_exists( 'WFFN_Pro_Admin' ) ) {
 					return;
 				}
 
-				if ( ! in_array( $slug, WFFN_Core()->admin->get_license_hashes(), true ) ) {
+				$valid_funnelkit_license_hashes = array_values( WFFN_Core()->admin->get_license_basename_sha1() );
+				if ( ! in_array( $slug, $valid_funnelkit_license_hashes, true ) ) {
 					return;
 				}
 

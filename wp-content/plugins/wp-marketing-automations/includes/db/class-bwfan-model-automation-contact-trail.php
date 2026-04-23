@@ -33,6 +33,46 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 	}
 
 	/**
+	 * Get counts for all statuses (completed, queued, failed, skipped) in a single query.
+	 * Replaces 4 separate get_bulk_step_count() calls with 1 query.
+	 *
+	 * @param array $step_ids List of step IDs.
+	 *
+	 * @return array Map of sid => array( 'completed' => int, 'queued' => int, 'failed' => int, 'skipped' => int ).
+	 */
+	public static function get_all_step_status_counts( $step_ids = array() ) {
+		global $wpdb;
+		$table_name = self::_table();
+
+		if ( empty( $step_ids ) ) {
+			return array();
+		}
+
+		$step_ids     = array_map( 'absint', $step_ids );
+		$placeholders = implode( ', ', array_fill( 0, count( $step_ids ), '%d' ) );
+
+		$query = $wpdb->prepare(
+			"SELECT `sid`,
+				COUNT( DISTINCT CASE WHEN `status` = 1 THEN `tid` END ) AS completed,
+				COUNT( DISTINCT CASE WHEN `status` = 2 THEN `tid` END ) AS queued,
+				COUNT( DISTINCT CASE WHEN `status` = 3 THEN `tid` END ) AS failed,
+				COUNT( DISTINCT CASE WHEN `status` = 4 THEN `tid` END ) AS skipped
+			FROM {$table_name}
+			WHERE `sid` IN ({$placeholders})
+			AND `status` IN (1, 2, 3, 4)
+			GROUP BY `sid`",
+			...$step_ids
+		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		$results    = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( empty( $results ) || ! is_array( $results ) ) {
+			return [];
+		}
+
+		return array_column( $results, null, 'sid' );
+	}
+
+	/**
 	 * Return table name
 	 *
 	 * @return string
@@ -112,11 +152,14 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 				break;
 		}
 
+		$is_desc = apply_filters( 'bwfan_step_automation_contact_trail_is_desc', true );
+		$order_by = (true === $is_desc) ? 'DESC' : 'ASC';
+
 		if ( ! empty( $path ) ) {
 			$path_pattern = '%"path":"' . $wpdb->esc_like( $path ) . '"%';
-			$sub_query    = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d AND data LIKE %s GROUP BY tid LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $path_pattern, $limit, $offset );
+			$sub_query    = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d AND data LIKE %s GROUP BY tid ORDER BY latest_time {$order_by} LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $path_pattern, $limit, $offset );
 		} else {
-			$sub_query = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d GROUP BY tid LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $limit, $offset );
+			$sub_query = $wpdb->prepare( "JOIN ( SELECT tid, MAX(c_time) AS latest_time FROM {$table_name} WHERE aid = %d AND sid = %d AND status = %d GROUP BY tid ORDER BY latest_time {$order_by} LIMIT %d OFFSET %d ) AS latest ON ct.tid = latest.tid AND ct.c_time = latest.latest_time ", $aid, $step_id, $status, $limit, $offset );
 		}
 		$query    = $wpdb->prepare( "SELECT ct.ID, ct.cid, ct.aid, ct.data, ct.tid, ct.c_time, c.email, c.f_name, c.l_name, c.contact_no FROM {$table_name} as ct {$sub_query} JOIN {$wpdb->prefix}bwf_contact AS c ON ct.cid = c.ID WHERE ct.sid = %d ORDER BY ct.ID DESC ", $step_id );
 		$contacts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -161,7 +204,7 @@ class BWFAN_Model_Automation_Contact_Trail extends BWFAN_Model {
 		global $wpdb;
 		$table_name = self::_table();
 
-		$query = $wpdb->prepare( "SELECT tr.*, st.type, st.data AS step_data, st.action, st.status AS step_status FROM {$table_name} AS tr LEFT JOIN {$wpdb->prefix}bwfan_automation_step AS st ON tr.sid = st.ID  WHERE tid = %s ", $tid );
+		$query = $wpdb->prepare( "SELECT tr.*, st.type, st.data AS step_data, st.action, st.status AS step_status FROM {$table_name} AS tr LEFT JOIN {$wpdb->prefix}bwfan_automation_step AS st ON tr.sid = st.ID  WHERE tid = %s ORDER BY tr.c_time ASC", $tid );
 
 		return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}

@@ -101,7 +101,8 @@
                 "assets/js/admin.js",
                 "assets/js/beacon-clicked.js",
                 "assets/js/duplicate-methods.js",
-                "assets/js/contextual-info.js"
+                "assets/js/contextual-info.js",
+                "assets/js/shipping-method-block-checkout.js"
             ],
             "css": [
                 "assets/css/font.css"
@@ -114,7 +115,6 @@
         "phpcbf": "phpcbf src",
         "phpunit-unit": "phpunit --configuration phpunit-unit.xml --coverage-text --colors=never",
         "phpunit-unit-coverage": "phpunit --configuration phpunit-unit.xml --coverage-html build-coverage",
-        "phpunit-integration": "phpunit --configuration phpunit-integration.xml --coverage-text --colors=never",
         "docs": "apigen generate",
         "build-plugin": "composer install && npm install && npm run prod && composer install --no-dev"
     },
@@ -128,6 +128,6 @@
             "url": "https://gitlab.wpdesk.dev/api/v4/group/wpdesk/-/packages/composer/"
         }
     },
-    "version": "6.5.7",
+    "version": "6.6.2",
     "type": "wordpress-plugin"
 }

@@ -14,7 +14,7 @@ return [
     ],
 
     'filters' => [
-        'theme_mod_nav_menu_locations' => [Listener\FilterMenuLocations::class => '@handle'],
+        'theme_mod_nav_menu_locations' => [Listener\FilterMenuLocations::class => ['@handle', 25]],
         'widget_nav_menu_args' => [Listener\FilterWidgetMenuArgs::class => ['handle', 10, 4]],
         'wp_nav_menu_args' => [Listener\FilterMenuArgs::class => 'handle'],
         'wp_nav_menu_objects' => [Listener\FilterMenuItems::class => ['handle', 10, 2]],

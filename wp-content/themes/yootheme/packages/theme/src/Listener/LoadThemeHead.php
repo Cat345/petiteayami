@@ -28,7 +28,7 @@ class LoadThemeHead
 
         $this->metadata->set(
             'style:theme',
-            compact('href', 'version') +
+            ['href' => $href, 'version' => $version] +
                 ($this->config->get('app.isCustomizer') ? ['id' => 'theme-style'] : []),
         );
 

@@ -14,8 +14,6 @@ use function YOOtheme\trans;
 class PostArchiveQueryType
 {
     /**
-     * @param WP_Post_Type $type
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Post_Type $type): array
@@ -31,6 +29,7 @@ class PostArchiveQueryType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                     ],
 
@@ -46,7 +45,6 @@ class PostArchiveQueryType
                                     ['%post_type%' => $type->labels->singular_name],
                                 ),
                                 'type' => 'number',
-                                'default' => 0,
                                 'modifier' => 1,
                                 'attrs' => [
                                     'min' => 1,
@@ -71,9 +69,11 @@ class PostArchiveQueryType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => null,
                         ],
                     ],
 
@@ -93,7 +93,6 @@ class PostArchiveQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -132,11 +131,6 @@ class PostArchiveQueryType
     public static function resolve($root, array $args)
     {
         global $wp_query;
-
-        $args += [
-            'offset' => 0,
-            'limit' => null,
-        ];
 
         $posts = $wp_query->posts;
 

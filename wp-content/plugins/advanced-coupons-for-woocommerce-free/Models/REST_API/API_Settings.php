@@ -213,6 +213,16 @@ class API_Settings implements Model_Interface {
             )
         );
 
+        \register_rest_route(
+            Plugin_Constants::REST_API_NAMESPACE,
+            '/clear-detached-store-credits',
+            array(
+                'methods'             => \WP_REST_Server::CREATABLE,
+                'permission_callback' => array( $this, 'get_settings_admin_permissions_check' ),
+                'callback'            => array( $this, 'start_clear_detached_store_credit_entries' ),
+            ),
+        );
+
         do_action( 'acfw_after_register_routes' );
     }
 
@@ -295,8 +305,8 @@ class API_Settings implements Model_Interface {
         $section  = sanitize_text_field( $request['section'] );
         $response = \rest_ensure_response(
             array(
-				'id'     => $section,
-				'fields' => $this->_get_single_section_fields( $section ),
+                'id'     => $section,
+                'fields' => $this->_get_single_section_fields( $section ),
             )
         );
 
@@ -328,8 +338,8 @@ class API_Settings implements Model_Interface {
 
         $response = \rest_ensure_response(
             array(
-				'id'    => $option,
-				'value' => get_option( $option ),
+                'id'    => $option,
+                'value' => get_option( $option ),
             )
         );
 
@@ -390,8 +400,8 @@ class API_Settings implements Model_Interface {
 
         $response = \rest_ensure_response(
             array(
-				'id'    => $option,
-				'value' => $value,
+                'id'    => $option,
+                'value' => $value,
             )
         );
 
@@ -428,8 +438,8 @@ class API_Settings implements Model_Interface {
 
         $response = \rest_ensure_response(
             array(
-				'updated'  => delete_option( $option ),
-				'previous' => $previous,
+                'updated'  => delete_option( $option ),
+                'previous' => $previous,
             )
         );
 
@@ -546,15 +556,15 @@ class API_Settings implements Model_Interface {
      */
     public function get_settings_admin_collection_params() {
         $query_params = array(
-			'settings_sections' => array(
-				'description' => __( 'Order sort attribute ascending or descending.', 'advanced-coupons-for-woocommerce-free' ),
-				'type'        => 'array',
-				'items'       => array(
-					'type' => 'string',
-					'enum' => array_keys( $this->_get_settings_sections() ),
-				),
-			),
-		);
+            'settings_sections' => array(
+                'description' => __( 'Order sort attribute ascending or descending.', 'advanced-coupons-for-woocommerce-free' ),
+                'type'        => 'array',
+                'items'       => array(
+                    'type' => 'string',
+                    'enum' => array_keys( $this->_get_settings_sections() ),
+                ),
+            ),
+        );
 
         return \apply_filters( 'wpb_filter_settings_admin_collection_params', $query_params );
     }
@@ -586,6 +596,96 @@ class API_Settings implements Model_Interface {
 
     /*
     |--------------------------------------------------------------------------
+    | Clear detached store credit entries (Advanced tool)
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Check whether the store credits table exists in the database.
+     *
+     * @since 4.7.2
+     * @access private
+     *
+     * @return bool True if the table exists, false otherwise.
+     */
+    private function _is_store_credits_table_present() {
+        global $wpdb;
+        $table = $wpdb->prefix . Plugin_Constants::STORE_CREDITS_DB_NAME;
+        return $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table;
+    }
+
+    /**
+     * Start clearing detached store credit entries in the background.
+     *
+     * @since 4.7.2
+     * @access public
+     *
+     * @param \WP_REST_Request $request Full details about the request.
+     * @return \WP_REST_Response|\WP_Error Response object on success, or WP_Error on failure.
+     */
+    public function start_clear_detached_store_credit_entries( $request ) {
+        if ( ! $this->_is_store_credits_table_present() ) {
+            return new \WP_Error(
+                'acfw_store_credits_table_missing',
+                __( 'Store credits table does not exist.', 'advanced-coupons-for-woocommerce-free' ),
+                array( 'status' => 400 )
+            );
+        }
+
+        if ( function_exists( 'as_schedule_single_action' ) ) {
+            as_schedule_single_action(
+                time(),
+                Plugin_Constants::CLEAR_DETACHED_STORE_CREDITS_SCHEDULE_HOOK,
+                array(),
+                'acfw-clear-detached-store-credit-entries'
+            );
+            $message = __( 'The cleanup has been started and is running in the background.', 'advanced-coupons-for-woocommerce-free' );
+        } else {
+            // No Action Scheduler: run synchronously.
+            $this->run_clear_detached_store_credit_entries();
+            $message = __( 'The cleanup has been completed.', 'advanced-coupons-for-woocommerce-free' );
+        }
+
+        return \rest_ensure_response(
+            array(
+                'status'  => 'success',
+                'message' => $message,
+            )
+        );
+    }
+
+    /**
+     * Run the actual delete of detached store credit entries (callback for Action Scheduler or sync fallback).
+     * Deletes in batches to avoid long table locks on large datasets.
+     *
+     * @since 4.7.2
+     * @access public
+     */
+    public function run_clear_detached_store_credit_entries() {
+        global $wpdb;
+
+        if ( ! $this->_is_store_credits_table_present() ) {
+            return;
+        }
+
+        $table_store_credits = $wpdb->prefix . Plugin_Constants::STORE_CREDITS_DB_NAME;
+        $table_users         = $wpdb->users;
+        $batch_size          = 500;
+
+        do {
+            $deleted = $wpdb->query(
+                $wpdb->prepare(
+                    'DELETE FROM %i WHERE user_id NOT IN (SELECT ID FROM %i) LIMIT %d',
+                    $table_store_credits,
+                    $table_users,
+                    $batch_size
+                )
+            );
+        } while ( $batch_size === $deleted );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
     |--------------------------------------------------------------------------
      */
@@ -599,5 +699,6 @@ class API_Settings implements Model_Interface {
      */
     public function run() {
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+        add_action( Plugin_Constants::CLEAR_DETACHED_STORE_CREDITS_SCHEDULE_HOOK, array( $this, 'run_clear_detached_store_credit_entries' ) );
     }
 }

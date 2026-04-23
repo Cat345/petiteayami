@@ -71,7 +71,7 @@ class LoadSourceTypes
     {
         return [
             'fields' => [
-                $field => ['metadata' => compact('label')],
+                $field => ['metadata' => ['label' => $label]],
             ],
         ];
     }

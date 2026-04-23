@@ -107,11 +107,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 			}
 
 			if ( isset( $_GET['wfocu_paypal_check_call'] ) && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$response = $this->set_express_checkout( array(
-					'currency'     => 'usd',
-					'order'        => wc_get_order( wc_clean( $_GET['wfocu_paypal_check_call'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'billing_type' => '',
-					'return_url'   => $this->get_callback_url( 'wfocu_paypal_create_billing_agreement' ),
+			$response = $this->set_express_checkout( array(
+				'currency'     => 'usd',
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- PayPal callback parameter
+				'order'        => wc_get_order( absint( wp_unslash( $_GET['wfocu_paypal_check_call'] ) ) ),
+				'billing_type' => '',
+				'return_url'   => $this->get_callback_url( 'wfocu_paypal_create_billing_agreement' ),
 					'cancel_url'   => $this->get_callback_url( 'wfocu_paypal_create_billing_agreement' ),
 					'notify_url'   => $this->get_callback_url( 'wfocu_paypal_create_billing_agreement' ),
 
@@ -442,8 +443,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 						return;
 					}
 
-					// get token to retrieve checkout details with
-					$token = wc_clean( $_GET['token'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// get token to retrieve checkout details with
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- PayPal callback parameter
+				$token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 
 					try {
 
@@ -623,16 +625,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 			 * If found disabled and code reached at this point meaning express checkout in offer payment JS breaks at some point
 			 * we ned to simply return from here with an error
 			 */
-			if ( false === $this->is_reference_trans_enabled() ) {
-				throw new WFOCU_Payment_Gateway_Exception( __( 'A JavaScript Error on offer page caused payment failture.', 'woofunnels-upstroke-one-click-upsell' ), 101, $this->get_key() );
-			}
+		if ( false === $this->is_reference_trans_enabled() ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message is internal, key is safe
+			throw new WFOCU_Payment_Gateway_Exception( esc_html__( 'A JavaScript Error on offer page caused payment failture.', 'woofunnels-upstroke-one-click-upsell' ), 101, $this->get_key() );
+		}
 			$response = $this->do_reference_transaction( $this->get_token( $order ), $order, array() );
 
 			if ( $this->has_api_error( $response ) ) {
 				WFOCU_Core()->log->log( 'PayPal DoReferenceTransactionCall Failed: Response Below' );
-				WFOCU_Core()->log->log( print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				$is_successful = false;
-				throw new WFOCU_Payment_Gateway_Exception( $this->get_api_error( $response ), 101, $this->get_key() );
+			WFOCU_Core()->log->log( print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			$is_successful = false;
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message is internal, key is safe
+			throw new WFOCU_Payment_Gateway_Exception( esc_html( $this->get_api_error( $response ) ), 101, $this->get_key() );
 
 			} else {
 				WFOCU_Core()->data->set( '_transaction_id', $response['TRANSACTIONID'] );
@@ -1263,10 +1267,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 				if ( false !== strpos( $key, 'AMT' ) ) {
 
 					// amounts must be 10,000.00 or less for USD
-					if ( isset( $this->parameters['PAYMENTREQUEST_0_CURRENCYCODE'] ) && 'USD' === $this->parameters['PAYMENTREQUEST_0_CURRENCYCODE'] && $value > 10000 ) {
-
-						throw new WFOCU_Payment_Gateway_Exception( sprintf( '%s amount of %s must be less than $10,000.00', $key, $value ), 101, $this->get_key() );
-					}
+				if ( isset( $this->parameters['PAYMENTREQUEST_0_CURRENCYCODE'] ) && 'USD' === $this->parameters['PAYMENTREQUEST_0_CURRENCYCODE'] && $value > 10000 ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message is internal, key is safe
+					throw new WFOCU_Payment_Gateway_Exception( sprintf( '%s amount of %s must be less than $10,000.00', esc_html( $key ), esc_html( $value ) ), 101, $this->get_key() );
+				}
 
 					// PayPal requires locale-specific number formats (e.g. USD is 123.45)
 					// PayPal requires the decimal separator to be a period (.)
@@ -1504,7 +1508,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
                         var $wcc_ppec = {
                             paypalBucket: null,
                             init: function () {
-                                var getButtonsMax = <?php echo $this->button_max_count; ?>;
+                                var getButtonsMax = <?php echo absint( $this->button_max_count ); ?>;
                                 var getButtons = [];
                                 for (var i = 0; i <= getButtonsMax; i++) {
                                     getButtons.push('wfocu_paypal_only_' + i);
@@ -1630,7 +1634,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
                                 /** move to order received page */
                                 if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                    window.location = wfocu_vars.order_received_url + '&ec=' + jqXHR.status;
+                                    window.location = wfocu_vars.order_received_url + '&ec=request_failed_to_respond';
 
                                 }
                             });
@@ -1757,9 +1761,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 					case 'wfocu_paypal_return':
 						$existing_package = WFOCU_Core()->data->get( 'upsell_package', '', 'paypal' );
 
-						if ( isset( $_GET['token'] ) && ! empty( $_GET['token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
-							$express_checkout_details_response = $this->get_express_checkout_details( wc_clean( $_GET['token'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					if ( isset( $_GET['token'] ) && ! empty( $_GET['token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- PayPal callback parameter
+						$express_checkout_details_response = $this->get_express_checkout_details( sanitize_text_field( wp_unslash( $_GET['token'] ) ) );
 							WFOCU_Core()->log->log( '$express_checkout_details_response ' . print_r( $express_checkout_details_response, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 							/***
@@ -1945,10 +1949,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 			} else {
 				$result = $this->get_pal_details();
 
-				if ( ! empty( $result['PAL'] ) ) {
-					update_option( $option_key, wc_clean( $result['PAL'] ) );
+			if ( ! empty( $result['PAL'] ) ) {
+				update_option( $option_key, bwf_clean( $result['PAL'] ) );
 
-					return $payer_id;
+				return $payer_id;
 				}
 			}
 
@@ -2029,9 +2033,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 
 
 				/**
-				 * Save Paypal IPN status so that it will be used when we move to correct status once funnel finishes.
-				 */
-				$status    = wc_clean( strtolower( wp_unslash( $_REQUEST['st'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			 * Save Paypal IPN status so that it will be used when we move to correct status once funnel finishes.
+			 */
+			//phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PayPal IPN callback
+			$status    = sanitize_text_field( strtolower( wp_unslash( $_REQUEST['st'] ) ) );
 				$get_order = WFOCU_Core()->data->get_current_order();
 				if ( $get_order ) {
 					$get_order->update_meta_data( '_wfocu_paypal_ipn_status', $status );
@@ -2189,9 +2194,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Standard' ) ) {
 				return $request;
 			}
 
-			if ( isset( $_POST['txn_id'] ) && ! empty( $_POST['txn_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				$request['TRANSACTIONID'] = wc_clean( $_POST['txn_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			}
+			if ( isset( $_POST['txn_id'] ) && ! empty( $_POST['txn_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- PayPal IPN callback
+				$request['TRANSACTIONID'] = sanitize_text_field( wp_unslash( $_POST['txn_id'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		}
 
 			return $request;
 		}

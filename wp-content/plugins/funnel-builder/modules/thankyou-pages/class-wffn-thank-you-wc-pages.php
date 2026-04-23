@@ -1,5 +1,5 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 /**
@@ -10,9 +10,9 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Thank_You_WC_Pages extends WFFN_Module_Common {
 
-		private static $ins = null;
+		private static $ins      = null;
 		public $wfty_is_thankyou = false;
-		public $thankyoupage_id = 0;
+		public $thankyoupage_id  = 0;
 		/**
 		 * @var WFTY_Data
 		 */
@@ -25,11 +25,11 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		protected $options;
 		protected $optionsShortCode;
 		protected $custom_options;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		public $edit_id = 0;
-		private $url = '';
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		public $edit_id                 = 0;
+		private $url                    = '';
 
 		/**
 		 * WFFN_Thank_You_WC_Pages constructor.
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			parent::__construct();
 			$this->url = plugin_dir_url( __FILE__ );
 			$this->process_url();
-
 
 			include_once __DIR__ . '/class-wftp-admin.php';
 			include_once __DIR__ . '/includes/class-wffn-ecomm-tracking.php';
@@ -55,20 +54,18 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			add_action( 'wp', array( $this, 'wfty_add_shortcodes' ), 12 );
 			add_action( 'wp', array( $this, 'maybe_redirect_funnel_thankyou' ), 999 );
 
-
 			add_action( 'wp', array( $this, 'parse_request_for_thankyou' ), - 1 );
 
 			add_action( 'wp', array( $this, 'maybe_set_query_var' ), 1 );
 
-			add_filter( 'template_include', [ $this, 'may_be_change_template' ], 99 );
-
+			add_filter( 'template_include', array( $this, 'may_be_change_template' ), 99 );
 
 			$post_type = $this->get_post_type_slug();
-			add_filter( "theme_{$post_type}_templates", [ $this, 'registered_page_templates' ], 99, 4 );
+			add_filter( "theme_{$post_type}_templates", array( $this, 'registered_page_templates' ), 99, 4 );
 
 			add_action( 'init', array( $this, 'load_files' ), 1 );
 			add_action( 'init', array( $this, 'load_instances' ), 1 );
-			add_action( 'plugins_loaded', [ $this, 'load_compatibility' ], 2 );
+			add_action( 'plugins_loaded', array( $this, 'load_compatibility' ), 2 );
 
 			add_action( 'wp_footer', array( $this, 'execute_wc_thankyou_hooks' ), 1 );
 
@@ -89,14 +86,14 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		}
 
 		private function process_url() {
-			if ( isset( $_REQUEST['page'] ) && isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['edit'] );  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['page'] ) && isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
+				$this->edit_id = absint( $_REQUEST['edit'] );  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
 			}
-			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
+				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
 			}
-			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
+				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for admin page detection
 			}
 		}
 
@@ -125,7 +122,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -134,7 +131,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 		public static function send_resp( $data = array() ) {
 			if ( ! is_array( $data ) ) {
-				$data = [];
+				$data = array();
 			}
 			$data['nonce'] = wp_create_nonce( 'wftp_secure_key' );
 			wp_send_json( $data );
@@ -162,40 +159,46 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			 */
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 
-			register_post_type( $this->get_post_type_slug(), apply_filters( 'wffn_thank_you_post_type_args', array(
-				'labels'              => array(
-					'name'          => $this->get_module_title( true ),
-					'singular_name' => $this->get_module_title(),
-					'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
-					'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
-					'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
-					'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
-					'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
-					'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => true,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'show_in_admin_bar'   => true,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'rewrite'             => array(
-					'slug'       => ( empty( $bwb_admin_setting->get_option( 'ty_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'ty_page_base' ) ),
-					'with_front' => false,
-				),
-				'capabilities'        => array(
-					'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
-				),
-				'show_in_rest'        => true,
-				'query_var'           => true,
-				'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
-				'has_archive'         => false,
-			) ) );
+			register_post_type(
+				$this->get_post_type_slug(),
+				apply_filters(
+					'wffn_thank_you_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => $this->get_module_title( true ),
+							'singular_name' => $this->get_module_title(),
+							'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
+							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
+							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
+							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => true,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'show_in_admin_bar'   => true,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'rewrite'             => array(
+							'slug'       => ( empty( $bwb_admin_setting->get_option( 'ty_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'ty_page_base' ) ),
+							'with_front' => false,
+						),
+						'capabilities'        => array(
+							'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
+						),
+						'show_in_rest'        => true,
+						'query_var'           => true,
+						'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
+						'has_archive'         => false,
+					)
+				)
+			);
 		}
 
 		public function get_module_title( $plural = false ) {
@@ -215,10 +218,13 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		}
 
 		public function setup_options() {
-			$db_options    = get_option( 'wffn_tp_settings', [] );
-			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map( function ( $val ) {
-				return is_scalar( $val ) ? html_entity_decode( $val ) : $val;
-			}, $db_options ) : array();
+			$db_options    = get_option( 'wffn_tp_settings', array() );
+			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map(
+				function ( $val ) {
+					return is_scalar( $val ) ? html_entity_decode( $val ) : $val;
+				},
+				$db_options
+			) : array();
 			$this->options = wp_parse_args( $db_options, $this->default_global_settings() );
 
 			return $this->options;
@@ -300,7 +306,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 						return ( WFTY_Common::prepare_single_post_url( $get_link, $order ) );
 					}
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				WFFN_Core()->logger->log( 'Error in redirect_to_thankyou: ' . $e->getMessage() );
 			}
 
@@ -309,6 +315,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 		/**
 		 * Set wfty_is_thankyou flag if it's our page
+		 *
 		 * @return void
 		 */
 		public function parse_request_for_thankyou() {
@@ -321,7 +328,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			if ( ! empty( $post->post_type ) && self::get_post_type_slug() === $post->post_type ) {
 				$this->wfty_is_thankyou = true;
 			}
-
 		}
 
 		public function wfty_add_shortcodes() {
@@ -374,15 +380,15 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 					if ( $document && $document->is_built_with_elementor() ) {
 
-						delete_post_meta( get_the_ID(), delete_post_meta_by_key( Elementor\Core\Base\Document::CACHE_META_KEY ) );
+						delete_post_meta( get_the_ID(), Elementor\Core\Base\Document::CACHE_META_KEY );
 					}
-
 				}
 			}
 		}
 
 		/**
 		 * Checks whether its our page or not
+		 *
 		 * @return bool
 		 */
 		public function is_wfty_page() {
@@ -392,6 +398,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 		/**
 		 * Validates current order and checks if order qualifies for the current loading
+		 *
 		 * @uses WC_Order::post_status
 		 */
 		public function validate_order() {
@@ -419,7 +426,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 
 			return $bool;
-
 		}
 
 		/**
@@ -454,12 +460,12 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 						$suffix_text = '';
 					}
 
-					$args         = [
+					$args         = array(
 						'post_title'   => $ty_page->post_title . $suffix_text,
 						'post_content' => $ty_page->post_content,
 						'post_name'    => sanitize_title( $ty_page->post_title . $suffix_text ),
 						'post_type'    => $this->get_post_type_slug(),
-					];
+					);
 					$duplicate_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $duplicate_id ) ) {
 
@@ -468,10 +474,9 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$ty_page_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,
 
 						if ( ! empty( $post_meta_all ) ) {
-							$sql_query_selects = [];
+							$sql_query_selects = array();
 
 							if ( in_array( $ty_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
-
 
 								foreach ( $post_meta_all as $meta_info ) {
 
@@ -486,12 +491,11 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 									}
 
 									if ( $meta_key === '_wp_page_template' ) {
-										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wftp", $meta_value ) : $meta_value;
+										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wftp', $meta_value ) : $meta_value;
 									}
 
 									$meta_key   = esc_sql( $meta_key );
 									$meta_value = esc_sql( $meta_value );
-
 
 									$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')";
 
@@ -589,11 +593,11 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 		public function default_shortcode_settings() {
 			return array(
-				'txt_color'                           => "#444444",
-				'txt_fontfamily'                      => "default",
-				'txt_font_size'                       => "15",
-				'head_color'                          => "#444444",
-				'head_font_size'                      => "20",
+				'txt_color'                           => '#444444',
+				'txt_fontfamily'                      => 'default',
+				'txt_font_size'                       => '15',
+				'head_color'                          => '#444444',
+				'head_font_size'                      => '20',
 				'head_font_weight'                    => 'default',
 				'layout_settings'                     => '2c',
 				'order_details_heading'               => __( 'Order Details', 'funnel-builder' ),
@@ -605,6 +609,19 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				'order_downloads_show_file_expiry'    => 'true',
 				'order_subscription_heading'          => __( 'Subscription', 'funnel-builder' ),
 			);
+
+			// Add Sublium-specific settings only if Sublium is available
+			if ( function_exists( 'sublium_init' ) ) {
+				$defaults = array_merge(
+					$defaults,
+					array(
+						'sublium_subscriptions_heading'   => __( 'Subscriptions', 'funnel-builder' ),
+						'sublium_subscriptions_view_text' => __( 'View', 'funnel-builder' ),
+					)
+				);
+			}
+
+			return $defaults;
 		}
 
 		public function get_custom_option( $key = 'all' ) {
@@ -638,46 +655,15 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		}
 
 		public function default_design_data() {
-			return [
+			return array(
 				'selected'        => 'wp_editor_1',
 				'selected_type'   => 'wp_editor',
 				'template_active' => 'no',
-			];
-		}
-
-
-		/**
-		 * Save selected design template against checkout page
-		 */
-
-		public function save_design() {
-			$resp = array(
-				'msg'    => '',
-				'status' => false,
 			);
-
-			check_ajax_referer( 'wffn_tp_save_design', '_nonce' );
-			$wftp_id = isset( $_POST['wftp_id'] ) ? absint( wffn_clean( $_POST['wftp_id'] ) ) : 0;
-			if ( $wftp_id > 0 ) {
-				$selected_type = isset( $_POST['selected_type'] ) ? wffn_clean( $_POST['selected_type'] ) : '';
-				$selected      = isset( $_POST['selected'] ) ? wffn_clean( $_POST['selected'] ) : '';
-				$data          = [
-					'selected'        => $selected,
-					'selected_type'   => $selected_type,
-					'template_active' => isset( $_POST['template_active'] ) ? wffn_clean( $_POST['template_active'] ) : '',
-				];
-				do_action( 'wffn_design_saved', $wftp_id, $selected_type, 'wc_thankyou' );
-
-				$this->update_page_design( $wftp_id, $data );
-				do_action( 'wfty_page_design_updated', $wftp_id, $data );
-
-				$resp = array(
-					'msg'    => __( 'Design Saved Successfully', 'funnel-builder' ),
-					'status' => true
-				);
-			}
-			self::send_resp( $resp );
 		}
+
+
+
 
 		public function update_page_design( $page_id, $data ) {
 			if ( $page_id < 1 ) {
@@ -695,46 +681,19 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 		}
 
-		public function remove_design() {
-			$resp = array(
-				'msg'    => '',
-				'status' => false,
-			);
-			check_ajax_referer( 'wffn_tp_remove_design', '_nonce' );
-			if ( isset( $_POST['wftp_id'] ) && $_POST['wftp_id'] > 0 ) {
-				$wftp_id                     = absint( $_POST['wftp_id'] );
-				$template                    = $this->default_design_data();
-				$template['template_active'] = 'no';
-				$this->update_page_design( $wftp_id, $template );
-				do_action( 'wftp_template_removed', $wftp_id );
-				do_action( 'woofunnels_module_template_removed', $wftp_id );
 
-				$args = [
-					'ID'           => $wftp_id,
-					'post_content' => ''
-				];
-				wp_update_post( $args );
-
-				$resp = array(
-					'msg'    => __( 'Design Saved Successfully', 'funnel-builder' ),
-					'status' => true,
-				);
-			}
-			self::send_resp( $resp );
-		}
 
 		public function import_template() {
 			check_ajax_referer( 'wffn_tp_import_design', '_nonce' );
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
-			$builder  = isset( $_REQUEST['builder'] ) ? wffn_clean( $_REQUEST['builder'] ) : '';
-			$template = isset( $_REQUEST['template'] ) ? wffn_clean( $_REQUEST['template'] ) : '';
-			$wftp_id  = isset( $_REQUEST['wftp_id'] ) ? wffn_clean( $_REQUEST['wftp_id'] ) : '';
+			);
+			$builder  = isset( $_REQUEST['builder'] ) ? wffn_clean( wp_unslash( $_REQUEST['builder'] ) ) : ''; // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin-only AJAX endpoint with nonce verification
+			$template = isset( $_REQUEST['template'] ) ? wffn_clean( wp_unslash( $_REQUEST['template'] ) ) : ''; // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin-only AJAX endpoint with nonce verification
+			$wftp_id  = isset( $_REQUEST['wftp_id'] ) ? wffn_clean( wp_unslash( $_REQUEST['wftp_id'] ) ) : ''; // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin-only AJAX endpoint with nonce verification
 
 			$result = WFFN_Core()->importer->import_remote( $wftp_id, $builder, $template, $this->get_cloud_template_step_slug() );
-
 
 			if ( true === $result['success'] ) {
 				$resp['status'] = true;
@@ -753,11 +712,11 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		public function registered_page_templates( $templates ) {
 
 			$all_templates = wp_get_theme()->get_post_templates();
-			$path          = [
+			$path          = array(
 
 				'wftp-boxed.php'  => __( 'FunnelKit Boxed', 'funnel-builder' ),
-				'wftp-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' )
-			];
+				'wftp-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' ),
+			);
 			if ( isset( $all_templates['page'] ) && is_array( $all_templates['page'] ) ) {
 				$paths = array_merge( $all_templates['page'], $path );
 			} else {
@@ -768,17 +727,15 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 
 			return $paths;
-
 		}
 
 		public function may_be_change_template( $template ) {
 			global $post;
-			if ( ! is_null( $post ) && $post->post_type === $this->get_post_type_slug() ) {
+			if ( ! is_null( $post ) && ( $post instanceof WP_Post ) && $post->post_type === $this->get_post_type_slug() ) {
 				$template = $this->get_template_url( $template );
 			}
 
 			return $template;
-
 		}
 
 		public function get_template_url( $main_template ) {
@@ -788,7 +745,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wftp_id, '_wp_page_template', true ), $wftp_id );
 
 			$file         = '';
-			$body_classes = [];
+			$body_classes = array();
 			switch ( $page_template ) {
 
 				case 'wftp-boxed.php':
@@ -804,7 +761,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				default:
 					/**
 					 ** Unhook any Next/Prev Navigation
-					 **/ add_filter( 'next_post_link', '__return_empty_string' );
+					 */ add_filter( 'next_post_link', '__return_empty_string' );
 					add_filter( 'previous_post_link', '__return_empty_string' );
 
 					if ( false !== strpos( $main_template, 'single.php' ) ) {
@@ -820,7 +777,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 			}
 			if ( ! empty( $body_classes ) ) {
-				add_filter( 'body_class', [ $this, 'wffn_add_unique_class' ], 9999, 1 );
+				add_filter( 'body_class', array( $this, 'wffn_add_unique_class' ), 9999, 1 );
 			}
 			if ( file_exists( $file ) ) {
 
@@ -837,7 +794,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			include_once $this->get_module_path() . 'compatibilities/page-builders/elementor/class-wffn-thankyou-wc-pages-elementor.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/divi/class-wffn-thankyou-wc-pages-divi.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			include_once $this->get_module_path() . 'compatibilities/page-builders/oxygen/class-wffn-thankyou-wc-pages-oxygen.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-
 		}
 
 
@@ -852,12 +808,12 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				$title = esc_html( trim( $data['title'] ) );
 				if ( ! isset( $this->template_type[ $slug ] ) ) {
 					$this->template_type[ $slug ]        = trim( $title );
-					$this->design_template_data[ $slug ] = [
+					$this->design_template_data[ $slug ] = array(
 						'edit_url'    => $data['edit_url'],
 						'button_text' => $data['button_text'],
 						'title'       => $data['title'],
 						'description' => isset( $data['description'] ) ? $data['description'] : '',
-					];
+					);
 				}
 			}
 		}
@@ -874,16 +830,15 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 
 			return $bool;
-
 		}
 
 		public function update_global_settings_fields( $options ) {
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = [
+			$resp    = array(
 				'status' => false,
 				'msg'    => __( 'Settings Updated', 'funnel-builder' ),
 				'data'   => '',
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -901,23 +856,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			update_option( 'wffn_tp_settings', $options, true );
 		}
 
-
-		public function update_edit_url() {
-			check_admin_referer( 'wffn_tp_update_edit_url', '_nonce' );
-
-			$id  = isset( $_POST['id'] ) ? wffn_clean( $_POST['id'] ) : 0;
-			$url = isset( $_POST['url'] ) ? $_POST['url'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-			if ( absint( $id ) > 0 && ( $url !== '' ) ) {
-				$url .= $this->check_oxy_inner_content( $id );
-			}
-
-			$resp = [
-				'status' => true,
-				'url'    => $url,
-			];
-			wp_send_json( $resp );
-		}
 
 
 		/**
@@ -954,27 +892,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			<?php
 		}
 
-		public function toggle_state() {
-			check_ajax_referer( 'wffn_tp_toggle_state', '_nonce' );
-			$resp = [
-				'status' => false,
-				'msg'    => __( 'Unable to change state', 'funnel-builder' ),
-			];
-
-			$state   = isset( $_POST['toggle_state'] ) ? sanitize_text_field( $_POST['toggle_state'] ) : '';
-			$wftp_id = isset( $_POST['wftp_id'] ) ? sanitize_text_field( $_POST['wftp_id'] ) : '';
-
-			$status = ( 'true' === $state ) ? 'publish' : 'draft';
-
-			wp_update_post( [ 'ID' => $wftp_id, 'post_status' => $status ] );
-
-			$resp['status'] = true;
-			$resp['msg']    = __( 'Status changed successfully.', 'funnel-builder' );
-
-
-			self::send_resp( $resp );
-		}
-
 		public function get_status() {
 			$post_lp = get_post( $this->get_edit_id() );
 
@@ -987,7 +904,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				return;
 			}
 
-			wp_enqueue_style( 'wffn_frontend_tp_css', $this->url . 'assets/css/style.css', [], time() );
+			wp_enqueue_style( 'wffn_frontend_tp_css', $this->url . 'assets/css/style.css', array(), time() );
 
 			$style = $this->generate_thank_you_style();
 			wp_add_inline_style( 'wffn_frontend_tp_css', $style );
@@ -998,7 +915,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			if ( true === apply_filters( 'wfty_load_frontend_style', true, $this->thankyoupage_id ) ) {
 				wp_enqueue_style( 'wffn-frontend-style' );
 			}
-
 		}
 
 		public function generate_thank_you_style() {
@@ -1012,13 +928,13 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			$order_show_images   = $this->get_optionsShortCode( 'order_details_img', $thank_you_id );
 			$order_show_images   = ( empty( $order_show_images ) ) ? 'true' : $order_show_images; // string
 
-			$text_font_family    = ( 'default' !== $text_font_family ? $text_font_family : "inherit" );
+			$text_font_family    = ( 'default' !== $text_font_family ? $text_font_family : 'inherit' );
 			$text_color          = ( empty( $text_color ) ) ? 'inherit' : $text_color;
 			$text_font_size      = ( empty( $text_font_size ) ) ? '15' : $text_font_size;
 			$heading_text_color  = ( empty( $heading_text_color ) ) ? 'inherit' : $heading_text_color;
 			$heading_font_size   = ( empty( $heading_font_size ) ) ? '18' : $heading_font_size;
 			$heading_font_weight = ( empty( $heading_font_weight ) ) ? '400' : $heading_font_weight;
-			$font_array          = [];
+			$font_array          = array();
 			$primary_body_class  = 'postid-' . $thank_you_id;
 			if ( 'inherit' !== $text_font_family ) {
 				$font_array[] = $text_font_family;
@@ -1027,7 +943,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			if ( ! empty( $font_array ) ) {
 				$font_array      = array_unique( $font_array );
 				$font_string     = implode( '|', $font_array );
-				$google_font_url = "//fonts.googleapis.com/css?family=" . $font_string;
+				$google_font_url = '//fonts.googleapis.com/css?family=' . $font_string;
 				wp_enqueue_style( 'wffn-google-fonts', esc_url( $google_font_url ), array(), WFFN_VERSION, 'all' );
 
 			}
@@ -1038,19 +954,19 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			font-family: {$text_font_family};
 			font-size: {$text_font_size}px;
 		}
-		
+
 		body.$primary_body_class .wfty_wrap .wfty_box.wfty_order_details table tr th,
 		body.$primary_body_class .wfty_wrap .wfty_box.wfty_order_details table tr td,
-		body.$primary_body_class .wffn_customer_details_table,		
+		body.$primary_body_class .wffn_customer_details_table,
 		body.$primary_body_class .wfty_Dview{
 			color: {$text_color};
 			font-family: {$text_font_family};
 			font-size: {$text_font_size}px;
 		}
 		.wfty_box.wfty_order_details .woocommerce-message a {color: #4169e1;}
-		body.$primary_body_class .woocommerce-order h2.woocommerce-column__title, 
-		body.$primary_body_class .wffn_customer_details_table .woocommerce-customer-details h2.woocommerce-column__title, 
-		body.$primary_body_class .woocommerce-order h2.woocommerce-order-details__title, 
+		body.$primary_body_class .woocommerce-order h2.woocommerce-column__title,
+		body.$primary_body_class .wffn_customer_details_table .woocommerce-customer-details h2.woocommerce-column__title,
+		body.$primary_body_class .woocommerce-order h2.woocommerce-order-details__title,
 		body.$primary_body_class .woocommerce-order .woocommerce-thankyou-order-received,
 		body.$primary_body_class .wfty_wrap .woocommerce-order-details h2,
 		body.$primary_body_class .woocommerce-order h2.wc-bacs-bank-details-heading,
@@ -1065,7 +981,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		.woocommerce-order ul.order_details,
 		.woocommerce-order .woocommerce-order-details,
 		.woocommerce-order .woocommerce-customer-details,
-		
+
 		img.emoji, img.wp-smiley {}";
 			if ( 'false' === $order_show_images ) {
 				$output .= "body.$primary_body_class .wfty_wrap .wfty_order_details .wfty_pro_list .wfty_leftDiv .wfty_p_name {padding-left:0}";
@@ -1102,7 +1018,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			$this->thankyoupage_id  = $maybe_wfty_id;
 			$this->wfty_is_thankyou = true;
 			$this->maybe_set_query_var( $wp_query );
-
 		}
 
 		/**
@@ -1136,7 +1051,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				return;
 			}
 
-
 			/**
 			 * not return forcefully thank you page URL if URL contains specific params
 			 */
@@ -1147,9 +1061,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 					if ( isset( $_GET[ $param ] ) && $_GET[ $param ] === $value ) { //phpcs:ignore
 						return;
 					}
-
 				}
-
 			}
 
 			// Retrieve the order using the order ID and redirect if it's a valid order
@@ -1161,7 +1073,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 					return;
 				}
 				$get_params = $_GET; //phpcs:ignore
-				$query_var  = [ 'nt' => '1' ];
+				$query_var  = array( 'nt' => '1' );
 
 				if ( ! empty( $get_params ) && is_array( $get_params ) ) {
 					$query_var = array_merge( $query_var, $get_params );
@@ -1171,7 +1083,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				wp_redirect( $url );
 				exit;
 			}
-
 		}
 
 		public function set_id( $id = null ) {
@@ -1202,7 +1113,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 		 * Modify permalink
 		 *
 		 * @param string $post_link post link.
-		 * @param array $post post data.
+		 * @param array  $post post data.
 		 * @param string $leavename leave name.
 		 *
 		 * @return string
@@ -1213,9 +1124,8 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 			if ( isset( $post->post_type ) && $this->get_post_type_slug() === $post->post_type && empty( trim( $bwb_admin_setting->get_option( 'ty_page_base' ) ) ) ) {
 
-
 				// If elementor page preview, return post link as it is.
-				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checking for preview parameter
 					return $post_link;
 				}
 
@@ -1226,7 +1136,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 					$post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
 
 				}
-
 			}
 
 			return $post_link;
@@ -1245,7 +1154,6 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			if ( ! $query->is_main_query() ) {
 				return;
 			}
-
 
 			// Bail if this query doesn't match our very specific rewrite rule.
 			if ( ! isset( $query->query['page'] ) ) {
@@ -1284,7 +1192,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 
 		public function add_global_settings_fields( $fields ) {
-			$fields["ty-settings"] = $this->all_global_settings_fields();
+			$fields['ty-settings'] = $this->all_global_settings_fields();
 
 			return $fields;
 		}
@@ -1326,7 +1234,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 				),
 			);
 			foreach ( $array as &$arr ) {
-				$values = [];
+				$values = array();
 				foreach ( $arr['fields'] as &$field ) {
 					$values[ $field['key'] ] = $this->get_option( $field['key'] );
 				}
@@ -1340,89 +1248,88 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			if ( function_exists( 'wc_clear_cart_after_payment' ) ) {
 				wc_clear_cart_after_payment();
 			}
-
 		}
 
 		public function get_settings_tab_data( $values = null ) {
 
-			$tabs = [
-				'custom_redirect' => [
+			$tabs = array(
+				'custom_redirect' => array(
 					'title'    => __( 'Custom Redirection', 'funnel-builder' ),
 					'heading'  => __( 'Custom Redirection', 'funnel-builder' ),
 					'slug'     => 'custom_redirect',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'custom_redirect',
 							'label'  => __( 'Custom Redirection', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'custom-select',
 							'key'         => 'select_redirect_page',
 							'placeholder' => __( 'Select Option', 'funnel-builder' ),
 							'apiEndPoint' => '/funnels/pages/search?pages=wc_thankyou',
 							'label'       => __( 'Select Page', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'custom_redirect',
 								'value' => 'true',
-							],
+							),
 							'hintLabel'   => __( 'Enter minimum 3 letters.', 'funnel-builder' ),
 							'hint'        => '',
 							'required'    => true,
 							'values'      => ! empty( $values['custom_redirect_page'] ) ? wffn_clean( wffn_rest_api_helpers()->array_change_key( $values['custom_redirect_page'], 'product', 'name' ) ) : '',
-						],
-					],
+						),
+					),
 					'priority' => 10,
 					'values'   => '',
-				],
-				'custom_css'      => [
+				),
+				'custom_css'      => array(
 					'title'    => __( 'Custom CSS', 'funnel-builder' ),
 					'heading'  => __( 'Custom CSS', 'funnel-builder' ),
 					'slug'     => 'custom_css',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_css',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom CSS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your CSS code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 20,
-					'values'   => [
+					'values'   => array(
 						'custom_css' => '',
-					],
-				],
-				'custom_js'       => [
+					),
+				),
+				'custom_js'       => array(
 					'title'    => __( 'External Script', 'funnel-builder' ),
 					'heading'  => __( 'External Scripts', 'funnel-builder' ),
 					'slug'     => 'custom_js',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_js',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom JS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 30,
-					'values'   => [
+					'values'   => array(
 						'custom_js' => '',
-					],
-				],
-			];
+					),
+				),
+			);
 
 			if ( ! empty( $values ) ) {
 				if ( ! empty( $values['custom_css'] ) ) {
@@ -1435,12 +1342,12 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 
 				if ( isset( $values['custom_redirect'] ) ) {
 
-					$custom_redirect = [
+					$custom_redirect = array(
 						'custom_redirect'      => ! empty( $values['custom_redirect'] ) ? wffn_clean( $values['custom_redirect'] ) : '',
 						'pages'                => ! empty( $values['pages'] ) ? wffn_clean( $values['pages'] ) : '',
 						'select_redirect_page' => ! empty( $values['custom_redirect_page'] ) ? wffn_clean( wffn_rest_api_helpers()->array_change_key( $values['custom_redirect_page'], 'product', 'name' ) ) : '',
 						'not_found'            => ! empty( $values['not_found'] ) ? wffn_clean( $values['not_found'] ) : __( 'Oops! No elements found. Consider changing the search query.', 'funnel-builder' ),
-					];
+					);
 
 					$tabs['custom_redirect']['values'] = wffn_clean( $custom_redirect );
 
@@ -1458,9 +1365,7 @@ if ( ! class_exists( 'WFFN_Thank_You_WC_Pages' ) ) {
 			}
 
 			return false;
-
 		}
-
 	}
 
 

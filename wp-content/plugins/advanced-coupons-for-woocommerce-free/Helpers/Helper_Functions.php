@@ -735,6 +735,19 @@ class Helper_Functions {
     }
 
     /**
+     * Sanitize a space-separated string of CSS class names.
+     *
+     * @since 4.6.2
+     * @access public
+     *
+     * @param string $classes Space-separated CSS class names.
+     * @return array Array of sanitized class names.
+     */
+    public function sanitize_css_classes( $classes ) {
+        return array_map( 'sanitize_html_class', explode( ' ', $classes ) );
+    }
+
+    /**
      * Prepare setting fields for API.
      *
      * @since 1.2
@@ -1217,7 +1230,7 @@ class Helper_Functions {
         );
 
         if ( $classname ) {
-            $classnames[] = $classname;
+            $classnames = array_merge( $classnames, $this->sanitize_css_classes( $classname ) );
         }
 
         $this->load_template(

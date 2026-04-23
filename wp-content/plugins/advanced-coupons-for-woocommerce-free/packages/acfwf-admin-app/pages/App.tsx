@@ -16,6 +16,7 @@ import PremiumUpsell from './Premium';
 import Help from './Help';
 import LoyaltyProgram from './LoyaltyProgram';
 import AdvancedGiftCards from './AdvancedGiftCards';
+import AdvancedPromoKit from './AdvancedPromoKit';
 import CouponTemplates from './CouponTemplates';
 
 // Actions
@@ -36,6 +37,7 @@ declare var acfwpElements: any;
 
 const is_lpfw_active = parseInt(acfwpElements.is_lpfw_active);
 const is_agc_active = parseInt(acfwpElements.is_agc_active);
+const is_apk_active = parseInt(acfwpElements.is_apk_active);
 const { setStorePage } = PageActions;
 const { readAdminNotices } = AdminNoticesActions;
 
@@ -99,6 +101,8 @@ const App = (props: IProps) => {
       {page === 'acfw-loyalty-program' && !is_lpfw_active ? <LoyaltyProgram /> : null}
 
       {page === 'acfw-advanced-gift-cards' && !is_agc_active ? <AdvancedGiftCards /> : null}
+
+      {page === 'advanced-promo-kit' && !is_apk_active ? <AdvancedPromoKit /> : null}
     </div>
   );
 };

@@ -9,7 +9,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -18,12 +18,12 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 		public function get_step_post( $step_id, $is_updated = false ) {
 
 			$data = array(
-				'step_data' => [],
-				'step_list' => []
+				'step_data' => array(),
+				'step_list' => array(),
 			);
 
-			$step_data = [];
-			$step_list = [];
+			$step_data = array();
+			$step_list = array();
 
 			if ( absint( $step_id ) > 0 && $this->check_step_exists( $step_id ) ) {
 				$post_data = get_post( $step_id );
@@ -60,7 +60,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 								}
 							}
 						}
-
 					} else {
 						$get_step = WFFN_Core()->steps->get_integration_object( WFFN_Common::get_step_type( $post_data->post_type ) );
 						if ( $get_step instanceof WFFN_Step ) {
@@ -73,10 +72,13 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					if ( 'wfocu_offer' === $post_data->post_type && class_exists( 'WFOCU_Core' ) ) {
 						$offer_data = WFOCU_Core()->offers->get_offer( $step_id );
 						if ( ! empty( $offer_data ) && ! empty( $offer_data->template_group ) && 'customizer' === $offer_data->template_group ) {
-							$step_data['view_link'] = add_query_arg( [
-								'wfocu_customize' => 'loaded',
-								'offer_id'        => $step_id,
-							], get_the_permalink( $step_id ) );
+							$step_data['view_link'] = add_query_arg(
+								array(
+									'wfocu_customize' => 'loaded',
+									'offer_id'        => $step_id,
+								),
+								get_the_permalink( $step_id )
+							);
 						} elseif ( 'custom_page' === $offer_data->template_group ) {
 							$custom_page = get_post_meta( $step_id, '_wfocu_custom_page', true );
 							if ( ! empty( $custom_page ) ) {
@@ -123,7 +125,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 							 */
 							if ( 'wfocu_offer' === $post_data->post_type && ( absint( $get_funnel_id ) === WFFN_Common::get_store_checkout_id() ) && false === in_array( 'wc_checkout', wp_list_pluck( $get_steps, 'type' ), true ) ) {
 								$sub_steps     = WFFN_Common::get_store_checkout_global_substeps( $get_funnel_id );
-								$sub_step_data = [];
+								$sub_step_data = array();
 								if ( is_array( $sub_steps ) && count( $sub_steps ) > 0 ) {
 									$get_substep = WFFN_Core()->substeps->get_integration_object( 'wc_order_bump' );
 									if ( $get_substep instanceof WFFN_Substep ) {
@@ -147,13 +149,10 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 										if ( is_array( $step_list ) && isset( $step_list[0] ) ) {
 											$step_list = $step_list[0];
 										}
-
 									}
 								}
 							}
-
 						}
-
 					}
 
 					$control_id             = get_post_meta( $step_id, '_bwf_ab_variation_of', true );
@@ -178,7 +177,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					return ( false === $is_updated ) ? $step_data : $data;
 
 				}
-
 			}
 
 			return false;
@@ -215,8 +213,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 									$offer['_data']->view_link = '';
 								}
 							}
-
-						} else if ( 'wc_native' === $step['type'] ) {
+						} elseif ( 'wc_native' === $step['type'] ) {
 							$view_link = '';
 							if ( function_exists( 'wc_get_checkout_url' ) ) {
 								$view_link = wc_get_checkout_url();
@@ -261,9 +258,9 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			return json_decode( $json, 1 );
 		}
 
-		public function format_fields_options( $options, $seperator = ",", $set_format = false ) {
+		public function format_fields_options( $options, $seperator = ',', $set_format = false ) {
 			$option_data = '';
-			$values      = [];
+			$values      = array();
 			if ( ! empty( $options ) && is_array( $options ) ) {
 				$options = array_values( $options );
 
@@ -277,7 +274,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					$values        = $options;
 					$option_values = explode( $seperator, $options[0] );
 					if ( count( $option_values ) ) {
-						$values = [];
+						$values = array();
 						foreach ( $option_values as $value ) {
 							if ( ! empty( $value ) ) {
 								$values[] = $value;
@@ -288,9 +285,8 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 				$option_data = ! empty( $values ) ? implode( $seperator, $values ) : '';
 
 				if ( true === $set_format ) {
-					$option_data = $this->set_input_options( $option_data, "," );
+					$option_data = $this->set_input_options( $option_data, ',' );
 				}
-
 			}
 
 			return $option_data;
@@ -321,11 +317,11 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 		}
 
 		// Convert array to Name Value Pair.
-		public function array_to_nvp( $array, $key = 'label', $value = 'value', $replicate_from = "", $replicate_to = "" ) {
-			$nvp = [];
+		public function array_to_nvp( $array, $key = 'label', $value = 'value', $replicate_from = '', $replicate_to = '' ) {
+			$nvp = array();
 			if ( ! empty( $array ) ) {
 				foreach ( $array as $arr_key => $arr_val ) {
-					$field           = [];
+					$field           = array();
 					$field[ $key ]   = trim( $arr_key );
 					$field[ $value ] = trim( $arr_val );
 					if ( ! empty( $replicate_from ) && ! empty( $replicate_to ) ) {
@@ -342,9 +338,9 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			return $nvp;
 		}
 
-		public function set_input_options( $op_options, $seperator = "," ) {
+		public function set_input_options( $op_options, $seperator = ',' ) {
 			$options = array();
-			$option  = [];
+			$option  = array();
 			if ( ! empty( $op_options ) ) {
 				$op_options = explode( $seperator, $op_options );
 				foreach ( $op_options as $_option ) {
@@ -358,7 +354,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 
 		public static function get_name_part( $name, $part = 0 ) {
 			if ( ! empty( $name ) && ! empty( $part ) ) {
-				$name = explode( "-", $name );
+				$name = explode( '-', $name );
 				if ( ! empty( $name[ $part ] ) ) {
 					$name = trim( $name[ $part ] );
 				}
@@ -368,10 +364,10 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 		}
 
 		public function get_availability_price_text( $product ) {
-			$availability = [
+			$availability = array(
 				'text'  => '',
-				'price' => ''
-			];
+				'price' => '',
+			);
 
 			/**
 			 * check if product id come
@@ -426,24 +422,34 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					$price = html_entity_decode( wp_strip_all_tags( apply_filters( 'woocommerce_variable_empty_price_html', '', $product ) ) );
 				} else {
 
-					$price         = [];
+					$price         = array();
 					$min_price     = current( $prices['price'] );
 					$max_price     = end( $prices['price'] );
 					$min_reg_price = current( $prices['regular_price'] );
 					$max_reg_price = end( $prices['regular_price'] );
 
 					if ( $min_price !== $max_price ) {
-						$price['price_range'] = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_price, $max_price ) ) );
-						$price['sale_price']  = array( 'min' => $min_price, 'max' => $max_price );
+						$min_formatted        = wp_strip_all_tags( wc_price( $min_price ) );
+						$max_formatted        = wp_strip_all_tags( wc_price( $max_price ) );
+						$price['price_range'] = $min_formatted . ' – ' . $max_formatted;
+						$price['sale_price']  = array(
+							'min' => $min_price,
+							'max' => $max_price,
+						);
 					} else {
 						$price['sale_price'] = $min_price;
 					}
 
 					if ( $min_reg_price !== $max_reg_price ) {
 						if ( ! isset( $price['price_range'] ) ) {
-							$price['price_range'] = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_reg_price, $max_reg_price ) ) );
+							$min_reg_formatted    = wp_strip_all_tags( wc_price( $min_reg_price ) );
+							$max_reg_formatted    = wp_strip_all_tags( wc_price( $max_reg_price ) );
+							$price['price_range'] = $min_reg_formatted . ' – ' . $max_reg_formatted;
 						}
-						$price['reg_price'] = array( 'min' => $min_reg_price, 'max' => $max_reg_price );
+						$price['reg_price'] = array(
+							'min' => $min_reg_price,
+							'max' => $max_reg_price,
+						);
 					} else {
 						$price['reg_price'] = $min_reg_price;
 					}
@@ -465,7 +471,7 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 		 * remove all price actions for get product price
 		 * and process not stuck in looping
 		 */
-		public function remove_all_wc_price_action(){
+		public function remove_all_wc_price_action() {
 			remove_all_actions( 'woocommerce_product_get_regular_price' );
 			remove_all_actions( 'woocommerce_product_get_price' );
 			remove_all_actions( 'woocommerce_product_variation_get_price' );
@@ -536,14 +542,13 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			}
 
 			return array_values( $messages );
-
 		}
 
 		public function get_entity_url( $type, $entity, $step_id ) {
 			if ( absint( $step_id ) > 0 && ! empty( $type ) ) {
 				$funnel_id = $this->get_funnel_id_from_step_id( $step_id );
 				if ( absint( $funnel_id ) === WFFN_Common::get_store_checkout_id() ) {
-					$suffix = "/store-checkout/" . $type . "/" . $step_id . "/" . $entity;
+					$suffix = '/store-checkout/' . $type . '/' . $step_id . '/' . $entity;
 				} else {
 					$suffix = "/funnel-$type/$step_id/$entity&funnel_id=$funnel_id";
 				}
@@ -552,7 +557,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			} else {
 				return '';
 			}
-
 		}
 
 		public function get_funnel_id_from_step_id( $step_id ) {
@@ -570,7 +574,6 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			}
 
 			return $funnel_id;
-
 		}
 
 
@@ -581,8 +584,8 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 					'code'    => 'woofunnels_rest_step_not_exists',
 					'message' => __( 'Invalid step ID.', 'funnel-builder' ),
 					'data'    => array(
-						'status' => 404
-					)
+						'status' => 404,
+					),
 				);
 				wp_send_json( $error_message );
 
@@ -607,31 +610,30 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 
 		/**
 		 * check template builder status on site
+		 *
 		 * @param $builder
 		 * @param $template
 		 *
 		 * @return array
 		 */
 		public function check_builder_status( $builder, $template ) {
-			$builder_data = [
+			$builder_data = array(
 				'status' => true,
-				'data'   => []
-			];
+				'data'   => array(),
+			);
 			if ( ! empty( $builder ) && ( 'gutenberg_1' !== $template && 'wfocu-gutenberg-empty' !== $template && 'gutenberg_funnel_1' !== $template ) ) {
 				$builder_status = WFFN_Core()->page_builders->builder_status( $builder );
 
 				if ( ! empty( $builder_status['builders_options']['status'] ) && 'activated' !== $builder_status['builders_options']['status'] ) {
-					$builder_data = [
+					$builder_data = array(
 						'status' => false,
-						'data'   => $builder_status
-					];
+						'data'   => $builder_status,
+					);
 				}
 			}
 
 			return $builder_data;
 		}
-
-
 	}
 
 	if ( ! function_exists( 'wffn_rest_api_helpers' ) ) {
@@ -643,5 +645,4 @@ if ( ! class_exists( 'WFFN_REST_API_Helpers' ) ) {
 			return WFFN_REST_API_Helpers::get_instance();
 		}
 	}
-
 }

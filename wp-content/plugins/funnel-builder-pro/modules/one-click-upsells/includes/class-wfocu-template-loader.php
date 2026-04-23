@@ -10,35 +10,39 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 	#[AllowDynamicProperties]
 	class WFOCU_Template_loader {
 
-		private static $ins = null;
-		private $installed_plugins = null;
-		public $current_template = null;
+		private static $ins           = null;
+		private $installed_plugins    = null;
+		public $current_template      = null;
 		public $customizer_key_prefix = '';
-		public $offer_id = null;
-		public $is_single = false;
-		public $product_data = null;
-		public $offer_data = null;
-		public $invalidation_reason = null;
-		public $multiple_p = false;
+		public $offer_id              = null;
+		public $is_single             = false;
+		public $product_data          = null;
+		public $offer_data            = null;
+		public $invalidation_reason   = null;
+		public $multiple_p            = false;
 		/**
 		 * @var WFOCU_Template_Group
 		 */
 		public $current_template_group;
 		protected $customize_manager_ins = null;
-		protected $template_groups = [];
-		protected $templates = array();
-		public $internal_css = [];
+		protected $template_groups       = array();
+		protected $templates             = array();
+		public $internal_css             = array();
 
 		public function __construct() {
 
-			add_action( 'template_redirect', function () {
-				add_filter( 'template_include', array( $this, 'maybe_load' ), 98 ); //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
-			}, 999 );
+			add_action(
+				'template_redirect',
+				function () {
+					add_filter( 'template_include', array( $this, 'maybe_load' ), 98 ); //phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
+				},
+				999
+			);
 
 			add_action( 'wfocu_header_print_in_head', array( $this, 'typography_custom_css' ) );
 
 			$post_type = $this->get_post_type_slug();
-			add_filter( "theme_{$post_type}_templates", [ $this, 'add_upstroke_page_templates' ], 99, 4 );
+			add_filter( "theme_{$post_type}_templates", array( $this, 'add_upstroke_page_templates' ), 99, 4 );
 
 			add_action( 'wp', array( $this, 'initiate_offer_template_setup' ), 9 );
 			/** Template common */
@@ -61,12 +65,11 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			add_action( 'wfocu_header_print_in_head', array( $this, 'print_internal_css' ), 99 );
 			add_action( 'wfocu_header_print_in_head', array( $this, 'print_internal_css' ), 99 );
 			add_action( 'wp_footer', array( $this, 'maybe_render_css_for_offer_conf' ), 999 );
-
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -80,10 +83,13 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 */
 		public function register_template( $slug, $data, $depriciated = '' ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
-			$data = wp_parse_args( $data, array(
-				'name'      => __( 'No title Template', 'woofunnels-upstroke-one-click-upsell' ),
-				'thumbnail' => ''
-			) );
+			$data = wp_parse_args(
+				$data,
+				array(
+					'name'      => __( 'No title Template', 'woofunnels-upstroke-one-click-upsell' ),
+					'thumbnail' => '',
+				)
+			);
 			if ( '' !== $slug && ! empty( $data ) ) {
 				$this->templates[ $slug ] = $data;
 
@@ -127,7 +133,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			}
 
 			return $template;
-
 		}
 
 		public function maybe_validate_offer() {
@@ -167,13 +172,12 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			$box_template    = WFOCU_Common::get_boxed_template();
 			$canvas_template = WFOCU_Common::get_canvas_template();
 
-
 			$all_templates = wp_get_theme()->get_post_templates();
-			$path          = [
+			$path          = array(
 
 				$box_template    => __( 'FunnelKit Boxed', 'woofunnels-upstroke-one-click-upsell' ),
-				$canvas_template => __( 'FunnelKit Canvas For Page Builder', 'woofunnels-upstroke-one-click-upsell' )
-			];
+				$canvas_template => __( 'FunnelKit Canvas For Page Builder', 'woofunnels-upstroke-one-click-upsell' ),
+			);
 			if ( isset( $all_templates['page'] ) && is_array( $all_templates['page'] ) && count( $all_templates['page'] ) > 0 ) {
 				$paths = array_merge( $all_templates['page'], $path );
 			} else {
@@ -204,7 +208,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wfocu_id, '_wp_page_template', true ), $wfocu_id );
 
 			$file         = '';
-			$body_classes = [];
+			$body_classes = array();
 
 			$box_template    = WFOCU_Common::get_boxed_template();
 			$canvas_template = WFOCU_Common::get_canvas_template();
@@ -236,7 +240,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 					break;
 			}
 			if ( ! empty( $body_classes ) ) {
-				add_filter( 'body_class', [ $this, 'wfocu_add_unique_class' ], 9999, 1 );
+				add_filter( 'body_class', array( $this, 'wfocu_add_unique_class' ), 9999, 1 );
 			}
 
 			if ( file_exists( $file ) ) {
@@ -307,13 +311,13 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			return implode( ' ', $body_classes );
 		}
 
-	public function typography_custom_css() {
-		$style_custom_css = WFOCU_Common::get_option( 'wfocu_custom_css_css_code' );
-		if ( ! empty( $style_custom_css ) ) {
-			$custom_css = '<style>' . $style_custom_css . '</style>';
-			echo $custom_css;//phpcs:ignore
+		public function typography_custom_css() {
+			$style_custom_css = WFOCU_Common::get_option( 'wfocu_custom_css_css_code' );
+			if ( ! empty( $style_custom_css ) ) {
+				$custom_css = '<style>' . $style_custom_css . '</style>';
+				echo $custom_css;//phpcs:ignore
+			}
 		}
-	}
 
 
 		public function add_common_scripts() {
@@ -326,8 +330,8 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 
 		public function add_fonts() {
 			?>
-            <link href="//fonts.googleapis.com/css?family=Oswald:300,400,500,600,700" rel="stylesheet"> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
-            <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+			<link href="//fonts.googleapis.com/css?family=Oswald:300,400,500,600,700" rel="stylesheet"> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+			<link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 			<?php
 		}
 
@@ -378,29 +382,44 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 							}
 						}
 
-						$attributes_json = array_combine( array_map( function ( $k ) {
+						$attributes_json = array_combine(
+							array_map(
+								function ( $k ) {
 
-							return '@' . WFOCU_Common::clean_ascii_characters( $k );
-						}, array_keys( $variation['attributes'] ) ), array_map( function ( $k ) {
+									return '@' . WFOCU_Common::clean_ascii_characters( $k );
+								},
+								array_keys( $variation['attributes'] )
+							),
+							array_map(
+								function ( $k ) {
 
-							return WFOCU_Common::handle_single_quote_variation( $k );
-						}, $variation['attributes'] ) );
+									return WFOCU_Common::handle_single_quote_variation( $k );
+								},
+								$variation['attributes']
+							)
+						);
 
 						$keys = array_keys( $variation['attributes'] );
-						array_walk( $keys, function ( $k ) use ( &$all_common_attribute_slugs ) {
+						array_walk(
+							$keys,
+							function ( $k ) use ( &$all_common_attribute_slugs ) {
 
-							$all_common_attribute_slugs[ WFOCU_Common::clean_ascii_characters( $k ) ] = $k;
-
-						} );
+								$all_common_attribute_slugs[ WFOCU_Common::clean_ascii_characters( $k ) ] = $k;
+							}
+						);
 
 						$attributes_json['id'] = $variation['variation_id'];
 
-						$prepare_dimension_hash[ $variation['variation_id'] ]    = md5( wp_json_encode( array(
-							$variation['dimensions_html'],
-							$variation['weight_html'],
-						) ) );
+						$prepare_dimension_hash[ $variation['variation_id'] ] = md5(
+							wp_json_encode(
+								array(
+									$variation['dimensions_html'],
+									$variation['weight_html'],
+								)
+							)
+						);
 
-						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product ,$offer_data->fields->{$hash});
+						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product, $offer_data->fields->{$hash} );
 						$available_variation_stock[ $variation['variation_id'] ] = $current_stock;
 						$weight_html[ $variation['variation_id'] ]               = $variation['weight_html'];
 						$images[ $variation['variation_id'] ]                    = $variation['image_id'];
@@ -410,24 +429,27 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 						$variation_settings->discount_type                       = WFOCU_Common::get_discount_setting( $product->discount_type );
 						$variation_settings->discount_amount                     = $variation_data->discount_amount;
 
-						$prices[ $variation['variation_id'] ]            = apply_filters( 'wfocu_variation_prices', array(
-							'price_incl_tax'             => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data ),
-							'price_incl_tax_raw'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data ),
-							'price_excl_tax'             => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data ),
-							'price_excl_tax_raw'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data ),
-							'regular_price_incl_tax'     => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_incl_tax_raw' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_excl_tax'     => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_excl_tax_raw' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'sale_modify_price_excl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data, true ),
-							'sale_modify_price_incl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data, true ),
+						$prices[ $variation['variation_id'] ] = apply_filters(
+							'wfocu_variation_prices',
+							array(
+								'price_incl_tax'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data ),
+								'price_incl_tax_raw'     => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data ),
+								'price_excl_tax'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data ),
+								'price_excl_tax_raw'     => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data ),
+								'regular_price_incl_tax' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_incl_tax_raw' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_excl_tax' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_excl_tax_raw' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'sale_modify_price_excl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data, true ),
+								'sale_modify_price_incl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data, true ),
 
-
-						), $variation['_wfocu_variation_object'], $product );
+							),
+							$variation['_wfocu_variation_object'],
+							$product
+						);
 						$variation_objects[ $variation['variation_id'] ] = $variation['_wfocu_variation_object'];
 
 					}
-
 				} else {
 					add_filter( 'woocommerce_available_variation', array( $this, 'add_variation_object_in_custom_variation_key' ), 10, 3 );
 
@@ -456,28 +478,43 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 							}
 						}
 
-						$attributes_json = array_combine( array_map( function ( $k ) {
+						$attributes_json = array_combine(
+							array_map(
+								function ( $k ) {
 
-							return '@' . WFOCU_Common::clean_ascii_characters( $k );
-						}, array_keys( $variation['attributes'] ) ), array_map( function ( $k ) {
+									return '@' . WFOCU_Common::clean_ascii_characters( $k );
+								},
+								array_keys( $variation['attributes'] )
+							),
+							array_map(
+								function ( $k ) {
 
-							return WFOCU_Common::handle_single_quote_variation( $k );
-						}, $variation['attributes'] ) );
+									return WFOCU_Common::handle_single_quote_variation( $k );
+								},
+								$variation['attributes']
+							)
+						);
 
 						$keys = array_keys( $variation['attributes'] );
-						array_walk( $keys, function ( $k ) use ( &$all_common_attribute_slugs ) {
+						array_walk(
+							$keys,
+							function ( $k ) use ( &$all_common_attribute_slugs ) {
 
-							$all_common_attribute_slugs[ WFOCU_Common::clean_ascii_characters( $k ) ] = $k;
-
-						} );
+								$all_common_attribute_slugs[ WFOCU_Common::clean_ascii_characters( $k ) ] = $k;
+							}
+						);
 
 						$attributes_json['id'] = $variation['variation_id'];
 
-						$prepare_dimension_hash[ $variation['variation_id'] ]    = md5( wp_json_encode( array(
-							$variation['dimensions_html'],
-							$variation['weight_html'],
-						) ) );
-						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product ,$offer_data->fields->{$hash});
+						$prepare_dimension_hash[ $variation['variation_id'] ]    = md5(
+							wp_json_encode(
+								array(
+									$variation['dimensions_html'],
+									$variation['weight_html'],
+								)
+							)
+						);
+						$available_variations[ $variation['variation_id'] ]      = apply_filters( 'wfocu_variations_attributes', $attributes_json, $variation, $product, $offer_data->fields->{$hash} );
 						$available_variation_stock[ $variation['variation_id'] ] = $current_stock;
 						$weight_html[ $variation['variation_id'] ]               = $variation['weight_html'];
 						$images[ $variation['variation_id'] ]                    = $variation['image_id'];
@@ -487,20 +524,23 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 						$variation_settings->discount_type                       = WFOCU_Common::get_discount_setting( $product->discount_type );
 						$variation_settings->discount_amount                     = $product->discount_amount;
 
-						$prices[ $variation['variation_id'] ]            = apply_filters( 'wfocu_variation_prices', array(
-							'price_incl_tax'             => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true ),
-							'price_incl_tax_raw'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true ),
-							'price_excl_tax'             => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false ),
-							'price_excl_tax_raw'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false ),
-							'regular_price_incl_tax'     => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_incl_tax_raw' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_excl_tax'     => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'regular_price_excl_tax_raw' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
-							'sale_modify_price_excl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data, true ),
-							'sale_modify_price_incl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data, true ),
+						$prices[ $variation['variation_id'] ] = apply_filters(
+							'wfocu_variation_prices',
+							array(
+								'price_incl_tax'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true ),
+								'price_incl_tax_raw'     => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true ),
+								'price_excl_tax'         => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false ),
+								'price_excl_tax_raw'     => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false ),
+								'regular_price_incl_tax' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_incl_tax_raw' => wc_get_price_including_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_excl_tax' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'regular_price_excl_tax_raw' => wc_get_price_excluding_tax( $variation['_wfocu_variation_object'], array( 'price' => $variation['_wfocu_variation_object']->get_regular_price() ) ) * $variation_settings->quantity,
+								'sale_modify_price_excl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, false, $offer_data, true ),
+								'sale_modify_price_incl_tax' => WFOCU_Core()->offers->get_product_price( $variation['_wfocu_variation_object'], $variation_settings, true, $offer_data, true ),
 
-
-						), $variation['_wfocu_variation_object'] );
+							),
+							$variation['_wfocu_variation_object']
+						);
 						$variation_objects[ $variation['variation_id'] ] = $variation['_wfocu_variation_object'];
 
 					}
@@ -524,7 +564,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			}
 
 			return $product;
-
 		}
 
 		/**
@@ -580,11 +619,8 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 							}
 						}
 					}
-				} else {
-					if ( $this->is_customizer_preview() ) {
+				} elseif ( $this->is_customizer_preview() ) {
 						wp_die( esc_attr__( 'Your offer must have at least one product to show preview.', 'woofunnels-upstroke-one-click-upsell' ) );
-
-					}
 				}
 
 				if ( ! is_null( $this->current_template ) ) {
@@ -597,6 +633,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		/**
 		 * Finds out if its safe to initiate data setup for the current request.
 		 * Checks for the environmental conditions and provide results.
+		 *
 		 * @return bool true on success| false otherwise
 		 * @see WFOCU_Template_loader::maybe_setup_offer()
 		 */
@@ -615,13 +652,14 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			}
 
 			return apply_filters( 'wfocu_valid_state_for_data_setup', false );
-
 		}
 
 		public function is_customizer_preview() {
-			if ( isset( $_REQUEST['wfocu_customize'] ) && 'loaded' === $_REQUEST['wfocu_customize'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview detection for frontend
+			if ( isset( $_REQUEST['wfocu_customize'] ) && 'loaded' === $_REQUEST['wfocu_customize'] ) {
 				return true;
-			} else if ( isset( $_REQUEST['preview'] ) && $_REQUEST['preview'] === 'true' && ! empty( WFOCU_Core()->template_loader->offer_data ) && isset( WFOCU_Core()->template_loader->offer_data->template_group ) && WFOCU_Core()->template_loader->offer_data->template_group === 'customizer' ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview detection for frontend
+			} elseif ( isset( $_REQUEST['preview'] ) && $_REQUEST['preview'] === 'true' && ! empty( WFOCU_Core()->template_loader->offer_data ) && isset( WFOCU_Core()->template_loader->offer_data->template_group ) && WFOCU_Core()->template_loader->offer_data->template_group === 'customizer' ) {
 				/** check preview condition for react interface */
 				return true;
 			}
@@ -650,7 +688,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			$variation_array['_wfocu_variation_object'] = $variation;
 
 			return $variation_array;
-
 		}
 
 		/**
@@ -661,9 +698,9 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 */
 		public function maybe_print_notices_in_hidden() {
 			?>
-            <div class="wfocu-wc-notice-wrap" style="display: none; !important;">
+			<div class="wfocu-wc-notice-wrap" style="display: none; !important;">
 				<?php wc_print_notices(); ?>
-            </div>
+			</div>
 			<?php
 		}
 
@@ -680,7 +717,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 					unset( $shortcode_tags[ $tag ] );
 				}
 			}
-
 		}
 
 		public function add_attributes_to_buy_button( $print = true ) {
@@ -688,7 +724,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			if ( null === $buy_button_count ) {
 				$buy_button_count = 1;
 			} else {
-				$buy_button_count ++;
+				++$buy_button_count;
 			}
 			$attributes     = apply_filters( 'wfocu_front_buy_button_attributes', array(), $buy_button_count );
 			$attributes_str = '';
@@ -753,7 +789,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			 * Save the modified template
 			 */
 			WFOCU_Common::update_offer( $offer_id, $offer_data, $funnel_id );
-
 		}
 
 		/**
@@ -781,7 +816,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_default_single_template() {
@@ -808,7 +842,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 
 				WFOCU_Core()->log->log( 'Offer: #' . $offer_id . ' Page Rendered successfully' );
 
-
 			}
 		}
 
@@ -825,7 +858,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 			if ( isset( $this->templates[ $slug ] ) ) {
 				return $this->templates[ $slug ];
 			}
-
 		}
 
 		public function register_group( $group, $slug ) {
@@ -834,7 +866,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				return;
 			}
 			$this->template_groups[ $slug ] = $group;
-
 		}
 
 		/**
@@ -868,7 +899,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				$this->setup_complete_offer_setup_manual( $maybe_offer_id, true, true );
 
 			}
-
 		}
 
 		/**
@@ -876,7 +906,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 * When accessing the page directly Or in admin interface during customizing pages using any builder or native editors, we could setup data using this method
 		 *
 		 * @param mixed $offer_id Offer ID to set data against
-		 * @param bool $is_preview should we setup data as preview setup or as live running funnel?
+		 * @param bool  $is_preview should we setup data as preview setup or as live running funnel?
 		 *
 		 * @since 2.0
 		 */
@@ -891,7 +921,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				/**
 				 * When offer setup already completed we just need to register our assets as we know its either custom page or single offer page front request
 				 */
-				WFOCU_Core()->assets->maybe_register_assets( [], '', true );
+				WFOCU_Core()->assets->maybe_register_assets( array(), '', true );
 
 				/**
 				 * Check if its a customizer template or not
@@ -948,7 +978,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				/**
 				 * When offer setup already completed we just need to register our assets as we know its either custom page or single offer page front request
 				 */
-				WFOCU_Core()->assets->maybe_register_assets( [], '', true );
+				WFOCU_Core()->assets->maybe_register_assets( array(), '', true );
 
 				if ( $load_assets ) {
 
@@ -956,7 +986,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				}
 			}
 			do_action( 'wfocu_setup_offer_completed' );
-
 		}
 
 		public function get_template_ins() {
@@ -975,7 +1004,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 * 4. Build offer data for the current offer
 		 */
 		public function maybe_setup_offer( $is_front = true ) {
-
 
 			/**
 			 * Forcing it to be true if not passed clearly
@@ -999,7 +1027,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				$this->set_data_object();
 				do_action( 'wfocu_offer_setup_completed' );
 			}
-
 		}
 
 		/**
@@ -1055,13 +1082,16 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 */
 		public function get_all_groups() {
 
-			uasort( $this->template_groups, function ( $a, $b ) {
-				if ( $a->listing_index === $b->listing_index ) {
-					return 0;
-				}
+			uasort(
+				$this->template_groups,
+				function ( $a, $b ) {
+					if ( $a->listing_index === $b->listing_index ) {
+						return 0;
+					}
 
-				return ( $a->listing_index < $b->listing_index ) ? - 1 : 1;
-			} );
+					return ( $a->listing_index < $b->listing_index ) ? - 1 : 1;
+				}
+			);
 
 			return $this->template_groups;
 		}
@@ -1082,7 +1112,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		/**
 		 * Sets up the current offer data related data objects
 		 * These objects will be later gets accessed using data class
-		 *
 		 */
 		public function set_data_object() {
 
@@ -1099,7 +1128,7 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		public function is_multiple_customizer_template() {
 			if ( is_object( $this->get_template_ins() ) ) {
 
-				if ( in_array( $this->get_template_ins()->get_slug(), [ 'mp-grid', 'mp-list' ], true ) ) {
+				if ( in_array( $this->get_template_ins()->get_slug(), array( 'mp-grid', 'mp-list' ), true ) ) {
 					return true;
 				}
 			}
@@ -1123,7 +1152,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				foreach ( $get_all_ids as $k ) {
 					echo do_shortcode( '[wfocu_variation_selector_form key="' . $k . '" display="no"]' );
 				}
-
 			}
 		}
 
@@ -1132,7 +1160,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 *
 		 * @return array Required Plugins list.
 		 * @since 1.1.4
-		 *
 		 */
 		public function get_plugins_groupby_page_builders() {
 
@@ -1148,7 +1175,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 					}
 				}
 			}
-
 
 			$plugins = array(
 				'elementor' => array(
@@ -1194,7 +1220,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		 *
 		 * @return mixed
 		 * @since 1.0.0
-		 *
 		 */
 		public function get_plugin_status( $plugin_init_file ) {
 
@@ -1212,8 +1237,8 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 		}
 
 		public function localize_page_builder_texts() {
-			$get_all_opted_page_builders = [ 'elementor', 'divi', 'oxy', 'gutenberg' ];
-			$pageBuildersTexts           = [];
+			$get_all_opted_page_builders = array( 'elementor', 'divi', 'oxy', 'gutenberg' );
+			$pageBuildersTexts           = array();
 			foreach ( $get_all_opted_page_builders as $builder ) {
 				$page_builder    = $this->get_dependent_plugins_for_page_builder( $builder );
 				$plugin_string   = sprintf( __( 'This template needs <strong>%s plugin</strong> activated.', 'woofunnels-upstroke-one-click-upsell' ), esc_html( $page_builder['title'] ) );
@@ -1237,16 +1262,16 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 						$plugin_string .= $string;
 					} else {
 						$plugin_string .= $install;
-						$button_text   = __( 'Install Divi Builder', 'woofunnels-upstroke-one-click-upsell' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://www.elegantthemes.com/' );
+						$button_text    = __( 'Install Divi Builder', 'woofunnels-upstroke-one-click-upsell' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://www.elegantthemes.com/' );
 					}
-				} else if ( 'oxy' === $builder ) {
+				} elseif ( 'oxy' === $builder ) {
 					if ( 'install' === $plugin_status ) {
 						$plugin_string .= $string;
-						$button_text   = __( 'Install Oxygen Classic Builder', 'woofunnels-upstroke-one-click-upsell' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://oxygenbuilder.com/' );
+						$button_text    = __( 'Install Oxygen Classic Builder', 'woofunnels-upstroke-one-click-upsell' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://oxygenbuilder.com/' );
 					} else {
 						$plugin_string .= $install;
 					}
@@ -1289,7 +1314,6 @@ if ( ! class_exists( 'WFOCU_Template_loader' ) ) {
 				return;
 			}
 			$this->print_internal_css();
-
 		}
 
 		/**

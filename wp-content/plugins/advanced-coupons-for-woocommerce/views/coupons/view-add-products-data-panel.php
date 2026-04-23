@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 } ?>
 
-<div id="<?php echo esc_attr( $panel_id ); ?>" class="panel woocommerce_options_panel"
+<div id="<?php echo esc_attr( $panel_id ); ?>" class="panel woocommerce_options_panel toggle-enable-fields"
     data-products="<?php echo esc_attr( wp_json_encode( $add_products ) ); ?>"
     data-nonce="<?php echo esc_attr( wp_create_nonce( 'acfw_save_add_products_data' ) ); ?>"
     <?php
@@ -14,14 +14,28 @@ endforeach;
 ?>
 >
     <div class="acfw-help-link" data-module="add-products"></div>
+
+    <div class="acfw-tab-info">
+        <h3><?php esc_html_e( 'Add Products', 'advanced-coupons-for-woocommerce' ); ?></h3>
+        <p><?php esc_html_e( "This feature lets you add products to a customer's cart when a coupon is successfully applied. The products listed in the table below will be automatically added to their cart in the specified quantities and price overrides.", 'advanced-coupons-for-woocommerce' ); ?></p>
+        <p><?php esc_html_e( "The Add Products feature can also be combined with other features like Cart Conditions and Auto Apply to make products appear in the customer's cart like magic once certain conditions are met.", 'advanced-coupons-for-woocommerce' ); ?></p>
+    </div>
+
+    <div class="options_group acfw-enable-toggle-group">
+        <?php
+        woocommerce_wp_checkbox(
+            array(
+                'id'          => '_acfw_enable_add_products',
+                'class'       => 'toggle-trigger-field',
+                'label'       => esc_html__( 'Enable Add Products', 'advanced-coupons-for-woocommerce' ),
+                'description' => esc_html__( 'When checked, products listed below will be added to the cart when this coupon is applied.', 'advanced-coupons-for-woocommerce' ),
+                'value'       => $enable_add_products,
+            )
+        );
+        ?>
+    </div>
+
     <div class="add-products-block">
-
-        <div class="add-products-info">
-            <h3><?php esc_html_e( 'Add Products', 'advanced-coupons-for-woocommerce' ); ?></h3>
-            <p><?php esc_html_e( 'This feature lets you add products to a customer’s cart when a coupon is successfully applied. The products listed in the table below will be automatically added to their cart in the specified quantities and price overrides.', 'advanced-coupons-for-woocommerce' ); ?></p>
-            <p><?php esc_html_e( "The Add Products feature can also be combined with other features like Cart Conditions and Auto Apply to make products appear in the customer's cart like magic once certain conditions are met.", 'advanced-coupons-for-woocommerce' ); ?></p>
-        </div>
-
         <table class="add-products-data-table acfw-styled-table" data-exclude="<?php echo esc_attr( wp_json_encode( $exclude ) ); ?>">
             <thead>
                 <tr>

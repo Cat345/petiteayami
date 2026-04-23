@@ -189,9 +189,9 @@ if ( ! class_exists( 'WooFunnels_AS_DS' ) ) {
 		 */
 		public function as_pre_init_cb() {
 			$is_worker_request = false;
-			if ( isset( $_GET['rest_route'] ) && false !== strpos( bwf_clean( $_GET['rest_route'] ), '/woofunnels/v1/worker' ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['rest_route'] ) && false !== strpos( bwf_clean( $_GET['rest_route'] ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Nonce verification not required for REST API route detection; route paths contain slashes as part of path structure
 				$is_worker_request = true;
-			} else if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( bwf_clean( $_SERVER['REQUEST_URI'] ), '/woofunnels/v1/worker' ) ) {
+			} else if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( bwf_clean( $_SERVER['REQUEST_URI'] ), '/woofunnels/v1/worker' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- REQUEST_URI is part of the URL structure, slashes are intentional
 				$is_worker_request = true;
 			}
 

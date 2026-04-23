@@ -402,6 +402,7 @@ class WPDesk_Flexible_Shipping extends WC_Shipping_Method {
 				$shipping_method = array(
 						'method_title' 				=> '',
 						'method_description'		=> '',
+						CommonMethodSettings::METHOD_LOGO_ID => 0,
 						'method_enabled' 			=> 'no',
 						'method_shipping_zone' 		=> '',
 						'method_calculation_method'	=> 'sum',

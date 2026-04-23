@@ -34,6 +34,7 @@ class AttributeFieldType
                     'args' => [
                         'separator' => [
                             'type' => 'String',
+                            'defaultValue' => ', ',
                         ],
                     ],
                     'metadata' => [
@@ -42,7 +43,6 @@ class AttributeFieldType
                             'separator' => [
                                 'label' => trans('Separator'),
                                 'description' => trans('Set the separator between tags.'),
-                                'default' => ', ',
                             ],
                         ],
                     ],
@@ -85,10 +85,6 @@ class AttributeFieldType
          * @var WC_Product_Attribute $attribute
          */
         [$product, $attribute] = (array) $ref;
-
-        $args += [
-            'separator' => ', ',
-        ];
 
         $values = [];
 

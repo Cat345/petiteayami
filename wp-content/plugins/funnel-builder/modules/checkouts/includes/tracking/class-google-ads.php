@@ -6,7 +6,7 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Analytics_GADS extends WFACP_Analytics_GA {
 		private static $self = null;
-		protected $slug = 'google_ads';
+		protected $slug      = 'google_ads';
 
 		protected function __construct() {
 			parent::__construct();
@@ -14,7 +14,7 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 
 		public static function get_instance() {
 			if ( is_null( self::$self ) ) {
-				self::$self = new self;
+				self::$self = new self();
 			}
 
 			return self::$self;
@@ -45,7 +45,7 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 				$options['add_to_cart'] = $data;
 			}
 
-			$data = $this->get_items_data();
+			$data                = $this->get_items_data();
 			$this->checkout_data = $data;
 			$options['checkout'] = $data;
 
@@ -62,7 +62,7 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 			if ( $cart_item['variation_id'] ) {
 				$variation = wc_get_product( $cart_item['variation_id'] );
 				if ( $variation->get_type() === 'variation' ) {
-					$variation_name = implode( "/", $variation->get_variation_attributes() );
+					$variation_name = implode( '/', $variation->get_variation_attributes() );
 					$categories     = implode( '/', $this->get_object_terms( 'product_cat', $variation->get_parent_id() ) );
 				} else {
 					$variation_name = null;
@@ -73,30 +73,29 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 				$categories     = implode( '/', $this->get_object_terms( 'product_cat', $product_id ) );
 			}
 
-
 			$price = $cart_item['line_subtotal'];
 			if ( ! wc_string_to_bool( $this->exclude_tax ) ) {
 				$price += $cart_item['line_subtotal_tax'];
 			}
 			$sub_total  = $this->number_format( $price );
-			$event_data = [
+			$event_data = array(
 				'value'        => $price,
 				'content_name' => $name,
 				'content_type' => 'product',
 				'currency'     => get_woocommerce_currency(),
-				'content_ids'  => [ $content_id ],
-				'contents'     => [
-					[
+				'content_ids'  => array( $content_id ),
+				'contents'     => array(
+					array(
 						'id'         => $content_id,
 						'item_price' => $sub_total,
 						'quantity'   => 1,
 						'value'      => $price,
 						'category'   => $categories,
 						'variant'    => $variation_name,
-					],
-				],
+					),
+				),
 				'user_roles'   => WFACP_Common::get_current_user_role(),
-			];
+			);
 
 			return $event_data;
 		}
@@ -124,7 +123,6 @@ if ( ! class_exists( 'WFACP_Analytics_GADS' ) ) {
 					$items[] = $item;
 				}
 			}
-
 
 			return $items;
 		}

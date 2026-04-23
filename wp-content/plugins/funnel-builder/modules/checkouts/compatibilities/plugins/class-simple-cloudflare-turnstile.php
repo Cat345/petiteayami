@@ -15,14 +15,14 @@ if ( ! class_exists( 'WFACP_Simple_Cloudflare_Turnstile' ) ) {
 
 	class WFACP_Simple_Cloudflare_Turnstile {
 		public function __construct() {
-			add_action( 'wfacp_template_load', [ $this, 'actions' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_css' ] );
+			add_action( 'wfacp_template_load', array( $this, 'actions' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_css' ) );
 		}
 
 		public function actions() {
 			try {
 				// Only proceed if the plugin is configured to show before submit and Check if the function exists before trying to use it
-				if ( get_option( 'cfturnstile_woo_checkout_pos' ) !== 'beforesubmit' || ! function_exists( 'cfturnstile_field_checkout' )) {
+				if ( get_option( 'cfturnstile_woo_checkout_pos' ) !== 'beforesubmit' || ! function_exists( 'cfturnstile_field_checkout' ) ) {
 					return;
 				}
 				// Remove the original hook and add it to our custom hook
@@ -30,7 +30,9 @@ if ( ! class_exists( 'WFACP_Simple_Cloudflare_Turnstile' ) ) {
 				add_action( 'wfacp_woocommerce_review_order_before_submit', 'cfturnstile_field_checkout', 10 );
 			} catch ( Exception $e ) {
 				// Log the error for debugging purposes
-				error_log( 'WFACP_Simple_Cloudflare_Turnstile::__construct - ' . $e->getMessage() );
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'WFACP_Simple_Cloudflare_Turnstile::__construct - ' . $e->getMessage() );//phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
 			}
 		}
 		public function add_css() {
@@ -40,4 +42,3 @@ if ( ! class_exists( 'WFACP_Simple_Cloudflare_Turnstile' ) ) {
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Simple_Cloudflare_Turnstile(), 'simple-cloudflare-turnstile' );
 }
-

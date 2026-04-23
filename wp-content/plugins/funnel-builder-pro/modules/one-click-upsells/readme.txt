@@ -1,4 +1,7 @@
 === FunnelKit One Click Upsells ===
+== 3.18.0 (24/10/2025) =
+* Fixed: Upsells: Offer price block for block editor templates is showing unresolved merge tags in case of WooCommerce Subscription plugin is not installed. (#8243)
+
 == 3.18.0 (22/10/2025) =
 * Fixed: Upsells: Compatibility updated with PayPal payments. (#8033,#8084)
 * Fixed: Upsells: Compatibility updated with mollie plugin to retry fetching customer mandate before opening offer. (#8072)

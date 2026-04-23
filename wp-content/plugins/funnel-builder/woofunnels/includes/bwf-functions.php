@@ -216,3 +216,4 @@ if ( ! function_exists( 'bwf_generate_random_bytes' ) ) {
 		return $output;
 	}
 }
+

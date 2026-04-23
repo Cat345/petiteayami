@@ -33,10 +33,8 @@ abstract class AbstractProvider
     abstract public function lists(array $provider): array;
 
     /**
-     * @param string $email
      * @param array<string, mixed> $data
      * @param array<string, mixed>  $provider
-     *
      * @throws \Exception
      */
     abstract public function subscribe(string $email, array $data, array $provider): bool;
@@ -91,10 +89,10 @@ abstract class AbstractProvider
         switch ($method) {
             case 'GET':
                 $query = http_build_query($args, '', '&');
-                $response = $this->client->get("{$url}?{$query}", compact('headers'));
+                $response = $this->client->get("{$url}?{$query}", ['headers' => $headers]);
                 break;
             case 'POST':
-                $response = $this->client->post($url, json_encode($args), compact('headers'));
+                $response = $this->client->post($url, json_encode($args), ['headers' => $headers]);
                 break;
 
             default:
@@ -118,7 +116,6 @@ abstract class AbstractProvider
      */
     protected function findError($response, $formattedResponse): string
     {
-        return $formattedResponse['detail'] ??
-            'Unknown error, call getLastResponse() to find out what happened.';
+        return $formattedResponse['detail'] ?? 'Unknown error.';
     }
 }

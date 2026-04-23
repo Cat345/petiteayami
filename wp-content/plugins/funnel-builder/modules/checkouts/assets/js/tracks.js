@@ -283,6 +283,23 @@
 
         }
 
+        /**
+         * Fire JavaScript action hook for add_to_cart events
+         * Allows developers to listen and duplicate events (e.g., for Stape)
+         * 
+         * @param {Object} eventData - The event data object
+         * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
+         */
+        fire_add_to_cart_hook(eventData, eventName) {
+            try {
+                if (typeof $ !== 'undefined' && $.fn && $.fn.trigger) {
+                    $(document).trigger('wffn_add_to_cart_event', [eventData, eventName || 'add_to_cart']);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         add_to_cart() {
             if (this.settings.add_to_cart === 'true') {
                 this.event_add_to_cart();
@@ -444,6 +461,10 @@
                 this.send_data(event, data, event_id);
             }
             data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+            // Fire action hook for AddToCart events
+            if ('AddToCart' === event) {
+                this.fire_add_to_cart_hook(data, 'AddToCart');
+            }
             if (typeof isCustom === 'undefined') {
                 fbq('trackSingle', this.track_id, event, data, {'eventID': event_id});
             } else {
@@ -539,7 +560,28 @@
         }
 
         gtag() {
+            // Fire action hook for add_to_cart events before pushing to dataLayer
+            if (arguments.length >= 2 && arguments[0] === 'event' && arguments[1] === 'add_to_cart') {
+                this.fire_add_to_cart_hook(arguments[2] || {}, 'add_to_cart');
+            }
             dataLayer.push(arguments);
+        }
+
+        /**
+         * Fire JavaScript action hook for add_to_cart events
+         * Allows developers to listen and duplicate events (e.g., for Stape)
+         * 
+         * @param {Object} eventData - The event data object
+         * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
+         */
+        fire_add_to_cart_hook(eventData, eventName) {
+            try {
+                if (typeof $ !== 'undefined' && $.fn && $.fn.trigger) {
+                    $(document).trigger('wffn_add_to_cart_event', [eventData, eventName || 'add_to_cart']);
+                }
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         event_checkout(checkout_data) {
@@ -568,6 +610,8 @@
             data.non_interaction = true;
             var event_data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
 
+            // Fire action hook before pushing to dataLayer
+            this.fire_add_to_cart_hook(event_data, 'add_to_cart');
             this.gtag('event', 'add_to_cart', event_data);
         }
 
@@ -737,6 +781,10 @@
             if (window.pintrk) {
                 data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
                 delete data['traffic_source'];
+                // Fire action hook for addtocart events
+                if ('addtocart' === event) {
+                    this.fire_add_to_cart_hook(data, 'addtocart');
+                }
                 pintrk('track', event, data);
             }
         }
@@ -823,6 +871,11 @@
         ttq(event, data) {
             if (typeof ttq !== "object") {
                 return;
+            }
+            // Fire action hook for AddToCart events
+            if ('AddToCart' === event) {
+                let processedData = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+                this.fire_add_to_cart_hook(processedData, 'AddToCart');
             }
             let self = this;
             setTimeout(function () {
@@ -913,7 +966,10 @@
             }
 
             data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
-
+            // Fire action hook for ADD_CART events
+            if ('ADD_CART' === event) {
+                this.fire_add_to_cart_hook(data, 'ADD_CART');
+            }
             snaptr('track', event, data);
         }
 

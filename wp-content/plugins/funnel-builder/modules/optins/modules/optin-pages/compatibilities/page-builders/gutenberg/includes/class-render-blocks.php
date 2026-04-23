@@ -58,21 +58,25 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 				return;
 			}
 
-			$bwfblocks = [
-				[
+			$bwfblocks = array(
+				array(
 					'name'     => 'bwfblocks/optin-form',
 					'callback' => 'do_optin_form_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/popup-form',
 					'callback' => 'do_popup_form_block_block',
-				],
-			];
+				),
+			);
 
 			foreach ( $bwfblocks as $block ) {
-				register_block_type( $block['name'], array(
+				register_block_type(
+					$block['name'],
+					array(
+						'api_version'     => 3,
 						'render_callback' => array( $this, $block['callback'] ),
-					) );
+					)
+				);
 			}
 		}
 
@@ -93,7 +97,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -110,7 +114,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -125,11 +129,23 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 				'bwfop-popup-form-container',
 				'bwf-' . $settings['uniqueID'],
 			);
-			$output     .= sprintf( '<div %1$s %2$s>', bwfblocks_attr( 'poup', array(
+			$output    .= sprintf(
+				'<div %1$s %2$s>',
+				bwfblocks_attr(
+					'poup',
+					array(
 						'class' => implode( ' ', $classNames ),
-					), $settings ), bwfblocks_attr( 'poupId', array(
+					),
+					$settings
+				),
+				bwfblocks_attr(
+					'poupId',
+					array(
 						'id' => isset( $settings['blockID'] ) ? $settings['blockID'] . '-popup' : null,
-					), $settings ) );
+					),
+					$settings
+				)
+			);
 
 			$output .= $this->do_button_block( $attributes, $content );
 			if ( ! isset( $settings['progressStripEnable'] ) ) {
@@ -148,29 +164,29 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 			}
 			ob_start();
 			?>
-            <div class="bwf_pp_overlay <?php echo esc_attr( $settings['popupType'] ); ?>" id="<?php echo isset( $settings['blockID'] ) ? esc_attr( $settings['blockID'] ) : null ?>">
-                <div class="bwf_pp_wrap">
-                    <a class="bwf_pp_close" href="javascript:void(0);">×</a>
-                    <div class="bwf_pp_cont">
+			<div class="bwf_pp_overlay <?php echo esc_attr( $settings['popupType'] ); ?>" id="<?php echo isset( $settings['blockID'] ) ? esc_attr( $settings['blockID'] ) : null; ?>">
+				<div class="bwf_pp_wrap">
+					<a class="bwf_pp_close" href="javascript:void(0);">×</a>
+					<div class="bwf_pp_cont">
 						<?php if ( $settings['progressBarEnable'] ) { ?>
 							<?php if ( $settings['progressBarTextEnable'] ) { ?>
-                                <div class="pp-bar-text above"><?php echo esc_html( $settings['progressBarText'] ); ?></div>
+								<div class="pp-bar-text above"><?php echo esc_html( $settings['progressBarText'] ); ?></div>
 							<?php } ?>
-                            <div class="bwf_pp_bar_wrap ">
-                                <div class="bwf_pp_bar <?php echo esc_attr( $animate ); ?>" role="progressbar" aria-valuenow="<?php echo $settings['progressWidth'] ? esc_attr( $settings['progressWidth'] ) : '75'; ?>" aria-valuemin="0" aria-valuemax="100">
+							<div class="bwf_pp_bar_wrap ">
+								<div class="bwf_pp_bar <?php echo esc_attr( $animate ); ?>" role="progressbar" aria-valuenow="<?php echo $settings['progressWidth'] ? esc_attr( $settings['progressWidth'] ) : '75'; ?>" aria-valuemin="0" aria-valuemax="100">
 									<?php if ( ! $settings['progressBarTextEnable'] ) { ?>
-                                        <span class="pp-bar-text inside"><?php echo esc_html( $settings['progressBarText'] ); ?></span>
+										<span class="pp-bar-text inside"><?php echo esc_html( $settings['progressBarText'] ); ?></span>
 									<?php } ?>
-                                </div>
-                            </div>
+								</div>
+							</div>
 						<?php } ?>
-                        <div class="bwf_pp_opt_head"><?php echo esc_html( $settings['heading'] ); ?></div>
+						<div class="bwf_pp_opt_head"><?php echo esc_html( $settings['heading'] ); ?></div>
                         <div class="bwf_pp_opt_sub_head"><?php echo $settings['subHeading'];// phpcs:ignore ?></div>
 						<?php echo $content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                        <div class="bwf_pp_footer"><?php echo esc_html( $settings['textAfter'] ); ?></div>
-                    </div>
-                </div>
-            </div>
+						<div class="bwf_pp_footer"><?php echo esc_html( $settings['textAfter'] ); ?></div>
+					</div>
+				</div>
+			</div>
 			<?php
 			$output .= ob_get_clean();
 			$output .= '</div>';
@@ -181,7 +197,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -196,21 +212,39 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 				$settings['classWrap'],
 			);
 
-			$output .= sprintf( '<div %1$s %2$s>', bwfblocks_attr( 'form', array(
+			$output .= sprintf(
+				'<div %1$s %2$s>',
+				bwfblocks_attr(
+					'form',
+					array(
 						'class' => implode( ' ', $classNames ),
-					), $settings ), bwfblocks_attr( 'formId', array(
+					),
+					$settings
+				),
+				bwfblocks_attr(
+					'formId',
+					array(
 						'id' => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-					), $settings ) );
+					),
+					$settings
+				)
+			);
 
-			$output .= sprintf( '<form %1$s method="post">', bwfblocks_attr( 'forminner', array(
+			$output .= sprintf(
+				'<form %1$s method="post">',
+				bwfblocks_attr(
+					'forminner',
+					array(
 						'class' => 'bwfop-form-wrap wffn-custom-optin-from',
-					), $settings ) );
+					),
+					$settings
+				)
+			);
 
 			ob_start();
 
-
-			$wrapper_class = '';
-			$show_labels   = isset( $settings['enableLabel'] ) ? $settings['enableLabel'] : false;
+			$wrapper_class  = '';
+			$show_labels    = isset( $settings['enableLabel'] ) ? $settings['enableLabel'] : false;
 			$wrapper_class .= $show_labels ? '' : ' wfop_hide_label';
 
 			$optinPageId    = WFOPP_Core()->optin_pages->get_optin_id();
@@ -254,9 +288,9 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 				$custom_form->_output_form( $wrapper_class, $optin_fields, $optinPageId, $optin_settings, 'inline', $settings_css );
 			}
 			?>
-            <script>
-                jQuery(document).trigger('wffn_reload_phone_field');
-            </script>
+			<script>
+				jQuery(document).trigger('wffn_reload_phone_field');
+			</script>
 			<?php
 			$output .= ob_get_clean() . '</form></div>';
 
@@ -266,7 +300,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -282,11 +316,16 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 				'bwfop-poup-button-wrap',
 			);
 
-
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
 						'class' => implode( ' ', $classNames ),
-					), $settings ) );
-
+					),
+					$settings
+				)
+			);
 
 			$buttonAnchorClasses = array( 'bwf-btn', 'bwf-btn-popup' );
 
@@ -296,7 +335,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 
 			$button_rel    = '';
 			$button_target = '';
-			$button        = isset( $settings['button'] ) ? $settings['button'] : [];
+			$button        = isset( $settings['button'] ) ? $settings['button'] : array();
 			if ( isset( $button['newTab'] ) && ! empty( $button['newTab'] ) ) {
 				$button_target = '_blank';
 				$button_rel    = 'noopener noreferrer';
@@ -305,24 +344,32 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 			if ( isset( $button['noFollow'] ) && ! empty( $button['noFollow'] ) ) {
 				$button_rel .= ' nofollow';
 			}
-			$output .= sprintf( '<button %1$s >', bwfblocks_attr( 'button-anchor', array(
+			$output .= sprintf(
+				'<button %1$s >',
+				bwfblocks_attr(
+					'button-anchor',
+					array(
 						'id'     => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
 						'class'  => implode( ' ', $buttonAnchorClasses ),
 						'href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
 						'target' => $button_target,
 						'rel'    => $button_rel,
-					), $settings ), isset( $settings['product'] ) ? $settings['product'] : '' );
+					),
+					$settings
+				),
+				isset( $settings['product'] ) ? $settings['product'] : ''
+			);
 
 			$output .= '<div class="bwfop-secondary">';
-			//Button Icon Left Side
+			// Button Icon Left Side
 			if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'left' === $button['iconPos'] ) {
 				$output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
 			}
 
-			//Button content
+			// Button content
 			$output .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' . $settings['content'] . '</span>' : '';
 
-			//Button Icon Right Side
+			// Button Icon Right Side
 			if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'right' === $button['iconPos'] ) {
 				$output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
 			}
@@ -330,7 +377,7 @@ if ( ! class_exists( 'BWFBlocksOptin_Render_Block' ) ) {
 			// Button Secondary Text (Sub heading)
 			if ( isset( $settings['secondaryContentEnable'] ) && ! empty( $settings['secondaryContentEnable'] ) ) {
 				$content2 = isset( $settings['secondaryContent'] ) ? $settings['secondaryContent'] : '';
-				$output   .= '<span class="bwf-btn-sub-text">' . $content2 . '</span>';
+				$output  .= '<span class="bwf-btn-sub-text">' . $content2 . '</span>';
 			}
 
 			$output .= '</button>';

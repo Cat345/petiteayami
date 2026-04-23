@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-03-03 10:00:00+0000\n"
+"PO-Revision-Date: 2026-04-15 08:27:45+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -9,47 +9,233 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: MailPoet - MailPoet\n"
 
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:776
+msgid "Encourage customers to rebook after their booking is completed."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:775
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:782
+msgid "Next booking nudge"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:753
+msgid "Ask for feedback after a booking is completed."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:752
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:759
+msgid "Post-booking review request"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:730
+msgid "Send a series of emails after a booking is created to help customers prepare for their visit."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:729
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:736
+msgid "Educational drip after booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:707
+msgid "Send a reminder before a booking starts. Customize the timing in the trigger settings."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:706
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:713
+msgid "Pre-visit reminder"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:684
+msgid "Send a confirmation email after a new booking is created."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:683
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:690
+msgid "Follow-up after a new booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:661
+msgid "Remind customers who left a booking in their cart to complete their reservation."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:660
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:667
+msgid "Abandoned booking reminder"
+msgstr ""
+
+#: lib/Twig/Functions.php:381
+msgid "Poor"
+msgstr "Низкое"
+
+#. translators: %s is the name of the email campaign.
+#: lib/Cron/Workers/StatsNotifications/Worker.php:139
+msgid "Campaign performance summary: %s"
+msgstr ""
+
+#: lib/Cron/Workers/StatsNotifications/AutomatedEmails.php:125
+msgid "Your monthly automation stats are in!"
+msgstr ""
+
+#: views/emails/statsNotificationLayout.html:140
+msgid "Manage email preference"
+msgstr ""
+
+#: views/emails/statsNotificationLayout.html:134
+msgid "All Rights Reserved."
+msgstr ""
+
+#: views/emails/statsNotificationGarden.html:273
+msgid "View full campaign report"
+msgstr ""
+
+#: views/emails/statsNotificationGarden.html:42
+msgid "Here's how your campaign \"%s\" performed in the first 24 hours."
+msgstr ""
+
+#: views/emails/statsNotificationGarden.html:25
+msgid "Your campaign stats"
+msgstr ""
+
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:312
+msgid "View automation report"
+msgstr ""
+
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:188
+#: views/emails/statsNotificationGarden.html:149
+msgid "Machine-opened"
+msgstr "открыто машиной"
+
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:44
+msgid "Here's a summary of how your active automations performed this month."
+msgstr ""
+
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:25
+msgid "Your monthly automation stats"
+msgstr ""
+
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:35
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:30
+msgid "Hello there,"
+msgstr "Привет,"
+
+#: lib/SystemReport/SystemReportCollector.php:146
+msgid "Managed by MailPoet Sending Service"
+msgstr "Управление осуществляется службой рассылки MailPoet"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:214
+msgid "A collection of event email layouts."
+msgstr "Коллекция макетов писем для мероприятий."
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:213
+msgctxt "Block pattern category"
+msgid "Events"
+msgstr "Мероприятия"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:209
+msgid "A collection of educational campaign email layouts."
+msgstr "Коллекция макетов писем для образовательных кампаний."
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:208
+msgctxt "Block pattern category"
+msgid "Educational campaign"
+msgstr "Образовательная кампания"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:204
+msgid "A collection of sales announcement email layouts."
+msgstr "Коллекция макетов писем с объявлениями о распродажах."
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:203
+msgctxt "Block pattern category"
+msgid "Sales announcements"
+msgstr "Объявления о распродажах"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:38
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Pattern.php:101
+msgid "Product placeholder"
+msgstr "Заполнитель для товара"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeEmailPattern.php:40
+msgid "Welcome email image"
+msgstr "Изображение приветственного письма"
+
+#: lib/Services/CongratulatoryMssEmailController.php:37
+msgctxt "Subject of an email confirming that the email sending service works"
+msgid "Your email sending is set up!"
+msgstr "Настройка отправки писем завершена!"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:37
+msgid "Sale announcement image"
+msgstr "Изображение объявления о распродаже"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewsletterPattern.php:36
+msgid "Newsletter image"
+msgstr "Изображение рассылки"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EventInvitationPattern.php:39
+msgid "Event invitation image"
+msgstr "Изображение приглашения на мероприятие"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:108
+msgid "Step 3 image"
+msgstr "Изображение шага 3"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:92
+msgid "Step 2 image"
+msgstr "Изображение шага 2"
+
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:48
+msgid "Step 1 image"
+msgstr "Изображение шага 1"
+
+#: views/emails/congratulatoryMssEmail.html:70
+msgid "This email was sent automatically after you activated your email sending key in your settings."
+msgstr "Это письмо было отправлено автоматически после того, как вы активировали ключ для отправки писем в настройках."
+
+#: views/emails/congratulatoryMssEmail.html:54
+msgid "Your emails are now being sent"
+msgstr "Теперь ваши письма отправляются"
+
 #. translators: PRODUCT NAME is placeholder text that merchants replace with
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductRestockNotificationPattern.php:29
 msgid "PRODUCT NAME is back in stock!"
-msgstr ""
+msgstr "НАЗВАНИЕ ТОВАРА снова в наличии!"
 
 #. translators: PRODUCT NAME is placeholder text that merchants replace with
 #. their own content.
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:30
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:46
 msgid "Loving your PRODUCT NAME? Make it even better"
-msgstr ""
+msgstr "Вам нравится НАЗВАНИЕ ТОВАРА? Сделайте его ещё лучше"
 
 #. translators: PRODUCT NAME is placeholder text that merchants replace with
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewProductsAnnouncementPattern.php:29
 msgid "Introducing PRODUCT NAME"
-msgstr ""
+msgstr "Представляем НАЗВАНИЕ ТОВАРА"
 
 #. translators: Placeholder text that merchants replace with their own
 #. content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EventInvitationPattern.php:51
 msgid "BUILDING STREET, CITY"
-msgstr ""
+msgstr "УЛИЦА, ГОРОД ЗДАНИЯ"
 
 #. translators: Placeholder text that merchants replace with their own
 #. content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EventInvitationPattern.php:45
 msgid "MONTH DAY, at TIME"
-msgstr ""
+msgstr "МЕСЯЦ ДЕНЬ, в ВРЕМЯ"
 
 #. translators: A BRIEF DESCRIPTION OF THE EVENT is placeholder text that
 #. merchants replace with their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EventInvitationPattern.php:35
 msgid "You're invited 🎉 Join us for A BRIEF DESCRIPTION OF THE EVENT and be part of our exclusive event series."
-msgstr ""
+msgstr "Приглашаем вас 🎉 Присоединяйтесь к нам на мероприятии «КРАТКОЕ ОПИСАНИЕ МЕРОПРИЯТИЯ» и станьте участником нашей эксклюзивной серии мероприятий."
 
 #. translators: EVENT NAME is placeholder text that merchants replace with
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EventInvitationPattern.php:29
 msgid "Join us for EVENT NAME"
-msgstr ""
+msgstr "Присоединитесь к нам на НАЗВАНИЕ МЕРОПРИЯТИЯ"
 
 #. translators: Placeholder text that merchants replace with their own
 #. content.
@@ -57,151 +243,151 @@ msgstr ""
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:84
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:121
 msgid "BRIEF DESCRIPTION"
-msgstr ""
+msgstr "КРАТКОЕ ОПИСАНИЕ"
 
 #. translators: PRODUCT NAME is placeholder text that merchants replace with
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:30
 msgid "How to Get the Most from PRODUCT NAME"
-msgstr ""
+msgstr "Как получить максимум от НАЗВАНИЕ ТОВАРА"
 
 #. translators: automation subject (entity entering automation) title
 #: lib/Automation/Integrations/WordPress/Subjects/UserSubject.php:40
 msgid "User"
 msgstr "Пользователь"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:155
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:233
 msgid "A collection of post-purchase email layouts."
-msgstr ""
+msgstr "Коллекция макетов писем, рассылаемых после покупки."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:154
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:232
 msgctxt "Block pattern category"
 msgid "Post-purchase"
-msgstr ""
+msgstr "После покупки"
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:97
 msgid "Win Back Customer"
-msgstr ""
+msgstr "Отвоеванный клиент"
 
 #. translators: %s is a placeholder for the first name
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:34
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:47
 msgid "Hi %s, come see what’s new — we’ve added fresh arrivals and exclusive deals just for you."
-msgstr ""
+msgstr "Привет, %s! Смотри, что у нас нового — мы добавили свежие новинки и эксклюзивные предложения специально для тебя."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:28
-msgid "We Miss You! Here’s 15% Off "
-msgstr ""
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:41
+msgid "We Miss You! Here’s 15% Off"
+msgstr "Мы соскучились! Вот 15% скидка"
 
 #. translators: Name of a content pattern used as starting content of an email
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:180
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:98
 msgid "Product Purchase Follow-Up"
-msgstr ""
+msgstr "Сопровождение после покупки"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:35
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:51
 msgid "Here are a few essentials that pair perfectly."
-msgstr ""
+msgstr "Вот несколько вещей, которые идеально сочетаются друг с другом."
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:80
 msgid "Post Purchase Thank You"
-msgstr ""
+msgstr "Благодарность после покупки"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:35
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:48
 msgid "Thanks for shopping with us. Your order is being processed, and we can’t wait for you to receive it."
-msgstr ""
+msgstr "Спасибо, что сделали покупку у нас. Ваш заказ находится в обработке, и мы с нетерпением ждем, когда вы его получите."
 
 #. translators: %s is a placeholder for the customer first name
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:30
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:43
 msgid "%s, thank you for your order"
-msgstr ""
+msgstr "%s, благодарим за заказ"
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:79
 msgid "First Purchase Thank You"
-msgstr ""
+msgstr "Благодарность за первую покупку"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:43
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:44
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:61
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:56
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:57
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:74
 msgid "While you wait, check out other items that pair perfectly with your order."
-msgstr ""
+msgstr "Пока вы ждете, посмотрите другие товары, которые идеально подойдут к вашему заказу."
 
 #. translators: %s is a placeholder for the shop name
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:34
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:47
 msgid "We’re thrilled you chose %s. Your order is being processed, and we can’t wait for you to receive it."
-msgstr ""
+msgstr "Мы очень рады, что вы выбрали %s. Ваш заказ находится в обработке, и мы с нетерпением ждем, когда вы его получите."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:28
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:41
 msgid "Thank You for Your First Order"
-msgstr ""
+msgstr "Благодарим за ваш первый заказ"
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeWithDiscountEmailPattern.php:72
 msgid "Welcome with Discount"
-msgstr ""
+msgstr "Приветственная скидка"
 
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeWithDiscountEmailPattern.php:52
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:50
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:63
 msgid "Start shopping"
-msgstr ""
+msgstr "Начать покупки"
 
 #. translators: %s: Customer full name personalization tag
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeWithDiscountEmailPattern.php:36
 msgid "Hi %s, we are so glad to have you onboard. As a thank you, here is a 10%% discount for your first purchase."
-msgstr ""
+msgstr "Привет, %s, мы рады, что вы с нами. В качестве благодарности предоставляем 10%% скидку на вашу первую покупку."
 
 #. translators: Name of a content pattern used as starting content of an email
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:51
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:62
 msgid "Abandoned Cart with Discount"
-msgstr ""
+msgstr "Заброшенная корзина со скидкой"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:40
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:51
 msgid "These items are waiting in your cart"
-msgstr ""
+msgstr "Эти товары ждут вас в корзине"
 
 #. translators: %s: Site description personalization tag
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:24
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:35
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeWithDiscountEmailPattern.php:42
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:40
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:53
 msgid "Use this code at checkout to redeem your discount:"
-msgstr ""
+msgstr "Введите этот код при оформлении заказа, чтобы воспользоваться скидкой:"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:20
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:31
 msgid "Good news — your cart is still here! Even better? You can get 10% off if you check out in the next 24 hours."
-msgstr ""
+msgstr "Хорошая новость — ваша корзина сохранилась! А знаете, что ещё лучше? Вы можете получить скидку 10%, если оформите заказ в течение следующих 24 часов."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:16
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:27
 msgid "We Saved Your Cart + Little Surprise"
-msgstr ""
+msgstr "Мы сохранили вашу корзину + небольшой сюрприз"
 
-#: lib/Config/Menu.php:558
+#: lib/Config/Menu.php:563
 msgid "Automation Flow"
-msgstr ""
+msgstr "Поток автоматизации"
 
 #: lib/Automation/Engine/Registry.php:68
 msgctxt "automation template category title"
 msgid "Bookings"
 msgstr "Бронирования"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:160
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:238
 msgid "A collection of abandoned cart email layouts."
 msgstr "Коллекция макетов писем о брошенных корзинах."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:159
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:237
 msgctxt "Block pattern category"
 msgid "Abandoned cart"
 msgstr "Брошенная корзина"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:146
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:224
 msgid "A collection of welcome email layouts."
 msgstr "Коллекция макетов приветственных писем."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:141
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:219
 msgid "A collection of newsletter email layouts."
 msgstr "Коллекция макетов писем с рассылками."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:140
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:218
 msgctxt "Block pattern category"
 msgid "Newsletter"
 msgstr "Рассылка"
@@ -231,7 +417,7 @@ msgstr "Объявление о распродаже"
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:61
 msgid "Don't wait too long – this offer ends on MONTH DAY."
-msgstr ""
+msgstr "Не ждите слишком долго – это предложение действует до МЕСЯЦ ДЕНЬ."
 
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:47
 msgid "No complicated rules, just great savings across the board."
@@ -245,7 +431,7 @@ msgstr "Это идеальный шанс порадовать себя или 
 #. with their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:43
 msgid "Get XX% OFF EVERYTHING in the store for a limited time."
-msgstr ""
+msgstr "Получите XХ% СКИДКУ НА ВСЕ в магазине в течение ограниченного времени."
 
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:33
 msgid "Big news! Our sitewide sale is officially ON!"
@@ -255,7 +441,7 @@ msgstr "Отличная новость! На нашем сайте официа
 #. content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:29
 msgid "XX% off sitewide!"
-msgstr ""
+msgstr "XХ% скидка со всего сайта!"
 
 #. translators: Name of a content pattern used as starting content of an email
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductRestockNotificationPattern.php:62
@@ -315,18 +501,18 @@ msgstr "Объявление о новых поступлениях"
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:66
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:166
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:67
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:167
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:85
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeEmailPattern.php:59
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeWithDiscountEmailPattern.php:59
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:84
 msgid "Happy shopping!"
 msgstr "Удачных покупок!"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:38
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/FirstPurchaseThankYouPattern.php:51
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:58
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:39
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:59
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:56
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/PostPurchaseThankYouPattern.php:52
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:75
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WinBackCustomerPattern.php:69
 msgid "You might also like"
 msgstr "Вам также может понравиться"
 
@@ -338,7 +524,7 @@ msgstr "Купить коллекцию"
 #. with their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:34
 msgid "Explore our latest collection featuring PRODUCT CATEGORY. It's designed to inspire and elevate."
-msgstr ""
+msgstr "Откройте для себя нашу новую коллекцию КАТЕГОРИЯ ТОВАРОВ. Она создана, чтобы вдохновлять и восхищать."
 
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:28
 msgid "New arrivals are here"
@@ -378,28 +564,29 @@ msgstr "Как это работает"
 #. their own content.
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/EducationalCampaignPattern.php:36
 msgid "Our latest guide walks you through expert tips to make the most out of your PRODUCT NAME."
-msgstr ""
+msgstr "В нашем новом руководстве вы найдете советы экспертов, которые помогут вам максимально эффективно использовать НАЗВАНИЕ ТОВАРА."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:34
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartWithDiscountPattern.php:45
 msgid "Finish checkout"
 msgstr "Завершить оформление заказа"
 
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:42
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewProductsAnnouncementPattern.php:41
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:43
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:59
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductRestockNotificationPattern.php:41
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Pattern.php:102
 msgid "Product name"
 msgstr "Название продукта"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:20
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:28
 msgid "You’ve already done the hard part: finding something great. Now’s the time to make it yours."
 msgstr "Вы уже сделали самое сложное: нашли нечто замечательное. Теперь пришло время сделать это своим."
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:16
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:24
 msgid "Don‘t let this gem slip away"
 msgstr "Не выпустите это сокровище из рук"
 
-#: lib/Config/Menu.php:548
+#: lib/Config/Menu.php:553
 msgid "Automation Preview"
 msgstr "Предпросмотр автоматизации"
 
@@ -461,53 +648,46 @@ msgstr "Когда пользователям необходимо подтве�
 msgid "This is a preview of the CAPTCHA page."
 msgstr "Это предварительный просмотр страницы CAPTCHA."
 
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:34
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:38
 msgid "Click here to confirm your subscription:"
 msgstr "Нажмите, чтобы подтвердить подписку:"
 
-#. translators: %s: Subscriber first name
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:27
-msgid "there"
-msgstr "там"
-
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:58
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:53
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:49
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:57
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:53
 msgid "If you received this email by mistake, simply delete it. You won't receive any more emails from us unless you confirm your subscription using the link above."
 msgstr "Если вы получили это письмо по ошибке, просто удалите его. Вы больше не будете получать от нас письма, пока не подтвердите свою подписку, перейдя по ссылке выше."
 
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:53
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:45
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:39
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:49
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:43
 msgid "Thank you,"
 msgstr "Спасибо,"
 
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:48
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:43
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:47
 msgid "Click here to confirm your subscription"
 msgstr "Нажмите, чтобы подтвердить подписку"
 
 #. translators: %s: Site title
 #. translators: %s: Site name
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:42
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:39
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:31
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:43
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:35
 msgid "You've received this message because you subscribed to %s. Please confirm your subscription to receive emails from us:"
 msgstr "Вы получили это сообщение, поскольку подписались на %s. Пожалуйста, подтвердите подписку, чтобы получать письма от нас:"
 
 #. translators: %s: Default placeholder used when no subscriber name is
 #. available, e.g. "Hello there"
-#. translators: %s: Subscriber first name
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:35
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:32
 msgctxt "subscriber name placeholder"
 msgid "there"
 msgstr "там"
 
 #. translators: %s: Subscriber first name
 #: lib/WooCommerce/Emails/Templates/emails/block/marketing-confirmation.php:31
-#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:32
-#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:27
+#: lib/WooCommerce/Emails/Templates/emails/marketing-confirmation.php:33
+#: lib/WooCommerce/Emails/Templates/emails/plain/marketing-confirmation.php:28
 msgid "Hello %s,"
 msgstr "Привет, %s,"
 
@@ -582,84 +762,84 @@ msgstr "Посетители, которые комментируют пост, 
 msgid "Active subscriptions count"
 msgstr "Количество активных подписок"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:624
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:638
 msgid "Re-engage former subscribers by showing what’s new and why it’s worth coming back."
 msgstr "Верните бывших подписчиков, показав им, что нового появилось и почему стоит вернуться."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:623
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:630
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:637
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:644
 msgid "Win back churned subscribers"
 msgstr "Верните ушедших подписчиков"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:601
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:615
 msgid "Check in with customers after their trial ends. Encourage them to keep enjoying the benefits of their subscription."
 msgstr "Свяжитесь с клиентами по окончании пробного периода. Поощряйте их продолжать пользоваться преимуществами подписки."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:600
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:607
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:614
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:621
 msgid "Follow up when trial ends"
 msgstr "Продолжить после окончания испытательного срока"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:578
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:592
 msgid "Reach out to subscribers who canceled and ask for their feedback to help improve your service."
 msgstr "Свяжитесь с подписчиками, которые отменили подписку, и попросите их оставить отзыв, чтобы помочь улучшить ваш сервис."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:577
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:584
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:591
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:598
 msgid "Follow up on churned subscription"
 msgstr "Отслеживание отмененных подписок"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:555
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:569
 msgid "Help customers fix failed payments and continue their subscription without disruption."
 msgstr "Помогите клиентам решить проблемы с неудачными платежами и продолжить подписку без перерывов."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:554
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:561
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:568
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:575
 msgid "Follow up after failed renewal"
 msgstr "Действия после неудачной попытки восстановления"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:532
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:546
 msgid "Reinforce the value of your subscription by reminding customers what they’re getting after every renewal."
 msgstr "Усильте ценность вашей подписки, напоминая клиентам о том, что они получают после каждого продления."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:531
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:538
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:545
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:552
 msgid "Follow up after a subscription renewal"
 msgstr "Действия после продления подписки"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:509
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:523
 msgid "Thank new subscribers and let them know what to expect. A warm welcome goes a long way."
 msgstr "Поблагодарите новых подписчиков и расскажите им, чего им ожидать. Теплый прием имеет большое значение."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:508
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:515
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:522
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:529
 msgid "Follow up after a subscription purchase"
 msgstr "Действия после покупки подписки"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:486
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:500
 msgid "Reach out to unhappy customers and show you care. Offer help or gather more feedback to improve."
 msgstr "Свяжитесь с недовольными клиентами и покажите, что вам не все равно. Предложите помощь или соберите больше отзывов, чтобы улучшить ситуацию."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:485
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:492
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:499
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:506
 msgid "Follow up on a negative review (1-2 stars)"
 msgstr "Действия после негативного отзыва (1-2 звездочки)"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:463
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:477
 msgid "Thank your happy customers for their feedback and let them know you appreciate their support."
 msgstr "Поблагодарите довольных клиентов за их отзыв и покажите, что цените их поддержку."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:462
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:469
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:476
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:483
 msgid "Follow up on a positive review (4-5 stars)"
 msgstr "Действия после положительного отзыва (4-5 звездочек)"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:440
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:454
 msgid "Encourage your customers to leave a review a few days after their purchase. Show them their opinion matters."
 msgstr "Поощряйте своих клиентов оставлять отзывы через несколько дней после покупки. Покажите им, что их мнение имеет значение."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:439
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:446
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:453
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:460
 msgid "Ask to leave a review post-purchase"
 msgstr "Попросите оставить отзыв после покупки"
 
@@ -702,7 +882,7 @@ msgstr "Исключить товары, которых нет на складе
 msgid "Order note added"
 msgstr "Добавлено примечание к заказу"
 
-#: views/newsletter/editor.html:1285
+#: views/newsletter/editor.html:1315
 msgid "RSS Feed"
 msgstr "Лента RSS"
 
@@ -1297,28 +1477,28 @@ msgstr "Пожалуйста, обратитесь к %1$s за дополнит
 msgid "Manage help"
 msgstr "Помощь в управлении"
 
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:145
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/PatternsController.php:223
 msgctxt "Block pattern category"
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:352
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:353
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:386
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:387
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:420
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:421
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:366
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:367
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:400
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:401
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:434
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:435
 msgid "Important information about your order"
 msgstr "Важная информация о вашем заказе"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:371
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:378
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:385
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:392
 msgid "Purchased a product with a tag"
 msgstr "Покупка товара с меткой"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:338
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:372
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:406
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:352
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:386
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:420
 msgid "Share care instructions or simply thank the customer for making an order."
 msgstr "Поделитесь инструкциями по уходу или просто поблагодарите клиента за сделанный заказ."
 
@@ -1432,16 +1612,16 @@ msgstr "Корзина всего"
 msgid "WooCommerce abandoned cart"
 msgstr "Брошенная корзина WooCommerce"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:293
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:307
 msgid "Looks like you forgot something"
 msgstr "Похоже, вы что-то забыли"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:257
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:271
 msgid "Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand."
 msgstr "Возобновите отношения с бывшими клиентами, напомнив им о любимых товарах и продемонстрировав новинки, что побудит их вернуться к вашему бренду."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:256
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:263
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:270
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:277
 msgid "Win back customers"
 msgstr "Отвоеванные клиенты"
 
@@ -1561,7 +1741,7 @@ msgid "Save 40% on all MailPoet annual plans and upgrades"
 msgstr "Получите скидку 40% на все годовые тарифные планы и обновления MailPoet"
 
 #. translators: Name of a content pattern used as starting content of an email
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:31
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/AbandonedCartPattern.php:39
 msgid "Abandoned Cart"
 msgstr "Брошенная корзина"
 
@@ -1798,7 +1978,7 @@ msgstr "Клиент покупает из категории"
 msgid "Customer buys a product"
 msgstr "Клиент покупает товар"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:292
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:306
 msgid "Abandoned cart"
 msgstr "Заброшенная корзина"
 
@@ -1921,7 +2101,7 @@ msgstr "в день или раньше"
 msgid "Customer"
 msgstr "Клиент"
 
-#: lib/Config/Menu.php:398
+#: lib/Config/Menu.php:403
 msgctxt "lists per page (screen options)"
 msgid "Number of lists per page"
 msgstr "Количество списков на страницу"
@@ -1986,7 +2166,7 @@ msgstr "Описание cookie: Цель данного файла cookie - о�
 msgid "Below is a list of cookies that may be generated by MailPoet (note that some cookies are only utilized when WooCommerce is installed and activated):"
 msgstr "Ниже приведён список cookies, которые могут быть сгенерированы MailPoet (обратите внимание, что некоторые cookies используются только если WooCommerce установлен и активирован):"
 
-#: lib/Config/Menu.php:528 lib/Config/Menu.php:529
+#: lib/Config/Menu.php:533 lib/Config/Menu.php:534
 msgid "Automation Analytics"
 msgstr "Анализ автоматизации"
 
@@ -2022,24 +2202,24 @@ msgstr "Дата оплаты"
 msgid "Created date"
 msgstr "Дата создания"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:314
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:328
 msgid "Encourage your potential customers to finalize their purchase when they have added items to their cart but haven’t finished the order yet. Offer a coupon code as a last resort to convert them to customers."
 msgstr "Побуждайте ваших потенциальных клиентов завершить покупку, если они добавили товары в корзину, но еще не оформили заказ. В крайнем случае предложите код купона, чтобы превратить их в покупателей."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:313
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:320
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:327
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:334
 msgid "Abandoned cart campaign"
 msgstr "Кампания брошенной корзины"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:280
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:294
 msgid "Nudge your shoppers to complete the purchase after they have added a product to the cart but haven’t completed the order."
 msgstr "Подтолкните покупателей к завершению покупки после того, как они добавили товар в корзину, но не завершили заказ."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:210
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:224
 msgid "Thank You for Choosing Us!"
 msgstr "Спасибо, что выбрали нас!"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:209
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:223
 msgid "Thank you"
 msgstr "Спасибо"
 
@@ -3133,7 +3313,7 @@ msgctxt "Name of user interface used to customize email template used for confir
 msgid "Edit template for Confirmation emails"
 msgstr "Изменить шаблон для писем-подтверждений"
 
-#: lib/Cron/Workers/StatsNotifications/Worker.php:197
+#: lib/Cron/Workers/StatsNotifications/Worker.php:235
 msgid "Unsubscribe link (without confirmation)"
 msgstr "Ссылка для отмены подписки (без подтверждения)"
 
@@ -3171,7 +3351,7 @@ msgstr "Подключите свой сайт к MailPoet и начните о�
 msgid "Get ready to send your first campaign."
 msgstr "Приготовьтесь к отправке своей первой кампании."
 
-#: lib/Config/Menu.php:223 lib/Config/Menu.php:224
+#: lib/Config/Menu.php:228 lib/Config/Menu.php:229
 msgid "Home"
 msgstr "Главная страница"
 
@@ -3183,62 +3363,62 @@ msgstr "Чтобы скрыть список от страницы \"Управ�
 msgid "Show this list on the \"Manage Subscription\" page"
 msgstr "Отображать этот список на странице \"Управление подпиской\""
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:279
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:286
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:293
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:300
 msgid "Abandoned cart reminder"
 msgstr "Напоминание о брошенной корзине"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:233
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:240
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:247
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:254
 msgid "Thank loyal customers"
 msgstr "Отблагодарите лояльных клиентов"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:234
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:248
 msgid "These are your most important customers. Make them feel special by sending a thank you note for supporting your brand."
 msgstr "Это ваши наиболее важные клиенты. Дайте им почувствовать свою особенность, отправив записку с благодарностью за поддержку вашего бренда."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:183
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:190
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:197
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:204
 msgid "Celebrate first-time buyers"
 msgstr "Отметьте появление клиентов, которые покупают впервые"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:184
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:198
 msgid "Welcome your first-time customers by sending an email with a special offer for their next purchase. Make them feel appreciated within your brand."
 msgstr "Поприветствуйте новых клиентов, отправив им письмо с специальным предложением на следующую покупку. Дайте им почувствовать свою ценность для вашего бренда."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:160
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:167
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:174
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:181
 msgid "Welcome series for new WordPress users"
 msgstr "Серия приветствий для новых пользователей WordPress"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:161
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:175
 msgid "Welcome new WordPress users to your site. Send an email immediately after a WordPress user registers. Send a follow-up email two days later with more in-depth information."
 msgstr "Поприветствуйте новых пользователей WordPress на своем сайте. Отправьте письмо сразу после регистрации пользователя WordPress. Через два дня отправьте повторное письмо с более подробной информацией."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:137
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:144
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:151
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:158
 msgid "Welcome series for new subscribers"
 msgstr "Серия приветствий для новых подписчиков"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:138
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:152
 msgid "Welcome new subscribers and start building a relationship with them. Send an email immediately after someone subscribes to your list to introduce your brand and a follow-up two days later to keep the conversation going."
 msgstr "Поприветствуйте новых подписчиков и начните строить с ними отношения. Чтобы представить ваш бренд, отправьте письмо сразу после того, как кто-то подписался на ваш список, а через два дня отправьте повторное письмо, чтобы поддержать разговор."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:107
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:114
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:121
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:128
 msgid "Welcome new WordPress users"
 msgstr "Поприветствуйте новых пользователей WordPress"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:108
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:122
 msgid "Send a welcome email when a new WordPress user registers to your website. Optionally, you can choose to send this email after a specified period."
 msgstr "Отправьте приветственное письмо, когда новый пользователь WordPress регистрируется на вашем сайте. По желанию вы можете выбрать отправку этого письма через определенный период времени."
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:75
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:82
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:89
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:96
 msgid "Welcome new subscribers"
 msgstr "Поприветствуйте новых подписчиков"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:76
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:90
 msgid "Send a welcome email when someone subscribes to your list. Optionally, you can choose to send this email after a specified period."
 msgstr "Отправьте приветственное письмо, когда кто-то подписался на вашу рассылку. По желанию, вы можете отправить письмо через определённый период времени."
 
@@ -3401,15 +3581,15 @@ msgstr "Автоматизация не найдена."
 msgid "Don't forget to include:<br /><br />[activation_link]Confirm your subscription.[/activation_link]<br /><br />Optional:<br /><br /> [lists_to_confirm] - comma separated subscriber's list names<br /><br />[subscriber:firstname | default: there] - Subscriber's first name, defaults to 'there' if not available<br /><br />[subscriber:lastname | default: there] - Subscriber's last name, defaults to 'there' if not available<br /><br />[subscriber:email] - Subscriber's email address<br /><br />[subscriber:count] - Total number of subscribers<br /><br />[site:title] - Your WordPress site title (currently '[current_site_title]')<br /><br />[site:homepage_link] - Link to your site's homepage."
 msgstr "Не забудьте добавить:<br /><br />[activation_link]Подтвердить подписку.[/activation_link]<br /><br />По желанию:<br /><br /> [lists_to_confirm] - список имён подписчиков, разделённых запятой<br /><br />[subscriber:firstname | default: there] - Имя подписчика, по умолчанию 'there', если неизвестно<br /><br />[subscriber:lastname | default: there] - Фамилия подписчика, по умолчанию 'there', если неизвестна<br /><br />[subscriber:email] - Адрес электронной почты подписчика<br /><br />[subscriber:count] - Общее количество подписчиков<br /><br />[site:title] - Ваше название сайта WordPress (на данный момент '[current_site_title]')<br /><br />[site:homepage_link] - Ссылка на главную страницу вашего сайта."
 
-#: lib/Config/Menu.php:538 lib/Config/Menu.php:539
+#: lib/Config/Menu.php:543 lib/Config/Menu.php:544
 msgid "Automation Templates"
 msgstr "Шаблоны автоматизаций"
 
-#: lib/Config/Menu.php:518 lib/Config/Menu.php:519
+#: lib/Config/Menu.php:523 lib/Config/Menu.php:524
 msgid "Automation Editor"
 msgstr "Редактор автоматизаций"
 
-#: lib/Config/Menu.php:487
+#: lib/Config/Menu.php:492
 msgid "Experimental Features"
 msgstr "Экспериментальные функции"
 
@@ -3500,7 +3680,7 @@ msgctxt "block title"
 msgid "MailPoet Marketing Opt-in"
 msgstr "Маркетинговое подтверждение MailPoet"
 
-#: views/segments/translations.html:129 lib/Config/Menu.php:508
+#: views/segments/translations.html:129 lib/Config/Menu.php:513
 msgid "Automations"
 msgstr "Автоматизации"
 
@@ -3870,7 +4050,7 @@ msgid "Authorize my email address"
 msgstr "Авторизировать мой электронный адрес"
 
 #: lib/AdminPages/Pages/Help.php:60
-#: lib/SystemReport/SystemReportCollector.php:92
+#: lib/SystemReport/SystemReportCollector.php:93
 msgid "Can‘t generate cron URL."
 msgstr "Невозможно сгенерировать URL-адрес cron."
 
@@ -3974,28 +4154,28 @@ msgstr "Ваша установка может связаться со служ�
 msgid "Connection to the MailPoet Sending Service"
 msgstr "Соединение со службой рассылки MailPoet"
 
-#: views/emails/statsNotification.html:352
-#: views/emails/statsNotificationAutomatedEmails.html:258
+#: views/emails/statsNotification.html:355
+#: views/emails/statsNotificationAutomatedEmails.html:262
 msgid "bounced"
 msgstr "отклонено"
 
-#: views/emails/statsNotification.html:320
-#: views/emails/statsNotificationAutomatedEmails.html:239
+#: views/emails/statsNotification.html:323
+#: views/emails/statsNotificationAutomatedEmails.html:243
 msgid "unsubscribed"
 msgstr "отписалось"
 
-#: views/emails/statsNotification.html:268
-#: views/emails/statsNotificationAutomatedEmails.html:199
+#: views/emails/statsNotification.html:271
+#: views/emails/statsNotificationAutomatedEmails.html:203
 msgid "machine-opened"
 msgstr "открыто машиной"
 
-#: views/emails/statsNotification.html:236
-#: views/emails/statsNotificationAutomatedEmails.html:180
+#: views/emails/statsNotification.html:239
+#: views/emails/statsNotificationAutomatedEmails.html:184
 msgid "opened"
 msgstr "прочитано"
 
-#: views/emails/statsNotification.html:184
-#: views/emails/statsNotificationAutomatedEmails.html:139
+#: views/emails/statsNotification.html:187
+#: views/emails/statsNotificationAutomatedEmails.html:143
 msgid "clicked"
 msgstr "нажато"
 
@@ -4042,8 +4222,8 @@ msgstr "Узнать больше."
 msgid "Search countries"
 msgstr "Искать страну"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:405
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:412
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:419
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:426
 msgid "Purchased in a category"
 msgstr "Куплено в категории"
 
@@ -4083,8 +4263,8 @@ msgstr "Выберите баланс между конфиденциально�
 msgid "Engagement analytics tracking"
 msgstr "Отслеживание аналитики вовлечённости"
 
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:337
-#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:344
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:351
+#: lib/Automation/Integrations/MailPoet/Templates/TemplatesFactory.php:358
 msgid "Purchased a product"
 msgstr "Купленный товар"
 
@@ -4198,11 +4378,7 @@ msgstr "Пожалуйста, сперва сохраните форму!"
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:102
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:129
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:152
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:53
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:80
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:103
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:130
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:153
+#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:69
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductRestockNotificationPattern.php:51
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/SaleAnnouncementPattern.php:53
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/WelcomeEmailPattern.php:52
@@ -4229,7 +4405,7 @@ msgstr "Поблагодарите своих подписчиков, актив
 msgid "Re-engagement page"
 msgstr "Страница повторного привлечения"
 
-#: lib/Subscription/Pages.php:452
+#: lib/Subscription/Pages.php:453
 msgid "We appreciate your continued interest in our updates. Expect to hear from us again soon!"
 msgstr "Мы ценим то, что вы проявляете интерес к обновлениям. Надеемся скоро услышать что-то от вас!"
 
@@ -4652,7 +4828,7 @@ msgctxt "Display the product title into a link"
 msgid "Make the product title into a link"
 msgstr "Преобразовать заголовок товара в ссылку"
 
-#: views/newsletter/editor.html:1720 views/newsletter/editor.html:1722
+#: views/newsletter/editor.html:1750 views/newsletter/editor.html:1752
 msgctxt "Text of a button which links to an ecommerce product page"
 msgid "Buy now"
 msgstr "Купить сейчас"
@@ -5107,7 +5283,7 @@ msgctxt "Subscription status"
 msgid "List status"
 msgstr "Статус списка"
 
-#: lib/Services/CongratulatoryMssEmailController.php:31
+#: lib/Services/CongratulatoryMssEmailController.php:38
 msgctxt "Subject of an email confirming that MailPoet Sending Service works"
 msgid "Sending with MailPoet works!"
 msgstr "Отправка через MailPoet работает!"
@@ -5783,13 +5959,13 @@ msgstr "Оставайтесь на связи"
 
 #. translators: %1$s is the percentage of clicks, %2$s the percentage of opens
 #. and %3$s the number of unsubscribes.
-#: lib/Cron/Workers/StatsNotifications/Worker.php:155
+#: lib/Cron/Workers/StatsNotifications/Worker.php:168
 msgctxt "newsletter open rate, click rate and unsubscribe rate"
 msgid "%1$s%% clicks, %2$s%% opens, %3$s%% unsubscribes in a nutshell."
 msgstr "%1$s%% открытий, %2$s%% кликов, %3$s%% отписок по сути."
 
 #. translators: %s is the subject of the email.
-#: lib/Cron/Workers/StatsNotifications/Worker.php:133
+#: lib/Cron/Workers/StatsNotifications/Worker.php:142
 msgctxt "title of an automatic email containing statistics (newsletter open rate, click rate, etc)"
 msgid "Stats for email %s"
 msgstr "Статистика для адреса %s"
@@ -5804,22 +5980,22 @@ msgctxt "default email opt-in message displayed on checkout page for ecommerce w
 msgid "Yes, I would like to be added to your mailing list"
 msgstr "Да, пожалуйста, добавьте меня в свой список рассылки"
 
-#: lib/Config/Menu.php:423
+#: lib/Config/Menu.php:428
 msgctxt "segments per page (screen options)"
 msgid "Number of segments per page"
 msgstr "Количество сегментов на странице"
 
-#: lib/Config/Menu.php:347
+#: lib/Config/Menu.php:352
 msgctxt "subscribers per page (screen options)"
 msgid "Number of subscribers per page"
 msgstr "Количество подписчиков на странице"
 
-#: lib/Config/Menu.php:289
+#: lib/Config/Menu.php:294
 msgctxt "forms per page (screen options)"
 msgid "Number of forms per page"
 msgstr "Количество форм на странице"
 
-#: lib/Config/Menu.php:249
+#: lib/Config/Menu.php:254
 msgctxt "newsletters per page (screen options)"
 msgid "Number of newsletters per page"
 msgstr "Количество рассылок на странице"
@@ -5897,6 +6073,8 @@ msgstr "Желаете добавить новые поля, например, �
 msgid "Not opened"
 msgstr "Не открытое"
 
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:107
+#: views/emails/statsNotificationGarden.html:68
 #: views/subscribers/subscribers.html:79
 msgid "Clicked"
 msgstr "Нажато"
@@ -6435,8 +6613,8 @@ msgid "or"
 msgstr "или"
 
 #: views/settings_translations.html:172
-msgid "Free up to 1,000 subscribers"
-msgstr "Бесплатно до 1000 подписчиков"
+msgid "Free up to 500 subscribers"
+msgstr ""
 
 #: views/settings_translations.html:171
 msgid "Activated"
@@ -7081,17 +7259,21 @@ msgstr "Просмотреть видео урок"
 msgid "Something to improve."
 msgstr "Есть место для улучшения."
 
+#: lib/Twig/Functions.php:369 lib/Twig/Functions.php:379
+msgid "Average"
+msgstr "В среднем"
+
 #: views/segments/translations.html:172 views/subscribers/subscribers.html:109
 msgid "Good stuff."
 msgstr "Хороший материал."
 
 #: views/segments/translations.html:171 views/subscribers/subscribers.html:108
-#: views/homepage.html:77 lib/Twig/Functions.php:352
+#: views/homepage.html:77 lib/Twig/Functions.php:367 lib/Twig/Functions.php:377
 msgid "Good"
 msgstr "Хорошо"
 
 #: views/segments/translations.html:168 views/subscribers/subscribers.html:105
-#: views/homepage.html:74 lib/Twig/Functions.php:350
+#: views/homepage.html:74 lib/Twig/Functions.php:365 lib/Twig/Functions.php:375
 msgid "Excellent"
 msgstr "Превосходно"
 
@@ -7343,10 +7525,6 @@ msgstr "Количество"
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:92
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:119
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewArrivalsAnnouncementPattern.php:142
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:70
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:93
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:120
-#: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/ProductPurchaseFollowUpPattern.php:143
 msgid "Product"
 msgstr "Товар"
 
@@ -7360,6 +7538,8 @@ msgstr "[Order #0001]"
 msgid "We have finished processing your order."
 msgstr "Мы завершили обработку вашего заказа."
 
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:36
+#: views/emails/statsNotificationGarden.html:34
 #: views/newsletter/templates/blocks/woocommerceContent/completed_order.hbs:6
 #: views/newsletter/templates/blocks/woocommerceContent/customer_note.hbs:6
 #: views/newsletter/templates/blocks/woocommerceContent/new_account.hbs:6
@@ -8099,19 +8279,19 @@ msgstr "Параметры отображения"
 msgid "This is only a preview! Your customers will see the product(s) they left in their shopping cart."
 msgstr "Это всего лишь предварительный просмотр! Ваши клиенты увидят товары, оставленные в корзине."
 
-#: views/newsletter/editor.html:1800
+#: views/newsletter/editor.html:1830
 msgid "Edit this to insert text."
 msgstr "Измените здесь, чтобы вставить текст."
 
-#: views/newsletter/editor.html:1787
+#: views/newsletter/editor.html:1817
 msgid "Twitter"
 msgstr "Twitter"
 
-#: views/newsletter/editor.html:1776
+#: views/newsletter/editor.html:1806
 msgid "Facebook"
 msgstr "Facebook"
 
-#: views/newsletter/editor.html:1640
+#: views/newsletter/editor.html:1670
 msgid "An image of..."
 msgstr "Изображение..."
 
@@ -8122,15 +8302,15 @@ msgstr "Изображение..."
 #: views/newsletter/templates/blocks/dynamicProducts/settings.hbs:278
 #: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:229
 #: views/newsletter/templates/blocks/products/settingsDisplayOptions.hbs:192
-#: views/newsletter/editor.html:1522
+#: views/newsletter/editor.html:1552
 msgid "Button"
 msgstr "Кнопка"
 
-#: views/newsletter/editor.html:1268
+#: views/newsletter/editor.html:1298
 msgid "Custom"
 msgstr "Произвольный"
 
-#: views/newsletter/editor.html:1357
+#: views/newsletter/editor.html:1387
 msgid "Website"
 msgstr "Сайт"
 
@@ -8153,7 +8333,7 @@ msgstr "Ссылка"
 msgid "Welcome Email"
 msgstr "Письмо-приветствие"
 
-#: lib/Config/Menu.php:497
+#: lib/Config/Menu.php:502
 msgid "Logs"
 msgstr "Журналы"
 
@@ -8817,48 +8997,48 @@ msgstr "Включить"
 msgid "Display the form"
 msgstr "Отобразить форму"
 
-#: views/emails/statsNotificationLayout.html:104
+#: views/emails/statsNotificationLayout.html:105
 msgid "Disable these emails"
 msgstr "Отключить эти письма"
 
-#: views/emails/statsNotificationLayout.html:96
+#: views/emails/statsNotificationLayout.html:97
 msgid "And my click rate?"
 msgstr "Как улучшить клик-рейтинг?"
 
-#: views/emails/statsNotificationLayout.html:87
+#: views/emails/statsNotificationLayout.html:88
 msgid "How to improve my open rate?"
 msgstr "Как улучшить рейтинг открытия?"
 
-#: views/emails/statsNotificationLayout.html:86
-#: views/emails/statsNotificationLayout.html:95
+#: views/emails/statsNotificationLayout.html:87
+#: views/emails/statsNotificationLayout.html:96
 msgid "How to Improve Open and Click Rates"
 msgstr "Как улучшить рейтинг открытий и кликов (OCR)"
 
-#: views/emails/statsNotification.html:478
+#: views/emails/statsNotification.html:481
 msgid "View all stats"
 msgstr "Просмотреть всю статистику"
 
-#: views/emails/statsNotification.html:435
+#: views/emails/statsNotification.html:438
 msgid "%s unique clicks"
 msgstr "%s уникальных кликов"
 
-#: views/emails/statsNotification.html:411
+#: views/emails/statsNotification.html:414
 msgid "Most clicked link"
 msgstr "Наиболее кликаемая ссылка"
 
-#: views/emails/statsNotification.html:84
+#: views/emails/statsNotification.html:87
 msgid "Our free version is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet."
 msgstr "Бесплатная версия ограничена [subscribersLimit] подписчиками. Вам необходимо обновиться для дальнейшего использования MailPoet."
 
-#: views/emails/statsNotification.html:66
+#: views/emails/statsNotification.html:69
 msgid "Congratulations, you now have more than [subscribersLimit] subscribers!"
 msgstr "Подздравляем! У вас теперь более, чем[subscribersLimit] подписчиков!"
 
-#: views/emails/statsNotification.html:26
+#: views/emails/statsNotification.html:29
 msgid "Your stats are in!"
 msgstr "Ваша статистика готова!"
 
-#: views/emails/newSubscriberNotification.html:9
+#: views/emails/newSubscriberNotification.html:12
 msgid "The MailPoet Plugin"
 msgstr "плагин MailPoet"
 
@@ -8874,15 +9054,15 @@ msgstr "Подписчик %1$s только что подписался на в
 msgid "Howdy,"
 msgstr "Привет,"
 
-#: views/emails/congratulatoryMssEmail.html:61
+#: views/emails/congratulatoryMssEmail.html:72
 msgid "This email was sent automatically with the MailPoet Sending Service after you activated your key in your MailPoet settings."
 msgstr "Это электронное сообщение было отправлено автоматически с помощью службы рассылки MailPoet после активации ключа в настройках MailPoet."
 
-#: views/emails/congratulatoryMssEmail.html:50
+#: views/emails/congratulatoryMssEmail.html:56
 msgid "MailPoet is now sending your emails"
 msgstr "MailPoet прямо сейчас рассылает ваши письма"
 
-#: views/emails/congratulatoryMssEmail.html:50
+#: views/emails/congratulatoryMssEmail.html:52
 #: views/segments/translations.html:169 views/subscribers/subscribers.html:106
 msgid "Congrats!"
 msgstr "Поздравляем!"
@@ -8952,20 +9132,20 @@ msgid "Congrats! You’re progressing well so far. Complete your upgrade thanks 
 msgstr "Поздравляем! У вас хорошо получается. Завершите свое обновление согласно этого   [link]списка[/link]."
 
 #. translators: %1$d is the amount of hours.
-#: views/settings_translations.html:201 lib/Twig/Functions.php:250
+#: views/settings_translations.html:201 lib/Twig/Functions.php:265
 msgid "every %1$d hours"
 msgstr "каждые %1$d часов"
 
-#: views/settings_translations.html:200 lib/Twig/Functions.php:248
+#: views/settings_translations.html:200 lib/Twig/Functions.php:263
 msgid "every hour"
 msgstr "каждый час"
 
 #. translators: %1$d is the amount of minutes.
-#: views/settings_translations.html:199 lib/Twig/Functions.php:247
+#: views/settings_translations.html:199 lib/Twig/Functions.php:262
 msgid "every %1$d minutes"
 msgstr "каждые %1$d минут"
 
-#: views/settings_translations.html:198 lib/Twig/Functions.php:245
+#: views/settings_translations.html:198 lib/Twig/Functions.php:260
 msgid "every minute"
 msgstr "каждую минуту"
 
@@ -8984,15 +9164,15 @@ msgstr "%d минут"
 msgid "%d hours"
 msgstr "%d часов"
 
-#: lib/Subscription/Pages.php:479
+#: lib/Subscription/Pages.php:480
 msgid "Link to subscription management page is only available to mailing lists subscribers."
 msgstr "Ссылка на страницу управления подпиской доступна только для подписчиков."
 
-#: lib/Subscription/Pages.php:442
+#: lib/Subscription/Pages.php:443
 msgid "Accidentally unsubscribed?"
 msgstr "Случайно отписались?"
 
-#: lib/Subscription/Pages.php:426
+#: lib/Subscription/Pages.php:427
 msgid "Subscription management form is only available to mailing lists subscribers."
 msgstr "Форма управления подпиской доступна только для подписчиков."
 
@@ -9108,6 +9288,8 @@ msgstr "Вам необходимо дождаться %s перед повто�
 msgid "Please leave the first field empty."
 msgstr "Пожалуйста, оставьте первое поле пустым."
 
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:265
+#: views/emails/statsNotificationGarden.html:226
 #: views/segments/translations.html:11 views/subscribers/subscribers.html:32
 #: lib/Automation/Integrations/MailPoet/Fields/SubscriberFieldsFactory.php:128
 #: lib/Subscribers/SubscriberListingRepository.php:376
@@ -9124,6 +9306,8 @@ msgstr "Отклонено"
 msgid "Inactive"
 msgstr "Неактивный"
 
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:238
+#: views/emails/statsNotificationGarden.html:199
 #: views/segments/translations.html:9
 #: views/subscribers/importExport/import.html:131
 #: views/subscribers/subscribers.html:30
@@ -9151,7 +9335,7 @@ msgid "Subscribed"
 msgstr "Подписано"
 
 #. translators: %s is name of the segment.
-#: lib/Subscribers/NewSubscriberNotificationMailer.php:95
+#: lib/Subscribers/NewSubscriberNotificationMailer.php:98
 msgid "New subscriber to %s"
 msgstr "Новый подписчик на %s"
 
@@ -9269,6 +9453,8 @@ msgstr "Нет"
 msgid "Opened at"
 msgstr "Открыто"
 
+#: views/emails/statsNotificationAutomatedEmailsGarden.html:161
+#: views/emails/statsNotificationGarden.html:122
 #: views/subscribers/subscribers.html:76
 #: lib/Subscribers/ImportExport/PersonalDataExporters/NewslettersExporter.php:82
 #: lib/Subscribers/ImportExport/PersonalDataExporters/NewslettersExporter.php:91
@@ -9432,7 +9618,7 @@ msgstr "Выберите форму MailPoet"
 msgid "View in your browser"
 msgstr "Просмотреть в вашем браузере"
 
-#: views/newsletter/editor.html:1620
+#: views/newsletter/editor.html:1650
 #: lib/Config/PopulatorData/Templates/ConfirmInterestBeforeDeactivation.php:163
 #: lib/EmailEditor/Integrations/MailPoet/Templates/Library/Newsletter.php:76
 #: lib/Newsletter/Shortcodes/ShortcodesHelper.php:102
@@ -9910,22 +10096,22 @@ msgstr "Обязательный аргумент \"%s\" должен быть �
 msgid "Mandatory argument \"%s\" is missing"
 msgstr "Отсутствует обязательный аргумент \"%s\"."
 
-#: lib/Cron/Workers/StatsNotifications/Worker.php:199
+#: lib/Cron/Workers/StatsNotifications/Worker.php:237
 #: lib/Newsletter/Shortcodes/ShortcodesHelper.php:106
 msgid "View in browser link"
 msgstr "Ссылка Посмотреть в браузере"
 
-#: lib/Cron/Workers/StatsNotifications/Worker.php:198
+#: lib/Cron/Workers/StatsNotifications/Worker.php:236
 msgid "Manage subscription link"
 msgstr "Управлять ссылкой на подписку"
 
-#: lib/Cron/Workers/StatsNotifications/Worker.php:196
+#: lib/Cron/Workers/StatsNotifications/Worker.php:234
 #: lib/Newsletter/Shortcodes/ShortcodesHelper.php:90
 msgid "Unsubscribe link"
 msgstr "Ссылка Отписаться"
 
-#: views/emails/statsNotificationAutomatedEmails.html:27
-#: lib/Cron/Workers/StatsNotifications/AutomatedEmails.php:111
+#: views/emails/statsNotificationAutomatedEmails.html:31
+#: lib/Cron/Workers/StatsNotifications/AutomatedEmails.php:127
 msgid "Your monthly stats are in!"
 msgstr "Ваша месячная статистика готова!"
 
@@ -10558,9 +10744,9 @@ msgstr "Мейкап блог"
 msgid "Buy now"
 msgstr "Купить сейчас"
 
-#: views/newsletter/editor.html:1427 views/newsletter/editor.html:1429
-#: views/newsletter/editor.html:1482 views/newsletter/editor.html:1484
-#: views/newsletter/editor.html:1667 views/newsletter/editor.html:1669
+#: views/newsletter/editor.html:1457 views/newsletter/editor.html:1459
+#: views/newsletter/editor.html:1512 views/newsletter/editor.html:1514
+#: views/newsletter/editor.html:1697 views/newsletter/editor.html:1699
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1327
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1330
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1387
@@ -10570,15 +10756,15 @@ msgstr "Купить сейчас"
 msgid "Read more"
 msgstr "Читать далее"
 
-#: views/newsletter/editor.html:1425 views/newsletter/editor.html:1480
-#: views/newsletter/editor.html:1665
+#: views/newsletter/editor.html:1455 views/newsletter/editor.html:1510
+#: views/newsletter/editor.html:1695
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1285
 #: lib/Config/PopulatorData/Templates/PostNotificationsBlank1Column.php:169
 msgid "Categories:"
 msgstr "Рубрики:"
 
-#: views/newsletter/editor.html:1423 views/newsletter/editor.html:1478
-#: views/newsletter/editor.html:1663
+#: views/newsletter/editor.html:1453 views/newsletter/editor.html:1508
+#: views/newsletter/editor.html:1693
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1282
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1342
 #: lib/Config/PopulatorData/Templates/KidsClothing.php:1463
@@ -10671,7 +10857,7 @@ msgstr "Цветы (с купоном)"
 msgid "A note has been added to your order"
 msgstr "Заметка добавлена к вашему заказу"
 
-#: views/newsletter/editor.html:1803
+#: views/newsletter/editor.html:1833
 #: lib/Config/PopulatorData/Templates/Avocado.php:999
 #: lib/Config/PopulatorData/Templates/Birds.php:209
 #: lib/Config/PopulatorData/Templates/Birds.php:1730
@@ -10798,7 +10984,7 @@ msgstr "Магазин моды"
 msgid "Kids Shop"
 msgstr "Детский магазин"
 
-#: views/newsletter/editor.html:1620
+#: views/newsletter/editor.html:1650
 #: lib/Config/PopulatorData/Templates/Avocado.php:654
 #: lib/Config/PopulatorData/Templates/Avocado.php:863
 #: lib/Config/PopulatorData/Templates/Birds.php:1349
@@ -11061,7 +11247,7 @@ msgstr "Доверие"
 #: lib/Config/PopulatorData/Templates/WordPressTheme.php:1266
 #: lib/Config/PopulatorData/Templates/WorldCup.php:725
 #: lib/Config/PopulatorData/Templates/YogaStudio.php:699
-#: lib/Subscription/Pages.php:386 lib/Subscription/Pages.php:484
+#: lib/Subscription/Pages.php:386 lib/Subscription/Pages.php:485
 msgid "Manage your subscription"
 msgstr "Управлять вашей подпиской"
 
@@ -11121,7 +11307,7 @@ msgstr "Птицы"
 msgid "Avocado"
 msgstr "Авокадо"
 
-#: views/newsletter/editor.html:1620
+#: views/newsletter/editor.html:1650
 #: lib/Config/PopulatorData/Templates/AppWelcome.php:319
 #: lib/Config/PopulatorData/Templates/Avocado.php:654
 #: lib/Config/PopulatorData/Templates/Avocado.php:863
@@ -11292,11 +11478,11 @@ msgstr "Списки из MailPoet"
 msgid "MailPoet Subscribers"
 msgstr "Подписчики MailPoet"
 
-#: lib/Config/Menu.php:474 lib/Config/Menu.php:475
+#: lib/Config/Menu.php:479 lib/Config/Menu.php:480
 msgid "WooCommerce Setup"
 msgstr "Установка WooCommerce"
 
-#: lib/Config/Menu.php:193 lib/Config/Menu.php:194
+#: lib/Config/Menu.php:198 lib/Config/Menu.php:199
 msgid "Welcome Wizard"
 msgstr "Приветственный мастер настройки"
 
@@ -11304,43 +11490,43 @@ msgstr "Приветственный мастер настройки"
 msgid "Settings"
 msgstr "Настройки"
 
-#: views/subscribers/subscribers.html:47 lib/Config/Menu.php:385
+#: views/subscribers/subscribers.html:47 lib/Config/Menu.php:390
 msgid "Lists"
 msgstr "Списки"
 
-#: views/subscribers/importExport/export.html:90 lib/Config/Menu.php:372
+#: views/subscribers/importExport/export.html:90 lib/Config/Menu.php:377
 msgid "Export"
 msgstr "Экспорт"
 
-#: views/subscribers/importExport/import.html:100 lib/Config/Menu.php:359
+#: views/subscribers/importExport/import.html:100 lib/Config/Menu.php:364
 msgid "Import"
 msgstr "Импорт"
 
-#: views/homepage.html:64 lib/Config/Menu.php:334 lib/Config/Menu.php:335
+#: views/homepage.html:64 lib/Config/Menu.php:339 lib/Config/Menu.php:340
 msgid "Subscribers"
 msgstr "Подписчики"
 
-#: lib/Config/Menu.php:321 lib/Config/Menu.php:322
+#: lib/Config/Menu.php:326 lib/Config/Menu.php:327
 msgid "Select Form Template"
 msgstr "Выберите шаблон формы"
 
-#: lib/Config/Menu.php:301 lib/Config/Menu.php:302
+#: lib/Config/Menu.php:306 lib/Config/Menu.php:307
 msgid "Form Editor"
 msgstr "Редактор форм"
 
-#: views/newsletter/editor.html:368 lib/Config/Menu.php:262
+#: views/newsletter/editor.html:368 lib/Config/Menu.php:267
 msgid "Newsletter Editor"
 msgstr "Редактор рассылок"
 
 #. translators: Name of a content pattern used as starting content of an email
-#: lib/Config/Menu.php:261
+#: lib/Config/Menu.php:266
 #: lib/EmailEditor/Integrations/MailPoet/Patterns/Library/NewsletterPattern.php:69
 #: lib/EmailEditor/Integrations/MailPoet/Templates/Library/Newsletter.php:21
 #: lib/EmailEditor/Integrations/MailPoet/Templates/Library/Newsletter.php:25
 msgid "Newsletter"
 msgstr "Рассылка"
 
-#: lib/Config/Menu.php:236 lib/Config/Menu.php:237
+#: lib/Config/Menu.php:241 lib/Config/Menu.php:242
 #: lib/EmailEditor/Integrations/MailPoet/EmailEditor.php:81
 msgid "Emails"
 msgstr "Письма"
@@ -11351,8 +11537,8 @@ msgstr "Рассылка в MailPoet"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: views/woo_system_info.html:5 mailpoet.php lib/Config/Capabilities.php:80
-#: lib/Config/Menu.php:206 lib/Config/Menu.php:207 lib/Config/Menu.php:720
+#: views/woo_system_info.html:5 mailpoet.php lib/Config/Capabilities.php:114
+#: lib/Config/Menu.php:211 lib/Config/Menu.php:212 lib/Config/Menu.php:729
 #: lib/Config/PrivacyPolicy.php:12
 #: lib/WooCommerce/MultichannelMarketing/MPMarketingChannel.php:49
 #: lib/WooCommerce/WooSystemInfoController.php:41
@@ -11532,8 +11718,8 @@ msgstr "Фамилия"
 msgid "First name"
 msgstr "Имя"
 
-#: views/form/editor.html:159 views/newsletter/editor.html:1276
-#: views/newsletter/editor.html:1277 views/segments/translations.html:54
+#: views/form/editor.html:159 views/newsletter/editor.html:1306
+#: views/newsletter/editor.html:1307 views/segments/translations.html:54
 #: views/segments/translations.html:87
 #: views/subscription/manage_subscription.html:9 views/help.html:70
 #: lib/API/MP/v1/CustomFields.php:27

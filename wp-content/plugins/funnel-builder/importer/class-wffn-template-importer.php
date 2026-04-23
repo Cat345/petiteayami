@@ -4,7 +4,7 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 	class WFFN_Template_Importer {
 
 		private static $instance = null;
-		private static $importer = [];
+		private static $importer = array();
 
 		public function __construct() {
 			require __DIR__ . '/remote/class-wffn-remote-template-importer.php';
@@ -35,8 +35,15 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 				return true;
 			}
 
-			$templates     = WooFunnels_Dashboard::get_all_templates();
-			$template_data = $templates[ $type ][ $builder ][ $slug ];
+			$templates = WooFunnels_Dashboard::get_all_templates();
+
+			// divi5 fallback to divi if divi5 data not available
+			$lookup_builder = $builder;
+			if ( 'divi5' === $builder && ! isset( $templates[ $type ]['divi5'] ) ) {
+				$lookup_builder = 'divi';
+			}
+
+			$template_data = $templates[ $type ][ $lookup_builder ][ $slug ];
 
 			if ( ! isset( $template_data['build_from_scratch'] ) ) {
 				return false;
@@ -54,19 +61,21 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 		 * @return array
 		 */
 		public function import_remote( $module_id, $builder, $slug, $step ) {
-			$result = [ 'success' => false, 'error' => __( 'We are having trouble importing this template, Please contact support.', 'funnel-builder' ) ];
+			$result = array(
+				'success' => false,
+				'error'   => __( 'We are having trouble importing this template, Please contact support.', 'funnel-builder' ),
+			);
 
 			do_action( 'wffn_template_import_remote', $module_id, $builder, $slug, $step );
 
-
 			$template_file_path = $builder . '/' . $step . '/' . $slug;
 			if ( ! file_exists( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ) ) {
-				//Pull Template from cloud
+				// Pull Template from cloud
 				$content = WFFN_Core()->remote_importer->get_remote_template( $step, $slug, $builder );
 
 			} else {
 				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
-				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
+				wp_delete_file( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
 			}
 
 			if ( empty( $content ) ) {
@@ -104,31 +113,36 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 
 			if ( $builder === 'elementor' ) {
 				if ( ( ! version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ( version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) ) ) {
-					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the wordpress version to import the template.', 'funnel-builder' ), '5.0' );
+					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the WordPress version to import the template.', 'funnel-builder' ), '5.0' );
 
-					return [ 'error' => $message ];
+					return array( 'error' => $message );
 				}
 			}
-			if ( $builder === 'divi' ) {
+			if ( $builder === 'divi' || $builder === 'divi5' ) {
 				$response = WFFN_Common::check_builder_status( 'divi' );
 				if ( ! empty( $response['error'] ) ) {
-					return [ 'error' => $response['error'] ];
+					return array( 'error' => $response['error'] );
 				}
-
 			}
 
-			if ( isset( self::$importer[ $builder ] ) && self::$importer[ $builder ] instanceof WFFN_Import_Export && ! empty( $content ) ) {
+			// divi5 falls back to divi importer if no dedicated divi5 importer is registered
+			$importer_key = $builder;
+			if ( 'divi5' === $builder && ! isset( self::$importer['divi5'] ) && isset( self::$importer['divi'] ) ) {
+				$importer_key = 'divi';
+			}
 
-				$importer = self::$importer[ $builder ];
-				BWF_Logger::get_instance()->log( "Importing the " . $module_id, 'wffn_template_import' );
-				BWF_Logger::get_instance()->log( "Content length the " . strlen( $content ), 'wffn_template_import' );
+			if ( isset( self::$importer[ $importer_key ] ) && self::$importer[ $importer_key ] instanceof WFFN_Import_Export && ! empty( $content ) ) {
+
+				$importer = self::$importer[ $importer_key ];
+				BWF_Logger::get_instance()->log( 'Importing the ' . $module_id, 'wffn_template_import' );
+				BWF_Logger::get_instance()->log( 'Content length the ' . strlen( $content ), 'wffn_template_import' );
 				$status = $importer->import( $module_id, $content );
 				delete_post_meta( $module_id, '_tobe_import_template_type' );
 				delete_post_meta( $module_id, '_tobe_import_template' );
 
 				return $status;
 			} else {
-				BWF_Logger::get_instance()->log( "failed importing for " . $module_id . "-- builder" . $builder, 'wffn_template_import' );
+				BWF_Logger::get_instance()->log( 'failed importing for ' . $module_id . '-- builder' . $builder, 'wffn_template_import' );
 			}
 
 			return false;
@@ -173,7 +187,6 @@ if ( ! class_exists( 'WFFN_Template_Importer' ) ) {
 			}
 			update_option( Elementor\Core\Kits\Manager::OPTION_ACTIVE, $created_default_kit );
 		}
-
 	}
 
 	WFFN_Core::register( 'importer', 'WFFN_Template_Importer' );

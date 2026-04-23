@@ -70,10 +70,8 @@ class Styler
         $importFile = $file;
         $extension = Path::extname($file);
 
-        if (!file_exists($file)) {
-            if ($extension || !file_exists($file = "{$file}.less")) {
-                return [];
-            }
+        if (!file_exists($file) && ($extension || !file_exists($file = "{$file}.less"))) {
+            return [];
         }
 
         $contents = @file_get_contents($file) ?: '';
@@ -145,9 +143,9 @@ class Styler
                 $value = Url::to(Path::resolve(dirname($file), $value));
             }
 
-            if (!$style && $key != 'style') {
+            if (!$style && $key !== 'style') {
                 $meta[$key] = $value;
-            } elseif ($key == 'style') {
+            } elseif ($key === 'style') {
                 $style = $value;
                 $meta['styles'][$style] = ['name' => static::namify($style)];
             } else {

@@ -1209,8 +1209,8 @@ class BWFAN_Conversation {
 		$template_data = isset( $this->template['data'] ) && ! empty( $this->template['data'] ) ? json_decode( $this->template['data'], true ) : [];
 		$links         = isset( $template_data['links'] ) && ! empty( $template_data['links'] ) ? $template_data['links'] : [];
 
-		BWFAN_Common::log_test_data( $links, 'fk-store-link', true );
-		BWFAN_Common::log_test_data( $url, 'fk-store-link', true );
+		BWFAN_Common::log_test_data( $links, 'fk-store-link', false );
+		BWFAN_Common::log_test_data( $url, 'fk-store-link', false );
 		if ( ! empty( $links ) && isset( $links[ $url ] ) ) {
 			BWFAN_Common::log_test_data( 'link already found in the DB', 'fk-store-link', true );
 

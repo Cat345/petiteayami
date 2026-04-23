@@ -600,6 +600,9 @@ if ( ! class_exists( 'WooFunnels_DB_Updater' ) ) {
 		}
 
 		public function event_cb_advanced_log_enabled() {
+			if ( class_exists( 'BWFAN_Common' ) && BWFAN_Common::is_log_enabled( 'bwfan_end_point_logging' ) ) {
+				return true;
+			}
 			if ( defined( 'BWFAN_ALLOW_EVENT_ENDPOINT_LOGS' ) && true === BWFAN_ALLOW_EVENT_ENDPOINT_LOGS ) {
 				return true;
 			}

@@ -211,7 +211,7 @@
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     .iti__flag {
         background-image: url("https://d3ldyx3r2ad3ic.cloudfront.net/flags@2x.png");
-
+        background-size: auto 15px;
     }
 }
 

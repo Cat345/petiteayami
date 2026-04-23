@@ -235,7 +235,7 @@ return [
                 'X-Large' => 'xlarge',
             ],
             'show' => '$match(this.type, \'menu\')',
-            'enable' => 'menu_style == \'primary\'',
+            'enable' => "menu_style == 'primary'",
         ],
         '_menu_image_dimensions' => [
             'description' =>

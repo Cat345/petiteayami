@@ -12,11 +12,6 @@ return [
         'render' => __DIR__ . '/templates/template.php',
         'content' => __DIR__ . '/templates/content.php',
     ],
-    'transforms' => [
-        'render' => function ($node, $params) {
-            $node->props['parent'] = $params['parent']->type;
-        },
-    ],
     'fields' => [
         'layout' => [
             'label' => 'Layout',
@@ -179,7 +174,7 @@ return [
             'description' => 'Show a divider between grid columns.',
             'type' => 'checkbox',
             'text' => 'Show dividers',
-            'enable' => 'column_gap != \'collapse\' && row_gap != \'collapse\'',
+            'enable' => "column_gap != 'collapse' && row_gap != 'collapse'",
         ],
         'alignment' => [
             'label' => 'Alignment',
@@ -210,7 +205,7 @@ return [
                 'Set the maximum content width. Note: The section may already have a maximum width, which you cannot exceed.',
             'type' => 'checkbox',
             'text' => 'Remove horizontal padding',
-            'enable' => 'width && width != \'expand\'',
+            'enable' => "width && width != 'expand'",
         ],
         'width_expand' => [
             'label' => 'Expand One Side',
@@ -218,11 +213,11 @@ return [
                 'Expand the width of one side to the left or right while the other side keeps within the constraints of the max width.',
             'type' => 'select',
             'options' => [
-                'Don\'t expand' => '',
+                "Don't expand" => '',
                 'To left' => 'left',
                 'To right' => 'right',
             ],
-            'enable' => 'width && width != \'expand\'',
+            'enable' => "width && width != 'expand'",
         ],
         'height' => [
             'type' => 'select',
@@ -246,7 +241,7 @@ return [
                 'Set a fixed height for all columns. They will keep their height when stacking. Optionally, subtract the header height to fill the first visible viewport.',
             'type' => 'checkbox',
             'text' => 'Subtract height above row',
-            'enable' => 'height == \'viewport\' && (height_viewport || 0) <= 100',
+            'enable' => "height == 'viewport' && (height_viewport || 0) <= 100",
         ],
         'margin_top' => [
             'label' => 'Margin Top',
@@ -352,7 +347,7 @@ return [
                         'parallax',
                         [
                             'description' =>
-                                'The animation starts when the row enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the row\'s height.',
+                                "The animation starts when the row enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the row's height.",
                             'name' => '_parallax',
                             'type' => 'grid',
                             'width' => '1-2',

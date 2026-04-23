@@ -71,7 +71,7 @@ return [
             'description' =>
                 'Set whether subnav items are forced into one line or can wrap into multiple lines.',
             'type' => 'checkbox',
-            'text' => 'Don\'t wrap into multiple lines',
+            'text' => "Don't wrap into multiple lines",
         ],
         'image_width' => [
             'type' => 'number',

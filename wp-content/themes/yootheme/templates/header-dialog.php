@@ -13,6 +13,7 @@ if (in_array($position, ['navbar', 'navbar-push', 'header', 'header-push'])) {
     $countModules = is_active_sidebar('dialog') || str_starts_with($config("$header.search", ''), 'dialog') || str_starts_with($config("$header.social", ''), 'dialog');
 
     $attrs_toggle['href'] ='#tm-dialog';
+    $attrs_toggle['aria-controls'] ='tm-dialog';
 
     if (str_starts_with($config("$header.layout"), 'stacked') && in_array($position, ['header', 'header-push'])) {
         $attrs_toggle['class'][] = 'uk-icon-link';
@@ -30,6 +31,7 @@ if (in_array($position, ['navbar', 'navbar-push', 'header', 'header-push'])) {
 
     $attrs_toggle['href'] ='#tm-dialog-mobile';
     $attrs_toggle['class'][] = 'uk-navbar-toggle';
+    $attrs_toggle['aria-controls'] ='tm-dialog-mobile';
 
 }
 

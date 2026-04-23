@@ -162,7 +162,7 @@
             billing_input.addEventListener("focusout", function () {
                 self.fill_valid_number(type);
             });
-            self.helping_text(billing_phone);
+
             self.fill_valid_number(type);
             if ('' !== billing_phone.val()) {
                 billing_phone.trigger('change');
@@ -254,12 +254,18 @@
 
         validatePhoneNumber(code, phoneNumber) {
             try {
-                let dialcodes = {"56": /^(?:\+?56)?(?:[ -]?9[ -]?\d{4}[ -]?\d{4})$/};
+                // Added Lebanon validation for valid mobile formats like 79077283
+                let dialcodes = {
+                    "56": /^(?:\+?56)?(?:[ -]?9[ -]?\d{4}[ -]?\d{4})$/,
+                    "961": /^(?:\+?961)?[ -]?[378]\d{7}$/
+                };
                 if (dialcodes.hasOwnProperty(code)) {
                     return dialcodes[code].test(phoneNumber);
                 }
             } catch (e) {
-                console.log('validatePhoneNumber')
+                if (typeof console !== 'undefined' && console.warn) {
+                    console.warn('[wfacp] validatePhoneNumber', e);
+                }
             }
 
             return false;
@@ -268,18 +274,89 @@
         }
 
         /**
+         * Strict validation that runs even when intl.isValidNumber() returns true.
+         * Catches false positives where the library accepts a mistyped number
+         * because it matches a different number type (e.g. fixed-line vs mobile).
+         * Returns false to reject, null if no override for that country (trust library).
+         * @param code Dial code string
+         * @param phoneNumber Full phone number string
+         * @returns {boolean|null}
+         */
+        strictValidatePhoneNumber(code, phoneNumber) {
+            try {
+                if (String(code) === '359') {
+                    const cleaned = phoneNumber.replace(/[\s\-().]/g, '');
+                    // Bulgarian mobiles start with 8 or 9 after the country code.
+                    // Landlines use area codes 2 (Sofia) or 3x–7x (regional) and are trusted to the library.
+                    // Strict check only applies to mobile-prefix numbers to reject incomplete entries
+                    // (e.g. 8-digit numbers the library mistakenly accepts as landlines).
+                    if (/^(?:\+?359)?0?[89]/.test(cleaned)) {
+                        return /^(?:\+?359)?0?[89]\d{8}$/.test(cleaned);
+                    }
+                    // Non-mobile BG number — defer to the library.
+                    return null;
+                }
+            } catch (e) {
+                if (typeof console !== 'undefined' && console.warn) {
+                    console.warn('[wfacp] strictValidatePhoneNumber', e);
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * intlTelInput often returns isValidNumber() false for valid BG 8/9 mobiles while typing
+         * or before full E.164; getNumber() can be empty. Build +359… from the visible input.
+         *
+         * @param intl
+         * @returns {string}
+         */
+        normalizeBulgariaPhoneForStrict(intl) {
+            if (intl.a && intl.a.value) {
+                const raw = intl.a.value.replace(/[\s\-().]/g, '');
+                if (raw) {
+                    if (raw.charAt(0) === '+') {
+                        return raw;
+                    }
+                    if (raw.indexOf('359') === 0) {
+                        return '+' + raw;
+                    }
+                    return '+359' + raw.replace(/^0/, '');
+                }
+            }
+            return (intl.getNumber() || '').replace(/[\s\-().]/g, '');
+        }
+
+        /**
          * Override INTL Is Valid Phone number
          * @param intl
          * @returns {*|boolean}
          */
         isValidNumber(intl) {
-            let result = intl.isValidNumber();
+            const result = intl.isValidNumber();
+            const country_data = intl.getSelectedCountryData();
+            const dial = country_data && country_data.dialCode != null ? String(country_data.dialCode) : '';
+
+            let phone_number = intl.getNumber() || '';
+            if (dial === '359') {
+                phone_number = this.normalizeBulgariaPhoneForStrict(intl);
+            }
+
             if (true === result) {
+                const strict_result = this.strictValidatePhoneNumber(dial, phone_number);
+                if (strict_result !== null) {
+                    return strict_result;
+                }
                 return result;
             }
-            let phone_number = intl.getNumber();
-            let country_data = intl.getSelectedCountryData();
-            return this.validatePhoneNumber(country_data.dialCode, phone_number);
+
+            // validatePhoneNumber only knows 56 / 961 — never 359, so this always failed for BG before.
+            if (dial === '359') {
+                return this.strictValidatePhoneNumber(dial, phone_number) === true;
+            }
+
+            return this.validatePhoneNumber(dial, phone_number);
         }
 
         /**
@@ -365,14 +442,6 @@
 
         countrychange() {
         }
-
-        helping_text(field_element) {
-            if (wfacp_frontend.phone_helping_text != '') {
-                field_element.parents('form-row').addClass("wfacp-helping-text-wrap");
-                field_element.after('<span class="wfacp-helping-text" wfacp-helping-text="' + wfacp_frontend.phone_helping_text + '"></span>');
-            }
-        }
-
         field_position(intl) {
             let selected_flag = $(intl.selectedFlag);
             let flag_w = 0;

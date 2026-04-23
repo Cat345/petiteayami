@@ -4,14 +4,14 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 	 * @author XLPlugins
 	 */
 	class WFOB_Rules {
-		private static $ins = null;
-		public $is_executing_rule = false;
-		public $environments = array();
-		public $excluded_rules = array();
+		private static $ins               = null;
+		public $is_executing_rule         = false;
+		public $environments              = array();
+		public $excluded_rules            = array();
 		public $excluded_rules_categories = array();
-		public $processed = array();
-		public $record = array();
-		public $skipped = array();
+		public $processed                 = array();
+		public $record                    = array();
+		public $skipped                   = array();
 
 		public function __construct() {
 
@@ -25,18 +25,16 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 				add_action( 'admin_init', array( $this, 'load_rules_classes' ) );
 			}
 
-
 			add_filter( 'wfob_wfob_rule_get_rule_types', array( $this, 'default_rule_types' ), 1 );
 			add_action( 'init', array( $this, 'maybe_save_rules' ) );
 			add_action( 'wfob_before_rules', array( $this, 'reset_skipped' ) );
 			add_filter( 'wfob_builder_menu', array( $this, 'add_rule_tab' ) );
 			add_action( 'wfob_dashboard_page_rules', array( $this, 'render_rules' ) );
-
 		}
 
 		public static function get_instance() {
 			if ( null == self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -65,7 +63,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 			if ( $results === false || true == $rematch ) {
 				$this->is_executing_rule = true;
 
-				//allowing rules to get manipulated using external logic
+				// allowing rules to get manipulated using external logic
 				$external_rules = apply_filters( 'wfob_before_rules', true, $content_id );
 				if ( ! $external_rules ) {
 					$this->is_executing_rule = false;
@@ -99,7 +97,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 						}
 					}
 				} else {
-					$display = true; //Always display the content if no rules have been configured.
+					$display = true; // Always display the content if no rules have been configured.
 				}
 
 				$display = apply_filters( 'wfob_after_rules', $display, $content_id );
@@ -114,10 +112,10 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 
 		public function load_rules_classes() {
 
-			//Include our default rule classes
-			//Include the compatibility class
+			// Include our default rule classes
+			// Include the compatibility class
 			include_once WFOB_PLUGIN_DIR . '/rules/class-wfob-compatibility.php';
-			//Include our default rule classes
+			// Include our default rule classes
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/base.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/general.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/page.php';
@@ -125,10 +123,11 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/date-time.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/geo.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/cart.php';
+			include_once WFOB_PLUGIN_DIR . '/rules/rules/product-stock.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/customer.php';
 			include_once WFOB_PLUGIN_DIR . '/rules/rules/wfacp.php';
 			if ( is_admin() || defined( 'DOING_AJAX' ) ) {
-				//Include the admin interface builder
+				// Include the admin interface builder
 				include_once WFOB_PLUGIN_DIR . '/rules/class-wfob-input-builder.php';
 				include_once WFOB_PLUGIN_DIR . '/rules/inputs/html-always.php';
 				include_once WFOB_PLUGIN_DIR . '/rules/inputs/text.php';
@@ -143,7 +142,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 				include_once WFOB_PLUGIN_DIR . '/rules/inputs/time.php';
 				include_once WFOB_PLUGIN_DIR . '/rules/inputs/coupon-text-match.php';
 			}
-			do_action( 'wfob_after_rules_classes' ); 
+			do_action( 'wfob_after_rules_classes' );
 		}
 
 		public function default_rule_types( $types ) {
@@ -154,16 +153,20 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 				__( 'Cart', 'woofunnels-order-bump' )      => array(
 					'cart_total_full'         => __( 'Cart Total', 'woofunnels-order-bump' ),
 					'cart_total'              => __( 'Cart Total (Subtotal)', 'woofunnels-order-bump' ),
-					'cart_item'               => __( 'Cart Item(s)', 'woofunnels-order-bump' ),
+					'cart_item'               => __( 'Cart Product(s)', 'woofunnels-order-bump' ),
 					'cart_category'           => __( 'Cart Category(s)', 'woofunnels-order-bump' ),
 					'cart_tags'               => __( 'Cart Product Tags', 'woofunnels-order-bump' ),
-					'cart_item_count'         => __( 'Cart Item Count', 'woofunnels-order-bump' ),
-					'cart_items_count'        => __( 'Cart Items Quantity Count', 'woofunnels-order-bump' ),
-					'cart_item_type'          => __( 'Cart Item Type', 'woofunnels-order-bump' ),
+					'cart_item_count'         => __( 'Cart Product Count', 'woofunnels-order-bump' ),
+					'cart_items_count'        => __( 'Cart All Products Quantity', 'woofunnels-order-bump' ),
+					'cart_per_item_count'     => __( 'Cart Per Product Quantity', 'woofunnels-order-bump' ),
+					'cart_item_type'          => __( 'Cart Product Type', 'woofunnels-order-bump' ),
 					'cart_coupons'            => __( 'Cart Coupons', 'woofunnels-order-bump' ),
 					'order_coupon_text_match' => __( 'Coupons - Text Match', 'woofunnels-order-bump' ),
 					'cart_shipping_method'    => __( 'Cart Shipping Method', 'woofunnels-order-bump' ),
-					'cart_sublium'           => __( 'Sublium', 'woofunnels-order-bump' ),
+					'cart_sublium'            => __( 'Sublium', 'woofunnels-order-bump' ),
+				),
+				__( 'Product', 'woofunnels-order-bump' )   => array(
+					'product_stock_status' => __( 'Product Stock Status', 'woofunnels-order-bump' ),
 				),
 				__( 'Customer', 'woofunnels-order-bump' )  => array(
 					'customer_user'               => __( 'Customer', 'woofunnels-order-bump' ),
@@ -182,14 +185,13 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 			);
 			if ( class_exists( 'WFACP_Core' ) ) {
 
-				$types[ __( 'Checkout', 'woofunnels-order-bump' ) ] = [
+				$types[ __( 'Checkout', 'woofunnels-order-bump' ) ] = array(
 					'wfacp_page' => __( 'FunnelKit Checkout pages', 'woofunnels-order-bump' ),
 
-				];
+				);
 			}
 
 			return apply_filters( 'funnelkit_order_bump_rule_types', $types );
-
 		}
 
 		public function maybe_save_rules() {
@@ -221,7 +223,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 			$bump_id    = filter_input( INPUT_GET, 'wfob_id', FILTER_SANITIZE_NUMBER_INT );
 			$control_id = get_post_meta( $bump_id, '_bwf_ab_variation_of', true );
 			if ( $control_id > 0 ) {
-				include_once( $this->rule_views_path() . '/rules-blocked.php' );
+				include_once $this->rule_views_path() . '/rules-blocked.php';
 
 				return;
 			}
@@ -231,10 +233,10 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 				$wfob_is_rules_saved = get_post_meta( $bump_id, '_wfob_is_rules_saved', true );
 
 			}
-			include_once( $this->rule_views_path() . '/rules-head.php' );
-			include_once( $this->rule_views_path() . '/rules-basic.php' );
-			include_once( $this->rule_views_path() . '/rules-footer.php' );
-			include_once( $this->rule_views_path() . '/rules-create.php' );
+			include_once $this->rule_views_path() . '/rules-head.php';
+			include_once $this->rule_views_path() . '/rules-basic.php';
+			include_once $this->rule_views_path() . '/rules-footer.php';
+			include_once $this->rule_views_path() . '/rules-create.php';
 		}
 
 		public function rule_views_path() {
@@ -286,7 +288,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 					$group_skipped = array();
 					foreach ( $group as $rule_id => $rule ) {
 
-						//just skipping the rule if excluded, so that it wont play any role in final judgement
+						// just skipping the rule if excluded, so that it wont play any role in final judgement
 						if ( in_array( $rule['rule_type'], $this->excluded_rules ) ) {
 
 							continue;
@@ -298,8 +300,8 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 							if ( $rule_object->supports( $environment ) ) {
 								$match = $rule_object->is_match( $rule, $environment );
 
-								//assigning values to the array.
-								//on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
+								// assigning values to the array.
+								// on false, as this is single group (bind by AND), one false would be enough to declare whole result as false so breaking on that point
 								if ( false === $match ) {
 									$iteration_results[ $group_id ] = 0;
 									break;
@@ -313,7 +315,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 						}
 					}
 
-					//checking if current group iteration combine returns true, if its true, no need to iterate other groups
+					// checking if current group iteration combine returns true, if its true, no need to iterate other groups
 					if ( isset( $iteration_results[ $group_id ] ) && $iteration_results[ $group_id ] === 1 ) {
 
 						/**
@@ -326,10 +328,10 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 					}
 				}
 
-				//checking count of all the groups iteration
+				// checking count of all the groups iteration
 				if ( count( $iteration_results ) > 0 ) {
 
-					//checking for the any true in the groups
+					// checking for the any true in the groups
 					if ( array_sum( $iteration_results ) > 0 ) {
 						$display = true;
 					} else {
@@ -337,11 +339,11 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 					}
 				} else {
 
-					//handling the case where all the rules got skipped
+					// handling the case where all the rules got skipped
 					$display = true;
 				}
 			} else {
-				$display = true; //Always display the content if no rules have been configured.
+				$display = true; // Always display the content if no rules have been configured.
 			}
 
 			return $display;
@@ -354,7 +356,6 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 		 *
 		 * @return wfob_Rule_Base or superclass of wfob_Rule_Base
 		 * @global array $woocommerce_wfob_rule_rules
-		 *
 		 */
 		public function woocommerce_wfob_rule_get_rule_object( $rule_type ) {
 			global $woocommerce_wfob_rule_rules;
@@ -363,7 +364,7 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 			}
 			$class = 'wfob_rule_' . $rule_type;
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfob_rule_rules[ $rule_type ] = new $class;
+				$woocommerce_wfob_rule_rules[ $rule_type ] = new $class();
 
 				return $woocommerce_wfob_rule_rules[ $rule_type ];
 			} else {
@@ -374,8 +375,6 @@ if ( ! class_exists( 'WFOB_Rules' ) ) {
 		protected function _push_to_skipped( $rule ) {
 			array_push( $this->skipped, $rule );
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOB_Rules' ) ) {

@@ -212,10 +212,8 @@ abstract class Arr
      *
      * @param Accessible $array
      * @param Key $key
-     * @param callable $callback
      *
      * @return Accessible
-     *
      * @example
      * $array = ['a' => [['b' => ['c' => 3]]]];
      *
@@ -460,9 +458,9 @@ abstract class Arr
             if (!is_array($item)) {
                 $result[] = $item;
             } elseif ($depth === 1) {
-                $result = array_merge($result, array_values($item));
+                array_push($result, ...array_values($item));
             } else {
-                $result = array_merge($result, static::flatten($item, $depth - 1));
+                array_push($result, ...static::flatten($item, $depth - 1));
             }
         }
 
@@ -473,10 +471,8 @@ abstract class Arr
      * Chunks an array evenly into columns.
      *
      * @param array<mixed> $array
-     * @param int $columns
      *
      * @return list<mixed>
-     *
      * @example
      * $array = [1, 2, 3, 4, 5];
      *
@@ -548,8 +544,6 @@ abstract class Arr
      * Checks if the given value is array accessible.
      *
      * @param mixed $value
-     *
-     * @return bool
      */
     public static function accessible($value): bool
     {
@@ -560,8 +554,6 @@ abstract class Arr
      * Removes a portion of the array and replaces it with something else, preserving keys.
      *
      * @param array<mixed> $array
-     * @param int|null $offset
-     * @param int|null $length
      * @param array<mixed> $replacement
      *
      * @return array<mixed>

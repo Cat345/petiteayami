@@ -10,9 +10,10 @@ if ( ! class_exists( 'WFACP_Subscription_gift' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Subscription_gift {
 		public function __construct() {
-			add_action( 'woocommerce_checkout_after_customer_details', [ $this, 'print_fields' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'handle_js' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'store_recipients_in_session' ], 50, 1 );
+			add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'print_fields' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'handle_js' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'store_recipients_in_session' ), 50, 1 );
+			remove_action( 'woocommerce_before_checkout_shipping_form', array( 'WCSG_Checkout', 'maybe_display_recipient_shipping_notice' ), 10 );
 		}
 
 
@@ -37,70 +38,68 @@ if ( ! class_exists( 'WFACP_Subscription_gift' ) ) {
 		public function handle_js() {
 
 			?>
-            <style>
-                body .wfacp-form table.shop_table.woocommerce-checkout-review-order-table .product-name fieldset {
-                    position: relative;
-                }
+			<style>
+				body .wfacp-form table.shop_table.woocommerce-checkout-review-order-table .product-name fieldset {
+					position: relative;
+				}
 
-                p.form-row.form-row.woocommerce_subscriptions_gifting_recipient_email.woocommerce-invalid input {
-                    border: 1px solid red;
-                }
+				p.form-row.form-row.woocommerce_subscriptions_gifting_recipient_email.woocommerce-invalid input {
+					border: 1px solid red;
+				}
 
-                p.form-row.form-row.woocommerce_subscriptions_gifting_recipient_email input {
-                    padding: 5px;
-                    border: 1px solid #a7a7a7;
-                    background: #fff;
-                }
-            </style>
+				p.form-row.form-row.woocommerce_subscriptions_gifting_recipient_email input {
+					padding: 5px;
+					border: 1px solid #a7a7a7;
+					background: #fff;
+				}
+			</style>
 
-            <script>
-                window.addEventListener('DOMContentLoaded', function () {
-                    (function ($) {
-                        function copy_html() {
-                            var mini_cart = $('.wfacp_mini_cart_items fieldset');
-                            if (mini_cart.length == 0) {
-                                return;
-                            }
-                            var object = {};
-                            mini_cart.each(function () {
-                                var parent = $(this).closest('.wfacp_product_row');
-                                if (parent.length > 0) {
-                                    var cart_key = parent.attr('cart_key');
-                                    if (cart_key == '') {
-                                        return;
-                                    }
-                                    var checkbox = parent.find('.woocommerce_subscription_gifting_checkbox');
-                                    object[cart_key] = {input: '', 'checked': false};
-                                    if (checkbox.is(":checked")) {
-                                        object[cart_key].checked = true;
-                                        var input_val = parent.find('.recipient_email');
-                                        if (input_val.val() != '') {
-                                            object[cart_key].input = input_val.val();
-                                        }
-                                    } else {
-                                        object[cart_key].input = '';
-                                    }
-                                }
-                            });
-                            $('#wfacp_subscription_gifting').val(JSON.stringify(object));
-                        }
+			<script>
+				window.addEventListener('DOMContentLoaded', function () {
+					(function ($) {
+						function copy_html() {
+							var mini_cart = $('.wfacp_mini_cart_items fieldset');
+							if (mini_cart.length == 0) {
+								return;
+							}
+							var object = {};
+							mini_cart.each(function () {
+								var parent = $(this).closest('.wfacp_product_row');
+								if (parent.length > 0) {
+									var cart_key = parent.attr('cart_key');
+									if (cart_key == '') {
+										return;
+									}
+									var checkbox = parent.find('.woocommerce_subscription_gifting_checkbox');
+									object[cart_key] = {input: '', 'checked': false};
+									if (checkbox.is(":checked")) {
+										object[cart_key].checked = true;
+										var input_val = parent.find('.recipient_email');
+										if (input_val.val() != '') {
+											object[cart_key].input = input_val.val();
+										}
+									} else {
+										object[cart_key].input = '';
+									}
+								}
+							});
+							$('#wfacp_subscription_gifting').val(JSON.stringify(object));
+						}
 
-                        $(document.body).on('updated_checkout', function () {
-                            setTimeout(copy_html, 400);
-                        });
-                        $(document.body).on('keyup change focusout', '.wfacp_mini_cart_items fieldset', function () {
-                            copy_html();
-                        });
-                    })(jQuery)
+						$(document.body).on('updated_checkout', function () {
+							setTimeout(copy_html, 400);
+						});
+						$(document.body).on('keyup change focusout', '.wfacp_mini_cart_items fieldset', function () {
+							copy_html();
+						});
+					})(jQuery)
 
-                });
+				});
 
-            </script>
+			</script>
 
 			<?php
 		}
-
-
 	}
 
 	new WFACP_Subscription_gift();

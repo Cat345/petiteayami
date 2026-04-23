@@ -14,7 +14,8 @@ wffnFBResult = true;
 if(false === wffnFBResult) {
 <?php
 if ( $this->do_track_fb_synced_purchase() && is_array( $data ) && isset( $data['fb'] ) ) {
-	$event_id = $this->get_event_id( 'Purchase' );
+	$order_id = isset( $data['fb']['order_id'] ) ? absint( $data['fb']['order_id'] ) : 0;
+	$event_id = $this->get_event_id( 'Purchase', $order_id );
 	?>
     var wffnfbDataPurchaseTrackSynced = {
     contents: <?php echo wp_json_encode( array_values( $data['fb']['products'] ) ); ?>,
@@ -61,7 +62,8 @@ if ( $this->do_track_fb_synced_purchase() && is_array( $data ) && isset( $data['
 }
 
 if ( false === $this->do_track_fb_synced_purchase() && $this->do_track_fb_purchase_event() && is_array( $data ) && isset( $data['fb'] ) ) {
-	$event_id = $this->get_event_id( 'Purchase' );
+	$order_id = isset( $data['fb']['order_id'] ) ? absint( $data['fb']['order_id'] ) : 0;
+	$event_id = $this->get_event_id( 'Purchase', $order_id );
 	?>
     var wffnfbDataPurchaseTrack = {
     'value': '<?php echo esc_js( $data['fb']['total'] ); ?>',

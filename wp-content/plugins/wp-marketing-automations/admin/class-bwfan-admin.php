@@ -119,6 +119,13 @@ class BWFAN_Admin {
 	function bwfan_migrate_automation() {
 		BWFAN_Common::check_nonce();
 
+		if ( ! current_user_can( BWFAN_admin::menu_cap() ) ) {
+			wp_send_json( array(
+				'status' => false,
+				'msg'    => __( 'You are not authorized to perform this action', 'wp-marketing-automations' ),
+			) );
+		}
+
 		// phpcs:disable WordPress.Security.NonceVerification
 		if ( empty( $_POST['automation_id'] ) ) {
 			$resp = array(
@@ -326,7 +333,7 @@ class BWFAN_Admin {
 			), 24 );
 
 			if ( BWFAN_Common::is_automation_v1_active() ) {
-				add_submenu_page( 'autonami', __( 'Automations', 'wp-marketing-automations' ), __( 'Automations', 'wp-marketing-automations' ) . ' <span style="background-color:#ece6e4; color: #000;white-space: nowrap; border-radius:10px;margin-left:2px;font-size:10px;padding:3px 6px;">Legacy</span>', $capability, 'autonami&path=/automations-v1', array(
+				add_submenu_page( 'autonami', __( 'Automations', 'wp-marketing-automations' ), __( 'Automations', 'wp-marketing-automations' ) . ' <span style="background-color:#ece6e4; color: #000;white-space: nowrap; border-radius:10px;margin-left:2px;font-size:10px;padding:3px 6px;">Legacy</span>', $capability, 'autonami-automations', array(
 					$this,
 					'autonami_automations_page'
 				), 25 );
@@ -1239,7 +1246,7 @@ class BWFAN_Admin {
 		if ( empty( $page ) || 'autonami-automations' !== strval( $page ) || ! empty( $id ) ) {
 			return;
 		}
-		wp_safe_redirect( admin_url( 'admin.php?page=autonami&path=/automations' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=autonami&path=/automations-v1' ) );
 		exit;
 	}
 
@@ -1313,7 +1320,7 @@ class BWFAN_Admin {
 		if ( ! empty( $tab ) || ! empty( $edit ) ) {
 			return;
 		}
-		
+
 		wp_safe_redirect( admin_url( 'admin.php?page=autonami&path=/automations-v1' ) );
 		exit;
 	}

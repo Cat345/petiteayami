@@ -2,7 +2,7 @@
 
 use Elementor\Plugin;
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_OTY_Pages_Elementor
@@ -10,12 +10,12 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 	class WFFN_OTY_Pages_Elementor {
 
-		private static $ins = null;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		private $edit_id = 0;
-		private $url = '';
+		private static $ins             = null;
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		private $edit_id                = 0;
+		private $url                    = '';
 
 		/**
 		 * WFFN_OTY_Pages_Elementor constructor.
@@ -24,25 +24,29 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 			$this->url = plugin_dir_url( __FILE__ );
 			add_filter( 'bwf_page_template', array( $this, 'get_page_template' ) );
 			add_action( 'init', array( $this, 'setup' ) );
+
+			add_action( 'wffn_optin_ty_page_setup_completed', array( $this, 'clear_elementor_cache_when_oty_page_loads' ), 5 );
 		}
 
 
 
 		public function add_default_templates() {
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['optin_ty'] ) ? $templates['optin_ty'] : [];
+			$designs   = isset( $templates['optin_ty'] ) ? $templates['optin_ty'] : array();
 
-			$template = [
+			$template = array(
 				'slug'        => 'elementor',
 				'title'       => __( 'Elementor', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'post'   => $this->edit_id,
-					'action' => 'elementor',
-				], admin_url( 'post.php' ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'post'   => $this->edit_id,
+						'action' => 'elementor',
+					),
+					admin_url( 'post.php' )
+				),
+			);
 			WFOPP_Core()->optin_ty_pages->register_template_type( $template );
-
 
 			if ( isset( $designs['elementor'] ) && is_array( $designs['elementor'] ) ) {
 				foreach ( $designs['elementor'] as $d_key => $templates ) {
@@ -55,19 +59,18 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 				}
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "elementor_1",
-					"build_from_scratch" => true,
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'elementor_1',
+					'build_from_scratch' => true,
 
-				];
+				);
 				WFOPP_Core()->optin_ty_pages->register_template( 'elementor_1', $empty_template, 'elementor' );
 			}
 
-
-			return [];
+			return array();
 		}
 
 		/**
@@ -75,7 +78,7 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -113,19 +116,42 @@ if ( ! class_exists( 'WFFN_OTY_Pages_Elementor' ) ) {
 
 		public function setup() {
 			if ( did_action( 'elementor/loaded' ) ) {
-				add_action( 'elementor/theme/register_conditions', [ $this, 'register_conditions' ] );
+				add_action( 'elementor/theme/register_conditions', array( $this, 'register_conditions' ) );
 			}
-
 		}
 
 		public function register_conditions( $conditions_manager ) {
 			require plugin_dir_path( WFFN_PLUGIN_FILE ) . 'modules/optins/modules/optin-ty-pages/compatibilities/page-builders/elementor/conditions/class-wffn-oty-pages.php';
-			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OTY_Pages( [
-				'post_type' => WFOPP_Core()->optin_ty_pages->get_post_type_slug(),
-			] );
+			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OTY_Pages(
+				array(
+					'post_type' => WFOPP_Core()->optin_ty_pages->get_post_type_slug(),
+				)
+			);
 			$conditions_manager->get_condition( 'singular' )->register_sub_condition( $new_condition );
 		}
 
+		/**
+		 * Invalidate Elementor document cache for this opt-in thank you page only (not site-wide).
+		 *
+		 * @param int $page_id Opt-in thank you page post ID.
+		 */
+		public function clear_elementor_cache_when_oty_page_loads( $page_id ) {
+			$page_id = absint( $page_id );
+			if ( $page_id <= 0 || ! function_exists( 'WFOPP_Core' ) ) {
+				return;
+			}
+			$design = WFOPP_Core()->optin_ty_pages->get_page_design( $page_id );
+			if ( ! is_array( $design ) || empty( $design['selected_type'] ) || 'elementor' !== $design['selected_type'] ) {
+				return;
+			}
+			if ( ! class_exists( '\Elementor\Core\Base\Document' ) ) {
+				return;
+			}
+			$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
+			if ( ! empty( $cache_meta_key ) ) {
+				delete_post_meta( $page_id, $cache_meta_key );
+			}
+		}
 	}
 
 	WFFN_OTY_Pages_Elementor::get_instance();

@@ -928,6 +928,7 @@ if ( ! class_exists( 'WFACP_EL_Fields' ) ) {
 			$strike_through_typo = [
 				$selector . ' .product-total del',
 				$selector . ' .product-total del *',
+				$selector . ' .product-total del bdi',
 				$selector . ' .product-total del span.woocommerce-Price-currencySymbol',
 			];
 

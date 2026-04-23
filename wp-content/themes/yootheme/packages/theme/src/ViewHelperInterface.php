@@ -47,7 +47,6 @@ interface ViewHelperInterface
 
     /**
      * @param array<string, mixed> $params
-     * @param string   $prefix
      * @param list<string> $props
      */
     public function parallaxOptions(
@@ -58,7 +57,7 @@ interface ViewHelperInterface
 
     public function striptags(
         ?string $str,
-        string $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del>'
+        string $allowable_tags = '<div><h1><h2><h3><h4><h5><h6><p><ul><ol><li><img><svg><br><hr><span><strong><em><i><b><s><mark><sup><del><wbr>'
     ): string;
 
     public function margin(?string $margin): ?string;

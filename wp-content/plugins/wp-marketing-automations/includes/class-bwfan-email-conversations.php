@@ -473,7 +473,6 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 
 			$templates_data = array(
 				'template'      => $template_body,
-				'template_hash' => $template_hash,
 				'subject'       => $template_subject,
 				'type'          => $type,
 				'mode'          => $mode,
@@ -504,6 +503,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 
 			/** Use hash for lookup if database update is complete, otherwise fallback to old method */
 			if ( ! empty( $global_settings['__db_update_3_6_5_completed'] ) ) {
+				$templates_data['template_hash'] = $template_hash;
 				$query = $wpdb->prepare( 'SELECT `ID` FROM ' . $table_name . ' WHERE `template_hash` = %s AND `subject` = %s' . $canned_query . ' LIMIT 1', $template_hash, $template_subject ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			} else {
 				/** Fallback to old method for backward compatibility */
@@ -1388,7 +1388,7 @@ if ( ! class_exists( 'BWFAN_Email_Conversations' ) && BWFAN_Common::is_pro_3_0()
 
                     return array(
                         'id'     => $automation['ID'],
-                        'name'   => isset( $automation['meta']['title'] ) ? $automation['meta']['title'] : $automation['title'],
+                        'name'   => isset( $automation['meta']['title'] ) ? $automation['meta']['title'] : ( $automation['title'] ?? '' ),
                         'status' => $automation['status'],
                         'type'   => __( 'Automation', 'wp-marketing-automations' ),
                         'link'   => add_query_arg( array(

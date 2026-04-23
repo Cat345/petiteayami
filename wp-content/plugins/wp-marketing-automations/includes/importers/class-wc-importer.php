@@ -168,6 +168,7 @@ class WC_Importer extends Importer {
 					$order->save();
 				}
 				$contact->contact->is_subscribed = false;
+				$contact->set_unsubscribe_context( 0, 0, BWFCRM_Contact::UNSUBSCRIBE_SOURCE_IMPORTER );
 				$contact->unsubscribe( $disable_events );
 				break;
 			case 4:

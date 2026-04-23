@@ -1,0 +1,77 @@
+{
+  "module": {
+    "text": "text.innerContent.*",
+    "icon": "icon",
+    "icon_align": "iconAlign",
+    "align": "buttonAlign.*",
+
+    "wfocu_reject_button_text_color": "wfocu_reject_button_text_color.decoration.font.font.*.color",
+    "wfocu_reject_button_text_hover_color": "wfocu_reject_button_text_hover_color.decoration.font.font.*.color",
+
+    "wfocu_reject_button_background_color": "wfocu_reject_button_background_color.decoration.background.*.color",
+    "wfocu_reject_button_background_hover_color": "wfocu_reject_button_background_hover_color.decoration.background.*.color",
+
+    "icon_margin": "icon_margin.decoration.spacing.*.margin",
+    "wfocu_reject_button_margin": "button.decoration.spacing.*.margin",
+    "wfocu_reject_button_padding": "button.decoration.spacing.*.padding",
+
+    "wfocu_reject_button_typography_typograhy": "text.decoration.font.font.*",
+
+    "wfocu_reject_button_border_border_radius_top": "button.decoration.border.border.*.radius.topLeft",
+    "wfocu_reject_button_border_border_radius_right": "button.decoration.border.border.*.radius.topRight",
+    "wfocu_reject_button_border_border_radius_bottom": "button.decoration.border.border.*.radius.bottomLeft",
+    "wfocu_reject_button_border_border_radius_left": "button.decoration.border.border.*.radius.bottomRight"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_reject_button_border": "button.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_reject_button_box_shadow": "button.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfocu_reject_button_typography": "text.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "icon_margin": "convertSpacing",
+    "wfocu_reject_button_margin": "convertSpacing",
+    "wfocu_reject_button_padding": "convertSpacing",
+    "wfocu_reject_button_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfocu_reject_button_border_border_width_all": "convertBorderWidth",
+    "wfocu_reject_button_border_border_width_top": "convertBorderWidth",
+    "wfocu_reject_button_border_border_width_bottom": "convertBorderWidth",
+    "wfocu_reject_button_border_border_width_left": "convertBorderWidth",
+    "wfocu_reject_button_border_border_width_right": "convertBorderWidth",
+    "wfocu_reject_button_border_border_radius_top": "convertBorderWidth",
+    "wfocu_reject_button_border_border_radius_bottom": "convertBorderWidth",
+    "wfocu_reject_button_border_border_radius_left": "convertBorderWidth",
+    "wfocu_reject_button_border_border_radius_right": "convertBorderWidth"
+  }
+}

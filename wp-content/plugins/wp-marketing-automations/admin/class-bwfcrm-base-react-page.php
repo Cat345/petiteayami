@@ -247,6 +247,7 @@ abstract class BWFCRM_Base_React_Page {
 		$this->page_data['contact_import_inprogress']    = BWFAN_Importer::get_import_option();
 		$this->page_data['feature_enabled']              = [
 			'categories' => class_exists('BWFCRM_Category' ),
+			'contact_filters' => class_exists('BWFCRM_Load_Filters' ),
 		];
 
 		$this->page_data['bwf_review_count'] = 302;
@@ -310,7 +311,7 @@ abstract class BWFCRM_Base_React_Page {
 	public function get_default_form_email_content() {
 		$default_email_body = '<p>Hi {{contact_first_name}},</p>
 <p>Thanks for signing up. Click the link below to confirm your subscription and you\'ll be on your way.</p>
-<p><a href="{{contact_confirmation_link}}" data-wplink-url-error="true">Confirm your subscription</a></p>
+<p><a href="{{contact_subscribe_link}}" data-wplink-url-error="true">Confirm your subscription</a></p>
 <p>It\'s good to have you!</p>
 <p></p>
 <p><a href="{{unsubscribe_link}}">Unsubscribe</a> | {{business_name}}, {{business_address}}</p>';

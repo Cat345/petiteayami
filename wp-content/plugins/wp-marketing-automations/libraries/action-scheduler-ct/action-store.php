@@ -311,33 +311,31 @@ class BWFAN_AS_CT_Action_Store extends ActionScheduler_Store {
 	protected function claim_actions( $claim_id, $limit, ?DateTime $before_date = null, $hooks = array(), $group = '' ) {
 		global $wpdb;
 
-		/** can't use $wpdb->update() because of the <= condition */
-		$update = "SELECT t.`ID` FROM {$wpdb->bwfan_tasks} AS t INNER JOIN {$wpdb->bwfan_automations} AS aut ON t.`automation_id` = aut.`ID`";
-		$params = [];
-
-		$where    = 'WHERE t.`claim_id` = 0 AND t.`e_date` <= %s AND t.`status` = 0 AND aut.`status` = 1';
-		$params[] = time();
-
-		$order    = 'ORDER BY t.`e_date` ASC, t.`priority` DESC LIMIT %d';
-		$params[] = $limit;
-
-		$sql = $wpdb->prepare( "{$update} {$where} {$order}", $params ); //phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-
-		$task_ids = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
-		if ( ! is_array( $task_ids ) || count( $task_ids ) === 0 ) {
-			return 0;
-		}
-
-		$task_ids = array_column( $task_ids, 'ID' );
-
-		/** Update call */
-		$type   = array_fill( 0, count( $task_ids ), '%d' );
-		$format = implode( ', ', $type );
-		$query  = "UPDATE {$wpdb->bwfan_tasks} SET `claim_id` = %d WHERE `ID` IN ({$format})";
-		$params = array( $claim_id );
-		$params = array_merge( $params, $task_ids );
-		$sql    = $wpdb->prepare( $query, $params ); // WPCS: unprepared SQL OK
+		/** Atomic UPDATE to prevent race conditions when multiple workers run concurrently.
+		 * Uses subquery because MySQL disallows ORDER BY and LIMIT in multi-table UPDATEs.
+		 * The outer WHERE claim_id = 0 ensures atomicity — rows claimed by another worker
+		 * between the subquery and UPDATE won't be overwritten.
+		 */
+		$sql = $wpdb->prepare(
+			"UPDATE {$wpdb->bwfan_tasks}
+			SET `claim_id` = %d
+			WHERE `claim_id` = 0
+			AND `ID` IN (
+				SELECT `ID` FROM (
+					SELECT t.`ID` FROM {$wpdb->bwfan_tasks} AS t
+					INNER JOIN {$wpdb->bwfan_automations} AS aut ON t.`automation_id` = aut.`ID`
+					WHERE t.`claim_id` = 0
+					AND t.`e_date` <= %d
+					AND t.`status` = 0
+					AND aut.`status` = 1
+					ORDER BY t.`e_date` ASC, t.`priority` DESC
+					LIMIT %d
+				) AS tmp
+			)",
+			$claim_id,
+			time(),
+			$limit
+		); //phpcs:ignore WordPress.DB.PreparedSQL
 
 		$rows_affected = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( false === $rows_affected ) {
@@ -422,12 +420,13 @@ class BWFAN_AS_CT_Action_Store extends ActionScheduler_Store {
 		$this->log( __FUNCTION__ . ' ' . $claim->get_id() );
 
 		global $wpdb;
-		//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( $wpdb->bwfan_tasks, [
-			'claim_id' => 0,
-		], [
-			'claim_id' => $claim->get_id(),
-		], [ '%d' ], [ '%d' ] );
+
+		/** Release claim with deadlock retry to prevent tasks getting permanently stuck */
+		$sql = $wpdb->prepare(
+			"UPDATE {$wpdb->bwfan_tasks} SET `claim_id` = 0 WHERE `claim_id` = %d",
+			$claim->get_id()
+		);
+		BWFAN_AS_V2::query_with_deadlock_retry( $sql );
 
 		//phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( $wpdb->bwfan_task_claim, [

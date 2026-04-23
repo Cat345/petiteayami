@@ -6,32 +6,31 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Angel_Eye {
 		public function __construct() {
-			add_action( 'wp', [ $this, 'detect_canceled_url' ], 15 );
-			add_filter( 'wfacp_skip_add_to_cart', [ $this, 'check_angel_eye_checkout_enable' ], 10, 2 );
-			add_filter( 'wfacp_form_template', [ $this, 'replace_form_template' ] );
-			add_filter( 'wfacp_checkout_fields', [ $this, 'woocommerce_checkout_fields' ], 99 );
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 'enable_billing_and_shipping_address' ] );
-			add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ], 15 );
-			add_action( 'wfacp_smart_button_container_paypal_express', [ $this, 'add_paypal_buttons' ] );
-			add_filter( 'angelleye_woocommerce_express_checkout_set_express_checkout_request_args', [ $this, 'add_aero_parameter_in_paypal_request' ] );
-			add_filter( 'woocommerce_get_checkout_url', [ $this, 'change_checkout_url' ], 100 );
-			add_filter( 'wfacp_do_not_check_for_global_checkout', [ $this, 'redirect_proper_url' ] );
-			add_action( 'woocommerce_before_checkout_process', [ $this, 'make_session_empty' ] );
-			add_filter( 'wfacp_enable_hashtag_for_multistep_checkout', [ $this, 'disabled_hashtag_form_multistep_checkout' ] );
-			add_filter( 'wfacp_css_js_removal_paths', [ $this, 'remove_some_js' ], 15 );
-			add_filter( 'wfacp_display_quantity_increment', [ $this, 'hide_quantity_switcher' ] );
-			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'hide_delete_icon' ] );
-			add_action( 'wfacp_after_template_found', [ $this, 'v2_action' ] );
-			add_action( 'woocommerce_checkout_order_processed', [ $this, 'update_aero_field' ], 11, 3 );
-			add_filter( 'wfacp_mark_conversion_post_id', [ $this, 'update_conversion_post_id' ], 10, 2 );
+			add_action( 'wp', array( $this, 'detect_canceled_url' ), 15 );
+			add_filter( 'wfacp_skip_add_to_cart', array( $this, 'check_angel_eye_checkout_enable' ), 10, 2 );
+			add_filter( 'wfacp_form_template', array( $this, 'replace_form_template' ) );
+			add_filter( 'wfacp_checkout_fields', array( $this, 'woocommerce_checkout_fields' ), 99 );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 'enable_billing_and_shipping_address' ) );
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ), 15 );
+			add_action( 'wfacp_smart_button_container_paypal_express', array( $this, 'add_paypal_buttons' ) );
+			add_filter( 'angelleye_woocommerce_express_checkout_set_express_checkout_request_args', array( $this, 'add_aero_parameter_in_paypal_request' ) );
+			add_filter( 'woocommerce_get_checkout_url', array( $this, 'change_checkout_url' ), 100 );
+			add_filter( 'wfacp_do_not_check_for_global_checkout', array( $this, 'redirect_proper_url' ) );
+			add_action( 'woocommerce_before_checkout_process', array( $this, 'make_session_empty' ) );
+			add_filter( 'wfacp_enable_hashtag_for_multistep_checkout', array( $this, 'disabled_hashtag_form_multistep_checkout' ) );
+			add_filter( 'wfacp_css_js_removal_paths', array( $this, 'remove_some_js' ), 15 );
+			add_filter( 'wfacp_display_quantity_increment', array( $this, 'hide_quantity_switcher' ) );
+			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'hide_delete_icon' ) );
+			add_action( 'wfacp_after_template_found', array( $this, 'v2_action' ) );
+			add_action( 'woocommerce_checkout_order_processed', array( $this, 'update_aero_field' ), 11, 3 );
+			add_filter( 'wfacp_mark_conversion_post_id', array( $this, 'update_conversion_post_id' ), 10, 2 );
 
-			add_action( 'wfacp_woocommerce_review_order_before_submit', [ $this, 'handle_general_list_express_button' ] );
-
+			add_action( 'wfacp_woocommerce_review_order_before_submit', array( $this, 'handle_general_list_express_button' ) );
 		}
 
 		public function v2_action() {
 
-			add_filter( 'woocommerce_api_request_url', [ $this, 'attach_aero_parameter' ], 10, 2 );
+			add_filter( 'woocommerce_api_request_url', array( $this, 'attach_aero_parameter' ), 10, 2 );
 		}
 
 		/**
@@ -64,7 +63,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 					$this->merge_billing_details( $paypal_express_checkout );
 				}
-				add_action( 'wfacp_express_checkout_paypal_billing_address_not_present', [ $this, 'print_html' ] );
+				add_action( 'wfacp_express_checkout_paypal_billing_address_not_present', array( $this, 'print_html' ) );
 				$template = WFACP_TEMPLATE_COMMON . '/form-express-checkout.php';
 			}
 
@@ -86,7 +85,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			} else {
 				WFACP_Core()->public->billing_details = $paypal_express_checkout['shipping_details'];
 			}
-
 		}
 
 		public function enable_billing_and_shipping_address() {
@@ -97,7 +95,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				$instance->have_billing_address  = true;
 				$instance->have_shipping_address = true;
 			}
-
 		}
 
 		public function woocommerce_checkout_fields( $field ) {
@@ -105,7 +102,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				return $field;
 			}
 
-			$available_fields = [ 'email', 'first_name', 'last_name', 'country', 'city', 'state', 'postcode', 'address_1', 'address_2' ];
+			$available_fields = array( 'email', 'first_name', 'last_name', 'country', 'city', 'state', 'postcode', 'address_1', 'address_2' );
 
 			if ( wp_doing_ajax() && ! is_null( WC()->session ) && WFACP_Common::get_id() > 0 && ! is_null( WC()->session->get( 'paypal_express_checkout', null ) ) ) {
 
@@ -141,15 +138,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				return $buttons;
 			}
 
-			//VERSION_PFW
-			add_action( 'wfacp_internal_css', function () {
-				$instance = Angelleye_PayPal_Express_Checkout_Helper::instance();
-				remove_action( 'woocommerce_before_checkout_form', [ $instance, 'checkout_message' ], 5 );
-			} );
-			$buttons['paypal_express'] = [
+			// VERSION_PFW
+			add_action(
+				'wfacp_internal_css',
+				function () {
+					$instance = Angelleye_PayPal_Express_Checkout_Helper::instance();
+					remove_action( 'woocommerce_before_checkout_form', array( $instance, 'checkout_message' ), 5 );
+				}
+			);
+			$buttons['paypal_express'] = array(
 				'iframe' => true,
 				'name'   => $settings['title'],
-			];
+			);
 			if ( isset( $buttons['ppec_paypal'] ) ) {
 				unset( $buttons['ppec_paypal'] );
 			}
@@ -159,15 +159,15 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 		public function add_paypal_buttons() {
 			?>
-            <style>
-                .woocommerce_paypal_ec_checkout_message {
-                    display: none;
-                }
+			<style>
+				.woocommerce_paypal_ec_checkout_message {
+					display: none;
+				}
 
-                div#wfacp_smart_button_paypal_express #wc-paypal_express-new-payment-method {
-                    width: auto !important;
-                }
-            </style>
+				div#wfacp_smart_button_paypal_express #wc-paypal_express-new-payment-method {
+					width: auto !important;
+				}
+			</style>
 			<?php
 			$instance = Angelleye_PayPal_Express_Checkout_Helper::instance();
 
@@ -181,40 +181,37 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			}
 			$settings = AngellEYE_Utility::angelleye_get_pre_option( false, 'woocommerce_paypal_express_settings' );
 
-
 			if ( ! is_null( WC()->session ) ) {
 				WC()->session->set( 'wfacp_angell_eye_error', '' );
 			}
 
-			if ( isset( $_POST['pp_action'] ) && 'set_express_checkout' == $_POST['pp_action'] && isset( $_POST['wfacp_is_checkout_override'] ) ) {
-				if ( 'yes' == $_POST['wfacp_is_checkout_override'] ) {
-					if ( isset( $_POST['wfacp_embed_form_page_id'] ) && '' !== $_POST['wfacp_embed_form_page_id'] ) {
-						$aero_id = absint( $_POST['wfacp_embed_form_page_id'] );
+			if ( isset( $_POST['pp_action'] ) && 'set_express_checkout' === sanitize_text_field( wp_unslash( $_POST['pp_action'] ) ) && isset( $_POST['wfacp_is_checkout_override'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Payment gateway callback, nonce verification handled by payment gateway
+				if ( 'yes' === sanitize_text_field( wp_unslash( $_POST['wfacp_is_checkout_override'] ) ) ) {
+					if ( isset( $_POST['wfacp_embed_form_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) ) ) {
+						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) );
 						$url     = get_the_permalink( $aero_id );
 					} else {
 						$url = wc_get_checkout_url();
 					}
 				} else {
-					$aero_id = $_POST['wfacp_id'];
-					if ( isset( $_POST['wfacp_embed_page_id'] ) && '' !== $_POST['wfacp_embed_page_id'] ) {
-						$aero_id = absint( $_POST['wfacp_embed_form_page_id'] );
+					$aero_id = isset( $_POST['wfacp_id'] ) ? absint( wp_unslash( $_POST['wfacp_id'] ) ) : 0;
+					if ( isset( $_POST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_POST['wfacp_embed_page_id'] ) ) ) {
+						$aero_id = absint( wp_unslash( $_POST['wfacp_embed_form_page_id'] ) );
 					}
 					$url = get_the_permalink( $aero_id );
 				}
-				//some error triggered in aero checkout
+				// some error triggered in aero checkout
 				if ( ! is_null( WC()->session ) && wc_notice_count() > 0 ) {
 					WC()->session->set( 'wfacp_angell_eye_error', $url );
 				}
-
 			}
 
-			if ( isset( $_REQUEST['pp_action'] ) && 'get_express_checkout_details' == $_REQUEST['pp_action'] && isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'no' == $_REQUEST['wfacp_is_checkout_override'] ) {
+			if ( isset( $_REQUEST['pp_action'] ) && 'get_express_checkout_details' === sanitize_text_field( wp_unslash( $_REQUEST['pp_action'] ) ) && isset( $_REQUEST['wfacp_is_checkout_override'] ) && 'no' === sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
-				$aero_id = $_REQUEST['wfacp_id'];
-				if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== $_REQUEST['wfacp_embed_page_id'] ) {
-					$aero_id = $_REQUEST['wfacp_embed_page_id'];
+				$aero_id = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0;
+				if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) {
+					$aero_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) );
 				}
-
 
 				$notice_count = wc_notice_count();
 				if ( $notice_count > 0 || ( isset( $settings['skip_final_review'] ) && 'no' == $settings['skip_final_review'] ) ) {
@@ -232,26 +229,32 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 		public function add_aero_parameter_in_paypal_request( $request ) {
 
-			if ( isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) {
+			if ( isset( $_REQUEST['wfacp_id'] ) && absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
-				$aero_id   = $_REQUEST['wfacp_id'];
-				$is_global = $_REQUEST['wfacp_is_checkout_override'];
+				$aero_id   = absint( wp_unslash( $_REQUEST['wfacp_id'] ) );
+				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no';
 
 				$embed_page_id = '';
 				if ( ! empty( $_REQUEST['wfacp_embed_form_page_id'] ) ) {
-					$embed_page_id = absint( $_REQUEST['wfacp_embed_form_page_id'] );
+					$embed_page_id = absint( wp_unslash( $_REQUEST['wfacp_embed_form_page_id'] ) );
 				}
-				$request['SECFields']['cancelurl'] = add_query_arg( [
-					'wfacp_canceled'             => true,
-					'wfacp_is_checkout_override' => $is_global,
-					'wfacp_id'                   => $aero_id,
-					'wfacp_embed_page_id'        => $embed_page_id,
-				], $request['SECFields']['cancelurl'] );
-				$request['SECFields']['returnurl'] = add_query_arg( [
-					'wfacp_id'                   => $aero_id,
-					'wfacp_is_checkout_override' => $is_global,
-					'wfacp_embed_page_id'        => $embed_page_id,
-				], $request['SECFields']['returnurl'] );
+				$request['SECFields']['cancelurl']     = add_query_arg(
+					array(
+						'wfacp_canceled'             => true,
+						'wfacp_is_checkout_override' => $is_global,
+						'wfacp_id'                   => $aero_id,
+						'wfacp_embed_page_id'        => $embed_page_id,
+					),
+					$request['SECFields']['cancelurl']
+				);
+					$request['SECFields']['returnurl'] = add_query_arg(
+						array(
+							'wfacp_id'                   => $aero_id,
+							'wfacp_is_checkout_override' => $is_global,
+							'wfacp_embed_page_id'        => $embed_page_id,
+						),
+						$request['SECFields']['returnurl']
+					);
 			}
 
 			return $request;
@@ -261,7 +264,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 			if ( 'WC_Gateway_PayPal_Express_AngellEYE' == $request ) {
 
-				$arg             = [ 'wfacp_id' => WFACP_Common::get_id(), 'wfacp_is_checkout_override' => WFACP_Core()->public->is_checkout_override() ? 'yes' : 'no', ];
+				$arg             = array(
+					'wfacp_id'                   => WFACP_Common::get_id(),
+					'wfacp_is_checkout_override' => WFACP_Core()->public->is_checkout_override() ? 'yes' : 'no',
+				);
 				$api_request_url = add_query_arg( $arg, $api_request_url );
 
 			}
@@ -270,20 +276,20 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 		}
 
 		public function detect_canceled_url() {
-			if ( isset( $_REQUEST['wfacp_canceled'] ) ) {
+			if ( isset( $_REQUEST['wfacp_canceled'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 				if ( ! is_null( WC()->session ) ) {
 					WC()->session->set( 'paypal_express_checkout', null );
 				}
 				// Cancel Url is set
-				$is_global = $_REQUEST['wfacp_is_checkout_override'];
-				$wfacp_id  = $_REQUEST['wfacp_id'];
+				$is_global = isset( $_REQUEST['wfacp_is_checkout_override'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wfacp_is_checkout_override'] ) ) : 'no';
+				$wfacp_id  = isset( $_REQUEST['wfacp_id'] ) ? absint( wp_unslash( $_REQUEST['wfacp_id'] ) ) : 0;
 				// User Make payment from global checkout page
 
-				if ( 'yes' == $is_global ) {
+				if ( 'yes' === $is_global ) {
 					wp_redirect( wc_get_checkout_url() );
 				} else {
-					if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== $_REQUEST['wfacp_embed_page_id'] ) {
-						$wfacp_id = $_REQUEST['wfacp_embed_page_id'];
+					if ( isset( $_REQUEST['wfacp_embed_page_id'] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) ) ) {
+						$wfacp_id = absint( wp_unslash( $_REQUEST['wfacp_embed_page_id'] ) );
 					}
 
 					wp_redirect( get_the_permalink( $wfacp_id ) );
@@ -305,12 +311,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				}
 			}
 
-
 			return $status;
 		}
 
 		public function make_session_empty() {
-			remove_filter( 'woocommerce_get_checkout_url', [ $this, 'change_checkout_url' ], 100 );
+			remove_filter( 'woocommerce_get_checkout_url', array( $this, 'change_checkout_url' ), 100 );
 			if ( ! is_null( WC()->session ) ) {
 				WC()->session->set( 'wfacp_angell_eye_error', '' );
 			}
@@ -326,13 +331,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				$status = 'no';
 			}
 
-
 			return $status;
 		}
 
 
 		public function remove_some_js( $paths ) {
-			//Remved Woo-postnl JS due Payment Gateway stuck in loop
+			// Remved Woo-postnl JS due Payment Gateway stuck in loop
 			if ( ! is_null( WC()->session ) && WFACP_Common::get_id() > 0 && ! is_null( WC()->session->get( 'paypal_express_checkout', null ) ) ) {
 				$paths[] = 'js/wcmp-frontend';
 			}
@@ -358,9 +362,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 
 		public function print_html() {
 			?>
-            <p>
-                <strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
-            </p>
+			<p>
+				<strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
+			</p>
 			<?php
 		}
 
@@ -377,7 +381,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				return;
 			}
 
-			$http_referer = [];
+			$http_referer = array();
 
 			if ( isset( $posted_data['_wp_http_referer'] ) ) {
 				parse_str( $posted_data['_wp_http_referer'], $http_referer );
@@ -422,7 +426,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 				return $post_id;
 			}
 
-			$http_referer = [];
+			$http_referer = array();
 			if ( isset( $posted_data['_wp_http_referer'] ) ) {
 				parse_str( $posted_data['_wp_http_referer'], $http_referer );
 			}
@@ -456,7 +460,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 			}
 
 			return $post_id;
-
 		}
 
 		public function handle_general_list_express_button() {
@@ -481,10 +484,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye' ) ) {
 					remove_action( 'woocommerce_review_order_after_submit', array( $instance, 'angelleye_display_paypal_button_checkout_page' ) );
 					add_action( 'wfacp_woocommerce_review_order_after_submit', array( $instance, 'angelleye_display_paypal_button_checkout_page' ) );
 				}
-
-
 			}
-
 		}
 	}
 

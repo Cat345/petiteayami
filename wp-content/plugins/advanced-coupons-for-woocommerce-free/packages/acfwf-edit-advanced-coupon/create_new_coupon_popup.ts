@@ -63,6 +63,45 @@ function bindPopupEvents() {
   $('#acfw-use-template').on('click', function () {
     window.location.href = create_new_coupon_popup.site_url + '/wp-admin/admin.php?page=acfw-coupon-templates';
   });
+
+  // Handle Generate with AI button
+  $('#acfw-generate-ai').on('click', function () {
+    window.location.href =
+      create_new_coupon_popup.site_url + '/wp-admin/admin.php?page=acfw-coupon-templates&show_ai_modal=true';
+  });
+}
+
+/**
+ * Get the AI option button HTML.
+ * Always shown regardless of StoreAgent connection status.
+ * The coupon templates page will handle showing the appropriate upsell modal
+ * if StoreAgent is not yet installed, activated, or connected.
+ *
+ * @since 4.7.0
+ *
+ * @return {string} AI option button HTML.
+ */
+function getAIOptionButton(): string {
+  return `
+    <button id="acfw-generate-ai" class="acfw-option-card acfw-option-card-ai">
+      <div class="acfw-option-content">
+        <div class="acfw-option-icon acfw-option-icon-ai">
+          <svg class="acfw-icon acfw-icon-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4"></path>
+            <path d="m6.8 15-3.5 2"></path>
+            <path d="m20.7 7-3.5 2"></path>
+            <path d="m6.8 9-3.5-2"></path>
+            <path d="m20.7 17-3.5-2"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </div>
+        <div class="acfw-option-text">
+          <h3 class="acfw-option-title">${create_new_coupon_popup.generate_ai}</h3>
+          <p class="acfw-option-description">${create_new_coupon_popup.generate_ai_desc}</p>
+        </div>
+      </div>
+    </button>
+  `;
 }
 
 /**
@@ -112,6 +151,8 @@ function newCouponPopupTemplate() {
             </div>
           </div>
         </button>
+
+        ${getAIOptionButton()}
       </div>
     </div>
   `;

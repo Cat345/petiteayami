@@ -318,7 +318,7 @@ return [
                 'consent.modal_accordion_icon_width' => [
                     'label' => 'Accordion Icon Width',
                     'description' => 'Set the icon width.',
-                    'show' => 'consent.modal_layout == \'accordion\'',
+                    'show' => "consent.modal_layout == 'accordion'",
                 ],
                 'consent.modal_categories_right' => [
                     'label' => 'Category Layout',
@@ -401,7 +401,7 @@ return [
                         'Muted' => 'muted',
                         'Text' => 'text',
                     ],
-                    'show' => 'consent.modal_layout == \'toggles\'',
+                    'show' => "consent.modal_layout == 'toggles'",
                 ],
                 'consent.modal_button_size' => [
                     'label' => 'Button Size',

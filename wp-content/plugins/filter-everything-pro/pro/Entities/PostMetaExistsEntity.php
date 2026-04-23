@@ -12,14 +12,6 @@ use FilterEverything\Filter\PostMetaNumEntity;
 class PostMetaExistsEntity extends PostMetaNumEntity
 {
 
-    public function __construct( $postMetaName, $postType ){
-        /**
-         * @feature clean code from unused methods
-         */
-        $this->entityName = $postMetaName;
-        $this->setPostTypes( array($postType) );
-    }
-
     public function selectTerms($alreadyFilteredPosts = [] ){
         $return = [];
         $i = 1;
@@ -78,10 +70,13 @@ class PostMetaExistsEntity extends PostMetaNumEntity
             $term_posts = $this->getTermPosts( $term->slug, $setId );
             $this->items[$slug]->posts = $term_posts['posts'];
             $this->items[$slug]->post_types = $term_posts['post_types'];
-            if ($this->entityName == '_sale_price' && flrt_is_woo_discount_rules()){
+            if ($this->entityName == '_sale_price' && $this->is_woo_discount_rules){
                 if(!empty($this->wdr_product_ids)){
-                    $this->items['yes']->posts = array_unique(array_merge($this->items['yes']->posts, $this->wdr_product_ids));
-                    $this->items['no']->posts = array_diff($this->items['no']->posts, $this->wdr_product_ids);
+                    if ($slug === 'yes') {
+                        $this->items[$slug]->posts = array_unique(array_merge($this->items[$slug]->posts, $this->wdr_product_ids));
+                    } elseif ($slug === 'no') {
+                        $this->items[$slug]->posts = array_diff($this->items[$slug]->posts, $this->wdr_product_ids);
+                    }
                 }
             }
         }
@@ -169,17 +164,18 @@ class PostMetaExistsEntity extends PostMetaNumEntity
             flrt_set_transient( $transient_key, $result, FLRT_TRANSIENT_PERIOD_HOURS * HOUR_IN_SECONDS );
         }
 
-        if(flrt_is_woo_discount_rules() && $this->entityName === '_sale_price')
+        if($this->is_woo_discount_rules && $this->entityName === '_sale_price'){
             $wdr_woo_discount_rules = $this->getWooDiscountRulesClass();
-
+            $product_ids = array_map('intval', array_column($result, 'ID'));
+            $this->preloadProducts($product_ids);
+        }
         if( ! empty( $result ) ){
             foreach( $result as $post){
                 $postIds[] = $post['ID'];
                 $postTypes[$post['ID']] = $post['post_type'];
-
-                if (flrt_is_woo_discount_rules()) {
+                if ($this->is_woo_discount_rules) {
                     if ($this->entityName === '_sale_price') {
-                        $product = wc_get_product($post['ID']);
+                        $product = $this->getProductCached($post['ID']);
                         if ($product) {
                             $wdr_product_has_sale = $wdr_woo_discount_rules->getProductPriceToDisplay($product);
                             if ($wdr_product_has_sale) {
@@ -208,7 +204,7 @@ class PostMetaExistsEntity extends PostMetaNumEntity
         // Add existing Meta Query if present
         $this->importExistingMetaQuery($wp_query);
 
-        if ((flrt_is_woocommerce() && flrt_is_woo_discount_rules() && $meta_key == '_sale_price')) {
+        if ((flrt_is_woocommerce() && $this->is_woo_discount_rules && $meta_key == '_sale_price')) {
             $query_post_in = $this->wdrAddProductsToFilterQuery($wp_query, $queried_value['values']);
             $wp_query->set('post__in', $query_post_in);
         } else {

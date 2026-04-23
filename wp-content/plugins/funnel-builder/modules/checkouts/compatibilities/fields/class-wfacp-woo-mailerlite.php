@@ -8,18 +8,18 @@
 if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_MailerLite {
-		private $position = null;
-		private $position_show = [ 'review_order_before_submit' ];
+		private $position      = null;
+		private $position_show = array( 'review_order_before_submit' );
 
 		private $display_dragable_field = true;
-		private $remove_fields = [ 'woo_ml_subscribe' ];
+		private $remove_fields          = array( 'woo_ml_subscribe' );
 
 
 		public function __construct() {
 			/*
 			 *  Register Add Custom Fields for Mailer Lite
 			 */
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_field' ], 20 );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_field' ), 20 );
 			/*
 			 *  Prevent to display custom field
 			 */
@@ -27,16 +27,16 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			/*
 			 *  Remove Plugin's Hook on the funnelkit checkout page Except review_order_before_submit Hook
 			 */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
 
 			/*
 			 *  Process Custom field According to plugin functionality
 			 */
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 50, 3 );
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 50, 3 );
 			/*
 			 *  Add the custom css for Mail lite field on the Funnelkit Checkout
 			 */
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
 			/* prevent third party fields and wrapper*/
 
@@ -45,18 +45,17 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			/**
 			 * Unset Billing Extra Fields to prevent Duplicate fields
 			 */
-			add_filter( 'wfacp_detect_extra_fields', [ $this, 'detect_extra_fields' ], 99, 3 );
-
+			add_filter( 'wfacp_detect_extra_fields', array( $this, 'detect_extra_fields' ), 99, 3 );
 		}
 
 		public function add_field( $fields ) {
-			$fields['woo_ml_subscribe_html'] = [
+			$fields['woo_ml_subscribe_html'] = array(
 				'type'       => 'wfacp_html',
-				'class'      => [ 'woo_ml_subscribe' ],
+				'class'      => array( 'woo_ml_subscribe' ),
 				'id'         => 'woo_ml_subscribe_html',
 				'field_type' => 'advanced',
 				'label'      => __( 'Woo MailerLite', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return $fields;
 		}
@@ -64,9 +63,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 		public function actions() {
 			try {
 
-
 				if ( class_exists( 'WooMailerLitePluginController' ) ) {
-					add_action( 'wfacp_woocommerce_review_order_before_submit', [ WooMailerLitePluginController::instance(), 'addMlSubscribeCheckbox' ], PHP_INT_MAX );
+					add_action( 'wfacp_woocommerce_review_order_before_submit', array( WooMailerLitePluginController::instance(), 'addMlSubscribeCheckbox' ), PHP_INT_MAX );
 
 					if ( ! function_exists( 'woo_ml_get_option' ) ) {
 						return;
@@ -74,7 +72,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 					$checkout_position = woo_ml_get_option( 'checkout_position', 'checkout_billing' );
 
 					/* default classes */
-					add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
+					add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
 
 					if ( in_array( $checkout_position, $this->position_show ) ) {
 						$this->display_dragable_field = false;
@@ -85,7 +83,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 					$this->position = $checkout_position;
 					remove_action( 'woocommerce_' . $checkout_position, 'woo_ml_checkout_label', 20 );
 				}
-			} catch( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 		}
@@ -97,7 +95,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				if ( ! in_array( $this->position, $this->position_show ) ) {
 					$this->mailer_lite_html();
 				}
-
 			}
 		}
 
@@ -106,10 +103,9 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 			if ( false == $this->display_dragable_field ) {
 				return;
 			}
-			if (function_exists('woo_ml_checkout_label')) {
+			if ( function_exists( 'woo_ml_checkout_label' ) ) {
 				woo_ml_checkout_label();
 			}
-
 		}
 
 		public function internal_css() {
@@ -118,24 +114,22 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				return;
 			}
 
-
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
 
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			echo "<style>";
-			echo $bodyClass . ".wfacp_main_form.woocommerce #woo_ml_subscribe_field{text-align:left;}";
-			echo $bodyClass . ".wfacp_main_form.woocommerce #billing_email_field .woocommerce-input-wrapper {position: relative;}";
-			echo $bodyClass . ".wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe { top: auto; left: 0; margin: 10px 0 0  !important;}";
-			echo $bodyClass . ".wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe + label{     padding-left: 26px !important;position: relative;display: inline-block !important;padding-top: 10px;}";
-			echo "</style>";
-
+			echo '<style>';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #woo_ml_subscribe_field{text-align:left;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field .woocommerce-input-wrapper {position: relative;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe { top: auto; left: 0; margin: 10px 0 0  !important;}';
+			echo esc_html( $bodyClass ) . '.wfacp_main_form.woocommerce #billing_email_field #woo_ml_subscribe + label{     padding-left: 26px !important;position: relative;display: inline-block !important;padding-top: 10px;}';
+			echo '</style>';
 		}
 
 		public function add_default_wfacp_styling( $args, $key ) {
@@ -144,19 +138,17 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				return $args;
 			}
 
-
 			if ( isset( $args['type'] ) && 'checkbox' !== $args['type'] ) {
 
-				$args['input_class'] = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
-				$args['label_class'] = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
-				$args['class']       = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full' ], $args['class'] );
-				$args['cssready']    = [ 'wfacp-col-full' ];
+				$args['input_class'] = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
+				$args['label_class'] = array_merge( array( 'wfacp-form-control-label' ), $args['label_class'] );
+				$args['class']       = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full' ), $args['class'] );
+				$args['cssready']    = array( 'wfacp-col-full' );
 
 			} else {
-				$args['class']    = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
-				$args['cssready'] = [ 'wfacp-col-full' ];
+				$args['class']    = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
+				$args['cssready'] = array( 'wfacp-col-full' );
 			}
-
 
 			return $args;
 		}
@@ -173,12 +165,12 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 		public function detect_extra_fields( $fields, $others_fields, $temp ) {
 			try {
 				// Check if we have fields to process
-				if ( !is_array( $fields ) || count( $fields ) === 0 ) {
+				if ( ! is_array( $fields ) || count( $fields ) === 0 ) {
 					return $fields;
 				}
 
 				// Check if we have fields to remove
-				if ( !is_array( $this->remove_fields ) || count( $this->remove_fields ) === 0 ) {
+				if ( ! is_array( $this->remove_fields ) || count( $this->remove_fields ) === 0 ) {
 					return $fields;
 				}
 
@@ -188,8 +180,8 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_MailerLite' ) ) {
 				foreach ( $fields as $key => $value ) {
 					// Check if field has an ID and if it should be removed
 					if ( isset( $value['id'] ) &&
-					     in_array( $value['id'], $this->remove_fields ) &&
-					     isset( $filtered_fields[ $value['id'] ] ) ) {
+						in_array( $value['id'], $this->remove_fields ) &&
+						isset( $filtered_fields[ $value['id'] ] ) ) {
 						unset( $filtered_fields[ $value['id'] ] );
 					}
 				}

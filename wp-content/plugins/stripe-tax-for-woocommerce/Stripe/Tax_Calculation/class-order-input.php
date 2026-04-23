@@ -31,8 +31,18 @@ class Order_Input extends Input {
 	 *
 	 * @param WC_Order $order The order to build the input from.
 	 * @param array    $tax_location_override Args passed by WooCommerce.
+	 * @param int      $customer_user_id_override Customer user id.
 	 */
-	public static function from_order( WC_Order $order, $tax_location_override ) {
+	public static function from_order( WC_Order $order, $tax_location_override, $customer_user_id_override = null ) {
+		if ( $customer_user_id_override ) {
+			$taxability_override = self::get_user_taxability_override_by_id( $customer_user_id_override );
+		} else {
+			$customer_id = $order->get_customer_id();
+			$customer    = new WC_Customer( $customer_id );
+
+			$taxability_override = self::get_customer_taxability_override( $customer );
+		}
+
 		$order_status = $order->get_status();
 
 		$tax_behavior = $order->get_prices_include_tax() ? self::TAX_BEHAVIOR_INCLUSIVE : self::TAX_BEHAVIOR_EXCLUSIVE;
@@ -43,12 +53,14 @@ class Order_Input extends Input {
 
 		$order_id = $order->get_id();
 
-		$currency            = $order->get_currency();
-		$shipping_cost       = Amount_Utility::to_cents( static::get_taxable_shipping_cost_amount( $order ), $currency );
-		$tax_location        = static::get_taxable_location( $order, $tax_location_override );
-		$taxability_override = self::get_customer_taxability_override( $order );
+		$currency = $order->get_currency();
 
-		$shipping_tax_code = Product_Tax_Code_Repo::get_tax_code_by_type_and_id( 'shipping' );
+		$shipping_cost_details = static::get_shipping_cost_details( $order, $currency );
+
+		$shipping_cost_amount = $shipping_cost_details['shipping_cost_amount'];
+		$shipping_tax_code    = $shipping_cost_details['shipping_tax_code'];
+
+		$tax_location = static::get_taxable_location( $order, $tax_location_override );
 
 		$items = $order->get_items( 'shipping' );
 
@@ -73,11 +85,11 @@ class Order_Input extends Input {
 
 		$shipping_cost = new Input_Line_Item(
 			static::SHIPPING_COST_REFERENCE,
-			$shipping_cost,
+			$shipping_cost_amount,
 			1,
 			$shipping_tax_behavior,
 			$shipping_tax_code,
-			$shipping_cost
+			$shipping_cost_amount
 		);
 
 		$customer_details = new Customer_Details(
@@ -151,24 +163,31 @@ class Order_Input extends Input {
 	}
 
 	/**
-	 * Calculates and returns an order taxable shipping cost.
+	 * Calculates and returns an order shipping cost amount by taxability.
 	 *
 	 * @param object $order The order.
+	 * @param bool   $is_taxable Whether to sum taxable or non-taxable shipping methods.
 	 */
-	protected static function get_taxable_shipping_cost_amount( $order ) {
+	protected static function get_shipping_cost_amount_by_taxability( $order, $is_taxable ) {
 		$shipping_cost_amount = 0;
 
 		$items = $order->get_items( 'shipping' );
 
 		foreach ( $items as $item ) {
-			$tax_status  = $item->get_tax_status();
-			$method_id   = $item->get_method_id();
-			$instance_id = $item->get_instance_id();
+			$method_id = $item->get_method_id();
 
-			$shipping_method_settings   = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings' );
-			$shipping_method_is_taxable = isset( $shipping_method_settings['tax_status'] ) && 'taxable' === $shipping_method_settings['tax_status'];
+			if ( $method_id ) {
+				$instance_id = $item->get_instance_id();
 
-			if ( ! $shipping_method_is_taxable && 'taxable' !== $tax_status ) {
+				$shipping_method_settings   = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings' );
+				$shipping_method_is_taxable = isset( $shipping_method_settings['tax_status'] ) && 'taxable' === $shipping_method_settings['tax_status'];
+			} else {
+				$shipping_method_is_taxable = 'taxable' === $item->get_tax_status();
+			}
+
+			$item_is_taxable = $shipping_method_is_taxable;
+
+			if ( $is_taxable !== $item_is_taxable ) {
 				continue;
 			}
 
@@ -182,7 +201,7 @@ class Order_Input extends Input {
 	 * Determines and return an order tax location
 	 *
 	 * @param object $order The order.
-	 * @param array  $tax_location_override Passwed by WooCommerce.
+	 * @param array  $tax_location_override Passed by WooCommerce.
 	 */
 	protected static function get_taxable_location( $order, $tax_location_override ) {
 		if ( $tax_location_override ) {

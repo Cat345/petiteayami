@@ -23,13 +23,13 @@ $classes = isset( $args['class'] ) ? implode( ' ', $args['class'] ) : '';
 
 if ( WFACP_Common::is_theme_builder() || apply_filters( 'wfacp_display_shipping_placeholder_message', false ) ) {
 	?>
-    <div class="wfacp_anim wfacp_shipping_options <?php echo $classes; ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr() ?> >
-        <ul id="shipping_method" class="wfacp_no_add_here">
-            <li>
-                <p><?php echo apply_filters( 'wfacp_default_shipping_message', $placeholder ); ?></p>
-            </li>
-        </ul>
-    </div>
+	<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
+		<ul id="shipping_method" class="wfacp_no_add_here">
+			<li>
+				<p><?php echo esc_html( apply_filters( 'wfacp_default_shipping_message', $placeholder ) ); ?></p>
+			</li>
+		</ul>
+	</div>
 	<?php
 
 	return;
@@ -42,12 +42,12 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 			if ( $key === 'undefined' ) {
 				continue;
 			}
-			echo '<input type="hidden" class="wfacp_hidden_shipping" data-index="' . $key . '" name="shipping_method[' . $key . ']"  value="' . $value . '" >';
+			echo '<input type="hidden" class="wfacp_hidden_shipping" data-index="' . esc_attr( $key ) . '" name="shipping_method[' . esc_attr( $key ) . ']"  value="' . esc_attr( $value ) . '" >';
 		}
 	}
 }
 ?>
-<div class="wfacp_anim wfacp_shipping_options <?php echo $classes; ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr() ?> >
+<div class="wfacp_anim wfacp_shipping_options <?php echo esc_attr( $classes ); ?>" id="shipping_calculator_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
 	<?php
 	$number_parents_fields = WC()->session->get( 'wfacp_shipping_method_parent_fields_count_' . WFACP_Common::get_id(), false );
 	$is_cart_is_virtual    = WFACP_Common::is_cart_is_virtual();
@@ -55,8 +55,8 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 	if ( wp_doing_ajax() || apply_filters( 'wfacp_show_shipping_options', true ) ) {
 		if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() && false == $is_cart_is_virtual ) {
 			unset( $data );
-			$item_names_containing_subscriptions = [];
-			$item_names                          = [];
+			$item_names_containing_subscriptions = array();
+			$item_names                          = array();
 			$label                               = isset( $field['label'] ) ? $field['label'] : __( 'Shipping', 'funnel-builder' );
 			$cart_contents                       = WC()->cart->get_cart_contents();
 			$cart_content_count                  = count( $cart_contents );
@@ -91,7 +91,7 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 				} else {
 
-					//empty the label as only subscription product is in the cart
+					// empty the label as only subscription product is in the cart
 					$label = '';
 				}
 			}
@@ -101,49 +101,59 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 			wc_cart_totals_shipping_html();
 			$shipping_html = ob_get_clean();
 			if ( ! empty( $shipping_html ) ) {
-				$shippingTitle  = WFACP_Common::translation_string_to_check(__( 'Shipping Method', 'funnel-builder' ));
+				$shippingTitle  = WFACP_Common::translation_string_to_check( __( 'Shipping Method', 'funnel-builder' ) );
 				$pageID         = WFACP_Common::get_id();
 				$_wfacp_version = WFACP_Common::get_post_meta_data( $pageID, '_wfacp_version' );
 				if ( $_wfacp_version == WFACP_VERSION ) {
-					$shippingTitle = WFACP_Common::translation_string_to_check(__( 'Select Shipping Method', 'funnel-builder' ));
+					$shippingTitle = WFACP_Common::translation_string_to_check( __( 'Select Shipping Method', 'funnel-builder' ) );
 				}
 				$shippingTitle = isset( $field['label'] ) ? $field['label'] : $shippingTitle;
 				?>
-                <div class="border">
-                    <label class="wfacp_main_form label label_shiping"><?php echo $shippingTitle; ?></label>
-                    <table class="wfacp_shipping_table ">
+				<div class="wfacp_border">
+					<label class="wfacp_main_form label label_shiping"><?php echo esc_html( $shippingTitle ); ?></label>
+					<table class="wfacp_shipping_table ">
 						<?php
 						do_action( 'wfacp_woocommerce_review_order_before_shipping' );
 						do_action( 'woocommerce_review_order_before_shipping' );
 						?>
 						<?php echo $shipping_html; ?>
-						<?php do_action( 'woocommerce_review_order_after_shipping' );
-						do_action( 'wfacp_woocommerce_review_order_after_shipping' ); ?>
-                    </table>
-                </div>
+						<?php
+						do_action( 'woocommerce_review_order_after_shipping' );
+						do_action( 'wfacp_woocommerce_review_order_after_shipping' );
+						?>
+					</table>
+				</div>
 				<?php
 			}
 			/**
 			 * Show the second shipping block for the recurring shipping
 			 */
-			if ( is_callable( array(
+			if ( is_callable(
+				array(
 					'WC_Subscriptions_Cart',
 					'cart_contains_subscriptions_needing_shipping',
-				) ) && true === WC_Subscriptions_Cart::cart_contains_subscriptions_needing_shipping() && true === apply_filters( 'wfacp_show_recurring_methods', true, $cart_content_count, $shipping_html ) ) {
+				)
+			) && true === WC_Subscriptions_Cart::cart_contains_subscriptions_needing_shipping() && true === apply_filters( 'wfacp_show_recurring_methods', true, $cart_content_count, $shipping_html ) ) {
 				global $have_multiple_subscription;
 				$have_multiple_subscription = false;
 				/**
 				 * This hook insures that during the html generation subscription plugin called the specific template
 				 * that means there are more than one shipping rates available for recurring cart.
+				 *
 				 * @see wcs_cart_totals_shipping_html()
 				 */
-				add_action( 'woocommerce_before_template_part', function ( $template_name, $template_path, $located, $args ) {
-					global $have_multiple_subscription;
-					if ( $template_name !== 'cart/cart-recurring-shipping.php' ) {
-						return;
-					}
-					$have_multiple_subscription = true;
-				}, 10, 4 );
+				add_action(
+					'woocommerce_before_template_part',
+					function ( $template_name, $template_path, $located, $args ) {
+						global $have_multiple_subscription;
+						if ( $template_name !== 'cart/cart-recurring-shipping.php' ) {
+							return;
+						}
+						$have_multiple_subscription = true;
+					},
+					10,
+					4
+				);
 				/**
 				 * setting recurring total calculation type so that subscription plugin calculates the respective recurring cart shipping
 				 */
@@ -164,10 +174,10 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 
 				$recurring_label = __( 'Recurring Shipping Method', 'funnel-builder' );
 				?>
-                <div class="border">
-                    <label class="wfacp_main_form label label_shiping wfacp_recurring_shipping_label">
-						<?php echo apply_filters( 'wfacp_recurring_shipping_label', $recurring_label ); ?></label>
-                    <table class="wfacp_shipping_table wfacp_shipping_recurring <?php echo $multiple_class; ?>">
+				<div class="wfacp_border">
+					<label class="wfacp_main_form label label_shiping wfacp_recurring_shipping_label">
+						<?php echo esc_html( apply_filters( 'wfacp_recurring_shipping_label', $recurring_label ) ); ?></label>
+					<table class="wfacp_shipping_table wfacp_shipping_recurring <?php echo esc_attr( $multiple_class ); ?>">
 						<?php
 
 						do_action( 'wfacp_woocommerce_review_order_before_shipping' );
@@ -176,52 +186,50 @@ if ( $shipping_hidden_fields && ! wp_doing_ajax() ) {
 						?>
 						<?php do_action( 'woocommerce_review_order_after_shipping' ); ?>
 						<?php do_action( 'wfacp_woocommerce_review_order_after_shipping' ); ?>
-                    </table>
-                </div>
+					</table>
+				</div>
 				<?php
 			}
-
 		} else {
 
 			if ( apply_filters( 'wfacp_no_available_shipping_method_found', true, $instance, $field ) ) {
 				?>
-                <style>
-                    .wfacp_shipping_options {
-                        display: none
-                    }
-                </style>
+				<style>
+					.wfacp_shipping_options {
+						display: none
+					}
+				</style>
 				<?php
 				if ( ( is_array( $number_parents_fields ) && 1 == $number_parents_fields['count'] ) ) {
 					$parent_step_number = $number_parents_fields['index'];
 					$step               = $number_parents_fields['step'];
 					?>
-                    <style>
-                        <?php printf(".wfacp_page.%s .wfacp-section.step_%s{ display: none;}",$step,$parent_step_number);?>
-                    </style>
+					<style>
+						<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', $step, $parent_step_number ); ?>
+					</style>
 					<?php
 				}
 			}
 			do_action( 'wfacp_no_shipping_method_founds', $instance, $field );
 		}
-	} else {
-		if ( true != $is_cart_is_virtual ) {
-			?>
+	} elseif ( true != $is_cart_is_virtual ) {
+		?>
 
-            <ul id="shipping_method" class="wfacp_no_add_here">
-                <li class="wfacp_no_shipping wfacp_clearfix">
-                    <label><?php _e( 'Shipping method', 'woocommerce' ); ?></label>
-                </li>
-            </ul>
+			<ul id="shipping_method" class="wfacp_no_add_here">
+				<li class="wfacp_no_shipping wfacp_clearfix">
+					<label><?php _e( 'Shipping method', 'woocommerce' ); ?></label>
+				</li>
+			</ul>
 			<?php
-		}
+
 	}
 	if ( ( is_array( $number_parents_fields ) && 1 == $number_parents_fields['count'] ) && ( ( true == $is_cart_is_virtual || false == WC()->cart->show_shipping() ) ) ) {
 		$parent_step_number = $number_parents_fields['index'];
 		$step               = $number_parents_fields['step'];
 		?>
-        <style>
-            <?php printf(".wfacp_page.%s .wfacp-section.step_%s{ display: none;}",$step,$parent_step_number);?>
-        </style>
+		<style>
+			<?php printf( '.wfacp_page.%s .wfacp-section.step_%s{ display: none;}', $step, $parent_step_number ); ?>
+		</style>
 		<?php
 	}
 	?>

@@ -1,5 +1,76 @@
 # Changelog
 
+## 5.0.29 (April 21, 2026)
+
+### Fixed
+
+- Fix consent overlay handling in Map element
+- Fix missing YOOtheme button in block editor view if the layout contains HTML comments (WordPress)
+
+## 5.0.28 (April 2, 2026)
+
+### Fixed
+
+- Fix resolving nested subform fields (Joomla)
+
+## 5.0.27 (April 2, 2026)
+
+### Fixed
+
+- Fix resolving nested subform fields (Joomla)
+- Fix regression in picking custom taxonomy source (WordPress)
+
+## 5.0.26 (March 31, 2026)
+
+### Fixed
+
+- Fix view loader not being applied on Windows
+- Fix offline template (Joomla)
+- Fix to ensure no invalid configuration is saved (Joomla)
+- Fix getting root categories if category table is corrupted (Joomla)
+
+## 5.0.25 (March 25, 2026)
+
+### Fixed
+
+- Fix image resolving for images with space character in name (Joomla)
+- Fix resolving directory for imagelist fields (Joomla)
+- Fix using global field plugin settings when resolving fields (Joomla)
+- Fix menu location assignment in Customizer preview (WordPress)
+
+## 5.0.24 (March 18, 2026)
+
+### Fixed
+
+- Fix regression in ACF field resolving (WordPress)
+
+## 5.0.23 (March 16, 2026)
+
+### Fixed
+
+- Fix regression when resolving field names that start with a digit
+
+## 5.0.22 (March 11, 2026)
+
+### Fixed
+
+- Fix regression in child theme loading (Joomla)
+
+## 5.0.21 (March 11, 2026)
+
+### Fixed
+
+- Fix regression in child theme loading (Joomla)
+- Fix regression with relationship sources in Toolset plugin (WordPress)
+
+## 5.0.20 (March 10, 2026)
+
+### Fixed
+
+- Fix ordering of WooCommerce Product Categories in Menu element (WordPress)
+- Fix dynamic content sources when field name starts with a digit
+- Fix menu item link source (Joomla)
+
 ## 5.0.19 (March 3, 2026)
 
 ### Added

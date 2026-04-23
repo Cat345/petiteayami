@@ -1,0 +1,121 @@
+{
+  "module": {
+    "mini_cart_heading": "miniCartHeading.innerContent.*",
+    "enable_coupon": "enableCoupon.*",
+    "enable_coupon_collapsible": "enableCouponCollapsible.*",
+
+    "mini_cart_section_typo_font_size": "miniCartHeadingTypo.decoration.font.font.*.size",
+    "mini_cart_section_text_color": "miniCartHeadingTypo.decoration.font.font.*.color",
+    "mini_cart_background_color": "wfacp_mini_cart_background.decoration.background.*.color",
+    "mini_cart_divider_color": "mini_cart_divider_color.decoration.background.*.color",
+
+    "wfacp_mini_cart_margin": "wfacp_mini_cart_spacing.decoration.spacing.*.margin",
+
+    "mini_cart_border_border_type": "wfacp_mini_cart_border.decoration.border.*.styles.all.style",
+    "mini_cart_border_border_color": "wfacp_mini_cart_border.decoration.border.*.styles.all.color",
+    "mini_cart_border_border_width_top": "wfacp_mini_cart_border.decoration.border.*.styles.top.width",
+    "mini_cart_border_border_width_bottom": "wfacp_mini_cart_border.decoration.border.*.styles.bottom.width",
+    "mini_cart_border_border_width_left": "wfacp_mini_cart_border.decoration.border.*.styles.left.width",
+    "mini_cart_border_border_width_right": "wfacp_mini_cart_border.decoration.border.*.styles.right.width",
+    "mini_cart_border_border_radius_top": "wfacp_mini_cart_border.decoration.border.*.radius.topLeft",
+    "mini_cart_border_border_radius_bottom": "wfacp_mini_cart_border.decoration.border.*.radius.bottomRight",
+    "mini_cart_border_border_radius_left": "wfacp_mini_cart_border.decoration.border.*.radius.bottomLeft",
+    "mini_cart_border_border_radius_right": "wfacp_mini_cart_border.decoration.border.*.radius.topRight",
+
+    "mini_cart_section_typo_typograhy": "miniCartHeadingTypo.decoration.font.font.*",
+    "mini_cart_product_typo_typograhy": "miniCartProductTypo.decoration.font.font.*",
+    "mini_cart_product_typo_font_size": "miniCartProductTypo.decoration.font.font.*.size",
+    "mini_cart_product_meta_typo_typograhy": "miniCartProductMetaTypo.decoration.font.font.*",
+    "mini_cart_product_meta_typo_font_size": "miniCartProductMetaTypo.decoration.font.font.*.size",
+    "mini_cart_total_label_typo_typograhy": "mini_cart_total_label_typo.decoration.font.font.*",
+    "mini_cart_total_label_typo_font_size": "mini_cart_total_label_typo.decoration.font.font.*.size",
+    "mini_cart_total_typo_typograhy": "mini_cart_total_typo.decoration.font.font.*",
+    "mini_cart_total_typo_font_size": "mini_cart_total_typo.decoration.font.font.*.size",
+    "mini_cart_total_color": "mini_cart_total_typo.decoration.font.font.*.color",
+
+    "mini_cart_coupon_display_font_size": "miniCartCouponCodeLabelTypo.decoration.font.font.*.size",
+    "mini_cart_coupon_display_label_color": "miniCartCouponCodeLabelTypo.decoration.font.font.*.color",
+    "mini_cart_coupon_display_val_color": "miniCartCouponCodeValueTypo.decoration.font.font.*.color",
+
+    "mini_cart_coupon_btn_color": "miniCartCouponButtonBackground.decoration.background.*.color",
+    "mini_cart_coupon_btn_lable_color": "miniCartCouponButtonTypo.decoration.font.font.*.color",
+    "mini_cart_coupon_btn_lable_hover_color": "miniCartCouponButtonHoverBackground.decoration.background.*.color",
+    "mini_cart_coupon_btn_hover_label_color": "mini_cart_coupon_btn_hover_label_color.decoration.font.font.*.color",
+
+    "wfacp_mini_cart_padding": "wfacp_mini_cart_spacing.decoration.spacing.*.padding"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "mini_cart_border": "wfacp_mini_cart_border.decoration.border",
+      "wfacp_form_mini_cart_coupon_border": "miniCartCouponInputFieldBorder.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfacp_form_mini_cart_coupon_focus_color_box_shadow": "wfacp_form_mini_cart_coupon_focus_color_box_shadow.decoration.boxShadow"
+    },
+    "fonts": {
+      "miniCartProductTypo": "miniCartProductTypo.decoration.font",
+      "miniCartStrikeThroughTypo": "miniCartStrikeThroughTypo.decoration.font",
+      "miniCartLowStockTypo": "miniCartLowStockTypo.decoration.font",
+      "miniCartSavingTextTypo": "miniCartSavingTextTypo.decoration.font",
+      "miniCartCouponLinkTypo": "miniCartCouponLinkTypo.decoration.font",
+      "miniCartCouponInputLabelTypo": "miniCartCouponInputLabelTypo.decoration.font",
+      "miniCartCouponInputFieldTypo": "miniCartCouponInputFieldTypo.decoration.font",
+      "miniCartCouponButtonTypo": "miniCartCouponButtonTypo.decoration.font",
+      "miniCartProductMetaTypo": "miniCartProductMetaTypo.decoration.font",
+      "mini_cart_total_label_typo": "mini_cart_total_label_typo.decoration.font",
+      "mini_cart_total_typo": "mini_cart_total_typo.decoration.font",
+      "mini_cart_coupon_btn_hover_label_color": "mini_cart_coupon_btn_hover_label_color.decoration.font",
+      "miniCartCouponCodeLabelTypo": "miniCartCouponCodeLabelTypo.decoration.font",
+      "miniCartCouponCodeValueTypo": "miniCartCouponCodeValueTypo.decoration.font",
+      "mini_cart_section_typo": "miniCartHeadingTypo.decoration.font",
+      "mini_cart_product_typo": "miniCartProductTypo.decoration.font",
+      "mini_cart_product_meta_typo": "miniCartProductMetaTypo.decoration.font",
+      "mini_cart_total_typo": "mini_cart_total_typo.decoration.font"
+    },
+    "text_shadow": {
+      "default": "module.advanced.text.textShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "deprecatedMap": [],
+  "valueExpansionFunctionMap": {
+    "wfacp_mini_cart_margin": "convertSpacing",
+    "wfacp_mini_cart_padding": "convertSpacing",
+    "mini_cart_border_border_width_top": "convertBorderWidth",
+    "mini_cart_border_border_width_bottom": "convertBorderWidth",
+    "mini_cart_border_border_width_left": "convertBorderWidth",
+    "mini_cart_border_border_width_right": "convertBorderWidth",
+    "mini_cart_border_border_radius_top": "convertBorderWidth",
+    "mini_cart_border_border_radius_bottom": "convertBorderWidth",
+    "mini_cart_border_border_radius_left": "convertBorderWidth",
+    "mini_cart_border_border_radius_right": "convertBorderWidth",
+    "mini_cart_section_typo_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "mini_cart_product_typo_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "mini_cart_product_meta_typo_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "mini_cart_total_label_typo_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "mini_cart_total_typo_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

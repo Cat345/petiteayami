@@ -322,9 +322,33 @@ if ( ! class_exists( '\WfocuFunnelKit\Qty_Selector' ) ) {
 			} else {
 				unset( $this->control_groups['elementStyle'] );
 
+				$upsell_id = get_post_meta( $offer_id, '_funnel_id', true );
+				$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
+
+				if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
+					$products_url = add_query_arg( array(
+						'page'      => 'bwf',
+						'path'      => '/funnel-offer/' . $offer_id . '/product',
+						'funnel_id' => $funnel_id,
+					), admin_url( 'admin.php' ) );
+				} else {
+					$products_url = add_query_arg( array(
+						'page'    => 'upstroke',
+						'section' => 'offers',
+						'edit'    => $upsell_id,
+					), admin_url( 'admin.php' ) );
+				}
+
+				$message = sprintf(
+					/* translators: %1$s: Opening anchor tag, %2$s: Closing anchor tag */
+					'%1$s' . esc_html__( 'The quantity selector is currently unavailable for this offer. Please enable customers to choose their preferred quantity when purchasing this upsell product(s) from the "Products" tab' ) . '%2$s',
+					'<a href="' . esc_url( $products_url ) . '" target="_blank" style="color:#fff">',
+					'</a>'
+				);
+
 				$this->controls['qtyErrorNotice'] = array(
 					'group'   => 'elementContent',
-					'content' => esc_html__( 'Quantity selector is not available for this offer. Kindly allow customer to chose the quantity while purchasing this upsell product(s) from "Offers" tab.' ),
+					'content' => $message,
 					'type'    => 'info',
 				);
 			}

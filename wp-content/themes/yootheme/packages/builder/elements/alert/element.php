@@ -128,7 +128,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'link'

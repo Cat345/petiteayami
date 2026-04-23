@@ -132,13 +132,13 @@ return [
                 'step' => 10,
                 'class' => 'uk-form-width-xsmall',
             ],
-            'enable' => 'height_viewport == \'viewport\'',
+            'enable' => "height_viewport == 'viewport'",
         ],
         'height_viewport_offset' => [
             'type' => 'checkbox',
             'text' => 'Subtract height above',
             'enable' =>
-                'height_viewport == \'viewport\' && (height_viewport_height || 0) <= 100 || height_viewport == \'section\'',
+                "height_viewport == 'viewport' && (height_viewport_height || 0) <= 100 || height_viewport == 'section'",
         ],
         'height_expand' => [
             'type' => 'checkbox',
@@ -148,7 +148,7 @@ return [
         'slideshow_ratio' => [
             'label' => 'Ratio',
             'description' =>
-                'Set the slideshow ratio. It\'s recommended to use the same ratio as the image or video file. Simply use its width and height, e.g. <code>1600:900</code>.',
+                "Set the slideshow ratio. It's recommended to use the same ratio as the image or video file. Simply use its width and height, e.g. <code>1600:900</code>.",
             'attrs' => [
                 'placeholder' => '16:9',
             ],
@@ -304,7 +304,7 @@ return [
                 'Column' => '!.tm-grid-expand>*',
                 'Row' => '!.tm-grid-expand',
                 'Section' => '!.uk-section',
-                'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
             ],
             'enable' => 'slideshow_parallax',
         ],
@@ -437,19 +437,19 @@ return [
             'attrs' => [
                 'placeholder' => 'auto',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_height' => [
             'attrs' => [
                 'placeholder' => 'auto',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_shrink' => [
             'description' => 'Shrink thumbnails if the container is too small.',
             'type' => 'checkbox',
             'text' => 'Shrink thumbnails',
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_svg_inline' => [
             'label' => 'Thumbnav Inline SVG',
@@ -457,7 +457,7 @@ return [
                 'Inject SVG images into the page markup so that they can easily be styled with CSS.',
             'type' => 'checkbox',
             'text' => 'Make SVG stylable with CSS',
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_svg_color' => [
             'label' => 'Thumbnav SVG Color',
@@ -474,7 +474,7 @@ return [
                 'Warning' => 'warning',
                 'Danger' => 'danger',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail && thumbnav_svg_inline',
+            'enable' => "nav == 'thumbnav' && show_thumbnail && thumbnav_svg_inline",
         ],
         'slidenav' => [
             'label' => 'Position',
@@ -539,7 +539,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'slidenav == \'outside\'',
+            'enable' => "slidenav == 'outside'",
         ],
         'overlay_link' => [
             'label' => 'Link',
@@ -674,7 +674,7 @@ return [
             'type' => 'button-panel',
             'panel' => 'builder-slideshow-overlay-parallax',
             'text' => 'Edit Settings',
-            'enable' => 'overlay_animation == \'parallax\'',
+            'enable' => "overlay_animation == 'parallax'",
         ],
         'image_width' => [
             'type' => 'number',
@@ -773,7 +773,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -832,7 +832,7 @@ return [
             'type' => 'button-panel',
             'panel' => 'builder-slideshow-title-parallax',
             'text' => 'Edit Settings',
-            'enable' => 'show_title && overlay_animation == \'parallax\'',
+            'enable' => "show_title && overlay_animation == 'parallax'",
         ],
         'meta_style' => [
             'label' => 'Style',
@@ -931,7 +931,7 @@ return [
             'type' => 'button-panel',
             'panel' => 'builder-slideshow-meta-parallax',
             'text' => 'Edit Settings',
-            'enable' => 'show_meta && overlay_animation == \'parallax\'',
+            'enable' => "show_meta && overlay_animation == 'parallax'",
         ],
         'content_style' => [
             'label' => 'Style',
@@ -987,7 +987,7 @@ return [
             'type' => 'button-panel',
             'panel' => 'builder-slideshow-content-parallax',
             'text' => 'Edit Settings',
-            'enable' => 'show_content && overlay_animation == \'parallax\'',
+            'enable' => "show_content && overlay_animation == 'parallax'",
         ],
         'link_text' => [
             'label' => 'Text',
@@ -1002,7 +1002,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',
@@ -1078,7 +1078,7 @@ return [
             'type' => 'button-panel',
             'panel' => 'builder-slideshow-link-parallax',
             'text' => 'Edit Settings',
-            'enable' => 'show_link && !link && overlay_animation == \'parallax\'',
+            'enable' => "show_link && !link && overlay_animation == 'parallax'",
         ],
         'position' => '${builder.position}',
         'position_left' => '${builder.position_left}',
@@ -1195,7 +1195,7 @@ return [
                                 [
                                     'label' => 'Parallax Start/End',
                                     'description' =>
-                                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => [

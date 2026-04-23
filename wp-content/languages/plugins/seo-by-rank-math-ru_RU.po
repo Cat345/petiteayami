@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-03-04 12:01:12+0000\n"
+"PO-Revision-Date: 2026-04-15 10:53:02+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,7 +11,66 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release)\n"
 
+#. Translators: placeholder is the new label.
+#: includes/modules/links/Admin/class-admin.php:57
+msgid "Link Genius %s"
+msgstr "Link Genius %s"
+
+#: includes/modules/links/Api/class-controller.php:113
+msgid "You do not have permission to access this resource."
+msgstr "У вас нет разрешения на доступ к этому ресурсу."
+
+#: includes/modules/links/Api/class-controller.php:642
+#: includes/modules/links/Api/class-controller.php:702
+msgid "Items per page."
+msgstr "Элементов на страницу."
+
+#: includes/modules/links/Api/class-controller.php:654
+msgid "Filter by post type. Supports multiple values."
+msgstr "Фильтрация по типу записи. Поддерживает несколько значений."
+
+#: includes/modules/links/Api/class-controller.php:663
+msgid "Filter by orphan status (orphan, linked)."
+msgstr "Фильтрация по сиротливости."
+
+#: includes/modules/links/Api/class-controller.php:669
+msgid "Filter by SEO score range (great, good, bad, no-score)."
+msgstr "Фильтрация по SEO-оценкам."
+
+#: includes/modules/links/Api/class-controller.php:675
+#: includes/modules/links/Api/class-controller.php:730
+msgid "Order by field."
+msgstr "Упорядочивание по полям."
+
+#: includes/modules/links/Api/class-controller.php:681
+#: includes/modules/links/Api/class-controller.php:736
+msgid "Order direction (ASC, DESC)."
+msgstr "Направление сортировки."
+
+#: includes/modules/links/Api/class-controller.php:708
+msgid "Search in URL."
+msgstr "Поиск по URL."
+
+#: includes/modules/links/Api/class-controller.php:648
+msgid "Search in post title."
+msgstr "Поиск по названиям записей."
+
+#: includes/modules/links/Api/class-controller.php:714
+msgid "Filter by source post ID."
+msgstr "Фильтрация по ID исходной записи."
+
+#: includes/modules/links/Api/class-controller.php:719
+msgid "Filter by target post ID."
+msgstr "Фильтрация по ID целевой записи."
+
+#: includes/modules/links/Api/class-controller.php:724
+msgid "Filter by link type (1 = internal, 0 = external)."
+msgstr "Фильтрация по типу ссылки (1=внутренняя, 0=внешняя)."
+
 #: includes/module/class-manager.php:158
+#: includes/modules/links/Admin/class-admin.php:52
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:86
 msgid "Link Genius"
 msgstr "Гений ссылок"
 
@@ -45,7 +104,7 @@ msgid "Halloween Sale"
 msgstr "Распродажа осенняя"
 
 #. Translators: 1: opening anchor tag, 2: closing anchor tag.
-#: includes/admin/class-notices.php:70
+#: includes/admin/class-notices.php:73
 msgid "The React Settings UI is currently disabled, and the classic settings interface is active. Note: The PHP-based settings interface will be removed in an upcoming release. %1$sEnable the React Settings UI%2$s to switch back."
 msgstr "Пользовательский интерфейс настроек React в настоящее время отключен, а классический интерфейс настроек активен. Внимание: интерфейс настроек на основе PHP будет удален в следующем выпуске. %1$sНастроить пользовательский интерфейс настроек React%2$s, чтобы переключиться обратно."
 
@@ -397,6 +456,8 @@ msgstr "Результатов на страницу."
 
 #: includes/modules/analytics/rest/class-rest.php:78
 #: includes/modules/analytics/rest/class-rest.php:119
+#: includes/modules/links/Api/class-controller.php:637
+#: includes/modules/links/Api/class-controller.php:697
 msgid "Page number."
 msgstr "Номер страницы."
 
@@ -412,23 +473,24 @@ msgstr "ID записи."
 msgid "Determine Search Intent"
 msgstr "Определение цели поиска"
 
-#: includes/admin/class-bulk-actions.php:139 assets/admin/js/post-list.js:1
-#: assets/admin/js/rank-math-app.js:1
+#: includes/admin/class-bulk-actions.php:139 assets/admin/js/components.js:1
+#: assets/admin/js/post-list.js:1 assets/admin/js/rank-math-app.js:1
 #: includes/modules/content-ai/assets/js/content-ai-media.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
 msgid "Your current plugin version does not support this feature. Please update Rank Math PRO to version 3.0.83 or later to unlock full functionality."
 msgstr "Текущая версия плагина не поддерживает эту функцию. Обновите Rank Math PRO до версии 3.0.83 или более поздней, чтобы разблокировать полный функционал."
+
+#: includes/admin/wizard/views/search-console-ui.php:358
+#: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
+msgid "Select Account"
+msgstr "Выбрать учётную запись"
 
 #. Translators: placeholders are opening and closing tags for connect analytics
 #. setting and using ga4 property doc.
 #: includes/updates/update-1.0.239.php:35
 msgid "Universal Analytics (UA) is no longer supported. Please connect your Google Analytics GA4 account by navigating to %1$sGeneral Settings → Analytics%2$s. For more details, refer to this guide: %3$sHow to Use Google Analytics 4 (GA4) Property with Rank Math%4$s."
 msgstr "Universal Analytics (UA) больше не поддерживается. Подключите свою учётную запись Google Analytics GA4, перейдя в раздел %1$sОбщие настройки → Аналитика%2$s. Для получения более подробной информации обратитесь к этому руководству: %3$sПоказать, как использовать свойство Google Analytics 4 (GA4) с математическим ранжированием%4$s."
-
-#: includes/admin/wizard/views/search-console-ui.php:358
-#: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
-msgid "Select Account"
-msgstr "Выбрать учётную запись"
 
 #. Translators: placeholder is the URL to the robots.txt tester tool.
 #: includes/modules/robots-txt/options.php:96
@@ -694,11 +756,6 @@ msgstr "Rank Math SEO - это лучший SEO-плагин WordPress со мн
 msgid "Cancel Content AI Bulk Editing Process"
 msgstr "Отменить процесс пакетной правки Контентного ИИ"
 
-#. Translators: placeholders are the number of posts that were processed.
-#: includes/modules/content-ai/class-bulk-actions.php:245
-msgid "Terminate the ongoing Content AI Bulk Editing Process to halt any pending modifications and revert to the previous state. The bulk metadata has been generated for %1$d out of %1$d posts so far."
-msgstr "Прекращение текущего процесса пакетного редактирования Контентного ИИ, чтобы остановить все планируемые изменения и вернуться к предыдущему состоянию. На данный момент для %1$d из %1$d записей были пакетно сгенерированы метаданные."
-
 #: includes/modules/content-ai/class-bulk-actions.php:249
 msgid "Terminate"
 msgstr "Прекратить"
@@ -706,6 +763,11 @@ msgstr "Прекратить"
 #: includes/modules/content-ai/class-bulk-actions.php:261
 msgid "Bulk Editing Process Successfully Cancelled"
 msgstr "Процесс пакетной правки успешно отменён"
+
+#. Translators: placeholders are the number of posts that were processed.
+#: includes/modules/content-ai/class-bulk-actions.php:245
+msgid "Terminate the ongoing Content AI Bulk Editing Process to halt any pending modifications and revert to the previous state. The bulk metadata has been generated for %1$d out of %1$d posts so far."
+msgstr "Прекращение текущего процесса пакетного редактирования Контентного ИИ, чтобы остановить все планируемые изменения и вернуться к предыдущему состоянию. На данный момент для %1$d из %1$d записей были пакетно сгенерированы метаданные."
 
 #: includes/admin/class-admin-menu.php:286
 msgid "Christmas Sale"
@@ -1515,11 +1577,11 @@ msgid "Selected roles will be excluded from the XML &amp; HTML sitemaps."
 msgstr "Выбранные роли будут исключены из XML- и HTML-карт сайта."
 
 #. Translators: link to the update page.
-#: includes/modules/content-ai/class-rest.php:667
+#: includes/modules/content-ai/class-rest.php:668
 msgid "There is a new version of Content AI available! %s the Rank Math SEO plugin to use this feature."
 msgstr "Доступна новая версия Контентого ИИ! %s плагин SEO Rank Math для использования этой функции."
 
-#: includes/modules/content-ai/class-rest.php:668
+#: includes/modules/content-ai/class-rest.php:669
 msgid "Please update"
 msgstr "Пожалуйста, обновитесь"
 
@@ -2206,11 +2268,8 @@ msgid "Content A.I. (Artificial Intelligence)"
 msgstr "Контентый ИИ (искусственный интеллект)"
 
 #: includes/admin/class-pro-notice.php:219
-#: includes/admin/class-pro-notice.php:238 assets/admin/js/post-list.js:1
-#: assets/admin/js/rank-math-app.js:1
-#: includes/modules/content-ai/assets/js/content-ai-media.js:1
+#: includes/admin/class-pro-notice.php:238
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
-#: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Keyword Rank Tracker"
 msgstr "Трекер рейтинга ключевиков"
 
@@ -2554,6 +2613,11 @@ msgstr "Headless CMS"
 msgid "Enable this option to register a REST API endpoint that returns the HTML meta tags for a given URL. %s"
 msgstr "Регистрация эндпойнт REST API, который возвращает HTML-метатеги для заданного URL. %s"
 
+#: includes/modules/links/Admin/class-admin.php:49
+#: includes/modules/content-ai/assets/js/content-ai.js:1
+msgid "New!"
+msgstr "Новинка!"
+
 #: includes/modules/content-ai/views/options.php:203
 #: assets/admin/js/generalSettings.js:1
 msgid "Select Post Type"
@@ -2761,11 +2825,11 @@ msgstr "Алжир"
 msgid "Get sophisticated AI suggestions for related Keywords, Questions & Links to include in the SEO meta & Content Area. Supports 80+ Countries."
 msgstr "Получите сложные предложения ИИ по связанным ключевым словам, вопросам и ссылкам для включения в SEO-метаданные и в область содержимого. Поддерживаются стандарты более 80 стран."
 
-#: includes/modules/content-ai/class-rest.php:702
+#: includes/modules/content-ai/class-rest.php:703
 msgid "You have used all the free credits which are allowed to this domain."
 msgstr "Использованы все бесплатные кредиты, доступные для этого домена."
 
-#: includes/modules/content-ai/class-rest.php:696
+#: includes/modules/content-ai/class-rest.php:697
 msgid "This feature is not available on the localhost."
 msgstr "Данная функция недоступна на localhost."
 
@@ -2773,7 +2837,7 @@ msgstr "Данная функция недоступна на localhost."
 msgid "Sorry, only authenticated users can research the keyword."
 msgstr "Извините, только авторизованные пользователи могут исследовать ключевики."
 
-#: includes/modules/content-ai/class-rest.php:647
+#: includes/modules/content-ai/class-rest.php:648
 msgid "No data found for the researched keyword."
 msgstr "Нет данных по исследуемому ключевику."
 
@@ -2975,15 +3039,15 @@ msgstr "Каждые 30 дн."
 msgid "Last ###PERIOD_DAYS### Days"
 msgstr "Последние ###PERIOD_DAYS### дн."
 
-#: includes/admin/class-notices.php:296
-msgid "<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one."
-msgstr "<b>Предупреждение Rank Math:</b> изменение постоянных ссылок на активном проиндексированном сайте может привести к серьёзной потере трафика, если оно производится неправильно. Рассмотрите возможность добавления переадресации старого формата URL на новый."
-
 #. Translators: Code to add support for Rank Math Breadcrumbs.
 #: includes/settings/general/breadcrumbs.php:26
 #: assets/admin/js/generalSettings.js:1
 msgid "This option cannot be changed since your theme has added the support for Rank Math Breadcrumbs using: %s"
 msgstr "Эту опцию нельзя изменить, так как в вашей теме добавлена ​​поддержка цепочки навигации Rank Math, используя: %s"
+
+#: includes/admin/class-notices.php:312
+msgid "<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one."
+msgstr "<b>Предупреждение Rank Math:</b> изменение постоянных ссылок на активном проиндексированном сайте может привести к серьёзной потере трафика, если оно производится неправильно. Рассмотрите возможность добавления переадресации старого формата URL на новый."
 
 #. Translators: the placeholder is for the sitemap base url.
 #: includes/modules/sitemap/class-admin.php:373
@@ -2995,12 +3059,12 @@ msgid "Import all the redirections you have already set up in Yoast Premium."
 msgstr "Импорт всех переадресаций, настроенных ранее в Yoast Premium."
 
 #. Translators: placeholder is the post type name.
-#: includes/admin/class-notices.php:151
+#: includes/admin/class-notices.php:154
 msgid "Rank Math has detected a new post type: %1$s. You may want to check the settings of the <a href=\"%2$s\">Titles &amp; Meta page</a>."
 msgstr "Rank Math обнаружил новый тип записей: %1$s. Вы можете проверить настройки <a href=\"%2$s\">«Заголовков и мета»</a>."
 
 #. Translators: placeholder is the post type names separated with commas.
-#: includes/admin/class-notices.php:155
+#: includes/admin/class-notices.php:158
 msgid "Rank Math has detected new post types: %1$s. You may want to check the settings of the <a href=\"%2$s\">Titles &amp; Meta page</a>."
 msgstr "Rank Math обнаружил новые типы записей: %1$s. Вы можете проверить настройки <a href=\"%2$s\">«Заголовков и мета»</a>."
 
@@ -3461,6 +3525,8 @@ msgstr "Апгрейд"
 
 #: includes/opengraph/class-slack.php:371
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:41
 msgid "Posts"
 msgstr "Записи"
 
@@ -3770,13 +3836,6 @@ msgstr "Удалить данные"
 msgid "free version"
 msgstr "бесплатная версия"
 
-#. Translators: placeholder is a link to rankmath.com, with "free version" as
-#. the anchor text.
-#: includes/modules/analytics/class-analytics.php:624
-#: includes/modules/analytics/views/options.php:86
-msgid "Enter the number of days to keep Analytics data in your database. The maximum allowed days are 90 in the %s. Though, 2x data will be stored in the DB for calculating the difference properly."
-msgstr "Введите количество дней для хранения данных Analytics в базе данных. Максимально допустимое количество дней: 90 в %s. Тем не менее, данные 2x будут сохранены в БД для правильного расчета разницы."
-
 #: includes/modules/analytics/views/options.php:94
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
 msgid "Analytics Database"
@@ -3793,6 +3852,13 @@ msgstr "Выполняется переиндексирование записи
 #: includes/modules/analytics/class-analytics-common.php:161
 msgid "Analytics cache cleared."
 msgstr "Кэш аналитики очищен."
+
+#. Translators: placeholder is a link to rankmath.com, with "free version" as
+#. the anchor text.
+#: includes/modules/analytics/class-analytics.php:624
+#: includes/modules/analytics/views/options.php:86
+msgid "Enter the number of days to keep Analytics data in your database. The maximum allowed days are 90 in the %s. Though, 2x data will be stored in the DB for calculating the difference properly."
+msgstr "Введите количество дней для хранения данных Analytics в базе данных. Максимально допустимое количество дней: 90 в %s. Тем не менее, данные 2x будут сохранены в БД для правильного расчета разницы."
 
 #: includes/modules/database-tools/class-database-tools.php:384
 msgid "Clear Cache"
@@ -4076,7 +4142,7 @@ msgstr "Сделайте любую историю, созданную с пом
 msgid "Google Web Stories"
 msgstr "Google Web Stories"
 
-#: includes/admin/class-notices.php:180
+#: includes/admin/class-notices.php:222
 msgid "Please activate the WPML String Translation plugin to convert Rank Math Setting values in different languages."
 msgstr "Пожалуйста, активируйте плагин WPML String Translation, чтобы преобразовать значения Rank Math Setting на разных языках."
 
@@ -4553,7 +4619,7 @@ msgstr "Schema"
 
 #: includes/settings/general/links.php:48 assets/admin/js/generalSettings.js:1
 msgid "Redirect Orphan Attachments"
-msgstr "Переадресация неиспользуемых вложений"
+msgstr "Переадресация осиротевших вложений"
 
 #: includes/modules/buddypress/class-admin.php:47
 #: assets/admin/js/titleSettings.js:1
@@ -5419,6 +5485,9 @@ msgid "Performer"
 msgstr "Исполнитель"
 
 #: includes/admin/class-post-columns.php:297
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:55
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:245
 msgid "Not Set"
 msgstr "Не задано"
 
@@ -5683,7 +5752,8 @@ msgstr "По умолчанию"
 #: includes/modules/local-seo/views/titles-options.php:167
 #: includes/modules/local-seo/views/titles-options.php:209
 #: includes/modules/local-seo/views/titles-options.php:253
-#: assets/admin/js/generalSettings.js:1 assets/admin/js/titleSettings.js:1
+#: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
+#: assets/admin/js/titleSettings.js:1
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Remove"
 msgstr "Убрать"
@@ -5697,6 +5767,8 @@ msgstr "%d логи удалены."
 #: assets/admin/js/generalSettings.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:48
 msgid "Links"
 msgstr "Ссылки"
 
@@ -5946,6 +6018,8 @@ msgstr "+%d подробнее..."
 #: includes/class-frontend-seo-score.php:174 assets/admin/js/components.js:1
 #: includes/modules/analytics/assets/js/admin-bar.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:220
 msgid "SEO Score"
 msgstr "SEO оценка"
 
@@ -6059,6 +6133,9 @@ msgstr "Добавить новое"
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:160
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:167
 msgid "All"
 msgstr "Все"
 
@@ -6069,6 +6146,8 @@ msgstr "Переместить в корзину"
 #: includes/modules/redirections/class-table.php:275
 #: includes/modules/schema/shortcode/music.php:27
 #: includes/modules/schema/shortcode/recipe.php:20
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:226
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Type"
@@ -6217,17 +6296,22 @@ msgstr "Формат адреса"
 msgid "Address"
 msgstr "Адрес"
 
-#: includes/modules/links/class-links.php:215
+#: includes/modules/links/class-links.php:206
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:194
 msgid "Incoming Links"
 msgstr "Входящие ссылки"
 
-#: includes/modules/links/class-links.php:213
+#: includes/modules/links/class-links.php:204
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:199
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:152
 msgid "Internal Links"
 msgstr "Внутренние ссылки"
 
-#: includes/modules/links/class-links.php:144
+#: includes/modules/links/class-links.php:159
 msgid "Links: "
 msgstr "Ссылки: "
 
@@ -6587,6 +6671,7 @@ msgstr "Логотип"
 
 #: includes/modules/404-monitor/class-admin.php:163
 #: includes/modules/redirections/class-admin.php:175
+#: assets/admin/js/components.js:1
 msgid "Bulk Actions"
 msgstr "Массовые действия"
 
@@ -6725,8 +6810,11 @@ msgstr "Деактивировать"
 msgid "Activate"
 msgstr "Активировать"
 
-#: includes/modules/links/class-links.php:214
+#: includes/modules/links/class-links.php:205
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:203
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:173
 msgid "External Links"
 msgstr "Внешние ссылки"
 
@@ -6794,7 +6882,7 @@ msgstr "Текущий месяц"
 #: includes/modules/sitemap/settings/html-sitemap.php:31
 #: includes/modules/sitemap/settings/html-sitemap.php:76
 #: includes/replace-variables/class-advanced-variables.php:86
-#: assets/admin/js/sitemapSettings.js:1
+#: assets/admin/js/components.js:1 assets/admin/js/sitemapSettings.js:1
 msgid "Page"
 msgstr "Страница"
 
@@ -7142,11 +7230,14 @@ msgstr "Заголовок текущей записи/страницы"
 #: includes/replace-variables/class-post-variables.php:34
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:132
 msgid "Post Title"
 msgstr "Заголовок записи"
 
 #. translators: %1$d: current page number, %2$d: max pages.
-#: includes/replace-variables/class-advanced-variables.php:210
+#: includes/replace-variables/class-advanced-variables.php:214
+#: includes/modules/analytics/assets/js/stats.js:1
 msgid "Page %1$d of %2$d"
 msgstr "Страница %1$d из %2$d"
 
@@ -7202,7 +7293,8 @@ msgid "SEO Settings for Date Archives"
 msgstr "Настройки SEO для архивов дат"
 
 #: includes/modules/404-monitor/views/main.php:27
-#: includes/modules/redirections/views/main.php:45 assets/admin/js/wizard.js:1
+#: includes/modules/redirections/views/main.php:45
+#: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
 msgid "Search"
 msgstr "Поиск"
 
@@ -7217,21 +7309,6 @@ msgstr "Поиск"
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 msgid "Learn more."
 msgstr "Узнать больше."
-
-#. translators: Link to kb article
-#. translators: Link to social setting KB article
-#: includes/admin/class-option-center.php:53
-#: includes/admin/class-option-center.php:61
-#: includes/admin/class-option-center.php:168
-#: includes/modules/404-monitor/class-admin.php:227
-#: includes/modules/redirections/class-admin.php:314
-#: assets/admin/js/post-list.js:1 assets/admin/js/rank-math-app.js:1
-#: includes/modules/analytics/assets/js/admin-bar.js:1
-#: includes/modules/content-ai/assets/js/content-ai-media.js:1
-#: includes/modules/content-ai/assets/js/content-ai-page.js:1
-#: includes/modules/content-ai/assets/js/content-ai.js:1
-msgid "Learn More"
-msgstr "Узнать больше"
 
 #. translators: Link to kb article
 #. translators: Link to KB article
@@ -7275,6 +7352,23 @@ msgstr "Узнать больше"
 #: includes/modules/redirections/assets/js/redirections.js:1
 #: includes/modules/role-manager/assets/js/role-manager.js:1
 msgid "Learn more"
+msgstr "Узнать больше"
+
+#. translators: Link to kb article
+#. translators: Link to social setting KB article
+#: includes/admin/class-option-center.php:53
+#: includes/admin/class-option-center.php:61
+#: includes/admin/class-option-center.php:168
+#: includes/modules/404-monitor/class-admin.php:227
+#: includes/modules/redirections/class-admin.php:314
+#: assets/admin/js/components.js:1 assets/admin/js/post-list.js:1
+#: assets/admin/js/rank-math-app.js:1
+#: includes/modules/analytics/assets/js/admin-bar.js:1
+#: includes/modules/content-ai/assets/js/content-ai-media.js:1
+#: includes/modules/content-ai/assets/js/content-ai-page.js:1
+#: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+msgid "Learn More"
 msgstr "Узнать больше"
 
 #: includes/modules/redirections/class-import-export.php:109
@@ -7565,6 +7659,11 @@ msgstr "Вы можете интегрировать Google Search Console с Ra
 msgid "Google's Search Console is a vital source of information concerning your rankings and click-through rates.  Rank Math can import this data, so you don't have to log into your Google account to get the data you need."
 msgstr "Google Search Console является важным источником информации о ваших позициях и кликах. Rank Math может импортировать эти данные, поэтому вам не нужно входить в свой аккаунт Google, чтобы получить необходимые данные."
 
+#. translators: link to plugin setting screen
+#: includes/modules/seo-analysis/seo-analysis-tests.php:117
+msgid "Register at Google Search Console and verificate your site by adding the code to <a href=\"%1$s\">Settings &gt; Verificate Tools</a>, then navigate to <a href=\"%2$s\">Settings &gt; Search Console</a> to authenticate and link your site."
+msgstr "Зарегистрируйтесь в Google Search Console и подтвердите свой сайт, добавив код в <a href=\"%1$s\"> Настройки &gt; Инструменты верификации</a>, затем перейдите в <a href=\"%2$s\"> Настройки &gt; Консоль поиска</a> для аутентификации и привязки вашего сайта."
+
 #: includes/modules/seo-analysis/seo-analysis-tests.php:67
 msgid "This option will replace the \"?p=99\" part of the URL with the post's title, like this: http://www.yoursite.com/my-amazing-post-title/"
 msgstr "Этот параметр заменит часть \"?p=99\" URL-адреса заголовком сообщения, напр: http://www.yoursite.com/my-amazing-post-title/"
@@ -7577,11 +7676,6 @@ msgstr "К счастью, это очень легко исправить. Пр
 #: includes/modules/seo-analysis/seo-analysis-tests.php:64
 msgid "It's not very kind on the eyes, and it does nothing for your site's SEO.  In fact, it can hurt it - Google's bot is quite cautious about crawling pages that look auto-generated."
 msgstr "Это не очень приятно для глаз и ничего не делает для SEO вашего сайта. На самом деле, это может навредить ему - бот Google довольно осторожно относится к сканированию страниц, которые выглядят автоматически сгенерированными."
-
-#. translators: link to plugin setting screen
-#: includes/modules/seo-analysis/seo-analysis-tests.php:117
-msgid "Register at Google Search Console and verificate your site by adding the code to <a href=\"%1$s\">Settings &gt; Verificate Tools</a>, then navigate to <a href=\"%2$s\">Settings &gt; Search Console</a> to authenticate and link your site."
-msgstr "Зарегистрируйтесь в Google Search Console и подтвердите свой сайт, добавив код в <a href=\"%1$s\"> Настройки &gt; Инструменты верификации</a>, затем перейдите в <a href=\"%2$s\"> Настройки &gt; Консоль поиска</a> для аутентификации и привязки вашего сайта."
 
 #. translators: link to general setting screen
 #: includes/modules/seo-analysis/seo-analysis-tests.php:37
@@ -7600,11 +7694,6 @@ msgstr "Большинство тем WordPress размещают слоган-
 #: includes/modules/seo-analysis/seo-analysis-tests.php:33
 msgid "Your theme may display the Site Tagline, and it can also be used in SEO titles &amp; descriptions. Set it to something unique. You can change it by navigating to <a href=\"%s\">Settings &gt; General</a>."
 msgstr "Ваша тема может отображать описание-слоган сайта, а также его можно использовать в SEO заголовках и описаниях. Сделайте описание сайта уникальным. Вы можете изменить его, перейдя в <a href=\"%s\">Настройки &gt; Общие</a>."
-
-#. translators: number of rows
-#: includes/modules/analytics/views/options.php:32
-msgid "Data Rows: %s"
-msgstr "Строки данных: %s"
 
 #: includes/modules/analytics/views/options.php:80
 #: assets/admin/js/generalSettings.js:1 assets/admin/js/wizard.js:1
@@ -8783,11 +8872,6 @@ msgstr "Параметры SEO, связанные с главным изобр�
 msgid "The standard permalink structure is pretty ugly - WordPress generates offputting URLs like: http://www.yoursite.com/?p=99"
 msgstr "Стандартная структура постоянных ссылок довольно неказиста - WordPress генерирует URL такого типа: http://www.yoursite.com/?p=99"
 
-#. translators: link to permalink setting screen
-#: includes/modules/seo-analysis/seo-analysis-tests.php:62
-msgid "For the best SEO results, use a custom permalink structure, preferably one that includes the post title (<code>%%postname%%</code>). You can change it by navigating to <a href=\"%s\">Settings &gt; Permalinks</a>"
-msgstr "Для достижения наилучших результатов SEO используйте произвольную структуру постоянных ссылок, предпочтительно такую, которая включает заголовок записи (<code>%%postname%%</code>). Вы можете изменить её, перейдя в раздел <a href=\"%s\">Настройки &gt; Постоянные ссылки</a>"
-
 #: includes/modules/seo-analysis/seo-analysis-tests.php:265
 msgid "Permalinks are set to the default value. <em>Pretty permalinks</em> are disabled. "
 msgstr "Постоянные ссылки имеют стандартное значение. <em>Красивые постоянные ссылки</em> отключены. "
@@ -8806,6 +8890,11 @@ msgstr "Включите ссылку на изображения из соде�
 #: assets/admin/js/sitemapSettings.js:1
 msgid "Include archive pages of terms that have no posts associated."
 msgstr "Включить архивные страницы терминов, у которых нет связанных записей."
+
+#. translators: link to permalink setting screen
+#: includes/modules/seo-analysis/seo-analysis-tests.php:62
+msgid "For the best SEO results, use a custom permalink structure, preferably one that includes the post title (<code>%%postname%%</code>). You can change it by navigating to <a href=\"%s\">Settings &gt; Permalinks</a>"
+msgstr "Для достижения наилучших результатов SEO используйте произвольную структуру постоянных ссылок, предпочтительно такую, которая включает заголовок записи (<code>%%postname%%</code>). Вы можете изменить её, перейдя в раздел <a href=\"%s\">Настройки &gt; Постоянные ссылки</a>"
 
 #: includes/modules/seo-analysis/seo-analysis-tests.php:87
 msgid "HTML Page Titles play a large role in Google's ranking algorithm.  When you add a Focus Keyword to a post or page, Rank Math will check to see that you used the keyword in the title.  If it finds any posts or pages that are missing the keyword in the title, it will tell you here."
@@ -8951,14 +9040,14 @@ msgstr "Добавляет атрибут <code>nofollow</code> для ссыл�
 msgid "The <code>nofollow</code> attribute <strong>will not be added</strong> for the link if target domain is in this list. Add one per line."
 msgstr "Атрибут <code>nofollow</code> <strong>не будет добавлен</strong> к ссылке, если целевой домен находится в этом списке. Добавляйте по одному на строку."
 
+#: includes/settings/general/links.php:110 assets/admin/js/generalSettings.js:1
+msgid "Automatically add <code>target=\"_blank\"</code> attribute for external links appearing in your posts, pages, and other post types to make them open in a new browser tab or window. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
+msgstr "Автоматическое добавление атрибута <code>target=\"_blank\"</code> внешним ссылкам, появляющимся в записях блога, страницах и других типах записей, чтобы они открывались в новых вкладках браузера. Атрибут применяется динамически при отображении содержимого, а исходные данные не меняеются."
+
 #: includes/modules/local-seo/views/titles-options.php:196
 #: assets/admin/js/titleSettings.js:1
 msgid "e.g. 09:00-17:00"
 msgstr "например: 09:00–17:00"
-
-#: includes/settings/general/links.php:110 assets/admin/js/generalSettings.js:1
-msgid "Automatically add <code>target=\"_blank\"</code> attribute for external links appearing in your posts, pages, and other post types to make them open in a new browser tab or window. The attribute is dynamically applied when the content is displayed, and the stored content is not changed."
-msgstr "Автоматическое добавление атрибута <code>target=\"_blank\"</code> внешним ссылкам, появляющимся в записях блога, страницах и других типах записей, чтобы они открывались в новых вкладках браузера. Атрибут применяется динамически при отображении содержимого, а исходные данные не меняеются."
 
 #: includes/modules/redirections/views/options.php:27
 #: assets/admin/js/generalSettings.js:1
@@ -9149,6 +9238,11 @@ msgstr "Цепи навигации"
 msgid "Yandex.Webmaster Page"
 msgstr "Страница Яндекс Вебмастер"
 
+#. translators: number of rows
+#: includes/modules/analytics/views/options.php:32
+msgid "Data Rows: %s"
+msgstr "Ряды данных: %s"
+
 #: includes/admin/metabox/class-taxonomy-screen.php:140
 #: includes/modules/local-seo/views/titles-options.php:64
 #: includes/settings/general/rss-vars-table.php:20
@@ -9190,6 +9284,11 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: includes/admin/class-assets.php:229
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:123
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:126
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:139
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:142
 msgid "(no title)"
 msgstr "(без заголовка)"
 

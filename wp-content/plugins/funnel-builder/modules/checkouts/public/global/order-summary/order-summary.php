@@ -4,11 +4,10 @@ if ( ! defined( 'WFACP_TEMPLATE_DIR' ) ) {
 }
 /**
  * @var $_product WC_Product_Variation
- *
  */
 $instance     = wfacp_template();
 $data         = $instance->get_checkout_fields();
-$field        = isset( $data['advanced'] ) ? ( isset( $data['advanced']['order_summary'] ) ? $data['advanced']['order_summary'] : '' ) : [];
+$field        = isset( $data['advanced'] ) ? ( isset( $data['advanced']['order_summary'] ) ? $data['advanced']['order_summary'] : '' ) : array();
 $colspan_attr = '';
 unset( $data );
 if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
@@ -23,68 +22,70 @@ $args         = WC()->session->get( 'wfacp_order_summary_' . WFACP_Common::get_i
 $classes      = isset( $args['cssready'] ) ? implode( ' ', $args['cssready'] ) : '';
 add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set' );
 $hide_item_content = apply_filters( 'wfacp_hide_item_content_shopcheckout', false );
-$tax_enabled       = "";
+$tax_enabled       = '';
 if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) {
-	$tax_enabled = "wfacp_tax_enabled";
+	$tax_enabled = 'wfacp_tax_enabled';
 }
 $wc_version = WC()->version;
 ?>
-    <div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo $classes . ' ' . $tax_enabled; ?>" id="order_summary_field" <?php echo WFACP_Common::get_fragments_attr() ?>>
+	<div class="wfacp_order_summary wfacp_wrapper_start wfacp_order_sec <?php echo $classes . ' ' . $tax_enabled; ?>" id="order_summary_field" <?php echo WFACP_Common::get_fragments_attr();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 		<?php do_action( 'wfacp_before_order_summary', $field, $instance ); ?>
-        <label class="wfacp-order-summary-label"><?php echo isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check(__( 'Order Summary', 'woocommerce' )); ?></label>
-        <div class="wfacp_anim wfacp_order_summary_container">
-            <table class="shop_table woocommerce-checkout-review-order-table <?php echo $instance->get_template_slug(); ?>">
+		<label class="wfacp-order-summary-label"><?php echo isset( $field['label'] ) ? $field['label'] : WFACP_Common::translation_string_to_check( __( 'Order Summary', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?></label>
+		<div class="wfacp_anim wfacp_order_summary_container">
+			<table class="shop_table woocommerce-checkout-review-order-table <?php echo $instance->get_template_slug();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 				<?php
 				if ( false === $hide_item_content ) {
 					?>
-                    <thead>
-                    <tr>
-                        <th class="product-name-area">
+					<thead>
+					<tr>
+						<th class="product-name-area">
 							<?php
 							$hideImageCls = '';
 							if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
-								$total_col ++;
+								++$total_col;
 								echo '<div class="product-img">';
 								echo ' </div>';
 								$hideImageCls = 'wfacp_summary_img_true';
 							}
 							?>
-                            <div class="product-name <?php echo $hideImageCls; ?>">
-								<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) ); ?>
-                            </div>
-                        </th>
-                        <th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) ); ?></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+							<div class="product-name <?php echo $hideImageCls;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+								<?php echo apply_filters( 'wfacp_order_summary_column_item_heading', __( 'Product', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?>
+							</div>
+						</th>
+						<th class="product-total"><?php echo apply_filters( 'wfacp_order_summary_column_total_heading', __( 'Total', 'woocommerce' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.I18n.TextDomainMismatch ?></th>
+					</tr>
+					</thead>
+					<tbody>
 					<?php
 					do_action( 'woocommerce_review_order_before_cart_contents' );
 					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 						$_product = apply_filters( 'woocommerce_cart_item_product1', $cart_item['data'], $cart_item, $cart_item_key );
 						if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 							?>
-                            <tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key ?>">
-                                <td class="product-name-area">
+							<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>" cart_key="<?php echo $cart_item_key;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+								<td class="product-name-area">
 									<?php
 									$hideImageCls = '';
 									if ( apply_filters( 'wfacp_cart_show_product_thumbnail', false ) ) {
 										$hideImageCls = 'wfacp_summary_img_true';
-										$thumbnail    = WFACP_Common::get_product_image( $_product, [ 100, 100 ], $cart_item, $cart_item_key );
+										$thumbnail    = WFACP_Common::get_product_image( $_product, array( 100, 100 ), $cart_item, $cart_item_key );
 										$thumbnail    = apply_filters( 'wfacp_cart_image', $thumbnail, $_product );
 										?>
-                                        <div class="product-image">
-                                            <div class="wfacp-pro-thumb">
-                                                <div class="wfacp-qty-ball">
-                                                    <div class="wfacp-qty-count"><span class="wfacp-pro-count"><?php echo $cart_item['quantity']; ?></span></div>
-                                                </div>
-												<?php echo $thumbnail; ?>
-                                            </div>
-                                        </div>
+										<div class="product-image">
+											<div class="wfacp-pro-thumb">
+												<div class="wfacp-qty-ball">
+													<div class="wfacp-qty-count"><span class="wfacp-pro-count"><?php echo $cart_item['quantity'];  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></div>
+												</div>
+												<?php echo $thumbnail;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+											</div>
+										</div>
 									<?php } ?>
-                                    <div class="product-name  <?php echo $hideImageCls; ?> ">
-                                        <span class="wfacp_order_summary_item_name"><?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ); ?></span>
+									<div class="product-name  <?php echo $hideImageCls;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ">
+										<span class="wfacp_order_summary_item_name"><?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 										<?php
-										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key );
+										do_action( 'wfacp_order_summary_field_after_product_name', $cart_item, $cart_item_key );
+
+										echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										if ( apply_filters( 'wfacp_allow_woocommerce_after_cart_item_name_order_summary', false, $cart_item, $cart_item_key ) ) {
 											/**
 											 * added in 2.0.0
@@ -92,9 +93,9 @@ $wc_version = WC()->version;
 											do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
 										}
 										if ( version_compare( $wc_version, '3.3.0', '>=' ) ) {
-											echo wc_get_formatted_cart_item_data( $cart_item );
+											echo wc_get_formatted_cart_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										} else {
-											echo WC()->cart->get_item_data( $cart_item );
+											echo WC()->cart->get_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										}
 
 										/**
@@ -102,60 +103,79 @@ $wc_version = WC()->version;
 										 */
 
 										do_action( 'wfacp_order_summary_field_after_product_title', $_product );
+										do_action( 'wfacp_order_summary_cart_item_formatted_data', $cart_item, $cart_item_key, $_product );
 										?>
-                                    </div>
-                                </td>
-                                <td class="product-total">
-                                    <div class="wfacp_order_summary_item_total">
+									</div>
+								</td>
+								<td class="product-total">
+									<div class="wfacp_order_summary_item_total">
 
 
 										<?php
+										$order_summary_strike = apply_filters( 'wfacp_order_summary_field_enable_strike_through_price', false );
 										if ( in_array( $_product->get_type(), WFACP_Common::get_subscription_product_type() ) ) {
-											$price_show = apply_filters( 'wfacp_subscription_price_display', WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ), $_product, $cart_item, $cart_item_key );
-											echo $price_show;
-										} else {
-											if ( true == apply_filters( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', true, $_product, $cart_item, $cart_item_key ) ) {
-
-
-
-												echo apply_filters( 'woocommerce_cart_item_subtotal', WFACP_Common::get_product_subtotal( $_product, $cart_item, false, apply_filters( 'wfacp_order_summary_field_enable_strike_through_price', false ) ), $cart_item, $cart_item_key );
+											if ( $order_summary_strike ) {
+												$price_show = apply_filters(
+													'woocommerce_cart_item_subtotal',
+													WFACP_Common::get_product_subtotal( $_product, $cart_item, false, true ),
+													$cart_item,
+													$cart_item_key
+												);
 											} else {
-												do_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription_placeholder', $_product, $cart_item, $cart_item_key );
+												$price_show = apply_filters(
+													'wfacp_subscription_price_display',
+													WFACP_Common::display_subscription_price( $_product, $cart_item, $cart_item_key ),
+													$_product,
+													$cart_item,
+													$cart_item_key
+												);
 											}
+											echo $price_show; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										} elseif ( apply_filters( 'wfacp_woocommerce_cart_item_subtotal_except_subscription', true, $_product, $cart_item, $cart_item_key ) ) {
+
+
+
+												echo apply_filters( 'woocommerce_cart_item_subtotal', WFACP_Common::get_product_subtotal( $_product, $cart_item, false, $order_summary_strike ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										} else {
+											do_action( 'wfacp_woocommerce_cart_item_subtotal_except_subscription_placeholder', $_product, $cart_item, $cart_item_key );
 										}
 										?>
-                                    </div>
+									</div>
 									<?php
 									WFACP_Common::delete_cart_item_link( $allow_delete, $cart_item_key, $cart_item );
 									?>
-                                </td>
-                            </tr>
+								</td>
+							</tr>
 							<?php
 						}
 					}
 					do_action( 'woocommerce_review_order_after_cart_contents', $total_col );
 					?>
-                    </tbody>
+					</tbody>
 					<?php
 				}
 				?>
-                <tfoot>
-                <tr class="cart-subtotal">
-                    <th <?php echo $colspan_attr; ?>><span><?php _e( 'Subtotal', 'woocommerce' ); ?></span></th>
-                    <td><?php wc_cart_totals_subtotal_html(); ?></td>
-                </tr>
+				<tfoot>
+				<tr class="cart-subtotal">
+					<th <?php echo $colspan_attr; ?>><span><?php _e( 'Subtotal', 'woocommerce' );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<td><?php wc_cart_totals_subtotal_html(); ?></td>
+				</tr>
 				<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
-                    <tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
-                        <th <?php echo $colspan_attr; ?>><span><?php $instance->wc_cart_totals_coupon_label( $coupon ) ?></span></th>
-                        <td><?php wc_cart_totals_coupon_html( $coupon );
-							do_action( 'wfacp_after_coupon_html', $coupon ); ?></td>
-                    </tr>
+					<tr class="cart-discount coupon-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
+						<th <?php echo $colspan_attr; ?>><span><?php $instance->wc_cart_totals_coupon_label( $coupon );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
+						<td>
+						<?php
+						wc_cart_totals_coupon_html( $coupon );
+							do_action( 'wfacp_after_coupon_html', $coupon );
+						?>
+							</td>
+					</tr>
 				<?php endforeach; ?>
 				<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
-                    <tr class="fee">
-                        <th <?php echo $colspan_attr; ?>><?php echo esc_html( $fee->name ); ?></th>
-                        <td><?php wc_cart_totals_fee_html( $fee ); ?></td>
-                    </tr>
+					<tr class="fee">
+						<th <?php echo $colspan_attr; ?>><?php echo esc_html( $fee->name );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+						<td><?php wc_cart_totals_fee_html( $fee ); ?></td>
+					</tr>
 				<?php endforeach; ?>
 				<?php
 				do_action( 'wfacp_order_summary_before_shipping' );
@@ -183,33 +203,34 @@ $wc_version = WC()->version;
 				<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 					<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 						<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-                            <tr class="tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">
-                                <th <?php echo $colspan_attr; ?>><?php echo esc_html( $tax->label ); ?></th>
-                                <td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
-                            </tr>
+							<tr class="tax-rate tax-rate-<?php echo sanitize_title( $code );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+								<th <?php echo $colspan_attr; ?>><?php echo esc_html( $tax->label );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+								<td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
+							</tr>
 						<?php endforeach; ?>
 					<?php else : ?>
-                        <tr class="tax-total">
-                            <th <?php echo $colspan_attr; ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></span></th>
-                            <td><?php wc_cart_totals_taxes_total_html(); ?></td>
-                        </tr>
+						<tr class="tax-total">
+							<th <?php echo $colspan_attr; ?>><span><?php echo esc_html( WC()->countries->tax_or_vat() );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></th>
+							<td><?php wc_cart_totals_taxes_total_html(); ?></td>
+						</tr>
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
-                <tr class="order-total">
-                    <th <?php echo $colspan_attr; ?>><span><?php _e( 'Total', 'woocommerce' ); ?></span></th>
-                    <td><?php wc_cart_totals_order_total_html(); ?></td>
-                </tr>
-				<?php do_action( 'woocommerce_review_order_after_order_total' );
+				<tr class="order-total">
+					<th <?php echo $colspan_attr; ?>><span><?php _e( 'Total', 'woocommerce' );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.WP.I18n.TextDomainMismatch ?></span></th>
+					<td><?php wc_cart_totals_order_total_html(); ?></td>
+				</tr>
+				<?php
+				do_action( 'woocommerce_review_order_after_order_total' );
 
 
 				do_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total' );
 
-                ?>
-                </tfoot>
-            </table>
-        </div>
+				?>
+				</tfoot>
+			</table>
+		</div>
 		<?php do_action( 'wfacp_after_order_summary', $field, $instance ); ?>
-    </div>
+	</div>
 <?php
 remove_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set' );

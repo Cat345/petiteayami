@@ -1,17 +1,64 @@
 *** FunnelKit Funnel Builder Pro ***
+= 3.15.0.2 (Apr 22, 2026) =
+* Fixed: Funnel: Compatibility issues with Divi5 checkout module is resolved. (#8831)
 
-= 3.13.3.2 (Feb 04, 2026) =
-* Improved: Checkout: Added new filter wfacp_mini_cart_show_variation_details to provide more control on variation attributes and selection option. ()
-= 3.13.3.2 (Feb 04, 2026) =
-* Improved: Checkout: Filter hooks wfacp_order_summary_field_after_product_name, wfacp_after_mini_cart_title & wfacp_after_cart_formatted_item_data for 3rd pary plugins. (#6872)
-* Improved: Upsells: Compatibility with mollie gateway updated. (#8181)
+= 3.15.0.1 (Apr 22, 2026) =
+* Improved: Funnel: Compatibility with divi page builder improved to handle few edge cases.  (#8813, #8809, #8815, #8794)
 
- = 3.13.3.1 (Jan 27, 2026) =
-* Improved: Checkout: Compatibility with Elementor has been enhanced to better support cached pages. (#8270)
-* Improved: Checkout: Compatibility updated with WooCommerce Subscriptions v3.1.0 for a more reliable subscription flow. (#8462)
-* Improved: Order Bump: Compatibility updated with Discount Rules Pro by Flycart for smoother discount handling. (#8081)
-* Improved: Checkout: Compatibility enhanced with WooPayments to support the Stripe Link option more consistently. (#8405)
-* Improved: Checkout: Place Order button icon visibility improved in block editor templates to ensure better consistency across themes. (#8316)
+= 3.15.0 (Apr 15, 2026) =
+* Added: Checkout: Added a new feature to conditionally show and hide checkout fields using rulesets. (#8527)
+* Added: Checkout: Added new product switcher template for inline variation selection at checkout. (#8625)
+* Added: Order Bumps: Added filter hook to control the maximum number of product rows displayed per order bump. (#8693)
+* Improved: Upsells: Improved compatibility with Authorize.net CIM. (#8731)
+* Fixed: Checkout: Fixed double WHERE clause SQL bug and optimized batch DELETE processing in the analytics reset endpoint. (#8725)
+* Improved: Funnel: Improved unsaved changes confirmation when navigating away from the Order Bump editor. (#8672)
+* Fixed: Upsells: Resolved PHP warning for undefined array key in the Elementor Product Title Widget on upsell pages. (#8662)
+
+= 3.14.0.1 (Apr 02, 2026) =
+* Added: Upsells: Added Airwallex payment gateway to the list of compatible upsell gateways. (#8644)
+* Improved: Upsells: Improved compatibility with Authorize.net CIM. (#8678)
+* Improved: Upsells: Improved compatibility with Braintree for WooCommerce. (#8700)
+* Fixed: Order Bumps: Fixed the variation selection popup not appearing when clicking a variable product order bump. (#8645)
+* Fixed: Checkout: Styling issues with quantity switcher in mini cart. (#8704)
+
+= 3.14.0 (Mar 11, 2026) =
+* Added: Upsells: Enhanced upsell price compatibility with External tax plugins like Taxjar, Avatax, Stripe tax etc. (#7800)
+* Improved: Checkout: Removed legacy WooFunnels branding text from prebuilt checkout templates. (#7815)
+* Improved: Checkout: Improved product price update in the product switcher when WooCommerce Extra Product Options Pro adds custom-priced fields. (#8385)
+* Improved: Checkout: Improved country dropdown icon and phone field styling in checkout address sections. (#8422)
+* Improved: Checkout: Improved compatibility with Impreza theme. (#8429)
+* Improved: Checkout: Improved compatibility with Etch page builder. (#8442)
+* Improved: Checkout: Improved compatibility with Elementor. (#8296)
+* Improved: Checkout: Improved compatibility with third-party plugin CSS. (#8321)
+* Improved: Order Bumps: Improved compatibility with Divi Builder. (#7138)
+* Improved: Order Bumps: Improved compatibility with YITH Multi-Currency Switcher. (#8356)
+* Improved: Order Bumps: Improved compatibility with WooCommerce PayPal Payments. (#8390)
+* Improved: Upsells: Improved compatibility with FunnelKit Stripe. (#8055)
+* Improved: Upsells: Improved compatibility with WooCommerce Stripe. (#8282)
+* Fixed: Checkout: Fixed product switcher variation popup displaying with incorrect order bump styling. (#6886)
+* Fixed: Checkout: Fixed custom checkbox field resetting to false when order status is updated. (#8102)
+* Fixed: Checkout: Fixed upsell product becoming free when a free gift discount threshold is applied at checkout. (#8162)
+* Fixed: Checkout: Fixed shipping options not displaying on initial page load. (#8289)
+* Fixed: Checkout: Fixed cart and order summary display issue on checkout pages. (#8319)
+* Fixed: Checkout: Fixed smart login popup styling issue at checkout. (#8420)
+* Fixed: Checkout: Resolved fatal TypeError when a null product is passed to WooCommerce stock quantity check. (#8423)
+* Fixed: Checkout: Fixed dropdown caret overlapping content on RTL checkout pages. (#8451)
+* Fixed: Checkout: Fixed email autocomplete behavior at checkout. (#8468)
+* Fixed: Optin: Fixed error on the Optin Customize tab in the admin. (#8414)
+* Fixed: Order Bumps: Fixed inline font styling not applying to order bump description text. (#8331)
+* Fixed: Order Bumps: Fixed order bump not displaying when rules are set and a bump count limit is configured. (#8342)
+* Fixed: Order Bumps: Fixed order total exclusion rule not working correctly for chained products. (#8347)
+* Fixed: Order Bumps: Fixed order bump style settings reverting on mobile when repositioning or duplicating. (#8443)
+* Fixed: Order Bumps: Fixed product bundle discount not applying correctly to order bumps. (#8533)
+* Fixed: Upsells: Fixed free trial period being ignored for subscription bundles, causing immediate full charges. (#8396)
+
+
+= 3.13.3.3 (Feb 12, 2026) =
+Improved: Checkout: Added new filter wfacp_mini_cart_show_variation_details to provide more control on variation attributes and selection options. (#8526)
+
+= 3.13.3.2 (Feb 09, 2026) =
+Improved: Checkout: Filter hooks wfacp_order_summary_field_after_product_name, wfacp_after_mini_cart_title & wfacp_after_cart_formatted_item_data added for 3rd party plugins. (#6872)
+Improved: Upsells: Compatibility with mollie gateway updated. (#8181)
 
 = 3.13.3.1 (Jan 27, 2026) =
 * Improved: Checkout: Compatibility with Elementor has been enhanced to better support cached pages. (#8270)

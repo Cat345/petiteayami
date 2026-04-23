@@ -56,22 +56,26 @@ class BWFAN_Common_Shortcodes {
         add_shortcode( 'bwfan_subscriber_recipient', array( $this, 'bwfan_contact_email' ) );
         add_shortcode( 'wfan_contact_email', array( $this, 'bwfan_contact_email' ) );
         add_shortcode( 'fka_contact_email', array( $this, 'bwfan_contact_email' ) );
+        add_shortcode( 'fka_subscriber_recipient', array( $this, 'bwfan_contact_email' ) );
 
         // Name shortcodes
         add_shortcode( 'bwfan_subscriber_name', array( $this, 'bwfan_contact_name' ) );
         add_shortcode( 'wfan_contact_name', array( $this, 'bwfan_contact_name' ) );
         add_shortcode( 'fka_contact_name', array( $this, 'bwfan_contact_name' ) );
+        add_shortcode( 'fka_subscriber_name', array( $this, 'bwfan_contact_name' ) );
 
 
         // First name shortcodes
         add_shortcode( 'bwfan_subscriber_firstname', array( $this, 'bwfan_contact_firstname' ) );
         add_shortcode( 'wfan_contact_firstname', array( $this, 'bwfan_contact_firstname' ) );
         add_shortcode( 'fka_contact_first_name', array( $this, 'bwfan_contact_firstname' ) );
+        add_shortcode( 'fka_subscriber_first_name', array( $this, 'bwfan_contact_firstname' ) );
 
         // Last name shortcodes
         add_shortcode( 'bwfan_subscriber_lastname', array( $this, 'bwfan_contact_lastname' ) );
         add_shortcode( 'wfan_contact_lastname', array( $this, 'bwfan_contact_lastname' ) );
         add_shortcode( 'fka_contact_last_name', array( $this, 'bwfan_contact_lastname' ) );
+        add_shortcode( 'fka_subscriber_last_name', array( $this, 'bwfan_contact_lastname' ) );
     }
 
 

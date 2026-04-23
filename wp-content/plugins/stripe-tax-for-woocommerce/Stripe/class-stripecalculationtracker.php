@@ -79,6 +79,11 @@ class StripeCalculationTracker {
 		// Store API (Cart/Checkout) endpoints.
 		'/wp-json/wc/store/v1/checkout',
 		'/wp-json/wc/store/v1/cart',
+
+		'rest_route=/wc/store/v1/checkout',
+		'rest_route=%2Fwc%2Fstore%2Fv1%2Fcheckout',
+		'rest_route=/wc/store/v1/cart',
+		'rest_route=%2Fwc%2Fstore%2Fv1%2Fcart',
 	);
 
 	/**
@@ -121,16 +126,24 @@ class StripeCalculationTracker {
 			}
 
 			if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-				$request   = wp_parse_url( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH );
+				$request = wp_parse_url( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH );
+				$request = $request ? untrailingslashit( $request ) : '';
+
 				$cart_url  = get_permalink( $cart_page_id );
 				$cart_path = wp_parse_url( $cart_url, PHP_URL_PATH );
-				if ( $cart_path && strpos( $request, $cart_path ) !== false ) {
+				$cart_path = $cart_path ? untrailingslashit( $cart_path ) : '';
+
+				// Avoid false positives on plain permalinks where cart path becomes '/'.
+				if ( $cart_path && '/' !== $cart_path && $request === $cart_path ) {
 					return true;
 				}
 
 				$checkout_url  = get_permalink( $checkout_page_id );
 				$checkout_path = wp_parse_url( $checkout_url, PHP_URL_PATH );
-				if ( $checkout_path && strpos( $request, $checkout_path ) !== false ) {
+				$checkout_path = $checkout_path ? untrailingslashit( $checkout_path ) : '';
+
+				// Avoid false positives on plain permalinks where checkout path becomes '/'.
+				if ( $checkout_path && '/' !== $checkout_path && $request === $checkout_path ) {
 					return true;
 				}
 			}

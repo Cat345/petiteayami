@@ -134,8 +134,12 @@ if ( ! class_exists( 'WFACP_Elementor' ) ) {
 
 		public function enqueue_scripts() {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checking for Elementor preview parameter
 			if ( isset( $_REQUEST['elementor-preview'] ) ) {
-				wp_enqueue_script( 'wfacp_elementor_edit', WFACP_Core()->url( '/builder/elementor/js/elementor-preview-iframe.js' ), [ 'wfacp_checkout_js' ], WFACP_VERSION_DEV, true );
+				$preview_id = absint( $_REQUEST['elementor-preview'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
+				if ( 'wfacp_checkout' === get_post_type( $preview_id ) ) {
+					wp_enqueue_script( 'wfacp_elementor_edit', WFACP_Core()->url( '/builder/elementor/js/elementor-preview-iframe.js' ), [ 'wfacp_checkout_js' ], WFACP_VERSION_DEV, true );
+				}
 			}
 		}
 

@@ -27,7 +27,7 @@ class FilterMenuItems
         }
 
         foreach ($sorted_menu_items as $item) {
-            if (!$item instanceof \WPML_LS_Menu_Item || $item->menu_item_parent !== 0) {
+            if (!($item instanceof \WPML_LS_Menu_Item) || $item->menu_item_parent !== 0) {
                 continue;
             }
 

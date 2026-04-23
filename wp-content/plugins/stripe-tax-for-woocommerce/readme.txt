@@ -1,7 +1,7 @@
 === Stripe Tax - Sales tax automation for WooCommerce ===
 Tags: stripe, tax, taxation, shipping
-Stable tag: 2.0.0
-Tested up to: 6.8
+Stable tag: 2.0.2
+Tested up to: 6.9.4
 Requires at least: 6.3
 Requires PHP: 7.4
 License: Expat
@@ -33,27 +33,33 @@ Install this plugin and make sure it’s activated.
 
 ## 2. Connect your Stripe account
 
-On your website’s dashboard, navigate to WooCommerce > Settings > WooCommerce.
+On your website’s dashboard, navigate to WooCommerce > Settings and select the Stripe Tax tab.
 <img src="https://woocommerce.com/wp-content/uploads/2024/07/Screenshot-2024-07-12-at-4.05.41%E2%80%AFPM.png" alt="WooCommerce Settings">
 
-Then on the Stripe Tax tab, click Connect with Stripe to log in to your Stripe account or create a new one.
+In the latest version, you connect your account manually using API keys:
 
-<img src="https://woocommerce.com/wp-content/uploads/2024/07/Screenshot-2024-07-12-at-4.07.46%E2%80%AFPM.png" alt="Connect with Stripe">
+You can generate your API key from the Woo Commerce Tax Stripe App
 
-After successful authentication, navigate back to the Stripe Tax settings to continue with the configuration steps.
+Select Mode: Choose between Live mode for real transactions or toggle the switch if you are performing tests.
 
-<img src="https://woocommerce.com/wp-content/uploads/2024/07/Screenshot-2024-07-12-at-4.14.50%E2%80%AFPM.png" alt="Connect with Stripe successful">
+Enter Secret Key: Copy your Secret Key from your Stripe account and paste it into the Secret key field.
+
+Note: If you are in Live mode, use your Live Secret Key. If you are testing, use your Test Secret Key.
+
+Test Connection: Click the Test connection button located next to the input field to verify that the key is valid.
+
+Save Changes: Once the connection is verified, scroll to the bottom of the page and click Save changes to finalize the setup.
 
 ## 3. Configure your sales tax settings
 
-If you previously configured these tax settings in the [Stripe Dashboard](https://dashboard.stripe.com/settings/tax), the values populate automatically in the Stripe Tax connector. You can edit the values in the connector and the changes automatically update in your Stripe Dashboard.
+Tax settings must now be configured directly on the [Stripe Dashboard](https://dashboard.stripe.com/settings/tax).
 
 On the Stripe Tax tab, under Configure your sales tax settings, complete the following:
 
-1.  Enter your head office address, which is your company’s legal address.
-    
-2.  Choose your default [product tax code](https://docs.stripe.com/tax/tax-codes), which allows Stripe to calculate the tax rate for categories of products.
-    
+1.  Choose your default [product tax code](https://docs.stripe.com/tax/tax-codes), which allows Stripe to calculate the tax rate for categories of products.
+
+2.  Choose your tax class for taxable fees. (Default is General - Services)
+
 3.  Click Save changes.
     
 

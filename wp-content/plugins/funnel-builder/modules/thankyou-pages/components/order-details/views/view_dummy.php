@@ -8,175 +8,226 @@ $price                      = 12;
 $subscription_price         = 7.50;
 $order_subscription_heading = ( isset( $this->data['order_subscription_heading'] ) && ! empty( $this->data['order_subscription_heading'] ) ) ? $this->data['order_subscription_heading'] : esc_html__( 'Subscription', 'woocommerce-subscription' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
-$section_order                      = apply_filters( 'wffn_thank_you_order_details_section_order', array(
-	'order_details',
-	'downloads',
-	'subscriptions'
-) );
-
+$section_order = apply_filters(
+	'wffn_thank_you_order_details_section_order',
+	array(
+		'order_details',
+		'downloads',
+		'subscriptions',
+		'sublium_subscriptions',
+	)
+);
 foreach ( $section_order as $item ) {
 
 	switch ( $item ) {
 		case 'order_details':
 			?>
-            <div class="wfty_box wfty_order_details">
-                <div class="wfty-order-details-heading wfty_title"><?php echo esc_html( $order_details_heading ); ?></div>
-                <div class="wfty_pro_list_cont <?php echo esc_attr( $show_images_class ) ?>">
-                    <div class="wfty_pro_list wfty_clearfix">
-                        <div class="wfty_leftDiv wfty_clearfix">
+			<div class="wfty_box wfty_order_details">
+				<div class="wfty-order-details-heading wfty_title"><?php echo esc_html( $order_details_heading ); ?></div>
+				<div class="wfty_pro_list_cont <?php echo esc_attr( $show_images_class ); ?>">
+					<div class="wfty_pro_list wfty_clearfix">
+						<div class="wfty_leftDiv wfty_clearfix">
 							<?php if ( $order_show_images ) { ?>
-                                <div class="wfty_p_img">
-                                    <a href="javascript:void(0);">
-                                        <img height="100" width="100" class="attachment-shop_thumbnail size-shop_thumbnail" src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>">
-                                    </a>
-                                </div>
+								<div class="wfty_p_img">
+									<a href="javascript:void(0);">
+										<img height="100" width="100" class="attachment-shop_thumbnail size-shop_thumbnail" src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>">
+									</a>
+								</div>
 							<?php } ?>
 
-                            <div class="wfty_p_name">
-                                <a href="javascript:void(0);">
-                                    <span class="wfty_t"><?php esc_html_e( 'Test Product', 'funnel-builder' ); ?></span>
-                                </a>
-                                <span class="wfty_quantity_value_box">
+							<div class="wfty_p_name">
+								<a href="javascript:void(0);">
+									<span class="wfty_t"><?php esc_html_e( 'Test Product', 'funnel-builder' ); ?></span>
+								</a>
+								<span class="wfty_quantity_value_box">
 									<span class="multiply">x</span>
 									<?php echo ( $order_show_images ) ? '1' : '<span class="qty">1</span>'; ?>
 								</span>
-                                <div class="wfty_info">
-                                    <ul class="wc-item-meta">
-                                        <li><strong class="wc-item-meta-label">Color: </strong>
-                                            <p>Blue</p></li>
-                                        <li><strong class="wc-item-meta-label">Size: </strong>
-                                            <p>Large</p></li>
-                                    </ul>
-                                </div>
-                            </div>
+								<div class="wfty_info">
+									<ul class="wc-item-meta">
+										<li><strong class="wc-item-meta-label">Color: </strong>
+											<p>Blue</p></li>
+										<li><strong class="wc-item-meta-label">Size: </strong>
+											<p>Large</p></li>
+									</ul>
+								</div>
+							</div>
 
-                        </div>
-                        <div class="wfty_rightDiv"><?php echo wp_kses_post( wc_price( $price ) ); ?></div>
-                        <div class="wfty-clearfix"></div>
-                    </div>
-                    <table>
-                        <tfoot>
-                        <tr>
-                            <th scope="row"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
-                            <td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
-                        </tr>
+						</div>
+						<div class="wfty_rightDiv"><?php echo wp_kses_post( wc_price( $price ) ); ?></div>
+						<div class="wfty-clearfix"></div>
+					</div>
+					<table>
+						<tfoot>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
+							<td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
+						</tr>
 
 						<?php
 						$shipping_option = get_option( 'woocommerce_ship_to_countries' );
 						if ( 'disabled' !== $shipping_option ) {
 							$price += 3;
 							?>
-                            <tr>
-                                <th scope="row"><?php esc_html_e( 'Shipping', 'woocommerce' ); ?></th>
-                                <td>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'Shipping', 'woocommerce' ); ?></th>
+								<td>
 									<span class="woocommerce-Price-amount amount"><?php echo wp_kses_post( wc_price( 3 ) ); ?>
-                                </td>
-                            </tr>
+								</td>
+							</tr>
 						<?php } ?>
-                        <tr>
-                            <th scope="row"><?php esc_html_e( 'Payment method', 'woocommerce' ); ?></th>
-                            <td><?php esc_html_e( 'Credit card', 'woocommerce' ); ?></td>
-                        </tr>
-                        <tr>
-                            <th scope="row"><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
-                            <td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Payment method', 'woocommerce' ); ?></th>
+							<td><?php esc_html_e( 'Credit card', 'woocommerce' ); ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
+							<td><?php echo wp_kses_post( wc_price( $price ) ); ?></td>
+						</tr>
+						</tfoot>
+					</table>
+				</div>
 
-            </div>
+			</div>
 			<?php
 			break;
 
 		case 'subscriptions':
 			?>
-            <div class="wfty_box wfty_subscription">
+			<div class="wfty_box wfty_subscription">
 
-                <div class="wfty_title"><?php echo esc_html( $order_subscription_heading ); ?></div>
-                <table class="shop_table shop_table_responsive my_account_orders">
-                    <thead>
-                    <tr>
-                        <th class="order-number wfty_left"><span class="nobr"><?php esc_html_e( 'Subscription', 'woocommerce-subscriptions' ); ?></span></th>
-                        <th class="order-status wfty_center "><span class="nobr"><?php echo esc_html_x( 'Next Payment', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
-                        <th class="order-total wfty_center "><span class="nobr"><?php echo esc_html_x( 'Total', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
-                        <th class="order-total wfty_center "><span class="nobr"></span></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="order">
-                        <td data-title="Subscription" class="subscription-id order-number wfty_left">
-                            <a href="javascript:void(0);"><strong>#1234</strong></a>
-                            <small>(<?php esc_html_e( 'Active', 'woocommerce' ); ?>)</small>
-                        </td>
-                        <td data-title="Next Payment" class="subscription-next-payment order-date wfty_center "> <?php echo esc_html( sprintf( __( 'In %s days', 'woocommerce-subscriptions' ), 30 ) ); ?></td>
-                        <td data-title="Total" class="subscription-total order-total wfty_center "> <?php echo wp_kses_post( wc_price( $subscription_price ) ); ?>
-                            / <?php echo esc_html_e( 'month', 'woocommerce-subscriptions' ); ?>
-                        </td>
-                        <td data-title="Action" class="subscription-actions order-actions wfty_center">
-                            <a href="javascript:void(0);" class="button view"><?php echo esc_html_x( 'View', 'view a subscription', 'woocommerce-subscriptions' ); ?></a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-				<?php do_action( 'woocommerce_subscription_after_related_subscriptions_table' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+				<div class="wfty_title"><?php echo esc_html( $order_subscription_heading ); ?></div>
+				<table class="shop_table shop_table_responsive my_account_orders">
+					<thead>
+					<tr>
+						<th class="order-number wfty_left"><span class="nobr"><?php esc_html_e( 'Subscription', 'woocommerce-subscriptions' ); ?></span></th>
+						<th class="order-status wfty_center "><span class="nobr"><?php echo esc_html_x( 'Next Payment', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
+						<th class="order-total wfty_center "><span class="nobr"><?php echo esc_html_x( 'Total', 'table heading', 'woocommerce-subscriptions' ); ?></span></th>
+						<th class="order-total wfty_center "><span class="nobr"></span></th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr class="order">
+						<td data-title="Subscription" class="subscription-id order-number wfty_left">
+							<a href="javascript:void(0);"><strong>#1234</strong></a>
+							<small>(<?php esc_html_e( 'Active', 'woocommerce' ); ?>)</small>
+						</td>
+						<td data-title="Next Payment" class="subscription-next-payment order-date wfty_center "> <?php echo esc_html( sprintf( __( 'In %s days', 'woocommerce-subscriptions' ), 30 ) ); ?></td>
+						<td data-title="Total" class="subscription-total order-total wfty_center "> <?php echo wp_kses_post( wc_price( $subscription_price ) ); ?>
+							/ <?php echo esc_html_e( 'month', 'woocommerce-subscriptions' ); ?>
+						</td>
+						<td data-title="Action" class="subscription-actions order-actions wfty_center">
+							<a href="javascript:void(0);" class="button view"><?php echo esc_html_x( 'View', 'view a subscription', 'woocommerce-subscriptions' ); ?></a>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+				<?php
+				do_action( 'woocommerce_subscription_after_related_subscriptions_table' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 				?>
-            </div>
+			</div>
 			<?php
 			break;
 
+		case 'sublium_subscriptions':
+			// Only show Sublium subscriptions in preview if Sublium is available
+			if ( function_exists( 'sublium_init' ) ) {
+				// Get Sublium-specific settings with fallbacks
+				$sublium_subscriptions_heading   = isset( $this->data['sublium_subscriptions_heading'] ) ? $this->data['sublium_subscriptions_heading'] : __( 'Subscriptions', 'funnel-builder' );
+				$sublium_subscriptions_view_text = isset( $this->data['sublium_subscriptions_view_text'] ) ? $this->data['sublium_subscriptions_view_text'] : __( 'View', 'funnel-builder' );
+
+				?>
+				<div class="wfty_box wfty_sublium_subscriptions">
+				<h2 class="sublium-subscriptions-heading woocommerce-order-details__title wfty_title">Subscriptions</h2>
+					<table class="woocommerce-table woocommerce-table--order-details shop_table order_details" style="width:100%">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'ID', 'funnel-builder' ); ?></th>
+								<th><?php esc_html_e( 'Next Payment', 'funnel-builder' ); ?></th>
+								<th><?php esc_html_e( 'Total', 'funnel-builder' ); ?></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>#300</td>
+								<td>November 15, 2025 10:11 am</td>
+								<td><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">USD</span>18.00</span></td>
+								<td>
+									<div class="sublium-view-subscription-buttons">
+										<a href="javascript:void(0);"><?php echo esc_html( $sublium_subscriptions_view_text ); ?></a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<?php
+			}
+			break;
+
 		case 'downloads':
-			$data_settings = $this->data; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+			$data_settings            = $this->data; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$order_downloads_btn_text = ( isset( $this->data['order_downloads_btn_text'] ) && ! empty( $this->data['order_downloads_btn_text'] ) ) ? $this->data['order_downloads_btn_text'] : esc_html__( 'Download', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-			$order_download_heading = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-			add_filter( 'woocommerce_account_downloads_columns', function ( $array ) use ($data_settings) {
-				if ( isset( $array['download-remaining'] ) && 'false' === $data_settings['order_downloads_show_file_downloads'] ) {
-					unset( $array['download-remaining'] );
-				}
-				if ( isset( $array['download-expires'] ) && 'false' === $data_settings['order_downloads_show_file_expiry'] ) {
-					unset( $array['download-expires'] );
-				}
+			$order_download_heading   = ( isset( $this->data['order_download_heading'] ) && ! empty( $this->data['order_download_heading'] ) ) ? $this->data['order_download_heading'] : esc_html__( 'Downloads', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+			add_filter(
+				'woocommerce_account_downloads_columns',
+				function ( $array ) use ( $data_settings ) {
+					if ( isset( $array['download-remaining'] ) && 'false' === $data_settings['order_downloads_show_file_downloads'] ) {
+						unset( $array['download-remaining'] );
+					}
+					if ( isset( $array['download-expires'] ) && 'false' === $data_settings['order_downloads_show_file_expiry'] ) {
+						unset( $array['download-expires'] );
+					}
 
-				return $array;
-			}, 999 );
+					return $array;
+				},
+				999
+			);
 
-			add_filter( 'woocommerce_account_downloads_columns', function ( $array ) {
-				if ( isset( $array['download-product'] ) ) {
-					$array['download-product'] = __( 'File', 'woocommerce' );
-				}
-				if ( isset( $array['download-file'] ) ) {
-					$array['download-file'] = '';
-				}
+			add_filter(
+				'woocommerce_account_downloads_columns',
+				function ( $array ) {
+					if ( isset( $array['download-product'] ) ) {
+						$array['download-product'] = __( 'File', 'woocommerce' );
+					}
+					if ( isset( $array['download-file'] ) ) {
+						$array['download-file'] = '';
+					}
 
-				return $array;
-			}, 999 );
+					return $array;
+				},
+				999
+			);
 			?>
-            <div class="wfty_box wfty_order_download">
+			<div class="wfty_box wfty_order_download">
 				<?php echo '<div class="wfty_title">' . esc_html( $order_download_heading ) . '</div>'; ?>
-                <table class="shop_table shop_table_responsive wfty_order_downloads">
-                    <thead>
-                    <tr>
-						<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
+				<table class="shop_table shop_table_responsive wfty_order_downloads">
+					<thead>
+					<tr>
+						<?php
+						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
 							?>
-                            <th class="<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
+							<th class="<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
 						<?php endforeach; ?>
-                    </tr>
-                    </thead>
+					</tr>
+					</thead>
 
 					<?php
 					$downloads = array(
 						array(
 							'access_expires'      => gmdate( 'Y-m-d H:i:s', strtotime( '+10 days' ) ),
-							'download_id'         => "c86887de-03b4-44a5-b073-1c5463ebd7d7",
+							'download_id'         => 'c86887de-03b4-44a5-b073-1c5463ebd7d7',
 							'download_name'       => 'Your_file_name.pdf',
 							'download_url'        => 'javascript:void(0);',
 							'downloads_remaining' => '10',
-						)
+						),
 					);
-					foreach ( $downloads as $download ) : ?>
-                        <tr>
+					foreach ( $downloads as $download ) :
+						?>
+						<tr>
 							<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : ?>
-                                <td class="<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
+								<td class="<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
 									<?php
 									if ( has_action( 'woocommerce_account_downloads_column_' . $column_id ) ) {
 										do_action( 'woocommerce_account_downloads_column_' . $column_id, $download );
@@ -201,13 +252,13 @@ foreach ( $section_order as $item ) {
 										}
 									}
 									?>
-                                </td>
+								</td>
 							<?php endforeach; ?>
-                        </tr>
+						</tr>
 					<?php endforeach; ?>
 
-                </table>
-            </div>
+				</table>
+			</div>
 			<?php
 			break;
 	}

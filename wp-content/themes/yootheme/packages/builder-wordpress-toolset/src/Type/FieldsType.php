@@ -27,24 +27,24 @@ class FieldsType
     public static function config(Source $source, array $fields): array
     {
         return [
-            'fields' => array_filter(
-                array_reduce(
-                    $fields,
-                    fn($fields, $field) => $fields +
-                        static::configFields(
-                            $field,
-                            [
-                                'type' => 'String',
-                                'name' => Str::snakeCase($field['slug']),
-                                'metadata' => [
-                                    'label' => $field['name'],
-                                    'group' => $field['group'] ?: trans('Fields'),
-                                ],
+            'fields' => array_reduce(
+                $fields,
+                fn($fields, $field) => $fields +
+                    static::configFields(
+                        $field,
+                        [
+                            'type' => 'String',
+                            'name' => ctype_digit($field['slug'])
+                                ? "_{$field['slug']}"
+                                : strtr($field['slug'], '-', '_'),
+                            'metadata' => [
+                                'label' => $field['name'],
+                                'group' => $field['group'] ?: trans('Fields'),
                             ],
-                            $source,
-                        ),
-                    [],
-                ),
+                        ],
+                        $source,
+                    ),
+                [],
             ),
         ];
     }
@@ -52,7 +52,6 @@ class FieldsType
     /**
      * @param Field $field
      * @param array<string, mixed> $config
-     * @param Source $source
      * @return array<FieldConfig>
      */
     public static function configFields($field, array $config, Source $source): array
@@ -133,7 +132,6 @@ class FieldsType
     }
 
     /**
-     * @param Source $source
      * @param Field $field
      * @param array<string, mixed> $config
      * @return FieldConfig

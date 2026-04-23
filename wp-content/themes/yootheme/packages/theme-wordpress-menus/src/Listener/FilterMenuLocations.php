@@ -22,25 +22,15 @@ class FilterMenuLocations
      */
     public function handle($locations)
     {
-        // use menu locations from theme mod
-        if (!$this->config->get('app.isCustomizer') || is_admin()) {
-            return $locations;
-        }
+        if ($this->config->get('app.isCustomizer') && !is_admin()) {
+            $locations = $locations ?: [];
+            $changes = $this->config->get('req.customizer.config');
 
-        $previous = $locations;
-        $locations = [];
-        $positions = $this->config->get('~theme.menu.positions', []);
-
-        // get menu locations from theme config
-        foreach ($positions as $name => $position) {
-            if (!empty($position['menu'])) {
-                // in some installations there is corrupted data where the term's name
-                // is stored in the position instead of its id
-                if (!is_int($position['menu'])) {
-                    return $previous;
+            foreach ($changes ?? [] as $change) {
+                $index = implode('.', $change['path'] ?? []);
+                if (preg_match('/^menu\.positions\.[^.]+\.menu$/', $index)) {
+                    $locations[$change['path'][2]] = $change['value'] ?? '';
                 }
-
-                $locations[$name] = $position['menu'];
             }
         }
 

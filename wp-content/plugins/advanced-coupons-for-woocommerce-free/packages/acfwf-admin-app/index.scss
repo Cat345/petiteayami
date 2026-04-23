@@ -15,14 +15,30 @@ body {
     .acfw-logo {
       margin-bottom: 40px;
     }
+
+    .page-header-title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .page-header-actions {
+      display: flex;
+      align-items: center;
+    }
+
     h1 {
       font-size: 26px;
       line-height: 31px;
       font-weight: bold;
+      margin: 0;
     }
+
     p {
       font-size: 16px;
       line-height: 19px;
+      margin: 0;
     }
   }
 

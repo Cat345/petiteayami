@@ -5,7 +5,7 @@
 if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 	class UpStroke_Subscriptions {
 
-		public static $instance = null;
+		public static $instance    = null;
 		public $current_offer_data = null;
 
 		public function __construct() {
@@ -57,7 +57,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 			add_filter( 'wfocu_customizer_fieldset', array( $this, 'maybe_add_customizer_fields' ), 10, 2 );
 			add_filter( 'wfocu_allow_free_upsells', array( $this, 'maybe_disallow_free_upsells_on_free_trail' ) );
-
 		}
 
 		/**
@@ -160,6 +159,17 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						'_recurring_price' => $product['_recurring_price'],
 					);
 
+					/**
+					 * Filter subscription args before creating subscription.
+					 * Use this to add 'add_shipping' => true if shipping should be added.
+					 *
+					 * @param array      $args               Subscription args.
+					 * @param WC_Product $get_product        The subscription product.
+					 * @param array      $product            The product data from upsell package.
+					 * @param WC_Order   $subscription_order The parent order.
+					 */
+					$args = apply_filters( 'wfocu_subscription_args', $args, $get_product, $product, $subscription_order );
+
 					$subscription = $this->_create_new_subscription( $args, $this->get_subscription_status( $subscription_order ), $product );
 
 					if ( false !== $subscription ) {
@@ -167,7 +177,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 					}
 				}
 			}
-
 		}
 
 
@@ -195,25 +204,31 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 				$period   = $this->get_period( $product, $offer_data );
 				$interval = $this->get_interval( $product, $offer_data );
 
-
 				$trial_period = $this->get_trial_period( $product, $offer_data );
 
-				WFOCU_Core()->log->log( 'Creating subscription for give args:' . print_R( array( //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log(
+					'Creating subscription for give args:' . print_R(
+						array( //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 						'start_date'       => $start_date,
 						'order_id'         => $order_id,
 						'billing_period'   => $period,
 						'billing_interval' => $interval,
 						'customer_note'    => $order->get_customer_note(),
 						'customer_id'      => $current_user_id,
-					), true ) );
-				$subscription = wcs_create_subscription( array(
-					'start_date'       => $start_date,
-					'order_id'         => $order_id,
-					'billing_period'   => $period,
-					'billing_interval' => $interval,
-					'customer_note'    => $order->get_customer_note(),
-					'customer_id'      => $current_user_id,
-				) );
+						),
+						true
+					)
+				);
+				$subscription = wcs_create_subscription(
+					array(
+						'start_date'       => $start_date,
+						'order_id'         => $order_id,
+						'billing_period'   => $period,
+						'billing_interval' => $interval,
+						'customer_note'    => $order->get_customer_note(),
+						'customer_id'      => $current_user_id,
+					)
+				);
 
 				if ( is_wp_error( $subscription ) ) {
 					WFOCU_Core()->log->log( 'WP Error captured :' . print_r( $subscription, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -230,9 +245,8 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 					$qty                  = ( is_array( $offer_data ) && isset( $offer_data['qty'] ) && (int) $offer_data['qty'] > 1 ) ? $offer_data['qty'] : 1;
 					$subscription_item_id = $subscription->add_product( $product, $qty ); // $args
 
-
 					if ( defined( 'WC_PB_ABSPATH' ) ) {
-						require_once( WC_PB_ABSPATH . 'includes/admin/class-wc-pb-admin-order.php' );
+						require_once WC_PB_ABSPATH . 'includes/admin/class-wc-pb-admin-order.php';
 						\WC_PB_Admin_Order::add_bundled_items( $subscription_item_id, $subscription->get_item( $subscription_item_id ), $subscription );
 
 					}
@@ -243,15 +257,16 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						$items = $order->get_items( 'shipping' );
 						if ( count( $items ) > 0 ) {
 							$item = new WC_Order_Item_Shipping();
-							$item->set_props( array(
-								'method_title' => current( $items )->get_method_title(),
-								'method_id'    => current( $items )->get_method_id(),
-								'total'        => current( $items )->get_total(),
-							) );
+							$item->set_props(
+								array(
+									'method_title' => current( $items )->get_method_title(),
+									'method_id'    => current( $items )->get_method_id(),
+									'total'        => current( $items )->get_total(),
+								)
+							);
 							$item->save();
 							$subscription->add_item( $item );
 						}
-
 					}
 					// set subscription dates
 
@@ -261,18 +276,21 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					if ( $trial_end_date > 0 ) {
 
-						$subscription->update_dates( array(
-							'trial_end'    => $trial_end_date,
-							'next_payment' => $next_payment_date,
-							'end'          => $end_date,
-						) );
+						$subscription->update_dates(
+							array(
+								'trial_end'    => $trial_end_date,
+								'next_payment' => $next_payment_date,
+								'end'          => $end_date,
+							)
+						);
 					} else {
-						$subscription->update_dates( array(
-							'next_payment' => $next_payment_date,
-							'end'          => $end_date,
-						) );
+						$subscription->update_dates(
+							array(
+								'next_payment' => $next_payment_date,
+								'end'          => $end_date,
+							)
+						);
 					}
-
 
 					if ( $this->get_trial_length( $product, $offer_data ) > 0 ) {
 						wc_add_order_item_meta( $subscription_item_id, '_has_trial', 'true' );
@@ -282,7 +300,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 					if ( ! empty( $trial_period ) ) {
 						$subscription->set_trial_period( $trial_period );
-
 
 					}
 
@@ -301,7 +318,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						$subscription->update_status( $status );
 					}
 					$subscription->save();
-
 
 					return $subscription;
 				}
@@ -324,7 +340,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		public function get_subscription_status( $order ) {
 			$get_payment_method = $order->get_payment_method();
 
-			if ( in_array( $get_payment_method, [ 'bacs', 'cheque' ], true ) ) {
+			if ( in_array( $get_payment_method, array( 'bacs', 'cheque' ), true ) ) {
 				return 'on-hold';
 			}
 
@@ -338,7 +354,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		 * @param $args
 		 */
 		public function create_pending_subscription( $args ) {
-
 
 			$subscription_order = $args['_failed_order'];
 			$user_created       = null;
@@ -364,8 +379,10 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						'transaction_id'   => '',
 						'amt'              => $product['price'],
 						'_recurring_price' => $product['_recurring_price'],
-
 					);
+
+					/** This filter is documented in class-upstroke-subscriptions.php */
+					$args = apply_filters( 'wfocu_subscription_args', $args, $get_product, $product, $subscription_order );
 
 					$this->_create_new_subscription( $args, 'pending', $product );
 				}
@@ -397,7 +414,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						'transaction_id'   => '',
 						'amt'              => $product['price'],
 						'_recurring_price' => $product['_recurring_price'],
-						'add_shipping'     => true
+						'add_shipping'     => true,
 					);
 
 					$subscription = $this->_create_new_subscription( $args, 'pending', $product );
@@ -448,10 +465,16 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 							foreach ( $product->variations_data['prices'] as $variation_id => &$price_data ) {
 								$variation = ( $product->variations_data['variation_objects'][ $variation_id ] );
 
-								$price_data['subscription_str'] = $this->parse_subscription_price_from_price_html( WC_Subscriptions_Product::get_price_string( $variation, array(
-									'price'       => wc_price( $price_data['price_incl_tax'] ),
-									'sign_up_fee' => false,
-								) ), wc_price( $price_data['price_incl_tax'] ) );
+								$price_data['subscription_str'] = $this->parse_subscription_price_from_price_html(
+									WC_Subscriptions_Product::get_price_string(
+										$variation,
+										array(
+											'price'       => wc_price( $price_data['price_incl_tax'] ),
+											'sign_up_fee' => false,
+										)
+									),
+									wc_price( $price_data['price_incl_tax'] )
+								);
 
 							}
 						}
@@ -485,203 +508,203 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 		public function render_js() {
 			?>
-            <script>
+			<script>
 
-                (function ($) {
-                    'use strict';
+				(function ($) {
+					'use strict';
 
-                    $(document).ready(function () {
-                        $(document).on('wfocu_populatePrices', function (event, price, regPrice, key, variationPrices, variationID, Bucket) {
-                            if (typeof variationPrices[variationID]['subscription_str'] === 'undefined') {
-                                $('.wfocu_variable_price_sale[data-key="' + key + '"] .subscription-details').remove();
-                            }
-
-
-                            if (typeof variationPrices[variationID].free_trial_length !== "undefined" && 0 !== parseInt(variationPrices[variationID].free_trial_length)) {
+					$(document).ready(function () {
+						$(document).on('wfocu_populatePrices', function (event, price, regPrice, key, variationPrices, variationID, Bucket) {
+							if (typeof variationPrices[variationID]['subscription_str'] === 'undefined') {
+								$('.wfocu_variable_price_sale[data-key="' + key + '"] .subscription-details').remove();
+							}
 
 
-                                $("span.wfocu_variable_price_sale[data-key='" + key + "']").html(Bucket.formatMoney(0)).show();
-
-                            }
+							if (typeof variationPrices[variationID].free_trial_length !== "undefined" && 0 !== parseInt(variationPrices[variationID].free_trial_length)) {
 
 
-                            if (typeof variationPrices[variationID]['signup_fee'] !== "undefined" && 0 < variationPrices[variationID]['signup_fee']) {
-                                $('.signup_details_wrap[data-key="' + key + '"] .amount').remove();
-                                $('.signup_details_wrap[data-key="' + key + '"] .rec_price').remove();
+								$("span.wfocu_variable_price_sale[data-key='" + key + "']").html(Bucket.formatMoney(0)).show();
 
-                                /**
-                                 * Prepare the new string to append
-                                 * @type {string}
-                                 */
-                                let str = '<span class="rec_price">' + Bucket.formatMoney(variationPrices[variationID]['signup_fee']) + '</span>';
-
-                                $(str).insertAfter('.signup_details_wrap[data-key="' + key + '"] .signup_price_label');
-                                /**
-                                 * Show the recurring price element
-                                 */
-                                $('.signup_details_wrap[data-key="' + key + '"]').show();
-
-                            } else {
-                                /**
-                                 * hide recurring details section in this case from bottom
-                                 */
-                                $('.signup_details_wrap[data-key="' + key + '"]').hide();
-                            }
-
-                            var PriceOnRecurring = 0;
-                            if (true === Bucket.globalVars.offer_data.settings.subscription_discount) {
-                                PriceOnRecurring = price;
-                            } else {
-                                PriceOnRecurring = regPrice;
-                            }
-                            /**
-                             * Clear all the previous prices and subscription price string from the head
-                             */
-                            $('.recurring_details_wrap[data-key="' + key + '"] .amount').remove();
-                            $('.recurring_details_wrap[data-key="' + key + '"] .rec_price').remove();
-                            $('.recurring_details_wrap[data-key="' + key + '"] .subscription-details').remove();
+							}
 
 
-                            /**
-                             * Prepare the new string to append
-                             * @type {string}
-                             */
-                            let str = '<span class="rec_price">' + Bucket.formatMoney(PriceOnRecurring) + '</span>';
-                            str = str + variationPrices[variationID]['subscription_str'];
-                            $(str).insertAfter('.recurring_details_wrap[data-key="' + key + '"] .recurring_price_label');
+							if (typeof variationPrices[variationID]['signup_fee'] !== "undefined" && 0 < variationPrices[variationID]['signup_fee']) {
+								$('.signup_details_wrap[data-key="' + key + '"] .amount').remove();
+								$('.signup_details_wrap[data-key="' + key + '"] .rec_price').remove();
+
+								/**
+								 * Prepare the new string to append
+								 * @type {string}
+								 */
+								let str = '<span class="rec_price">' + Bucket.formatMoney(variationPrices[variationID]['signup_fee']) + '</span>';
+
+								$(str).insertAfter('.signup_details_wrap[data-key="' + key + '"] .signup_price_label');
+								/**
+								 * Show the recurring price element
+								 */
+								$('.signup_details_wrap[data-key="' + key + '"]').show();
+
+							} else {
+								/**
+								 * hide recurring details section in this case from bottom
+								 */
+								$('.signup_details_wrap[data-key="' + key + '"]').hide();
+							}
+
+							var PriceOnRecurring = 0;
+							if (true === Bucket.globalVars.offer_data.settings.subscription_discount) {
+								PriceOnRecurring = price;
+							} else {
+								PriceOnRecurring = regPrice;
+							}
+							/**
+							 * Clear all the previous prices and subscription price string from the head
+							 */
+							$('.recurring_details_wrap[data-key="' + key + '"] .amount').remove();
+							$('.recurring_details_wrap[data-key="' + key + '"] .rec_price').remove();
+							$('.recurring_details_wrap[data-key="' + key + '"] .subscription-details').remove();
 
 
-                            /**
-                             * Show the recurring price element
-                             */
-                            $('.recurring_details_wrap[data-key="' + key + '"]').show();
+							/**
+							 * Prepare the new string to append
+							 * @type {string}
+							 */
+							let str = '<span class="rec_price">' + Bucket.formatMoney(PriceOnRecurring) + '</span>';
+							str = str + variationPrices[variationID]['subscription_str'];
+							$(str).insertAfter('.recurring_details_wrap[data-key="' + key + '"] .recurring_price_label');
 
 
-                        });
-
-                        wfocuCommons.addFilter('wfocu_additem_price', function (price, key, variationID) {
-                            if ('' === variationID) {
-
-                                if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                                    return price;
-                                }
-
-                                if (typeof wfocu_vars.offer_data.products[key].free_trial_length === 'undefined') {
-                                    return price;
-                                }
-
-                                if (parseInt(wfocu_vars.offer_data.products[key].free_trial_length) > 0) {
-
-                                    return (wfocu_vars.offer_data.products[key].signup_fee_excluding_tax > 0) ? wfocu_vars.offer_data.products[key].signup_fee_excluding_tax : 0;
-
-                                }
-                            } else {
-                                if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
-                                    return price;
-                                }
-
-                                if (parseInt(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].free_trial_length) > 0) {
-                                    return (wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax > 0) ? parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax) : 0;
-
-                                }
-                            }
-                            return price;
-                        });
-
-                        wfocuCommons.addFilter('wfocu_additem_taxes', function (price, key, variationID) {
-                            if ('' === variationID) {
-
-                                if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                                    return price;
-                                }
-
-                                if (typeof wfocu_vars.offer_data.products[key].free_trial_length === 'undefined') {
-                                    return price;
-                                }
-
-                                if (parseInt(wfocu_vars.offer_data.products[key].free_trial_length) > 0) {
-
-                                    return (wfocu_vars.offer_data.products[key].signup_fee_including_tax > 0) ? wfocu_vars.offer_data.products[key].signup_fee_including_tax - wfocu_vars.offer_data.products[key].signup_fee_excluding_tax : 0;
-
-                                }
-                            } else {
-                                if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
-                                    return price;
-                                }
-                                if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
-                                    return price;
-                                }
-
-                                if (parseInt(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].free_trial_length) > 0) {
-                                    return (wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax > 0) ? parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_including_tax) - parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax) : 0;
-
-                                }
-                            }
-                            return price;
-                        });
+							/**
+							 * Show the recurring price element
+							 */
+							$('.recurring_details_wrap[data-key="' + key + '"]').show();
 
 
-                    });
+						});
 
-                })
-                (jQuery);
+						wfocuCommons.addFilter('wfocu_additem_price', function (price, key, variationID) {
+							if ('' === variationID) {
 
-                function wfocu_subscription_item_display(index, Bucket) {
+								if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+									return price;
+								}
 
-                    var variationID = Bucket.getItemDataByIndex(index, '_wfocu_variation');
-                    var key = Bucket.items[index];
-                    if ('' === variationID) {
+								if (typeof wfocu_vars.offer_data.products[key].free_trial_length === 'undefined') {
+									return price;
+								}
 
-                        if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                            return '';
-                        }
+								if (parseInt(wfocu_vars.offer_data.products[key].free_trial_length) > 0) {
 
-                        if (typeof wfocu_vars.offer_data.products[key].subscription_str === 'undefined') {
-                            return '';
-                        }
+									return (wfocu_vars.offer_data.products[key].signup_fee_excluding_tax > 0) ? wfocu_vars.offer_data.products[key].signup_fee_excluding_tax : 0;
 
-                        return Bucket.formatMoney(wfocu_vars.offer_data.products[key].price_incl_tax_raw) + wfocu_vars.offer_data.products[key].subscription_str;
+								}
+							} else {
+								if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
+									return price;
+								}
+
+								if (parseInt(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].free_trial_length) > 0) {
+									return (wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax > 0) ? parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax) : 0;
+
+								}
+							}
+							return price;
+						});
+
+						wfocuCommons.addFilter('wfocu_additem_taxes', function (price, key, variationID) {
+							if ('' === variationID) {
+
+								if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+									return price;
+								}
+
+								if (typeof wfocu_vars.offer_data.products[key].free_trial_length === 'undefined') {
+									return price;
+								}
+
+								if (parseInt(wfocu_vars.offer_data.products[key].free_trial_length) > 0) {
+
+									return (wfocu_vars.offer_data.products[key].signup_fee_including_tax > 0) ? wfocu_vars.offer_data.products[key].signup_fee_including_tax - wfocu_vars.offer_data.products[key].signup_fee_excluding_tax : 0;
+
+								}
+							} else {
+								if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
+									return price;
+								}
+								if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
+									return price;
+								}
+
+								if (parseInt(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].free_trial_length) > 0) {
+									return (wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax > 0) ? parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_including_tax) - parseFloat(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].signup_fee_excluding_tax) : 0;
+
+								}
+							}
+							return price;
+						});
 
 
-                    } else {
+					});
 
-                        if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
-                            return '';
-                        }
-                        if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
-                            return '';
-                        }
-                        if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
-                            return '';
-                        }
-                        if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
-                            return '';
-                        }
-                        if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID].subscription_str === 'undefined') {
-                            return '';
-                        }
+				})
+				(jQuery);
+
+				function wfocu_subscription_item_display(index, Bucket) {
+
+					var variationID = Bucket.getItemDataByIndex(index, '_wfocu_variation');
+					var key = Bucket.items[index];
+					if ('' === variationID) {
+
+						if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+							return '';
+						}
+
+						if (typeof wfocu_vars.offer_data.products[key].subscription_str === 'undefined') {
+							return '';
+						}
+
+						return Bucket.formatMoney(wfocu_vars.offer_data.products[key].price_incl_tax_raw) + wfocu_vars.offer_data.products[key].subscription_str;
 
 
-                        return Bucket.formatMoney(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].price_incl_tax_raw) + wfocu_vars.offer_data.products[key].variations_data.prices[variationID].subscription_str;
+					} else {
 
-                    }
-                }
-            </script>
+						if (typeof wfocu_vars.offer_data.products[key] === 'undefined') {
+							return '';
+						}
+						if (typeof wfocu_vars.offer_data.products[key].variations_data === 'undefined') {
+							return '';
+						}
+						if (typeof wfocu_vars.offer_data.products[key].variations_data.prices === 'undefined') {
+							return '';
+						}
+						if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID] === 'undefined') {
+							return '';
+						}
+						if (typeof wfocu_vars.offer_data.products[key].variations_data.prices[variationID].subscription_str === 'undefined') {
+							return '';
+						}
+
+
+						return Bucket.formatMoney(wfocu_vars.offer_data.products[key].variations_data.prices[variationID].price_incl_tax_raw) + wfocu_vars.offer_data.products[key].variations_data.prices[variationID].subscription_str;
+
+					}
+				}
+			</script>
 			<?php
 		}
 
@@ -697,7 +720,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			if ( new stdClass() === $offer_build->products ) {
 				WFOCU_Core()->log->log( 'Offer Validation failed, No Products in offer build ' );
 
-				//no products
+				// no products
 				return false;
 			}
 
@@ -709,14 +732,12 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 					if ( ! empty( WFOCU_Core()->session_db ) && method_exists( WFOCU_Core()->session_db, 'set_skip_id' ) ) {
 						WFOCU_Core()->session_db->set_skip_id( 10 );
 					}
-
 				}
 
 				return false;
 			}
 
 			return $result;
-
 		}
 
 		/**
@@ -730,7 +751,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			$gateway      = $order->get_payment_method();
 			$get_gateways = WC()->payment_gateways()->payment_gateways();
 
-
 			if ( empty( $gateway ) ) {
 				/**
 				 * if no gateway found in the parent order then try to find if our stripe gateway integration is enabled.
@@ -741,7 +761,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 				}
 			}
-
 
 			/**
 			 * Check if gateway is ready for subscriptions
@@ -772,7 +791,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 				return true;
 			}
 
-
 			return false;
 		}
 
@@ -791,25 +809,27 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return $gateway->supports( 'subscriptions' );
-
 		}
 
 		public function get_supported_gateways() {
-			return apply_filters( 'wfocu_subscriptions_get_supported_gateways', [
-				'wfocu_test',
-				'bacs',
-				'cheque',
-				'cod',
-				'stripe',
-				'paypal',
-				'ppec_paypal',
-				'paypal_express',
-				'authorize_net_cim_credit_card',
-				'braintree_paypal',
-				'braintree_credit_card',
-				'woocommerce_payments',
-				'ppcp-gateway',
-			] );
+			return apply_filters(
+				'wfocu_subscriptions_get_supported_gateways',
+				array(
+					'wfocu_test',
+					'bacs',
+					'cheque',
+					'cod',
+					'stripe',
+					'paypal',
+					'ppec_paypal',
+					'paypal_express',
+					'authorize_net_cim_credit_card',
+					'braintree_paypal',
+					'braintree_credit_card',
+					'woocommerce_payments',
+					'ppcp-gateway',
+				)
+			);
 		}
 
 		public function maybe_add_signup_fee( $output, $offer_data, $is_front ) {
@@ -822,12 +842,18 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 							foreach ( $product->variations_data['prices'] as $variation_id => &$price_data ) {
 								$sign_up_fee                         = WC_Subscriptions_Product::get_sign_up_fee( $product->variations_data['variation_objects'][ $variation_id ] );
-								$sign_up_fee_excl_tax                = wcs_get_price_excluding_tax( $product->variations_data['variation_objects'][ $variation_id ], array(
-									'price' => $sign_up_fee,
-								) );
-								$sign_up_fee_incl_tax                = wcs_get_price_including_tax( $product->variations_data['variation_objects'][ $variation_id ], array(
-									'price' => $sign_up_fee,
-								) );
+								$sign_up_fee_excl_tax                = wcs_get_price_excluding_tax(
+									$product->variations_data['variation_objects'][ $variation_id ],
+									array(
+										'price' => $sign_up_fee,
+									)
+								);
+								$sign_up_fee_incl_tax                = wcs_get_price_including_tax(
+									$product->variations_data['variation_objects'][ $variation_id ],
+									array(
+										'price' => $sign_up_fee,
+									)
+								);
 								$sign_up_fee                         = WC_Subscriptions_Product::get_sign_up_fee( $product->variations_data['variation_objects'][ $variation_id ] );
 								$free_trial                          = $this->get_trial_length( $product->variations_data['variation_objects'][ $variation_id ], $offer_data, $product );
 								$variation_settings                  = new stdClass();
@@ -851,19 +877,25 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 								$price_data['price_incl_tax']             += $price_data['signup_fee_including_tax'];
 								$price_data['sale_modify_price_excl_tax'] += $price_data['signup_fee_excluding_tax'];
 								$price_data['sale_modify_price_incl_tax'] += $price_data['signup_fee_including_tax'];
-								$price_data['free_trial_length']          = $free_trial;
-								$price_data['free_trial_period']          = $this->get_trial_period( $product->variations_data['variation_objects'][ $variation_id ], $offer_data, $product );
-								$price_data['signup_fee']                 = $sign_up_fee;
+								$price_data['free_trial_length']           = $free_trial;
+								$price_data['free_trial_period']           = $this->get_trial_period( $product->variations_data['variation_objects'][ $variation_id ], $offer_data, $product );
+								$price_data['signup_fee']                  = $sign_up_fee;
 
 							}
 						} else {
 							$sign_up_fee          = WC_Subscriptions_Product::get_sign_up_fee( $product->data );
-							$sign_up_fee_excl_tax = wcs_get_price_excluding_tax( $product->data, array(
-								'price' => $sign_up_fee,
-							) );
-							$sign_up_fee_incl_tax = wcs_get_price_including_tax( $product->data, array(
-								'price' => $sign_up_fee,
-							) );
+							$sign_up_fee_excl_tax = wcs_get_price_excluding_tax(
+								$product->data,
+								array(
+									'price' => $sign_up_fee,
+								)
+							);
+							$sign_up_fee_incl_tax = wcs_get_price_including_tax(
+								$product->data,
+								array(
+									'price' => $sign_up_fee,
+								)
+							);
 
 							$free_trial = $this->get_trial_length( $product->data, $offer_data, $product );
 
@@ -901,7 +933,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 							if ( isset( $product->sale_price_incl_tax ) && isset( $product->sale_price_excl_tax ) ) {
 								$product->tax = $product->sale_price_incl_tax - $product->sale_price_excl_tax;
 							}
-
 						}
 					}
 				}
@@ -918,18 +949,17 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 			wcs_set_paypal_id( $subscription, $get_profile_ids[ $key ] );
 			wcs_set_objects_property( $subscription, '_wfocu_paypal_subscription', 'yes', 'save' );
-
 		}
 
 		public function maybe_handle_paypal_ipn_on_subscriptions( $transaction_details ) {
 			$use_sandbox = ( 'yes' === WCS_PayPal::get_option( 'testmode' ) ) ? true : false;
 
 			if ( version_compare( WC_Subscriptions::$version, '7.5.0', '>=' ) ) {
-			    require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'includes/core/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
+				require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'includes/core/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
 			} elseif ( version_compare( WC_Subscriptions::$version, '4.0.0', '>=' ) ) {
-			    require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'vendor/woocommerce/subscriptions-core/includes/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
+				require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'vendor/woocommerce/subscriptions-core/includes/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
 			} else {
-			    require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'includes/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
+				require_once plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'includes/gateways/paypal/includes/class-wcs-paypal-standard-ipn-handler.php';
 			}
 
 			require_once 'gateways/class-wfocu-wcs-paypal-standard-ipn-handler.php'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.NotAbsolutePath
@@ -1010,7 +1040,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function add_subscription_discount_setting( $object ) {
@@ -1040,14 +1069,13 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return $html;
-
 		}
 
 		public function print_subscription_details() {
 			?>
-            <div class="wfocu-oc-subscription-details">
-                <# print(wfocu_subscription_item_display(i,data.Bucket)); #>
-            </div>
+			<div class="wfocu-oc-subscription-details">
+				<# print(wfocu_subscription_item_display(i,data.Bucket)); #>
+			</div>
 			<?php
 		}
 
@@ -1078,12 +1106,12 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		public function paypal_on_notice() {
 			?>
 
-            <div class="notice notice-error">
-                <p><?php echo wp_kses_post( __( 'UpStroke Notice: For <strong>UpStroke Subscription </strong> to work with  PayPal, Reference Transactions should be enabled for your Paypal Account. Learn how to get Reference Transactions enabled. <br/><br/> Note: If you don\'t have  Reference Transactions enabled for your accounts, UpStroke won\'t trigger funnels having subscription product offers. Falsely, indicating enablement of Reference Transactions will lead to payment failures.', 'woo-funnels-one-click-upsell' ) ); ?>
-                    <a target="_blank" href="https://buildwoofunnels.com/docs/upstroke/supported-payment-methods/paypal-reference-transactions/">Learn more about reference transactions</a></p>
-                <p><a href="<?php echo esc_url( admin_url( 'admin.php?page=upstroke&tab=settings' ) ); ?>" class="button"><?php esc_html_e( 'Go to settings', 'woofunnels-upstroke-power-pack' ); ?></a>
-                </p>
-            </div>
+			<div class="notice notice-error">
+				<p><?php echo wp_kses_post( __( 'UpStroke Notice: For <strong>UpStroke Subscription </strong> to work with  PayPal, Reference Transactions should be enabled for your Paypal Account. Learn how to get Reference Transactions enabled. <br/><br/> Note: If you don\'t have  Reference Transactions enabled for your accounts, UpStroke won\'t trigger funnels having subscription product offers. Falsely, indicating enablement of Reference Transactions will lead to payment failures.', 'woo-funnels-one-click-upsell' ) ); ?>
+					<a target="_blank" href="https://buildwoofunnels.com/docs/upstroke/supported-payment-methods/paypal-reference-transactions/">Learn more about reference transactions</a></p>
+				<p><a href="<?php echo esc_url( admin_url( 'admin.php?page=upstroke&tab=settings' ) ); ?>" class="button"><?php esc_html_e( 'Go to settings', 'woofunnels-upstroke-power-pack' ); ?></a>
+				</p>
+			</div>
 			<?php
 		}
 
@@ -1119,11 +1147,14 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		public function product_recurring_total_string( $attr, $raw = false ) {
 
 			$data                = WFOCU_Core()->data->get( '_current_offer_data' );
-			$attr                = shortcode_atts( array(
-				'key'             => 1, //has to be user friendly , user will not understand 12:45 PM (g:i A) (https://codex.wordpress.org/Formatting_Date_and_Time)
-				'info'            => 'yes',
-				'recurring_label' => __( 'Recurring Total: ', 'woocommerce-subscription' ),
-			), $attr );
+			$attr                = shortcode_atts(
+				array(
+					'key'             => 1, // has to be user friendly , user will not understand 12:45 PM (g:i A) (https://codex.wordpress.org/Formatting_Date_and_Time)
+					'info'            => 'yes',
+					'recurring_label' => __( 'Recurring Total: ', 'woocommerce-subscription' ),
+				),
+				$attr
+			);
 			$price               = 0;
 			$shipping_difference = 0;
 			$html                = '';
@@ -1174,21 +1205,25 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 						if ( isset( $attr['info'] ) && 'yes' === $attr['info'] ) {
 							$get_default_variation_object = $data->products->{$attr['key']}->variations_data['variation_objects'][ $data->products->{$attr['key']}->default_variation ];
 
-
 							if ( true === $data->settings->is_override_free_trial && ! empty( $data->settings->free_trial_length ) ) {
 								$this->add_filters_for_trial( $data );
-								$price = WC_Subscriptions_Product::get_price_string( $get_default_variation_object, array(
-									'price'       => wc_price( $price ),
-									'sign_up_fee' => false,
-								) );
+								$price = WC_Subscriptions_Product::get_price_string(
+									$get_default_variation_object,
+									array(
+										'price'       => wc_price( $price ),
+										'sign_up_fee' => false,
+									)
+								);
 								$this->remove_filters_for_trial();
 							} else {
-								$price = WC_Subscriptions_Product::get_price_string( $get_default_variation_object, array(
-									'price'       => wc_price( $price ),
-									'sign_up_fee' => false,
-								) );
+								$price = WC_Subscriptions_Product::get_price_string(
+									$get_default_variation_object,
+									array(
+										'price'       => wc_price( $price ),
+										'sign_up_fee' => false,
+									)
+								);
 							}
-
 
 							$html = '';
 							if ( ! empty( $attr['recurring_label'] ) ) {
@@ -1234,16 +1269,22 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 				if ( true === $data->settings->is_override_free_trial && ! empty( $data->settings->free_trial_length ) ) {
 					$this->add_filters_for_trial( $data );
-					$price = WC_Subscriptions_Product::get_price_string( $data->products->{$attr['key']}->data, array(
-						'price'       => wc_price( $price ),
-						'sign_up_fee' => false,
-					) );
+					$price = WC_Subscriptions_Product::get_price_string(
+						$data->products->{$attr['key']}->data,
+						array(
+							'price'       => wc_price( $price ),
+							'sign_up_fee' => false,
+						)
+					);
 					$this->remove_filters_for_trial();
 				} else {
-					$price = WC_Subscriptions_Product::get_price_string( $data->products->{$attr['key']}->data, array(
-						'price'       => wc_price( $price ),
-						'sign_up_fee' => false,
-					) );
+					$price = WC_Subscriptions_Product::get_price_string(
+						$data->products->{$attr['key']}->data,
+						array(
+							'price'       => wc_price( $price ),
+							'sign_up_fee' => false,
+						)
+					);
 				}
 
 				if ( ! empty( $attr['recurring_label'] ) ) {
@@ -1260,10 +1301,13 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 
 		public function product_signup_fee( $attr ) {
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
-			$attr = shortcode_atts( array(
-				'key'          => 1,
-				'signup_label' => __( 'Signup Fee: ', 'woocommerce-subscription' ),
-			), $attr );
+			$attr = shortcode_atts(
+				array(
+					'key'          => 1,
+					'signup_label' => __( 'Signup Fee: ', 'woocommerce-subscription' ),
+				),
+				$attr
+			);
 
 			$html = '';
 
@@ -1371,7 +1415,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 								continue;
 							}
 
-							$target_arr                                                        = $val[ $secion_slug[0] ]['sections'][ 'product_' . $key ]['fields'];
+							$target_arr = $val[ $secion_slug[0] ]['sections'][ 'product_' . $key ]['fields'];
 							$val[ $secion_slug[0] ]['sections'][ 'product_' . $key ]['fields'] = array_merge( $target_arr, $recurring_price_label_field, $signup_price_label_field );
 
 						}
@@ -1382,10 +1426,9 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			return $customizer_data;
 		}
 
-		public function get_trial_length( $product, $product_args, $product_data = [] ) {
+		public function get_trial_length( $product, $product_args, $product_data = array() ) {
 
 			if ( ! empty( $product_args ) && isset( $product_args->settings ) ) {
-
 
 				if ( isset( $product_args->settings->is_override_free_trial ) && true === wc_string_to_bool( $product_args->settings->is_override_free_trial ) && ! empty( $product_args->settings->free_trial_length ) ) {
 					return $product_args->settings->free_trial_length;
@@ -1403,7 +1446,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 				}
 			}
 
-
 			$trial_length = $this->maybe_subscriptions_value( $product_data, 'trial_length' );
 			if ( false !== $trial_length ) {
 				return $trial_length;
@@ -1413,11 +1455,9 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		}
 
 
-		public function get_trial_period( $product, $product_args, $product_data = [] ) {
-
+		public function get_trial_period( $product, $product_args, $product_data = array() ) {
 
 			if ( ! empty( $product_args ) && isset( $product_args->settings ) ) {
-
 
 				if ( isset( $product_args->settings->is_override_free_trial ) && true === wc_string_to_bool( $product_args->settings->is_override_free_trial ) && ! empty( $product_args->settings->free_trial_period ) ) {
 					return $product_args->settings->free_trial_period;
@@ -1435,9 +1475,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 				}
 			}
 
-
 			$trial_period = $this->maybe_subscriptions_value( $product_data, 'trial_period' );
-
 
 			if ( false !== $trial_period ) {
 				return $trial_period;
@@ -1446,7 +1484,7 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			return apply_filters( 'wfocu_trial_period', WC_Subscriptions_Product::get_trial_period( $product ), $product, $product_args );
 		}
 
-		public function get_trial_expiration_date( $product, $from_date = '', $offer_data = [] ) {
+		public function get_trial_expiration_date( $product, $from_date = '', $offer_data = array() ) {
 			$trial_length = $this->get_trial_length( $product, $offer_data );
 
 			if ( $trial_length > 0 ) {
@@ -1476,7 +1514,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return apply_filters( 'woocommerce_subscriptions_product_first_renewal_payment_date', $first_renewal_date, $product, $from_date, $timezone );
-
 		}
 
 		public function get_first_renewal_payment_time( $product, $offer_data, $from_date = '', $timezone = 'gmt' ) {
@@ -1518,7 +1555,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return apply_filters( 'woocommerce_subscriptions_product_first_renewal_payment_time', $first_renewal_timestamp, $product, $from_date_param, $timezone );
-
 		}
 
 		/**
@@ -1543,7 +1579,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			$this->current_offer_data = null;
 			remove_filter( 'woocommerce_subscriptions_product_trial_length', array( $this, 'maybe_modifiy_trial_length_for_price_output' ), 10, 2 );
 			remove_filter( 'woocommerce_subscriptions_product_trial_period', array( $this, 'maybe_modifiy_trial_period_for_price_output' ), 10, 2 );
-
 		}
 
 		/**
@@ -1600,7 +1635,6 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_period( $product, $offer_data ) {
@@ -1625,18 +1659,20 @@ if ( ! class_exists( 'UpStroke_Subscriptions' ) ) {
 		public function maybe_disallow_free_upsells_on_free_trail( $bool ) {
 			$get_package = WFOCU_Core()->data->get( '_upsell_package' );
 			$order       = WFOCU_Core()->data->get_parent_order();
-			if ( in_array( $order->get_payment_method(), [
+			if ( in_array(
+				$order->get_payment_method(),
+				array(
 					'paypal',
 					'ppec_paypal',
-					'paypal_express'
-				], true ) && 'no' === WFOCU_Core()->data->get_option( 'paypal_ref_trans' ) && $this->is_package_contains_subscription( $get_package ) ) {
+					'paypal_express',
+				),
+				true
+			) && 'no' === WFOCU_Core()->data->get_option( 'paypal_ref_trans' ) && $this->is_package_contains_subscription( $get_package ) ) {
 				return false;
 			}
 
 			return $bool;
 		}
-
-
 	}
 
 	if ( class_exists( 'WC_Subscriptions' ) ) {

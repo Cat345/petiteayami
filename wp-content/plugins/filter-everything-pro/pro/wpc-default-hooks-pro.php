@@ -8,6 +8,8 @@ use FilterEverything\Filter\Pro\Api\ApiRequests;
 use FilterEverything\Filter\Pro\PluginPro;
 use FilterEverything\Filter\Plugin;
 use FilterEverything\Filter\DuplicateFilterSet;
+use FilterEverything\Filter\Pro\Admin\ExportSettings;
+use FilterEverything\Filter\Pro\Admin\ImportSettings;
 
 add_filter('wpc_seo_vars_list', 'flrt_add_seo_vars');
 function flrt_add_seo_vars( $seo_vars )
@@ -343,7 +345,7 @@ function flrt_show_license_notice()
     $dismiss_nonce = wp_create_nonce( PluginPro::LICENSE_DISMISS_NONCE_ACTION );
     ?>
     <div class="license-notice is-dismissible">
-        <h2><img src="<?php echo esc_attr( flrt_get_icon_svg('#333333') ); ?>" alt="" width="20" /> <?php echo esc_html( flrt_get_plugin_name() ); ?></h2> <p><?php
+        <h2><img src="<?php echo esc_attr( flrt_get_icon_svg('#333333') ); ?>" alt="" width="22" /> <?php echo esc_html( flrt_get_plugin_name() ); ?></h2> <p><?php
             echo wp_kses(
                 sprintf(
                     __( 'To allow the plugin to update automatically and avoid blocking some of its features, please enter your license key on the <a href="%1$s">License page</a>.', 'filter-everything' ),
@@ -464,6 +466,19 @@ function flrt_license_status()
         </div>
     </div>
     <?php
+}
+
+function flrt_get_license_status()
+{
+    $tri = get_option('wpc_trident');
+    $license_key = flrt_get_license_key();
+
+    if ((isset($tri['first_install']) && $tri['first_install'] + MONTH_IN_SECONDS < time()) || $license_key) {
+        if ($license_key) {
+            return true;
+        }
+    }
+    return false;
 }
 
 if ( flrt_is_dokan() ) {
@@ -630,5 +645,206 @@ if(!function_exists('flrt_input_raw_title')){
             }
         }
         return $new_seoEntitiesAndSlugs;
+    }
+}
+
+add_action('admin_action_wpc_create_xml_files', function() {
+    if( !wp_verify_nonce( $_GET['_wpnonce'], 'wpc_create_xml_files') ){
+        wp_die(esc_html__( 'Insufficient rights to create XML.', 'filter-everything'));
+    }
+    if (current_user_can('edit_posts')) {
+        $xml = new FilterEverything\Filter\Pro\XmlPrepare();
+        $response_url = '';
+        $text = esc_html__('Regenerate XML Sitemap', 'filter-everything');
+        if($xml->error->get_error_code()){
+            wp_send_json_error($xml->error);
+        } else {
+            $url = $xml->createXml();
+            if($url){
+                $response_url = $url;
+            }
+            wp_send_json( array(
+                'success' => true,
+                'url' => $response_url,
+                'update_text' => $text
+            ) );
+        }
+    }
+});
+add_action('admin_action_wpc_xml_load_progress', function() {
+    if( !wp_verify_nonce( $_GET['_wpnonce'], 'wpc_xml_load_progress') ){
+        wp_die(esc_html__( 'Insufficient rights to create XML.', 'filter-everything'));
+    }
+    if(false !== ($progress = get_transient('load_xml_progress'))){
+        wp_send_json( array(
+                'success' => true,
+                'progress' => $progress,
+        ));
+    }else {
+        wp_send_json( array(
+                'success' => false
+        ));
+    }
+});
+
+
+add_action('manage_posts_extra_tablenav', 'wpc_add_xml_buttons', 20, 1);
+
+function wpc_add_xml_buttons($which)
+{
+    global $typenow;
+
+    if ($typenow !== FLRT_SEO_RULES_POST_TYPE) return;
+
+    if ($which !== 'top') return;
+
+    if (flrt_has_filter_seo_rules() || flrt_is_sitemap_exists()) {
+        if (current_user_can('edit_posts')) {
+            flrt_include_admin_view('xml-create-row', []);
+        }
+    }
+}
+
+add_action('wpc_after_seo_rule_save', function ($rule_id, $rule_post_type, $filterFields){
+    $indexDeepOptions = get_option( 'wpc_indexing_deep_settings', false);
+    $set["{$rule_post_type}_index_deep"] = 2;
+    if(!$indexDeepOptions){
+        add_option('wpc_indexing_deep_settings', $set, '', 'yes');
+    }
+    if($indexDeepOptions !== false){
+        if(empty($indexDeepOptions)){
+            update_option('wpc_indexing_deep_settings', $set);
+        }
+        if(!empty($indexDeepOptions) && empty($indexDeepOptions["{$rule_post_type}_index_deep"])){
+            $indexDeepOptions["{$rule_post_type}_index_deep"] = 2;
+            update_option('wpc_indexing_deep_settings', $indexDeepOptions);
+        }
+    }
+
+    $updatedIndexDeepOptions = get_option( 'wpc_indexing_deep_settings', false);
+    if((int) $updatedIndexDeepOptions["{$rule_post_type}_index_deep"] < count($filterFields['filter'])){
+        if(empty(get_post_meta($rule_id, '_wpc_indexing_deep_setting_warning'))){
+            add_post_meta($rule_id, '_wpc_indexing_deep_setting_warning', 1, true);
+        }
+    }
+}, 10, 3);
+
+add_filter('wpc_import_export_filters_settings', function($settings) {
+
+    $exportSettings = new ExportSettings();
+    $settings['wpc_export_settings']['fields']['export_all']['checked'] = true;
+    if(isset($settings['wpc_export_settings']['fields']['export_seo_rule'])){
+        $seoRules = $exportSettings->getSeoRules();
+        if(!empty($seoRules)){
+            $settings['wpc_export_settings']['fields']['export_seo_rule']['checked'] = true;
+        }else{
+            $settings['wpc_export_settings']['fields']['export_seo_rule']['disabled'] = true;
+            $settings['wpc_export_settings']['fields']['export_all']['disabled'] = true;
+            unset($settings['wpc_export_settings']['fields']['export_all']['checked']);
+        }
+    }
+
+    if(isset($settings['wpc_export_settings']['fields']['export_filter_set'])){
+        $seoRules = $exportSettings->getFilterSets();
+        if(!empty($seoRules)){
+            $settings['wpc_export_settings']['fields']['export_filter_set']['checked'] = true;
+        }else{
+            $settings['wpc_export_settings']['fields']['export_filter_set']['disabled'] = true;
+            $settings['wpc_export_settings']['fields']['export_all']['disabled'] = true;
+            unset($settings['wpc_export_settings']['fields']['export_all']['checked']);
+        }
+    }
+
+    return $settings;
+});
+
+if(!function_exists('flrt_export_settings')){
+    add_action('admin_action_wpc_export_settings', 'flrt_export_settings');
+    function flrt_export_settings() {
+        check_admin_referer( 'wpc_export_settings', 'wpc_export_settings' );
+
+        $redirect_url = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=import_export' );
+        if ( !current_user_can('edit_posts') ) {
+            $redirect_url = add_query_arg('flrt_export_error', 'no_edit_right', $redirect_url);
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit;
+        }
+        if(!isset($_POST['wpc_filter_import_export']) || empty($_POST['wpc_filter_import_export'])){
+            $redirect_url = add_query_arg('flrt_export_error', 'empty', $redirect_url);
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit;
+        }
+
+        if(isset($_POST['wpc_filter_import_export']) && !empty($_POST['wpc_filter_import_export'])){
+            $export_params = $_POST['wpc_filter_import_export'];
+            $export = new ExportSettings($export_params, $redirect_url);
+            $export_set = $export->submit_download();
+            if (!$export_set){
+                $redirect_url = add_query_arg('flrt_export_error', 'empty_set', $redirect_url);
+                wp_redirect( esc_url_raw($redirect_url) );
+                exit;
+            }
+        }
+
+        if (!empty($redirect_url)) {
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit;
+        }
+        wp_redirect( admin_url() );
+        exit;
+    }
+}
+
+if(!function_exists('flrt_import_settings')){
+    add_action('admin_action_wpc_import_settings', 'flrt_import_settings');
+    function flrt_import_settings() {
+        check_admin_referer( 'wpc_import_settings', 'wpc_import_settings' );
+
+        $redirect_url = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=import_export' );
+
+        if ( !current_user_can('edit_posts') ) {
+            $redirect_url = add_query_arg('flrt_import_error', 'no_edit_right', $redirect_url);
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit;
+        }
+
+        if (!isset($_FILES['wpc_filter_import_export']) || empty($_FILES['wpc_filter_import_export'])) {
+            $redirect_url = add_query_arg('flrt_import_error', 'empty_file_input', $redirect_url);
+            wp_redirect(esc_url_raw($redirect_url));
+            exit;
+        }
+
+        $files = [];
+        if (isset($_FILES['wpc_filter_import_export']) && !empty($_FILES['wpc_filter_import_export'])) {
+            $files = $_FILES;
+        }
+
+        if(!isset($_POST['wpc_filter_import_export']) || empty($_POST['wpc_filter_import_export'])){
+            $redirect_url = add_query_arg('flrt_import_error', 'empty_params', $redirect_url);
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit();
+        }
+
+        if(isset($_POST['wpc_filter_import_export']) && !empty($_POST['wpc_filter_import_export'])){
+            $import_params = $_POST['wpc_filter_import_export'];
+
+
+            if(empty($import_params)){
+                $redirect_url = add_query_arg('flrt_import_error', 'empty_params', $redirect_url);
+                wp_redirect( esc_url_raw($redirect_url) );
+                exit();
+            }
+
+            if(!empty($import_params) && !empty($files)){
+                $import = new ImportSettings($import_params, $files, $redirect_url);
+            }
+        }
+
+        if (!empty($redirect_url)) {
+            wp_redirect( esc_url_raw($redirect_url) );
+            exit;
+        }
+        wp_redirect( admin_url() );
+        exit;
     }
 }

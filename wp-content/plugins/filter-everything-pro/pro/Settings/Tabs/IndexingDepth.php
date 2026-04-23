@@ -9,23 +9,29 @@ if ( ! defined('ABSPATH') ) {
 
 use FilterEverything\Filter\BaseSettings;
 use FilterEverything\Filter\Container;
+use FilterEverything\Filter\SeoTabTrait;
 
 class IndexingDepth extends BaseSettings
 {
+    use SeoTabTrait;
     private $em;
 
     private $fse;
 
-    protected $page = 'wpc-filter-indexing-deep';
+    protected $page     = 'wpc-filter-admin-permalinks';
 
     protected $group = 'wpc_indexing_deep';
 
     public $optionName = 'wpc_indexing_deep_settings';
 
+    public function __construct()
+    {
+        $this->init();
+    }
+
     public function init()
     {
-        add_action( 'admin_init', array( $this, 'initSettings') );
-        add_action( 'wpc_before_sections_settings_fields', array( $this, 'indexingDepthExplanationMessage' ) );
+        add_action( 'admin_init', array( $this, 'initSettings'), 11 );
 
         $this->em   = Container::instance()->getEntityManager();
         $this->fse  = Container::instance()->getFilterSetService();
@@ -53,16 +59,28 @@ class IndexingDepth extends BaseSettings
                 ),
                 'fields' => array(
                     $postType.'_index_deep' => array(
-                        'type'  => 'text',
+                        'type'  => 'number',
                         'id' => $postType.'_index_deep'
                     )
                 )
             );
 
         }
-
+        $is_settings_empty = false;
         if( empty( $settings ) ){
-            add_action( 'wpc_before_sections_settings_fields', array( $this, 'noPostTypesFiltersMessage' ) );
+            $settings['wpc_indexing_deep_empty_settings'] = array(
+                'label' => '',
+            );
+            $is_settings_empty = true;
+        }
+
+        if (!empty($settings)) {
+            $first_key = array_key_first($settings);
+            $settings = $this->addSectionSettingsWrapper($settings);
+            add_action('wpc_before_seo_setting_section_title_' . $first_key, array( $this, 'indexingDepthExplanationMessage' ));
+            if( $is_settings_empty ){
+                add_action('wpc_before_seo_setting_section_title_' . $first_key, array( $this, 'noPostTypesFiltersMessage' ));
+            }
         }
 
         register_setting($this->group, $this->optionName);
@@ -79,16 +97,16 @@ class IndexingDepth extends BaseSettings
         if( $page === $this->page ) {
             echo '<p class="wpc-setting-description">';
             echo wp_kses(
-                        __('By default, all filtering results pages are closed from indexing.<br />These settings determine a maximum number of filters (only filters, not archive page)<br /> will be indexed by Search Engines.', 'filter-everything'),
-                        array( 'br' => array() )
+                __('By default, all filtering results pages are closed from indexing.<br />These settings determine a maximum number of filters (only filters, not archive page)<br /> will be indexed by Search Engines.', 'filter-everything'),
+                array( 'br' => array() )
             );
             echo flrt_tooltip( array(
-                        'tooltip' => wp_kses(
-                                __('For example, for Post Type Products Indexing depth is 2. It means the page with URL path:<br />/color-blue/size-large/<br />will be indexed.<br />But the page with URL path:<br />/color-blue/size-large/shape-round/<br />will NOT be indexed because it contains more than 2 filters.', 'filter-everything'),
-                                array('br' => array() )
-                        )
+                    'tooltip' => wp_kses(
+                        __('For example, for Post Type Products Indexing depth is 2. It means the page with URL path:<br />/color-blue/size-large/<br />will be indexed.<br />But the page with URL path:<br />/color-blue/size-large/shape-round/<br />will NOT be indexed because it contains more than 2 filters.', 'filter-everything'),
+                        array('br' => array() )
                     )
-                );
+                )
+            );
             echo '</p>';
         }
     }
@@ -101,6 +119,11 @@ class IndexingDepth extends BaseSettings
     }
 
     public function getLabel()
+    {
+        return esc_html__('Indexing Depth', 'filter-everything');
+    }
+
+    public function sectionName()
     {
         return esc_html__('Indexing Depth', 'filter-everything');
     }

@@ -173,6 +173,12 @@ class BWFAN_Automation_Controller {
 				return;
 			}
 
+			/** If wait step has a skip target, bypass normal traversal and execute the target step directly */
+			if ( intval( $this->skip_step_id ) > 0 && self::$TYPE_WAIT === $this->type ) {
+				$this->skip_step_id = 0;
+				continue;
+			}
+
 			$this->setup_next_step();
 
 			/** If current node is end node */
@@ -346,6 +352,8 @@ class BWFAN_Automation_Controller {
 	 */
 	public function process_current_step() {
 		if ( $this->e_time > time() + 5 ) {
+			$this->end_current_process = true;
+
 			return;
 		}
 
@@ -408,11 +416,14 @@ class BWFAN_Automation_Controller {
 		$this->last_step_id = $this->step_id;
 
 		/**
-		 * For `wait` and `jump` step only
-		 * If skip_step_id found then set it as last_step_id
-		 * Set status to retry so that it can re-run on the same last executed step which will be skip_step_id i.e. jump step
+		 * For `wait` step: reposition traversal to skip target and continue execution immediately
+		 * For `jump` step: defer to next cycle via STATUS_RETRY
 		 */
-		if ( in_array( $this->type, [ self::$TYPE_WAIT, self::$TYPE_JUMP ], true ) && intval( $this->skip_step_id ) > 0 ) {
+		if ( self::$TYPE_WAIT === $this->type && intval( $this->skip_step_id ) > 0 ) {
+			$this->traverse_ins->set_node_id_from_step_id( intval( $this->skip_step_id ) );
+			$this->step_id = intval( $this->skip_step_id );
+			$this->status  = self::$STATUS_ACTIVE;
+		} elseif ( self::$TYPE_JUMP === $this->type && intval( $this->skip_step_id ) > 0 ) {
 			$this->last_step_id = $this->skip_step_id;
 			$this->status       = self::$STATUS_RETRY;
 		}
@@ -627,6 +638,15 @@ class BWFAN_Automation_Controller {
 			BWFAN_Common::log_test_data( 'Wait Step: Skipped as time passed, step ID: ' . $this->step_id . ', automation ID: ' . $this->automation_id . '. Next Step ID: ' . $this->skip_step_id, 'process-wait-skipped' );
 			if ( 'end' === $this->skip_step_id ) {
 				$this->should_end_automation = true;
+			}
+
+			/** If skip target is a valid step (not 'end'), continue execution immediately instead of deferring to next cycle */
+			if ( 'end' !== $this->skip_step_id ) {
+				$this->set_trail_item( [ 'msg' => __( 'Skipped as time passed', 'wp-marketing-automations' ) ], 1 );
+				$this->e_time = current_time( 'timestamp', 1 );
+				$this->status = BWFAN_Automation_Controller::$STATUS_ACTIVE;
+
+				return;
 			}
 
 			$this->set_trail_item( [ 'msg' => __( 'Skipped as time passed', 'wp-marketing-automations' ) ], 2 );

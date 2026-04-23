@@ -8,6 +8,7 @@ foreach (glob(__DIR__ . "/includes/*.php") as $filename)
     include_once($filename);
 }
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once(plugin_dir_path( __FILE__ ) . "includes/admin/funnels.php");
 
 class BeRocket_terms_cond_popup extends BeRocket_Framework {
     public static $settings_name = 'br-terms_cond_popup-options';
@@ -255,24 +256,6 @@ class BeRocket_terms_cond_popup extends BeRocket_Framework {
                 ),
             ),
             'Custom CSS' => array(
-                'global_font_awesome_disable' => array(
-                    "label"     => __( 'Disable Font Awesome', "terms-and-conditions-popup-for-woocommerce" ),
-                    "type"      => "checkbox",
-                    "name"      => "fontawesome_frontend_disable",
-                    "value"     => '1',
-                    'label_for' => __('Don\'t load Font Awesome css files on site front end. Use it only if you don\'t use Font Awesome icons in widgets or your theme has Font Awesome.', 'terms-and-conditions-popup-for-woocommerce'),
-                ),
-                'global_fontawesome_version' => array(
-                    "label"    => __( 'Font Awesome Version', "terms-and-conditions-popup-for-woocommerce" ),
-                    "name"     => "fontawesome_frontend_version",
-                    "type"     => "selectbox",
-                    "options"  => array(
-                        array('value' => '', 'text' => __('Font Awesome 4', 'terms-and-conditions-popup-for-woocommerce')),
-                        array('value' => 'fontawesome5', 'text' => __('Font Awesome 5', 'terms-and-conditions-popup-for-woocommerce')),
-                    ),
-                    "value"    => '',
-                    "label_for" => __('Version of Font Awesome that will be used on front end. Please select version that you have in your theme', 'terms-and-conditions-popup-for-woocommerce'),
-                ),
                 array(
                     "label"   => "Custom CSS",
                     "name"    => "custom_css",

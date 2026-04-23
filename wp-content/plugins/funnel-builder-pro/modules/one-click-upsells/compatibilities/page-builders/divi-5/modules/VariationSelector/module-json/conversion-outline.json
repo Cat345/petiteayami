@@ -1,0 +1,72 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "attr_value_block": "attr_value_block",
+    "align": "textAlign.*",
+
+    "wfocu_variation_selector_attribute_color": "attributeLabel.decoration.font.font.*.color",
+    "wfocu_variation_selector_attribute_bg_color": "wfocu_variation_selector_attribute_bg_color.decoration.background.color.*.hex",
+    "wfocu_variation_selector_attr_value_text_color": "attributeValue.decoration.font.font.*.color",
+    "wfocu_variation_selector_attr_value_bg_color": "wfocu_variation_selector_attr_value_bg_color.decoration.background.color.*.hex",
+
+    "wfocu_variation_selector_selector_margin": "wfocu_variation_selector_selector_margin.decoration.spacing.*.margin",
+    "wfocu_variation_selector_selector_padding": "wfocu_variation_selector_selector_margin.decoration.spacing.*.padding",
+    "wfocu_variation_selector_attr_value_margin": "wfocu_variation_selector_attr_value_spacing.decoration.spacing.*.margin",
+    "wfocu_variation_selector_attr_value_padding": "wfocu_variation_selector_attr_value_spacing.decoration.spacing.*.padding",
+    "attr_value_width_width": "attributeValueWidth.decoration.sizing.*.width",
+    "wfocu_variation_selector_margin": "module.decoration.spacing.*.margin",
+    "wfocu_variation_selector_padding": "module.decoration.spacing.*.padding",
+
+    "wfocu_variation_selector_text_typography_typograhy": "attributeLabel.decoration.font.font.*",
+    "wfocu_variation_selector_attr_value_typography_typograhy": "attributeValue.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_variation_selector_border": "module.decoration.border",
+      "wfocu_variation_selector_attr_value_border": "wfocu_variation_selector_attr_value_border.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_variation_selector_box_shadow": "module.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfocu_variation_selector_text_typography": "attributeLabel.decoration.font",
+      "wfocu_variation_selector_attr_value_typography": "attributeValue.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfocu_variation_selector_selector_margin": "convertSpacing",
+    "wfocu_variation_selector_selector_padding": "convertSpacing",
+    "wfocu_variation_selector_attr_value_margin": "convertSpacing",
+    "wfocu_variation_selector_attr_value_padding": "convertSpacing",
+    "wfocu_variation_selector_margin": "convertSpacing",
+    "wfocu_variation_selector_padding": "convertSpacing",
+    "wfocu_variation_selector_text_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfocu_variation_selector_attr_value_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

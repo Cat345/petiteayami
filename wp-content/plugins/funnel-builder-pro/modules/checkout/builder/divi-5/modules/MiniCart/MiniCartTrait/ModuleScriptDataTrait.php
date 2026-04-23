@@ -1,0 +1,58 @@
+<?php
+/**
+ * MiniCart::module_script_data()
+ *
+ * @package WFACP\Modules\MiniCart
+ * @since 1.0.0
+ */
+
+namespace WFACP\Modules\MiniCart\MiniCartTrait;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access forbidden.' );
+}
+
+use ET\Builder\Packages\Module\Options\Element\ElementScriptData;
+
+trait ModuleScriptDataTrait {
+
+	/**
+	 * Set script data of used module options.
+	 *
+	 * This function is equivalent of JS component ModuleScriptData located in
+	 * src/components/mini-cart/module-script-data.tsx.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $args {
+	 *   Array of arguments.
+	 *
+	 *   @type string $id       Module id.
+	 *   @type string $selector Module selector.
+	 *   @type array  $attrs    Module attributes.
+	 *   @type string $storeInstance Store instance.
+	 * }
+	 *
+	 * @return void
+	 */
+	public static function module_script_data( array $args ): void {
+		// Assign variables.
+		$id             = $args['id'] ?? '';
+		$selector       = $args['selector'] ?? '';
+		$attrs          = $args['attrs'] ?? [];
+		$store_instance = $args['storeInstance'] ?? null;
+
+		// Module decoration attributes.
+		$module_decoration_attrs = $attrs['module']['decoration'] ?? [];
+
+		// Element Script Data Options.
+		ElementScriptData::set(
+			[
+				'id'            => $id,
+				'selector'      => $selector,
+				'attrs'         => $module_decoration_attrs,
+				'storeInstance' => $store_instance,
+			]
+		);
+	}
+}

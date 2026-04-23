@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Author Woofunnels.
+ */
 
 use Sublium_WCS\Compatibilities\Compatibility as Compatibility;
 use Sublium_WCS\Includes\Controller\Subscriptions\Subscription;

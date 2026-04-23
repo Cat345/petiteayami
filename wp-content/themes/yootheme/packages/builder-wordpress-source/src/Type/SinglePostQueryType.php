@@ -16,8 +16,6 @@ use function YOOtheme\trans;
 class SinglePostQueryType
 {
     /**
-     * @param WP_Post_Type $type
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Post_Type $type): array
@@ -47,13 +45,12 @@ class SinglePostQueryType
             ]
             : [];
 
-        $args = $taxonomies
-            ? [
-                'taxonomy' => [
-                    'type' => 'String',
-                ],
-            ]
-            : [];
+        $args = [
+            'taxonomy' => [
+                'type' => 'String',
+                'defaultValue' => '',
+            ],
+        ];
 
         return [
             'fields' => [
@@ -125,7 +122,6 @@ class SinglePostQueryType
      */
     public static function resolvePreviousPost($root, $args)
     {
-        $args += ['taxonomy' => ''];
         return get_previous_post((bool) $args['taxonomy'], '', $args['taxonomy'] ?: 'category') ?:
             null;
     }
@@ -137,7 +133,6 @@ class SinglePostQueryType
      */
     public static function resolveNextPost($root, $args)
     {
-        $args += ['taxonomy' => ''];
         return get_next_post((bool) $args['taxonomy'], '', $args['taxonomy'] ?: 'category') ?: null;
     }
 }

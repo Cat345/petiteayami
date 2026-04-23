@@ -214,7 +214,7 @@ return [
         'drop_position' => [
             'label' => 'Position',
             'description' =>
-                'Select the popover alignment to its marker. If the popover doesn\'t fit its container, it will flip automatically.',
+                "Select the popover alignment to its marker. If the popover doesn't fit its container, it will flip automatically.",
             'type' => 'select',
             'options' => [
                 'Top' => 'top-center',
@@ -251,7 +251,7 @@ return [
         ],
         'card_size' => [
             'label' => 'Padding',
-            'description' => 'Set the padding between the card\'s edge and its content.',
+            'description' => "Set the padding between the card's edge and its content.",
             'type' => 'select',
             'options' => [
                 'Small' => 'small',
@@ -328,7 +328,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -506,7 +506,7 @@ return [
         ],
         'image_card_padding' => [
             'label' => 'Padding',
-            'description' => 'Attach the image to the drop\'s edge.',
+            'description' => "Attach the image to the drop's edge.",
             'type' => 'checkbox',
             'text' => 'Align image without padding',
             'enable' => 'show_image',
@@ -573,7 +573,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',

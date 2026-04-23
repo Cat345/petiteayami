@@ -44,12 +44,20 @@ class BWFAN_Subscribe_Link_Handler {
 		$dbcontact    = $bwf_contacts->get_contact_by( 'uid', $uid );
 
 		$link = filter_input( INPUT_GET, 'bwfan-link' );
-
+		if ( empty( $link ) ) {
+			$general_options   = BWFAN_Common::get_global_settings();
+			$confirmation_type = isset( $general_options['after_confirmation_type'] ) ? $general_options['after_confirmation_type'] : 'show_message';
+			if ( 'show_message' !== $confirmation_type ) {
+				$link = ! empty( $general_options['bwfan_confirmation_redirect_url'] ) ? trim( $general_options['bwfan_confirmation_redirect_url'] ) : '';
+			}
+		}
+	
 		$url = '';
 		if ( ! empty( $link ) ) {
 			// redirecting to bwfan-link if there
 			$link = BWFAN_Common::bwfan_correct_protocol_url( $link );
-			$link = BWFAN_Common::validate_target_link( $link );
+			$automation_id = filter_input( INPUT_GET, 'automation-id' );
+			$link = BWFAN_Common::validate_target_link( $link,'', [[  'oid'=>intval($automation_id), 'type'=>1 ]] );
 			$link = BWFAN_Common::append_extra_url_arguments( $link );
 			if ( false !== wp_http_validate_url( $link ) ) {
 				$url = BWFAN_Email_Conversations::validate_link( $link );
@@ -62,6 +70,21 @@ class BWFAN_Subscribe_Link_Handler {
 		}
 
 		$contact = new BWFCRM_Contact( $dbcontact->db_contact->id );
+
+		/** Apply "Add Tags after confirmation" from form feed when feed-id is in URL */
+		$feed_id = filter_input( INPUT_GET, 'feed-id', FILTER_SANITIZE_NUMBER_INT );
+		if ( ! empty( $feed_id ) && class_exists( 'BWFCRM_Form_Feed' ) ) {
+			$feed = new BWFCRM_Form_Feed( absint( $feed_id ) );
+			if ( $feed->is_feed_exists() && method_exists( $feed, 'get_data' ) ) {
+				$tag_enabled = $feed->get_data( 'add_tag_enable' );
+				if ( $tag_enabled ) {
+					$tag_to_add = $feed->get_data( 'tag_to_add' );
+					if ( ! empty( $tag_to_add ) && is_array( $tag_to_add ) && method_exists( $contact, 'set_tags' ) ) {
+						$contact->set_tags( $tag_to_add );
+					}
+				}
+			}
+		}
 
 		/** to mark the contact subscribe and remove the unsubscribe record */
 		$contact->resubscribe( false );

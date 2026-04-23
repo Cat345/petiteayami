@@ -37,7 +37,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -49,261 +49,311 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 		public function register_routes() {
 
 			// Route for Search and retrieve template list.
-			register_rest_route( $this->namespace, '/funnels/templates/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/funnels/templates/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_templates' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'builder' => array(
-							'description'       => __( 'Page Builder', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'type'    => array(
-							'description'       => __( 'Funnel type', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_templates' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'builder' => array(
+								'description'       => __( 'Page Builder', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'type'    => array(
+								'description'       => __( 'Funnel type', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Route to Search Pages.
-			register_rest_route( $this->namespace, '/funnels/pages/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/funnels/pages/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_pages' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term'  => array(
-							'description'       => __( 'search term', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'pages' => array(
-							'description'       => __( 'Post type', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_pages' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term'  => array(
+								'description'       => __( 'search term', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'pages' => array(
+								'description'       => __( 'Post type', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Search for WooCommerce Products.
-			register_rest_route( $this->namespace, '/' . '/funnels/products/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . '/funnels/products/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'product_list' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term' => array(
-							'description'       => __( 'Product name', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'required'          => true,
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'product_list' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term' => array(
+								'description'       => __( 'Product name', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'required'          => true,
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Search Product for steps
-			register_rest_route( $this->namespace, '/' . 'funnels' . '/products/search_variant', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnels' . '/products/search_variant',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'product_search_variant' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term'       => array(
-							'description'       => __( 'Product name', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'required'          => true,
-						),
-						'variations' => array(
-							'description'       => __( 'Search for Variation name', 'funnel-builder' ),
-							'type'              => 'boolean',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'product_search_variant' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term'       => array(
+								'description'       => __( 'Product name', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'required'          => true,
+							),
+							'variations' => array(
+								'description'       => __( 'Search for Variation name', 'funnel-builder' ),
+								'type'              => 'boolean',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Search Coupons
-			register_rest_route( $this->namespace, '/' . 'funnels' . '/coupons/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnels' . '/coupons/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_coupons' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term' => array(
-							'description'       => __( 'Coupon name', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'required'          => true,
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_coupons' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term' => array(
+								'description'       => __( 'Coupon name', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'required'          => true,
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Search Coupons
-			register_rest_route( $this->namespace, '/' . 'funnels' . '/customers/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnels' . '/customers/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_customers' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term' => array(
-							'description'       => __( 'Customer User Name', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'required'          => true,
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_customers' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term' => array(
+								'description'       => __( 'Customer User Name', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'required'          => true,
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
 			// Routes for Step Design.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/design', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/design',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_design' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_step' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'remove_design' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => $this->get_delete_steps_collection(),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_design' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_step' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'remove_design' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => $this->get_delete_steps_collection(),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Routes for Customize Tab.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/customize', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/customize',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_customization_options' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_customization_options' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_customization_options' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_customization_options' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Route for Customize Tab get configurations.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<step_id>[\d]+)/customize/configurations', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<step_id>[\d]+)/customize/configurations',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_customization_config' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_customization_config' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes to save Step State.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/save-state' . '/(?P<step_id>[\d]+)', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
-
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/save-state' . '/(?P<step_id>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_state' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_state' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Step Settings.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/settings', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<step_id>[\d]+)' . '/settings',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_customsettings' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_customsettings' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_customsettings' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_customsettings' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Save Order API
 			// Register routes for Order Bumps Layout.
-			register_rest_route( $this->namespace, '/' . 'funnels' . '/steps/order/save' . '/(?P<step_id>[\d]+)', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'type'    => array(
-						'description' => __( 'Substep Type', 'funnel-builder' ),
-						'type'        => 'string',
-						'required'    => true,
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnels' . '/steps/order/save' . '/(?P<step_id>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'substep_save_order' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'type'    => array(
+							'description' => __( 'Substep Type', 'funnel-builder' ),
+							'type'        => 'string',
+							'required'    => true,
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'substep_save_order' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Routes for Checkout Save Design Settings.
-			register_rest_route( $this->namespace, '/' . 'funnel-thankyou' . '/(?P<step_id>[\d]+)' . '/design/save-settings', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-thankyou' . '/(?P<step_id>[\d]+)' . '/design/save-settings',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'wfty_save_design_config' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'wfty_save_design_config' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -362,7 +412,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				}
 
 				$data_store = WC_Data_Store::load( 'product' );
-				$ids        = $data_store->search_products( $term, '', true, false, 30, [], [] );
+				$ids        = $data_store->search_products( $term, '', true, false, 30, array(), array() );
 
 				$products = array();
 				if ( ! empty( $ids ) ) {
@@ -374,7 +424,10 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						}
 						$formatted_name = $product_object->get_formatted_name();
 						$product_id     = $product_object->get_id();
-						$products[]     = [ 'id' => $product_id, 'name' => rawurldecode( wp_strip_all_tags( $formatted_name ) ) . "(#" . $product_id . ")" ];
+						$products[]     = array(
+							'id'   => $product_id,
+							'name' => rawurldecode( wp_strip_all_tags( $formatted_name ) ) . '(#' . $product_id . ')',
+						);
 					}
 				}
 				if ( ! empty( $products ) ) {
@@ -403,56 +456,64 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			}
 
 			$data_store = WC_Data_Store::load( 'product' );
-			$ids        = $data_store->search_products( $term, '', $variations, false, 30, [], [] );
+			$ids        = $data_store->search_products( $term, '', $variations, false, 30, array(), array() );
 
-			$allowed_types = [];
+			$allowed_types = array();
 			/**
 			 * Products types that are allowed in Product search
 			 */
 
 			if ( 'checkout' === $type ) {
-				$allowed_types = apply_filters( 'wfacp_offer_product_types', array(
-					'simple',
-					'variable',
-					'course',
-					'variation',
-					'subscription',
-					'variable-subscription',
-					'subscription_variation',
-					'virtual_subscription',
-					'bundle',
-					'yith_bundle',
-					'woosb',
-					'braintree-subscription',
-					'braintree-variable-subscription',
-				) );
+				$allowed_types = apply_filters(
+					'wfacp_offer_product_types',
+					array(
+						'simple',
+						'variable',
+						'course',
+						'variation',
+						'subscription',
+						'variable-subscription',
+						'subscription_variation',
+						'virtual_subscription',
+						'bundle',
+						'yith_bundle',
+						'woosb',
+						'braintree-subscription',
+						'braintree-variable-subscription',
+					)
+				);
 			}
 
 			if ( 'bump' === $type ) {
-				$allowed_types = apply_filters( 'wfob_offer_product_types', array(
-					'simple',
-					'variable',
-					'course',
-					'variation',
-					'subscription',
-					'variable-subscription',
-					'subscription_variation',
-					'bundle',
-					'yith_bundle',
-					'woosb',
-				) );
+				$allowed_types = apply_filters(
+					'wfob_offer_product_types',
+					array(
+						'simple',
+						'variable',
+						'course',
+						'variation',
+						'subscription',
+						'variable-subscription',
+						'subscription_variation',
+						'bundle',
+						'yith_bundle',
+						'woosb',
+					)
+				);
 			}
 
 			if ( 'offer' === $type || 'upsell' === $type ) {
-				$allowed_types = apply_filters( 'wfocu_offer_product_types', array(
-					'simple',
-					'variable',
-					'variation',
-				) );
+				$allowed_types = apply_filters(
+					'wfocu_offer_product_types',
+					array(
+						'simple',
+						'variable',
+						'variation',
+					)
+				);
 			}
 
 			$products = array();
-
 
 			foreach ( $ids as $id ) {
 				$product_object = wc_get_product( $id );
@@ -491,7 +552,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							'product_stock'        => $product_stock,
 							'product_stock_status' => $stock_status,
 							'currency_symbol'      => get_woocommerce_currency_symbol(),
-							'product_type'         => $product_object->get_type()
+							'product_type'         => $product_object->get_type(),
 						);
 					} else {
 						$products[] = array(
@@ -536,14 +597,16 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$ids = array();
 			// Search by ID.
 			if ( is_numeric( $term ) ) {
-				$coupon = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$coupon = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'post__in'         => array( intval( $term ) ),
 					'post_type'        => 'shop_coupon',
 					'fields'           => 'ids',
 					'numberposts'      => 100,
 					'paged'            => 1,
 					'suppress_filters' => false,
-				) );
+					)
+				);
 				if ( count( $coupon ) > 0 ) {
 					$ids = array( current( $coupon ) );
 				}
@@ -631,12 +694,13 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			if ( ! empty( $_GET['exclude'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 				$ids = array_diff( $ids, array_map( 'absint', (array) wp_unslash( $_GET['exclude'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
 			}
-			$customers = [];
+			$customers = array();
 			foreach ( $ids as $id ) {
 				$customer = new WC_Customer( $id );
 				/* translators: 1: user display name 2: user ID 3: user email */
 				$customers['id']   = (string) $id;
-				$customers['name'] = sprintf( /* translators: $1: customer name, $2 customer id, $3: customer email */ esc_html__( '%1$s (#%2$s &ndash; %3$s)', 'woocommerce' ), $customer->get_display_name(), $customer->get_id(), $customer->get_email() );;
+				$customers['name'] = sprintf( /* translators: $1: customer name, $2 customer id, $3: customer email */ esc_html__( '%1$s (#%2$s &ndash; %3$s)', 'woocommerce' ), $customer->get_display_name(), $customer->get_id(), $customer->get_email() ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional: reuse WooCommerce's translation for this format string.
+
 				$found_customers[] = $customers;
 			}
 
@@ -714,8 +778,20 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 				// Remove Template Meta key.
 				global $wpdb;
-				$wpdb->delete( $wpdb->postmeta, array( 'meta_key' => '_et_pb_use_builder', 'post_id' => $step_id ) );
-				$wpdb->delete( $wpdb->postmeta, array( 'meta_key' => 'tcb_editor_enabled', 'post_id' => $step_id ) );
+				$wpdb->delete(
+					$wpdb->postmeta,
+					array(
+						'meta_key' => '_et_pb_use_builder',
+						'post_id'  => $step_id,
+					)
+				);
+				$wpdb->delete(
+					$wpdb->postmeta,
+					array(
+						'meta_key' => 'tcb_editor_enabled',
+						'post_id'  => $step_id,
+					)
+				);
 
 				$resp = array(
 					'msg'     => __( 'Design Saved Successfully', 'funnel-builder' ),
@@ -761,7 +837,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 		}
 
 		public function wc_get_customsettings( $values ) {
-			$tracking_analysis = [];
+			$tracking_analysis = array();
 
 			$track_event_options = WFACP_Common_Helper::track_events_options();
 			$track_event_options = wffn_rest_api_helpers()->array_change_key( $track_event_options, 'id', 'value' );
@@ -820,176 +896,175 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			WFOCU_Core()->funnels->setup_funnel_options( $upsell_id );
 			$prop_image = WFOCU_PLUGIN_URL . '/assets/img/funnel-settings-prop.jpg';
 
-
-			$tabs = [
-				'upsell_orders' => [
+			$tabs = array(
+				'upsell_orders'          => array(
 					'title'    => __( 'Order', 'funnel-builder' ),
 					'heading'  => __( 'Order Settings', 'funnel-builder' ),
 					'slug'     => 'upsell_ordes',
 					'hint'     => '',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'order_behavior',
 							'label'  => __( 'Each accepted upsell will be', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'batching',
 									'name'  => __( 'Merged with the main order', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'create_order',
 									'name'  => __( 'Create a new order', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'    => 'radios',
 							'key'     => 'is_cancel_order',
 							'label'   => __( 'Cancel Main Order', 'funnel-builder' ),
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'order_behavior',
 								'value' => 'create_order',
-							],
+							),
 							'hint'    => __( 'Enable this setting to cancel the main order when first offer is accepted.', 'funnel-builder' ),
-							'values'  => [
-								0 => [
+							'values'  => array(
+								0 => array(
 									'value' => 'yes',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'no',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-					],
+								),
+							),
+						),
+					),
 					'priority' => 10,
-					'values'   => [
+					'values'   => array(
 						'order_behavior'  => ! empty( $values['order_behavior'] ) ? wffn_clean( $values['order_behavior'] ) : 'batching',
 						'is_cancel_order' => ! empty( $values['is_cancel_order'] ) ? wffn_clean( $values['is_cancel_order'] ) : 'no',
-					],
-				],
-				'upsell_prices' => [
+					),
+				),
+				'upsell_prices'          => array(
 					'title'    => __( 'Prices', 'funnel-builder' ),
 					'heading'  => __( 'Price Settings', 'funnel-builder' ),
 					'hint'     => '',
 					'slug'     => 'upsell_prices',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'is_tax_included',
 							'label'  => __( 'Show Prices with Taxes', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'yes',
 									'name'  => __( 'Yes (Recommended)', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'no',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-					],
+								),
+							),
+						),
+					),
 					'priority' => 15,
-					'values'   => [
+					'values'   => array(
 						'is_tax_included' => ! empty( $values['is_tax_included'] ) ? wffn_clean( $values['is_tax_included'] ) : 'yes',
-					],
-				],
+					),
+				),
 
-				'confirmation_messages' => [
+				'confirmation_messages'  => array(
 					'title'          => __( 'Confirmation Messages', 'funnel-builder' ),
 					'heading'        => __( 'Upsell Confirmation Messages', 'funnel-builder' ),
 					'hint'           => __( 'These messages show when buyer\'s upsell order is charged &amp; confirmed. If unable to charge user, a failure message will show.', 'funnel-builder' ),
 					'hint_link'      => $prop_image,
 					'hint_link_text' => __( 'Click here to learn about these settings.', 'funnel-builder' ),
 					'slug'           => 'confirmation_messages',
-					'fields'         => [
-						0 => [
+					'fields'         => array(
+						0 => array(
 							'key'         => 'offer_success_message_pop',
 							'type'        => 'textArea',
 							'label'       => __( 'Upsell Success Message', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-						1 => [
+						),
+						1 => array(
 							'key'         => 'offer_failure_message_pop',
 							'type'        => 'textArea',
 							'label'       => __( 'Upsell Failure Message', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-						2 => [
+						),
+						2 => array(
 							'key'         => 'offer_wait_message_pop',
 							'type'        => 'textArea',
 							'label'       => __( 'Upsell Processing Message', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-					],
+						),
+					),
 					'priority'       => 15,
-					'values'         => [
+					'values'         => array(
 						'offer_success_message_pop' => WFOCU_Core()->funnels->get_funnel_option( 'offer_success_message_pop' ),
 						'offer_failure_message_pop' => WFOCU_Core()->funnels->get_funnel_option( 'offer_failure_message_pop' ),
 						'offer_wait_message_pop'    => WFOCU_Core()->funnels->get_funnel_option( 'offer_wait_message_pop' ),
-					],
-				],
+					),
+				),
 
-				'upsell_failed_recovery' => [
-					'title'   => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
-					'heading' => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
-					'hint'    => sprintf( 
+				'upsell_failed_recovery' => array(
+					'title'    => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
+					'heading'  => __( 'Request Card Update on Upsell Failure', 'funnel-builder' ),
+					'hint'     => sprintf(
 						__( 'In upsell recovery feature we show credit card fields to customers in case the charge attempt fails. %s', 'funnel-builder' ),
 						'<a href="' . admin_url( 'admin.php?page=bwf&path=/settings/stripe' ) . '" data-link="react">' . __( 'Click here to activate Funnelkit Stripe', 'funnel-builder' ) . '</a>'
 					),
 
 					'slug'     => 'upsell_failed_recovery',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'upsell_failed_recovery_heading',
 							'type'        => 'textInput',
 							'label'       => __( 'Heading', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-						1 => [
+						),
+						1 => array(
 							'key'         => 'upsell_failed_recovery_btn_text',
 							'type'        => 'textInput',
 							'label'       => __( 'Button Text', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-						2 => [
+						),
+						2 => array(
 							'key'         => 'upsell_failed_recovery_btn_fail_msg',
 							'type'        => 'textInput',
 							'label'       => __( 'Failure Message', 'funnel-builder' ),
 							'placeholder' => '',
-						],
-					],
+						),
+					),
 					'priority' => 15,
-					'values'   => [
-						'upsell_failed_recovery_heading'      => WFOCU_Core()->funnels->get_funnel_option( 'upsell_failed_recovery_heading' ),
-						'upsell_failed_recovery_btn_text'     => WFOCU_Core()->funnels->get_funnel_option( 'upsell_failed_recovery_btn_text' ),
+					'values'   => array(
+						'upsell_failed_recovery_heading'  => WFOCU_Core()->funnels->get_funnel_option( 'upsell_failed_recovery_heading' ),
+						'upsell_failed_recovery_btn_text' => WFOCU_Core()->funnels->get_funnel_option( 'upsell_failed_recovery_btn_text' ),
 						'upsell_failed_recovery_btn_fail_msg' => WFOCU_Core()->funnels->get_funnel_option( 'upsell_failed_recovery_btn_fail_msg' ),
-					],
-				],
-				'tracking_code'          => [
+					),
+				),
+				'tracking_code'          => array(
 					'title'    => __( 'External Tracking Code', 'funnel-builder' ),
 					'heading'  => __( 'External Tracking Code', 'funnel-builder' ),
 					'hint'     => '',
 					'slug'     => 'tracking_code',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'funnel_success_script',
 							'type'        => 'textArea',
 							'label'       => __( 'Add tracking code to run, this upsells', 'funnel-builder' ),
 							'placeholder' => __( 'Place your code here', 'funnel-builder' ),
-						],
-					],
+						),
+					),
 					'priority' => 15,
-					'values'   => [
+					'values'   => array(
 						'funnel_success_script' => ! empty( $values['funnel_success_script'] ) ? ( $values['funnel_success_script'] ) : '',
-					]
-				],
-			];
+					),
+				),
+			);
 
 			return $tabs;
 		}
@@ -999,120 +1074,96 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			if ( is_object( $values ) && isset( $values->settings ) ) {
 				$values = (array) $values->settings;
 			} else {
-				$values = [];
+				$values = array();
 			}
 
-			$tabs = [
-				'dynamic_shipping' => [
-					'title'    => __( 'Dynamic Shipping', 'funnel-builder' ),
-					'heading'  => __( 'Dynamic Shipping', 'funnel-builder' ),
-					'slug'     => 'ship_dynamic',
-					'hint'     => '',
-					'fields'   => [
-						0 => [
-							'type'   => 'checklist',
-							'key'    => 'ship_dynamic',
-							'label'  => __( 'Dynamic Shipping', 'funnel-builder' ),
-							'hint'   => '',
-							'values' => [
-								0 => [
-									'value' => "true",
-									'name'  => __( 'Check this box to charge the user separately for the shipping of this item. The cost will be calculated on the fly based on your store\'s configuration and shown to the user upon clicking ‘accept’. Any Flat Shipping charges set above will be overridden by dynamic shipping.', 'funnel-builder' ),
-								],
-							],
-						]
-					],
-					'priority' => 0,
-					'values'   => [
-						'ship_dynamic' => ( ! empty( $values['ship_dynamic'] ) && true === wffn_string_to_bool( $values['ship_dynamic'] ) ) ? wffn_clean( (array) 'true' ) : [],
-					],
-				],
-				'ask_confirm'      => [
+			$tabs = array(
+				'ask_confirm'  => array(
 					'title'    => __( 'Ask Confirmation', 'funnel-builder' ),
 					'heading'  => __( 'Ask Confirmation', 'funnel-builder' ),
 					'slug'     => 'ask_confirm',
 					'hint'     => '',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'checklist',
 							'key'    => 'ask_confirmation',
 							'label'  => __( 'Ask Confirmation', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
-									'value' => "true",
+							'values' => array(
+								0 => array(
+									'value' => 'true',
 									'name'  => __( 'Ask for confirmation every time user accepts this offer. A new side cart will trigger and ask for confirmation if this option is enabled.', 'funnel-builder' ),
-								],
-							],
-						],
-					],
+								),
+							),
+						),
+					),
 					'priority' => 0,
-					'values'   => [
-						'ask_confirmation' => ( ! empty( $values['ask_confirmation'] ) && true === wffn_string_to_bool( $values['ask_confirmation'] ) ) ? wffn_clean( (array) 'true' ) : [],
-					],
-				],
-				'trackingcode'     => [
+					'values'   => array(
+						'ask_confirmation' => ( ! empty( $values['ask_confirmation'] ) && true === wffn_string_to_bool( $values['ask_confirmation'] ) ) ? wffn_clean( (array) 'true' ) : array(),
+					),
+				),
+				'trackingcode' => array(
 					'title'    => __( 'Tracking Code', 'funnel-builder' ),
 					'heading'  => __( 'Tracking Code', 'funnel-builder' ),
 					'slug'     => 'trackingcode',
 					'hint'     => '',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'checklist',
 							'key'    => 'check_add_offer_script',
 							'label'  => __( 'Tracking Code', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
-									'value' => "true",
+							'values' => array(
+								0 => array(
+									'value' => 'true',
 									'name'  => __( 'Add tracking code if the buyer views this offer', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'textarea',
 							'key'         => 'upsell_page_track_code',
 							'label'       => '',
 							'hint'        => '',
 							'placeholder' => __( 'Paste your code here', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'check_add_offer_script',
-								'value' => "true",
-							]
-						],
-						2 => [
+								'value' => 'true',
+							),
+						),
+						2 => array(
 							'type'   => 'checklist',
 							'key'    => 'check_add_offer_purchase',
 							'label'  => '',
 							'hint'   => '',
-							'values' => [
-								0 => [
-									'value' => "true",
+							'values' => array(
+								0 => array(
+									'value' => 'true',
 									'name'  => __( 'Add tracking code if the buyer accepts this offer', 'funnel-builder' ),
-								],
-							],
-						],
-						3 => [
+								),
+							),
+						),
+						3 => array(
 							'type'        => 'textarea',
 							'key'         => 'upsell_page_purchase_code',
 							'label'       => '',
 							'hint'        => '',
 							'placeholder' => __( 'Paste your code here', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'check_add_offer_purchase',
-								'value' => "true",
-							]
-						],
-					],
+								'value' => 'true',
+							),
+						),
+					),
 					'priority' => 10,
-					'values'   => [
-						'check_add_offer_script'    => ( ! empty( $values['check_add_offer_script'] ) && true === wffn_string_to_bool( $values['check_add_offer_script'] ) ) ? wffn_clean( ( array ) 'true' ) : [],
-						'check_add_offer_purchase'  => ( ! empty( $values['check_add_offer_purchase'] ) && true === wffn_string_to_bool( $values['check_add_offer_purchase'] ) ) ? wffn_clean( ( array ) 'true' ) : [],
+					'values'   => array(
+						'check_add_offer_script'    => ( ! empty( $values['check_add_offer_script'] ) && true === wffn_string_to_bool( $values['check_add_offer_script'] ) ) ? wffn_clean( (array) 'true' ) : array(),
+						'check_add_offer_purchase'  => ( ! empty( $values['check_add_offer_purchase'] ) && true === wffn_string_to_bool( $values['check_add_offer_purchase'] ) ) ? wffn_clean( (array) 'true' ) : array(),
 						'upsell_page_track_code'    => ! empty( $values['upsell_page_track_code'] ) ? ( $values['upsell_page_track_code'] ) : '',
 						'upsell_page_purchase_code' => ! empty( $values['upsell_page_purchase_code'] ) ? ( $values['upsell_page_purchase_code'] ) : '',
-					],
-				],
-			];
+					),
+				),
+			);
 
 			$tabs = apply_filters( 'wffn_offer_admin_settings_fields', $tabs, $values );
 
@@ -1125,7 +1176,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			if ( ! empty( $post_data['settings'] ) ) {
 				$options = $this->sanitize_custom( $post_data['settings'], true );
 			}
-
 
 			$options['custom_css'] = isset( $options['custom_css'] ) ? htmlentities( $options['custom_css'] ) : '';
 			$options['custom_js']  = isset( $options['custom_js'] ) ? htmlentities( $options['custom_js'] ) : '';
@@ -1153,7 +1203,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 		public function save_checkout_settings( $step_id, $post_data ) {
 			$resp    = array();
-			$options = [];
+			$options = array();
 			if ( ! empty( $post_data['settings'] ) ) {
 				$options                  = $this->sanitize_custom( $post_data['settings'], true );
 				$options['header_script'] = isset( $options['header_script'] ) ? $options['header_script'] : '';
@@ -1174,7 +1224,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 		public function save_upsell_settings( $step_id, $post_data ) {
 			$resp    = array();
-			$options = [];
+			$options = array();
 			if ( ! empty( $post_data['settings'] ) ) {
 				$options = $this->sanitize_custom( $post_data['settings'], true );
 			}
@@ -1198,7 +1248,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$offer_meta   = WFOCU_Common::get_offer( $step_id );
 			$ship_dynamic = false;
 
-
 			if ( absint( $step_id ) && ! empty( $options['settings'] ) ) {
 
 				$offer_meta     = ! empty( $offer_meta ) ? $offer_meta : new stdClass();
@@ -1221,7 +1270,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							}
 						}
 					}
-
 				}
 				$offer_meta->settings = (object) array_merge( (array) $offer_settings, (array) $option_values );
 				$ship_dynamic         = ( ! empty( $offer_meta->settings ) && ! empty( $offer_meta->settings->ship_dynamic ) ) ? $offer_meta->settings->ship_dynamic : false;
@@ -1241,7 +1289,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$resp['success'] = true;
 			$resp['msg']     = __( 'Settings Updated', 'funnel-builder' );
 			$resp['data']    = array(
-				'ship_dynamic' => $ship_dynamic
+				'ship_dynamic' => $ship_dynamic,
 			);
 
 			return rest_ensure_response( $resp );
@@ -1292,23 +1340,26 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				return rest_ensure_response( $resp );
 			}
 
-			$post_types = [];
+			$post_types = array();
 			switch ( $pages ) {
-				case "wc_thankyou":
-					add_filter( 'wffn_exclude_post_types_from_search', function ( $excludes ) {
-						array_push( $excludes, 'wfacp_checkout' );
+				case 'wc_thankyou':
+					add_filter(
+						'wffn_exclude_post_types_from_search',
+						function ( $excludes ) {
+							array_push( $excludes, 'wfacp_checkout' );
 
-						return $excludes;
-					} );
+							return $excludes;
+						}
+					);
 					break;
-				case "lifter_lms":
-					$post_types = [ 'course' ];
+				case 'lifter_lms':
+					$post_types = array( 'course' );
 					break;
-				case "learndash":
-					$post_types = [ 'sfwd-courses' ];
+				case 'learndash':
+					$post_types = array( 'sfwd-courses' );
 					break;
 				default:
-					$post_types = [];
+					$post_types = array();
 			}
 
 			$ids = WFFN_Common::search_page( $term, $post_types );
@@ -1347,7 +1398,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$step_id   = $request->get_param( 'step_id' );
 			$type      = $request->get_param( 'type' );
 			$funnel_id = $request->get_param( 'funnel_id' );
-
 
 			if ( ! empty( $type ) ) {
 				$type = $this->step_swap_slug( $type );
@@ -1395,7 +1445,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							$design['selected']      = $offer_data['template'];
 							$design['selected_type'] = empty( $offer_data['template_group'] ) ? 'customizer' : $offer_data['template_group'];
 						}
-
 					}
 
 					if ( empty( $design ) ) {
@@ -1407,9 +1456,8 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					}
 
 					if ( 'wc_checkout' === $type && 'embed_forms' !== $design['selected_type'] && 'no' !== $design['template_active'] ) {
-						$additional_tabs = [];
+						$additional_tabs = array();
 					}
-
 
 					$post_data        = get_post( $step_id );
 					$post_description = get_post_meta( $step_id, '_post_description', true );
@@ -1424,7 +1472,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 							$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 
 						}
-
 					}
 					$edit_link = ( 'wc_upsells' !== $type ) ? htmlspecialchars_decode( get_edit_post_link( $step_id ) ) : htmlspecialchars_decode( get_edit_post_link( $step_id ) );
 					$view_link = $this->get_base_url( $post_data );
@@ -1454,7 +1501,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 					if ( ! empty( $design['selected_type'] ) ) {
 
-						if ( ! in_array( $design['selected_type'], [ 'elementor', 'divi', 'oxy', 'bricks', 'gutenberg', 'pre_built', 'embed_forms', 'customizer' ], true ) ) {
+						if ( ! in_array( $design['selected_type'], array( 'elementor', 'divi', 'divi5', 'oxy', 'bricks', 'gutenberg', 'pre_built', 'embed_forms', 'customizer' ), true ) ) {
 							$step['other_builder'] = $this->detectActivePageBuilder( $post_data );
 						}
 
@@ -1468,7 +1515,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						$step['template']               = ! empty( wffn_rest_api_helpers()->get_template_design( $design['selected_type'], $design['selected'], $type ) ) ? wffn_rest_api_helpers()->get_template_design( $design['selected_type'], $design['selected'], $type ) : null;
 						$step['design']['builder_name'] = isset( $all_builder[ $design['selected_type'] ] ) ? ucfirst( $all_builder[ $design['selected_type'] ] ) : ucfirst( $design['selected_type'] );
 
-
 						$all_page_builder = wffn_rest_funnels()->get_all_builders();
 						if ( isset( $all_page_builder[ $type ][ $design['selected_type'] ] ) ) {
 							$step['design']['builder_name'] = $all_page_builder[ $type ][ $design['selected_type'] ];
@@ -1479,14 +1525,12 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						if ( $step['design']['selected_type'] === 'custom_page' ) {
 							$step['design']['builder_name'] = __( 'Custom Page', 'funnel-builder' );
 						}
-
 					}
 
 					$step['additional_tabs'] = $additional_tabs;
 					$resp['data']['step']    = $step;
 
 				}
-
 			}
 
 			return rest_ensure_response( $resp );
@@ -1574,7 +1618,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$type = $this->step_swap_slug( $type );
 			}
 
-
 			if ( absint( $step_id ) > 0 && ! empty( $settings ) && 0 !== $settings && $this->is_valid_page_type( $type ) ) {
 
 				$options = $this->sanitize_custom( $settings, true );
@@ -1605,7 +1648,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					if ( 'offer' === $type ) {
 						return $this->save_offer_settings( $step_id, $options );
 					}
-
 				}
 			}
 
@@ -1730,7 +1772,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					return rest_ensure_response( $builder_status['data'] );
 				}
 
-				$response = [];
+				$response = array();
 
 				switch ( $type ) {
 					case 'landing':
@@ -1793,19 +1835,28 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 				$is_offer = strpos( $route, 'funnel-offer' );
 
-
 				if ( isset( $posted_data['status'] ) ) {
 					$posted_data['status'] = wffn_string_to_bool( $posted_data['status'] );
 					$status                = ( true === $posted_data['status'] ) ? 'publish' : 'draft';
-					wp_update_post( array( 'ID' => $step_id, 'post_status' => $status ) );
+					wp_update_post(
+						array(
+							'ID'          => $step_id,
+							'post_status' => $status,
+						)
+					);
 					do_action( 'wffn_state_toggle_step', $status, $request );
-
 
 				}
 
 				if ( isset( $posted_data['slug'] ) || isset( $posted_data['title'] ) ) {
 					$post_name = ( isset( $posted_data['slug'] ) && ! empty( $posted_data['slug'] ) ) ? $posted_data['slug'] : $posted_data['title'];
-					wp_update_post( array( 'ID' => $step_id, 'post_title' => $posted_data['title'], 'post_name' => sanitize_title( $post_name ) ) );
+					wp_update_post(
+						array(
+							'ID'         => $step_id,
+							'post_title' => $posted_data['title'],
+							'post_name'  => sanitize_title( $post_name ),
+						)
+					);
 				}
 
 				if ( absint( $is_offer ) > 0 ) {
@@ -1817,7 +1868,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$this->update_last_update_time( 0, $step_id );
 
 				$resp['step_data'] = is_array( $all_data ) && isset( $all_data['step_data'] ) ? $all_data['step_data'] : false;
-
 
 				$resp['success']   = true;
 				$resp['step_list'] = is_array( $all_data ) && isset( $all_data['step_list'] ) ? $all_data['step_list'] : false;
@@ -1836,16 +1886,29 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$builder = ( 'pre_built' === $builder ) ? 'customizer' : $builder;
 			switch ( $builder ) {
 				case 'divi':
-					$edit_url = add_query_arg( array( 'et_fb' => true, 'PageSpeed' => 'off' ), get_the_permalink( $page_id ) );
+				case 'divi5':
+					$edit_url = add_query_arg(
+						array(
+							'et_fb'     => true,
+							'PageSpeed' => 'off',
+						),
+						get_the_permalink( $page_id )
+					);
 					break;
 
 				case 'elementor':
-					$edit_url = add_query_arg( array( 'post' => $page_id, 'action' => 'elementor' ), admin_url( 'post.php' ) );
+					$edit_url = add_query_arg(
+						array(
+							'post'   => $page_id,
+							'action' => 'elementor',
+						),
+						admin_url( 'post.php' )
+					);
 					break;
 
 				case 'oxy':
 					if ( ! empty( $post ) && function_exists( 'oxygen_add_posts_quick_action_link' ) ) {
-						$actions = oxygen_add_posts_quick_action_link( array(), $post, "array" );
+						$actions = oxygen_add_posts_quick_action_link( array(), $post, 'array' );
 
 						if ( is_array( $actions ) && isset( $actions['url'] ) ) {
 							$edit_url = $actions['url'];
@@ -1861,7 +1924,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					$edit_url = add_query_arg( array( 'ct_builder' => true ), get_the_permalink( $page_id ) );
 					break;
 
-
 				case 'bricks':
 					$edit_url = add_query_arg( array( 'bricks' => 'run' ), get_the_permalink( $page_id ) );
 					break;
@@ -1872,57 +1934,80 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			}
 
 			if ( 'wc_checkout' === $type && 'customizer' === $builder ) {
-				$url = add_query_arg( [
-					'wfacp_customize' => 'loaded',
-					'wfacp_id'        => $page_id,
-				], get_the_permalink( $page_id ) );
+				$url = add_query_arg(
+					array(
+						'wfacp_customize' => 'loaded',
+						'wfacp_id'        => $page_id,
+					),
+					get_the_permalink( $page_id )
+				);
 
-				$return_url = add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-checkout/" . $page_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) );
+				$return_url = add_query_arg(
+					array(
+						'page'      => 'bwf',
+						'path'      => '/funnel-checkout/' . $page_id . '/design',
+						'funnel_id' => $funnel_id,
+					),
+					admin_url( 'admin.php' )
+				);
 
-				$edit_url = add_query_arg( [
-					'url'             => apply_filters( 'wfacp_customize_url', urlencode_deep( $url ), $this ),
-					'wfacp_customize' => 'loaded',
-					'wfacp_id'        => $page_id,
-					'return'          => rawurlencode( $return_url ),
-				], admin_url( 'customize.php' ) );
+				$edit_url = add_query_arg(
+					array(
+						'url'             => apply_filters( 'wfacp_customize_url', urlencode_deep( $url ), $this ),
+						'wfacp_customize' => 'loaded',
+						'wfacp_id'        => $page_id,
+						'return'          => rawurlencode( $return_url ),
+					),
+					admin_url( 'customize.php' )
+				);
 			}
-			if ( 'wc_checkout' === $type && 'divi' === $builder ) {
-				$edit_url = add_query_arg( [ 'et_wfacp_id' => $page_id ], $edit_url );
+			if ( 'wc_checkout' === $type && ( 'divi' === $builder || 'divi5' === $builder ) ) {
+				$edit_url = add_query_arg( array( 'et_wfacp_id' => $page_id ), $edit_url );
 			}
 			if ( 'wc_checkout' === $type && 'oxy' === $builder ) {
-				$edit_url = add_query_arg( [ 'oxy_wfacp_id' => $page_id ], $edit_url );
+				$edit_url = add_query_arg( array( 'oxy_wfacp_id' => $page_id ), $edit_url );
 			}
 			if ( 'upsell' === $type && 'customizer' === $builder ) {
-				$url = add_query_arg( [
-					'wfocu_customize' => 'loaded',
-					'offer_id'        => $page_id,
-				], get_the_permalink( $page_id ) );
+				$url = add_query_arg(
+					array(
+						'wfocu_customize' => 'loaded',
+						'offer_id'        => $page_id,
+					),
+					get_the_permalink( $page_id )
+				);
 
-				$return_url = add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-offer/" . $page_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) );
+				$return_url = add_query_arg(
+					array(
+						'page'      => 'bwf',
+						'path'      => '/funnel-offer/' . $page_id . '/design',
+						'funnel_id' => $funnel_id,
+					),
+					admin_url( 'admin.php' )
+				);
 
-				$edit_url = add_query_arg( [
-					'url'             => urlencode_deep( $url ),
-					'wfocu_customize' => 'loaded',
-					'offer_id'        => $page_id,
-					'return'          => rawurlencode( $return_url ),
-				], admin_url( 'customize.php' ) );
+				$edit_url = add_query_arg(
+					array(
+						'url'             => urlencode_deep( $url ),
+						'wfocu_customize' => 'loaded',
+						'offer_id'        => $page_id,
+						'return'          => rawurlencode( $return_url ),
+					),
+					admin_url( 'customize.php' )
+				);
 
 			}
 
 			if ( 'upsell' === $type && 'custom_page' === $builder ) {
 				$custom_page = get_post_meta( $page_id, '_wfocu_custom_page', true );
 				if ( ! empty( $custom_page ) ) {
-					$edit_url = add_query_arg( array( 'post' => $custom_page, 'action' => 'edit' ), admin_url( 'post.php' ) );
+					$edit_url = add_query_arg(
+						array(
+							'post'   => $custom_page,
+							'action' => 'edit',
+						),
+						admin_url( 'post.php' )
+					);
 				}
-
 			}
 
 			return $edit_url;
@@ -2007,7 +2092,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 						unset( $customization_tab['form']['initial_value'] );
 					}
 
-
 					if ( defined( 'WFOPP_PRO_PLUGIN_FILE' ) ) {
 						$customization_tab['scripts'] = plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/js/intltelinput.min.js';
 						$customization_tab['styles']  = plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/css/phone-flag.css';
@@ -2023,19 +2107,17 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 					ob_end_clean();
 
-					$customization_tab['preview']      = [
+					$customization_tab['preview']      = array(
 						'inline' => $inline_form,
 						'popup'  => $pop_form,
-					];
+					);
 					$customization_tab['field_values'] = $this->get_form_customization_options( $customization_form, $form_fields, 'popup' );
-
 
 					$step['customization_tab'] = $customization_tab;
 					$resp['data']['step']      = $step;
 
 				}
 			}
-
 
 			return rest_ensure_response( $resp );
 		}
@@ -2129,7 +2211,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$step_id = get_post_meta( $offer_id, '_funnel_id', true );
 				$steps   = WFOCU_Core()->funnels->get_funnel_steps( $step_id );
 
-				$update_steps = [];
+				$update_steps = array();
 				if ( $steps && is_array( $steps ) && count( $steps ) > 0 ) {
 					foreach ( $steps as $key => $step ) {
 						if ( ! empty( $step ) ) {
@@ -2152,7 +2234,6 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					WFOCU_Common::update_funnel_upsell_downsell( $step_id, $upsell_downsell );
 
 				}
-
 			}
 		}
 
@@ -2232,7 +2313,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 		public function wcty_design_settings( $step_id = null ) {
 
-			$typography_fonts = [];
+			$typography_fonts = array();
 			$fonts_list       = bwf_get_fonts_list();
 
 			if ( ! empty( $fonts_list ) ) {
@@ -2243,10 +2324,9 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					$font['value']      = $font['key'];
 					$typography_fonts[] = $font;
 				}
-
 			}
 
-			$default_models = [
+			$default_models = array(
 				'txt_color'                           => '#444444',
 				'txt_fontfamily'                      => 'default',
 				'txt_font_size'                       => 15,
@@ -2262,110 +2342,150 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				'order_downloads_show_file_downloads' => true,
 				'order_downloads_show_file_expiry'    => true,
 				'order_subscription_heading'          => __( 'Subscription', 'funnel-builder' ),
-			];
+			);
 
-			$schema = [
-				[
+			$schema = array(
+				array(
 					'label'  => __( 'General Typography', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "select",
+					'fields' => array(
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Font Family', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'options' => $typography_fonts,
 							'key'     => 'txt_fontfamily',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'txt_color',
-						],
-						[
-							'type'  => "number",
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Font Size (in px)', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
 							'key'   => 'txt_font_size',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Heading Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'head_color',
-						],
-						[
-							'type'  => "number",
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Heading Font Size (in px)', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
 							'key'   => 'head_font_size',
-						],
-						[
-							'type'    => "select",
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Font Weight', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
-							'options' => [
-								[ 'key' => 'default', 'value' => 'default', 'label' => 'Default' ],
-								[ 'key' => 'bold', 'value' => 'normal', 'label' => 'Normal' ],
-								[ 'key' => 'bold', 'value' => 'bold', 'label' => 'Bold' ],
-								[ 'key' => '300', 'value' => '300', 'label' => '300' ],
-								[ 'key' => '400', 'value' => '400', 'label' => '400' ],
-								[ 'key' => '500', 'value' => '500', 'label' => '500' ],
-								[ 'key' => '600', 'value' => '600', 'label' => '600' ],
-								[ 'key' => '700', 'value' => '700', 'label' => '700' ],
-							],
+							'options' => array(
+								array(
+									'key'   => 'default',
+									'value' => 'default',
+									'label' => 'Default',
+								),
+								array(
+									'key'   => 'bold',
+									'value' => 'normal',
+									'label' => 'Normal',
+								),
+								array(
+									'key'   => 'bold',
+									'value' => 'bold',
+									'label' => 'Bold',
+								),
+								array(
+									'key'   => '300',
+									'value' => '300',
+									'label' => '300',
+								),
+								array(
+									'key'   => '400',
+									'value' => '400',
+									'label' => '400',
+								),
+								array(
+									'key'   => '500',
+									'value' => '500',
+									'label' => '500',
+								),
+								array(
+									'key'   => '600',
+									'value' => '600',
+									'label' => '600',
+								),
+								array(
+									'key'   => '700',
+									'value' => '700',
+									'label' => '700',
+								),
+							),
 							'key'     => 'head_font_weight',
-						],
-					],
-				],
+						),
+					),
+				),
 				/* Order details */
-				[
+				array(
 					'label'  => __( 'Order Details', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'  => "toggle",
+					'fields' => array(
+						array(
+							'type'  => 'toggle',
 							'label' => __( 'Show Images', 'funnel-builder' ),
 							'class' => '',
 							'key'   => 'order_details_img',
-						],
-						[
-							'type'  => "text",
+						),
+						array(
+							'type'  => 'text',
 							'label' => __( 'Download Button Text', 'funnel-builder' ),
 							'class' => '',
 							'key'   => 'order_downloads_btn_text',
-						],
-						[
-							'type'  => "toggle",
+						),
+						array(
+							'type'  => 'toggle',
 							'label' => __( 'Show File Downloads Column', 'funnel-builder' ),
 							'class' => '',
 							'key'   => 'order_downloads_show_file_downloads',
-						],
-						[
-							'type'         => "toggle",
+						),
+						array(
+							'type'         => 'toggle',
 							'label'        => __( 'Show File Expiry Column', 'funnel-builder' ),
 							'styleClasses' => 'wfty_design_setting_full',
 							'key'          => 'order_downloads_show_file_expiry',
-						],
-					],
-				],
+						),
+					),
+				),
 				/* Customer details */
-				[
+				array(
 					'label'  => __( 'Customer Details', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "select",
+					'fields' => array(
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Layout', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
-							'options' => [
-								[ 'key' => '2c', 'value' => '2c', 'label' => 'Two Column' ],
-								[ 'key' => 'full_width', 'value' => 'full_width', 'label' => 'Full width' ],
-							],
+							'options' => array(
+								array(
+									'key'   => '2c',
+									'value' => '2c',
+									'label' => 'Two Column',
+								),
+								array(
+									'key'   => 'full_width',
+									'value' => 'full_width',
+									'label' => 'Full width',
+								),
+							),
 							'key'     => 'layout_settings',
-						],
-					],
-				],
-			];
+						),
+					),
+				),
+			);
 
-			$models = [];
+			$models = array();
 
 			if ( absint( $step_id ) > 0 ) {
 				$models = get_post_meta( $step_id, '_shortcode_settings', true );
@@ -2377,7 +2497,10 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			$models['order_downloads_show_file_expiry']    = ! empty( $models['order_downloads_show_file_expiry'] ) ? bwf_string_to_bool( $models['order_downloads_show_file_expiry'] ) : false;
 			$models['order_downloads_show_file_downloads'] = ! empty( $models['order_downloads_show_file_downloads'] ) ? bwf_string_to_bool( $models['order_downloads_show_file_downloads'] ) : false;
 
-			return [ 'schema' => $schema, 'values' => $models ];
+			return array(
+				'schema' => $schema,
+				'values' => $models,
+			);
 		}
 
 		public function wfty_save_design_config( WP_REST_Request $request ) {
@@ -2419,7 +2542,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$models = WFACP_Common::get_option( '', true );
 			}
 
-			$typography_fonts = [];
+			$typography_fonts = array();
 			$fonts_list       = bwf_get_fonts_list();
 
 			if ( ! empty( $fonts_list ) ) {
@@ -2430,628 +2553,778 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					$font['value']      = $font['key'];
 					$typography_fonts[] = $font;
 				}
-
 			}
 
 			$default_models       = array(
-				'wfacp_form_section_embed_forms_2_step_form_max_width'                          => '420',
-				'wfacp_form_section_embed_forms_2_form_border_width'                            => '2',
-				'wfacp_form_section_embed_forms_2_disable_steps_bar'                            => true,
-				'wfacp_form_section_embed_forms_2_form_border_type'                             => 'double',
-				'wfacp_form_section_embed_forms_2_form_border_color'                            => '#e61e1e',
-				'wfacp_form_section_embed_forms_2_form_inner_padding'                           => '16',
-				'wfacp_form_section_embed_forms_2_name_0'                                       => 'GET YOUR FREE COPY OF AMAZING BOOK',
-				'wfacp_form_section_embed_forms_2_headline_0'                                   => 'Shipped in less than 3 days!',
-				'wfacp_form_section_embed_forms_2_step_heading_font_size'                       => 20,
-				'wfacp_form_section_embed_forms_2_heading_fs'                                   => 21,
-				'wfacp_form_section_embed_forms_2_heading_font_weight'                          => 'wfacp-normal',
-				'wfacp_form_section_embed_forms_2_heading_talign'                               => 'wfacp-text-right',
-				'wfacp_form_section_embed_forms_2_sec_heading_color'                            => '#ee2020',
-				'wfacp_form_section_embed_forms_2_sec_bg_color'                                 => '#f8f6f6',
-				'wfacp_form_section_embed_forms_2_rbox_border_type'                             => 'solid',
-				'wfacp_form_section_embed_forms_2_rbox_border_width'                            => '1',
-				'wfacp_form_section_embed_forms_2_rbox_padding'                                 => '8',
-				'wfacp_form_section_embed_forms_2_rbox_margin'                                  => '10',
-				'wfacp_form_section_embed_forms_2_sub_heading_fs'                               => 17,
-				'wfacp_form_section_embed_forms_2_sub_heading_font_weight'                      => 'wfacp-bold',
-				'wfacp_form_section_embed_forms_2_sub_heading_talign'                           => 'wfacp-text-right',
-				'wfacp_form_section_embed_forms_2_sec_sub_heading_color'                        => '#d43e3e',
-				'wfacp_form_section_embed_forms_2_field_style_fs'                               => 19,
-				'wfacp_form_section_embed_forms_2_step_sub_heading_font_size'                   => 16,
-				'wfacp_form_section_embed_forms_2_step_alignment'                               => 'right',
-				'wfacp_form_section_ct_active_inactive_tab'                                     => 'active',
-				'wfacp_form_section_embed_forms_2_active_step_bg_color'                         => '#d84f4f',
-				'wfacp_form_section_embed_forms_2_active_step_text_color'                       => '#ffffff',
-				'wfacp_form_section_embed_forms_2_active_step_tab_border_color'                 => '#f6bd88',
-				'wfacp_form_section_embed_forms_2_field_border_layout'                          => 'dotted',
-				'wfacp_form_section_embed_forms_2_field_border_width'                           => '3',
-				'wfacp_form_section_embed_forms_2_field_style_color'                            => '#e62222',
-				'wfacp_form_section_embed_forms_2_field_border_color'                           => '#3d2828',
-				'wfacp_form_section_embed_forms_2_field_focus_color'                            => '#235c7f',
-				'wfacp_form_section_embed_forms_2_field_input_color'                            => '#4e0d0d',
-				'wfacp_form_section_payment_methods_heading'                                    => __( 'Payment method', 'woocommerce' ),
-				'wfacp_form_section_payment_methods_sub_heading'                                => '',
-				'wfacp_form_section_embed_forms_2_btn_order-place_btn_text'                     => __( 'Place order', 'woocommerce' ),
-				'wfacp_form_section_embed_forms_2_btn_order-place_fs'                           => 26,
-				'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding'           => '17',
-				'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding'           => '25',
-				'wfacp_form_section_embed_forms_2_btn_order-place_border_radius'                => '14',
-				'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight'              => 'normal',
-				'wfacp_form_section_embed_forms_2_btn_order-place_width'                        => 'initial',
+				'wfacp_form_section_embed_forms_2_step_form_max_width' => '420',
+				'wfacp_form_section_embed_forms_2_form_border_width' => '2',
+				'wfacp_form_section_embed_forms_2_disable_steps_bar' => true,
+				'wfacp_form_section_embed_forms_2_form_border_type' => 'double',
+				'wfacp_form_section_embed_forms_2_form_border_color' => '#e61e1e',
+				'wfacp_form_section_embed_forms_2_form_inner_padding' => '16',
+				'wfacp_form_section_embed_forms_2_name_0' => 'GET YOUR FREE COPY OF AMAZING BOOK',
+				'wfacp_form_section_embed_forms_2_headline_0' => 'Shipped in less than 3 days!',
+				'wfacp_form_section_embed_forms_2_step_heading_font_size' => 20,
+				'wfacp_form_section_embed_forms_2_heading_fs' => 21,
+				'wfacp_form_section_embed_forms_2_heading_font_weight' => 'wfacp-normal',
+				'wfacp_form_section_embed_forms_2_heading_talign' => 'wfacp-text-right',
+				'wfacp_form_section_embed_forms_2_sec_heading_color' => '#ee2020',
+				'wfacp_form_section_embed_forms_2_sec_bg_color' => '#f8f6f6',
+				'wfacp_form_section_embed_forms_2_rbox_border_type' => 'solid',
+				'wfacp_form_section_embed_forms_2_rbox_border_width' => '1',
+				'wfacp_form_section_embed_forms_2_rbox_padding' => '8',
+				'wfacp_form_section_embed_forms_2_rbox_margin' => '10',
+				'wfacp_form_section_embed_forms_2_sub_heading_fs' => 17,
+				'wfacp_form_section_embed_forms_2_sub_heading_font_weight' => 'wfacp-bold',
+				'wfacp_form_section_embed_forms_2_sub_heading_talign' => 'wfacp-text-right',
+				'wfacp_form_section_embed_forms_2_sec_sub_heading_color' => '#d43e3e',
+				'wfacp_form_section_embed_forms_2_field_style_fs' => 19,
+				'wfacp_form_section_embed_forms_2_step_sub_heading_font_size' => 16,
+				'wfacp_form_section_embed_forms_2_step_alignment' => 'right',
+				'wfacp_form_section_ct_active_inactive_tab' => 'active',
+				'wfacp_form_section_embed_forms_2_active_step_bg_color' => '#d84f4f',
+				'wfacp_form_section_embed_forms_2_active_step_text_color' => '#ffffff',
+				'wfacp_form_section_embed_forms_2_active_step_tab_border_color' => '#f6bd88',
+				'wfacp_form_section_embed_forms_2_field_border_layout' => 'dotted',
+				'wfacp_form_section_embed_forms_2_field_border_width' => '3',
+				'wfacp_form_section_embed_forms_2_field_style_color' => '#e62222',
+				'wfacp_form_section_embed_forms_2_field_border_color' => '#3d2828',
+				'wfacp_form_section_embed_forms_2_field_focus_color' => '#235c7f',
+				'wfacp_form_section_embed_forms_2_field_input_color' => '#4e0d0d',
+				'wfacp_form_section_payment_methods_heading' => __( 'Payment method', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional: reuse WooCommerce's translation for this WooCommerce core label.
+				'wfacp_form_section_payment_methods_sub_heading' => '',
+				'wfacp_form_section_embed_forms_2_btn_order-place_btn_text' => __( 'Place order', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Intentional: reuse WooCommerce's translation for this WooCommerce core label.
+				'wfacp_form_section_embed_forms_2_btn_order-place_fs' => 26,
+				'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding' => '17',
+				'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding' => '25',
+				'wfacp_form_section_embed_forms_2_btn_order-place_border_radius' => '14',
+				'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight' => 'normal',
+				'wfacp_form_section_embed_forms_2_btn_order-place_width' => 'initial',
 				'wfacp_form_section_embed_forms_2_btn_order-place_make_button_sticky_on_mobile' => 'no_sticky',
-				'wfacp_form_section_embed_forms_2_color_type'                                   => 'hover',
-				'wfacp_form_section_embed_forms_2_btn_order-place_bg_color'                     => '#c36a18',
-				'wfacp_form_section_embed_forms_2_btn_order-place_text_color'                   => '#e12727',
-				'wfacp_form_section_embed_forms_2_additional_text_color'                        => '#c62424',
-				'wfacp_form_section_embed_forms_2_additional_bg_color'                          => '#fad5d5',
-				'wfacp_form_section_embed_forms_2_validation_color'                             => '#511e1e',
-				'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color'               => '#111111',
-				'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color'             => '#ffffff',
-				'wfacp_form_section_text_below_placeorder_btn'                                  => '* 100% Secure &amp; Safe Payments *555',
-				'wfacp_form_section_embed_forms_2_form_content_color'                           => '#46960d',
-				'wfacp_form_section_embed_forms_2_form_content_link_color'                      => '#000000',
-				'wfacp_form_section_embed_forms_2_section_bg_color'                             => '#fdfbfb',
-				'wfacp_form_section_embed_forms_2_form_content_link_color_type'                 => 'hover',
-				'wfacp_form_section_embed_forms_2_form_content_link_hover_color'                => '#2e2222',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_email'                          => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_email_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name'                     => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name_other_classes'       => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name'                      => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_phone'                          => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_phone_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing'               => 'wfacp-col-left-third',
+				'wfacp_form_section_embed_forms_2_color_type' => 'hover',
+				'wfacp_form_section_embed_forms_2_btn_order-place_bg_color' => '#c36a18',
+				'wfacp_form_section_embed_forms_2_btn_order-place_text_color' => '#e12727',
+				'wfacp_form_section_embed_forms_2_additional_text_color' => '#c62424',
+				'wfacp_form_section_embed_forms_2_additional_bg_color' => '#fad5d5',
+				'wfacp_form_section_embed_forms_2_validation_color' => '#511e1e',
+				'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color' => '#111111',
+				'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color' => '#ffffff',
+				'wfacp_form_section_text_below_placeorder_btn' => '* 100% Secure &amp; Safe Payments *555',
+				'wfacp_form_section_embed_forms_2_form_content_color' => '#46960d',
+				'wfacp_form_section_embed_forms_2_form_content_link_color' => '#000000',
+				'wfacp_form_section_embed_forms_2_section_bg_color' => '#fdfbfb',
+				'wfacp_form_section_embed_forms_2_form_content_link_color_type' => 'hover',
+				'wfacp_form_section_embed_forms_2_form_content_link_hover_color' => '#2e2222',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_email' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_email_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_phone' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_phone_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing' => 'wfacp-col-left-third',
 				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing_other_classes' => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1'                     => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1_other_classes'       => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_city'                          => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_city_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode'                      => 'wfacp-col-two-third',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_country'                       => 'wfacp-col-two-third',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_country_other_classes'         => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_state'                         => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_state_other_classes'           => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1'                      => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_city'                           => 'wfacp-col-two-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_city_other_classes'             => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode'                       => 'wfacp-col-two-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_country'                        => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_state'                          => 'wfacp-col-left-third',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode_other_classes'         => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_country_other_classes'          => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_state_other_classes'            => '',
-				'wfacp_style_typography_embed_forms_2_content_ff'                               => 'ABeeZee',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_city' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_city_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode' => 'wfacp-col-two-third',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_country' => 'wfacp-col-two-third',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_country_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_state' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_state_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_city' => 'wfacp-col-two-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_city_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode' => 'wfacp-col-two-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_country' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_state' => 'wfacp-col-left-third',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_country_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_state_other_classes' => '',
+				'wfacp_style_typography_embed_forms_2_content_ff' => 'ABeeZee',
 			);
 			$models               = wp_parse_args( $models, $default_models );
-			$checkout_form_fields = [
+			$checkout_form_fields = array(
 				/* Form Style  */
-				[
+				array(
 					'label'  => __( 'Form Style', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "number",
+					'fields' => array(
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Width', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '640',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'step_form_max_width'
-						],
-						[
-							'type'    => "number",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'step_form_max_width',
+						),
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Form Padding', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => '16',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_inner_padding'
-						],
-						[
-							'type'    => "select",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_inner_padding',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Border Type', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third',
 							'default' => 'solid',
-							'options' => [
-								[ 'key' => 'none', 'value' => 'none', 'label' => 'None' ],
-								[ 'key' => 'solid', 'value' => 'solid', 'label' => 'Solid' ],
-								[ 'key' => 'double', 'value' => 'double', 'label' => 'Double' ],
-								[ 'key' => 'dotted', 'value' => 'dotted', 'label' => 'Dotted' ],
-								[ 'key' => 'dashed', 'value' => 'dashed', 'label' => 'Dashed' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_border_type'
-						],
-						[
-							'type'    => "number",
+							'options' => array(
+								array(
+									'key'   => 'none',
+									'value' => 'none',
+									'label' => 'None',
+								),
+								array(
+									'key'   => 'solid',
+									'value' => 'solid',
+									'label' => 'Solid',
+								),
+								array(
+									'key'   => 'double',
+									'value' => 'double',
+									'label' => 'Double',
+								),
+								array(
+									'key'   => 'dotted',
+									'value' => 'dotted',
+									'label' => 'Dotted',
+								),
+								array(
+									'key'   => 'dashed',
+									'value' => 'dashed',
+									'label' => 'Dashed',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_border_type',
+						),
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Width', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third bwf-field-one-third-last ',
 							'default' => '640',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_border_width'
-						],
-						[
-							'type'  => "color",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'form_border_width',
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Border Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-third bwf-field-one-third-last ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'form_border_color',
-						],
-						[
-							'type'    => "select",
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Typography', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'options' => $typography_fonts,
-							'key'     => 'wfacp_style_typography_embed_forms_2_' . 'content_ff'
-						],
-					]
-				],
+							'key'     => 'wfacp_style_typography_embed_forms_2_' . 'content_ff',
+						),
+					),
+				),
 				/* Top Bar */
-				[
+				array(
 					'label'  => __( 'Top Bar', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'  => "toggle",
+					'fields' => array(
+						array(
+							'type'  => 'toggle',
 							'label' => __( 'Disable Top Bar', 'funnel-builder' ),
 							'class' => '',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar'
-						],
-						[
-							'type'    => "text",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+						),
+						array(
+							'type'    => 'text',
 							'label'   => __( 'Heading', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'name_0',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							]
-						],
-						[
-							'type'    => "text",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'text',
 							'label'   => __( 'Sub Heading', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last ',
 							'default' => '',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'headline_0',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							]
-						],
-						[
-							'type'    => "number",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Step Heading (in px)', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'step_heading_font_size',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							]
-						],
-						[
-							'type'    => "number",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Step Sub Heading (in px)', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => '',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'step_sub_heading_font_size',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							],
-						],
-						[
-							'type'    => "select",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Text Alignment', 'funnel-builder' ),
 							'class'   => '',
-							'options' => [
-								[ 'key' => 'left', 'value' => 'left', 'label' => 'left' ],
-								[ 'key' => 'center', 'value' => 'center', 'label' => 'center' ],
-								[ 'key' => 'right', 'value' => 'right', 'label' => 'Right' ],
-							],
+							'options' => array(
+								array(
+									'key'   => 'left',
+									'value' => 'left',
+									'label' => 'left',
+								),
+								array(
+									'key'   => 'center',
+									'value' => 'center',
+									'label' => 'center',
+								),
+								array(
+									'key'   => 'right',
+									'value' => 'right',
+									'label' => 'Right',
+								),
+							),
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'step_alignment',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							],
-						],
-						[
-							'type'    => "color",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'color',
 							'label'   => __( 'Background', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third ',
 							'default' => '#e61e1e',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'active_step_bg_color',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							],
-						],
-						[
-							'type'    => "color",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'color',
 							'label'   => __( 'Text', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third bwf-field-one-third-last',
 							'default' => '#e61e1e',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'active_step_text_color',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							]
-						],
-						[
-							'type'    => "color",
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+						array(
+							'type'    => 'color',
 							'label'   => __( 'Tab Color', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third  bwf-field-one-third-last',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'active_step_tab_border_color',
-							"toggler" => [
-								"key"   => 'wfacp_form_section_embed_forms_2_' . "disable_steps_bar",
-								"value" => true
-							]
-						],
-					]
-				],
+							'toggler' => array(
+								'key'   => 'wfacp_form_section_embed_forms_2_' . 'disable_steps_bar',
+								'value' => true,
+							),
+						),
+					),
+				),
 				/* Section  */
-				[
+				array(
 					'label'  => __( 'Section', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "number",
+					'fields' => array(
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Font Size (in px)', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_fs'
-						],
-						[
-							'type'    => "select",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_fs',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Font Weight', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => 'wfacp-normal',
-							'options' => [
-								[ 'key' => 'wfacp-normal', 'value' => 'wfacp-normal', 'label' => 'Normal' ],
-								[ 'key' => 'wfacp-bold', 'value' => 'wfacp-bold', 'label' => 'Bold' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_font_weight'
-						],
-						[
-							'type'  => "number",
+							'options' => array(
+								array(
+									'key'   => 'wfacp-normal',
+									'value' => 'wfacp-normal',
+									'label' => 'Normal',
+								),
+								array(
+									'key'   => 'wfacp-bold',
+									'value' => 'wfacp-bold',
+									'label' => 'Bold',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_font_weight',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Margin Bottom', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'rbox_margin'
-						],
-						[
-							'type'  => "number",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'rbox_margin',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Padding (Left and Right)', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'rbox_padding'
-						],
-						[
-							'type'    => "select",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'rbox_padding',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Text Alignment', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => 'wfacp-text-left',
-							'options' => [
-								[ 'key' => 'wfacp-text-left', 'value' => 'wfacp-text-left', 'label' => 'Left' ],
-								[ 'key' => 'wfacp-text-center', 'value' => 'wfacp-text-center', 'label' => 'Center' ],
-								[ 'key' => 'wfacp-text-right', 'value' => 'wfacp-text-right', 'label' => 'Right' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_talign'
-						],
-						[
-							'type'    => "color",
+							'options' => array(
+								array(
+									'key'   => 'wfacp-text-left',
+									'value' => 'wfacp-text-left',
+									'label' => 'Left',
+								),
+								array(
+									'key'   => 'wfacp-text-center',
+									'value' => 'wfacp-text-center',
+									'label' => 'Center',
+								),
+								array(
+									'key'   => 'wfacp-text-right',
+									'value' => 'wfacp-text-right',
+									'label' => 'Right',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'heading_talign',
+						),
+						array(
+							'type'    => 'color',
 							'label'   => __( 'Section Heading', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => '#e61e1e',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sec_heading_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Section Background', 'funnel-builder' ),
 							'class' => '',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'sec_bg_color',
-						],
-						[
-							'type'    => "select",
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Border Type', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third',
 							'default' => 'solid',
-							'options' => [
-								[ 'key' => 'none', 'value' => 'none', 'label' => 'None' ],
-								[ 'key' => 'solid', 'value' => 'solid', 'label' => 'Solid' ],
-								[ 'key' => 'double', 'value' => 'double', 'label' => 'Double' ],
-								[ 'key' => 'dotted', 'value' => 'dotted', 'label' => 'Dotted' ],
-								[ 'key' => 'dashed', 'value' => 'dashed', 'label' => 'Dashed' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'rbox_border_type'
-						],
-						[
-							'type'    => "number",
+							'options' => array(
+								array(
+									'key'   => 'none',
+									'value' => 'none',
+									'label' => 'None',
+								),
+								array(
+									'key'   => 'solid',
+									'value' => 'solid',
+									'label' => 'Solid',
+								),
+								array(
+									'key'   => 'double',
+									'value' => 'double',
+									'label' => 'Double',
+								),
+								array(
+									'key'   => 'dotted',
+									'value' => 'dotted',
+									'label' => 'Dotted',
+								),
+								array(
+									'key'   => 'dashed',
+									'value' => 'dashed',
+									'label' => 'Dashed',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'rbox_border_type',
+						),
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Width', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third bwf-field-one-third-last',
 							'default' => '1',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'rbox_border_width'
-						],
-						[
-							'type'    => "color",
-							'label'   => __( 'Color', 'woofunnels-aero-checkout ' ),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'rbox_border_width',
+						),
+						array(
+							'type'    => 'color',
+							'label'   => __( 'Color', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-third  bwf-field-one-third-last',
 							'default' => '#e61e1e',
 							'key'     => 'wfacp_form_section_embed_forms_2_' . 'rbox_border_color',
-						],
-					]
-				],
+						),
+					),
+				),
 				/* Sub Section  */
-				[
+				array(
 					'label'  => __( 'Section Sub heading', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "number",
+					'fields' => array(
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Font Size (in px)', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_fs'
-						],
-						[
-							'type'    => "select",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_fs',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Font Weight', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => 'normal',
-							'options' => [
-								[ 'key' => 'wfacp-normal', 'value' => 'wfacp-normal', 'label' => 'Normal' ],
-								[ 'key' => 'wfacp-bold', 'value' => 'wfacp-bold', 'label' => 'Bold' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_font_weight'
+							'options' => array(
+								array(
+									'key'   => 'wfacp-normal',
+									'value' => 'wfacp-normal',
+									'label' => 'Normal',
+								),
+								array(
+									'key'   => 'wfacp-bold',
+									'value' => 'wfacp-bold',
+									'label' => 'Bold',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_font_weight',
 
-						],
-						[
-							'type'    => "select",
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Text Alignment', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half ',
 							'default' => 'wfacp-text-left',
-							'options' => [
-								[ 'key' => 'wfacp-text-left', 'value' => 'wfacp-text-left', 'label' => 'Left' ],
-								[ 'key' => 'wfacp-text-center', 'value' => 'wfacp-text-center', 'label' => 'Center' ],
-								[ 'key' => 'wfacp-text-right', 'value' => 'wfacp-text-right', 'label' => 'Right' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_talign'
-						],
-						[
-							'type'  => "color",
+							'options' => array(
+								array(
+									'key'   => 'wfacp-text-left',
+									'value' => 'wfacp-text-left',
+									'label' => 'Left',
+								),
+								array(
+									'key'   => 'wfacp-text-center',
+									'value' => 'wfacp-text-center',
+									'label' => 'Center',
+								),
+								array(
+									'key'   => 'wfacp-text-right',
+									'value' => 'wfacp-text-right',
+									'label' => 'Right',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'sub_heading_talign',
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Section Subheading', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'sec_sub_heading_color',
-						],
-					]
-				],
+						),
+					),
+				),
 				/* Field Style */
-				[
+				array(
 					'label'  => __( 'Field Style', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'    => "number",
+					'fields' => array(
+						array(
+							'type'    => 'number',
 							'label'   => __( 'Font Size (in px)', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => '',
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'field_style_fs'
-						],
-						[
-							'type'    => "select",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'field_style_fs',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Field Border Layout', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => 'solid',
-							'options' => [
-								[ 'key' => 'none', 'value' => 'none', 'label' => 'None' ],
-								[ 'key' => 'solid', 'value' => 'solid', 'label' => 'Solid' ],
-								[ 'key' => 'double', 'value' => 'double', 'label' => 'Double' ],
-								[ 'key' => 'dotted', 'value' => 'dotted', 'label' => 'Dotted' ],
-								[ 'key' => 'dashed', 'value' => 'dashed', 'label' => 'Dashed' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'field_border_layout'
-						],
-						[
-							'type'  => "number",
+							'options' => array(
+								array(
+									'key'   => 'none',
+									'value' => 'none',
+									'label' => 'None',
+								),
+								array(
+									'key'   => 'solid',
+									'value' => 'solid',
+									'label' => 'Solid',
+								),
+								array(
+									'key'   => 'double',
+									'value' => 'double',
+									'label' => 'Double',
+								),
+								array(
+									'key'   => 'dotted',
+									'value' => 'dotted',
+									'label' => 'Dotted',
+								),
+								array(
+									'key'   => 'dashed',
+									'value' => 'dashed',
+									'label' => 'Dashed',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'field_border_layout',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Field Border Width', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_border_width'
-						],
-						[
-							'type'  => "color",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_border_width',
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Field Label', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_style_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Field Border', 'funnel-builder' ),
 							'class' => 'bwf-field-one-third ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_border_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Field Focus', 'funnel-builder' ),
 							'class' => 'bwf-field-one-third bwf-field-one-third-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_focus_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Field Value', 'funnel-builder' ),
 							'class' => 'bwf-field-one-third bwf-field-one-third-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'field_input_color',
-						],
-					]
-				],
+						),
+					),
+				),
 				/* Buttons */
-				[
+				array(
 					'label'  => __( 'Buttons', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'  => "text",
+					'fields' => array(
+						array(
+							'type'  => 'text',
 							'label' => __( 'Button Label', 'funnel-builder' ),
 							'class' => '',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_btn_text'
-						],
-						[
-							'type'  => "number",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_btn_text',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Font Size', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_fs'
-						],
-						[
-							'type'  => "number",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_fs',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Padding Top Bottom', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_top_bottom_padding'
-						],
-						[
-							'type'  => "number",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_top_bottom_padding',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Padding Left Right', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_left_right_padding'
-						],
-						[
-							'type'  => "number",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_left_right_padding',
+						),
+						array(
+							'type'  => 'number',
 							'label' => __( 'Border Radius', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_border_radius'
-						],
-						[
-							'type'    => "select",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_border_radius',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Font Weight', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => 'wfacp-normal',
-							'options' => [
-								[ 'key' => 'normal', 'value' => 'normal', 'label' => 'Normal' ],
-								[ 'key' => 'bold', 'value' => 'bold', 'label' => 'Bold' ],
-							],
+							'options' => array(
+								array(
+									'key'   => 'normal',
+									'value' => 'normal',
+									'label' => 'Normal',
+								),
+								array(
+									'key'   => 'bold',
+									'value' => 'bold',
+									'label' => 'Bold',
+								),
+							),
 
-							'key' => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_btn_font_weight'
-						],
-						[
-							'type'    => "select",
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_btn_font_weight',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Width', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => 'normal',
-							'options' => [
-								[ 'key' => '100', 'value' => '100', 'label' => 'Full Width' ],
-								[ 'key' => 'initial', 'value' => 'initial', 'label' => 'Normal' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_width'
-						],
-						[
-							'type'    => "select",
+							'options' => array(
+								array(
+									'key'   => '100',
+									'value' => '100',
+									'label' => 'Full Width',
+								),
+								array(
+									'key'   => 'initial',
+									'value' => 'initial',
+									'label' => 'Normal',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_width',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Alignment', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half',
 							'default' => 'left',
-							'options' => [
-								[ 'key' => 'left', 'value' => 'left', 'label' => 'Left' ],
-								[ 'key' => 'center', 'value' => 'center', 'label' => 'Center' ],
-								[ 'key' => 'right', 'value' => 'right', 'label' => 'Right' ],
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_talign'
-						],
-						[
-							'type'    => "select",
+							'options' => array(
+								array(
+									'key'   => 'left',
+									'value' => 'left',
+									'label' => 'Left',
+								),
+								array(
+									'key'   => 'center',
+									'value' => 'center',
+									'label' => 'Center',
+								),
+								array(
+									'key'   => 'right',
+									'value' => 'right',
+									'label' => 'Right',
+								),
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_talign',
+						),
+						array(
+							'type'    => 'select',
 							'label'   => __( 'Sticky on Mobile', 'funnel-builder' ),
 							'class'   => 'bwf-field-one-half bwf-field-one-half-last',
 							'default' => 'no_sticky',
-							'options' => [
-								[ 'key' => 'yes_sticky', 'value' => 'yes_sticky', 'label' => __( 'Yes', 'funnel-builder' ) ],
-								[ 'key' => 'no_sticky', 'value' => 'no_sticky', 'label' => __( 'No', 'funnel-builder' ) ],
+							'options' => array(
+								array(
+									'key'   => 'yes_sticky',
+									'value' => 'yes_sticky',
+									'label' => __( 'Yes', 'funnel-builder' ),
+								),
+								array(
+									'key'   => 'no_sticky',
+									'value' => 'no_sticky',
+									'label' => __( 'No', 'funnel-builder' ),
+								),
 
-							],
-							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_make_button_sticky_on_mobile'
-						],
-						[
-							'type'  => "color",
+							),
+							'key'     => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_make_button_sticky_on_mobile',
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Background', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_bg_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Label', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_text_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Background Hover', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_bg_hover_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Label Hover', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'btn_order-place_text_hover_color',
-						],
-						[
-							'type'  => "textarea",
+						),
+						array(
+							'type'  => 'textarea',
 							'label' => __( 'Text Below Place Order Buttons', 'funnel-builder' ),
 							'class' => '',
-							'key'   => 'wfacp_form_section_embed_forms_2_' . 'wfacp_form_section_text_below_placeorder_btn'
-						],
-						[
-							'type'  => "color",
+							'key'   => 'wfacp_form_section_embed_forms_2_' . 'wfacp_form_section_text_below_placeorder_btn',
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'additional_text_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Background', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'additional_bg_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Validation Text', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'validation_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Form Content', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'form_content_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Background', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'section_bg_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Form Links Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half bwf-field-one-half-last',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'form_content_link_color',
-						],
-						[
-							'type'  => "color",
+						),
+						array(
+							'type'  => 'color',
 							'label' => __( 'Form Links Hover Color', 'funnel-builder' ),
 							'class' => 'bwf-field-one-half ',
 							'key'   => 'wfacp_form_section_embed_forms_2_' . 'form_content_link_hover_color',
-						],
+						),
 
-					]
-				],
-				//Payment Gateways
-				[
+					),
+				),
+				// Payment Gateways
+				array(
 					'label'  => __( 'Payment Methods', 'funnel-builder' ),
-					"fields" => [
-						[
-							'type'  => "input",
+					'fields' => array(
+						array(
+							'type'  => 'input',
 							'label' => __( 'Heading', 'funnel-builder' ),
 							'class' => '',
-							'key'   => 'wfacp_form_section_payment_methods_heading'
-						],
-						[
-							'type'  => "textarea",
+							'key'   => 'wfacp_form_section_payment_methods_heading',
+						),
+						array(
+							'type'  => 'textarea',
 							'label' => __( 'Sub heading', 'funnel-builder' ),
 							'class' => '',
-							'key'   => 'wfacp_form_section_payment_methods_sub_heading'
-						]
-					]
-				],
-			];
+							'key'   => 'wfacp_form_section_payment_methods_sub_heading',
+						),
+					),
+				),
+			);
 
 			$models['wfacp_form_section_embed_forms_2_disable_steps_bar'] = ! empty( $models['wfacp_form_section_embed_forms_2_disable_steps_bar'] ) ? wffn_string_to_bool( $models['wfacp_form_section_embed_forms_2_disable_steps_bar'] ) : false;
 
-			return [ 'schema' => $checkout_form_fields, 'values' => $models ];
+			return array(
+				'schema' => $checkout_form_fields,
+				'values' => $models,
+			);
 		}
 
 		public function get_additional_tabs_info( $page_type, $design, $step_id ) {
@@ -3061,157 +3334,157 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				switch ( $page_type ) {
 					case 'optin':
 						if ( isset( $design['selected_type'] ) && 'wp_editor_1' === $design['selected'] ) {
-							$additional_tabs[] = [
+							$additional_tabs[] = array(
 								'mainHeading' => __( 'Optin Page Settings', 'funnel-builder' ),
 								'heading'     => __( 'Form Shortcodes', 'funnel-builder' ),
 								'title'       => '',
-								'fields'      => [
-									[
+								'fields'      => array(
+									array(
 										'label' => __( 'Optin Form Shortcode', 'funnel-builder' ),
 										'value' => '[wfop_form]',
-										'id'    => 'wfop_form'
-									],
-									[
+										'id'    => 'wfop_form',
+									),
+									array(
 										'label' => __( 'Optin Popup Link', 'funnel-builder' ),
 										'value' => esc_url( site_url() . '/?wfop-popup=yes' ),
 										'id'    => 'wfop_popup',
-									]
-								],
-							];
+									),
+								),
+							);
 						}
-						$additional_tabs[] = [
+						$additional_tabs[] = array(
 							'mainHeading' => __( 'Optin Page Settings', 'funnel-builder' ),
 							'heading'     => __( 'Personalization Shortcodes', 'funnel-builder' ),
 							'title'       => '',
-							'fields'      => [
-								[
+							'fields'      => array(
+								array(
 									'label' => __( 'Optin First Name', 'funnel-builder' ),
 									'value' => '[wfop_first_name]',
-									'id'    => 'wfop_first_name'
-								],
-								[
+									'id'    => 'wfop_first_name',
+								),
+								array(
 									'label' => __( 'Optin Last Name', 'funnel-builder' ),
 									'value' => '[wfop_last_name]',
 									'id'    => 'wfop_last_name',
-								],
-								[
+								),
+								array(
 									'label' => __( 'Optin Email', 'funnel-builder' ),
 									'value' => '[wfop_email]',
-									'id'    => 'wfop_email'
-								],
-								[
+									'id'    => 'wfop_email',
+								),
+								array(
 									'label' => __( 'Optin Phone', 'funnel-builder' ),
 									'value' => '[wfop_phone]',
-									'id'    => 'wfop_phone'
-								],
-								[
+									'id'    => 'wfop_phone',
+								),
+								array(
 									'label' => __( 'Optin Custom Fields', 'funnel-builder' ),
 									'value' => '[wfop_custom key = \'Label\']',
-									'id'    => 'wfop_custom'
-								]
-							],
-						];
+									'id'    => 'wfop_custom',
+								),
+							),
+						);
 						break;
 					case 'wc_thankyou':
 						if ( isset( $design['selected_type'] ) && 'wp_editor_1' === $design['selected'] ) {
-							$additional_tabs[] = [
+							$additional_tabs[] = array(
 								'mainHeading' => __( 'Thank You Page Settings', 'funnel-builder' ),
 								'heading'     => __( 'Order Shortcodes', 'funnel-builder' ),
 								'title'       => '',
-								'fields'      => [
-									[
+								'fields'      => array(
+									array(
 										'label' => __( 'Order Details', 'funnel-builder' ),
 										'value' => '[wfty_order_details]',
-										'id'    => 'wfty_order_details'
-									],
-									[
+										'id'    => 'wfty_order_details',
+									),
+									array(
 										'label' => __( 'Customer Details', 'funnel-builder' ),
 										'value' => '[wfty_customer_details]',
 										'id'    => 'wfty_customer_details',
-									]
-								],
-							];
+									),
+								),
+							);
 						}
 						if ( isset( $design['selected_type'] ) && 'oxy' === $design['selected_type'] ) {
 							$fields = array(
-								[
+								array(
 									'label' => __( 'Customer Email', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_customer_email']",
 									'id'    => 'wfty_customer_email',
-								],
-								[
+								),
+								array(
 									'label' => __( 'Customer First Name', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_customer_first_name']",
-									'id'    => 'wfty_first_name'
-								],
-								[
+									'id'    => 'wfty_first_name',
+								),
+								array(
 									'label' => __( 'Customer last Name', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_customer_last_name']",
-									'id'    => 'wfty_last_name'
-								],
-								[
+									'id'    => 'wfty_last_name',
+								),
+								array(
 									'label' => __( 'Customer Phone Number', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_customer_phone_number']",
-									'id'    => 'wfty_customer_phone_number'
-								],
-								[
+									'id'    => 'wfty_customer_phone_number',
+								),
+								array(
 									'label' => __( 'Order Number', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_order_number']",
-									'id'    => 'wfty_order_number'
-								],
-								[
+									'id'    => 'wfty_order_number',
+								),
+								array(
 									'label' => __( 'Order Custom Meta', 'funnel-builder' ),
 									'value' => "[oxygen data='phpfunction' function='wfty_order_meta' arguments='']",
-									'id'    => 'wfty_order_meta'
-								],
+									'id'    => 'wfty_order_meta',
+								),
 							);
 						} else {
 							$fields = array(
-								[
+								array(
 									'label' => __( 'Customer Email', 'funnel-builder' ),
 									'value' => '[wfty_customer_email]',
 									'id'    => 'wfty_customer_email',
-								],
-								[
+								),
+								array(
 									'label' => __( 'Customer First Name', 'funnel-builder' ),
 									'value' => '[wfty_customer_first_name]',
-									'id'    => 'wfty_customer_first_name'
-								],
-								[
+									'id'    => 'wfty_customer_first_name',
+								),
+								array(
 									'label' => __( 'Customer last Name', 'funnel-builder' ),
 									'value' => '[wfty_customer_last_name]',
-									'id'    => 'wfty_customer_last_name'
-								],
-								[
+									'id'    => 'wfty_customer_last_name',
+								),
+								array(
 									'label' => __( 'Customer Phone Number', 'funnel-builder' ),
 									'value' => '[wfty_customer_phone_number]',
-									'id'    => 'wfty_customer_phone_number'
-								],
-								[
+									'id'    => 'wfty_customer_phone_number',
+								),
+								array(
 									'label' => __( 'Order Number', 'funnel-builder' ),
 									'value' => '[wfty_order_number]',
-									'id'    => 'wfty_order_number'
-								],
-								[
+									'id'    => 'wfty_order_number',
+								),
+								array(
 									'label' => __( 'Order Total', 'funnel-builder' ),
 									'value' => '[wfty_order_total]',
-									'id'    => 'wfty_order_total'
-								],
-								[
+									'id'    => 'wfty_order_total',
+								),
+								array(
 									'label' => __( 'Order Custom Meta', 'funnel-builder' ),
 									'value' => '[wfty_order_meta key=""]',
-									'id'    => 'wfty_order_meta'
-								],
+									'id'    => 'wfty_order_meta',
+								),
 							);
 						}
 
-						$short_code_fields = [];
-						$additional_tabs[] = [
+						$short_code_fields = array();
+						$additional_tabs[] = array(
 							'mainHeading' => __( 'Thank You Page Settings', 'funnel-builder' ),
 							'heading'     => __( 'Personalization Shortcodes', 'funnel-builder' ),
 							'title'       => '',
-							'fields'      => $fields
-						];
+							'fields'      => $fields,
+						);
 
 						if ( isset( $design['selected_type'] ) && 'wp_editor_1' === $design['selected'] ) {
 
@@ -3225,46 +3498,53 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 								$short_code_fields[] = $field;
 							}
 
-							$custom_shortcode = [
+							$custom_shortcode = array(
 								'type'   => 'shortcode',
 								'fields' => $short_code_fields,
-							];
-							$form_design      = $this->wcty_design_settings( $step_id );;
+							);
+							$form_design      = $this->wcty_design_settings( $step_id );
 
-							$tabs = [
-								[ 'id' => 'tab_custom_shortcode', 'name' => __( 'ShortCode', 'funnel-builder' ) ],
-								[ 'id' => 'tab_design', 'name' => __( 'Design', 'funnel-builder' ) ],
-							];
+							$tabs = array(
+								array(
+									'id'   => 'tab_custom_shortcode',
+									'name' => __( 'ShortCode', 'funnel-builder' ),
+								),
+								array(
+									'id'   => 'tab_design',
+									'name' => __( 'Design', 'funnel-builder' ),
+								),
+							);
 
-							$content = [ 'tab_custom_shortcode' => $custom_shortcode, 'tab_design' => $form_design['schema'] ];
+							$content = array(
+								'tab_custom_shortcode' => $custom_shortcode,
+								'tab_design'           => $form_design['schema'],
+							);
 
 							unset( $additional_tabs );
 
-							$additional_tabs[] = [
+							$additional_tabs[] = array(
 								'tabs'    => $tabs,
 								'content' => $content,
 								'heading' => __( 'Thank You Page Settings', 'funnel-builder' ),
-								"values"  => $form_design['values']
-							];
-
+								'values'  => $form_design['values'],
+							);
 
 						}
 
-
 						break;
 					case 'landing':
-						$additional_tabs[] = [
+						$additional_tabs[] = array(
 							'mainHeading' => __( 'Sale Page Settings', 'funnel-builder' ),
 							'heading'     => __( 'Shortcodes', 'funnel-builder' ),
 							'title'       => '',
-							'fields'      => [
-								[
+							'fields'      => array(
+								array(
 									'label' => __( 'Next Step Button Link', 'funnel-builder' ),
 									'value' => esc_url( site_url() . '/?wffn-next-link=yes' ),
-									'id'    => 'next_step_link'
-								],
-							],
-						];
+									'id'    => 'next_step_link',
+								),
+							),
+						);
 						break;
 					case 'optin_ty':
 						break;
@@ -3281,13 +3561,13 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 								}
 							}
 
-							$additional_tabs[] = [
+							$additional_tabs[] = array(
 								'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 								'heading'     => __( 'Personalization Shortcodes', 'funnel-builder' ),
-								'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
-								'fields'      => $shortcode
-							];
-						} else if ( isset( $design['selected_type'] ) && in_array( $design['selected_type'], [ 'beaver', 'custom', 'custom_page' ], true ) ) {
+								'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+								'fields'      => $shortcode,
+							);
+						} elseif ( isset( $design['selected_type'] ) && in_array( $design['selected_type'], array( 'beaver', 'custom', 'custom_page' ), true ) ) {
 							if ( class_exists( 'WFOCU_Core' ) ) {
 								if ( $design ) {
 									$offer_data = WFOCU_Core()->offers->get_offer_meta( $step_id );
@@ -3304,92 +3584,115 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 												continue;
 											}
 
-											$shortcode[] = [ 'heading' => __( 'Product', 'funnel-builder' ) . ': ' . wc_get_product( $product_id )->get_title() ];
+											$shortcode[] = array( 'heading' => __( 'Product', 'funnel-builder' ) . ': ' . wc_get_product( $product_id )->get_title() );
 
 											foreach ( $offer_shortcode as $item ) {
 												if ( isset( $item['code'] ) && isset( $item['code']['multi'] ) ) {
 													$s_id = trim( str_replace( array( '[', ']' ), '', $item['code']['single'] ) );
 													if ( false !== strpos( $s_id, '?' ) ) {
 														$s_id = explode( '?', $s_id );
-														$s_id = ( is_array( $s_id ) && isset( $s_id[1] ) ) ? str_replace( [ ' ', '-', '=' ], '_', $s_id[1] ) : '';
+														$s_id = ( is_array( $s_id ) && isset( $s_id[1] ) ) ? str_replace( array( ' ', '-', '=' ), '_', $s_id[1] ) : '';
 													}
-													$shortcode[] = [
+													$shortcode[] = array(
 														'label' => $item['label'],
 														'value' => sprintf( $item['code']['multi'], $product_count ),
 														'id'    => $s_id . '_' . $product_count,
-													];
+													);
 
 												}
 											}
 											if ( $product_count === 1 ) {
-												$additional_tabs[] = [
+												$additional_tabs[] = array(
 													'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 													'heading'     => __( 'Shortcodes', 'funnel-builder' ),
-													'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'woofunnels-upstroke-one-click-upsell' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
-													'fields'      => $shortcode
-												];
+													'title'       => sprintf( __( 'Using page builders to build custom upsell pages? <a href=%1$s target="_blank">Read this guide to learn more</a> about using Button widgets of your page builder <a href=%2$s target="_blank">Personalization shortcodes</a>', 'funnel-builder' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designed-one-click-upsell-pages/' ), esc_url( 'https://funnelkit.com/docs/one-click-upsell/design/custom-designs/#order-personalization-shortcodes' ) ),
+													'fields'      => $shortcode,
+												);
 											} else {
-												$additional_tabs[] = [
+												$additional_tabs[] = array(
 													'mainHeading' => __( 'Upsell Page Settings', 'funnel-builder' ),
 													'heading'     => '',
 													'title'       => '',
-													'fields'      => $shortcode
-												];
+													'fields'      => $shortcode,
+												);
 											}
-											$product_count ++;
+											++$product_count;
 										}
-
 									} else {
-										$additional_tabs[] = [];
+										$additional_tabs[] = array();
 									}
 								}
 							}
 						}
 						break;
 					case 'wc_checkout':
-
 						$is_pro_active = WFFN_Common::wffn_is_funnel_pro_active();
 						$url           = admin_url( 'post.php?post=' . $step_id . '&action=edit' );
 						$link          = "<a href='$url'>WordPress Editor</a>";
 
-						$custom_shortcode = [
-							'type'   => 'shortcode',
+						$custom_shortcode = array(
+							'type'    => 'shortcode',
 							'heading' => __( 'Shortcodes', 'funnel-builder' ),
-							'fields' => [
-								[
+							'fields'  => array(
+								array(
 									'label' => __( 'Form Shortcode', 'funnel-builder' ),
 									'value' => '[wfacp_forms]',
 									'id'    => 'wfacp_forms',
-									'hint'  => sprintf( __( 'Use this shortcode to embed the checkout form on this page. Switch to %s.', 'woofunnels-aero-checkout' ), $link )
-								],
-							],
-						];
+									'hint'  => sprintf( __( 'Use this shortcode to embed the checkout form on this page. Switch to %s.', 'funnel-builder' ), $link ),
+								),
+							),
+						);
 
 						if ( $is_pro_active ) {
-							$custom_shortcode['fields'][] = [
+							$custom_shortcode['fields'][] = array(
 								'label' => __( 'Mini Cart Shortcode', 'funnel-builder' ),
 								'value' => '[wfacp_mini_cart]',
 								'id'    => 'wfacp_mini_cart',
-								'hint'  => __( 'Use this shortcode to display mini cart your pages.', 'woofunnels-aero-checkout' )
-							];
+								'hint'  => __( 'Use this shortcode to display mini cart your pages.', 'funnel-builder' ),
+							);
 							$additional_tabs[]            = $custom_shortcode;
 						} else {
 
 							$fieldsets_data   = WFACP_Common::get_fieldset_data( $step_id );
-							$field_width_data = [];
+							$field_width_data = array();
 
-							$width_options = [
-								[ 'key' => 'wfacp-col-full', 'value' => 'wfacp-col-full', 'label' => 'Full' ],
-								[ 'key' => 'wfacp-col-left-half', 'value' => 'wfacp-col-left-half', 'label' => 'One Half' ],
-								[ 'key' => 'wfacp-col-left-third', 'value' => 'wfacp-col-left-third', 'label' => 'One Third' ],
-								[ 'key' => 'wfacp-col-two-third', 'value' => 'wfacp-col-two-third', 'label' => 'Two Third' ],
-							];
+							$width_options = array(
+								array(
+									'key'   => 'wfacp-col-full',
+									'value' => 'wfacp-col-full',
+									'label' => 'Full',
+								),
+								array(
+									'key'   => 'wfacp-col-left-half',
+									'value' => 'wfacp-col-left-half',
+									'label' => 'One Half',
+								),
+								array(
+									'key'   => 'wfacp-col-left-third',
+									'value' => 'wfacp-col-left-third',
+									'label' => 'One Third',
+								),
+								array(
+									'key'   => 'wfacp-col-two-third',
+									'value' => 'wfacp-col-two-third',
+									'label' => 'Two Third',
+								),
+							);
 
-							$tabs = [
-								[ 'id' => 'tab_custom_shortcode', 'name' => __( 'ShortCode', 'funnel-builder' ) ],
-								[ 'id' => 'tab_form_style', 'name' => __( 'Form Style', 'funnel-builder' ) ],
-								[ 'id' => 'tab_field_width', 'name' => __( 'Field Width', 'funnel-builder' ) ]
-							];
+							$tabs = array(
+								array(
+									'id'   => 'tab_custom_shortcode',
+									'name' => __( 'ShortCode', 'funnel-builder' ),
+								),
+								array(
+									'id'   => 'tab_form_style',
+									'name' => __( 'Form Style', 'funnel-builder' ),
+								),
+								array(
+									'id'   => 'tab_field_width',
+									'name' => __( 'Field Width', 'funnel-builder' ),
+								),
+							);
 
 							$design_settings = $this->design_settings( $step_id );
 							$form_style      = $design_settings['schema'];
@@ -3398,14 +3701,14 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 								$fieldsets = $fieldsets_data['fieldsets'];
 								foreach ( $fieldsets as $fieldset ) {
 									foreach ( $fieldset as $field_set ) {
-										$field_data = [];
+										$field_data = array();
 										if ( ! empty( $field_set['fields'] ) ) {
 
 											$field_data['label'] = ! empty( $field_set['name'] ) ? $field_set['name'] : __( 'No section Heading', 'funnel-builder' );
 											foreach ( $field_set['fields'] as $_field ) {
 												if ( ! empty( $_field['label'] ) ) {
 													$field['label']   = $_field['label'];
-													$field['key']     = "wfacp_form_form_fields_1_embed_forms_2_" . $_field['id'];
+													$field['key']     = 'wfacp_form_form_fields_1_embed_forms_2_' . $_field['id'];
 													$field['class']   = '';
 													$field['type']    = 'select';
 													$field['options'] = $width_options;
@@ -3419,14 +3722,18 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 								}
 							}
 
-							$content = [ 'tab_custom_shortcode' => $custom_shortcode, 'tab_form_style' => $form_style, 'tab_field_width' => $field_width_data ];
+							$content = array(
+								'tab_custom_shortcode' => $custom_shortcode,
+								'tab_form_style'       => $form_style,
+								'tab_field_width'      => $field_width_data,
+							);
 
-							$additional_tabs[] = [
+							$additional_tabs[] = array(
 								'tabs'    => $tabs,
 								'content' => $content,
 								'heading' => __( 'Checkout Form', 'funnel-builder' ),
-								"values"  => $design_settings['values']
-							];
+								'values'  => $design_settings['values'],
+							);
 
 						}
 
@@ -3454,7 +3761,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				$product_store = WC_Data_Store::load( 'product' );
 				$product_ids   = $product_store->search_products( $term, '', $include_variations );
 			} else {
-				$product_ids = [];
+				$product_ids = array();
 			}
 
 			return $product_ids;
@@ -3472,13 +3779,13 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 			if ( ! empty( $step_id ) && ! empty( $type ) && ! empty( $option ) ) {
 				$option = $this->sanitize_custom( $option );
-				$order  = ! empty( $option['order'] ) ? $option['order'] : [];
+				$order  = ! empty( $option['order'] ) ? $option['order'] : array();
 
 				switch ( $type ) {
-					case 'offer' :
+					case 'offer':
 						$response = WFFN_REST_UPSELL_API_EndPoint::get_instance()->save_upsell_order( $step_id, $order );
 						break;
-					case 'wc_order_bump' :
+					case 'wc_order_bump':
 						$response = $this->save_bump_order( $step_id, $order );
 						break;
 					default:
@@ -3506,14 +3813,14 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 			if ( ! empty( $step ) && ! empty( $steps[ $search ] ) && ! empty( $step['substeps']['wc_order_bump'] ) ) {
 				$steps[ $search ]['substeps']['wc_order_bump'] = $order;
 				$funnel->set_steps( $steps );
-				$return = $funnel->save( [] );
+				$return = $funnel->save( array() );
 			}
 
 			return $return;
 		}
 
 		public function get_step_design( $step_id, $type = 'optin' ) {
-			$resp                = [];
+			$resp                = array();
 			$page_class_instance = wffn_rest_funnel_modules()->get_page_class_instance( $type );
 			if ( is_object( $page_class_instance ) ) {
 				$design         = $page_class_instance->get_page_design( $step_id );
@@ -3526,7 +3833,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 		public static function get_first_item( $order_id ) {
 			$return = array(
 				'titles' => '',
-				'more'   => ''
+				'more'   => '',
 			);
 			if ( ! empty( $order_id ) ) {
 				$wc_order = wc_get_order( $order_id );
@@ -3536,7 +3843,7 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 					$items_count = count( $order_items );
 
 					if ( $items_count > 0 ) {
-						$titles = [];
+						$titles = array();
 						foreach ( $order_items as $item ) {
 							$titles[] = $item->get_name();
 						}
@@ -3589,30 +3896,80 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 
 			$postID = $post_data->ID;
 
-			$native_edit_link        = add_query_arg( [ 'action' => 'edit', 'post' => $postID ], admin_url( 'post.php' ) );
+			$native_edit_link        = add_query_arg(
+				array(
+					'action' => 'edit',
+					'post'   => $postID,
+				),
+				admin_url( 'post.php' )
+			);
 			$permalink               = get_the_permalink( $postID );
 			$pageBuilderPostMetaKeys = array(
-				array( '_fl_builder_enabled', 'bb-plugin/fl-builder.php', 'Beaver Builder', 'meta', add_query_arg( [ 'fl_builder' => 'yes' ], $permalink ) ),
-				array( '_fl_builder_enabled', 'beaver-builder-lite-version/fl-builder.php', 'Beaver builder', 'meta', add_query_arg( [ 'fl_builder' => 'yes' ], $permalink ) ),
+				array( '_fl_builder_enabled', 'bb-plugin/fl-builder.php', 'Beaver Builder', 'meta', add_query_arg( array( 'fl_builder' => 'yes' ), $permalink ) ),
+				array( '_fl_builder_enabled', 'beaver-builder-lite-version/fl-builder.php', 'Beaver builder', 'meta', add_query_arg( array( 'fl_builder' => 'yes' ), $permalink ) ),
 				array(
 					'wp:siteorigin-panels',
 					'siteorigin-panels/siteorigin-panels.php',
 					'SiteOrigin',
 					'content',
-					$native_edit_link
+					$native_edit_link,
 				),
 				array(
 					'tcb_editor_enabled',
 					'thrive-visual-editor/thrive-visual-editor.php',
 					'Thrive Builder',
 					'meta',
-					add_query_arg( [ 'action' => 'architect', 'tve' => 'true', 'post' => $postID ], admin_url( 'post.php' ) )
+					add_query_arg(
+						array(
+							'action' => 'architect',
+							'tve'    => 'true',
+							'post'   => $postID,
+						),
+						admin_url( 'post.php' )
+					),
 				),
 				array( '_wpb_vc_js_status', 'js_composer/js_composer.php', 'WPBakery Page Builder', 'meta', $native_edit_link ),
-				array( 'brizy_enabled', 'brizy/brizy.php', 'Brizy', 'meta', add_query_arg( [ 'action' => 'in-front-editor', 'post' => $postID ], admin_url( 'post.php' ) ) ),
-				array( '_bricks_editor_mode', defined( 'BRICKS_VERSION' ), 'Bricks', 'meta', add_query_arg( [ 'bricks' => 'run' ], $permalink ) ),
-				array( 'breakdance_data', 'breakdance/plugin.php', 'Break Dance', 'meta', add_query_arg( [ "breakdance" => "builder", "id" => $postID ], home_url( '/' ) ) ),
-				array( 'wp:flatsome', defined( 'UX_BUILDER_PATH' ), 'UX Builder', 'content', add_query_arg( [ 'app' => 'uxbuilder', 'type' => 'editor', 'post' => $postID ], admin_url( 'post.php' ) ) )
+				array(
+					'brizy_enabled',
+					'brizy/brizy.php',
+					'Brizy',
+					'meta',
+					add_query_arg(
+						array(
+							'action' => 'in-front-editor',
+							'post'   => $postID,
+						),
+						admin_url( 'post.php' )
+					),
+				),
+				array( '_bricks_editor_mode', defined( 'BRICKS_VERSION' ), 'Bricks', 'meta', add_query_arg( array( 'bricks' => 'run' ), $permalink ) ),
+				array(
+					'breakdance_data',
+					'breakdance/plugin.php',
+					'Break Dance',
+					'meta',
+					add_query_arg(
+						array(
+							'breakdance' => 'builder',
+							'id'         => $postID,
+						),
+						home_url( '/' )
+					),
+				),
+				array(
+					'wp:flatsome',
+					defined( 'UX_BUILDER_PATH' ),
+					'UX Builder',
+					'content',
+					add_query_arg(
+						array(
+							'app'  => 'uxbuilder',
+							'type' => 'editor',
+							'post' => $postID,
+						),
+						admin_url( 'post.php' )
+					),
+				),
 			);
 			$metaValues              = get_post_meta( $postID );
 			foreach ( $pageBuilderPostMetaKeys as $metaData ) {
@@ -3626,17 +3983,25 @@ if ( ! class_exists( 'WFFN_REST_Funnel_Modules' ) ) {
 				}
 				if ( $key_type === 'content' ) {
 					if ( false !== strpos( $post_data->post_content, $metaKey ) ) {
-						return [ 'page_builder' => $builder, 'url' => $url ];
+						return array(
+							'page_builder' => $builder,
+							'url'          => $url,
+						);
 					}
 				}
 				if ( isset( $metaValues[ $metaKey ] ) && ! empty( $metaValues[ $metaKey ][0] ) ) {
-					return [ 'page_builder' => $builder, 'url' => $url ];
+					return array(
+						'page_builder' => $builder,
+						'url'          => $url,
+					);
 				}
 			}
 
-			return [ 'page_builder' => __( 'Other Page Builder', 'funnel-builder' ), 'url' => $native_edit_link ]; // If no active builder is detected or the required plugin is not activated
+			return array(
+				'page_builder' => __( 'Other Page Builder', 'funnel-builder' ),
+				'url'          => $native_edit_link,
+			); // If no active builder is detected or the required plugin is not activated
 		}
-
 	}
 
 	if ( ! function_exists( 'wffn_rest_funnel_modules' ) ) {

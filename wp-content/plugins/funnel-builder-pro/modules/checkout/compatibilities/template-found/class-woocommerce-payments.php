@@ -11,10 +11,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_WooCommerce_Payments {
 		public function __construct() {
-			add_action( 'wfacp_internal_css', [ $this, 'enqueue_scripts' ] );
-			add_action( 'wfacp_outside_header', [ $this, 'detect_woo_payment' ] );
-			add_filter( 'wfacp_product_switcher_price_data', [ $this, 'wfacp_product_switcher_price_data' ], 10, 2 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'enqueue_scripts' ) );
+			add_action( 'wfacp_outside_header', array( $this, 'detect_woo_payment' ) );
+			add_filter( 'wfacp_product_switcher_price_data', array( $this, 'wfacp_product_switcher_price_data' ), 10, 2 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 		}
 
 		/*
@@ -24,10 +24,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			$instance = WFACP_Common::remove_actions( 'woocommerce_checkout_billing', 'WC_Payments', 'woopay_fields_before_billing_details' );
 
 			if ( $instance == 'WC_Payments' ) {
-				add_action( 'wfacp_internal_css', [ $this, 'css' ] );
-				add_filter( 'woocommerce_form_field_args', [ $this, 'add_aero_basic_classes' ], 10, 2 );
+				add_action( 'wfacp_internal_css', array( $this, 'css' ) );
+				add_filter( 'woocommerce_form_field_args', array( $this, 'add_aero_basic_classes' ), 10, 2 );
 			}
-
 		}
 
 		public function css() {
@@ -82,64 +81,64 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			}
 
 			</style>
-<?php
+			<?php
 		}
 
 		public function add_aero_basic_classes( $field, $key ) {
 			if ( $key === 'billing_email' ) {
 				$field['input_class'][] = 'wfacp-form-control';
-				$tmp                    = [];
+				$tmp                    = array();
 				if ( isset( $field['class'] ) && is_array( $field['class'] ) ) {
 					$tmp = $field['class'];
 				}
-				$field['class']         = array_merge( [ 'woopay-billing-email' ], $tmp );
+				$field['class']         = array_merge( array( 'woopay-billing-email' ), $tmp );
 				$field['label_class'][] = 'wfacp-form-control-label';
 			}
 
 			return $field;
 		}
 
-	public function enqueue_scripts() {
-		// Early return if cart doesn't exist or doesn't need payment
-		if ( is_null( WC()->cart ) || ! WC()->cart->needs_payment() ) {
-			return;
+		public function enqueue_scripts() {
+			// Early return if cart doesn't exist or doesn't need payment
+			if ( is_null( WC()->cart ) || ! WC()->cart->needs_payment() ) {
+				return;
+			}
+
+			// Check if WooPayments is active and available
+			if ( ! defined( 'WCPAY_PLUGIN_FILE' ) || ! class_exists( 'WC_Payments' ) ) {
+				return;
+			}
+
+			$gateways = WC()->payment_gateways()->get_available_payment_gateways();
+			if ( ! isset( $gateways['woocommerce_payments'] ) ) {
+				return;
+			}
+
+			$gateway = $gateways['woocommerce_payments'];
+
+			/**
+			 * @var $gateway WC_Payment_Gateway_WCPay
+			 */
+			if ( method_exists( $gateway, 'get_payment_fields_js_config' ) ) {
+				wp_localize_script( 'wcpay-checkout', 'wcpay_config', $gateway->get_payment_fields_js_config() );
+				wp_enqueue_script( 'wcpay-checkout' );
+				wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), array(), WC_Payments::get_file_version( 'dist/checkout.css' ) );
+			}
+
+			// Enqueue blocks-checkout.css for Stripe link modal styling
+			// Call WooPayments' get_payment_method_script_handles() to ensure proper CSS enqueuing
+			// This fixes the issue where Stripe link modal appears distorted due to missing CSS
+			if ( class_exists( 'WC_Payments_Blocks_Payment_Method' ) && ! wp_style_is( 'wc-blocks-checkout-style', 'enqueued' ) ) {
+				$blocks_payment_method = new WC_Payments_Blocks_Payment_Method();
+				$blocks_payment_method->initialize();
+
+				// Temporarily ensure is_checkout() returns true so the CSS gets enqueued
+				// This is safe because we're only on Funnelkit checkout pages when this function runs
+				add_filter( 'woocommerce_is_checkout', '__return_true', 999 );
+				$blocks_payment_method->get_payment_method_script_handles();
+				remove_filter( 'woocommerce_is_checkout', '__return_true', 999 );
+			}
 		}
-
-		// Check if WooPayments is active and available
-		if ( ! defined( 'WCPAY_PLUGIN_FILE' ) || ! class_exists( 'WC_Payments' ) ) {
-			return;
-		}
-
-		$gateways = WC()->payment_gateways()->get_available_payment_gateways();
-		if ( ! isset( $gateways['woocommerce_payments'] ) ) {
-			return;
-		}
-
-		$gateway = $gateways['woocommerce_payments'];
-
-		/**
-		 * @var $gateway WC_Payment_Gateway_WCPay
-		 */
-		if ( method_exists( $gateway, 'get_payment_fields_js_config' ) ) {
-			wp_localize_script( 'wcpay-checkout', 'wcpay_config', $gateway->get_payment_fields_js_config() );
-			wp_enqueue_script( 'wcpay-checkout' );
-			wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), [], WC_Payments::get_file_version( 'dist/checkout.css' ) );
-		}
-
-		// Enqueue blocks-checkout.css for Stripe link modal styling
-		// Call WooPayments' get_payment_method_script_handles() to ensure proper CSS enqueuing
-		// This fixes the issue where Stripe link modal appears distorted due to missing CSS
-		if ( class_exists( 'WC_Payments_Blocks_Payment_Method' ) && ! wp_style_is( 'wc-blocks-checkout-style', 'enqueued' ) ) {
-			$blocks_payment_method = new WC_Payments_Blocks_Payment_Method();
-			$blocks_payment_method->initialize();
-
-			// Temporarily ensure is_checkout() returns true so the CSS gets enqueued
-			// This is safe because we're only on Funnelkit checkout pages when this function runs
-			add_filter( 'woocommerce_is_checkout', '__return_true', 999 );
-			$blocks_payment_method->get_payment_method_script_handles();
-			remove_filter( 'woocommerce_is_checkout', '__return_true', 999 );
-		}
-	}
 
 		/**
 		 * @param $price_data
@@ -163,22 +162,22 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 		 * @return mixed one of condition check the required key which was throwing the notice
 		 */
 		public function action() {
-			add_action( 'woocommerce_checkout_fields', [ $this, 'checkout_fields' ], 9 );
-			add_action( 'wfacp_before_form', [ $this, 'add_wcpay_hidden_div' ], 99 );
+			add_action( 'woocommerce_checkout_fields', array( $this, 'checkout_fields' ), 9 );
+			add_action( 'wfacp_before_form', array( $this, 'add_wcpay_hidden_div' ), 99 );
 		}
 
 		/**
 		 * Add hidden div for WooCommerce Payments compatibility
 		 */
 		public function add_wcpay_hidden_div() {
-			echo '<div id="wcpay-hidden-div" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
+			echo '<div id="wcpay-hidden-div" aria-hidden="true" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
     <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
-        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" style="transition: none;">
-        <label id="wcpay-hidden-valid-active-label"></label>
+        <label for="wcpay-hidden-input" id="wcpay-hidden-valid-active-label">Payment processing field</label>
+        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" aria-label="Payment processing field" tabindex="-1" autocomplete="off" style="transition: none;">
     </p>
     <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
-        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="">
-        <label id="wcpay-hidden-invalid-input"></label>
+        <label for="wcpay-hidden-invalid-input" id="wcpay-hidden-invalid-input-label">Payment validation field</label>
+        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="" aria-label="Payment validation field" tabindex="-1" autocomplete="off">
     </p>
 </div>';
 		}
@@ -187,7 +186,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			if ( ! is_array( $fields ) || count( $fields ) == 0 ) {
 				return $fields;
 			}
-
 
 			foreach ( $fields as $i => $field ) {
 
@@ -200,14 +198,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 						$fields[ $i ][ $k ]['required'] = false;
 					}
 				}
-
 			}
-
 
 			return $fields;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_WooCommerce_Payments(), 'woocommerce_checkout' );

@@ -151,6 +151,10 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			$fields_options = [
 				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::-webkit-input-placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control::-moz-placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:-ms-input-placeholder',
 			];
 
 			$optionString = implode( ',', $fields_options );
@@ -295,48 +299,96 @@ if ( ! class_exists( 'El_WFACP_Form_Summary' ) ) {
 
 			$this->add_heading( __( 'Default Font', 'woocommerce' ) );
 
-			$wfacp_mini_cart_font_family = [
+			// Global selectors with lower specificity than local settings
+			// Removed one class from each local selector to ensure local settings override global
+			$wfacp_mini_cart_global_selectors = [
 				'{{WRAPPER}} .wfacp_mini_cart_start_h *',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount bdi',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items .product-total',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items .product-total span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items .product-total small',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items dl',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items dt',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items dd',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_items dd p',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total)',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total) td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total) th',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total) td span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total) td small',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr:not(.order-total) td a',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h span.wfacp_coupon_code',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr.order-total td span.woocommerce-Price-amount.amount',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .wfacp_mini_cart_reviews tr.order-total td span.woocommerce-Price-amount.amount bdi',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table .order-total td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table .order-total th',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table .order-total td span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item .product-name',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .cart_item td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .cart_item td small',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .cart_item td p',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .cart_item td .product-name span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .cart_item td .product-name',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp_main_showcoupon',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tr.order-total td',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tr.order-total th',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tr.order-total td span',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tr.order-total td small',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
-				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-coupon-btn',
+				// Heading selectors (removed .wfacp_mini_cart_start_h)
+				'{{WRAPPER}} .wfacp-order-summary-label',
+				// Products selectors (removed .wfacp_order_summary_container)
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td:not(.product-total)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total > span bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total > ins span bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total del bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total > span:not(.wfacp_cart_product_name_h):not(.wfacp_delete_item_wrap)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total ins span:not(.wfacp_cart_product_name_h):not(.wfacp_delete_item_wrap)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items .product-total small',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items dl',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items dt',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items dd',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_items dd p',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td .product-name',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td small',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h span.subscription-details',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td p',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td .product-name span:not(.subscription-details)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td .product-name',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h tr.cart_item td .product-name bdi',
+				// Low Stock Message selectors
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_stocks',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .product-name-area .wfacp_stocks',
+				// Coupon selectors (removed intermediate classes)
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp_main_showcoupon',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .woocommerce-info',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .woocommerce-info a',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control-label',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control::placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control::-webkit-input-placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control::-moz-placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control:-ms-input-placeholder',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .wfacp-form-control:focus',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:hover',
+				// Cart Total - Subtotal selectors (removed .wfacp_order_summary_container)
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) th',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) th span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td small',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td a',
+				// Saving amount selectors
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td *',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td svg path',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td *',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td svg path',
+				// Cart Total - Coupon display selectors (removed .wfacp_order_summary_container)
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount th',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount th span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount td span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount td a',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table tbody tr.cart-discount th span:not(.wfacp_coupon_code)',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table .cart-discount td span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table .cart-discount td span bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h .shop_table .cart-discount th .wfacp_coupon_code',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
+				// Cart Total - Total selectors (removed .wfacp_order_summary_container or simplified)
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td span.amount',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td span.amount bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total td small',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total th',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tr.order-total th span',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th small',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th a',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td span.woocommerce-Price-amount.amount',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td span.woocommerce-Price-amount.amount bdi',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td p',
+				'{{WRAPPER}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td a',
+
 			];
 
-			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_font_family, 'Font family', 'Open Sans' );
+
+			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_global_selectors, 'Font family', 'Open Sans' );
 			$this->add_heading( __( 'Divider', 'woocommerce' ) );
 
 			$this->add_border_color( 'mini_cart_divider_color', [

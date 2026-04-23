@@ -3,18 +3,18 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Divi_Field extends ET_Builder_Module {
 		protected $get_local_slug = '';
-		public $vb_support = 'on';
-		protected $post_id = 0;
-		protected $tabs = [];
-		protected $sub_tabs = [];
-		protected $html_fields = [];
-		protected $section_fields = [];
-		protected $modules_fields = [];
-		protected $typography = [];
-		protected $tab_array = [];
-		protected $style_selector = [];
-		private $heading_tag_keys = [];
-		public $global_typography = [ 'wfacp_font_family_typography', 'wfacp_mini_cart_font_family' ];
+		public $vb_support        = 'on';
+		protected $post_id        = 0;
+		protected $tabs           = array();
+		protected $sub_tabs       = array();
+		protected $html_fields    = array();
+		protected $section_fields = array();
+		protected $modules_fields = array();
+		protected $typography     = array();
+		protected $tab_array      = array();
+		protected $style_selector = array();
+		private $heading_tag_keys = array();
+		public $global_typography = array( 'wfacp_font_family_typography', 'wfacp_mini_cart_font_family' );
 		protected $module_credits = array(
 			'module_uri' => '',
 			'author'     => 'FunnelKit',
@@ -27,7 +27,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$this->advanced_fields['margin_padding']['use_padding'] = false;
 		}
 
-		public function add_heading( $tab_id, $heading, $separator = '', $conditions = [], $not_condition = [] ) {
+		public function add_heading( $tab_id, $heading, $separator = '', $conditions = array(), $not_condition = array() ) {
 
 			$key = $this->get_unique_id();
 
@@ -35,17 +35,14 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'label'     => $heading,
 				'type'      => 'text',
 				'className' => 'wfacp_heading_divi_builder',
-				'default'   => ''
+				'default'   => '',
 			);
 
-
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
-
 
 				$this->show_if( $key, $conditions );
 			}
 			if ( is_array( $not_condition ) && ! empty( $not_condition ) ) {
-
 
 				$this->show_if_not( $key, $not_condition );
 			}
@@ -54,7 +51,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_switcher( $tab_id, $key, $label = '', $default = 'off', $conditions = [] ) {
+		protected function add_switcher( $tab_id, $key, $label = '', $default = 'off', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Enable', 'woofunnels-aero-checkout' );
 			}
@@ -69,22 +66,20 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				),
 			);
 
-
 			$this->assign_tab( $key, $tab_id );
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
 			}
 
 			return $key;
-
 		}
 
-		protected function add_select( $tab_id, $key, $label, $options, $default, $conditions = [] ) {
+		protected function add_select( $tab_id, $key, $label, $options, $default, $conditions = array() ) {
 			$this->modules_fields[ $key ] = array(
 				'label'   => $label,
 				'type'    => 'select',
 				'options' => $options,
-				'default' => $this->get_default_data( $key, $default )
+				'default' => $this->get_default_data( $key, $default ),
 			);
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -97,7 +92,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		public function add_text( $tab_id, $key, $label, $default = '', $conditions = [], $not_condition = [] ) {
+		public function add_text( $tab_id, $key, $label, $default = '', $conditions = array(), $not_condition = array() ) {
 
 			$this->modules_fields[ $key ] = array(
 				'label'     => $label,
@@ -106,7 +101,6 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'className' => 'wfacp_divi_textarea',
 
 			);
-
 
 			if ( ! empty( $description ) ) {
 				$this->modules_fields[ $key ]['description'] = $description;
@@ -127,7 +121,6 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			$this->assign_tab( $key, $tab_id );
 
-
 			return $key;
 		}
 
@@ -137,13 +130,13 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			}
 		}
 
-		protected function add_textArea( $tab_id, $key, $label, $default = '', $conditions = [] ) {
+		protected function add_textArea( $tab_id, $key, $label, $default = '', $conditions = array() ) {
 
-			$this->modules_fields[ $key ] = [
+			$this->modules_fields[ $key ] = array(
 				'label'   => $label,
 				'type'    => 'textarea',
 				'default' => $this->get_default_data( $key, $default ),
-			];
+			);
 
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -153,10 +146,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_typography( $tab_id, $key, $selectors = '', $label = '', $default = '#333333', $conditions = [], $font_side_default = [], $letter_spacing_default = [] ) {
-			$keys = [];
+		protected function add_typography( $tab_id, $key, $selectors = '', $label = '', $default = '#333333', $conditions = array(), $font_side_default = array(), $letter_spacing_default = array() ) {
+			$keys = array();
 			if ( in_array( $key, $this->global_typography ) ) {
-				$keys[] = $this->add_global_font_size( $tab_id, $key, $selectors, '', '', [ 'aa' => "on" ], [] );
+				$keys[] = $this->add_global_font_size( $tab_id, $key, $selectors, '', '', array( 'aa' => 'on' ), array() );
 				$keys[] = $this->add_font( $tab_id, $key, $selectors, '', 'Open Sans', $conditions );
 			} else {
 				$keys[] = $this->add_font_size( $tab_id, $key, $selectors, '', '', $conditions, $font_side_default );
@@ -165,11 +158,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$keys[] = $this->add_letter_spacing( $tab_id, $key . '_letter_spacing', $selectors, '', $letter_spacing_default, $conditions );
 			}
 
-
 			return $keys;
 		}
 
-		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = [] ) {
+		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Alignment', 'et_builder' );
 			}
@@ -188,29 +180,25 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = 'default', $conditions = [] ) {
+		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = 'default', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Select Font', 'et_builder' );
 			}
 
 			$defaultVal = $this->get_default_data( $key, $default );
 
-
 			if ( in_array( $key, $this->global_typography ) ) {
 				$defaultVal = $default;
 
 			}
 
-
 			$key = $key . '_typograhy';
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'   => $label,
 				'type'    => 'font',
 				'default' => $defaultVal,
 			);
-
 
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -222,20 +210,21 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		}
 
 
-		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [], $font_side_default = [] ) {
+		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array(), $font_side_default = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Font Size', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '14px', 'unit' => 'px' ];
+				$default = array(
+					'default' => '14px',
+					'unit'    => 'px',
+				);
 			}
-
 
 			if ( ! empty( $font_side_default ) ) {
 				$default = $font_side_default;
 			}
-
 
 			if ( ! isset( $default['range_settings'] ) ) {
 
@@ -246,15 +235,12 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				);
 			}
 
-
 			if ( ! isset( $default['allowed_units'] ) ) {
 				$default['allowed_units'] = array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
 			}
-			$this->typography[ $key . '_font_size' ] = $key . "_typograhy";
-
+			$this->typography[ $key . '_font_size' ] = $key . '_typograhy';
 
 			$key = $key . '_font_size';
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -269,32 +255,31 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'mobile_options'  => true,
 			);
 
-
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
 			}
 			$this->assign_tab( $key, $tab_id );
-
 
 			$this->set_selector( $tab_id, $key, $selectors );
 
 			return $key;
 		}
 
-		protected function add_global_font_size( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [], $font_side_default = [] ) {
+		protected function add_global_font_size( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array(), $font_side_default = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Font Size', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '14px', 'unit' => 'px' ];
+				$default = array(
+					'default' => '14px',
+					'unit'    => 'px',
+				);
 			}
-
 
 			if ( ! empty( $font_side_default ) ) {
 				$default = $font_side_default;
 			}
-
 
 			if ( ! isset( $default['range_settings'] ) ) {
 
@@ -305,15 +290,12 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				);
 			}
 
-
 			if ( ! isset( $default['allowed_units'] ) ) {
 				$default['allowed_units'] = array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
 			}
-			$this->typography[ $key . '_font_size' ] = $key . "_typograhy";
-
+			$this->typography[ $key . '_font_size' ] = $key . '_typograhy';
 
 			$key = $key . '_font_size';
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -324,12 +306,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'mobile_options'  => true,
 			);
 
-
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
 			}
 			$this->assign_tab( $key, $tab_id );
-
 
 			$this->set_selector( $tab_id, $key, $selectors );
 
@@ -337,13 +317,16 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		}
 
 
-		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Letter Spacing', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '0px', 'unit' => 'px' ];
+				$default = array(
+					'default' => '0px',
+					'unit'    => 'px',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -356,7 +339,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$default['allowed_units'] = array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
 			}
 
-			$this->modules_fields[ $key ] = [
+			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
 				'type'            => 'range',
 				'option_category' => 'font_option',
@@ -367,7 +350,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'range_settings'  => $default['range_settings'],
 				'responsive'      => true,
 				'mobile_options'  => true,
-			];
+			);
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
 			}
@@ -382,7 +365,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return WFACP_Divi_Extension::$field_color_type;
 		}
 
-		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = [], $not_condition = [] ) {
+		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = array(), $not_condition = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Color';
 			}
@@ -400,19 +383,17 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$this->show_if_not( $key, $not_condition );
 			}
 
-
 			$this->assign_tab( $key, $tab_id );
 			$this->set_selector( $tab_id, $key, $selectors );
 
 			return $key;
 		}
 
-		public function add_background_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $conditions = [] ) {
+		public function add_background_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Background', 'elementor' );
 			}
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'        => $label,
@@ -425,29 +406,27 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$this->show_if( $key, $conditions );
 			}
 
-
 			$this->assign_tab( $key, $tab_id );
 
 			$this->set_selector( $tab_id, $key, $selectors );
 
-
 			return $key;
 		}
 
-		public function add_border_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $box_shadow = false, $conditions = [] ) {
+		public function add_border_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Color', 'elementor' );
 			}
-			$keys_for_imp = [
+			$keys_for_imp = array(
 				'wfacp_form_fields_validation_color',
 				'wfacp_form_fields_hover_color',
 				'wfacp_form_fields_focus_color',
 				'wfacp_form_mini_cart_coupon_focus_color',
 				'order_coupon_focus_color',
-			];
+			);
 
-			$color_selectors = [];
+			$color_selectors = array();
 			if ( is_array( $selectors ) && count( $selectors ) > 0 ) {
 				foreach ( $selectors as $selector ) {
 					if ( in_array( $key, $keys_for_imp ) ) {
@@ -464,7 +443,6 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				}
 			}
 
-
 			$this->modules_fields[ $key ] = array(
 				'label'        => $label,
 				'type'         => $this->color_type(),
@@ -480,10 +458,9 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$this->set_selector( $tab_id, $key, $selectors );
 
 			return $key;
-
 		}
 
-		protected function add_border_radius( $tab_id, $key, $selector, $conditions = [], $default = [], $custom_label = '' ) {
+		protected function add_border_radius( $tab_id, $key, $selector, $conditions = array(), $default = array(), $custom_label = '' ) {
 
 			$label = __( 'Border Radius', 'elementor' );
 
@@ -491,9 +468,11 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$label = $custom_label;
 			}
 
-
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '0', 'unit' => 'px' ];
+				$default = array(
+					'default' => '0',
+					'unit'    => 'px',
+				);
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -504,11 +483,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'default'          => $this->get_default_data( $key, $default['default'] ),
 				'default_unit'     => $default['unit'],
 				'default_on_front' => '',
-				'allowed_units'    => [ 'px', 'em', '%' ],
+				'allowed_units'    => array( 'px', 'em', '%' ),
 				'hover'            => 'tabs',
 				'mobile_options'   => true,
 			);
-
 
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -517,15 +495,13 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$this->set_selector( $tab_id, $key, $selector );
 
 			return $key;
-
 		}
 
-		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = [] ) {
+		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Padding', 'et_builder' );
 			}
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -546,7 +522,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = [] ) {
+		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Margin', 'et_builder' );
@@ -558,7 +534,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'c_type'          => 'margin',
 				'mobile_options'  => true,
 				'default'         => $this->get_default_data( $key, $default ),
-				'default_unit'    => "px",
+				'default_unit'    => 'px',
 				'option_category' => 'layout',
 				'hover'           => 'tabs',
 				'allowed_units'   => array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' ),
@@ -572,22 +548,21 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_border( $tab_id, $key, $selectors, $conditions = [], $default = [], $fields_options = [], $default_args = [] ) {
+		protected function add_border( $tab_id, $key, $selectors, $conditions = array(), $default = array(), $fields_options = array(), $default_args = array() ) {
 
-			$exclude_border_keys = [];
+			$exclude_border_keys = array();
 
-			$border_option = [
+			$border_option = array(
 				'none'   => __( 'None', 'woofunnels-aero-checkout' ),
 				'solid'  => __( 'Solid', 'woofunnels-aero-checkout' ),
 				'double' => __( 'Double', 'woofunnels-aero-checkout' ),
 				'dotted' => __( 'Dotted', 'woofunnels-aero-checkout' ),
 				'dashed' => __( 'Dashed', 'woofunnels-aero-checkout' ),
 				'groove' => __( 'Groove', 'woofunnels-aero-checkout' ),
-			];
+			);
 
-
-			//if ( empty( $default_args ) ) {
-			$args = [
+			// if ( empty( $default_args ) ) {
+			$args = array(
 				'border_type'          => 'solid',
 				'border_width_top'     => '1',
 				'border_width_bottom'  => '1',
@@ -598,15 +573,14 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'border_radius_left'   => '0',
 				'border_radius_right'  => '0',
 				'border_color'         => '#dddddd',
-			];
-			//}
+			);
+			// }
 			if ( ! empty( $default_args ) ) {
 				$default = $default_args;
 			}
 
-			$fields_keys = [];
+			$fields_keys = array();
 			$default     = wp_parse_args( $default, $args );
-
 
 			$wfacp_start_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfacp_start_border ] = array(
@@ -614,15 +588,15 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'type'      => 'hidden',
 				'c_type'    => 'wfacp_start_border',
 				'field_key' => $key,
-				'selector'  => $selectors
+				'selector'  => $selectors,
 			);
 
-			$type_condition = [];
+			$type_condition = array();
 			if ( ! in_array( $key, $exclude_border_keys ) ) {
 				$fields_keys[]  = $this->add_heading( $tab_id, __( 'Border', 'woofunnels-aero-checkout', '', $conditions ) );
 				$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'woofunnels-aero-checkout' ), $border_option, $default['border_type'] );
 				$fields_keys[]  = $border_type;
-				$type_condition = [ $border_type => 'none' ];
+				$type_condition = array( $border_type => 'none' );
 				if ( ! empty( $conditions ) ) {
 					$type_condition = array_merge( $type_condition, $conditions );
 				}
@@ -635,7 +609,6 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$fields_keys[] = $this->add_color( $tab_id, $key . '_border_color', $selectors, '', $default['border_color'], $conditions, $type_condition );
 			}
 
-
 			$fields_keys[] = $this->add_heading( $tab_id, __( 'Border Radius', 'woofunnels-aero-checkout' ), '', $conditions, $type_condition );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'woofunnels-aero-checkout' ), $default['border_radius_top'], $conditions, $type_condition );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'woofunnels-aero-checkout' ), $default['border_radius_bottom'], $conditions, $type_condition );
@@ -647,7 +620,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'label'     => 'end border',
 				'type'      => 'hidden',
 				'c_type'    => 'wfacp_end_border',
-				'field_key' => $key
+				'field_key' => $key,
 			);
 
 			if ( ! in_array( $key, $exclude_border_keys ) ) {
@@ -662,51 +635,44 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$this->add_class( $key . '_border_radius_left', 'wfacp_border_width_left' );
 			$this->add_class( $key . '_border_radius_right', 'wfacp_divi_border_width_end wfacp_border_width_right' );
 
-
 			return $fields_keys;
 		}
 
-		protected function add_border_radius_new( $tab_id, $key, $selectors, $conditions = [], $default = [], $fields_options = [], $default_args = [] ) {
+		protected function add_border_radius_new( $tab_id, $key, $selectors, $conditions = array(), $default = array(), $fields_options = array(), $default_args = array() ) {
 
-
-			$fields_keys = [];
+			$fields_keys = array();
 
 			if ( empty( $default ) ) {
-				$default = [
+				$default = array(
 					'border_radius_top'    => '0',
 					'border_radius_bottom' => '0',
 					'border_radius_left'   => '0',
 					'border_radius_right'  => '0',
 
-				];
+				);
 			}
-
 
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_top', __( 'Top', 'woofunnels-aero-checkout' ), $default['border_radius_top'], $conditions );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_bottom', __( 'Bottom', 'woofunnels-aero-checkout' ), $default['border_radius_bottom'], $conditions );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_left', __( 'Left', 'woofunnels-aero-checkout' ), $default['border_radius_left'], $conditions );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_radius_right', __( 'Right', 'woofunnels-aero-checkout' ), $default['border_radius_right'], $conditions );
 
-
 			$this->add_class( $key . '_border_radius_top', 'wfacp_divi_border_width_start wfacp_border_width_top' );
 			$this->add_class( $key . '_border_radius_bottom', 'wfacp_border_width_bottom' );
 			$this->add_class( $key . '_border_radius_left', 'wfacp_border_width_left' );
 			$this->add_class( $key . '_border_radius_right', 'wfacp_divi_border_width_end wfacp_border_width_right' );
 
-
 			return $fields_keys;
 		}
 
-		protected function add_box_shadow( $tab_id, $key, $selectors, $default = [], $conditions = [] ) {
+		protected function add_box_shadow( $tab_id, $key, $selectors, $default = array(), $conditions = array() ) {
 
-
-			$border_option = [
+			$border_option = array(
 				''      => __( 'Ouline', 'woofunnels-upstroke-one-click-upsell' ),
 				'inset' => __( 'Inset', 'woofunnels-upstroke-one-click-upsell' ),
-			];
+			);
 
-
-			$default_args = [
+			$default_args = array(
 				'enable'     => 'off',
 				'type'       => '',
 				'horizontal' => '0',
@@ -714,10 +680,9 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'blur'       => '0',
 				'spread'     => '0',
 				'color'      => '#dddddd',
-			];
+			);
 
-
-			$fields_keys                                 = [];
+			$fields_keys                                 = array();
 			$default                                     = wp_parse_args( $default, $default_args );
 			$wfacp_start_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfacp_start_border ] = array(
@@ -725,14 +690,13 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'type'      => 'hidden',
 				'c_type'    => 'wfacp_start_box_shadow',
 				'field_key' => $key,
-				'selector'  => $selectors
+				'selector'  => $selectors,
 			);
-
 
 			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'woofunnels-upstroke-one-click-upsell', '', $conditions ) );
 			$enabled       = $this->add_switcher( $tab_id, $key . '_shadow_enable', __( 'Enable', 'woofunnels-upstroke-one-click-upsell' ), $default['enable'], $conditions );
 
-			$type_condition = [ $enabled => 'on' ];
+			$type_condition = array( $enabled => 'on' );
 			if ( ! empty( $conditions ) ) {
 				$type_condition = array_merge( $type_condition, $conditions );
 			}
@@ -743,13 +707,12 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_blur', __( 'Blur', 'woofunnels-upstroke-one-click-upsell' ), $default['blur'], $type_condition );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_spread', __( 'Spread', 'woofunnels-upstroke-one-click-upsell' ), $default['spread'], $type_condition );
 
-
 			$wfacp_end_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfacp_end_border ] = array(
 				'label'     => 'end border',
 				'type'      => 'hidden',
 				'c_type'    => 'wfacp_end_box_shadow',
-				'field_key' => $key
+				'field_key' => $key,
 			);
 
 			$this->add_class( $key . '_shadow_horizontal', 'wfacp_divi_border_width_start wfacp_border_width_top' );
@@ -761,8 +724,8 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		}
 
 
-		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = '1px', $conditions = [] ) {
-			$key                          .= '_line_height';
+		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = '1px', $conditions = array() ) {
+			$key                         .= '_line_height';
 			$this->modules_fields[ $key ] = array(
 				'label'           => esc_html__( 'Line Height', 'et_builder' ),
 				'type'            => 'range',
@@ -770,7 +733,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				'mobile_options'  => true,
 				'option_category' => 'font_option',
 				'default_unit'    => 'em',
-				'default'         => "1.5",
+				'default'         => '1.5',
 				'allowed_units'   => array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' ),
 				'range_settings'  => array(
 					'min'  => '1',
@@ -786,20 +749,21 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$this->set_selector( $tab_id, $key, $selectors );
 
 			return $key;
-
 		}
 
 		protected function add_divider( $type ) {
-
 		}
 
-		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Width', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '100', 'unit' => '%' ];
+				$default = array(
+					'default' => '100',
+					'unit'    => '%',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -833,13 +797,16 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Min Width', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '100', 'unit' => '%' ];
+				$default = array(
+					'default' => '100',
+					'unit'    => '%',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -874,7 +841,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_controls_tabs( $tab_id, $label, $conditions = [] ) {
+		protected function add_controls_tabs( $tab_id, $label, $conditions = array() ) {
 
 			$key                          = $this->get_unique_id();
 			$this->modules_fields[ $key ] = array(
@@ -896,7 +863,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			$id = $this->get_unique_id();
 			if ( isset( $this->modules_fields[ $control_tabs_id ] ) ) {
 				$this->modules_fields[ $control_tabs_id ]['composite_structure'][ $id ]['label'] = $label;
-				$controls                                                                        = [];
+				$controls = array();
 				foreach ( $field_keys as $field_key ) {
 					if ( ! isset( $this->modules_fields[ $field_key ] ) ) {
 						continue;
@@ -915,14 +882,13 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 					$this->modules_fields[ $control_tabs_id ]['composite_structure'][ $id ]['controls'] = $controls;
 
-
 				}
 			}
 
-			return [ $id, $control_tabs_id ];
+			return array( $id, $control_tabs_id );
 		}
 
-		protected function add_icon( $tab_id, $key, $label = '', $default = '', $conditions = [] ) {
+		protected function add_icon( $tab_id, $key, $label = '', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Icon', 'et_builder' );
 			}
@@ -950,7 +916,6 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			$css_data = $this->create_css_property( $key, $type );
 
-
 			if ( empty( $css_data ) ) {
 				return;
 			}
@@ -966,69 +931,105 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 
 		protected function create_css_property( $key, $type ) {
-			$property = [];
+			$property = array();
 			$default  = isset( $this->modules_fields[ $key ]['default'] ) ? $this->modules_fields[ $key ]['default'] : '';
 
-
 			switch ( $type ) {
-				case  'text_align':
+				case 'text_align':
 					$default  = isset( $this->modules_fields[ $key ]['default'] ) ? $this->modules_fields[ $key ]['default'] : ( is_rtl() ? 'right' : 'left' );
-					$property = [ 'property' => 'text-align', 'value' => $default ];
+					$property = array(
+						'property' => 'text-align',
+						'value'    => $default,
+					);
 					break;
-				case  'letter_spacing':
-					$property = [ 'property' => 'letter-spacing', 'value' => $default ];
+				case 'letter_spacing':
+					$property = array(
+						'property' => 'letter-spacing',
+						'value'    => $default,
+					);
 					break;
-				case  'line_height':
-					$property = [ 'property' => 'line-height', 'value' => $default ];
+				case 'line_height':
+					$property = array(
+						'property' => 'line-height',
+						'value'    => $default,
+					);
 					break;
-				case  'width':
-					$property = [ 'property' => 'width', 'value' => $default ];
+				case 'width':
+					$property = array(
+						'property' => 'width',
+						'value'    => $default,
+					);
 					break;
-				case  'margin':
-					$property = [ 'property' => 'margin', 'value' => $default ];
+				case 'margin':
+					$property = array(
+						'property' => 'margin',
+						'value'    => $default,
+					);
 					break;
-				case  'padding':
-					$property = [ 'property' => 'margin', 'value' => $default ];
+				case 'padding':
+					$property = array(
+						'property' => 'margin',
+						'value'    => $default,
+					);
 					break;
-				case  'border_radius':
-					$property = [ 'property' => 'border-radius', 'value' => $default ];
+				case 'border_radius':
+					$property = array(
+						'property' => 'border-radius',
+						'value'    => $default,
+					);
 					break;
-				case  'border_color':
-					$property = [ 'property' => 'border-color', 'value' => $default ];
+				case 'border_color':
+					$property = array(
+						'property' => 'border-color',
+						'value'    => $default,
+					);
 					break;
-				case  'background_color':
-					$property = [ 'property' => 'background-color', 'value' => $default ];
+				case 'background_color':
+					$property = array(
+						'property' => 'background-color',
+						'value'    => $default,
+					);
 					break;
-				case  'color':
-					$property = [ 'property' => 'color', 'value' => $default ];
+				case 'color':
+					$property = array(
+						'property' => 'color',
+						'value'    => $default,
+					);
 					break;
-				case  'color-alpha':
-					$property = [ 'property' => 'color', 'value' => $default ];
+				case 'color-alpha':
+					$property = array(
+						'property' => 'color',
+						'value'    => $default,
+					);
 					break;
-				case  'font_size':
-					$property = [ 'property' => 'font-size', 'value' => $default ];
+				case 'font_size':
+					$property = array(
+						'property' => 'font-size',
+						'value'    => $default,
+					);
 					break;
-				case  'box_shadow':
-					$property = [ 'property' => 'box-shadow', 'value' => '' ];
+				case 'box_shadow':
+					$property = array(
+						'property' => 'box-shadow',
+						'value'    => '',
+					);
 					break;
 				default:
 					break;
 
-
 			}
-
 
 			return $property;
 		}
 
 
 		protected function get_class_options() {
-			return [
+			return array(
 				'wfacp-col-full'       => __( 'Full', 'woofunnels-aero-checkout' ),
 				'wfacp-col-left-half'  => __( 'One Half', 'woofunnels-aero-checkout' ),
 				'wfacp-col-left-third' => __( 'One Third', 'woofunnels-aero-checkout' ),
 				'wfacp-col-two-third'  => __( 'Two Third', 'woofunnels-aero-checkout' ),
-			];
+			);
 		}
 
 		protected function show_if( $key, $condition ) {
@@ -1044,12 +1045,10 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 				$this->modules_fields[ $key ]['mobile_options'] = true;
 
 			}
-
 		}
 
 
 		protected function assign_tab( $key, $tab_id ) {
-
 
 			if ( isset( $this->modules_fields[ $key ] ) ) {
 				$this->modules_fields[ $key ]['toggle_slug'] = $tab_id;
@@ -1067,26 +1066,32 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			if ( $type == '5' ) {
 				$type = 'general';
-			} else if ( $type == '3' ) {
+			} elseif ( $type == '3' ) {
 				$type = 'custom_css';
-			} else if ( $type == '2' ) {
+			} elseif ( $type == '2' ) {
 				$type = 'advanced';
 			} else {
 				$type = 'general';
 			}
-			//advanced
+			// advanced
 
 			if ( empty( $id ) ) {
 				$id = $this->get_unique_id();
 			}
 			if ( isset( $this->settings_modal_toggles[ $type ] ) ) {
-				$this->settings_modal_toggles[ $type ]['toggles'][ $id ] = [ 'title' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $id ] = array( 'title' => $name );
 			} else {
-				$this->settings_modal_toggles[ $type ] = [ 'toggles' => [ $id => [ 'title' => $name ] ] ];
+				$this->settings_modal_toggles[ $type ] = array( 'toggles' => array( $id => array( 'title' => $name ) ) );
 			}
-			$this->tabs[ $id ] = [ 'type' => $type, 'name' => $name ];
+			$this->tabs[ $id ] = array(
+				'type' => $type,
+				'name' => $name,
+			);
 
 			return $id;
+		}
+
+		protected function end_tab() {
 		}
 
 		protected function add_sub_tab( $name, $tab_id, $id = '' ) {
@@ -1098,24 +1103,28 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			if ( isset( $this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ] ) ) {
 				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['tabbed_subtoggles']   = true;
-				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = [ 'name' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = array( 'name' => $name );
 			} else {
 				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['tabbed_subtoggles']   = true;
-				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = [ 'name' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = array( 'name' => $name );
 			}
 
-			$this->sub_tabs[ $id ] = [ 'type' => $type, 'id' => $id, 'name' => $name, 'tab_id' => $tab_id ];
+			$this->sub_tabs[ $id ] = array(
+				'type'   => $type,
+				'id'     => $id,
+				'name'   => $name,
+				'tab_id' => $tab_id,
+			);
 
 			return $this->sub_tabs[ $id ];
 		}
 
-		protected function add_font_family( $tab_id, $key, $selectors = '', $label = '', $default = 'default', $conditions = [] ) {
+		protected function add_font_family( $tab_id, $key, $selectors = '', $label = '', $default = 'default', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Font Family', 'et_builder' );
 			}
 
 			$defaultVal = $this->get_default_data( $key, $default );
-
 
 			if ( in_array( $key, $this->global_typography ) ) {
 				$defaultVal = $default;
@@ -1138,18 +1147,17 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		}
 
 		protected function _add_link_options_fields() {
-			$this->_additional_fields_options = [];
+			$this->_additional_fields_options = array();
 		}
 
 		public function get_fields() {
-
 
 			return $this->modules_fields;
 		}
 
 		protected function get_unique_id() {
 			static $count = 0;
-			$count ++;
+			++$count;
 			$key = md5( 'wfacp_' . $count );
 
 			return $key;
@@ -1175,7 +1183,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		public function init() {
 			if ( isset( $_REQUEST['et_post_id'] ) ) {
 				$this->post_id = absint( $_REQUEST['et_post_id'] );
-				if ( WFACP_Common::get_post_type_slug() == trim( $_REQUEST['et_post_type'] ) ) {
+				if ( isset( $_REQUEST['et_post_type'] ) && WFACP_Common::get_post_type_slug() == trim( $_REQUEST['et_post_type'] ) ) {
 					$_REQUEST['wfacp_id'] = $this->post_id;
 					WFACP_Common::set_id( $this->post_id );
 					WFACP_Core()->template_loader->load_template( $this->post_id );
@@ -1184,7 +1192,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 			$template = wfacp_template();
 			if ( is_null( $template ) ) {
-				return [];
+				return array();
 			}
 
 			$this->setup_data( $template );
@@ -1192,14 +1200,12 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 
 
 		protected function setup_data( $template ) {
-
 		}
 
 		private function get_default_data( $key, $default = '' ) {
 			return $default;
 		}
-		public function custom_notice( $tab_id, $notice_html ,$key,$label='') {
-
+		public function custom_notice( $tab_id, $notice_html, $key, $label = '' ) {
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => '',
@@ -1214,10 +1220,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			);
 			$this->assign_tab( $key, $tab_id );
 
-
 			return $key;
 		}
-
-
 	}
 }

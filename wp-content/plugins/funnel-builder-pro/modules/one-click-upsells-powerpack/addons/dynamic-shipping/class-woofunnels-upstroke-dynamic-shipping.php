@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Class WooFunnels_UpStroke_Dynamic_Shipping
  */
@@ -57,16 +57,19 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			$is_tax_exempt      = $order->get_meta( 'is_vat_exempt' );
 
 			if ( ! empty( $products ) ) {
-				$response = wp_remote_post( WC()->api_request_url( 'wfocu_cs' ), array(
-					'body'      => array(
-						'products'        => $products,
-						'location'        => $location,
-						'chosen_shipping' => $existing_methods,
-						'currency'        => $order->get_currency(),
-					),
-					'sslverify' => false,
-					'timeout'   => 20,
-				) );
+				$response = wp_remote_post(
+					WC()->api_request_url( 'wfocu_cs' ),
+					array(
+						'body'      => array(
+							'products'        => $products,
+							'location'        => $location,
+							'chosen_shipping' => $existing_methods,
+							'currency'        => $order->get_currency(),
+						),
+						'sslverify' => false,
+						'timeout'   => 20,
+					)
+				);
 				if ( is_wp_error( $response ) ) {
 					return __return_empty_string();
 				} else {
@@ -83,7 +86,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 						foreach ( $response_packages['packages'] as $package ) {
 							foreach ( $package as $method_id => $method_data ) {
 
-								//exclude tax when the order has tax exemption
+								// exclude tax when the order has tax exemption
 								if ( ! empty( $is_tax_exempt ) && 'yes' === $is_tax_exempt ) {
 									if ( isset( $method_data['shipping_tax'] ) ) {
 										$method_data['shipping_tax'] = 0;
@@ -102,7 +105,15 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 									$shipping[] = array(
 										$method_id => $method_data,
 									);
-									$override   = false;
+									/**
+									 * Filter to control shipping override behavior in batching mode.
+									 *
+									 * @param bool   $override         Whether to override. Default false.
+									 * @param string $method_id        The shipping method ID.
+									 * @param bool   $is_batching_on   Whether batching mode is enabled.
+									 * @param array  $existing_methods Existing shipping methods on parent order.
+									 */
+									$override = apply_filters( 'wfocu_dynamic_shipping_override', false, $method_id, $is_batching_on, $existing_methods );
 									foreach ( is_array( $get_shipping_items ) ? $get_shipping_items : array() as $shipping_item ) {
 										if ( $method_id === $shipping_item->get_method_id() ) {
 											$shipping_prev = array(
@@ -121,7 +132,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 							}
 						}
 
-						//Iteration for free shipping
+						// Iteration for free shipping
 						foreach ( $response_packages['packages'] as $package ) {
 							foreach ( $package as $method_id => $method_data ) {
 								if ( WFOCU_Core()->shipping->is_free_shipping( $method_data['method'] ) && count( $get_free_shipping ) === 0 ) {
@@ -135,7 +146,6 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 				}
 			}
 
-
 			$shipping_methods = array(
 				'free_shipping' => $get_free_shipping,
 				'shipping'      => $shipping,
@@ -146,7 +156,6 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			}
 
 			return apply_filters( 'wfocu_calculate_dynamic_shipping_methods', $shipping_methods, $existing_methods, $products, $order, $location );
-
 		}
 
 		/**
@@ -162,9 +171,11 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 		 */
 		public function maybe_handle_call_cs() {
 			if ( ! isset( $_POST['location'] ) ) {
-				wp_send_json( array(
-					'packages' => [],
-				) );
+				wp_send_json(
+					array(
+						'packages' => array(),
+					)
+				);
 			}
 
 			ob_start();
@@ -172,12 +183,14 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			WC()->customer->set_location( $country, $state, $postcode, $city );
 			WC()->customer->set_shipping_location( $country, $state, $postcode, $city );
 
-			$products = isset( $_POST['products'] ) ? wc_clean( $_POST['products'] ) : [];
+			$products = isset( $_POST['products'] ) ? wc_clean( $_POST['products'] ) : array();
 			WC()->session->set( 'chosen_shipping_methods', isset( $_POST['chosen_shipping'] ) ? wc_clean( $_POST['chosen_shipping'] ) : '' );
 			if ( empty( $products ) ) {
-				wp_send_json( array(
-					'packages' => [],
-				) );
+				wp_send_json(
+					array(
+						'packages' => array(),
+					)
+				);
 			}
 			$post_currency = isset( $_POST['currency'] ) ? wc_clean( wp_unslash( $_POST['currency'] ) ) : '';
 			if ( $post_currency ) {
@@ -189,7 +202,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 				try {
 					$offer_product = ( isset( $product['offer_product'] ) && ( wc_clean( $product['offer_product'] ) ) ) ? array(
 						'offer_product' => 1,
-						'offer_key'     => md5( $product['product_id'] . microtime() . wp_rand() )
+						'offer_key'     => md5( $product['product_id'] . microtime() . wp_rand() ),
 					) : array( 'offer_key' => md5( $product['product_id'] . microtime() . wp_rand() ) );
 
 					if ( isset( $product['variation_attributes'] ) && is_array( $product['variation_attributes'] ) && count( $product['variation_attributes'] ) > 0 ) {
@@ -262,9 +275,11 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			WC()->session->destroy_session();
 
 			ob_get_clean();
-			wp_send_json( array(
-				'packages' => $my_packages,
-			) );
+			wp_send_json(
+				array(
+					'packages' => $my_packages,
+				)
+			);
 		}
 
 		public function wfocu_parse_shipping_packages( $package ) {
@@ -309,9 +324,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {
 			}
 
 			return $price;
-
 		}
-
 	}
 }
 if ( class_exists( 'WooFunnels_UpStroke_Dynamic_Shipping' ) ) {

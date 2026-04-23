@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class contains all the Aero related funnel functionality
@@ -9,9 +9,9 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Step_WC_Checkout extends WFFN_Step {
 
-		private static $ins = null;
-		public $slug = 'wc_checkout';
-		public $substeps = [ 'wc_order_bump' ];
+		private static $ins   = null;
+		public $slug          = 'wc_checkout';
+		public $substeps      = array( 'wc_order_bump' );
 		public $list_priority = 20;
 
 		/**
@@ -19,9 +19,9 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		 */
 		public function __construct() {
 			parent::__construct();
-			add_action( 'wfacp_listing_handle_query_args', [ $this, 'exclude_from_query' ] );
-			add_action( 'woocommerce_checkout_order_processed', [ $this, 'maybe_record_orders_in_session' ], 11 );
-			add_filter( 'maybe_setup_funnel_for_breadcrumb', [ $this, 'maybe_funnel_breadcrumb' ] );
+			add_action( 'wfacp_listing_handle_query_args', array( $this, 'exclude_from_query' ) );
+			add_action( 'woocommerce_checkout_order_processed', array( $this, 'maybe_record_orders_in_session' ), 11 );
+			add_filter( 'maybe_setup_funnel_for_breadcrumb', array( $this, 'maybe_funnel_breadcrumb' ) );
 			add_filter( 'wfacp_fb_pixel_ids', array( $this, 'override_pixel_key' ) );
 			add_filter( 'wfacp_get_ga_key', array( $this, 'override_ga_key' ) );
 			add_filter( 'wfacp_get_gad_key', array( $this, 'override_gad_key' ) );
@@ -32,14 +32,18 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			add_filter( 'wfacp_conversion_api_test_event_code', array( $this, 'override_conversion_api_test_event_code' ) );
 			add_filter( 'wffn_funnel_environment', array( $this, 'maybe_override_environment_for_global' ) );
 
-			add_action( 'wffn_load_api_export_class', [ $this, 'load_api_export_class' ], 999 );
-			add_action( 'wffn_load_api_import_class', [ $this, 'load_api_import_class' ], 999 );
-			add_action( 'wfacp_update_order_report_review', [ $this, 'update_pending_conversions' ] );
+			add_action( 'wffn_load_api_export_class', array( $this, 'load_api_export_class' ), 999 );
+			add_action( 'wffn_load_api_import_class', array( $this, 'load_api_import_class' ), 999 );
+			add_action( 'wfacp_update_order_report_review', array( $this, 'update_pending_conversions' ) );
 			add_filter( 'wffn_rest_get_templates', array( $this, 'alter_templates' ) );
 			add_filter( 'wfacp_update_report_views', array( $this, 'maybe_already_recoded_views' ), 10, 2 );
 			add_filter( 'wfacp_global_checkout_page_id', array( $this, 'maybe_override_global_checkout_id' ), 8, 1 );
 			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'setup_funnel_on_update_order' ), 99, 1 );
 
+			// Checkout redirect: proxy hooks — class loaded only when these filters actually fire.
+			add_filter( 'wfacp_global_checkout_page_id', array( $this, 'fk_checkout_redirect_resolve' ), 10 );
+			add_filter( 'woocommerce_product_add_to_cart_text', array( $this, 'fk_checkout_redirect_cart_text' ), 10, 2 );
+			add_filter( 'woocommerce_product_single_add_to_cart_text', array( $this, 'fk_checkout_redirect_cart_text' ), 10, 2 );
 		}
 
 		/**
@@ -47,7 +51,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -57,7 +61,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		 * @return array|void
 		 */
 		public function get_supports() {
-			return array_unique( array_merge( parent::get_supports(), [ 'open_link' ] ) );
+			return array_unique( array_merge( parent::get_supports(), array( 'open_link' ) ) );
 		}
 
 		/**
@@ -89,14 +93,26 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		}
 
 
-		public function get_step_designs( $term, $funnel_id = 0 ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-			$active_pages    = $this->get_checkout_pages( $term );
-			$inside_funnels  = [];
-			$outside_funnels = [];
+		public function get_step_designs( $term, $funnel_id = 0, $extra_args = array() ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+			$is_checkout_redirect = ! empty( $extra_args['checkout_redirect'] );
+
+			// When called from the checkout redirect search, resolve the store checkout
+			// funnel ID so we can exclude all of its checkout steps from results.
+			// WFFN_Common::get_store_checkout_id() returns the funnel ID (stored as
+			// _bwf_global_funnel). A store checkout funnel may contain multiple checkout
+			// steps — excluding the whole funnel covers all of them.
+			$exclude_funnel_id = 0;
+			if ( $is_checkout_redirect && class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'get_store_checkout_id' ) ) {
+				$exclude_funnel_id = WFFN_Common::get_store_checkout_id();
+			}
+
+			$active_pages    = $this->get_checkout_pages( $term, $extra_args );
+			$inside_funnels  = array();
+			$outside_funnels = array();
 			foreach ( $active_pages as $active_page ) {
 				$post_type     = get_post_type( $active_page->ID );
 				$bwf_funnel_id = get_post_meta( $active_page->ID, '_bwf_in_funnel', true );
-				$data          = [];
+				$data          = array();
 				if ( 'cartflows_step' === $post_type ) {
 					$meta = get_post_meta( $active_page->ID, 'wcf-step-type', true );
 					if ( 'checkout' === $meta ) {
@@ -118,26 +134,46 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 				$funnel = new WFFN_Funnel( $bwf_funnel_id );
 				if ( absint( $bwf_funnel_id ) > 0 && ! empty( $funnel->get_title() ) ) {
+					// Exclude every step that belongs to the store checkout funnel.
+					if ( $exclude_funnel_id > 0 && (int) $bwf_funnel_id === $exclude_funnel_id ) {
+						continue;
+					}
 					if ( ! isset( $inside_funnels[ $bwf_funnel_id ] ) ) {
-						$inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+						$inside_funnels[ $bwf_funnel_id ] = array(
+							'name'  => $funnel->get_title(),
+							'id'    => $bwf_funnel_id,
+							'steps' => array(),
+						);
 					}
 					$inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 				} else {
 					$outside_funnels[] = $data;
 				}
-
-
 			}
 			if ( ! empty( $outside_funnels ) ) {
-				$outside_funnels = [ [ 'name' => __( 'Other Pages', 'funnel-builder' ), 'id' => 0, 'steps' => $outside_funnels ] ];
+				$outside_funnels = array(
+					array(
+						'name'  => __( 'Other Pages', 'funnel-builder' ),
+						'id'    => 0,
+						'steps' => $outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $inside_funnels, $outside_funnels );
 		}
 
-		public function get_checkout_pages( $term ) {
+		public function get_checkout_pages( $term, $extra_args = array() ) {
+			$is_checkout_redirect = ! empty( $extra_args['checkout_redirect'] );
+
+			// For the checkout redirect search we only need wfacp_checkout posts —
+			// pages are irrelevant there and excluding them keeps results clean.
+			$post_types = $is_checkout_redirect
+				? array( WFACP_Common::get_post_type_slug() )
+				: array( WFACP_Common::get_post_type_slug(), 'cartflows_step', 'page' );
+
 			$args = array(
-				'post_type'   => array( WFACP_Common::get_post_type_slug(), 'cartflows_step', 'page' ),
+				'post_type'   => $post_types,
 				'post_status' => 'any',
 			);
 			if ( ! empty( $term ) ) {
@@ -165,13 +201,15 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		public function add_step( $funnel_id, $posted_data ) {
 			$title = isset( $posted_data['title'] ) ? $posted_data['title'] : '';
 
-			$step_id = wp_insert_post( array(
-				'post_type'   => WFACP_Common::get_post_type_slug(),
-				'post_title'  => $title,
-				'post_name'   => sanitize_title( $title ),
-				'post_status' => 'publish'
+			$step_id = wp_insert_post(
+				array(
+					'post_type'   => WFACP_Common::get_post_type_slug(),
+					'post_title'  => $title,
+					'post_name'   => sanitize_title( $title ),
+					'post_status' => 'publish',
 
-			) );
+				)
+			);
 			if ( ! $step_id instanceof WP_Error ) {
 				update_post_meta( $step_id, '_wfacp_version', WFACP_VERSION );
 				update_post_meta( $step_id, '_wfacp_created_by', 'funnel-builder' );
@@ -199,7 +237,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			if ( $duplicate_id > 0 ) {
 				$posted_data['id'] = $duplicate_id;
 				$new_title         = isset( $posted_data['title'] ) ? $posted_data['title'] : '';
-				$arr               = [ 'ID' => $duplicate_id, 'post_status' => $post_status ];
+				$arr               = array(
+					'ID'          => $duplicate_id,
+					'post_status' => $post_status,
+				);
 
 				if ( ! empty( $new_title ) ) {
 					$arr['post_title'] = $new_title;
@@ -208,7 +249,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			}
 
 			$status = parent::duplicate_step( $funnel_id, $step_id, $posted_data );
-
 
 			if ( isset( $posted_data['id'] ) && isset( $posted_data['_data']['desc'] ) ) {
 				$post               = get_post( $posted_data['id'] );
@@ -253,12 +293,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 						$suffix_text = '';
 					}
 
-					$args         = [
+					$args         = array(
 						'post_title'   => $checkout_page->post_title . $suffix_text,
 						'post_content' => $checkout_page->post_content,
 						'post_name'    => sanitize_title( $checkout_page->post_title . $suffix_text ),
 						'post_type'    => WFACP_Common::get_post_type_slug(),
-					];
+					);
 					$duplicate_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $duplicate_id ) ) {
 
@@ -267,12 +307,11 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 						$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=%s", $checkout_page_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 						if ( ! empty( $post_meta_all ) ) {
-							$sql_query_selects = [];
+							$sql_query_selects = array();
 
 							if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 
 								foreach ( $post_meta_all as $meta_info ) {
-
 
 									$meta_key   = $meta_info->meta_key;
 									$meta_value = $meta_info->meta_value;
@@ -284,17 +323,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 										if ( strpos( $meta_key, 'wcf-' ) === false ) {
 
 											if ( $meta_key === '_wp_page_template' ) {
-												$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wfacp", $meta_value ) : $meta_value;
+												$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wfacp', $meta_value ) : $meta_value;
 											}
 											$meta_key   = esc_sql( $meta_key );
 											$meta_value = esc_sql( $meta_value );
 
-											$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')";//db call ok; no-cache ok; WPCS: unprepared SQL ok.
+											$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')";// db call ok; no-cache ok; WPCS: unprepared SQL ok.
 										}
 									}
 								}
 							} else {
-								update_option( WFACP_SLUG . '_c_' . $duplicate_id, get_option( WFACP_SLUG . '_c_' . $checkout_page_id, [] ), 'no' );
+								update_option( WFACP_SLUG . '_c_' . $duplicate_id, get_option( WFACP_SLUG . '_c_' . $checkout_page_id, array() ), 'no' );
 								foreach ( $post_meta_all as $meta_info ) {
 
 									$meta_key = $meta_info->meta_key;
@@ -308,8 +347,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 									$meta_key   = esc_sql( $meta_key );
 									$meta_value = esc_sql( $meta_info->meta_value );
 
-
-									$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+									$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 								}
 							}
 
@@ -319,10 +357,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 							if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 								$template = WFFN_Core()->admin->get_selected_template( $checkout_page_id, $post_meta_all );
 								if ( isset( $template['selected_type'] ) && $template['selected_type'] === 'wp_editor' ) {
-									$template = [
+									$template = array(
 										'selected'      => 'embed_forms_4',
 										'selected_type' => 'embed_forms',
-									];
+									);
 								}
 								update_post_meta( $duplicate_id, '_wfacp_selected_design', $template );
 							}
@@ -335,10 +373,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 						if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 							$template = WFFN_Core()->admin->get_selected_template( $checkout_page_id, $post_meta_all );
 							if ( isset( $template['selected_type'] ) && $template['selected_type'] === 'wp_editor' ) {
-								$template = [
+								$template = array(
 									'selected'      => 'embed_forms_4',
 									'selected_type' => 'embed_forms',
-								];
+								);
 							}
 							update_post_meta( $duplicate_id, '_wfacp_selected_design', $template );
 						}
@@ -360,10 +398,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		public function get_entity_edit_link( $step_id ) {
 			$link = parent::get_entity_edit_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
-				$link = esc_url( BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page' => 'bwf',
-					'path' => '/funnel-checkout/' . $step_id . '/design',
-				], admin_url( 'admin.php' ) ) ) );
+				$link = esc_url(
+					BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page' => 'bwf',
+								'path' => '/funnel-checkout/' . $step_id . '/design',
+							),
+							admin_url( 'admin.php' )
+						)
+					)
+				);
 			}
 
 			return $link;
@@ -377,7 +422,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		public function get_entity_tags( $step_id, $funnel_id ) {
 			$wfacp_products = WFACP_Common::get_page_product( $step_id );
 
-			$flags = [];
+			$flags = array();
 
 			if ( absint( $funnel_id ) !== WFFN_Common::get_store_checkout_id() ) {
 				$product_count = count( $wfacp_products );
@@ -385,7 +430,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 					$flags['no_product'] = array(
 						'label'       => __( 'No Products', 'funnel-builder' ),
 						'label_class' => 'bwf-st-c-badge-red',
-						'edit'        => wffn_rest_api_helpers()->get_entity_url( 'checkout', 'products', $step_id )
+						'edit'        => wffn_rest_api_helpers()->get_entity_url( 'checkout', 'products', $step_id ),
 					);
 				}
 			}
@@ -398,7 +443,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 				);
 
 			}
-			$options = get_option( '_wfacp_global_settings', [] );
+			$options = get_option( '_wfacp_global_settings', array() );
 
 			if ( isset( $options['override_checkout_page_id'] ) && ! empty( $options['override_checkout_page_id'] ) && absint( $step_id ) === absint( $options['override_checkout_page_id'] ) ) {
 				$flags['global_checkout'] = array(
@@ -406,7 +451,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 					'label_class' => 'bwf-st-c-badge-yellow',
 				);
 			}
-
 
 			return $flags;
 		}
@@ -468,7 +512,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 				}
 				WFFN_Core()->data->set( 'wc_order', $order_id )->save();
 			}
-
 		}
 
 
@@ -481,10 +524,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		}
 
 		public function maybe_have_substeps_export( $new_all_meta, $step ) {
-			$sub_steps = [];
+			$sub_steps = array();
 			if ( isset( $step['substeps'] ) && ! empty( $step['substeps'] ) ) {
 				foreach ( $step['substeps'] as $key => $substeps ) {
-					$sub_steps[ $key ]  = [];
+					$sub_steps[ $key ]  = array();
 					$get_substep_object = WFFN_Core()->substeps->get_integration_object( $key );
 					if ( ! empty( $get_substep_object ) ) {
 						foreach ( $substeps as $substep ) {
@@ -501,27 +544,34 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 		}
 
 		public function _process_import( $funnel_id, $step_data ) {
-			$substeps = [];
+			$substeps = array();
 			if ( isset( $step_data['meta']['substeps'] ) ) {
 				$substeps = $step_data['meta']['substeps'];
 				unset( $step_data['meta']['substeps'] );
 			}
 			$status = 'publish';
 
-			$meta = [];
+			$meta = array();
 			if ( isset( $step_data['meta']['meta'] ) ) {
 				$meta = $step_data['meta']['meta'];
 			}
 
 			$post_content = ( isset( $step_data['post_content'] ) && ! empty( $step_data['post_content'] ) ) ? $step_data['post_content'] : '';
-			$args         = array( 'title' => $step_data['title'], 'post_status' => $status, 'post_content' => $post_content, 'meta' => $meta );
+			$args         = array(
+				'title'        => $step_data['title'],
+				'post_status'  => $status,
+				'post_content' => $post_content,
+				'meta'         => $meta,
+			);
 			if ( isset( $step_data['meta']['customizer_meta'] ) ) {
 				$args['customizer_meta'] = $step_data['meta']['customizer_meta'];
 			}
 			$ids = WFACP_Core()->import->import_from_json_data( array( $args ) );
 
-
-			$posted_data = [ 'title' => $step_data['title'], 'id' => $ids[0] ];
+			$posted_data = array(
+				'title' => $step_data['title'],
+				'id'    => $ids[0],
+			);
 			parent::add_step( $funnel_id, $posted_data );
 			if ( ! empty( $substeps ) ) {
 				foreach ( $substeps as $key => $substep ) {
@@ -546,7 +596,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			if ( ! empty( $template ) ) {
 				return array(
 					'template'      => $template,
-					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true )
+					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true ),
 
 				);
 			}
@@ -558,9 +608,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			$template = get_post_meta( $id, '_tobe_import_template', true );
 			WFACP_Core()->template_loader->add_default_template( true );
 
-
 			return WFACP_Core()->importer->import( $id, get_post_meta( $id, '_tobe_import_template_type', true ), $template );
-
 		}
 
 		public function update_template_data( $id, $data ) {
@@ -581,10 +629,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			$switched = false;
 			if ( $step_id > 0 ) {
 				$newstatus = empty( $new_status ) ? 'draft' : 'publish';
-				$args      = [
+				$args      = array(
 					'ID'          => $step_id,
 					'post_status' => $newstatus,
-				];
+				);
 
 				$meta       = get_post_meta( $step_id, '_wp_page_template', true );
 				$updated_id = wp_update_post( $args );
@@ -805,42 +853,39 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 		public function alter_templates( $templates ) {
 
-
 			if ( ! isset( $templates['wc_checkout']['pre_built'] ) || ! isset( $templates['wc_checkout']['embed_forms'] ) ) {
 				return $templates;
 			}
-			$templates['wc_checkout']['customizer'] = [];
-			$templates['wc_checkout']['wp_editor']  = [];
+			$templates['wc_checkout']['customizer'] = array();
+			$templates['wc_checkout']['wp_editor']  = array();
 			if ( isset( $templates['wc_checkout']['customizer'] ) ) {
-				$templates['wc_checkout']['customizer']['customizer-empty'] = [
+				$templates['wc_checkout']['customizer']['customizer-empty'] = array(
 					'name'               => '',
 					'slug'               => 'customizer-empty',
 					'build_from_scratch' => true,
 					'allow_new'          => false,
 					'group_type'         => array( 1 => 'customizer-empty' ),
-					'no_steps'           => '1'
-				];
+					'no_steps'           => '1',
+				);
 			}
-			$templates['wc_checkout']['customizer'] = array_merge( $templates['wc_checkout']['customizer'],$templates['wc_checkout']['pre_built'] );
-
+			$templates['wc_checkout']['customizer'] = array_merge( $templates['wc_checkout']['customizer'], $templates['wc_checkout']['pre_built'] );
 
 			if ( isset( $templates['wc_checkout']['wp_editor'] ) ) {
-				$templates['wc_checkout']['wp_editor']['wp_editor-empty'] = [
+				$templates['wc_checkout']['wp_editor']['wp_editor-empty'] = array(
 					'name'               => '',
 					'slug'               => 'customizer-empty',
 					'build_from_scratch' => true,
 					'allow_new'          => false,
 					'group_type'         => array( 1 => 'customizer-empty' ),
-					'no_steps'           => '1'
-				];
+					'no_steps'           => '1',
+				);
 			}
-			$templates['wc_checkout']['wp_editor'] = array_merge( $templates['wc_checkout']['wp_editor'],$templates['wc_checkout']['embed_forms'] );
+			$templates['wc_checkout']['wp_editor'] = array_merge( $templates['wc_checkout']['wp_editor'], $templates['wc_checkout']['embed_forms'] );
 
 			unset( $templates['wc_checkout']['pre_built'] );
 			unset( $templates['wc_checkout']['embed_forms'] );
 
 			return $templates;
-
 		}
 
 		public function get_inherit_supported_post_type() {
@@ -874,7 +919,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 				return $is;
 			}
 			$key          = 'wffn_ay_' . WFFN_Core()->data->get_transient_key();
-			$cookie_value = isset( $_COOKIE[ $key ] ) ? wffn_clean( $_COOKIE[ $key ] ) : ''; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+			$cookie_value = isset( $_COOKIE[ $key ] ) ? wffn_clean( wp_unslash( $_COOKIE[ $key ] ) ) : ''; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 			$cookie_value = explode( ',', str_replace( array( '[', ']' ), '', $cookie_value ) );
 			if ( is_array( $cookie_value ) && in_array( $aero_id, $cookie_value ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$is = true;
@@ -898,7 +943,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			if ( ! class_exists( 'WFFN_Common' ) || ! method_exists( 'WFFN_Common', 'get_store_checkout_id' ) || 0 === WFFN_Common::get_store_checkout_id() ) {
 				return $checkout_id;
 			}
-
 
 			$funnel = new WFFN_Funnel( WFFN_Common::get_store_checkout_id() );
 
@@ -929,22 +973,20 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 					if ( isset( $step['type'] ) && $step['type'] === 'wc_checkout' && 'publish' === get_post_status( $step['id'] ) ) {
 						return $step['id'];
 					}
-
 				}
-
-
 			}
 
 			return $checkout_id;
 		}
 
-		/* Setup funnel and set correct step on update order review call
+		/*
+		Setup funnel and set correct step on update order review call
 		 * @param $postdata
 		 *
 		 * @return void
 		 */
 		public function setup_funnel_on_update_order( $postdata ) {
-			$post_data = [];
+			$post_data = array();
 			parse_str( $postdata, $post_data );
 			$wfacp_id = isset( $post_data['_wfacp_post_id'] ) ? $post_data['_wfacp_post_id'] : 0;
 
@@ -952,11 +994,14 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 				return;
 			}
 
-			$environment = apply_filters( 'wffn_funnel_environment', array(
-				'id'         => $wfacp_id,
-				'post_type'  => WFACP_Common::get_post_type_slug(),
-				'setup_time' => strtotime( gmdate( 'c' ) ),
-			) );
+			$environment = apply_filters(
+				'wffn_funnel_environment',
+				array(
+					'id'         => $wfacp_id,
+					'post_type'  => WFACP_Common::get_post_type_slug(),
+					'setup_time' => strtotime( gmdate( 'c' ) ),
+				)
+			);
 
 			$funnel = $this->get_funnel_to_run( $environment );
 
@@ -969,12 +1014,14 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			}
 
 			WFFN_Core()->data->set( 'funnel', $funnel );
-			WFFN_Core()->data->set( 'current_step', [
-				'id'   => $environment['id'],
-				'type' => $this->slug,
-			] );
+			WFFN_Core()->data->set(
+				'current_step',
+				array(
+					'id'   => $environment['id'],
+					'type' => $this->slug,
+				)
+			);
 			WFFN_Core()->data->save();
-
 		}
 
 		/**
@@ -988,7 +1035,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 
 			$old_products = maybe_unserialize( $meta_value );
 			if ( ! empty( $old_products ) ) {
-				$new_products = [];
+				$new_products = array();
 				foreach ( $old_products as $o_product ) {
 					$new_products[ uniqid( 'wfacp_' ) ] = $o_product;
 				}
@@ -997,9 +1044,38 @@ if ( ! class_exists( 'WFFN_Step_WC_Checkout' ) ) {
 			}
 
 			return $meta_value;
-
 		}
 
+		/**
+		 * Proxy: lazy-load FK_Checkout_Redirect and resolve checkout from cart.
+		 * Runs at priority 10 on wfacp_global_checkout_page_id, after the store
+		 * checkout override at priority 8.
+		 *
+		 * @param int $checkout_page_id
+		 * @return int
+		 */
+		public function fk_checkout_redirect_resolve( $checkout_page_id ) {
+			if ( did_action( 'wp_loaded' ) <= 0 ) {
+				return $checkout_page_id;
+			}
+			require_once WFFN_PLUGIN_DIR . '/includes/class-fk-checkout-redirect.php';
+
+			return FK_Checkout_Redirect::get_instance()->resolve_checkout_from_cart( $checkout_page_id );
+		}
+
+		/**
+		 * Proxy: lazy-load FK_Checkout_Redirect and override add-to-cart button text.
+		 * Handles both archive and single product page text filters.
+		 *
+		 * @param string     $text
+		 * @param WC_Product $product
+		 * @return string
+		 */
+		public function fk_checkout_redirect_cart_text( $text, $product ) {
+			require_once WFFN_PLUGIN_DIR . '/includes/class-fk-checkout-redirect.php';
+
+			return FK_Checkout_Redirect::get_instance()->override_add_to_cart_text( $text, $product );
+		}
 	}
 
 	if ( class_exists( 'WFFN_Core' ) && class_exists( 'WFACP_Core' ) && wffn_is_wc_active() ) {

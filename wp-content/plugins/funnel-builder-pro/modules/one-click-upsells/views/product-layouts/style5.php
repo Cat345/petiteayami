@@ -100,42 +100,45 @@ if ( true === $product_override_global ) {
 }
 ?>
 <div class="wfocu-landing-section wfocu-product-section wfocu-product-sec-style5 wfocu-pkey-<?php echo $product_key; ?>" data-scrollto="wfocu_product_product_<?php echo $product_key; ?>" data-key="<?php echo $product_key; ?>" data-id="<?php echo $product_id; ?>">
-    <div class="wfocu-container">
-        <div class="wfocu-product-border-wrap <?php echo $border_class; ?> ">
-            <div class="wfocu-product-main wfocu-pro-gallery-pos-full wfocu-clearfix">
-                <div class="wfocu-row wfocu-clearfix">
-                    <div class="wfocu-col-md-12">
-                        <div class="wfocu-product-inner-wrap wfocu-max-600">
-                            <div class="wfocu-product-top-section">
-                                <h1 class="wfocu-product-title"><?php echo $title; ?></h1>
-                                <div class="wfocu-clearfix"></div>
+	<div class="wfocu-container">
+		<div class="wfocu-product-border-wrap <?php echo $border_class; ?> ">
+			<div class="wfocu-product-main wfocu-pro-gallery-pos-full wfocu-clearfix">
+				<div class="wfocu-row wfocu-clearfix">
+					<div class="wfocu-col-md-12">
+						<div class="wfocu-product-inner-wrap wfocu-max-600">
+							<div class="wfocu-product-top-section">
+								<h1 class="wfocu-product-title"><?php echo $title; ?></h1>
+								<div class="wfocu-clearfix"></div>
 								<?php if ( true === $display_rating && $rating_count > 0 ) { ?>
-                                    <div class="wfocu-product-rating">
-                                        <div class="wfocu-star-rating">
-                                            <span style="width:<?php echo $rating_average * 20; ?>%">Rated <strong class="rating"><?php echo $rating_average; ?></strong> out of 5 based on <span class="rating"><?php echo $rating_count; ?></span> customer ratings</span>
-                                        </div>
-                                        <a href="javascript:void(0)" class="wfocu-review-link" rel="nofollow">(<span class="count">4</span> customer reviews)</a>
-                                    </div>
+									<div class="wfocu-product-rating">
+										<div class="wfocu-star-rating">
+											<span style="width:<?php echo $rating_average * 20; ?>%">Rated <strong class="rating"><?php echo $rating_average; ?></strong> out of 5 based on <span class="rating"><?php echo $rating_count; ?></span> customer ratings</span>
+										</div>
+										<a href="javascript:void(0)" class="wfocu-review-link" rel="nofollow">(<span class="count">4</span> customer reviews)</a>
+									</div>
 								<?php } ?>
-                            </div>
+							</div>
 							<?php if ( is_array( $gallery ) && count( $gallery ) > 0 ) { ?>
-                                <div class="wfocu-product-gallery-col">
-                                    <div class="wfocu-product-carousel-container">
+								<div class="wfocu-product-gallery-col">
+									<div class="wfocu-product-carousel-container">
 										<?php
-										$this->get_template_part( 'product/slider', array(
-											'key'     => $product_key,
-											'gallery' => $gallery,
-											'product' => $product,
-											'title'   => $title,
-											'style'   => 5,
-										) );
+										$this->get_template_part(
+											'product/slider',
+											array(
+												'key'     => $product_key,
+												'gallery' => $gallery,
+												'product' => $product,
+												'title'   => $title,
+												'style'   => 5,
+											)
+										);
 										?>
-                                    </div>
-                                </div>
+									</div>
+								</div>
 							<?php } ?>
-                            <div class="wfocu-product-info-col">
-                                <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
-                                    <div class="wfocu-product-price wfocu-product-on-sale">
+							<div class="wfocu-product-info-col">
+								<div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
+									<div class="wfocu-product-price wfocu-product-on-sale">
 										<?php
 
 										$price_output = '';
@@ -144,29 +147,27 @@ if ( true === $product_override_global ) {
 										if ( round( $regular_price_raw, 2 ) !== round( $sale_price_raw, 2 ) ) {
 											$price_output .= $regular_price ? '<span class="wfocu-regular-price">' . $regular_price . '</span>' : '';
 											$price_output .= $sale_price ? '<span class="wfocu-sale-price">' . $sale_price . '</span>' : '';
-										} else {
-											if ( 'variable' === $product->get_type() ) {
+										} elseif ( 'variable' === $product->get_type() ) {
 												$price_output .= sprintf( '<span class="wfocu-regular-price"><span class="wfocu_variable_price_regular" style="display: none;" data-key="%s"></span></span>', $product_key );
 												$price_output .= $sale_price ? '<span class="wfocu-sale-price">' . $sale_price . '</span>' : '';
-											} else {
-												$price_output .= $sale_price ? '<span class="wfocu-sale-price">' . $sale_price . '</span>' : '';
-											}
+										} else {
+											$price_output .= $sale_price ? '<span class="wfocu-sale-price">' . $sale_price . '</span>' : '';
 										}
 										$get_html_output = apply_filters( 'wfocu_template_price_html', $price_output, $regular_price_raw, $regular_price, $sale_price_raw, $sale_price, $data );
 										echo $get_html_output;
 
 										?>
-                                    </div>
-                                </div>
+									</div>
+								</div>
 								<?php
 								echo ( ! empty( $short_desc ) ) ? '<div class="wfocu-product-short-description">' . apply_filters( 'wfocu_the_content', $short_desc ) . '</div>' : '';
 								?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="wfocu-text-center wfocu-mb-40">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="wfocu-text-center wfocu-mb-40">
 				<?php
 				$buy_data = array(
 					'key'            => $product_key,
@@ -178,18 +179,21 @@ if ( true === $product_override_global ) {
 				}
 				WFOCU_Core()->template_loader->get_template_part( 'buy-block', $buy_data );
 				?>
-            </div>
-            <div class="wfocu-clearfix"></div>
+			</div>
+			<div class="wfocu-clearfix"></div>
 			<?php
 			if ( true === $display_tabs ) {
-				WFOCU_Core()->template_loader->get_template_part( 'product/tabs', array(
-					'mode'    => $display_mode,
-					'custom'  => $custom_tabs,
-					'align'   => $tab_alignment,
-					'product' => $product,
-				) );
+				WFOCU_Core()->template_loader->get_template_part(
+					'product/tabs',
+					array(
+						'mode'    => $display_mode,
+						'custom'  => $custom_tabs,
+						'align'   => $tab_alignment,
+						'product' => $product,
+					)
+				);
 			}
 			?>
-        </div>
-    </div>
+		</div>
+	</div>
 </div>

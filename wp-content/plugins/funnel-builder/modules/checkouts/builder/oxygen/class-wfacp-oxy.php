@@ -1,24 +1,23 @@
 <?php
 if ( ! class_exists( 'WFACP_OXY' ) ) {
-	class
-	WFACP_OXY {
-		private static $ins = null;
-		private $is_oxy = false;
-		private static $front_locals = [];
-		private $template_file = '';
-		private $wfacp_id = 0;
-		private $section_slug = "woofunnels";
-		private $tab_slug = "woofunnels";
-		public $modules_instance = [];
-		private $post = null;
+	class WFACP_OXY {
+		private static $ins          = null;
+		private $is_oxy              = false;
+		private static $front_locals = array();
+		private $template_file       = '';
+		private $wfacp_id            = 0;
+		private $section_slug        = 'woofunnels';
+		private $tab_slug            = 'woofunnels';
+		public $modules_instance     = array();
+		private $post                = null;
 
 		private function __construct() {
 			$this->template_file = __DIR__ . '/template/template.php';
-			add_action( 'after_setup_theme', [ $this, 'init' ] );
-			add_action( 'wfacp_register_template_types', [ $this, 'register_template_type' ], 19 );
-			add_filter( 'wfacp_register_templates', [ $this, 'register_templates' ] );
-			add_filter( 'wfacp_template_edit_link', [ $this, 'add_template_edit_link' ], 10, 2 );
-			add_action( 'woocommerce_checkout_terms_and_conditions', [ $this, 'remove_the_content_filter' ] );
+			add_action( 'after_setup_theme', array( $this, 'init' ) );
+			add_action( 'wfacp_register_template_types', array( $this, 'register_template_type' ), 19 );
+			add_filter( 'wfacp_register_templates', array( $this, 'register_templates' ) );
+			add_filter( 'wfacp_template_edit_link', array( $this, 'add_template_edit_link' ), 10, 2 );
+			add_action( 'woocommerce_checkout_terms_and_conditions', array( $this, 'remove_the_content_filter' ) );
 		}
 
 		public static function get_instance() {
@@ -27,31 +26,30 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 		public function init() {
 			if ( ! defined( 'CT_VERSION' ) ) {
 				return;
 			}
-			add_action( 'wfacp_checkout_page_found', [ $this, 'setup_global_checkout' ] );
-			add_action( 'wfacp_template_removed', [ $this, 'delete_oxy_data' ] );
-			add_action( 'wfacp_duplicate_pages', [ $this, 'duplicate_template' ], 10, 3 );
+			add_action( 'wfacp_checkout_page_found', array( $this, 'setup_global_checkout' ) );
+			add_action( 'wfacp_template_removed', array( $this, 'delete_oxy_data' ) );
+			add_action( 'wfacp_duplicate_pages', array( $this, 'duplicate_template' ), 10, 3 );
 
 			$this->register();
 		}
 
 		private function register() {
-			add_action( 'admin_bar_menu', [ $this, 'add_admin_bar_link' ], 1003 );
-			add_action( 'init', [ $this, 'init_extension' ], 21 );
-			add_filter( 'wfacp_is_theme_builder', [ $this, 'is_oxy_page' ] );
-			add_filter( 'wfacp_post', [ $this, 'check_current_page_is_aero_page' ] );
-			add_action( 'wfacp_template_load', [ $this, 'load_oxy_abs_class' ], 10, 2 );
-			add_action( 'oxygen_enqueue_frontend_scripts', [ $this, 'enable_self_page_css' ] );
+			add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_link' ), 1003 );
+			add_action( 'init', array( $this, 'init_extension' ), 21 );
+			add_filter( 'wfacp_is_theme_builder', array( $this, 'is_oxy_page' ) );
+			add_filter( 'wfacp_post', array( $this, 'check_current_page_is_aero_page' ) );
+			add_action( 'wfacp_template_load', array( $this, 'load_oxy_abs_class' ), 10, 2 );
+			add_action( 'oxygen_enqueue_frontend_scripts', array( $this, 'enable_self_page_css' ) );
 		}
 
 		private function importer() {
-			add_action( 'wp_loaded', [ $this, 'load_oxy_importer' ], 150 );
+			add_action( 'wp_loaded', array( $this, 'load_oxy_importer' ), 150 );
 		}
 
 		public function load_oxy_importer() {
@@ -64,7 +62,6 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 
 		public static function get_locals() {
 			return self::$front_locals;
-
 		}
 
 		public function is_oxy_page( $status ) {
@@ -89,7 +86,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 
 				if ( isset( $_REQUEST['post'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$temp_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				} else if ( isset( $_REQUEST['post_id'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				} elseif ( isset( $_REQUEST['post_id'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$temp_id = absint( $_REQUEST['post_id'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				} elseif ( isset( $_REQUEST['editor_post_id'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$temp_id = absint( $_REQUEST['editor_post_id'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -110,20 +107,19 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		 * @param $loader WFACP_Template_loader
 		 */
 		public function register_template_type( $loader ) {
-			$template = [
+			$template = array(
 				'slug'    => 'oxy',
 				'title'   => __( 'Oxygen Classic', 'woofunnels-aero-checkout' ),
-				'filters' => WFACP_Common::get_template_filter()
-			];
+				'filters' => WFACP_Common::get_template_filter(),
+			);
 
 			$loader->register_template_type( $template );
 		}
 
 		public function register_templates( $designs ) {
 
-
 			$templates      = WooFunnels_Dashboard::get_all_templates();
-			$designs['oxy'] = ( isset( $templates['wc_checkout'] ) && isset( $templates['wc_checkout']['oxy'] ) ) ? $templates['wc_checkout']['oxy'] : [];
+			$designs['oxy'] = ( isset( $templates['wc_checkout'] ) && isset( $templates['wc_checkout']['oxy'] ) ) ? $templates['wc_checkout']['oxy'] : array();
 
 			if ( is_array( $designs['oxy'] ) && count( $designs['oxy'] ) > 0 ) {
 				foreach ( $designs['oxy'] as $key => $val ) {
@@ -132,14 +128,11 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				}
 			}
 
-
 			return $designs;
-
-
 		}
 
 
-		public function load_oxy_abs_class( $wfacp_id, $template = [] ) {
+		public function load_oxy_abs_class( $wfacp_id, $template = array() ) {
 			if ( empty( $template ) ) {
 				return;
 			}
@@ -149,11 +142,17 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		}
 
 		public function add_template_edit_link( $links, $admin ) {
-			$url          = add_query_arg( [
-				'ct_builder'   => 'true',
-				'oxy_wfacp_id' => $admin->wfacp_id
-			], get_the_permalink( $admin->wfacp_id ) );
-			$links['oxy'] = [ 'url' => $url, 'button_text' => __( 'Edit', 'woofunnles-aero-checkout' ) ];
+			$url          = add_query_arg(
+				array(
+					'ct_builder'   => 'true',
+					'oxy_wfacp_id' => $admin->wfacp_id,
+				),
+				get_the_permalink( $admin->wfacp_id )
+			);
+			$links['oxy'] = array(
+				'url'         => $url,
+				'button_text' => __( 'Edit', 'woofunnles-aero-checkout' ),
+			);
 
 			return $links;
 		}
@@ -165,7 +164,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		public function init_extension() {
 			if ( self::is_template_editor() ) {
 				// Only Run Template Preview Section Displayed
-				add_action( 'wfacp_after_template_found', [ $this, 'prepare_module' ] );
+				add_action( 'wfacp_after_template_found', array( $this, 'prepare_module' ) );
 
 				return;
 			}
@@ -182,11 +181,9 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
-
 			if ( wp_doing_ajax() && isset( $_REQUEST['wfacp_id'] ) ) {
 				$post_id = $_REQUEST['wfacp_id'];
 			}
-
 
 			if ( $post_id > 0 ) {
 				$status = $this->editor_prepare_module( $post_id );
@@ -195,13 +192,12 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				}
 			}
 
-			add_action( 'wfacp_after_template_found', [ $this, 'prepare_module' ] );
-
-
+			add_action( 'wfacp_after_template_found', array( $this, 'prepare_module' ) );
 		}
 
 		/**
 		 * Only run when oxygen builder importer running . Widget need to ready before builder_json_prepare
+		 *
 		 * @return void
 		 */
 		public function setup_oxygen_widgets() {
@@ -217,9 +213,12 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 			$post = get_post( $post_id );
 			if ( ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) {
 				WFACP_Common::set_id( $post_id );
-				add_action( 'admin_head', function () {
-					add_filter( 'post_type_link', [ $this, 'change_edit_with_oxygen_link' ], 10, 2 );
-				} );
+				add_action(
+					'admin_head',
+					function () {
+						add_filter( 'post_type_link', array( $this, 'change_edit_with_oxygen_link' ), 10, 2 );
+					}
+				);
 				WFACP_Core()->template_loader->load_template( $post_id );
 				$this->prepare_module();
 
@@ -237,7 +236,6 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				return;
 			}
 			$this->run_widgets();
-
 		}
 
 		public function run_widgets() {
@@ -262,8 +260,8 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 				global $post;
 				$post       = get_post( $this->wfacp_id );
 				$this->post = $post;
-				add_action( 'wp_head', [ $this, 'change_global_post_var_to_our_page_post' ], 999998 );
-				add_filter( 'the_content', [ $this, 'change_global_post_var_to_our_page_post' ], 5 );
+				add_action( 'wp_head', array( $this, 'change_global_post_var_to_our_page_post' ), 999998 );
+				add_filter( 'the_content', array( $this, 'change_global_post_var_to_our_page_post' ), 5 );
 			}
 		}
 
@@ -280,18 +278,18 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		}
 
 		private function get_modules() {
-			$modules = [
-				'checkout_form' => [
+			$modules = array(
+				'checkout_form' => array(
 					'name' => __( 'Checkout Form', 'woofunnels-aero-checkout' ),
 					'path' => __DIR__ . ( '/modules/class-oxy-form.php' ),
-				],
-			];
+				),
+			);
 
 			return apply_filters( 'wfacp_oxy_modules', $modules, $this );
 		}
 
 		public function change_edit_with_oxygen_link( $link, $post ) {
-			$link = add_query_arg( [ 'oxy_wfacp_id' => $post->ID ], $link );
+			$link = add_query_arg( array( 'oxy_wfacp_id' => $post->ID ), $link );
 
 			return $link;
 		}
@@ -310,7 +308,13 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 					if ( ! is_null( $post ) && $post->post_type === WFACP_Common::get_post_type_slug() ) {
 						$wfacp_id     = $post->ID;
 						$href         = $node['href'];
-						$node['href'] = add_query_arg( [ 'ct_builder' => 'true', 'oxy_wfacp_id' => $wfacp_id ], $href );
+						$node['href'] = add_query_arg(
+							array(
+								'ct_builder'   => 'true',
+								'oxy_wfacp_id' => $wfacp_id,
+							),
+							$href
+						);
 						$wp_admin_bar->add_node( $node );
 					}
 				}
@@ -343,7 +347,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 			if ( apply_filters( 'bwf_enable_oxygen_universal_css', true, $this ) ) {
 				return;
 			}
-			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', [ $this, 'disable_universal_css' ] );
+			add_filter( 'pre_option_oxygen_vsb_universal_css_cache', array( $this, 'disable_universal_css' ) );
 		}
 
 		public function disable_universal_css( $status ) {
@@ -356,7 +360,7 @@ if ( ! class_exists( 'WFACP_OXY' ) ) {
 		}
 
 		public function remove_the_content_filter() {
-			remove_filter( 'the_content', [ $this, 'change_global_post_var_to_our_page_post' ], 5 );
+			remove_filter( 'the_content', array( $this, 'change_global_post_var_to_our_page_post' ), 5 );
 		}
 	}
 

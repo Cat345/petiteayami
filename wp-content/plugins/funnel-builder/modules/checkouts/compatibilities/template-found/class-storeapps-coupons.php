@@ -10,7 +10,7 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 		public function __construct() {
 			add_action( 'wfacp_after_checkout_page_found', array( $this, 'handle_aero_coupons' ) );
 
-			add_action( 'wc_sc_before_auto_apply_coupons', [ $this, 'handle_auto_apply' ], 10 );
+			add_action( 'wc_sc_before_auto_apply_coupons', array( $this, 'handle_auto_apply' ), 10 );
 
 			/**
 			 * Remove wc_sc_before_auto_apply_coupons hook when version is greater than or equal to 9.54.0
@@ -23,11 +23,11 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 		 */
 		public function handle_aero_coupons() {
 			// Check if direct coupon-code is present in URL
-			if ( isset( $_REQUEST['coupon-code'] ) ) {
-				$coupon_code = $_REQUEST['coupon-code'];
+			if ( isset( $_REQUEST['coupon-code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required
+				$coupon_code = sanitize_text_field( wp_unslash( $_REQUEST['coupon-code'] ) );
 			} // Otherwise check for aero-coupons parameter
-			elseif ( isset( $_REQUEST['aero-coupons'] ) ) {
-				$coupon_code             = $_REQUEST['aero-coupons'];
+			elseif ( isset( $_REQUEST['aero-coupons'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading URL parameter for coupon code, nonce verification not required
+				$coupon_code             = sanitize_text_field( wp_unslash( $_REQUEST['aero-coupons'] ) );
 				$_REQUEST['coupon-code'] = $coupon_code;
 			} else {
 				return;
@@ -54,7 +54,7 @@ if ( ! class_exists( 'WFACP_Storeapps_Coupons' ) ) {
 				return;
 			}
 
-			$plugin_data = get_plugin_data( WC_SC_PLUGIN_FILE );
+			$plugin_data         = get_plugin_data( WC_SC_PLUGIN_FILE );
 			$current_wsc_version = $plugin_data['Version'];
 
 			// Remove hook when version is >= 9.54.0

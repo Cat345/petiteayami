@@ -2,12 +2,12 @@
 if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Customer_Details extends WFTY_Divi_HTML_BLOCK {
-		public $slug = 'wfty_customer_details';
+		public $slug        = 'wfty_customer_details';
 		protected $main_css = '%%order_class%%.et_wfty_customer_details';
 
 		public function __construct() {
 			parent::__construct();
-			add_action( 'wp_footer', [ $this, 'localize_locals' ] );
+			add_action( 'wp_footer', array( $this, 'localize_locals' ) );
 		}
 
 		public function setup_data() {
@@ -15,31 +15,36 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 
 			$this->add_text( $tab_id, 'heading', __( 'Heading', 'funnel-builder' ), __( 'Customer Details', 'funnel-builder' ) );
 
-			$this->add_select( $tab_id, 'customer_layout', __( 'Layout', 'funnel-builder' ), [
-				'2c' => __( 'Two Columns', 'elementor' ),
-				'1c' => __( 'Full Width', 'elementor' ),
-			], '2c' );
+			$this->add_select(
+				$tab_id,
+				'customer_layout',
+				__( 'Layout', 'funnel-builder' ),
+				array(
+					'2c' => __( 'Two Columns', 'divi' ),
+					'1c' => __( 'Full Width', 'divi' ),
+				),
+				'2c'
+			);
 			// Add checkbox for extra content
-			$this->add_switcher( $tab_id, 'enable_extra_content', __( 'Show Extra Thankyou Content', 'funnel-builder' ), false,[],__( 'When enabled, this will display additional content/hooks from WooCommerce on the thank you page. Useful for compatibility with payment gateways and plugins.', 'funnel-builder' ) );
+			$this->add_switcher( $tab_id, 'enable_extra_content', __( 'Show Extra Thankyou Content', 'funnel-builder' ), false, array(), __( 'When enabled, this will display additional content/hooks from WooCommerce on the thank you page. Useful for compatibility with payment gateways and plugins.', 'funnel-builder' ) );
 
 			$this->style_field();
-
 		}
 
 		private function style_field() {
 
-			$key = "wfty_customer_details";
+			$key = 'wfty_customer_details';
 
 			$head_id = $this->add_tab( __( 'Heading', 'funnel-builder' ), 2 );
 
 			$font_side_default = array(
 				'font_size'   => array(
 					'default' => '24px',
-					'unit'    => 'px'
+					'unit'    => 'px',
 				),
 				'line_height' => array(
 					'default' => '1.5',
-					'unit'    => 'em'
+					'unit'    => 'em',
 				),
 			);
 
@@ -60,7 +65,6 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 			$font_side_default['font_size']['default'] = '15px';
 			$this->add_typography( $det_id, $key . '_det_text_typography', '%%order_class%% .wffn_customer_details_table .wfty_wrap .wfty_box.wfty_customer_details_2_col table tr th, %%order_class%% .wffn_customer_details_table .wfty_wrap .wfty_box.wfty_customer_details_2_col table tr td, %%order_class%% .wffn_customer_details_table, %%order_class%% .wfty_view, %%order_class%% .wffn_customer_details_table *', '', '', $font_side_default );
 			$this->add_color( $det_id, $key . '_det_text_color', '%%order_class%% .wffn_customer_details_table .wfty_wrap .wfty_box.wfty_customer_details_2_col table tr th, %%order_class%% .wffn_customer_details_table .wfty_wrap .wfty_box.wfty_customer_details_2_col table tr td, %%order_class%% .wffn_customer_details_table, %%order_class%% .wfty_view, %%order_class%% .wffn_customer_details_table *', __( 'Color', 'funnel-builder' ), '#565656' );
-
 		}
 
 		public function localize_locals() {
@@ -77,25 +81,32 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 				$data['shipping'] = 'true';
 			}
 
-			$data = implode( ', ', array_map( function ( $v, $k ) {
-				return sprintf( "%s:'%s'", $k, $v );
-			}, $data, array_keys( $data ) ) );
+			$data = implode(
+				', ',
+				array_map(
+					function ( $v, $k ) {
+						return sprintf( "%s:'%s'", $k, $v );
+					},
+					$data,
+					array_keys( $data )
+				)
+			);
 
 			?>
-            <script>
-                let wftyDiviCustomer = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
-            </script>
+			<script>
+				let wftyDiviCustomer = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
+			</script>
 			<?php
 		}
 
 		public function html() {
-			$settings        = $this->props;
-			$heading_text    = $settings['heading'];
-			$customer_layout = ( isset( $settings['customer_layout'] ) && '2c' !== $settings['customer_layout'] ) ? ' wfty_full_width' : '2c'; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+			$settings         = $this->props;
+			$heading_text     = isset( $settings['heading'] ) ? $settings['heading'] : '';
+			$customer_layout  = ( isset( $settings['customer_layout'] ) && '2c' !== $settings['customer_layout'] ) ? ' wfty_full_width' : '2c'; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$customer_layout .= ( isset( $settings['customer_layout_tablet'] ) && '2c' === $settings['customer_layout_tablet'] ) ? ' wfty_2c_tab_width' : ''; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$customer_layout .= ( isset( $settings['customer_layout_phone'] ) && '2c' === $settings['customer_layout_phone'] ) ? ' wfty_2c_mob_width' : ''; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			if ( $customer_layout !== '' && $customer_layout !== '2c' ) {
-				$customer_layout .= " wfty_cont_style";
+				$customer_layout .= ' wfty_cont_style';
 			}
 			$enable_extra_content = ( isset( $settings['enable_extra_content'] ) && $settings['enable_extra_content'] === 'on' ) ? 'yes' : 'no';
 			ob_start();
@@ -106,9 +117,7 @@ if ( ! class_exists( 'WFTY_Customer_Details' ) ) {
 			<?php
 			return ob_get_clean();
 		}
-
-
 	}
 
-	return new WFTY_Customer_Details;
+	return new WFTY_Customer_Details();
 }

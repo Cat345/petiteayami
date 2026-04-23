@@ -1,0 +1,83 @@
+{
+  "module": {
+    "button_text": "button_text.innerContent.*",
+    "subtitle": "subtitle.innerContent.*",
+    "button_submitting_text": "button_submitting_text.innerContent.*",
+    "show_labels": "show_labels.*",
+    "input_size": "input_size",
+
+    "wfop_optin_form_label_color": "wfop_optin_form_label_typography.decoration.font.font.*.color",
+    "wfop_optin_form_mark_required_color": "wfop_optin_form_mark_required_color.decoration.font.font.*.color",
+    "wfop_optin_form_field_text_color": "wfop_optin_form_field_typography.decoration.font.font.*.color",
+    "wfop_optin_form_button_color": "wfop_optin_form_button_text_typo.decoration.font.font.*.color",
+    "wfop_optin_form_button_hover_color": "wfop_optin_form_button_hover_color.decoration.font.font.*.color",
+
+    "wfop_optin_form_field_background_color": "wfop_optin_form_field_background_color.decoration.background.*.color",
+    "wfop_optin_form_button_bg_color": "wfop_optin_form_button_bg_color.decoration.background.*.color",
+    "wfop_optin_form_button_hover_bg_color": "wfop_optin_form_button_hover_bg_color.decoration.background.*.color",
+
+    "wfop_optin_form_column_gap_padding": "wfop_optin_form_column_gap_padding.decoration.spacing.*.padding",
+    "wfop_optin_form_button_text_padding": "wfop_optin_form_button_text_padding.decoration.spacing.*.padding",
+    "wfop_optin_form_text_padding": "module.decoration.spacing.*.padding",
+    "wfop_optin_form_row_gap_margin": "wfop_optin_form_row_gap_margin.decoration.spacing.*.margin",
+    "wfop_optin_form_button_text_margin": "wfop_optin_form_button_text_padding.decoration.spacing.*.margin",
+    "wfop_optin_form_text_margin": "module.decoration.spacing.*.margin",
+
+    "wfop_optin_form_button_width_width": "wfop_optin_form_button_width.decoration.sizing.*.maxWidth",
+    "wfop_optin_form_button_alignment": "wfop_optin_form_submit_button_text.advanced.text.text.*.align",
+    "wfop_optin_form_button_text_alignment": "wfop_optin_form_submit_button_text.advanced.text.text.*.orientation"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "text": "module.advanced.text",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfop_optin_form_field_border": "wfop_optin_form_field_border.decoration.border",
+      "bwf_button_border": "bwf_button_border.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "button_text_alignment": "button_text_alignment_box_shadow.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfop_optin_form_label_typography": "wfop_optin_form_label_typography.decoration.font",
+      "wfop_optin_form_field_typography": "wfop_optin_form_field_typography.decoration.font",
+      "wfop_optin_form_button_text_typo": "wfop_optin_form_button_text_typo.decoration.font",
+      "wfop_optin_form_button_subheading_text_typo": "wfop_optin_form_button_subheading_text_typo.decoration.font"
+    },
+    "text_shadow": {
+      "default": "module.advanced.text.textShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfop_optin_form_column_gap_padding": "convertSpacing",
+    "wfop_optin_form_button_text_padding": "convertSpacing",
+    "wfop_optin_form_text_padding": "convertSpacing",
+    "wfop_optin_form_row_gap_margin": "convertSpacing",
+    "wfop_optin_form_button_text_margin": "convertSpacing",
+    "wfop_optin_form_text_margin": "convertSpacing"
+  }
+}

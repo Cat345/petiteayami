@@ -899,7 +899,7 @@ class PremiumCachedContainer extends Container
      */
     protected function getPremiumTemplatesFactoryService()
     {
-        return $this->services['MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumTemplatesFactory'] = new \MailPoet\Premium\Automation\Integrations\MailPoetPremium\Templates\PremiumTemplatesFactory(($this->services['MailPoet\\Automation\\Engine\\Templates\\AutomationBuilder'] ?? $this->getAutomationBuilderService()), ($this->services['MailPoet\\Automation\\Integrations\\WooCommerce\\WooCommerce'] ?? $this->getWooCommerceService()), ($this->services['MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumEmailFactory'] ?? $this->getPremiumEmailFactoryService()));
+        return $this->services['MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumTemplatesFactory'] = new \MailPoet\Premium\Automation\Integrations\MailPoetPremium\Templates\PremiumTemplatesFactory(($this->services['MailPoet\\Automation\\Engine\\Templates\\AutomationBuilder'] ?? $this->getAutomationBuilderService()), ($this->services['MailPoet\\Automation\\Integrations\\WooCommerce\\WooCommerce'] ?? $this->getWooCommerceService()), ($this->services['MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumEmailFactory'] ?? $this->getPremiumEmailFactoryService()), ($this->services['MailPoet\\WooCommerce\\WooCommerceBookings\\Helper'] ?? $this->getHelper2Service()));
     }
 
     /**

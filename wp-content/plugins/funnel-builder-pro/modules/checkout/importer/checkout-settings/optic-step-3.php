@@ -2,8 +2,8 @@
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
-$settings = [
-	'show_on_next_step'          => [
+$settings = array(
+	'show_on_next_step'              => array(
 		'single_step' => array(
 			'billing_email'      => 'true',
 			'billing_first_name' => 'true',
@@ -13,45 +13,45 @@ $settings = [
 			'billing_phone'      => 'true',
 		),
 		'two_step'    => array(
-			'shipping_calculator' => 'true'
-		)
-	],
-	'coupons'                    => '',
-	'enable_coupon'              => 'false',
-	'disable_coupon'             => 'false',
-	'autocomplete_enable'        => 'false',
-	'autocomplete_google_key'    => '',
-	'preferred_countries_enable' => 'false',
-	'enable_autopopulate_fields' => 'true',
-	'enable_autopopulate_state'  => 'true',
-	'autopopulate_state_service' => 'zippopotamus',
-	'preferred_countries'        => '',
-	'enable_smart_buttons'       => 'false',
-	'smart_button_position'      => 'wfacp_form_single_step_start',
-	'collapsible_optional_fields'    => [
-		'shipping_company'   => "false",
-		'shipping_address_2' => "true",
-		'shipping_phone'     => "false",
-		'billing_company'    => "false",
-		'billing_address_2'  => "true",
-		'billing_phone'      => "false",
+			'shipping_calculator' => 'true',
+		),
+	),
+	'coupons'                        => '',
+	'enable_coupon'                  => 'false',
+	'disable_coupon'                 => 'false',
+	'autocomplete_enable'            => 'false',
+	'autocomplete_google_key'        => '',
+	'preferred_countries_enable'     => 'false',
+	'enable_autopopulate_fields'     => 'true',
+	'enable_autopopulate_state'      => 'true',
+	'autopopulate_state_service'     => 'zippopotamus',
+	'preferred_countries'            => '',
+	'enable_smart_buttons'           => 'false',
+	'smart_button_position'          => 'wfacp_form_single_step_start',
+	'collapsible_optional_fields'    => array(
+		'shipping_company'   => 'false',
+		'shipping_address_2' => 'true',
+		'shipping_phone'     => 'false',
+		'billing_company'    => 'false',
+		'billing_address_2'  => 'true',
+		'billing_phone'      => 'false',
 
-	],
-	'collapsible_optional_link_text' => __( "Add", 'woocommerce' ),
-];
+	),
+	'collapsible_optional_link_text' => __( 'Add', 'woocommerce' ),
+);
 $shipping_fields = WFACP_Common::get_single_address_fields( 'shipping' );
 if ( isset( $shipping_fields['fields_options'] ) && isset( $shipping_fields['fields_options']['address_2']['street_address2'] ) ) {
-	$shipping_fields['fields_options']['address_2']['street_address2'] = "true";
+	$shipping_fields['fields_options']['address_2']['street_address2'] = 'true';
 }
 
 $billing_fields = WFACP_Common::get_single_address_fields();
 if ( isset( $billing_fields['fields_options'] ) && isset( $billing_fields['fields_options']['address_2']['street_address2'] ) ) {
-	$billing_fields['fields_options']['address_2']['street_address2'] = "true";
+	$billing_fields['fields_options']['address_2']['street_address2'] = 'true';
 }
 
-$pageLayout = [
-	'steps'     => WFACP_Common::get_default_steps_fields( true ),
-	'fieldsets' => [
+$pageLayout = array(
+	'steps'                       => WFACP_Common::get_default_steps_fields( true ),
+	'fieldsets'                   => array(
 		'single_step' => array(
 			array(
 				'name'        => __( 'Contact Information', 'woofunnels-aero-checkout' ),
@@ -69,7 +69,7 @@ $pageLayout = [
 						'validate'     => array(
 							0 => 'email',
 						),
-						'autocomplete' => 'email username',
+						'autocomplete' => 'email',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
@@ -136,13 +136,13 @@ $pageLayout = [
 				'class'       => '',
 				'sub_heading' => '',
 				'fields'      => array(
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
-				)
-			)
-		)
-	],
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
+				),
+			),
+		),
+	),
 
-	'product_settings'            => [
+	'product_settings'            => array(
 
 		'hide_quantity_switcher'              => 'false',
 		'enable_delete_item'                  => 'false',
@@ -157,7 +157,7 @@ $pageLayout = [
 		'best_value_position'                 => 'below',
 		'enable_custom_name_in_order_summary' => 'false',
 		'product_switcher_template'           => 'default',
-	],
+	),
 	'have_coupon_field'           => 'false',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -167,17 +167,16 @@ $pageLayout = [
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'third_step',
 
-];
+);
 
 
-$product_settings                     = [];
+$product_settings                     = array();
 $product_settings['settings']         = $pageLayout['product_settings'];
-$product_settings['products']         = [];
-$product_settings['default_products'] = [];
+$product_settings['products']         = array();
+$product_settings['default_products'] = array();
 
-return [
+return array(
 	'page_layout'                    => $pageLayout,
 	'page_settings'                  => $settings,
 	'wfacp_product_switcher_setting' => $product_settings,
-];
-
+);

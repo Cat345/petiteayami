@@ -1,0 +1,1927 @@
+{
+  "name": "wfacp/mini-cart",
+  "d4Shortcode": "wfacp_checkout_form_summary",
+  "title": "FK Mini Cart",
+  "titles": "FK Mini Carts",
+  "category": "module",
+  "attributes": {
+    "module": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "styleProps": {},
+      "default": {},
+      "settings": {
+        "meta": {},
+        "advanced": {
+          "htmlAttributes": {}
+        },
+        "decoration": {
+          "attributes": {},
+          "overflow": {},
+          "disabledOn": {},
+          "transition": {},
+          "position": {},
+          "zIndex": {},
+          "scroll": {},
+          "sticky": {}
+        }
+      }
+    },
+    "miniCartHeading": {
+      "type": "object",
+      "tagName": "div",
+      "attributes": {
+        "class": "wfacp-order-summary-label"
+      },
+      "inlineEditor": "plainText",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Order summary"
+          }
+        }
+      },
+      "settings": {
+        "decoration": {},
+        "innerContent": {
+          "groupType": "group-item",
+          "item": {
+            "groupSlug": "contentHeading",
+            "priority": 10,
+            "render": true,
+            "attrName": "miniCartHeading.innerContent",
+            "label": "Title",
+            "component": {
+              "name": "divi/text",
+              "type": "field"
+            }
+          }
+        }
+      }
+    },
+    "miniCartModuleTextTypo": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designModuleText",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartModuleTextTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartHeadingTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp-order-summary-label",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "18px",
+                  "letterSpacing": "1px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartHeadingTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "enableProductImage": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 10,
+          "render": true,
+          "attrName": "enableProductImage",
+          "label": "Image",
+          "defaultAttr": {
+            "desktop": {
+              "value": "on"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "enableQuantityBox": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 20,
+          "render": true,
+          "attrName": "enableQuantityBox",
+          "label": "Quantity Switcher",
+          "defaultAttr": {
+            "desktop": {
+              "value": "on"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "enableDeleteItem": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 30,
+          "render": true,
+          "attrName": "enableDeleteItem",
+          "label": "Allow Deletion",
+          "defaultAttr": {
+            "desktop": {
+              "value": "on"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "miniCartEnableStrikeThroughPrice": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 40,
+          "render": true,
+          "attrName": "miniCartEnableStrikeThroughPrice",
+          "label": "Regular & Discounted Price",
+          "defaultAttr": {
+            "desktop": {
+              "value": "off"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "miniCartEnableLowStockTrigger": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 50,
+          "render": true,
+          "attrName": "miniCartEnableLowStockTrigger",
+          "label": "Low Stock Trigger",
+          "defaultAttr": {
+            "desktop": {
+              "value": "off"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "miniCartLowStockMessage": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "{{quantity}} left in stock"
+          }
+        }
+      },
+      "settings": {
+        "innerContent": {
+          "groupType": "group-item",
+          "item": {
+            "groupSlug": "contentProducts",
+            "priority": 60,
+            "render": true,
+            "attrName": "miniCartLowStockMessage.innerContent",
+            "label": "Message",
+            "component": {
+              "name": "divi/textarea",
+              "type": "field"
+            },
+            "showIf": {
+              "miniCartEnableLowStockTrigger": {
+                "desktop": {
+                  "value": "on"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartEnableSavingPriceMessage": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProducts",
+          "priority": 70,
+          "render": true,
+          "attrName": "miniCartEnableSavingPriceMessage",
+          "label": "Total Saving Message",
+          "defaultAttr": {
+            "desktop": {
+              "value": "off"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "miniCartSavingPriceMessage": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "You saved {{saving_amount}} ({{saving_percentage}}) on this order"
+          }
+        }
+      },
+      "settings": {
+        "innerContent": {
+          "groupType": "group-item",
+          "item": {
+            "groupSlug": "contentProducts",
+            "priority": 80,
+            "render": true,
+            "attrName": "miniCartSavingPriceMessage.innerContent",
+            "label": "Message",
+            "component": {
+              "name": "divi/textarea",
+              "type": "field"
+            },
+            "showIf": {
+              "miniCartEnableSavingPriceMessage": {
+                "desktop": {
+                  "value": "on"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "enableCoupon": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentCoupon",
+          "priority": 10,
+          "render": true,
+          "attrName": "enableCoupon",
+          "label": "Enable",
+          "defaultAttr": {
+            "desktop": {
+              "value": "off"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          }
+        }
+      }
+    },
+    "enableCouponCollapsible": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentCoupon",
+          "priority": 20,
+          "render": true,
+          "attrName": "enableCouponCollapsible",
+          "label": "Collapsible",
+          "defaultAttr": {
+            "desktop": {
+              "value": "off"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/toggle",
+            "type": "field",
+            "props": {
+              "on": "Yes",
+              "off": "No"
+            }
+          },
+          "showIf": {
+            "enableCoupon": {
+              "desktop": {
+                "value": "on"
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponButtonText": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Apply"
+          }
+        }
+      },
+      "settings": {
+        "innerContent": {
+          "groupType": "group-item",
+          "item": {
+            "groupSlug": "contentCoupon",
+            "priority": 30,
+            "render": true,
+            "attrName": "miniCartCouponButtonText.innerContent",
+            "label": "Coupon Button Text",
+            "component": {
+              "name": "divi/text",
+              "type": "field"
+            },
+            "showIf": {
+              "enableCoupon.desktop": {
+                "value": "on"
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartProductTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items, {{selector}} .wfacp_order_summary_container tr.cart_item td:not(.product-total), {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total > span bdi, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total > ins span bdi, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total > span:not(.wfacp_cart_product_name_h):not(.wfacp_delete_item_wrap), {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total ins span:not(.wfacp_cart_product_name_h):not(.wfacp_delete_item_wrap), {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total small, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items dl, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items dt, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items dd, {{selector}} .wfacp_order_summary_container table.wfacp_mini_cart_items dd p, {{selector}} .wfacp_order_summary_container tr.cart_item td .product-name, {{selector}} .wfacp_order_summary_container tr.cart_item td small, {{selector}} .wfacp_order_summary_container span.subscription-details, {{selector}} .wfacp_order_summary_container tr.cart_item td p, {{selector}} .wfacp_order_summary_container tr.cart_item td .product-name span:not(.subscription-details), {{selector}} .wfacp_order_summary_container tr.cart_item td .product-name, {{selector}} .wfacp_order_summary_container tr.cart_item td .product-name bdi",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#666666"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProducts",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartProductTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Product Cart",
+                  "fieldLabel": "Product Cart",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartStrikeThroughTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_order_summary_container .product-total del, {{selector}} .wfacp_order_summary_container .product-total del *, {{selector}} .wfacp_order_summary_container .product-total del span.woocommerce-Price-currencySymbol",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px",
+                  "weight": "500"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#E15334"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProducts",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartStrikeThroughTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Strike Through",
+                  "fieldLabel": "Strike Through",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartLowStockTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_order_summary_container .wfacp_stocks",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "11px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#e15334"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProducts",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartLowStockTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Low Stock",
+                  "fieldLabel": "Low Stock",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartSavingTextTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_order_summary_container table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td, {{selector}} .wfacp_order_summary_container table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td svg path, {{selector}} .wfacp_order_summary_container table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td *",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#5CADA3"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProducts",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartSavingTextTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Saving Text",
+                  "fieldLabel": "Saving Text",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartProductImageBorder": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp_order_sum .product-image img",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "style": "none",
+                  "width": {
+                    "top": "0px",
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px"
+                  },
+                  "color": {
+                    "hex": ""
+                  },
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomRight": "0px",
+                    "bottomLeft": "0px"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProducts",
+              "priority": 30,
+              "render": true,
+              "attrName": "miniCartProductImageBorder.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Image Border",
+                  "fieldLabel": "Image Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponLinkTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp-coupon-section .wfacp-coupon-page .wfacp_main_showcoupon",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "15px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#057daf"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 20,
+              "render": true,
+              "attrName": "miniCartCouponLinkTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Link",
+                  "fieldLabel": "Coupon Link",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponInputLabelTypo": {
+      "type": "object",
+      "selector": "{{selector}} form.checkout_coupon.woocommerce-form-coupon p:not(.wfacp-anim-wrap) .wfacp-form-control-label",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px",
+                  "weight": "400"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#333333"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 30,
+              "render": true,
+              "attrName": "miniCartCouponInputLabelTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Input Label",
+                  "fieldLabel": "Coupon Input Label",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponInputFieldTypo": {
+      "type": "object",
+      "selector": "{{selector}} form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#333333"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 40,
+              "render": true,
+              "attrName": "miniCartCouponInputFieldTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Input Field",
+                  "fieldLabel": "Coupon Input Field",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponInputFieldBorder": {
+      "type": "object",
+      "selector": "{{selector}} form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "4px",
+                    "topRight": "4px",
+                    "bottomLeft": "4px",
+                    "bottomRight": "4px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#61bdf7"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 45,
+              "render": true,
+              "attrName": "miniCartCouponInputFieldBorder.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Input Field Border",
+                  "fieldLabel": "Input Field Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacpFormMiniCartCouponFocusColor": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#61bdf7"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 10,
+              "render": true,
+              "attrName": "wfacpFormMiniCartCouponFocusColor.decoration.background",
+              "subName": "color",
+              "label": "Focus Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponButtonTypo": {
+      "type": "object",
+      "selector": "{{selector}} button.wfacp-coupon-btn",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#333333"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 55,
+              "render": true,
+              "attrName": "miniCartCouponButtonTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Button Text",
+                  "fieldLabel": "Text",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartProductMetaTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount), {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th span, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span bdi, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td small, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span.amount, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#666666"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCartTotal",
+              "priority": 10,
+              "render": true,
+              "attrName": "miniCartProductMetaTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Subtotal",
+                  "fieldLabel": "Subtotal",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mini_cart_total_label_typo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th span, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th small, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total th a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "24px",
+                  "color": "#323232"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCartTotal",
+              "priority": 15,
+              "render": true,
+              "attrName": "mini_cart_total_label_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Total Label",
+                  "fieldLabel": "Total Label",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mini_cart_total_typo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td span.woocommerce-Price-amount.amount, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td span.woocommerce-Price-amount.amount bdi, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td p, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td span, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td small, {{selector}} .wfacp_mini_cart_start_h table.shop_table tbody tr.order-total td a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "24px",
+                  "color": "#323232"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCartTotal",
+              "priority": 16,
+              "render": true,
+              "attrName": "mini_cart_total_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Total Price",
+                  "fieldLabel": "Total Price",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponCodeLabelTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount th span:not(.wfacp_coupon_code)",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCartTotal",
+              "priority": 30,
+              "render": true,
+              "attrName": "miniCartCouponCodeLabelTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Code Label",
+                  "fieldLabel": "Coupon Code Label",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponCodeValueTypo": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td span, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table tbody tr.cart-discount td a, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table .cart-discount td span bdi, {{selector}} .wfacp_mini_cart_start_h .wfacp_order_summary_container .shop_table .cart-discount th .wfacp_coupon_code",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          },
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#24ae4e"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCartTotal",
+              "priority": 31,
+              "render": true,
+              "attrName": "miniCartCouponCodeValueTypo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Code Value",
+                  "fieldLabel": "Coupon Code Value",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mini_cart_coupon_btn_hover_label_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:not([disabled]):hover",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 60,
+              "render": true,
+              "attrName": "mini_cart_coupon_btn_hover_label_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Button Hover Text",
+                  "fieldLabel": "Coupon Button Hover Text",
+                  "presetGroup": "wfacp/font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponButtonBackground": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:not([disabled])",
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#000000"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "attrName": "miniCartCouponButtonBackground.decoration.background",
+              "subName": "color",
+              "label": "Button Background",
+              "render": true,
+              "priority": 11,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "miniCartCouponButtonHoverBackground": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h button.wfacp-coupon-btn:not([disabled]):hover",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "attrName": "miniCartCouponButtonHoverBackground.decoration.background",
+              "subName": "color",
+              "label": "Button Hover Background",
+              "render": true,
+              "priority": 12,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_mini_cart_spacing": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                },
+                "padding": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "render": true,
+            "attrName": "wfacp_mini_cart_spacing.decoration.spacing"
+          }
+        }
+      }
+    },
+    "wfacp_mini_cart_border": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd",
+                      "style": "none"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {}
+        }
+      }
+    },
+    "mini_cart_divider_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h .wfacp_mini_cart_divi .cart_item, {{selector}} .wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal, {{selector}} .wfacp_mini_cart_start_h table.shop_table tr.order-total, {{selector}} .wfacp_mini_cart_start_h table.shop_table tr.wfacp_ps_error_state td, {{selector}} .wfacp_wrapper_start.wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page, {{selector}} .wfacp_wrapper_start.wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item, {{selector}} .wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page",
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designDivider",
+              "attrName": "mini_cart_divider_color.decoration.background",
+              "subName": "color",
+              "label": "Divider Color",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_mini_cart_background": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_mini_cart_start_h",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designBackground",
+              "attrName": "wfacp_mini_cart_background.decoration.background",
+              "subName": "color",
+              "label": "Background Color",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "design": "auto",
+    "advanced": "auto",
+    "groups": {
+      "contentHeading": {
+        "panel": "content",
+        "priority": 10,
+        "groupName": "contentHeading",
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Heading"
+          }
+        }
+      },
+      "contentProducts": {
+        "panel": "content",
+        "priority": 20,
+        "groupName": "contentProducts",
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Products"
+          }
+        }
+      },
+      "contentCoupon": {
+        "panel": "content",
+        "priority": 30,
+        "groupName": "contentCoupon",
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Coupon"
+          }
+        }
+      },
+      "designModuleText": {
+        "panel": "design",
+        "priority": 100,
+        "groupName": "designModuleText",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Settings",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designHeading": {
+        "panel": "design",
+        "priority": 10,
+        "groupName": "designHeading",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Heading",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designProducts": {
+        "panel": "design",
+        "priority": 20,
+        "groupName": "designProducts",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Products",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designCoupon": {
+        "panel": "design",
+        "priority": 30,
+        "groupName": "designCoupon",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Coupon",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designCartTotal": {
+        "panel": "design",
+        "priority": 40,
+        "groupName": "designCartTotal",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Cart Total",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designDivider": {
+        "panel": "design",
+        "priority": 50,
+        "groupName": "designDivider",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Divider"
+          }
+        }
+      },
+      "designBackground": {
+        "panel": "design",
+        "priority": 60,
+        "groupName": "designBackground",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Background"
+          }
+        }
+      }
+    }
+  }
+}

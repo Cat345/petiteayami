@@ -49,12 +49,12 @@ return [
         'show_count' => [
             'type' => 'checkbox',
             'text' => 'Show result count',
-            'enable' => 'type == \'current_query\'',
+            'enable' => "type == 'current_query'",
         ],
         'show_ordering' => [
             'type' => 'checkbox',
             'text' => 'Show result ordering',
-            'enable' => 'type == \'current_query\'',
+            'enable' => "type == 'current_query'",
         ],
         'show_title' => [
             'type' => 'checkbox',
@@ -74,7 +74,7 @@ return [
             'label' => 'Limit',
             'description' => 'Limit the number of products.',
             'type' => 'number',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'paginate' => [
             'label' => 'Pagination',
@@ -84,7 +84,7 @@ return [
                 'Show' => 'true',
                 'Hide' => 'false',
             ],
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'orderby' => [
             'label' => 'Order',
@@ -123,13 +123,13 @@ return [
                 'Search' => 'search',
                 'Hidden' => 'hidden',
             ],
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'category' => [
             'label' => 'Categories',
             'description' =>
                 'Filter products by categories using a comma-separated list of category slugs.',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'cat_operator' => [
             'label' => 'Categories Operator',
@@ -139,14 +139,14 @@ return [
             'options' => [
                 'Match one (OR)' => 'IN',
                 'Match all (AND)' => 'AND',
-                'Don\'t match (NOR)' => 'NOT IN',
+                "Don't match (NOR)" => 'NOT IN',
             ],
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'tag' => [
             'label' => 'Tags',
             'description' => 'Filter products by tags using a comma-separated list of tag slugs.',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'tag_operator' => [
             'label' => 'Tags Operator',
@@ -156,20 +156,20 @@ return [
             'options' => [
                 'Match one (OR)' => 'IN',
                 'Match all (AND)' => 'AND',
-                'Don\'t match (NOR)' => 'NOT IN',
+                "Don't match (NOR)" => 'NOT IN',
             ],
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'attribute' => [
             'label' => 'Attribute Slug',
             'description' => 'Filter products by attribute using the attribute slug.',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'terms' => [
             'label' => 'Attribute Terms',
             'description' =>
                 'Filter products by terms of the chosen attribute using a comma-separated list of attribute term slugs.',
-            'enable' => 'type != \'current_query\' && attribute',
+            'enable' => "type != 'current_query' && attribute",
         ],
         'terms_operator' => [
             'label' => 'Attribute Terms Operator',
@@ -179,19 +179,19 @@ return [
             'options' => [
                 'Match one (OR)' => 'IN',
                 'Match all (AND)' => 'AND',
-                'Don\'t match (NOR)' => 'NOT IN',
+                "Don't match (NOR)" => 'NOT IN',
             ],
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'skus' => [
             'label' => 'Product SKUs',
             'description' => 'Filter products using a comma-separated list of SKUs.',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'ids' => [
             'label' => 'Product IDs',
             'description' => 'Filter products using a comma-separated list of IDs.',
-            'enable' => 'type != \'current_query\'',
+            'enable' => "type != 'current_query'",
         ],
         'position' => '${builder.position}',
         'position_left' => '${builder.position_left}',

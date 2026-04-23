@@ -1,5 +1,5 @@
-<?php $get_hash = $this->get_localstorage_hash( 'tiktok' ); ?>
-var wffnTIKTOKHash = '<?php echo $get_hash; ?>';
+<?php $get_hash = $this->get_localstorage_hash( 'tiktok' ) . '_' . ( isset( $id ) ? $id : '' ); ?>
+var wffnTIKTOKHash = '<?php echo esc_js( $get_hash ); ?>';
 var wffnTIKTOKResult = false;
 try {
 
@@ -22,7 +22,7 @@ if ( is_array( $data ) && isset( $data['tiktok'] ) && ( true === $purchase ) ) {
 
     wffnTikTokPurchaseData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnTikTokPurchaseData):wffnTikTokPurchaseData;
 	<?php if ( true === $purchase ) { ?>
-        ttq.instance('<?php echo $id; ?>').track('Purchase',wffnTikTokPurchaseData);
+        ttq.instance('<?php echo esc_js( $id ); ?>').track('Purchase',wffnTikTokPurchaseData);
 	<?php } ?>
 
 

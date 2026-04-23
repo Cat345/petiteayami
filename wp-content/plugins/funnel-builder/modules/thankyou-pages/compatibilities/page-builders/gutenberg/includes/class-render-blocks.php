@@ -57,21 +57,25 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 				return;
 			}
 
-			$bwfblocks = [
-				[
+			$bwfblocks = array(
+				array(
 					'name'     => 'bwfblocks/customer-details',
 					'callback' => 'do_customer_details_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/order-details',
 					'callback' => 'do_order_details_block',
-				],
-			];
+				),
+			);
 
 			foreach ( $bwfblocks as $block ) {
-				register_block_type( $block['name'], array(
-					'render_callback' => array( $this, $block['callback'] ),
-				) );
+				register_block_type(
+					$block['name'],
+					array(
+						'api_version'     => 3,
+						'render_callback' => array( $this, $block['callback'] ),
+					)
+				);
 			}
 		}
 
@@ -108,22 +112,29 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output  = sprintf( '<div %s>', bwfblocks_attr( 'accordion', array(
-				'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : null,
-				'class' => implode( ' ', $classNames ),
-			), $settings ) );
-			$heading = isset( $settings['content'] ) ? $settings['content'] : __( 'Customer Details' );
+			$output  = sprintf(
+				'<div %s>',
+				bwfblocks_attr(
+					'accordion',
+					array(
+						'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : null,
+						'class' => implode( ' ', $classNames ),
+					),
+					$settings
+				)
+			);
+			$heading = isset( $settings['content'] ) ? $settings['content'] : __( 'Customer Details', 'funnel-builder' );
 
-			$customer_layout = ( isset( $settings['layout'] ) && isset( $settings['layout']['desktop'] ) && '2c' !== $settings['layout']['desktop'] ) ? ' wfty_full_width' : '2c'; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+			$customer_layout  = ( isset( $settings['layout'] ) && isset( $settings['layout']['desktop'] ) && '2c' !== $settings['layout']['desktop'] ) ? ' wfty_full_width' : '2c'; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$customer_layout .= ( isset( $settings['layout'] ) && isset( $settings['layout']['tablet'] ) && '2c' === $settings['layout']['tablet'] ) ? ' wfty_2c_tab_width' : ''; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 			$customer_layout .= ( isset( $settings['layout'] ) && isset( $settings['layout']['mobile'] ) && '2c' === $settings['layout']['mobile'] ) ? ' wfty_2c_mob_width' : ''; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 			if ( $customer_layout !== '' && $customer_layout !== '2c' ) {
-				$customer_layout .= " wfty_cont_style";
+				$customer_layout .= ' wfty_cont_style';
 			}
 
-			$enable_extra_content = isset($settings['enable_extra_content']) ? $settings['enable_extra_content'] : '';
-			$output .= '[wfty_customer_details layout_settings ="' . $customer_layout . '" customer_details_heading="' . $heading . '" enable_extra_content="' . esc_attr($enable_extra_content) . '"]';
+			$enable_extra_content = isset( $settings['enable_extra_content'] ) ? $settings['enable_extra_content'] : '';
+			$output              .= '[wfty_customer_details layout_settings ="' . $customer_layout . '" customer_details_heading="' . $heading . '" enable_extra_content="' . esc_attr( $enable_extra_content ) . '"]';
 
 			$output .= '</div>';
 
@@ -136,18 +147,18 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 				'subscriptionFont' => array(
 					'desktop' => array(
 						'size'     => 15,
-						'sizeUnit' => 'px'
-					)
+						'sizeUnit' => 'px',
+					),
 				),
 				'downloadFont'     => array(
 					'desktop' => array(
 						'size'     => 15,
-						'sizeUnit' => 'px'
-					)
+						'sizeUnit' => 'px',
+					),
 				),
 				'dividerColor'     => array(
-					'dekstop' => '#dddddd'
-				)
+					'dekstop' => '#dddddd',
+				),
 			);
 
 			$settings = wp_parse_args( $attributes, $defaults );
@@ -165,31 +176,34 @@ if ( ! class_exists( 'WFTYBlocks_Render_Block' ) ) {
 			$classNames[] = isset( $settings['downloadPreview'] ) && $settings['downloadPreview'] === true ? '' : 'wfty-hide-download';
 			$classNames[] = isset( $settings['subscriptionPreview'] ) && $settings['subscriptionPreview'] === true ? '' : 'wfty-hide-subscription';
 
-			$output            = sprintf( '<div %s>', bwfblocks_attr( 'accordion', array(
-				'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : null,
-				'class' => implode( ' ', $classNames ),
-			), $settings ) );
+			$output            = sprintf(
+				'<div %s>',
+				bwfblocks_attr(
+					'accordion',
+					array(
+						'id'    => isset( $settings['anchor'] ) ? $settings['anchor'] : null,
+						'class' => implode( ' ', $classNames ),
+					),
+					$settings
+				)
+			);
 			$order_details_img = true;
 			if ( isset( $settings['orderProductImage'] ) && false === $settings['orderProductImage'] ) {
 				$order_details_img = false;
 			}
-			$order_heading_text         = isset( $settings['orderHeading'] ) ? $settings['orderHeading'] : __( 'Order Details' );
-			$order_subscription_heading = isset( $settings['subscriptionHeading'] ) ? $settings['subscriptionHeading'] : __( 'Subscription' );
-			$order_download_heading     = isset( $settings['downloadHeading'] ) ? $settings['downloadHeading'] : __( 'Downloads' );
-			$download_btn_text          = isset( $settings['downloadBtnText'] ) ? $settings['downloadBtnText'] : __( 'Download' );
+			$order_heading_text         = isset( $settings['orderHeading'] ) ? $settings['orderHeading'] : __( 'Order Details', 'funnel-builder' );
+			$order_subscription_heading = isset( $settings['subscriptionHeading'] ) ? $settings['subscriptionHeading'] : __( 'Subscription', 'funnel-builder' );
+			$order_download_heading     = isset( $settings['downloadHeading'] ) ? $settings['downloadHeading'] : __( 'Downloads', 'funnel-builder' );
+			$download_btn_text          = isset( $settings['downloadBtnText'] ) ? $settings['downloadBtnText'] : __( 'Download', 'funnel-builder' );
 			$show_column_download       = isset( $settings['downloadFileCount'] ) ? $settings['downloadFileCount'] : false;
 			$show_column_file_expiry    = isset( $settings['downloadFileExpiry'] ) ? $settings['downloadFileExpiry'] : false;
-
 
 			$output .= '[wfty_order_details order_details_img="' . $order_details_img . '" order_details_heading="' . $order_heading_text . '" order_subscription_heading="' . $order_subscription_heading . '" order_download_heading="' . $order_download_heading . '" order_downloads_btn_text="' . $download_btn_text . '" order_downloads_show_file_downloads="' . wp_json_encode( $show_column_download ) . '"  order_downloads_show_file_expiry="' . wp_json_encode( $show_column_file_expiry ) . '"]';
 
 			$output .= '</div>';
 
-
 			return $output;
-
 		}
-
 	}
 
 	WFTYBlocks_Render_Block::get_instance();

@@ -38,9 +38,11 @@ class Advanced_Coupon extends \ACFWF\Models\Objects\Advanced_Coupon {
             'day_time_schedule_error_msg'              => '',
             'day_time_schedules'                       => array(),
             'add_products_data'                        => array(),
+            'enable_add_products'                      => '',
             'excluded_coupons'                         => array(),
             'allowed_coupons'                          => array(),
             'shipping_overrides'                       => array(),
+            'enable_shipping_overrides'                => '',
             'auto_apply_coupon'                        => false,
             'enable_apply_notification'                => false,
             'apply_notification_message'               => '',
@@ -97,6 +99,8 @@ class Advanced_Coupon extends \ACFWF\Models\Objects\Advanced_Coupon {
             case 'cart_condition_display_notice_auto_apply':
             case 'enable_payment_methods_restrict':
             case 'payment_methods_restrict_type':
+            case 'enable_add_products':
+            case 'enable_shipping_overrides':
             case 'enable_day_time_schedules':
             case 'day_time_schedule_error_msg':
                 $data = 'string' === gettype( $raw_data ) ? $raw_data : $default_data;

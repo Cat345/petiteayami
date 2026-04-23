@@ -18,6 +18,7 @@ class FiltersPro{
         $wpcFilter->define( 'FLRT_FILTERS_PRO', true );
         $wpcFilter->define( 'FLRT_ENVATO_APP_CLIENT_ID', 'filter-everything-py1gbdtg' );
         $wpcFilter->define( 'FLRT_VERSION_TRANSIENT', 'wpc_plugin_version' );
+        $wpcFilter->define( 'FLRT_PRO_BUILDER_KEY', '_kl-jlk_45(dp*)sd' );
         $wpcFilter->define( 'FLRT_LICENSE_SOURCE', 'https://codecanyon.net/item/filter-everything-wordpress-woocommerce-filter/31634508' );
 
         flrt_include('pro/Entities/PostMetaExistsEntity.php');
@@ -31,12 +32,19 @@ class FiltersPro{
         flrt_include('pro/Api/ApiRequests.php');
         flrt_include('pro/Settings/Tabs/SeoRulesTab.php');
         flrt_include('pro/Settings/Tabs/IndexingDepth.php');
+        flrt_include('pro/Settings/Tabs/ImportExportTab.php');
         flrt_include('pro/Settings/Tabs/LicenseTab.php');
         flrt_include('pro/Admin/SeoRules.php');
 
         flrt_include('pro/Admin/Admin.php');
         flrt_include('pro/Admin/MetaBoxes.php');
         flrt_include('pro/Admin/ShortcodesPro.php');
+
+        flrt_include('pro/Xml/XmlPrepare.php');
+        flrt_include('pro/Xml/WriteXml.php');
+        flrt_include('pro/Admin/SeoRulesPreview.php');
+        flrt_include('pro/Admin/ExportSettings.php');
+        flrt_include('pro/Admin/ImportSettings.php');
 
         if( is_admin() ){
             new Admin();

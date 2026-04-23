@@ -27,12 +27,15 @@ class FileQueryType
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'name',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'ASC',
                         ],
                     ],
 
@@ -51,7 +54,6 @@ class FileQueryType
                                     'Set the offset to specify which file is loaded.',
                                 ),
                                 'type' => 'number',
-                                'default' => 0,
                                 'modifier' => 1,
                                 'attrs' => [
                                     'min' => 1,
@@ -68,7 +70,6 @@ class FileQueryType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'name',
                                         'options' => [
                                             trans('Default') => 'default',
                                             trans('Alphabetical') => 'name',
@@ -78,7 +79,6 @@ class FileQueryType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'ASC',
                                         'options' => [
                                             trans('Ascending') => 'ASC',
                                             trans('Descending') => 'DESC',

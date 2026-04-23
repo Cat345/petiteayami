@@ -297,6 +297,30 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
     }
 
     /**
+     * Output a dedicated ACFW nonce field on the coupon edit page.
+     * Uses a unique field name to prevent conflicts with other plugins
+     * (e.g. WooPayments) that may output or modify the shared _wpnonce field.
+     *
+     * @since 4.7.3
+     * @access public
+     */
+    public function display_acfw_coupon_nonce() {
+        global $post;
+
+        if ( ! $post instanceof \WP_Post ) {
+            return;
+        }
+
+        wp_nonce_field( 'acfw_save_coupon_data_' . $post->ID, '_acfw_nonce' );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | URL Coupons
+    |--------------------------------------------------------------------------
+     */
+
+    /**
      * Add url cuopun data panel to woocommerce coupon admin data panels.
      *
      * @since 1.0.0
@@ -795,9 +819,11 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
 
         do_action( 'acfw_before_save_coupon', $coupon->get_id(), $coupon );
 
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        $nonce = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
-        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'update-post_' . $coupon_id ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        $nonce = isset( $_POST['_acfw_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_acfw_nonce'] ) ) : '';
+        if ( ! $nonce || false === wp_verify_nonce( $nonce, 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 
@@ -1634,6 +1660,9 @@ class Edit_Coupon extends Base_Model implements Model_Interface, Initializable_I
         add_filter( 'manage_edit-shop_coupon_columns', array( $this, 'add_coupon_list_category_column' ) );
         add_filter( 'manage_shop_coupon_posts_custom_column', array( $this, 'coupon_list_category_column_content' ), 10, 2 );
         add_action( 'restrict_manage_posts', array( $this, 'add_shop_coupon_category_filter_selection' ), 10 );
+
+        // Output dedicated ACFW nonce field before all panels to avoid conflicts with other plugins (e.g. WooPayments).
+        add_action( 'woocommerce_coupon_data_panels', array( $this, 'display_acfw_coupon_nonce' ), 1 );
 
         // URL Coupons meta.
         if ( $this->_helper_functions->is_module( Plugin_Constants::URL_COUPONS_MODULE ) ) {

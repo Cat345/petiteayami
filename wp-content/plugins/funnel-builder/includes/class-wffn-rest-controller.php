@@ -65,26 +65,26 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$interval_type = $this->date_format( $interval );
 			$avg           = ( $interval === 'day' ) ? 1 : 0;
 			if ( 'YEAR' === $interval_type ) {
-				$interval = ", YEAR(" . $table_col . ") ";
+				$interval = ', YEAR(' . $table_col . ') ';
 				$avg      = 365;
 			} elseif ( 'QUARTER' === $interval_type ) {
-				$interval = ", CONCAT(YEAR(" . $table_col . "), '-0', QUARTER(" . $table_col . ")) ";
+				$interval = ', CONCAT(YEAR(' . $table_col . "), '-0', QUARTER(" . $table_col . ')) ';
 				$avg      = 90;
 			} elseif ( '%x-%v' === $interval_type ) {
 				$first_day_of_week = absint( get_option( 'start_of_week' ) );
 
 				if ( 1 === $first_day_of_week ) {
-					$interval = ", DATE_FORMAT(" . $table_col . ", '" . $interval_type . "')";
+					$interval = ', DATE_FORMAT(' . $table_col . ", '" . $interval_type . "')";
 				} else {
-					$interval = ", CONCAT(YEAR(" . $table_col . "), '-', LPAD( FLOOR( ( DAYOFYEAR(" . $table_col . ") + ( ( DATE_FORMAT(MAKEDATE(YEAR(" . $table_col . "),1), '%w') - $first_day_of_week + 7 ) % 7 ) - 1 ) / 7  ) + 1 , 2, '0'))";
+					$interval = ', CONCAT(YEAR(' . $table_col . "), '-', LPAD( FLOOR( ( DAYOFYEAR(" . $table_col . ') + ( ( DATE_FORMAT(MAKEDATE(YEAR(' . $table_col . "),1), '%w') - $first_day_of_week + 7 ) % 7 ) - 1 ) / 7  ) + 1 , 2, '0'))";
 				}
 				$avg = 7;
 			} else {
-				$interval = ", DATE_FORMAT( " . $table_col . ", '" . $interval_type . "')";
+				$interval = ', DATE_FORMAT( ' . $table_col . ", '" . $interval_type . "')";
 			}
 
-			$interval       .= " as time_interval ";
-			$interval_group = " `time_interval` ";
+			$interval      .= ' as time_interval ';
+			$interval_group = ' `time_interval` ';
 
 			return array(
 				'interval_query' => $interval,
@@ -92,7 +92,6 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'interval_avg'   => $avg,
 
 			);
-
 		}
 
 
@@ -103,7 +102,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$interval_query = $get_interval['interval_query'];
 			$interval_group = $get_interval['interval_group'];
 
-			$query = "SELECT MIN(" . $table_col . ") AS start_date, MAX(" . $table_col . ") as end_date, " . ltrim( $interval_query, ',' ) . "  FROM `" . $table . "` WHERE 1=1 AND $table_col >= '" . $start_date . "' AND `" . $table_col . "` < '" . $end_date . "' GROUP BY " . $interval_group . " ASC";
+			$query = 'SELECT MIN(' . $table_col . ') AS start_date, MAX(' . $table_col . ') as end_date, ' . ltrim( $interval_query, ',' ) . '  FROM `' . $table . "` WHERE 1=1 AND $table_col >= '" . $start_date . "' AND `" . $table_col . "` < '" . $end_date . "' GROUP BY " . $interval_group . ' ASC';
 
 			$intervals = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -117,7 +116,6 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					if ( isset( $data[ $interval_key ] ) && $current_interval === $data[ $interval_key ] ) {
 						return array( $data );
 					}
-
 				}
 			}
 
@@ -161,7 +159,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 
 			$array = array_merge( $sql_intervals, $all_intervals );
 
-			$temp_array = [];
+			$temp_array = array();
 			$key        = 'time_interval';
 
 			foreach ( $array as &$v ) {
@@ -170,19 +168,19 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				}
 			}
 
-			usort( $temp_array, function ( $a, $b ) {
-				$datetime1 = strtotime( $a['time_interval'] );
-				$datetime2 = strtotime( $b['time_interval'] );
+			usort(
+				$temp_array,
+				function ( $a, $b ) {
+					$datetime1 = strtotime( $a['time_interval'] );
+					$datetime2 = strtotime( $b['time_interval'] );
 
-				return $datetime1 - $datetime2;
-			} );
-
+					return $datetime1 - $datetime2;
+				}
+			);
 
 			$array = array_values( $temp_array );
 
 			return $array;
-
-
 		}
 
 		public function intervals_between( $start, $end, $interval, $overall = false ) {
@@ -193,27 +191,26 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					$format        = 'Y-m-d H';
 					break;
 				case 'day':
-					$interval_type = "P1D";
+					$interval_type = 'P1D';
 					$format        = 'Y-m-d';
 					break;
 				case 'month':
-					$interval_type = "P1M";
+					$interval_type = 'P1M';
 					$format        = 'Y-m';
 					break;
 				case 'quarter':
-					$interval_type = "P3M";
+					$interval_type = 'P3M';
 					$format        = 'Y-m';
 					break;
 				case 'year':
-					$interval_type = "P1Y";
+					$interval_type = 'P1Y';
 					$format        = 'Y';
 					break;
 				default:
-					$interval_type = "P1W";
+					$interval_type = 'P1W';
 					$format        = 'W';
 					break;
 			}
-
 
 			$result = array();
 
@@ -251,7 +248,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					if ( 'week' === $interval ) {
 						$year                          = $date->format( 'Y' );
 						$new_interval['time_interval'] = $year . '-' . $date->format( $format );
-					} else if ( 'quarter' === $interval ) {
+					} elseif ( 'quarter' === $interval ) {
 						$quarter = $this->get_quarter_by_month( $date->format( 'm' ) );
 						$year    = $date->format( 'Y' );
 
@@ -263,7 +260,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 
 					$result[] = $new_interval;
 				}
-				$count --;
+				--$count;
 
 			}
 
@@ -296,7 +293,6 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 
 			return $newDate->format( self::$sql_datetime_format );
-
 		}
 
 		public static function maybe_last_date( $newDate, $period ) {
@@ -326,7 +322,6 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			}
 
 			return $newDate->format( 'Y-m-d 23:59:59 ' );
-
 		}
 
 		public static function first_day_of_week() {
@@ -406,10 +401,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		 */
 		public function get_base_url( $post_data ) {
 
-
 			return get_post_permalink( $post_data );
-
-
 		}
 
 		/**
@@ -433,7 +425,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'%category%',
 				'%author%',
 				'%pagename%',
-				'/'
+				'/',
 			);
 			$permalink   = str_replace( $rewritecode, '', $permalink );
 
@@ -468,7 +460,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		}
 
 		public function get_category_based_rules() {
-			return [
+			return array(
 				'order_term',
 				'order_payment_gateway',
 				'order_category',
@@ -490,7 +482,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'order_item_type',
 				'order_coupons',
 				'order_subs',
-			];
+			);
 		}
 
 		public function strip_group_rule_keys( $array ) {
@@ -511,32 +503,33 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 							if ( ! empty( $_rule['operator'] ) ) {
 								$_rule['operator'] = wp_specialchars_decode( $_rule['operator'] );
 							}
-							if ( ! empty( $_rule['rule_type'] ) && in_array( $_rule['rule_type'], [ 'cart_coupons', 'order_coupons' ], true ) ) {
+							if ( ! empty( $_rule['rule_type'] ) && in_array( $_rule['rule_type'], array( 'cart_coupons', 'order_coupons' ), true ) ) {
 								if ( ! empty( $_rule['condition'] ) ) {
-									$_rule['condition'] = array_map( function ( $k ) {
-										return sanitize_title( $k );
-									}, $_rule['condition'] );
+									$_rule['condition'] = array_map(
+										function ( $k ) {
+											return sanitize_title( $k );
+										},
+										$_rule['condition']
+									);
 								}
 							}
 
-							if ( ! empty( $_rule['rule_type'] ) && in_array( $_rule['rule_type'], [ 'order_coupon_exist' ], true ) ) {
+							if ( ! empty( $_rule['rule_type'] ) && in_array( $_rule['rule_type'], array( 'order_coupon_exist' ), true ) ) {
 								$_rule['condition'] = 'parent_order';
 							}
-
 
 							if ( ! empty( $_rule['rule_type'] ) && in_array( $_rule['rule_type'], $this->get_category_based_rules(), true ) ) {
 								if ( ! empty( $_rule['condition'] ) ) {
 									$condition                        = $_rule['condition'];
-									$_rule['condition']               = [];
+									$_rule['condition']               = array();
 									$_rule['condition']['categories'] = $condition;
 								} else {
-									$_rule['condition']['categories'] = [];
+									$_rule['condition']['categories'] = array();
 								}
 							}
 
-
 							if ( ! empty( $_rule['rule_type'] ) && 'time' === $_rule['rule_type'] ) {
-								$_rule['condition'] = ! empty( $_rule['condition'] ) ? str_replace( " ", "", $_rule['condition'] ) : '';
+								$_rule['condition'] = ! empty( $_rule['condition'] ) ? str_replace( ' ', '', $_rule['condition'] ) : '';
 							}
 
 							$rules[] = $_rule;
@@ -546,11 +539,9 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					}
 					$rules = array();
 				}
-
 			}
 
 			return $groups;
-
 		}
 
 		public function rectify_posted_rules( $posted_data ) {
@@ -590,66 +581,63 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				if ( isset( $data['condition_input_type'] ) ) {
 
 					switch ( $data['condition_input_type'] ) {
-						case 'Html_Always' :
+						case 'Html_Always':
 							break;
-						case 'Cart_Category_Select' :
-						case 'Cart_Tag_Select' :
+						case 'Cart_Category_Select':
+						case 'Cart_Tag_Select':
 							$fields = $this->input_cart_category_select( $data['value_args'] );
 							break;
-						case 'Cart_Product_Select' :
+						case 'Cart_Product_Select':
 							$fields = $this->input_cart_product_select( $data['value_args'] );
 							break;
-						case 'Chosen_Select' :
+						case 'Chosen_Select':
 							$fields = $this->input_chosen_select( $data['value_args'] );
 							break;
-						case 'User_Select' :
+						case 'User_Select':
 							$fields = $this->input_user_select( $data['value_args'] );
 							break;
-						case 'Text' :
+						case 'Text':
 							$fields = $this->input_text( $data['value_args'] );
 							break;
-						case 'Coupon_Select' :
+						case 'Coupon_Select':
 							$fields = $this->input_coupon_select( $data['value_args'] );
 							break;
-						case 'Coupon_Exist' :
+						case 'Coupon_Exist':
 							$fields = $this->input_coupon_exist( $data['value_args'] );
 							break;
-						case 'Coupon_Text_Match' :
+						case 'Coupon_Text_Match':
 							$fields = $this->input_coupon_text_match( $data['value_args'] );
 							break;
-						case 'Item_Text_Match' :
+						case 'Item_Text_Match':
 							$fields = $this->input_item_text_match( $data['value_args'] );
 							break;
-						case 'Select' :
+						case 'Select':
 							$fields = $this->input_select( $data['value_args'] );
 							break;
-						case 'Product_Select' :
+						case 'Product_Select':
 							$fields = $this->input_product_select( $data['value_args'] );
 							break;
-						case 'Date' :
+						case 'Date':
 							$fields = $this->input_date( $data['value_args'] );
 							break;
-						case 'Time' :
+						case 'Time':
 							$fields = $this->input_time( $data['value_args'] );
 							break;
-						case 'Customer_Rule_Unavailable' :
-							$fields = [
-								[
+						case 'Customer_Rule_Unavailable':
+							$fields = array(
+								array(
 									'type'  => 'custom-html',
 									'key'   => 'custom_html',
 									'label' => $this->rule_unavailable(),
-								],
-							];
+								),
+							);
 							break;
 
 					}
-
 				}
-
 			}
 
 			return $fields;
-
 		}
 
 		// Fields for cart category select option.
@@ -660,25 +648,36 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 
 			$field   = array_merge( $defaults, $field );
 			$choices = $field['choices'];
 
-			$fields = [
-				[
+			// Build options array by iterating to preserve all entries
+			// (array_flip loses duplicate category names)
+			$options = array();
+			if ( ! empty( $choices ) && is_array( $choices ) ) {
+				foreach ( $choices as $cat_id => $cat_name ) {
+					$options[] = array(
+						'name' => $cat_name,
+						'id'   => (string) $cat_id,
+					);
+				}
+			}
+
+			$fields = array(
+				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[category_select]',
 					'placeholder' => __( 'Search ...', 'funnel-builder-powerpack' ),
 					'label'       => __( 'Categories', 'funnel-builder-powerpack' ),
-					'options'     => ! empty( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'name', 'id' ) : [],
-					'optionValue' => ! empty( $choices ) ? array_keys( $choices ) : [],
-				],
-			];
+					'options'     => $options,
+					'optionValue' => ! empty( $choices ) ? array_keys( $choices ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for cart product select option.
@@ -690,7 +689,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 
 			$field = array_merge( $defaults, $field );
@@ -728,26 +727,25 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				}
 			}
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[qty]',
 					'label'       => __( 'Quantity', 'funnel-builder-powerpack' ),
 					'placeholder' => '',
 					'values'      => 1,
-				],
-				[
+				),
+				array(
 					'type'        => 'multiSelect',
 					'key'         => $field['name'] . '[products]',
 					'apiEndPoint' => '/funnels/products/search',
 					'label'       => __( 'Products', 'funnel-builder-powerpack' ),
 					'placeholder' => __( 'Select Product', 'funnel-builder-powerpack' ),
 					'options'     => wffn_rest_api_helpers()->array_to_nvp( array_flip( $products ), 'name', 'id' ),
-				],
-			];
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for cart chosen select option.
@@ -759,25 +757,24 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'choices'       => array(),
 				'default_value' => array(),
 				'class'         => '',
-				'name'          => 'chosen_select'
+				'name'          => 'chosen_select',
 			);
 
 			$field   = array_merge( $defaults, $field );
 			$choices = $field['choices'];
 			$choices = array_map( 'ucwords', $choices );
-			$fields  = [
-				[
+			$fields  = array(
+				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[chosen_select]',
 					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
 					'label'       => '',
-					'options'     => ! empty( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), 'id', 'name' ) : [],
-					'optionValue' => ! empty( $choices ) ? array_values( ( $choices ) ) : [],
-				],
-			];
+					'options'     => ! empty( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), 'id', 'name' ) : array(),
+					'optionValue' => ! empty( $choices ) ? array_values( ( $choices ) ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for cart text option.
@@ -786,22 +783,21 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 
 			$field = array_merge( $defaults, $field );
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'   => 'text',
 					'key'    => $field['name'] . '[text]',
 					'label'  => '',
-					'values' => [],
-				],
-			];
+					'values' => array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for coupon select option.
@@ -813,25 +809,24 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'choices'       => array(),
 				'default_value' => array(),
 				'class'         => '',
-				'name'          => 'chosen_select'
+				'name'          => 'chosen_select',
 			);
 
 			$field   = array_merge( $defaults, $field );
 			$choices = $field['choices'];
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[coupon_select]',
 					'label'       => __( 'Coupons', 'funnel-builder-powerpack' ),
 					'placeholder' => __( 'Select Coupons..', 'funnel-builder-powerpack' ),
-					'options'     => is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), "id", "name" ) : $choices,
-					'optionValue' => ! empty( $choices ) ? array_keys( ( $choices ) ) : [],
-				],
-			];
+					'options'     => is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( ( $choices ), 'id', 'name' ) : $choices,
+					'optionValue' => ! empty( $choices ) ? array_keys( ( $choices ) ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for coupon select option.
@@ -842,24 +837,23 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder-powerpack' ) ),
 				'default_value' => 'no',
-				'class'         => 'chosen_coupon_exist'
+				'class'         => 'chosen_coupon_exist',
 			);
 
 			$field   = array_merge( $defaults, $field );
 			$choices = $field['choices'];
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'select',
 					'key'         => $field['name'] . '[coupon_exist]',
 					'label'       => __( 'Coupon Exist', 'funnel-builder-powerpack' ),
 					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
-					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : []
-				],
-			];
+					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for Coupon Text match text option.
@@ -871,23 +865,22 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'coupon_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' )
+				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' ),
 			);
 
 			$field = array_merge( $defaults, $field );
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[coupon_text_match]',
 					'apiEndPoint' => '/funnels/products/search',
 					'placeholder' => __( 'Enter the search key..', 'funnel-builder-powerpack' ),
 					'label'       => __( 'Select Coupon', 'funnel-builder-powerpack' ),
-				],
-			];
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for Item Text match text option.
@@ -899,22 +892,21 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'default_value' => '',
 				'class'         => 'item_text_match',
-				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' )
+				'placeholder'   => __( 'Enter the search key...', 'funnel-builder-powerpack' ),
 			);
 
 			$field = array_merge( $defaults, $field );
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[item_text_match]',
 					'placeholder' => __( 'Enter the search key..', 'funnel-builder-powerpack' ),
 					'label'       => __( 'Select Coupon', 'funnel-builder-powerpack' ),
-				],
-			];
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for coupon select option.
@@ -925,24 +917,23 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array( 'parent_order' => __( 'In parent order', 'funnel-builder-powerpack' ) ),
 				'default_value' => 'no',
-				'class'         => 'chosen_coupon_exist'
+				'class'         => 'chosen_coupon_exist',
 			);
 
 			$field   = array_merge( $defaults, $field );
 			$choices = $field['choices'];
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'select',
 					'key'         => $field['name'] . '[coupon_exist]',
 					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
 					'label'       => '',
-					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : [],
-				],
-			];
+					'options'     => ! empty( $choices ) && is_array( $choices ) ? wffn_rest_api_helpers()->array_to_nvp( array_flip( $choices ), 'label', 'value', 'value', 'key' ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for User select option.
@@ -953,34 +944,38 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			if ( ! empty( $field['choices'] ) ) {
 				foreach ( $field['choices'] as $user ) {
 					$_user['name'] = get_user_by( 'id', (int) $user )->display_name;
-					$_user['id']   = ( string ) $user;
+					$_user['id']   = (string) $user;
 					$user_ids[]    = $_user;
 				}
 			}
 
-			$users = get_users( array( 'number' => 5, 'fields' => array( 'ID' ) ) );
+			$users = get_users(
+				array(
+					'number' => 5,
+					'fields' => array( 'ID' ),
+				)
+			);
 
 			foreach ( $users as $user ) {
 				$_user['name'] = get_user_by( 'id', $user->ID )->display_name;
-				$_user['id']   = ( string ) $user->ID;
+				$_user['id']   = (string) $user->ID;
 				$user_ids[]    = $_user;
 			}
 
 			$choices = wffn_rest_api_helpers()->array_change_key( $user_ids, 'label', 'name' );
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'chosen-select',
 					'key'         => $field['name'] . '[user_select]',
 					'placeholder' => __( 'Select Option', 'funnel-builder-powerpack' ),
 					'label'       => '',
-					'options'     => ! empty( $choices ) ? $choices : [],
-					'optionValue' => ! empty( $choices ) ? array_values( $choices ) : [],
-				],
-			];
+					'options'     => ! empty( $choices ) ? $choices : array(),
+					'optionValue' => ! empty( $choices ) ? array_values( $choices ) : array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for product select option.
@@ -991,7 +986,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				'allow_null'    => 0,
 				'choices'       => array(),
 				'default_value' => '',
-				'class'         => 'ajax_chosen_select_products'
+				'class'         => 'ajax_chosen_select_products',
 			);
 
 			$field = array_merge( $defaults, $field );
@@ -1020,19 +1015,18 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				}
 			}
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'multiSelect',
 					'key'         => $field['name'] . '[products]',
 					'apiEndPoint' => '/funnels/products/search',
 					'placeholder' => __( 'Search for a product..', 'funnel-builder-powerpack' ),
 					'label'       => __( 'Select Product', 'funnel-builder-powerpack' ),
 					'options'     => wffn_rest_api_helpers()->array_to_nvp( $products, 'id', 'name' ),
-				],
-			];
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for date option.
@@ -1041,53 +1035,50 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 			$defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 
 			$field  = array_merge( $defaults, $field );
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[date]',
 					'label'       => __( 'Date', 'funnel-builder-powerpack' ),
 					'placeholder' => '',
 					'class'       => $field['class'],
-					'values'      => [],
-				],
-			];
+					'values'      => array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		// Fields for time option.
 		public function input_time( $field = array() ) {
 
-
 			$defaults = array(
 				'default_value' => '',
 				'class'         => '',
-				'placeholder'   => ''
+				'placeholder'   => '',
 			);
 
 			$field = array_merge( $defaults, $field );
 
-			$fields = [
-				[
+			$fields = array(
+				array(
 					'type'        => 'text',
 					'key'         => $field['name'] . '[time]',
 					'label'       => __( 'Time', 'funnel-builder-powerpack' ),
 					'placeholder' => __( 'For eg: 23:59', 'funnel-builder-powerpack' ),
-					'values'      => [],
-				],
-			];
+					'values'      => array(),
+				),
+			);
 
 			return $fields;
-
 		}
 
 		public function get_formatted_variations( $variations, $offer_variations ) {
-			$formatted_variations = [];
+			$formatted_variations = array();
 
 			if ( ! empty( $variations ) ) {
 
@@ -1100,10 +1091,9 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 
 					if ( ! empty( $attributes ) ) {
 						foreach ( $attributes as $key => $val ) {
-							$attribute[] = $key . " : " . $val;
+							$attribute[] = $key . ' : ' . $val;
 						}
 					}
-
 
 					$regular_price = ! empty( $variable_product->get_regular_price() ) ? $variable_product->get_regular_price() : 0;
 					$sale_price    = ! empty( $variable_product->get_sale_price() ) ? $variable_product->get_sale_price() : 0;
@@ -1149,7 +1139,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		 * @return array
 		 */
 		public function get_product_from_conditions( $groups ) {
-			$products = [];
+			$products = array();
 			if ( ! empty( $groups ) ) {
 				foreach ( $groups as $group ) {
 					foreach ( $group as $rule ) {
@@ -1165,7 +1155,6 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 							$products = wp_parse_args( $products, $rule['condition'] );
 
 						}
-
 					}
 				}
 			}
@@ -1174,7 +1163,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		}
 
 		public function get_coupons_from_conditions( $groups ) {
-			$users = [];
+			$users = array();
 			if ( ! empty( $groups ) ) {
 				foreach ( $groups as $group ) {
 					foreach ( $group as $rule ) {
@@ -1190,7 +1179,7 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 		}
 
 		public function get_user_from_conditions( $groups ) {
-			$users = [];
+			$users = array();
 			if ( ! empty( $groups ) ) {
 				foreach ( $groups as $group ) {
 					foreach ( $group as $rule ) {
@@ -1266,17 +1255,18 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 
 		/**
 		 * sanitize api received params
+		 *
 		 * @return array[]
 		 */
 		public function sanitize_receive_params() {
 			return array(
-				'id'   => array(
+				'id'          => array(
 					'description'       => __( 'Unique identifier for the resource', 'funnel-builder' ),
 					'type'              => 'integer',
 					'sanitize_callback' => 'absint',
 					'validate_callback' => 'rest_validate_request_arg',
 				),
-				'cid'   => array(
+				'cid'         => array(
 					'description'       => __( 'Customer id', 'funnel-builder' ),
 					'type'              => 'integer',
 					'sanitize_callback' => 'absint',
@@ -1300,19 +1290,19 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					'validate_callback' => 'rest_validate_request_arg',
 					'sanitize_callback' => array( $this, 'sanitize_text_json_data' ),
 				),
-				'filters' => array(
+				'filters'     => array(
 					'description'       => __( 'Search filters', 'funnel-builder' ),
 					'type'              => 'json',
 					'validate_callback' => 'rest_validate_request_arg',
 					'sanitize_callback' => array( $this, 'sanitize_text_json_data' ),
 				),
-				'after' => array(
+				'after'       => array(
 					'description'       => __( 'Limit response.', 'funnel-builder' ),
 					'type'              => 'string',
 					'format'            => 'date-time',
 					'validate_callback' => 'rest_validate_request_arg',
 				),
-				'before' => array(
+				'before'      => array(
 					'description'       => __( 'Limit response.', 'funnel-builder' ),
 					'type'              => 'string',
 					'format'            => 'date-time',
@@ -1346,17 +1336,17 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 					'type'              => 'boolean',
 					'validate_callback' => 'rest_validate_request_arg',
 				),
-				'order' => array(
+				'order'       => array(
 					'description'       => __( 'Order sql sort attribute ascending or descending.', 'funnel-builder' ),
 					'type'              => 'string',
 					'enum'              => array( 'asc', 'desc', 'ASC', 'DESC' ),
 					'validate_callback' => 'rest_validate_request_arg',
 				),
-				'orderby'  => array(
+				'orderby'     => array(
 					'description'       => __( 'Order by', 'funnel-builder' ),
 					'type'              => 'string',
 					'validate_callback' => 'rest_validate_request_arg',
-				)
+				),
 			);
 		}
 
@@ -1366,18 +1356,19 @@ if ( ! class_exists( 'WFFN_REST_Controller' ) ) {
 				$decoded = json_decode( $data, true );
 				if ( json_last_error() === JSON_ERROR_NONE ) {
 					// It's valid JSON, so sanitize all its values
-					array_walk_recursive( $decoded, function ( &$value ) {
-						$value = sanitize_text_field( $value );
-					} );
+					array_walk_recursive(
+						$decoded,
+						function ( &$value ) {
+							$value = sanitize_text_field( $value );
+						}
+					);
 					return wp_json_encode( $decoded );
 				} else {
 					return sanitize_text_field( $data );
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				return $data;
 			}
-
 		}
-
 	}
 }

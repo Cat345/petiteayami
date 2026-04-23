@@ -1,6 +1,6 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Funnel landing page module
@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Landing_Pages extends WFFN_Module_Common {
+	class WFFN_Landing_Pages extends WFFN_Module_Common {
 
 		private static $ins = null;
 		/**
@@ -18,13 +18,13 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 		public $admin;
 		protected $options;
 		protected $custom_options;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		protected $wflp_is_landing = false;
-		public $edit_id = 0;
-		public $url = '';
-		public $ecom_tracking = null;
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		protected $wflp_is_landing      = false;
+		public $edit_id                 = 0;
+		public $url                     = '';
+		public $ecom_tracking           = null;
 
 		/**
 		 * WFFN_Landing_Pages constructor.
@@ -45,14 +45,12 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 			add_action( 'init', array( $this, 'register_post_type' ), 5 );
 			add_action( 'init', array( $this, 'load_compatibility' ), 2 );
 
-
-			add_filter( 'template_include', [ $this, 'may_be_change_template' ], 99 );
+			add_filter( 'template_include', array( $this, 'may_be_change_template' ), 99 );
 
 			$post_type = $this->get_post_type_slug();
-			add_filter( "theme_{$post_type}_templates", [ $this, 'registered_page_templates' ], 99, 4 );
+			add_filter( "theme_{$post_type}_templates", array( $this, 'registered_page_templates' ), 99, 4 );
 
 			add_action( 'wp', array( $this, 'parse_request_for_landing' ), - 1 );
-
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'landing_page_frontend_scripts' ), 21 );
 			add_action( 'wffn_import_completed', array( $this, 'set_page_template' ), 10, 2 );
@@ -60,33 +58,42 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 			add_filter( 'post_type_link', array( $this, 'post_type_permalinks' ), 10, 2 );
 			add_action( 'pre_get_posts', array( $this, 'add_cpt_post_names_to_main_query' ), 20 );
-			add_filter( 'bwf_general_settings_default_config', function ( $fields ) {
-				$fields['landing_page_base'] = 'sp';
+			add_filter(
+				'bwf_general_settings_default_config',
+				function ( $fields ) {
+					$fields['landing_page_base'] = 'sp';
 
-				return $fields;
-			} );
+					return $fields;
+				}
+			);
 
-			add_filter( 'woofunnels_global_settings', function ( $menu ) {
+			add_filter(
+				'woofunnels_global_settings',
+				function ( $menu ) {
 
-				array_push( $menu, array(
-					'title'    => __( 'Sales', 'funnel-builder' ),
-					'slug'     => 'lp-settings',
-					'priority' => 20,
-				) );
+					array_push(
+						$menu,
+						array(
+							'title'    => __( 'Sales', 'funnel-builder' ),
+							'slug'     => 'lp-settings',
+							'priority' => 20,
+						)
+					);
 
-				return $menu;
-			} );
+					return $menu;
+				}
+			);
 			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_global_settings_fields' ) );
 			add_filter( 'bwf_general_settings_fields', array( $this, 'add_permalink_settings' ), 10 );
 		}
 
 		private function process_url() {
 
-			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
+				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
 			}
-			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
+				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
 			}
 		}
 
@@ -100,7 +107,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -114,40 +121,46 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 
-			register_post_type( $this->get_post_type_slug(), apply_filters( 'wffn_landing_post_type_args', array(
-				'labels'              => array(
-					'name'          => $this->get_module_title( true ),
-					'singular_name' => $this->get_module_title(),
-					'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
-					'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
-					'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
-					'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
-					'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
-					'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => true,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'hierarchical'        => false,
-				'show_in_admin_bar'   => true,
-				'show_in_nav_menus'   => true,
-				'rewrite'             => array(
-					'slug'       => ( empty( $bwb_admin_setting->get_option( 'landing_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'landing_page_base' ) ),
-					'with_front' => false,
-				),
-				'capabilities'        => array(
-					'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
-				),
-				'query_var'           => true,
-				'show_in_rest'        => true,
-				'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
-				'has_archive'         => false,
-			) ) );
+			register_post_type(
+				$this->get_post_type_slug(),
+				apply_filters(
+					'wffn_landing_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => $this->get_module_title( true ),
+							'singular_name' => $this->get_module_title(),
+							'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
+							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
+							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
+							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => true,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'hierarchical'        => false,
+						'show_in_admin_bar'   => true,
+						'show_in_nav_menus'   => true,
+						'rewrite'             => array(
+							'slug'       => ( empty( $bwb_admin_setting->get_option( 'landing_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'landing_page_base' ) ),
+							'with_front' => false,
+						),
+						'capabilities'        => array(
+							'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
+						),
+						'query_var'           => true,
+						'show_in_rest'        => true,
+						'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
+						'has_archive'         => false,
+					)
+				)
+			);
 		}
 
 		public function landing_page_frontend_scripts() {
@@ -172,6 +185,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		/**
 		 * Checks whether its our page or not
+		 *
 		 * @return bool
 		 */
 		public function is_wflp_page() {
@@ -180,6 +194,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		/**
 		 * Set wfty_is_thankyou flag if it's our page
+		 *
 		 * @return void
 		 */
 		public function parse_request_for_landing() {
@@ -194,7 +209,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 			if ( is_singular( $post->post_type ) && ( $this->get_post_type_slug() === $post->post_type ) ) {
 
 				if ( wffn_is_valid_funnel( $funnel ) ) {
-					WFFN_Core()->logger->log( "Funnel id: #" . $funnel->get_id() . " parse request for sales page" );
+					WFFN_Core()->logger->log( 'Funnel id: #' . $funnel->get_id() . ' parse request for sales page' );
 				}
 
 				$this->wflp_is_landing = true;
@@ -226,7 +241,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 		}
 
 		public function setup_options() {
-			$db_options    = get_option( 'wffn_lp_settings', [] );
+			$db_options    = get_option( 'wffn_lp_settings', array() );
 			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map( 'html_entity_decode', $db_options ) : array();
 			$this->options = wp_parse_args( $db_options, $this->default_global_settings() );
 
@@ -279,12 +294,12 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 						$suffix_text = '';
 					}
 
-					$args         = [
+					$args         = array(
 						'post_title'   => $landing_page->post_title . $suffix_text,
 						'post_content' => $landing_page->post_content,
 						'post_name'    => sanitize_title( $landing_page->post_title . $suffix_text ),
 						'post_type'    => $this->get_post_type_slug(),
-					];
+					);
 					$duplicate_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $duplicate_id ) ) {
 
@@ -293,7 +308,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$landing_page_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 						if ( ! empty( $post_meta_all ) ) {
-							$sql_query_selects = [];
+							$sql_query_selects = array();
 
 							if ( in_array( $landing_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 								foreach ( $post_meta_all as $meta_info ) {
@@ -309,7 +324,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 									}
 
 									if ( $meta_key === '_wp_page_template' ) {
-										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wflp", $meta_value ) : $meta_value;
+										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wflp', $meta_value ) : $meta_value;
 									}
 
 									$meta_key   = esc_sql( $meta_key );
@@ -379,7 +394,6 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 			$query_result = new WP_Query( $args );
 
-
 			if ( $query_result->have_posts() ) {
 				return $query_result->posts;
 			}
@@ -398,22 +412,22 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		public function default_design_data() {
 
-			return [
+			return array(
 				'selected'        => 'wp_editor_1',
 				'selected_type'   => 'wp_editor',
 				'template_active' => 'no',
-			];
+			);
 		}
 
 
 		public function registered_page_templates( $templates ) {
 
 			$all_templates = wp_get_theme()->get_post_templates();
-			$path          = [
+			$path          = array(
 
 				'wflp-boxed.php'  => __( 'FunnelKit Boxed', 'funnel-builder' ),
-				'wflp-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' )
-			];
+				'wflp-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' ),
+			);
 			if ( isset( $all_templates['page'] ) && is_array( $all_templates['page'] ) ) {
 				$paths = array_merge( $all_templates['page'], $path );
 			} else {
@@ -428,7 +442,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		public function may_be_change_template( $template ) {
 			global $post;
-			if ( ! is_null( $post ) && $post->post_type === $this->get_post_type_slug() ) {
+			if ( ! is_null( $post ) && ( $post instanceof WP_Post ) && $post->post_type === $this->get_post_type_slug() ) {
 				$template = $this->get_template_url( $template );
 			}
 
@@ -441,7 +455,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wflp_id, '_wp_page_template', true ), $wflp_id );
 
 			$file         = '';
-			$body_classes = [];
+			$body_classes = array();
 
 			switch ( $page_template ) {
 				case 'wflp-boxed.php':
@@ -469,7 +483,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 					break;
 			}
 			if ( ! empty( $body_classes ) ) {
-				add_filter( 'body_class', [ $this, 'wffn_add_unique_class' ], 9999, 1 );
+				add_filter( 'body_class', array( $this, 'wffn_add_unique_class' ), 9999, 1 );
 			}
 			if ( file_exists( $file ) ) {
 				return $file;
@@ -496,11 +510,11 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		public function update_global_settings_fields( $options ) {
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = [
+			$resp    = array(
 				'status' => false,
 				'msg'    => __( 'Settings Updated', 'funnel-builder' ),
 				'data'   => '',
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -516,53 +530,8 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 
 
-		public function update_edit_url() {
-			check_admin_referer( 'wffn_lp_update_edit_url', '_nonce' );
-
-			$id  = isset( $_POST['id'] ) ? wffn_clean( $_POST['id'] ) : 0;
-			$url = isset( $_POST['url'] ) ? $_POST['url'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-			if ( absint( $id ) > 0 && ( $url !== '' ) ) {
-				$url .= $this->check_oxy_inner_content( $id );
-			}
-
-			$resp = [
-				'status' => true,
-				'url'    => $url,
-			];
-			wp_send_json( $resp );
-		}
-
 		public function update_options( $options ) {
 			update_option( 'wffn_lp_settings', $options, true );
-		}
-
-		/**
-		 * Save selected design template against checkout page
-		 */
-
-		public function save_design() {
-			$resp = array(
-				'msg'    => '',
-				'status' => false,
-			);
-			check_ajax_referer( 'wffn_lp_save_design', '_nonce' );
-			$wflp_id = isset( $_POST['wflp_id'] ) ? absint( wffn_clean( $_POST['wflp_id'] ) ) : 0;
-
-			if ( $wflp_id > 0 ) {
-				$selected_type = isset( $_POST['selected_type'] ) ? wffn_clean( $_POST['selected_type'] ) : '';
-				$this->update_page_design( $wflp_id, [
-					'selected'      => isset( $_POST['selected'] ) ? sanitize_text_field( $_POST['selected'] ) : '',
-					'selected_type' => $selected_type
-				] );
-				do_action( 'wffn_design_saved', $wflp_id, $selected_type, 'landing' );
-				do_action( 'wflp_page_design_updated', $wflp_id, $selected_type );
-				$resp = array(
-					'msg'    => __( 'Design Saved Successfully', 'funnel-builder' ),
-					'status' => true,
-				);
-			}
-			self::send_resp( $resp );
 		}
 
 		public function update_page_design( $page_id, $data ) {
@@ -581,87 +550,6 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 			}
 
 			return $data;
-		}
-
-		public static function send_resp( $data = array() ) {
-			if ( ! is_array( $data ) ) {
-				$data = [];
-			}
-			$data['nonce'] = wp_create_nonce( 'wflp_secure_key' );
-			wp_send_json( $data );
-		}
-
-		public function remove_design() {
-			$resp = array(
-				'msg'    => '',
-				'status' => false,
-			);
-			check_ajax_referer( 'wffn_lp_remove_design', '_nonce' );
-			if ( isset( $_POST['wflp_id'] ) && $_POST['wflp_id'] > 0 ) {
-				$wflp_id                     = absint( $_POST['wflp_id'] );
-				$template                    = $this->default_design_data();
-				$template['template_active'] = 'no';
-				$this->update_page_design( $wflp_id, $template );
-				do_action( 'wflp_template_removed', $wflp_id );
-				do_action( 'woofunnels_module_template_removed', $wflp_id );
-
-				$args = [
-					'ID'           => $wflp_id,
-					'post_content' => ''
-				];
-				wp_update_post( $args );
-
-				$resp = array(
-					'msg'    => __( 'Design Saved Successfully', 'funnel-builder' ),
-					'status' => true,
-				);
-			}
-			self::send_resp( $resp );
-		}
-
-		public function import_template() {
-			$resp = [
-				'status' => false,
-				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
-			check_ajax_referer( 'wffn_lp_import_design', '_nonce' );
-			$builder  = isset( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
-			$template = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
-			$wflp_id  = isset( $_POST['wflp_id'] ) ? sanitize_text_field( $_POST['wflp_id'] ) : '';
-
-
-			$result = WFFN_Core()->importer->import_remote( $wflp_id, $builder, $template, $this->get_cloud_template_step_slug() );
-
-
-			if ( true === $result['success'] ) {
-				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
-			} else {
-				$resp['error'] = $result['error'];
-			}
-
-			self::send_resp( $resp );
-		}
-
-		public function toggle_state() {
-			check_ajax_referer( 'wffn_lp_toggle_state', '_nonce' );
-			$resp = [
-				'status' => false,
-				'msg'    => __( 'Unable to change state', 'funnel-builder' ),
-			];
-
-			$state   = isset( $_POST['toggle_state'] ) ? sanitize_text_field( $_POST['toggle_state'] ) : '';
-			$wflp_id = isset( $_POST['wflp_id'] ) ? sanitize_text_field( $_POST['wflp_id'] ) : '';
-
-			$status = ( 'true' === $state ) ? 'publish' : 'draft';
-
-			wp_update_post( [ 'ID' => $wflp_id, 'post_status' => $status ] );
-
-			$resp['status'] = true;
-			$resp['msg']    = __( 'Status changed successfully', 'funnel-builder' );
-
-
-			self::send_resp( $resp );
 		}
 
 		public function get_cloud_template_step_slug() {
@@ -688,7 +576,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 		 * Modify permalink
 		 *
 		 * @param string $post_link post link.
-		 * @param array $post post data.
+		 * @param array  $post post data.
 		 * @param string $leavename leave name.
 		 *
 		 * @return string
@@ -699,9 +587,8 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 			if ( isset( $post->post_type ) && $this->get_post_type_slug() === $post->post_type && empty( trim( $bwb_admin_setting->get_option( 'landing_page_base' ) ) ) ) {
 
-
 				// If elementor page preview, return post link as it is.
-				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor preview parameter check
 					return $post_link;
 				}
 
@@ -712,7 +599,6 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 					$post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
 
 				}
-
 			}
 
 			return $post_link;
@@ -743,7 +629,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 			}
 
 			// If query does not match (not exactly 2 parameters or 3 with 'lang'), return early.
-			if ( !( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
+			if ( ! ( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
 				return;
 			}
 
@@ -775,7 +661,7 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 		}
 
 		public function add_global_settings_fields( $fields ) {
-			$fields["lp-settings"] = $this->all_global_settings_fields();
+			$fields['lp-settings'] = $this->all_global_settings_fields();
 
 			return $fields;
 		}
@@ -816,10 +702,10 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 					),
 					'priority' => 10,
-				)
+				),
 			);
 			foreach ( $array as &$arr ) {
-				$values = [];
+				$values = array();
 				foreach ( $arr['fields'] as &$field ) {
 					$values[ $field['key'] ] = WFFN_Core()->landing_pages->get_option( $field['key'] );
 				}
@@ -843,44 +729,44 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 
 		public function get_settings_tab_data( $values = null ) {
 
-			$tabs = [
-				'custom_css' => [
+			$tabs = array(
+				'custom_css' => array(
 					'title'    => __( 'Custom CSS', 'funnel-builder' ),
 					'heading'  => __( 'Custom CSS', 'funnel-builder' ),
 					'slug'     => 'custom_css',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_css',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom CSS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your CSS Code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 5,
-					'values'   => [
+					'values'   => array(
 						'custom_css' => '',
-					],
-				],
-				'custom_js'  => [
+					),
+				),
+				'custom_js'  => array(
 					'title'    => __( 'External Scripts', 'funnel-builder' ),
 					'heading'  => __( 'External Scripts', 'funnel-builder' ),
 					'slug'     => 'custom_js',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_js',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom JS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 10,
-					'values'   => [
+					'values'   => array(
 						'custom_js' => '',
-					],
-				],
-			];
+					),
+				),
+			);
 
 			if ( ! empty( $values ) ) {
 				if ( ! empty( $values['custom_css'] ) ) {
@@ -888,14 +774,12 @@ if ( ! class_exists( 'WFFN_Landing_Pages' ) ) {
 				}
 
 				if ( ! empty( $values['custom_js'] ) ) {
-					$tabs['custom_js']['values']['custom_js'] = html_entity_decode($values['custom_js']);
+					$tabs['custom_js']['values']['custom_js'] = html_entity_decode( $values['custom_js'] );
 				}
 			}
 
 			return $tabs;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) ) {

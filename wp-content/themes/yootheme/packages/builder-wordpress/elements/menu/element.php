@@ -137,7 +137,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'style == \'primary\'',
+            'enable' => "style == 'primary'",
         ],
         'image_width' => [
             'label' => 'Image Width',

@@ -103,8 +103,6 @@ class Helper
     }
 
     /**
-     * @param string $domain
-     * @param ?string $name
      * @return array<string, Field>
      */
     public static function fieldsGroups(string $domain, ?string $name = null): array

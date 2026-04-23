@@ -8,8 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 	class Accept_Button extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-accept-offer-button';
-		public $icon = 'wfocu-icon-button_yes';
+		public $name     = 'wfocu-accept-offer-button';
+		public $icon     = 'wfocu-icon-button_yes';
 
 		/**
 		 * Retrieves the label for the Accept Button element.
@@ -331,13 +331,13 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 			$product = \WFOCU_Common::default_selected_product( $product_key );
 			do_action( 'wfocu_add_custom_html_above_accept_button', $product->get_id(), $product_key );
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                    <a <?php echo $this->render_attributes( 'button' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php WFOCU_Core()->template_loader->add_attributes_to_buy_button(); ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div style="display:flex;flex-direction:column;" <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					<a <?php echo $this->render_attributes( 'button' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php WFOCU_Core()->template_loader->add_attributes_to_buy_button(); ?>>
 						<?php $this->render_button_text(); ?>
-                    </a>
-                </div>
-            </div>
+					</a>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -353,26 +353,30 @@ if ( ! class_exists( '\WfocuFunnelKit\Accept_Button' ) ) {
 			$this->set_attribute( 'text', 'class', 'bricks-button-text' );
 			$this->set_attribute( 'subtitle', 'class', 'bricks-button-subtitle' );
 
-			$this->set_attribute( 'icon-align', 'class', array(
-				'bricks-button-icon',
-				'bricks-button-icon-align-' . $icon_position,
-			) );
+			$this->set_attribute(
+				'icon-align',
+				'class',
+				array(
+					'bricks-button-icon',
+					'bricks-button-icon-align-' . $icon_position,
+				)
+			);
 
 			?>
-            <span style="width:100%;" <?php echo $this->render_attributes( 'content-wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<span style="width:100%;" <?php echo $this->render_attributes( 'content-wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 			<?php if ( $icon && $icon_position === 'left' ) : ?>
-                <span <?php echo $this->render_attributes( 'icon-align' );  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<span <?php echo $this->render_attributes( 'icon-align' );  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>
 			<span <?php echo $this->render_attributes( 'text' ); ?>><?php echo $settings['text']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 			<?php if ( $icon && $icon_position === 'right' ) : ?>
-                <span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<span <?php echo $this->render_attributes( 'icon-align' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php echo $icon; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 			<?php endif; ?>
 				<?php if ( ! empty( $settings['subtitle'] ) ) : ?>
-                    <span style="display:block;" <?php echo $this->render_attributes( 'subtitle' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo $settings['subtitle']; ?></span>
+					<span style="display:block;" <?php echo $this->render_attributes( 'subtitle' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo $settings['subtitle']; ?></span>
 				<?php endif; ?>
 		</span>
 			<?php

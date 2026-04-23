@@ -219,7 +219,7 @@ class View implements \ArrayAccess
         $next = $this->loader->top();
 
         foreach ($this->filters as $filter => $loaders) {
-            if (!Str::is($filter, $name)) {
+            if (!Str::is($filter, strtr($name, '\\', '/'))) {
                 continue;
             }
 

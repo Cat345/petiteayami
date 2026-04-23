@@ -66,6 +66,43 @@ class Store_Credits extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Validate that the store credit redemption amount meets the minimum required amount.
+     *
+     * @since 4.0.7
+     * @access public
+     *
+     * @param bool|WP_Error $is_valid   True if the store credits redeem amount is valid, WP_Error otherwise.
+     * @param float         $amount     The amount of store credits to redeem.
+     * @param float         $cart_total The total cart amount.
+     * @return bool|\WP_Error True if valid, WP_Error if amount is below the minimum.
+     */
+    public function validate_minimum_store_credit_redemption_amount( $is_valid, $amount, $cart_total ) {
+        if ( is_wp_error( $is_valid ) ) {
+            return $is_valid;
+        }
+
+        $min_redemption_amount = (float) get_option( $this->_constants->MIN_STORE_CREDITS_AMOUNT_REDEEM, 0 );
+
+        if ( $min_redemption_amount > 0 && $amount < $min_redemption_amount ) {
+            return new \WP_Error(
+                'acfw_store_credits_below_minimum_redeem_amount',
+                sprintf(
+                    /* translators: %s: minimum redemption amount */
+                    __( 'The minimum store credits redemption amount is %s.', 'advanced-coupons-for-woocommerce' ),
+                    wc_price( $min_redemption_amount )
+                ),
+                array(
+                    'status'                => 400,
+                    'amount'                => $amount,
+                    'min_redemption_amount' => $min_redemption_amount,
+                )
+            );
+        }
+
+        return $is_valid;
+    }
+
+    /**
      * Set the maximum amount of store credit points that can be redeemed in a single order based on total order.
      *
      * @since  3.6.1
@@ -227,6 +264,137 @@ class Store_Credits extends Base_Model implements Model_Interface {
         return $sc_data;
     }
 
+    /**
+     * Automatically apply available store credits to the cart when the setting is enabled.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @return void
+     */
+    public function maybe_auto_apply_store_credits() {
+        // Skip if auto-apply setting is not enabled.
+        if ( 'yes' !== get_option( $this->_constants->STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT, 'no' ) ) {
+            return;
+        }
+
+        // Skip if not on checkout page or if on a WooCommerce endpoint (e.g., order-received, order-pay).
+        if ( ! is_checkout() || is_wc_endpoint_url() ) {
+            return;
+        }
+
+        if ( ! is_user_logged_in() ) {
+            return;
+        }
+
+        if ( ! \WC()->cart || \WC()->cart->is_empty() ) {
+            return;
+        }
+
+        if ( ! \WC()->session ) {
+            return;
+        }
+
+        // Check if store credits are already applied.
+        $sc_data = \WC()->session->get( \ACFWF()->Plugin_Constants::STORE_CREDITS_SESSION, null );
+        if ( $sc_data && isset( $sc_data['amount'] ) && $sc_data['amount'] > 0 ) {
+            return; // Store credits already applied.
+        }
+
+        // Skip if the store credits were manually removed.
+        if ( \WC()->session->get( $this->_constants->STORE_CREDITS_MANUALLY_REMOVED, false ) ) {
+            return;
+        }
+
+        // We only trigger store credit redemption using the customer's available balance.
+        // The final redeemable amount will be recalculated within the redeem_store_credits() method.
+        $amount = \ACFWF()->Store_Credits_Calculate->get_customer_balance( get_current_user_id() );
+        if ( $amount > 0 ) {
+            $result = \ACFWF()->Store_Credits_Checkout->redeem_store_credits( get_current_user_id(), $amount );
+            if ( is_wp_error( $result ) ) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Maybe flag manual store credits removal to prevent auto-apply from re-applying (after tax apply type).
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @param float $amount The amount of store credits to redeem.
+     * @param float $cart_total The total cart amount.
+     * @return float The amount of store credits to redeem.
+     */
+    public function maybe_flag_manual_store_credits_removal_after_tax( $amount, $cart_total ) {
+        // Skip if the option is not enabled.
+        if ( 'yes' !== get_option( $this->_constants->STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT, 'no' ) ) {
+            return $amount;
+        }
+
+        // $amount <= 0 means that the store credits were removed.
+        if ( $amount <= 0 && \WC()->session ) {
+            \WC()->session->set( $this->_constants->STORE_CREDITS_MANUALLY_REMOVED, true );
+        }
+
+        return $amount;
+    }
+
+    /**
+     * Maybe flag manual store credits removal to prevent auto-apply from re-applying (before tax apply type).
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @param bool   $should_clear Whether to clear the store credit session.
+     * @param string $coupon_code  The store credit coupon code.
+     * @return bool Whether to clear the store credit session.
+     */
+    public function maybe_flag_manual_store_credits_removal_before_tax( $should_clear, $coupon_code ) {
+        // Skip if the option is not enabled.
+        if ( 'yes' !== get_option( $this->_constants->STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT, 'no' ) ) {
+            return $should_clear;
+        }
+
+        // Flag manual store credits removal.
+        if ( \WC()->session ) {
+            \WC()->session->set( $this->_constants->STORE_CREDITS_MANUALLY_REMOVED, true );
+        }
+
+        return $should_clear;
+    }
+
+    /**
+     * Reset the manually removed store credits flag after order is created.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @return void
+     */
+    public function reset_manually_removed_store_credits_flag_on_order_created() {
+        if ( \WC()->session ) {
+            \WC()->session->set( $this->_constants->STORE_CREDITS_MANUALLY_REMOVED, null );
+        }
+    }
+
+    /**
+     * Reset the manually removed store credits flag after cart is emptied.
+     *
+     * @since 4.0.6
+     * @access public
+     *
+     * @param string   $cart_item_key The cart item key.
+     * @param \WC_Cart $cart The cart object.
+     * @return void
+     */
+    public function reset_manually_removed_store_credits_flag_on_cart_emptied( $cart_item_key, $cart ) {
+        if ( $cart->is_empty() && \WC()->session ) {
+            \WC()->session->set( $this->_constants->STORE_CREDITS_MANUALLY_REMOVED, false );
+        }
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Fulfill implemented interface contracts
@@ -245,6 +413,12 @@ class Store_Credits extends Base_Model implements Model_Interface {
         add_filter( 'acfw_get_store_credit_decrease_action_types', array( $this, 'store_credit_decrease_action_types' ), 10, 1 );
         add_action( 'woocommerce_order_refunded', array( $this, 'revoke_cashback_store_credits' ), 10, 2 );
         add_filter( 'acfw_is_valid_store_credits_redeem_amount', array( $this, 'validate_maximum_store_credit_points_redeem' ), 10, 3 );
+        add_filter( 'acfw_is_valid_store_credits_redeem_amount', array( $this, 'validate_minimum_store_credit_redemption_amount' ), 11, 3 );
         add_filter( 'acfw_before_apply_store_credit_discount', array( $this, 'set_maximum_store_credit_points_redeem' ), 10, 1 );
+        add_action( 'template_redirect', array( $this, 'maybe_auto_apply_store_credits' ), 10 );
+        add_filter( 'acfw_store_credits_redeem_amount', array( $this, 'maybe_flag_manual_store_credits_removal_after_tax' ), 10, 2 );
+        add_filter( 'acfw_should_clear_store_credit_session', array( $this, 'maybe_flag_manual_store_credits_removal_before_tax' ), 10, 2 );
+        add_action( 'woocommerce_checkout_order_created', array( $this, 'reset_manually_removed_store_credits_flag_on_order_created' ), 10 );
+        add_action( 'woocommerce_cart_item_removed', array( $this, 'reset_manually_removed_store_credits_flag_on_cart_emptied' ), 10, 2 );
     }
 }

@@ -22,7 +22,7 @@ return [
         'provider' => [
             'name' => 'mailchimp',
             'after_submit' => 'message',
-            'message' => 'You\'ve been subscribed successfully.',
+            'message' => "You've been subscribed successfully.",
             'redirect' => '',
         ],
         'mailchimp' => [
@@ -80,19 +80,19 @@ return [
             'label' => 'Mailchimp',
             'type' => 'newsletter-lists',
             'provider' => 'mailchimp',
-            'show' => 'provider.name == \'mailchimp\'',
+            'show' => "provider.name == 'mailchimp'",
         ],
         'mailchimp.double_optin' => [
             'label' => 'Double opt-in',
             'type' => 'checkbox',
             'text' => 'Use double opt-in.',
-            'show' => 'provider.name == \'mailchimp\'',
+            'show' => "provider.name == 'mailchimp'",
         ],
         'cmonitor' => [
             'label' => 'Campaign Monitor',
             'type' => 'newsletter-lists',
             'provider' => 'cmonitor',
-            'show' => 'provider.name == \'cmonitor\'',
+            'show' => "provider.name == 'cmonitor'",
         ],
         'provider.after_submit' => [
             'label' => 'After Submit',
@@ -111,14 +111,14 @@ return [
             'attrs' => [
                 'rows' => 4,
             ],
-            'show' => 'provider.after_submit == \'message\'',
+            'show' => "provider.after_submit == 'message'",
         ],
         'provider.redirect' => [
             'label' => 'Link',
             'description' => 'Link to redirect to after submit.',
             'type' => 'link',
             'filePicker' => false,
-            'show' => 'provider.after_submit == \'redirect\'',
+            'show' => "provider.after_submit == 'redirect'",
         ],
         'layout' => [
             'label' => 'Layout',
@@ -210,12 +210,12 @@ return [
                 'Danger' => 'danger',
                 'Text' => 'text',
             ],
-            'enable' => 'button_mode == \'button\'',
+            'enable' => "button_mode == 'button'",
         ],
         'button_fullwidth' => [
             'type' => 'checkbox',
             'text' => 'Full width button',
-            'enable' => 'button_mode == \'button\' && layout != \'grid\'',
+            'enable' => "button_mode == 'button' && layout != 'grid'",
         ],
         'button_margin' => [
             'label' => 'Extra Margin',
@@ -226,13 +226,13 @@ return [
                 'Small' => 'small',
                 'Medium' => 'default',
             ],
-            'enable' => 'button_mode == \'button\' && show_name',
+            'enable' => "button_mode == 'button' && show_name",
         ],
         'button_icon' => [
             'label' => 'Icon',
             'description' => 'Click on the pencil to pick an icon from the icon library.',
             'type' => 'icon',
-            'enable' => 'button_mode == \'icon\'',
+            'enable' => "button_mode == 'icon'",
         ],
         'position' => '${builder.position}',
         'position_left' => '${builder.position_left}',

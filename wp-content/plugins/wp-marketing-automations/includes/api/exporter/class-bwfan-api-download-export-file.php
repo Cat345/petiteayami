@@ -30,25 +30,24 @@ class BWFAN_API_Download_Export_File extends BWFAN_API_Base {
 		}
 
 		$filename = $user_data[ $type ]['url'];
-		
+
 		// Validate path to prevent directory traversal
 		$allowed_dir = defined( 'BWFAN_SINGLE_EXPORT_DIR' ) ? BWFAN_SINGLE_EXPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-single-export';
-		
+
 		// Extract filename and sanitize
 		$file_name = basename( $filename );
-		$file_name = sanitize_file_name( $file_name );
 		$file_path = $allowed_dir . '/' . $file_name;
-		
+
 		// Validate path using realpath to prevent directory traversal
 		$real_path    = realpath( $file_path );
 		$real_allowed = realpath( $allowed_dir );
-		
+
 		if ( false === $real_path || false === $real_allowed || strpos( $real_path, $real_allowed ) !== 0 ) {
 			$this->response_code = 403;
-			
+
 			return $this->error_response( __( 'Invalid file path', 'wp-marketing-automations' ) );
 		}
-		
+
 		if ( file_exists( $real_path ) && is_readable( $real_path ) ) {
 			// Define header information
 			header( 'Content-Description: File Transfer' );

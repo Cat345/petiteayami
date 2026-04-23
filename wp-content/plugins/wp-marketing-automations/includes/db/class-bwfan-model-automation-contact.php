@@ -97,8 +97,10 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		/** If automation is inactive then no need to check automation contact status */
 		if ( ! empty( $status ) && 'inactive' !== $status ) {
 			if ( 'active' === $status ) {
+				$is_desc = apply_filters( 'bwfan_active_automation_contact_is_desc', false );
+				$order_by = (true === $is_desc) ? 'DESC' : 'ASC';
 				$where    .= " AND (cc.status = 1 OR cc.status = 4 OR cc.status = 6 ) ";
-				$order_by = " ORDER BY cc.c_date, cc.e_time  ASC ";
+				$order_by = " ORDER BY cc.c_date {$order_by}, cc.e_time {$order_by} ";
 			} elseif ( 'delayed' === $status ) {
 				$where    .= " AND (cc.status = 1 OR cc.status = 6 ) ";
 				$order_by = " ORDER BY cc.e_time ASC ";
@@ -176,21 +178,34 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$query    = "SELECT  cc.ID,cc.cid, cc.aid, cc.trail, cc.c_date, c.email, c.f_name, c.l_name, c.contact_no, c.creation_date as date $more_columns FROM $table_name as cc JOIN {$wpdb->prefix}bwf_contact AS c ON cc.cid = c.ID WHERE 1=1 $where  $order_by $limit";
 		$contacts = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		return array_map( function ( $contact ) use ( $more_data, $status ) {
-			$contact['e_time'] = isset( $contact['e_time'] ) ? date( 'Y-m-d H:i:s', $contact['e_time'] ) : '';
-			if ( 2 === intval( $status ) && isset( $contact['trail'] ) && isset( $contact['last'] ) ) {
-				$fail_data = BWFAN_Model_Automation_Contact_Trail::get_step_trail( $contact['trail'], $contact['last'] );
-				if ( isset( $fail_data['data'] ) ) {
-					$fail_data = json_decode( $fail_data['data'], true );
-					if ( isset( $fail_data['error_msg'] ) ) {
-						$contact['error_msg'] = $fail_data['error_msg'];
-					}
-				}
+		if ( empty( $contacts ) ) {
+			return $contacts;
+		}
+
+		/** Batch fetch: error messages for failed contacts (status = 2) */
+		$fail_data_map = array();
+		if ( 2 === intval( $status ) ) {
+			$fail_data_map = self::batch_get_fail_data( $contacts, $wpdb );
+		}
+
+		/** Batch fetch: step data when more_data is requested */
+		$step_data_map = array();
+		if ( true === $more_data ) {
+			$trail_ids = array_unique( array_filter( wp_list_pluck( $contacts, 'trail' ) ) );
+			if ( ! empty( $trail_ids ) ) {
+				$step_data_map = self::batch_get_step_data( $trail_ids, $wpdb );
 			}
-			/**Get trail data */
-			if ( true === $more_data ) {
-				$data            = BWFAN_Common::get_step_by_trail( $contact['trail'] );
-				$contact['data'] = isset( $data[0] ) ? $data[0] : $data;
+		}
+
+		return array_map( function ( $contact ) use ( $more_data, $status, $fail_data_map, $step_data_map ) {
+			$contact['e_time'] = isset( $contact['e_time'] ) ? date( 'Y-m-d H:i:s', $contact['e_time'] ) : '';
+
+			if ( 2 === intval( $status ) && isset( $contact['trail'] ) && isset( $fail_data_map[ $contact['trail'] ] ) ) {
+				$contact['error_msg'] = $fail_data_map[ $contact['trail'] ];
+			}
+
+			if ( true === $more_data && isset( $step_data_map[ $contact['trail'] ] ) ) {
+				$contact['data'] = $step_data_map[ $contact['trail'] ];
 			}
 
 			return $contact;
@@ -249,6 +264,45 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		}
 
 		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+	/**
+	 * Get active, failed and paused counts for multiple automation IDs in a single query.
+	 * Replaces 3 separate get_active_count() calls with 1 query using conditional aggregation.
+	 *
+	 * @param array $aids Array of automation IDs.
+	 *
+	 * @return array Map of aid => array( 'active' => int, 'failed' => int, 'paused' => int ).
+	 */
+	public static function get_all_status_counts_by_aids( $aids ) {
+		global $wpdb;
+		$table_name = self::_table();
+
+		if ( ! is_array( $aids ) || empty( $aids ) ) {
+			return [];
+		}
+
+		$aids         = array_map( 'absint', $aids );
+		$placeholders = implode( ',', array_fill( 0, count( $aids ), '%d' ) );
+
+		$query = $wpdb->prepare(
+			"SELECT cc.aid,
+				SUM( CASE WHEN cc.status IN (1, 4, 6) THEN 1 ELSE 0 END ) AS active,
+				SUM( CASE WHEN cc.status = 2 THEN 1 ELSE 0 END ) AS failed,
+				SUM( CASE WHEN cc.status = 3 THEN 1 ELSE 0 END ) AS paused
+			FROM {$table_name} AS cc
+			WHERE cc.aid IN ({$placeholders})
+			AND EXISTS ( SELECT 1 FROM {$wpdb->prefix}bwfan_automations AS am WHERE am.ID = cc.aid AND am.status = 1 )
+			GROUP BY cc.aid",
+			...$aids
+		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		$results    = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( empty( $results ) || ! is_array( $results ) ) {
+			return [];
+		}
+
+		return array_column( $results, null, 'aid' );
 	}
 
 	public static function get_automation_contact_count( $aids ) {
@@ -582,5 +636,120 @@ class BWFAN_Model_Automation_Contact extends BWFAN_Model {
 		$query = $wpdb->prepare( $query, $args );
 
 		return $wpdb->query( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+
+	/**
+	 * Batch fetch error messages for failed contacts.
+	 * Replaces N individual get_step_trail() calls with 1 query.
+	 *
+	 * @param array  $contacts List of contact rows (must have 'trail' and 'last' keys).
+	 * @param object $wpdb     WordPress database object.
+	 *
+	 * @return array Map of trail_id => error_msg.
+	 */
+	private static function batch_get_fail_data( $contacts, $wpdb ) {
+		$fail_data_map = array();
+		$trail_table   = $wpdb->prefix . 'bwfan_automation_contact_trail';
+
+		/** Collect (trail, last) pairs for failed contacts */
+		$where_parts = array();
+		$args        = array();
+		foreach ( $contacts as $contact ) {
+			if ( empty( $contact['trail'] ) || empty( $contact['last'] ) ) {
+				continue;
+			}
+			$where_parts[] = '(t2.tid = %s AND t2.sid = %d)';
+			$args[]        = $contact['trail'];
+			$args[]        = intval( $contact['last'] );
+		}
+
+		if ( empty( $where_parts ) ) {
+			return $fail_data_map;
+		}
+
+		$where_clause = implode( ' OR ', $where_parts );
+
+		/**
+		 * Get the latest trail row per (tid, sid) pair in a single query.
+		 * Uses a subquery to find MAX(ID) per group, then joins back for full row.
+		 */
+		$query = $wpdb->prepare(
+			"SELECT t.tid, t.data FROM {$trail_table} AS t
+			INNER JOIN (
+				SELECT tid, sid, MAX(ID) AS max_id FROM {$trail_table} AS t2
+				WHERE {$where_clause}
+				GROUP BY tid, sid
+			) AS latest ON t.ID = latest.max_id",
+			...$args
+		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		foreach ( $results as $row ) {
+			if ( empty( $row['data'] ) ) {
+				continue;
+			}
+			$data = json_decode( $row['data'], true );
+			if ( isset( $data['error_msg'] ) ) {
+				$fail_data_map[ $row['tid'] ] = $data['error_msg'];
+			}
+		}
+
+		return $fail_data_map;
+	}
+
+	/**
+	 * Batch fetch step data for multiple trail IDs.
+	 * Replaces N individual get_step_by_trail() calls with 1 query.
+	 *
+	 * @param array  $trail_ids List of trail IDs.
+	 * @param object $wpdb      WordPress database object.
+	 *
+	 * @return array Map of trail_id => step data array.
+	 */
+	private static function batch_get_step_data( $trail_ids, $wpdb ) {
+		$step_data_map = array();
+		$trail_table   = $wpdb->prefix . 'bwfan_automation_contact_trail';
+		$step_table    = $wpdb->prefix . 'bwfan_automation_step';
+		$placeholders  = implode( ',', array_fill( 0, count( $trail_ids ), '%s' ) );
+
+		/**
+		 * Get the latest trail+step row per trail_id in a single query.
+		 * Replicates the logic of BWFAN_Model_Automation_Step::get_step_by_trail() in batch.
+		 */
+		$query = $wpdb->prepare(
+			"SELECT ct.tid, ct.c_time AS run_time, st.action, st.type
+			FROM {$trail_table} AS ct
+			JOIN {$step_table} AS st ON ct.sid = st.ID
+			INNER JOIN (
+				SELECT tid, MAX(ID) AS max_id FROM {$trail_table}
+				WHERE tid IN ({$placeholders})
+				GROUP BY tid
+			) AS latest ON ct.ID = latest.max_id",
+			...$trail_ids
+		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		foreach ( $results as $row ) {
+			$tid              = $row['tid'];
+			$row['run_time']  = date( 'Y-m-d H:i:s', $row['run_time'] ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions
+			$action           = ! empty( $row['action'] ) ? json_decode( $row['action'], true ) : array();
+			$nice_name        = '';
+
+			if ( 2 === absint( $row['type'] ) ) {
+				$nice_name = isset( $action['action'] ) && BWFAN_Core()->integration->get_action( $action['action'] ) instanceof BWFAN_Action ? BWFAN_Core()->integration->get_action( $action['action'] )->get_name() : '';
+			} elseif ( 3 === absint( $row['type'] ) ) {
+				$nice_name = isset( $action['benchmark'] ) && BWFAN_Core()->sources->get_event( $action['benchmark'] ) instanceof BWFAN_Event ? BWFAN_Core()->sources->get_event( $action['benchmark'] )->get_name() : '';
+			}
+
+			$row['action'] = $nice_name;
+			unset( $row['tid'] );
+
+			$step_data_map[ $tid ] = $row;
+		}
+
+		return $step_data_map;
 	}
 }

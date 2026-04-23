@@ -42,13 +42,11 @@ class Middleware
      */
     public function hasHandler(): bool
     {
-        return isset($this->handler);
+        return $this->handler !== null;
     }
 
     /**
      * Sets the middleware handler.
-     *
-     * @param callable $handler
      */
     public function setHandler(callable $handler): void
     {
@@ -57,8 +55,6 @@ class Middleware
 
     /**
      * Unshift a middleware to the bottom of the stack.
-     *
-     * @param callable $middleware
      */
     public function unshift(callable $middleware): void
     {
@@ -67,8 +63,6 @@ class Middleware
 
     /**
      * Push a middleware to the top of the stack.
-     *
-     * @param callable $middleware
      */
     public function push(callable $middleware): void
     {

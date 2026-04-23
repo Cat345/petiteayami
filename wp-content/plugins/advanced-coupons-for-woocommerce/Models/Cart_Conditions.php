@@ -633,14 +633,29 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
 
         // Cache the cart total in session to avoid using 0 when WC()->cart->get_total('raw') calling by other hooks.
         // is called before totals are calculated. Only cache if the value is greater than 0.
-        $cart_total = (float) \WC()->cart->get_total( 'raw' );
-        if ( $cart_total <= 0 ) {
-            $cached_total = WC()->session->get( Plugin_Constants::CACHED_CART_TOTAL );
-            if ( ! empty( $cached_total ) && $cached_total > 0 ) {
-                $cart_total = $cached_total;
-            }
+        // Cache includes currency so a WooPayments Multicurrency switch invalidates the cached value.
+        $cart_total    = (float) \WC()->cart->get_total( 'raw' );
+        $cart_currency = get_woocommerce_currency();
+        $cached        = \WC()->session->get( Plugin_Constants::CACHED_CART_TOTAL );
+
+        $is_valid_cache = is_array( $cached )
+            && isset( $cached['total'], $cached['currency'] )
+            && $cached['currency'] === $cart_currency
+            && $cached['total'] > 0;
+
+        if ( $cart_total <= 0 && $is_valid_cache ) {
+            $cart_total = (float) $cached['total'];
+        } elseif ( $cart_total > 0 ) {
+            \WC()->session->set(
+                Plugin_Constants::CACHED_CART_TOTAL,
+                array(
+                    'total'    => $cart_total,
+                    'currency' => $cart_currency,
+                )
+            );
         } else {
-            \WC()->session->set( Plugin_Constants::CACHED_CART_TOTAL, $cart_total );
+            // Cached value is stale or invalid — clear it.
+            \WC()->session->set( Plugin_Constants::CACHED_CART_TOTAL, null );
         }
 
         $value = apply_filters( 'acfw_filter_amount', (float) $value );

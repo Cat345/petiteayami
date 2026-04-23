@@ -8,14 +8,20 @@ class BWFAN_Model_Abandonedcarts extends BWFAN_Model {
 
 		$limit_string = '';
 		if ( '' !== $offset ) {
-			$limit_string = "LIMIT {$offset}";
+			$limit_string = "LIMIT %d";
+			$limit_string = $wpdb->prepare( $limit_string, $offset ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 		}
 		if ( '' !== $per_page && '' !== $limit_string ) {
-
-			$limit_string .= ',' . $per_page;
+			$limit_string = "LIMIT %d, %d";
+			$limit_string = $wpdb->prepare( $limit_string, $offset, $per_page ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}bwfan_abandonedcarts {$where} ORDER BY {$order_by} DESC {$limit_string}", $output ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( ! empty( $order_by ) ) {
+			$order_by = " ORDER BY {$order_by} DESC";
+		}
+
+		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}bwfan_abandonedcarts {$where} {$order_by} {$limit_string}", $output ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function delete_abandoned_cart_row( $data ) {

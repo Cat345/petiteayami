@@ -2901,6 +2901,50 @@ class BWFAN_Rule_Custom_Taxonomy extends BWFAN_Rule_Term_Taxonomy {
 		return $all_terms;
 	}
 
+	/**
+	 * Get the taxonomy term IDs from the order item's actual attribute selection
+	 * instead of all terms registered on the parent product.
+	 *
+	 * WooCommerce stores variation attributes as order item meta with the
+	 * taxonomy name (e.g. 'pa_gravur') as key and the term slug as value.
+	 *
+	 * @param array              $all_terms Accumulated term IDs.
+	 * @param WC_Order           $order     Order object.
+	 * @param WC_Order_Item|mixed $cart_item Order item object.
+	 *
+	 * @return array
+	 */
+	public function get_product_terms( $all_terms, $order, $cart_item ) {
+		$product = BWFAN_WooCommerce_Compatibility::get_product_from_item( $order, $cart_item );
+		if ( ! $product instanceof WC_Product ) {
+			return $all_terms;
+		}
+
+		/** Check order item meta for the customer's actual attribute selection */
+		if ( taxonomy_exists( $this->taxonomy_name ) && is_callable( array( $cart_item, 'get_meta' ) ) ) {
+			$selected_slug = $cart_item->get_meta( $this->taxonomy_name );
+
+			if ( ! empty( $selected_slug ) && is_string( $selected_slug ) ) {
+				$term = get_term_by( 'slug', $selected_slug, $this->taxonomy_name );
+				if ( $term instanceof WP_Term ) {
+					return array_merge( $all_terms, array( $term->term_id ) );
+				}
+			}
+		}
+
+		$product_id = $product->get_id();
+		$product_id = ( $product->get_parent_id() ) ? $product->get_parent_id() : $product_id;
+		$terms      = wp_get_object_terms( $product_id, $this->taxonomy_name, array(
+			'fields' => 'ids',
+		) );
+
+		if ( $terms instanceof WP_Error || empty( $terms ) ) {
+			return $all_terms;
+		}
+
+		return array_merge( $all_terms, $terms );
+	}
+
 	public function get_possible_rule_operators() {
 		return array(
 			'any'  => __( 'matches any of', 'wp-marketing-automations' ),

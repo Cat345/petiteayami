@@ -99,7 +99,7 @@ if ( ! class_exists( 'WFFN_WP_User_AutoLogin' ) ) {
 
 
 					$userIds = array();
-					$results = $wpdb->get_results( $wpdb->prepare( "SELECT user_id, meta_value as login_code FROM $wpdb->usermeta WHERE meta_key = %s and meta_value = %s;", self::WP_USER_AUTOLOGIN_KEY, $autologin_code ), ARRAY_A ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__usermeta
+					$results = $wpdb->get_results( $wpdb->prepare( "SELECT user_id, meta_value as login_code FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value = %s ORDER BY umeta_id DESC LIMIT 2", self::WP_USER_AUTOLOGIN_KEY, $autologin_code ), ARRAY_A ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__usermeta
 					if ( $results === null ) {
 						wp_die( "Query failed!" );
 					}

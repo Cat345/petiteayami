@@ -265,8 +265,6 @@ class BWFAN_Abandoned_Cart {
 	 * @param $order_id
 	 */
 	public function remove_abandoned_data_from_table( $order_id ) {
-		global $wpdb;
-
 		$order = wc_get_order( $order_id );
 		if ( ! $order instanceof WC_Order ) {
 			return;
@@ -279,6 +277,7 @@ class BWFAN_Abandoned_Cart {
 		if ( empty( $ab_cart_id ) ) {
 			$sql_where     = 'email = %s';
 			$billing_email = BWFAN_Woocommerce_Compatibility::get_billing_email( $order );
+			global $wpdb;
 			$sql_where     = $wpdb->prepare( $sql_where, $billing_email ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			$cart_details = $this->get_cart_by_multiple_key( $sql_where );
@@ -304,6 +303,35 @@ class BWFAN_Abandoned_Cart {
 				}
 
 				do_action( 'abandoned_cart_recovered', $cart_details, $order_id, $order );
+			}
+		} else {
+			/** Fallback: attribute recovery when cart exists but no recovery meta was set (e.g., direct purchase without recovery link) */
+			if ( empty( $cart_details ) ) {
+				global $wpdb;
+				$where                   = "WHERE status=1 AND ID= %d";
+				$where                   = $wpdb->prepare( $where, $ab_cart_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$cart_details = BWFAN_Model_Abandonedcarts::get_abandoned_data( $where, 0, 1, 'ID', ARRAY_A );  
+				
+				if ( is_array( $cart_details ) && count( $cart_details ) > 0 ) {
+					$cart_details = $cart_details[0];
+					BWFAN_Common::save_order_meta( $order_id, '_bwfan_recovered_ab_id', $ab_cart_id );
+	
+					/**
+					 * Also persist an automation id meta so that this recovery
+					 * can be listed in the Recovered carts view, which queries
+					 * orders by the '_bwfan_ab_cart_recovered_a_id' meta key.
+					 * Try to use an automation id from the cart details if
+					 * available; otherwise fall back to 0 to indicate a
+					 * non-automation/direct-purchase recovery.
+					 */
+					$automation_id = 0;
+					if ( is_array( $cart_details ) && isset( $cart_details['automation_id'] ) ) {
+						$automation_id = intval( $cart_details['automation_id'] );
+					}
+	
+					BWFAN_Common::save_order_meta( $order_id, '_bwfan_ab_cart_recovered_a_id', $automation_id );
+					do_action( 'abandoned_cart_recovered', $cart_details, $order_id, $order );
+				}
 			}
 		}
 
@@ -407,6 +435,107 @@ class BWFAN_Abandoned_Cart {
 	 */
 	public function cart_updated() {
 		self::$is_cart_changed = true;
+
+		/** When cart is empty, remove abandoned cart record so FKA does not send emails for an empty cart */
+		if ( $this->is_empty() ) {
+			$this->maybe_delete_abandoned_cart_if_empty();
+		}
+	}
+
+	/**
+	 * Delete the abandoned cart record for the current visitor when their cart is empty.
+	 * Stops FKA from sending abandoned cart emails after the user has removed all products.
+	 *
+	 * @return void
+	 */
+	public function maybe_delete_abandoned_cart_if_empty() {
+		static $already_checked = false;
+
+		// Prevent multiple executions within the same request to reduce database queries.
+		if ( $already_checked ) {
+			return;
+		}
+		$already_checked = true;
+
+		// WC check.
+		if ( ! class_exists( 'WooCommerce' ) || is_null( WC()->cart ) ) {
+			return;
+		}
+
+		$tracking_cookie = $this->get_tracking_cookie();
+		if ( empty( $tracking_cookie ) ) {
+			return;
+		}
+
+		// Use lightweight query to get only ID and status instead of full cart data.
+		$cart_details = $this->get_cart_id_and_status_by_cookie( $tracking_cookie );
+		if ( false === $cart_details || ! isset( $cart_details['ID'] ) ) {
+			return;
+		}
+
+		// Only remove if cart status is pending (0). Do not remove recovered, lost, or other statuses.
+		$cart_status = isset( $cart_details['status'] ) ? (int) $cart_details['status'] : 0;
+		if ( 0 !== $cart_status ) {
+			return;
+		}
+
+		$ab_cart_id = (int) $cart_details['ID'];
+		// Delete the abandoned cart row.
+		BWFAN_Model_Abandonedcarts::delete( $ab_cart_id );
+	}
+
+	/**
+	 * Get the tracking cookie value with caching.
+	 *
+	 * Checks cookie, session, and global fallback in that order.
+	 * Results are cached for the current request to avoid repeated lookups.
+	 *
+	 * @return string|false The tracking cookie value or false if not found.
+	 */
+	private function get_tracking_cookie() {
+		static $cached_cookie = null;
+
+		if ( null !== $cached_cookie ) {
+			return $cached_cookie;
+		}
+
+		$tracking_cookie = BWFAN_Common::get_cookie( 'bwfan_visitor' );
+		if ( empty( $tracking_cookie ) && ! is_null( WC()->session ) ) {
+			$tracking_cookie = WC()->session->get( 'bwfan_visitor' );
+		}
+		if ( empty( $tracking_cookie ) ) {
+			global $cookie_set;
+			if ( is_array( $cookie_set ) && isset( $cookie_set['bwfan_visitor'] ) ) {
+				$tracking_cookie = $cookie_set['bwfan_visitor'];
+			}
+		}
+
+		$cached_cookie = empty( $tracking_cookie ) ? false : $tracking_cookie;
+
+		return $cached_cookie;
+	}
+
+	/**
+	 * Get cart ID and status by cookie key using lightweight query.
+	 *
+	 * This method only selects the necessary columns (ID, status) instead of
+	 * all columns to reduce memory usage and query time.
+	 *
+	 * @since 1.0.0
+	 * @param string $cookie_key The cookie key to search for.
+	 * @return array|false Cart data with ID and status, or false if not found.
+	 */
+	private function get_cart_id_and_status_by_cookie( $cookie_key ) {
+		global $wpdb;
+
+		$query = $wpdb->prepare(
+			"SELECT ID, status FROM {table_name} WHERE cookie_key = %s AND status != 2 ORDER BY ID DESC LIMIT 0,1",
+			$cookie_key
+		);
+
+		$cart_details = BWFAN_Model_Abandonedcarts::get_results( $query );
+
+		return ( is_array( $cart_details ) && count( $cart_details ) > 0 ) ? $cart_details[0] : false;
 	}
 
 	/**
@@ -575,6 +704,13 @@ class BWFAN_Abandoned_Cart {
 
 		$url_utm_args                        = [];
 		$url_utm_args['bwfan-cart-restored'] = 'success';
+
+		/** Preserve bwfan-coupon parameter in redirect URL for auto-application on next page load */
+		$bwfan_coupon = filter_input( INPUT_GET, 'bwfan-coupon' );
+		if ( ! empty( $bwfan_coupon ) ) {
+			$url_utm_args['bwfan-coupon'] = sanitize_text_field( $bwfan_coupon );
+		}
+
 		$url_utm_args                        = apply_filters( 'bwfan_cart_restore_link_args', $url_utm_args );
 		$url                                 = BWFAN_Common::append_extra_url_arguments( $url, $url_utm_args );
 
@@ -634,7 +770,7 @@ class BWFAN_Abandoned_Cart {
 			}
 
 			/** If product from FK Cart Special Addon */
-			if ( ! empty( $item_data['_fkcart_spl_addon'] ) && true === $item_data['_fkcart_spl_addon'] ){
+			if ( ! empty( $item_data['_fkcart_spl_addon'] ) && true === $item_data['_fkcart_spl_addon'] ) {
 				continue;
 			}
 
@@ -999,9 +1135,13 @@ class BWFAN_Abandoned_Cart {
 		$is_cookie_set = ! empty( $cookie_key ) ? $cookie_key : $cookie_uid;
 
 		if ( empty( $is_cookie_set ) ) {
-			return;
+			if ( is_user_logged_in() ) {
+				$this->set_session_cookies();
+			} else {
+				return;
+			}
 		}
-		/** heck if the cart item key exists in cart contents before accessing it */
+		/** check if the cart item key exists in cart contents before accessing it */
 		if ( ! isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
 			return;
 		}
@@ -1060,7 +1200,10 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function insert_abandoned_cart() {
-		BWFAN_Common::check_nonce();
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! wp_verify_nonce( $nonce, 'bwfan-action-public' ) ) {
+			wp_send_json( array( 'status' => false, 'msg' => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ) ) );
+		}
 
 		$email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 		if ( empty( $email ) ) {
@@ -1203,6 +1346,11 @@ class BWFAN_Abandoned_Cart {
 			$data['lang'] = weglot_get_current_language();
 		} elseif ( function_exists( 'bwfan_is_gtranslate_active' ) && bwfan_is_gtranslate_active() ) {
 			$data['lang'] = BWFAN_Compatibility_With_GTRANSLATE::get_gtranslate_language();
+		} elseif ( function_exists( 'bwfan_is_linguise_active' ) && bwfan_is_linguise_active() && class_exists( '\Linguise\WordPress\Helper' ) ) {
+			$lang = \Linguise\WordPress\Helper::getLanguage();
+			if ( ! empty( $lang ) ) {
+				$data['lang'] = $lang;
+			}
 		}
 
 		$abandoned_cart_id = $this->process_abandoned_cart( $email, $data );
@@ -1216,6 +1364,9 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		do_action( 'bwfan_insert_abandoned_cart', $abandoned_cart_id );
+
+		/** Allow compatibility layers to restore cookies before AJAX response is sent */
+		do_action( 'bwfan_before_abandoned_cart_ajax_response' );
 
 		$resp = array(
 			'id'     => $abandoned_cart_id,
@@ -1388,7 +1539,7 @@ class BWFAN_Abandoned_Cart {
 	 */
 	public function get_cart_by_key( $key, $value, $value_type ) {
 		global $wpdb;
-		$query        = $wpdb->prepare( "SELECT * FROM {table_name} WHERE {$key} LIKE {$value_type} AND status != 2 ORDER BY `ID` DESC LIMIT 0,1", $value );
+		$query        = $wpdb->prepare( "SELECT * FROM {table_name} WHERE {$key} = {$value_type} AND status != 2 ORDER BY `ID` DESC LIMIT 0,1", $value );
 		$cart_details = BWFAN_Model_Abandonedcarts::get_results( $query );
 
 		return ( is_array( $cart_details ) && count( $cart_details ) > 0 ) ? $cart_details[0] : false;
@@ -1421,7 +1572,7 @@ class BWFAN_Abandoned_Cart {
 		if ( empty( $data['user_id'] ) && is_user_logged_in() ) {
 			$user            = wp_get_current_user();
 			$data['user_id'] = ( isset( $user->ID ) ? (int) $user->ID : 0 );
-			$data['email'] = empty( $data['email'] ) ? $user->user_email : $data['email'];
+			$data['email']   = empty( $data['email'] ) ? $user->user_email : $data['email'];
 		}
 
 		/** If email is empty, return 0 */
@@ -1480,7 +1631,7 @@ class BWFAN_Abandoned_Cart {
 		$data['shipping_tax_total'] = WC()->cart->shipping_tax_total;
 		$data['shipping_total']     = WC()->cart->shipping_total;
 		$data['currency']           = get_woocommerce_currency();
-		$total       				= WC()->cart->get_total( 'raw' );
+		$total                      = WC()->cart->get_total( 'raw' );
 		$data['total']              = $total;
 		$data['total_base']         = BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $total, $data['currency'] );
 
@@ -1522,7 +1673,10 @@ class BWFAN_Abandoned_Cart {
 	 * @since 1.0.0
 	 */
 	public function delete_abandoned_cart() {
-		BWFAN_Common::check_nonce();
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! wp_verify_nonce( $nonce, 'bwfan-action-public' ) ) {
+			wp_send_json( array( 'status' => false, 'msg' => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ) ) );
+		}
 
 		if ( isset( $_POST['email'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 			$email = sanitize_email( $_POST['email'] ); //phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
@@ -1635,21 +1789,18 @@ class BWFAN_Abandoned_Cart {
 		/** Check excluded emails or user roles */
 		$global_settings = BWFAN_Common::get_global_settings();
 		$email           = method_exists( $customer, 'get_billing_email' ) ? $customer->get_billing_email() : '';
-		if ( 0 !== absint( $global_settings['bwfan_ab_exclude_users_cart_tracking'] ) ) {
-			if ( isset( $global_settings['bwfan_ab_exclude_emails'] ) && ! empty( $global_settings['bwfan_ab_exclude_emails'] ) ) {
-				$global_settings['bwfan_ab_exclude_emails'] = str_replace( ' ', '', $global_settings['bwfan_ab_exclude_emails'] );
-				$exclude_emails                             = [];
-				if ( strpos( $global_settings['bwfan_ab_exclude_emails'], ',' ) ) {
-					$exclude_emails = explode( ',', $global_settings['bwfan_ab_exclude_emails'] );
-				}
+		if ( isset( $global_settings['bwfan_ab_exclude_emails'] ) && ! empty( $global_settings['bwfan_ab_exclude_emails'] ) ) {
+			/** Normalize line breaks to commas and explode — matches insert_abandoned_cart() */
+			$exclude_emails = preg_split( '/[\r\n,]+/', $global_settings['bwfan_ab_exclude_emails'], - 1, PREG_SPLIT_NO_EMPTY );
+			$exclude_emails = array_map( 'trim', $exclude_emails );
+			$exclude_emails = array_unique( $exclude_emails );
 
-				if ( empty( $exclude_emails ) ) {
-					$exclude_emails = preg_split( '/$\R?^/m', $global_settings['bwfan_ab_exclude_emails'] );
-				}
-				if ( $this->email_exists_in_patterns( $email, $exclude_emails ) ) {
-					return false;
-				}
+			if ( $this->email_exists_in_patterns( $email, $exclude_emails ) ) {
+				return false;
 			}
+		}
+
+		if ( 0 !== absint( $global_settings['bwfan_ab_exclude_users_cart_tracking'] ) ) {
 			if ( isset( $global_settings['bwfan_ab_exclude_roles'] ) && ! empty( $global_settings['bwfan_ab_exclude_roles'] ) && is_user_logged_in() ) {
 				$user          = wp_get_current_user();
 				$exclude_roles = array_intersect( (array) $user->roles, $global_settings['bwfan_ab_exclude_roles'] );
@@ -1757,6 +1908,11 @@ class BWFAN_Abandoned_Cart {
 			$data['lang'] = weglot_get_current_language();
 		} elseif ( function_exists( 'bwfan_is_gtranslate_active' ) && bwfan_is_gtranslate_active() ) {
 			$data['lang'] = BWFAN_Compatibility_With_GTRANSLATE::get_gtranslate_language();
+		} elseif ( function_exists( 'bwfan_is_linguise_active' ) && bwfan_is_linguise_active() && class_exists( '\Linguise\WordPress\Helper' ) ) {
+			$lang = \Linguise\WordPress\Helper::getLanguage();
+			if ( ! empty( $lang ) ) {
+				$data['lang'] = $lang;
+			}
 		}
 
 		$abandoned_cart_id = $this->process_abandoned_cart( $email, $data );
@@ -1765,6 +1921,9 @@ class BWFAN_Abandoned_Cart {
 		}
 
 		do_action( 'bwfan_insert_abandoned_cart', $abandoned_cart_id );
+
+		/** Allow compatibility layers to restore cookies before response is sent */
+		do_action( 'bwfan_before_abandoned_cart_ajax_response' );
 
 		return $abandoned_cart_id;
 	}
@@ -1956,7 +2115,7 @@ class BWFAN_Abandoned_Cart {
 	/**
 	 * Check for duplicate in-progress carts and update newest data into oldest entry
 	 * Keep the oldest cart entry and delete the newest duplicates
-	 * 
+	 *
 	 * Supports both single cart (backward compatibility) and multiple carts
 	 *
 	 * @param array|array[] $active_abandoned_carts Single cart array or array of cart arrays
@@ -1965,25 +2124,25 @@ class BWFAN_Abandoned_Cart {
 	 */
 	public static function check_for_cart_in_progress( $active_abandoned_carts ) {
 		global $wpdb;
-		
+
 		// Normalize input: convert single cart to array format for consistent processing
 		if ( empty( $active_abandoned_carts ) || ! is_array( $active_abandoned_carts ) ) {
 			return [];
 		}
-		
+
 		$emails = array_column( $active_abandoned_carts, 'email' );
 		if ( empty( $emails ) ) {
 			return $active_abandoned_carts;
 		}
-		
+
 		// Fetch all in-progress carts for all emails in a single query (optimized)
 		$email_placeholders = array_fill( 0, count( $emails ), '%s' );
-		
+
 		$email_placeholders = implode( ', ', $email_placeholders );
-		$query = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `email` IN ($email_placeholders) AND `status` IN (1) ORDER BY `ID` ASC", $emails );
-		
+		$query              = $wpdb->prepare( "SELECT * FROM {table_name} WHERE `email` IN ($email_placeholders) AND `status` IN (1) ORDER BY `ID` ASC", $emails );
+
 		$all_existing_carts = BWFAN_Model_Abandonedcarts::get_results( $query );
-		
+
 		// Group existing carts by email for efficient lookup
 		$existing_carts_by_email = [];
 		if ( is_array( $all_existing_carts ) && count( $all_existing_carts ) > 0 ) {
@@ -2007,54 +2166,54 @@ class BWFAN_Abandoned_Cart {
 				/** No in-progress carts found in database for this email */
 				continue;
 			}
-			
+
 			/** Get oldest cart (first in array) */
 			$oldest_cart = $existing_carts[0];
-			
+
 			/** Prepare update data from newest active abandoned cart to oldest cart */
 			$update_data = [
-				'items'               => $active_cart['items'] ?? '',
-				'coupons'             => $active_cart['coupons'] ?? '',
-				'fees'                => $active_cart['fees'] ?? '',
-				'shipping_tax_total'  => $active_cart['shipping_tax_total'] ?? '',
-				'shipping_total'      => $active_cart['shipping_total'] ?? '',
-				'total'               => $active_cart['total'] ?? '',
-				'total_base'          => $active_cart['total_base'] ?? '',
-				'currency'            => $active_cart['currency'] ?? '',
-				'last_modified'       => $active_cart['last_modified'] ?? current_time( 'mysql', 1 ),
-				'checkout_data'       => $active_cart['checkout_data'] ?? '',
-				'checkout_page_id'    => $active_cart['checkout_page_id'] ?? 0,
-				'cookie_key'          => $active_cart['cookie_key'] ?? '',
-				'token'               => $active_cart['token'] ?? '',
+				'items'              => $active_cart['items'] ?? '',
+				'coupons'            => $active_cart['coupons'] ?? '',
+				'fees'               => $active_cart['fees'] ?? '',
+				'shipping_tax_total' => $active_cart['shipping_tax_total'] ?? '',
+				'shipping_total'     => $active_cart['shipping_total'] ?? '',
+				'total'              => $active_cart['total'] ?? '',
+				'total_base'         => $active_cart['total_base'] ?? '',
+				'currency'           => $active_cart['currency'] ?? '',
+				'last_modified'      => $active_cart['last_modified'] ?? current_time( 'mysql', 1 ),
+				'checkout_data'      => $active_cart['checkout_data'] ?? '',
+				'checkout_page_id'   => $active_cart['checkout_page_id'] ?? 0,
+				'cookie_key'         => $active_cart['cookie_key'] ?? '',
+				'token'              => $active_cart['token'] ?? '',
 			];
-			
+
 			/** Update oldest cart with newest active abandoned cart's data */
 			$where = [ 'ID' => $oldest_cart['ID'] ];
-			
+
 			BWFAN_Model_Abandonedcarts::update( $update_data, $where );
-			
+
 			/** Collect IDs of all carts except the oldest one (to delete) */
-			$ids_to_delete = array_filter( array_column( $existing_carts, 'ID' ), function( $id ) use ( $oldest_cart ) {
+			$ids_to_delete = array_filter( array_column( $existing_carts, 'ID' ), function ( $id ) use ( $oldest_cart ) {
 				return intval( $id ) !== intval( $oldest_cart['ID'] );
 			} );
-			
+
 			/** Delete the active abandoned cart entry for this email */
 			$ids_to_delete[] = intval( $active_cart['ID'] );
-			
+
 			/** Delete duplicate cart entries */
 			if ( ! empty( $ids_to_delete ) ) {
-				$ids_to_delete = array_unique( $ids_to_delete );
+				$ids_to_delete   = array_unique( $ids_to_delete );
 				$id_placeholders = array_fill( 0, count( $ids_to_delete ), '%d' );
 				$id_placeholders = implode( ', ', $id_placeholders );
-				
+
 				BWFAN_Common::log_test_data( [
-					'email'         => $email,
-					'kept_cart_id'  => $oldest_cart['ID'],
+					'email'          => $email,
+					'kept_cart_id'   => $oldest_cart['ID'],
 					'active_cart_id' => intval( $active_cart['ID'] ),
-					'deleted_ids'   => implode( ',', $ids_to_delete ),
-					'deleted_count' => count( $ids_to_delete ),
+					'deleted_ids'    => implode( ',', $ids_to_delete ),
+					'deleted_count'  => count( $ids_to_delete ),
 				], 'fka-duplicate-cart-merged', true );
-				
+
 				$delete_query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bwfan_abandonedcarts WHERE `ID` IN ($id_placeholders)", $ids_to_delete ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->query( $delete_query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 

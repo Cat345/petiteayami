@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class contains all the upstroke related funnel functionality
@@ -10,8 +10,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 	class WFFN_Step_WC_Upsells extends WFFN_Step {
 
-		private static $ins = null;
-		public $slug = 'wc_upsells';
+		private static $ins   = null;
+		public $slug          = 'wc_upsells';
 		public $list_priority = 30;
 
 
@@ -22,7 +22,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			parent::__construct();
 			add_action( 'wfocu_funnels_from_external_base', array( $this, 'maybe_filter_upsells' ) );
 			add_filter( 'wfocu_session_db_insert_data', array( $this, 'funnel_id_recorded' ), 10, 2 );
-			add_filter( 'maybe_setup_funnel_for_breadcrumb', [ $this, 'maybe_funnel_breadcrumb' ] );
+			add_filter( 'maybe_setup_funnel_for_breadcrumb', array( $this, 'maybe_funnel_breadcrumb' ) );
 			add_filter( 'wfocu_fb_pixel_ids', array( $this, 'override_pixel_key' ) );
 			add_filter( 'wfocu_get_ga_key', array( $this, 'override_ga_key' ) );
 			add_filter( 'wfocu_get_gad_key', array( $this, 'override_gad_key' ) );
@@ -33,7 +33,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 			add_action( 'wfocu_before_cancelling_order', array( $this, 'maybe_report_checkout' ) );
 			add_filter( 'wffn_rest_get_templates', array( $this, 'add_customizer_templates' ) );
-
 		}
 
 		/**
@@ -41,7 +40,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -79,13 +78,13 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		public function get_step_designs( $term, $funnel_id = 0 ) {
 			remove_all_filters( 'wfocu_add_control_meta_query' );
 			$this->funnel_id = $funnel_id;
-			add_filter( 'wfocu_add_control_meta_query', [ $this, 'search_any_post_status' ], 9 );
+			add_filter( 'wfocu_add_control_meta_query', array( $this, 'search_any_post_status' ), 9 );
 			$get_upstroke_posts = WFOCU_Core()->funnels->setup_funnels();
 			$get_all_ids        = wp_list_pluck( $get_upstroke_posts, 'id' );
 
 			$get_upstroke_posts = array_map( 'get_post', $get_all_ids );
-			$inside_funnels     = [];
-			$outside_funnels    = [];
+			$inside_funnels     = array();
+			$outside_funnels    = array();
 			if ( is_array( $get_upstroke_posts ) && count( $get_upstroke_posts ) > 0 ) {
 
 				foreach ( $get_upstroke_posts as $post ) {
@@ -94,7 +93,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					}
 					$post_type     = get_post_type( $post->ID );
 					$bwf_funnel_id = get_post_meta( $post->ID, '_bwf_in_funnel', true );
-					$data          = [];
+					$data          = array();
 					if ( 'cartflows_step' === $post_type ) {
 						$meta = get_post_meta( $post->ID, 'wcf-step-type', true );
 						if ( 'upsell' === $meta ) {
@@ -110,7 +109,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 						);
 					}
 
-
 					if ( empty( $data ) ) {
 						continue;
 					}
@@ -118,34 +116,43 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					$funnel = new WFFN_Funnel( $bwf_funnel_id );
 					if ( absint( $bwf_funnel_id ) > 0 && ! empty( $funnel->get_title() ) ) {
 						if ( ! isset( $inside_funnels[ $bwf_funnel_id ] ) ) {
-							$inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+							$inside_funnels[ $bwf_funnel_id ] = array(
+								'name'  => $funnel->get_title(),
+								'id'    => $bwf_funnel_id,
+								'steps' => array(),
+							);
 						}
 						$inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 					} else {
 						$outside_funnels[] = $data;
 					}
-
 				}
 			}
 
 			if ( ! empty( $outside_funnels ) ) {
-				$outside_funnels = [ [ 'name' => __( 'Other Pages', 'woofunnels-upstroke-one-click-upsell' ), 'id' => 0, 'steps' => $outside_funnels ] ];
+				$outside_funnels = array(
+					array(
+						'name'  => __( 'Other Pages', 'woofunnels-upstroke-one-click-upsell' ),
+						'id'    => 0,
+						'steps' => $outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $inside_funnels, $outside_funnels );
 		}
 
 		public function search_any_post_status( $existing_args ) {
-			$existing_args                = is_array( $existing_args ) ? $existing_args : [];
+			$existing_args                = is_array( $existing_args ) ? $existing_args : array();
 			$existing_args['post_type']   = array( WFOCU_Common::get_funnel_post_type_slug(), 'cartflows_step', 'page' );
 			$existing_args['post_status'] = 'any';
 			if ( $this->funnel_id > 0 ) {
-				$existing_args['meta_query'] = [
-					[
+				$existing_args['meta_query'] = array(
+					array(
 						'key'   => '_bwf_in_funnel',
 						'value' => $this->funnel_id,
-					]
-				];
+					),
+				);
 			}
 
 			return $existing_args;
@@ -165,7 +172,14 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				'title'           => $title,
 				'status'          => 'publish',
 				'offers_override' => array(
-					0 => array( 'meta_override' => array( '_wfocu_setting_override' => array( 'products' => new stdClass(), 'fields' => new stdClass() ) ) ),
+					0 => array(
+						'meta_override' => array(
+							'_wfocu_setting_override' => array(
+								'products' => new stdClass(),
+								'fields'   => new stdClass(),
+							),
+						),
+					),
 				),
 			);
 
@@ -204,7 +218,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 				$post_status = ( isset( $posted_data['original_id'] ) && $posted_data['original_id'] > 0 ) ? get_post_status( $posted_data['original_id'] ) : 'publish';
 
-
 				if ( 'cartflows_step' === $post_type || 'page' === $post_type ) {
 					$exclude_metas = array(
 						'cartflows_imported_step',
@@ -225,22 +238,26 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$upsell_step_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					if ( is_array( $post_meta_all ) && count( $post_meta_all ) > 0 ) {
-						$meta_selects[] = (object) [ 'meta_key' => '_offer_type', 'meta_value' => 'upsell' ];
+						$meta_selects[] = (object) array(
+							'meta_key'   => '_offer_type',
+							'meta_value' => 'upsell',
+						);
 						foreach ( $post_meta_all as $meta_info ) {
 							$meta_key   = $meta_info->meta_key;
 							$meta_value = $meta_info->meta_value;
 							if ( ! in_array( $meta_key, $exclude_metas, true ) ) {
 								if ( ( strpos( $meta_key, 'wcf-' ) === false ) ) {
 									if ( $meta_key === '_wp_page_template' ) {
-										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wfocu", $meta_value ) : $meta_value;
+										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wfocu', $meta_value ) : $meta_value;
 									}
-									$meta_selects[] = (object) [ 'meta_key' => $meta_key, 'meta_value' => $meta_value ];
+									$meta_selects[] = (object) array(
+										'meta_key'   => $meta_key,
+										'meta_value' => $meta_value,
+									);
 
 								}
 							}
 						}
-
-
 					}
 					$meta_settings             = new stdClass();
 					$meta_vals                 = new stdClass();
@@ -298,22 +315,25 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					}
 				} else {
 
-
-					$resp                = WFOCU_AJAX_Controller::duplicating_funnel( $upsell_step_id, array(
-						'msg'    => '',
-						'status' => true,
-					) );
+					$resp                = WFOCU_AJAX_Controller::duplicating_funnel(
+						$upsell_step_id,
+						array(
+							'msg'    => '',
+							'status' => true,
+						)
+					);
 					$duplicate_upsell_id = $resp['duplicate_id'];
 					$posted_data['id']   = $duplicate_upsell_id;
 				}
-
-
 			}
 
-			if ( isset ( $posted_data['id'] ) && $posted_data['id'] > 0 ) {
+			if ( isset( $posted_data['id'] ) && $posted_data['id'] > 0 ) {
 				$new_title = isset( $posted_data['existing'] ) && isset( $posted_data['title'] ) ? $posted_data['title'] : '';
 				if ( ! empty( $new_title ) ) {
-					$arr = [ 'ID' => $posted_data['id'], 'post_title' => $new_title ];
+					$arr = array(
+						'ID'         => $posted_data['id'],
+						'post_title' => $new_title,
+					);
 					wp_update_post( $arr );
 				}
 			}
@@ -329,11 +349,18 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		public function get_entity_edit_link( $step_id ) {
 			$link = parent::get_entity_edit_link( $step_id );
 			if ( $step_id > 0 && get_post( $step_id ) instanceof WP_Post ) {
-				$link = esc_url( BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-					'page'    => 'upstroke',
-					'section' => 'offers',
-					'edit'    => $step_id,
-				), admin_url( 'admin.php' ) ) ) );
+				$link = esc_url(
+					BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'offers',
+								'edit'    => $step_id,
+							),
+							admin_url( 'admin.php' )
+						)
+					)
+				);
 			}
 
 			return $link;
@@ -365,7 +392,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		}
 
 		public function get_entity_tags( $step_id, $funnel_id ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
-
 
 			$funnel_rules = get_post_meta( $step_id, '_wfocu_rules', true );
 			$has_rules    = $no_product = $no_offers = false;
@@ -421,7 +447,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		 * @return array|void
 		 */
 		public function get_supports() {
-			return array_unique( array_merge( parent::get_supports(), [ 'expand' ] ) );
+			return array_unique( array_merge( parent::get_supports(), array( 'expand' ) ) );
 		}
 
 
@@ -435,20 +461,18 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			$current_step    = WFFN_Core()->data->get_current_step();
 			$current_step_id = isset( $current_step['id'] ) ? $current_step['id'] : 0;
 
-
 			/**
 			 * Check if the respective method exists to go further
 			 */
 			if ( method_exists( WFFN_Core()->admin, 'get_license_config' ) ) {
 				$License = WooFunnels_licenses::get_instance();
 				$License->get_plugins_list();
-				$state          = $this->get_current_app_state();
+				$state = $this->get_current_app_state();
 
-
-				if ( in_array( $state, [ 'pro_without_license', 'license_expired' ], true ) ) {
+				if ( in_array( $state, array( 'pro_without_license', 'license_expired' ), true ) ) {
 					WFOCU_Core()->session_db->set_skip_id( 12 );
 					WFOCU_Core()->log->log( 'Upsell is not allowed due to license issue' );
-					return [];
+					return array();
 				}
 			}
 
@@ -461,9 +485,9 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					$current_step['id'] = apply_filters( 'wffn_maybe_get_ab_control', $current_step_id );
 				}
 
-				$all_upsells = $this->maybe_get_upsells($current_step, $funnel);
+				$all_upsells = $this->maybe_get_upsells( $current_step, $funnel );
 
-				return apply_filters('wffn_filter_upsells', $all_upsells, $current_step);
+				return apply_filters( 'wffn_filter_upsells', $all_upsells, $current_step );
 			} else {
 
 				$upsells = $this->get_setup_global_upsells_from_funnel( $funnels );
@@ -473,26 +497,34 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				if ( ! empty( $upsells ) ) {
 					if ( is_string( $upsells ) ) {
 						$all_ids = explode( ',', $upsells );
-						$all_ids = array_map( function ( $val ) {
-							return [ 'id' => intval( $val ) ];
-						}, $all_ids );
+						$all_ids = array_map(
+							function ( $val ) {
+								return array( 'id' => intval( $val ) );
+							},
+							$all_ids
+						);
 
 						return $all_ids;
 					}
 
-
 					return $upsells;
 				}
 
-
-				WFFN_Core()->logger->log( 'WFFN upsell funnel details for skip given below ' . print_r( array( /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r */
+				WFFN_Core()->logger->log(
+					'WFFN upsell funnel details for skip given below ' . print_r(
+						array( /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r */
 						'funnels'              => $funnels,
 						'has_valid_session'    => ( WFFN_Core()->data->has_valid_session() ),
 						'current_step'         => $current_step,
 						'wffn_is_valid_funnel' => ( wffn_is_valid_funnel( $funnel ) ),
 						'validate_environment' => ( $this->validate_environment( $current_step ) ),
 
-					), true ), 'wffn', true );
+						),
+						true
+					),
+					'wffn',
+					true
+				);
 			}
 
 			return $funnels;
@@ -523,12 +555,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			if ( empty( $wfacp_id ) ) {
 				$orderID = WFFN_Core()->data->get( 'wc_order' );
 				$order   = wc_get_order( $orderID );
-				if (! $order instanceof WC_Order) {
+				if ( ! $order instanceof WC_Order ) {
 
 					$order_id = WFOCU_Core()->rules->get_environment_var( 'order' );
 					$order    = wc_get_order( $order_id );
-					if (! $order instanceof WC_Order) {
-						WFFN_Core()->logger->log('No Order found.');
+					if ( ! $order instanceof WC_Order ) {
+						WFFN_Core()->logger->log( 'No Order found.' );
 
 						return false;
 					}
@@ -554,7 +586,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		public function maybe_get_upsells( $current_step, $funnel ) {
 			$this->front_end_request = true;
 			$found_step              = false;
-			$all_upsells_funnels     = [];
+			$all_upsells_funnels     = array();
 			$targets_step_found      = false;
 			foreach ( $funnel->steps as $key => $step ) {
 
@@ -586,9 +618,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					WFOCU_Core()->session_db->set_skip_id( 1 );
 					continue;
 				}
-				array_push( $all_upsells_funnels, [ 'id' => $step['id'] ] );
+				array_push( $all_upsells_funnels, array( 'id' => $step['id'] ) );
 				$targets_step_found = true;
-
 
 			}
 
@@ -609,10 +640,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				$post_status = get_post_status( $step_id );
 				$newStatus   = ( 1 === absint( $new_status ) ) ? 'publish' : WFOCU_SLUG . '-disabled';
 				if ( $newStatus !== $post_status ) {
-					$updated_id = wp_update_post( array(
-						'ID'          => $step_id,
-						'post_status' => $newStatus,
-					) );
+					$updated_id = wp_update_post(
+						array(
+							'ID'          => $step_id,
+							'post_status' => $newStatus,
+						)
+					);
 				}
 				if ( intval( $step_id ) === intval( $updated_id ) ) {
 					$switched = true;
@@ -628,13 +661,21 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		}
 
 		public function _process_import( $funnel_id, $step_data ) {
-			$ids         = WFOCU_Core()->import->import_from_json_data( array(
-				array_merge( $step_data['meta'], array(
-					'title'  => $step_data['title'],
-					'status' => ( isset( $step_data['status'] ) ? $step_data['status'] : 0 )
-				) )
-			) );
-			$posted_data = [ 'title' => $step_data['title'], 'id' => $ids[0] ];
+			$ids         = WFOCU_Core()->import->import_from_json_data(
+				array(
+					array_merge(
+						$step_data['meta'],
+						array(
+							'title'  => $step_data['title'],
+							'status' => ( isset( $step_data['status'] ) ? $step_data['status'] : 0 ),
+						)
+					),
+				)
+			);
+			$posted_data = array(
+				'title' => $step_data['title'],
+				'id'    => $ids[0],
+			);
 			parent::add_step( $funnel_id, $posted_data );
 		}
 
@@ -646,7 +687,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				if ( ! empty( $template ) ) {
 					return array(
 						'template'      => $template,
-						'template_type' => get_post_meta( $step['id'], '_tobe_import_template_type', true )
+						'template_type' => get_post_meta( $step['id'], '_tobe_import_template_type', true ),
 
 					);
 				}
@@ -693,7 +734,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			}
 
 			return $args;
-
 		}
 
 		/**
@@ -853,7 +893,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			}
 
 			return $templates;
-
 		}
 
 		public function get_setup_global_upsells_from_funnel( $upsells ) {
@@ -883,7 +922,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				if ( ! empty( $funnel_offers ) ) {
 					foreach ( $funnel_offers as $offer ) {
 						$offer['state'] = wc_string_to_bool( $offer['state'] );
-						$offer['id']    = ( string ) $offer['id'];
+						$offer['id']    = (string) $offer['id'];
 						$offer['url']   = ( ! empty( $offer['slug'] ) && ! empty( $offer['url'] ) ) ? str_replace( $offer['slug'] . '/', '', $offer['url'] ) : '';
 						$offers[]       = $offer;
 					}
@@ -895,15 +934,13 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 		public function populate_upsell_offer_data_properties( $wfocu_id ) {
 
-
 			$wc_offer     = $offer_ids = array();
 			$wfocu_offers = $this->get_upsell_offers( $wfocu_id );
 			if ( ! empty( $wfocu_offers ) && count( $wfocu_offers ) > 0 ) {
 				$offer_ids = wp_list_pluck( $wfocu_offers, 'id' );
 
-
 				foreach ( $offer_ids as $offer_id ) {
-					$offer         = [];
+					$offer         = array();
 					$offer['id']   = $offer_id;
 					$offer['tags'] = $this->get_substep_entity_tags( $offer_id );
 					$product_count = 0;
@@ -932,19 +969,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		public function get_substep_entity_tags( $substep_id ) {
 
 			$product_meta = get_post_meta( $substep_id, '_wfocu_setting', true );
-			$flags        = [];
+			$flags        = array();
 
 			if ( empty( $product_meta ) || ! isset( $product_meta->products ) || count( (array) $product_meta->products ) < 1 ) {
-				$flags['no_product'] = [
+				$flags['no_product'] = array(
 					'label'       => __( 'No Products', 'woofunnels-upstroke-one-click-upsell' ),
 					'label_class' => 'bwf-st-c-badge-red',
-					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'offer', 'product', $substep_id ) : ''
-				];
+					'edit'        => function_exists( 'wffn_rest_api_helpers' ) ? wffn_rest_api_helpers()->get_entity_url( 'offer', 'product', $substep_id ) : '',
+				);
 			}
 
-
 			return $flags;
-
 		}
 
 		/**
@@ -966,7 +1001,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					$funnel_id = absint( $funnel_id );  // Input var okay.
 
 					if ( isset( $duplicated_data->step_type ) && '' !== $duplicated_data->step_type ) {  // Input var okay.
-						$offer_type = wc_clean( wp_unslash( $duplicated_data->step_type ) );  // Input var okay.
+						$offer_type = bwf_clean( wp_unslash( $duplicated_data->step_type ) );  // Input var okay.
 					} else {
 						$offer_type = 'upsell';
 					}
@@ -987,11 +1022,9 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 					$duplicated_substeps['id'] = $step_id;
 				}
-
 			}
 
 			return $duplicated_substeps;
-
 		}
 
 		public function make_duplicate_substep( $post_id ) {
@@ -1001,13 +1034,13 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				$post = get_post( $post_id );
 				if ( ! is_null( $post ) && WFOCU_Common::get_offer_post_type_slug() === $post->post_type ) {
 
-					$args        = [
+					$args        = array(
 						'post_title'   => $post->post_title . ' - ' . __( 'Copy', 'woofunnels-aero-checkout' ),
 						'post_content' => $post->post_content,
 						'post_name'    => sanitize_title( $post->post_title . ' - ' . __( 'Copy', 'woofunnels-aero-checkout' ) ),
 						'post_type'    => WFOCU_Common::get_offer_post_type_slug(),
 						'post_status'  => 'draft',
-					];
+					);
 					$new_post_id = wp_insert_post( $args );
 
 					if ( ! is_wp_error( $new_post_id ) ) {
@@ -1017,7 +1050,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 			}
 
 			return null;
-
 		}
 
 		/**
@@ -1026,11 +1058,11 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		 * @return array
 		 */
 		public function get_substep_designs( $term, $funnel_id = 0 ) {
-			$get_all_ids = [];
+			$get_all_ids = array();
 			if ( $funnel_id > 0 ) {
 				$this->funnel_id = $funnel_id;
 				remove_all_filters( 'wfocu_add_control_meta_query' );
-				add_filter( 'wfocu_add_control_meta_query', [ $this, 'search_any_post_status' ], 9 );
+				add_filter( 'wfocu_add_control_meta_query', array( $this, 'search_any_post_status' ), 9 );
 				$get_upstroke_posts = WFOCU_Core()->funnels->setup_funnels();
 				$get_all_ids        = wp_list_pluck( $get_upstroke_posts, 'id' );
 			}
@@ -1048,17 +1080,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				}
 			}
 			if ( ! empty( $get_all_ids ) ) {
-				$args['meta_query'] = [
-					[
+				$args['meta_query'] = array(
+					array(
 						'key'     => '_funnel_id',
 						'value'   => $get_all_ids,
-						'compare' => 'in'
-					]
-				];
+						'compare' => 'in',
+					),
+				);
 
 			}
-			$inside_funnels  = [];
-			$outside_funnels = [];
+			$inside_funnels  = array();
+			$outside_funnels = array();
 
 			$q = new WP_Query( $args );
 			if ( $q->found_posts > 0 ) {
@@ -1072,18 +1104,27 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 					$funnel        = new WFFN_Funnel( $bwf_funnel_id );
 					if ( absint( $bwf_funnel_id ) > 0 && ! empty( $funnel->get_title() ) ) {
 						if ( ! isset( $inside_funnels[ $bwf_funnel_id ] ) ) {
-							$inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+							$inside_funnels[ $bwf_funnel_id ] = array(
+								'name'  => $funnel->get_title(),
+								'id'    => $bwf_funnel_id,
+								'steps' => array(),
+							);
 						}
 						$inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 					} else {
 						$outside_funnels[] = $data;
 					}
-
 				}
 			}
 
 			if ( ! empty( $outside_funnels ) ) {
-				$outside_funnels = [ [ 'name' => __( 'Others Pages', 'woofunnels-upstroke-one-click-upsell' ), 'id' => '0', 'steps' => $outside_funnels ] ];
+				$outside_funnels = array(
+					array(
+						'name'  => __( 'Others Pages', 'woofunnels-upstroke-one-click-upsell' ),
+						'id'    => '0',
+						'steps' => $outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $inside_funnels, $outside_funnels );
@@ -1123,10 +1164,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 								if ( $post_status_tobe !== $post_status ) {
 									$post_status = $post_status_tobe;
-									wp_update_post( array(
-										'ID'          => $offer['id'],
-										'post_status' => $post_status
-									) );
+									wp_update_post(
+										array(
+											'ID'          => $offer['id'],
+											'post_status' => $post_status,
+										)
+									);
 								}
 
 								break;
@@ -1147,8 +1190,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_migrate_downsells( $steps ) {
-			$upsell_offers = [];
-
+			$upsell_offers = array();
 
 			foreach ( $steps as $value ) {
 
@@ -1158,7 +1200,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 				if ( isset( $value['type'] ) && 'wc_upsells' === $value['type'] ) {
 					if ( is_array( $value['substeps'] ) && count( $value['substeps'] ) > 0 ) {
 						if ( isset( $value['substeps']['offer'] ) ) {
-							$get_offers = [];
+							$get_offers = array();
 							foreach ( $value['substeps']['offer'] as $offer ) {
 								if ( isset( $offer['id'] ) && absint( $offer['id'] ) > 0 ) {
 									$offer_id       = absint( $offer['id'] );
@@ -1180,7 +1222,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 											'state' => $offer['_data']['status'],
 										);
 									}
-
 								}
 							}
 							$upsell_offers[ $value['id'] ] = $get_offers;
@@ -1196,9 +1237,9 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 							if ( 'downsell' === $offer['type'] ) {
 
-								$next_offer  = $this->get_offer_in_list( $offers, $key, 'next_offer' ); //0
-								$next_upsell = $this->get_offer_in_list( $offers, $key, 'next_upsell' ); //0
-								$prev_upsell = $this->get_offer_in_list( $offers, $key, 'prev_upsell' ); //0
+								$next_offer  = $this->get_offer_in_list( $offers, $key, 'next_offer' ); // 0
+								$next_upsell = $this->get_offer_in_list( $offers, $key, 'next_upsell' ); // 0
+								$prev_upsell = $this->get_offer_in_list( $offers, $key, 'prev_upsell' ); // 0
 
 								/**
 								 * update previous find upsell setting
@@ -1225,7 +1266,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 										$prev_meta->settings->jump_to_offer_on_rejected = $offer['id'];
 
 									}
-
 
 									update_post_meta( $prev_upsell, '_wfocu_setting', $prev_meta );
 								}
@@ -1275,17 +1315,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 								update_post_meta( $offer['id'], '_wfocu_setting', $get_offer_data );
 
 							}
-
 						}
-
-
 					}
 				}
-
 			}
 
 			return $steps;
-
 		}
 
 		public function get_offer_in_list( $steps, $key, $offer = '' ) {
@@ -1321,7 +1356,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 		function get_current_app_state() {
 			$license_config = WFFN_Core()->admin->get_license_config( true );
 
-
 			if ( isset( $license_config['ul']['ed'] ) && $license_config['ul']['ed'] ) {
 				$ed = $license_config['ul']['ed'];
 
@@ -1355,10 +1389,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Upsells' ) ) {
 
 			return 'pro_without_license';
 		}
-
-
 	}
 
 	WFFN_Core()->steps->register( WFFN_Step_WC_Upsells::get_instance() );
 }
-

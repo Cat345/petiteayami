@@ -75,9 +75,9 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 		/**
 		 * Render Inline CSS helper function
 		 *
-		 * @param array $css the css for each rendered block.
+		 * @param array  $css the css for each rendered block.
 		 * @param string $style_id the unique id for the rendered style.
-		 * @param bool $in_content the bool for whether or not it should run in content.
+		 * @param bool   $in_content the bool for whether or not it should run in content.
 		 */
 		public function render_inline_css( $css, $style_id, $in_content = false ) {
 			if ( ! is_admin() ) {
@@ -91,7 +91,7 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * Gets the parsed blocks, need to use this becuase wordpress 5 doesn't seem to include gutenberg_parse_blocks
+		 * Gets the parsed blocks, need to use this becuase WordPress 5 doesn't seem to include gutenberg_parse_blocks
 		 *
 		 * @param string $content string of page/post content.
 		 */
@@ -124,7 +124,6 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 					return;
 				}
 				$this->compute_bwf_blocks( $blocks );
-
 
 			}
 		}
@@ -187,9 +186,9 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * @param mixed $attr
+		 * @param mixed  $attr
 		 * @param string $indexkey - check whether indexkey is set in $attr[] array or not
-		 * @param mixed $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
+		 * @param mixed  $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
 		 *
 		 * @return void
 		 */
@@ -217,17 +216,17 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 
 			$selector_wrapper = '.wfty-cust-details-block.wfty-' . $unique_id . ' .wfty_wrap';
 			$screens          = array( 'desktop', 'tablet', 'mobile' );
-			$defaults         = [
-				'headingColor'    => [
-					'desktop' => '#333333'
-				],
-				'subHeadingColor' => [
-					'desktop' => '#333333'
-				],
-				'contentColor'    => [
-					'desktop' => '#565656'
-				]
-			];
+			$defaults         = array(
+				'headingColor'    => array(
+					'desktop' => '#333333',
+				),
+				'subHeadingColor' => array(
+					'desktop' => '#333333',
+				),
+				'contentColor'    => array(
+					'desktop' => '#565656',
+				),
+			);
 
 			$attr = wp_parse_args( $attr, $defaults );
 
@@ -243,7 +242,6 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'border', $screen ) );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'boxShadow', $screen ) );
 
-
 				$css->set_selector( $selector_wrapper . ' .wfty-customer-info-heading' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'headingColor', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'headingLineHeight', $screen ), true );
@@ -257,7 +255,6 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'subHeadingLetterSpacing', $screen ), true );
 				$css->add_property( 'font', $this->has_attr( $attr, 'subHeadingFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'subHeadingText', $screen ) );
-
 
 				$css->set_selector( $selector_wrapper . ' .wfty_content .wfty_view' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'contentColor', $screen ) );
@@ -284,44 +281,44 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 			$selector_wrapper = '.wfty-order-details-block.wfty-' . $unique_id . ' .wfty_wrap';
 			$screens          = array( 'desktop', 'tablet', 'mobile' );
 
-			$defaults = [
-				'headingColor'              => [
-					'desktop' => '#000000'
-				],
-				'productColor'              => [
-					'desktop' => '#565656'
-				],
-				'subTotalColor'             => [
-					'desktop' => '#565656'
-				],
-				'totalColor'                => [
-					'desktop' => '#565656'
-				],
-				'variationColor'            => [
-					'desktop' => '#000000'
-				],
-				'dividerColor'              => [
-					'desktop' => '#dddddd'
-				],
-				'subscriptionColor'         => [
-					'desktop' => '#565656'
-				],
-				'subscriptionBtnColor'      => [
-					'desktop' => '#ffffff'
-				],
-				'subscriptionBtnBackground' => [
-					'desktop' => '#70dc1d'
-				],
-				'downloadColor'             => [
-					'desktop' => '#565656'
-				],
-				'downloadBtnColor'          => [
-					'desktop' => '#ffffff'
-				],
-				'downloadBtnBackground'     => [
-					'desktop' => '#565656'
-				]
-			];
+			$defaults = array(
+				'headingColor'              => array(
+					'desktop' => '#000000',
+				),
+				'productColor'              => array(
+					'desktop' => '#565656',
+				),
+				'subTotalColor'             => array(
+					'desktop' => '#565656',
+				),
+				'totalColor'                => array(
+					'desktop' => '#565656',
+				),
+				'variationColor'            => array(
+					'desktop' => '#000000',
+				),
+				'dividerColor'              => array(
+					'desktop' => '#dddddd',
+				),
+				'subscriptionColor'         => array(
+					'desktop' => '#565656',
+				),
+				'subscriptionBtnColor'      => array(
+					'desktop' => '#ffffff',
+				),
+				'subscriptionBtnBackground' => array(
+					'desktop' => '#70dc1d',
+				),
+				'downloadColor'             => array(
+					'desktop' => '#565656',
+				),
+				'downloadBtnColor'          => array(
+					'desktop' => '#ffffff',
+				),
+				'downloadBtnBackground'     => array(
+					'desktop' => '#565656',
+				),
+			);
 
 			$attr = wp_parse_args( $attr, $defaults );
 
@@ -337,7 +334,6 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'border', $screen ) );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'boxShadow', $screen ) );
 
-
 				$css->set_selector( $selector_wrapper . ' .wfty_title' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'headingColor', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'headingLineHeight', $screen ), true );
@@ -345,7 +341,7 @@ if ( ! class_exists( 'WFTY_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'headingFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'headingTextStyle', $screen ) );
 
-				$css->set_selector( $selector_wrapper . ' .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .wfty_t,' . $selector_wrapper . " .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .woocommerce-Price-amount.amount, " . $selector_wrapper . " .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .woocommerce-Price-amount.amount span,".$selector_wrapper . " .wfty_order_details .wfty_pro_list_cont .wfty_p_name *" );
+				$css->set_selector( $selector_wrapper . ' .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .wfty_t,' . $selector_wrapper . ' .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .woocommerce-Price-amount.amount, ' . $selector_wrapper . ' .wfty_order_details .wfty_pro_list_cont .wfty_pro_list .woocommerce-Price-amount.amount span,' . $selector_wrapper . ' .wfty_order_details .wfty_pro_list_cont .wfty_p_name *' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'productColor', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'productLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'productLetterSpacing', $screen ), true );

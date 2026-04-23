@@ -77,6 +77,22 @@ class CSV_Importer extends Importer {
 				'uploadPath' => $this->import_folder,
 				'required'   => true,
 			],
+			[
+				'id'         => 'delimiter',
+				'type'       => 'text',
+				'label'   => __( 'Delimiter', 'wp-marketing-automations' ),
+				'required'   => true,
+				'tip'   => __( 'Enter the delimiter character for the CSV file. Default is comma (,).', 'wp-marketing-automations' ),
+				'toggler' => [
+					'fields' => [
+						[
+							'id' => 'file',
+							'value' => 'non-empty',
+						]
+					],
+					'relation' => 'AND',
+				],
+			],
 		];
 	}
 
@@ -98,7 +114,7 @@ class CSV_Importer extends Importer {
 	 */
 	public function prepare_create_import_data( $import_data = array(), $fields = array() ) {
 		$import_data['meta']['file']              = $fields['file'] ?? '';
-		$import_data['meta']['delimiter']         = $this->params['delimiter'];
+		$import_data['meta']['delimiter']         = $fields['delimiter'] ?? self::DEFAULT_DELIMITER;
 		$import_data['meta']['dont_update_blank'] = $this->params['dont_update_blank'];
 		$import_data['meta']['mapped_fields']     = $this->params['mapping'];
 		$import_data['meta']['end_position']      = $this->params['end_position'];
@@ -123,32 +139,32 @@ class CSV_Importer extends Importer {
 		$delimiter = empty( $delimiter ) ? self::DEFAULT_DELIMITER : $delimiter;
 
 		$file = $this->get_import_meta( 'file' );
-		
+
 		// Validate file path to prevent directory traversal
 		if ( empty( $file ) || ! is_string( $file ) ) {
 			return;
 		}
-		
+
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
-		
+
 		// Ensure allowed directory exists before validation
 		if ( ! file_exists( $allowed_dir ) ) {
 			wp_mkdir_p( $allowed_dir );
 		}
-		
+
 		$real_path   = realpath( $file );
 		$real_allowed = realpath( $allowed_dir );
-		
+
 		// Ensure file is within allowed directory
 		if ( false === $real_path || false === $real_allowed || strpos( $real_path, $real_allowed ) !== 0 ) {
 			return;
 		}
-		
+
 		// Ensure file exists and is readable
 		if ( ! file_exists( $real_path ) || ! is_readable( $real_path ) ) {
 			return;
 		}
-		
+
 		$handle = fopen( $real_path, 'r' );
 
 		if ( ! $handle ) {
@@ -235,14 +251,14 @@ class CSV_Importer extends Importer {
 		if ( ! isset( $meta['file'] ) || ! file_exists( $meta['file'] ) ) {
 			return 100;
 		}
-		
+
 		$file_size = filesize( $meta['file'] );
 		if ( empty( $file_size ) || $file_size <= 0 ) {
 			return 100;
 		}
 
 		$offset = $this->get_offset();
-		
+
 		// Calculate percentage based on file position (bytes) vs total file size
 		// Note: This is approximate since CSV rows have variable lengths
 		$percent = floor( ( $offset / $file_size ) * 100 );
@@ -301,34 +317,33 @@ class CSV_Importer extends Importer {
 	 *
 	 * @return string|array The mapping options including headers and fields.
 	 */
-	public function get_mapping_options( $csv_file ) {
+	public function get_mapping_options( $csv_file, $delimiter ) {
 		$mapping_options = array(
 			'fields' => $this->get_crm_fields( true, true ),
 		);
 
-		$delimiter = $this->get_import_meta( 'delimiter' );
 		$delimiter = empty( $delimiter ) ? self::DEFAULT_DELIMITER : $delimiter;
 
 		// Validate file path to prevent directory traversal
 		if ( empty( $csv_file ) || ! is_string( $csv_file ) ) {
 			return __( 'Invalid file path', 'wp-marketing-automations' );
 		}
-		
+
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
-		
+
 		// Ensure allowed directory exists before validation
 		if ( ! file_exists( $allowed_dir ) ) {
 			wp_mkdir_p( $allowed_dir );
 		}
-		
+
 		$real_path   = realpath( $csv_file );
 		$real_allowed = realpath( $allowed_dir );
-		
+
 		// Ensure file is within allowed directory
 		if ( false === $real_path || false === $real_allowed || strpos( $real_path, $real_allowed ) !== 0 ) {
 			return __( 'File path is not allowed', 'wp-marketing-automations' );
 		}
-		
+
 		if ( ! file_exists( $real_path ) || ! is_readable( $real_path ) ) {
 			return __( 'File not found or not readable', 'wp-marketing-automations' );
 		}
@@ -377,23 +392,23 @@ class CSV_Importer extends Importer {
 		if ( empty( $file ) || ! is_string( $file ) ) {
 			return 0;
 		}
-		
+
 		// Validate file path to prevent directory traversal
 		$allowed_dir = defined( 'BWFAN_IMPORT_DIR' ) ? BWFAN_IMPORT_DIR : wp_upload_dir()['basedir'] . '/funnelkit/fka-import';
-		
+
 		// Ensure allowed directory exists before validation
 		if ( ! file_exists( $allowed_dir ) ) {
 			wp_mkdir_p( $allowed_dir );
 		}
-		
+
 		$real_path   = realpath( $file );
 		$real_allowed = realpath( $allowed_dir );
-		
+
 		// Ensure file is within allowed directory
 		if ( false === $real_path || false === $real_allowed || strpos( $real_path, $real_allowed ) !== 0 ) {
 			return 0;
 		}
-		
+
 		if ( ! file_exists( $real_path ) || ! is_readable( $real_path ) ) {
 			return 0;
 		}
@@ -422,7 +437,7 @@ class CSV_Importer extends Importer {
 	 */
 	public function get_second_step_fields( $fields ) {
 		$file = ! empty( $fields['file'] ) ? $fields['file'] : '';
-
+		$delimiter = ! empty( $fields['delimiter'] ) ? $fields['delimiter'] : self::DEFAULT_DELIMITER;
 		if ( empty( $file ) || ! file_exists( $file ) ) {
 			return [
 				'status'  => 3,
@@ -430,7 +445,7 @@ class CSV_Importer extends Importer {
 			];
 		}
 
-		$options = $this->get_mapping_options( $file );
+		$options = $this->get_mapping_options( $file, $delimiter );
 		if ( ! is_array( $options ) ) {
 			return is_string( $options ) ? $options : __( 'Unknown error occurred', 'wp-marketing-automations' );
 		}
@@ -498,6 +513,17 @@ class CSV_Importer extends Importer {
 		return array(
 			'mapped_fields' => $mapped_fields
 		);
+	}
+
+	/**
+	 * Get the default values for the CSV importer.
+	 *
+	 * @return array The default values for the CSV importer.
+	 */
+	public function get_default_values() {
+		return [
+			'delimiter' => self::DEFAULT_DELIMITER,
+		];
 	}
 }
 

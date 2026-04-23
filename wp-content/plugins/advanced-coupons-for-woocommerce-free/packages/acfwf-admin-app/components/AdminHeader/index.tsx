@@ -15,6 +15,7 @@ interface IProps {
   className?: string;
   description?: string;
   hideUpgrade?: boolean;
+  actions?: React.ReactNode;
 }
 
 // #endregion [Interfaces]
@@ -22,13 +23,16 @@ interface IProps {
 // #region [Component] =================================================================================================
 
 const AdminHeader = (props: IProps) => {
-  const { title, className, description } = props;
+  const { title, className, description, actions } = props;
   const hideUpgrade = props.hideUpgrade ?? false;
 
   return (
     <div className={`page-header ${className ?? ''}`}>
       <Logo hideUpgrade />
-      {!!title && <h1>{title}</h1>}
+      <div className="page-header-title-row">
+        {!!title && <h1>{title}</h1>}
+        {actions && <div className="page-header-actions">{actions}</div>}
+      </div>
       {!!description && <p>{description}</p>}
     </div>
   );

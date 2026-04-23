@@ -106,7 +106,7 @@ return [
         'pagination_space_between' => [
             'type' => 'checkbox',
             'text' => 'Show space between links',
-            'enable' => 'pagination_type == \'previous/next\'',
+            'enable' => "pagination_type == 'previous/next'",
         ],
         'pagination_taxonomy' => [
             'label' => 'Filter by Term',
@@ -121,7 +121,7 @@ return [
                     'evaluate' => 'yootheme.builder.allTaxonomies',
                 ],
             ],
-            'enable' => 'pagination_type == \'previous/next\'',
+            'enable' => "pagination_type == 'previous/next'",
         ],
         'position' => '${builder.position}',
         'position_left' => '${builder.position_left}',

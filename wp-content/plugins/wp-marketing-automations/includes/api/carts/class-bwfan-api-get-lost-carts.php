@@ -217,9 +217,9 @@ class BWFAN_API_Get_Lost_Carts extends BWFAN_API_Base {
 				$products[]    = array(
 					'name'  => $product['data']->get_formatted_name(),
 					'qty'   => $product['quantity'],
-					'price' => number_format( $product['line_subtotal'], 2, '.', '' ),
+					'price' => number_format( floatval( $product['line_subtotal'] ), 2, '.', '' ),
 				);
-				$product_total = $product_total + $product['line_subtotal'];
+				$product_total = $product_total + floatval( $product['line_subtotal'] );
 			}
 		}
 
@@ -252,13 +252,14 @@ class BWFAN_API_Get_Lost_Carts extends BWFAN_API_Base {
 
 		if ( is_array( $coupon_data ) && 0 !== count( $coupon_data ) ) {
 			foreach ( $coupon_data as $key => $coupon ) {
-				$data['discount'] += isset( $coupon['discount_incl_tax'] ) ? number_format( $coupon['discount_incl_tax'], 2, '.', '' ) : 0;
+				$data['discount'] += isset( $coupon['discount_incl_tax'] ) ? floatval( $coupon['discount_incl_tax'] ) : 0;
 			}
 		}
-		$data['total']          = $product_total - (int) $data['discount'];
-		$data['total']          = $data['total'] + $item->shipping_total;
+		$data['total']          = $product_total - floatval( $data['discount'] );
+		$shipping_total_value   = ! empty( $item->shipping_total ) ? floatval( $item->shipping_total ) : 0;
+		$data['total']          = $data['total'] + $shipping_total_value;
 		$data['total']          = ! empty( $data['total'] ) ? number_format( $data['total'], 2, '.', '' ) : 0;
-		$data['shipping_total'] = ! empty( $item->shipping_total ) ? number_format( $item->shipping_total, 2, '.', '' ) : 0;
+		$data['shipping_total'] = ! empty( $item->shipping_total ) ? number_format( floatval( $item->shipping_total ), 2, '.', '' ) : 0;
 
 		return $data;
 	}

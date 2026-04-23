@@ -91,6 +91,10 @@ function link_pages(): string
     global $page, $numpages, $multipage, $more;
 
     return $multipage
-        ? app(View::class)('~theme/templates/pagebreak', compact('page', 'numpages', 'more'))
+        ? app(View::class)('~theme/templates/pagebreak', [
+            'page' => $page,
+            'numpages' => $numpages,
+            'more' => $more,
+        ])
         : '';
 }

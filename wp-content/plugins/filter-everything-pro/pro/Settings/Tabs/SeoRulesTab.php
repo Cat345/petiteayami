@@ -10,43 +10,50 @@ if ( ! defined('ABSPATH') ) {
 use FilterEverything\Filter\BaseSettings;
 use FilterEverything\Filter\Container;
 use FilterEverything\Filter\EntityManager;
+use FilterEverything\Filter\SeoTabTrait;
+
 
 class SeoRulesTab extends BaseSettings
 {
+    use SeoTabTrait;
     private $em;
 
     private $fse;
 
     private $fs;
 
-    protected $page = 'wpc-filter-seo-rules';
+    protected $page = 'wpc-filter-admin-permalinks';
 
-    protected $group = 'wpc_seo_rules';
+    protected $group    = 'wpc_seo_settings_rules';
 
     public $optionName = 'wpc_seo_rules_settings';
 
+    public function __construct()
+    {
+        $this->init();
+    }
+
     public function init()
     {
-        add_action( 'admin_init', array( $this, 'initSettings') );
-        add_action( 'wpc_before_sections_settings_fields', array( $this, 'markCheckboxesMessage' ) );
+        add_action( 'admin_init', array( $this, 'initSettings'), 11 );
 
         $this->em   = Container::instance()->getEntityManager();
         $this->fse  = Container::instance()->getFilterSetService();
         $this->fs   = Container::instance()->getFilterService();
+
     }
 
-    public function markCheckboxesMessage( $page )
+
+    public function markCheckboxesMessage()
     {
-        if( $page === $this->page ){
-            echo '<p>'.wp_kses(
-                                sprintf(
-                                    __( 'Specify the filters which pages should be available for indexing by search engines.<br />Besides this you will also need to <a href="%s" target="_blank">create %s</a> to make filter pages available for indexing.', 'filter-everything' ),
-                                    admin_url('post-new.php?post_type='.FLRT_SEO_RULES_POST_TYPE),
-                                    __('SEO Rules', 'filter-everything')
-                                ),
-                                array('a'=> array('href'=> true, 'target'=> true), 'br'=> array() )
-                ).'</p>'."\r\n";
-        }
+        echo '<p>' . wp_kses(
+                sprintf(
+                    __('Specify the filters which pages should be available for indexing by search engines.<br />Besides this you will also need to <a href="%s" target="_blank">create %s</a> to make filter pages available for indexing.', 'filter-everything'),
+                    admin_url('post-new.php?post_type=' . FLRT_SEO_RULES_POST_TYPE),
+                    __('SEO Rules', 'filter-everything')
+                ),
+                array('a' => array('href' => true, 'target' => true), 'br' => array())
+            ) . '</p>' . "\r\n";
     }
 
     private function taxFields( $postType, $taxonomies )
@@ -88,7 +95,7 @@ class SeoRulesTab extends BaseSettings
         }
 
         foreach ( $filters as $filter ) {
-            if( in_array( $filter['entity'], [ 'post_meta_num', 'tax_numeric', 'post_date' ] ) ){
+            if( in_array( $filter['entity'], [ 'post_meta_num', 'tax_numeric', 'post_date', 'post_meta_date' ] ) ){
                 continue;
             }
 
@@ -128,19 +135,30 @@ class SeoRulesTab extends BaseSettings
             if( ! empty( $mergedFields ) ){
                 $settings['wpc_seo_rules_' . $postType] = array(
                     'label'  => wp_kses(
-                                        sprintf(
-                                            __('%s ( <span class="wpc-settings-post-type-label">%s</span> )', 'filter-everything'),
-                                            $postLabel,
-                                            $postType
-                                        ),
-                                        array(
-                                            'span' => array( 'class' => true )
-                                        )
+                        sprintf(
+                            __('%s ( <span class="wpc-settings-post-type-label">%s</span> )', 'filter-everything'),
+                            $postLabel,
+                            $postType
+                        ),
+                        array(
+                            'span' => array( 'class' => true )
+                        )
                     ),
-                    'fields' => $mergedFields
+                    'fields' => $mergedFields,
                 );
             }
+        }
 
+        if( empty( $settings ) ){
+            $settings['wpc_seo_rules_empty_settings'] = array(
+                'label' => '',
+            );
+        }
+
+        if (!empty($settings)) {
+            $first_key = array_key_first($settings);
+            $settings = $this->addSectionSettingsWrapper($settings);
+            add_action('wpc_before_seo_setting_section_title_' . $first_key, array( $this, 'markCheckboxesMessage' ));
         }
 
         register_setting($this->group, $this->optionName);
@@ -149,6 +167,11 @@ class SeoRulesTab extends BaseSettings
     }
 
     public function getLabel()
+    {
+        return esc_html__('Indexed Filters', 'filter-everything');
+    }
+
+    public function sectionName()
     {
         return esc_html__('Indexed Filters', 'filter-everything');
     }

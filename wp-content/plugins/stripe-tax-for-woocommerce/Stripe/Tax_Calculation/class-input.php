@@ -11,6 +11,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Stripe\StripeTaxForWooCommerce\StripeTax_Options;
 use Stripe\StripeTaxForWooCommerce\Stripe\TaxExemptions;
+use Stripe\StripeTaxForWooCommerce\Stripe\Product_Tax_Code_Repo;
+use Stripe\StripeTaxForWooCommerce\Utils\Amount_Utility;
 
 /**
  * Tax calculation operations input base class.
@@ -98,16 +100,31 @@ class Input extends Data {
 	}
 
 	/**
-	 * Rreturns a customer taxability override
+	 * Returns a customer taxability override
 	 *
 	 * @param object $customer The customer.
 	 */
-	protected static function get_customer_taxability_override( $customer ) {
-		$customer_id = $customer->get_id();
+	public static function get_customer_taxability_override( $customer ) {
+		$user_id = $customer->get_id();
 
+		$taxability_override = self::get_user_taxability_override_by_id( $user_id );
+
+		if ( 'none' === $taxability_override && $customer->get_is_vat_exempt() ) {
+			$taxability_override = 'customer_exempt';
+		}
+
+		return $taxability_override;
+	}
+
+	/**
+	 * Returns a customer taxability override
+	 *
+	 * @param int $user_id The user ID.
+	 */
+	public static function get_user_taxability_override_by_id( $user_id ) {
 		$tax_exemptions = new TaxExemptions();
 
-		$taxability_override = $tax_exemptions->get_tax_exeption( $customer_id );
+		$taxability_override = $tax_exemptions->get_tax_exeption( $user_id );
 
 		return $taxability_override;
 	}
@@ -255,6 +272,18 @@ class Input extends Data {
 		if ( ! isset( $tax_location['country'] ) || ! $tax_location['country'] ) {
 			throw new Input_Exception( 'Invalid tax location address' );
 		}
+
+		$country  = strtoupper( trim( (string) $tax_location['country'] ) );
+		$postcode = isset( $tax_location['postcode'] ) ? trim( (string) $tax_location['postcode'] ) : '';
+		$state    = isset( $tax_location['state'] ) ? trim( (string) $tax_location['state'] ) : '';
+
+		if ( 'US' === $country && '' === $postcode ) {
+			throw new Input_Exception( 'Invalid tax location address' );
+		}
+
+		if ( 'CA' === $country && ( '' === $postcode || '' === $state ) ) {
+			throw new Input_Exception( 'Invalid tax location address' );
+		}
 	}
 
 	/**
@@ -282,5 +311,52 @@ class Input extends Data {
 		}
 		// @phpstan-ignore-next-line
 		return static::get_item_reference( ...$args );
+	}
+
+	/**
+	 * Calculates and returns taxable shipping cost for an input source.
+	 *
+	 * @param object $input_source The source object used to determine shipping cost.
+	 */
+	public static function get_taxable_shipping_cost_amount( $input_source ) {
+		return static::get_shipping_cost_amount_by_taxability( $input_source, true );
+	}
+
+	/**
+	 * Calculates and returns non-taxable shipping cost for an input source.
+	 *
+	 * @param object $input_source The source object used to determine shipping cost.
+	 */
+	public static function get_non_taxable_shipping_cost_amount( $input_source ) {
+		return static::get_shipping_cost_amount_by_taxability( $input_source, false );
+	}
+
+	/**
+	 * Returns an order or cart shipping cost details (taxable and non-taxable amounts, tax code)
+	 *
+	 * @param object $cart_or_order The cart or order to determine the details for.
+	 * @param string $currency The currency.
+	 */
+	protected static function get_shipping_cost_details( $cart_or_order, $currency ) {
+		$taxable_shipping_cost_amount     = Amount_Utility::to_cents( static::get_taxable_shipping_cost_amount( $cart_or_order ), $currency );
+		$non_taxable_shipping_cost_amount = Amount_Utility::to_cents( static::get_non_taxable_shipping_cost_amount( $cart_or_order ), $currency );
+
+		if ( 0 !== $taxable_shipping_cost_amount && 0 !== $non_taxable_shipping_cost_amount ) {
+			$shipping_cost_amount = $taxable_shipping_cost_amount;
+			$shipping_tax_code    = Product_Tax_Code_Repo::get_tax_code_by_type_and_id( 'shipping' );
+		} elseif ( 0 !== $taxable_shipping_cost_amount ) {
+			$shipping_cost_amount = $taxable_shipping_cost_amount;
+			$shipping_tax_code    = Product_Tax_Code_Repo::get_tax_code_by_type_and_id( 'shipping' );
+		} else {
+			$shipping_cost_amount = $non_taxable_shipping_cost_amount;
+			$shipping_tax_code    = StripeTax_Options::get_option( StripeTax_Options::NON_TAXABLE_TAX_CODE );
+		}
+
+		return array(
+			'shipping_cost_amount'             => $shipping_cost_amount,
+			'taxable_shipping_cost_amount'     => $taxable_shipping_cost_amount,
+			'non_taxable_shipping_cost_amount' => $non_taxable_shipping_cost_amount,
+			'shipping_tax_code'                => $shipping_tax_code,
+		);
 	}
 }

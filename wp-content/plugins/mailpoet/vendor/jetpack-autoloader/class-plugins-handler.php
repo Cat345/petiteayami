@@ -1,5 +1,5 @@
 <?php
-namespace Automattic\Jetpack\Autoloader\jp7c0d7e264a9d7f0208bb951e822c03c5\al5_0_8;
+namespace Automattic\Jetpack\Autoloader\jp631745f69d0d49f37545cab8b2ba2596\al5_0_8;
 if (!defined('ABSPATH')) exit;
  // phpcs:ignore
 class Plugins_Handler {

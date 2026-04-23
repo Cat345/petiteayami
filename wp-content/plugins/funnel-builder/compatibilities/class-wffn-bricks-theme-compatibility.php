@@ -43,6 +43,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Bricks_Theme' ) ) {
 
 		/**
 		 * Set default template when bricks theme activated
+		 *
 		 * @param $page_id
 		 *
 		 * @return void
@@ -52,9 +53,7 @@ if ( ! class_exists( 'WFFN_Compatibility_With_Bricks_Theme' ) ) {
 				update_post_meta( $page_id, '_wp_page_template', '' );
 			}
 		}
-
 	}
 
 	WFFN_Plugin_Compatibilities::register( new WFFN_Compatibility_With_Bricks_Theme(), 'bricks_theme' );
 }
-

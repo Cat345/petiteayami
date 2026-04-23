@@ -181,6 +181,7 @@ class Calculation {
                 },
                 \WC()->cart->get_cart()
             ),
+            'currency'  => get_woocommerce_currency(),
         );
 
         return ! empty( $cart_session ) ? md5( wp_json_encode( $cart_session ) ) : '';

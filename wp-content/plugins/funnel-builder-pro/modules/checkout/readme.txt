@@ -1,4 +1,7 @@
 == Change log ==
+= 3.23.2 (2025-10-22) =
+* Improved: Checkout: Compatibility updated with MailerLite plugin. (#8237)
+* Fixed: Checkout: Issue with oxygen templates getting overridden by checkout page if set for boxed or Canvas template. (#8235)
 
 = 3.23.0 (2025-10-22) =
 * Added: Checkout: Added compatibility with GLS and Nukium plugins, optimizing Google Maps API loading. (#7962)

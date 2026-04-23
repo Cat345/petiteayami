@@ -1,7 +1,7 @@
 <?php
 if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 	class WFOCU_Compatibility_With_Product_Bundles {
-		public $accepted_ids = [];
+		public $accepted_ids = array();
 
 		public function __construct() {
 			if ( true === class_exists( 'WC_Bundles' ) ) {
@@ -16,7 +16,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				add_filter( 'wfocu_offer_product_data', array( $this, 'setup_bundle_discount_prices' ), 10, 5 );
 				add_filter( 'wfocu_upsell_package', array( $this, 'recreate_upsell_package_for_bundled_products' ), 5 );
 
-
 			}
 		}
 
@@ -24,7 +23,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 		/**
 		 * @hooked over `wfocu_add_products_to_the_order`
 		 *
-		 * @param array $products products in the package
+		 * @param array    $products products in the package
 		 * @param WC_Order $order current order
 		 *
 		 * @return mixed
@@ -33,12 +32,10 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 			$ins = WC_PB_Order::instance();
 			foreach ( $products['products'] as $key => $product ) {
 
-
 				$get_product = $product['data'];
 				if ( $get_product && $get_product->is_type( 'bundle' ) ) {
 
-
-					$configuration = [];
+					$configuration = array();
 
 					$get_current_key = $key;
 					$bundled_items   = $get_product->get_bundled_items();
@@ -46,13 +43,12 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 
 						if ( isset( $product_bundle['_child_of_bundle'] ) && $get_current_key === $product_bundle['_child_of_bundle'] ) {
 
-
 							$configuration[ $product_bundle['_bundle_item_id'] ] = array(
 								'discount' => 0,
 								'args'     => array(
 									'total'    => $product_bundle['args']['total'],
 									'subtotal' => $product_bundle['args']['subtotal'],
-								)
+								),
 							);
 
 							$bundled_item         = $bundled_items[ $product_bundle['_bundle_item_id'] ];
@@ -74,20 +70,19 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 									 * Set price 0 if subscription product have trial length
 									 */
 									$configuration[ $product_bundle['_bundle_item_id'] ]['args'] = array(
-										'total'    => ( float) $price + ( float) $signup_fee,
-										'subtotal' => ( float) $price + ( float) $signup_fee,
+										'total'    => (float) $price + (float) $signup_fee,
+										'subtotal' => (float) $price + (float) $signup_fee,
 									);
 									$product['args']['total']                                    = $price;
 									$product['args']['subtotal']                                 = $price;
 
 								} else {
 									$configuration[ $product_bundle['_bundle_item_id'] ]['args'] = array(
-										'total'    => ( float) $product_bundle['args']['total'] + $signup_fee,
-										'subtotal' => ( float) $product_bundle['args']['subtotal'] + $signup_fee,
+										'total'    => (float) $product_bundle['args']['total'] + $signup_fee,
+										'subtotal' => (float) $product_bundle['args']['subtotal'] + $signup_fee,
 									);
 								}
 							}
-
 
 							/**
 							 * Check if bundle product is variable and has a single filtered variation
@@ -99,7 +94,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 								if ( $bundled_item->has_filtered_variations() ) {
 									$filtered_variations = $bundled_item->get_filtered_variations();
 									if ( count( $filtered_variations ) === 1 ) {
-										$get_variation                                                       = wc_get_product( $filtered_variations[0] );
+										$get_variation = wc_get_product( $filtered_variations[0] );
 										$configuration[ $product_bundle['_bundle_item_id'] ]['variation_id'] = $filtered_variations[0];
 										$configuration[ $product_bundle['_bundle_item_id'] ]['attributes']   = $get_variation->get_variation_attributes();
 									}
@@ -113,22 +108,20 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						unset( $products['products'][ $key_bundle ] );
 					}
 					$meta_args = array(
-						[
+						array(
 							'key'   => '_upstroke_purchase',
-							'value' => 'yes'
-						]
+							'value' => 'yes',
+						),
 					);
 
-					$args = array_merge( $product['args'], [ 'configuration' => $configuration ], [ 'meta_data' => $meta_args ] );
+					$args = array_merge( $product['args'], array( 'configuration' => $configuration ), array( 'meta_data' => $meta_args ) );
 					$ins->add_bundle_to_order( $get_product, $order, $product['qty'], $args );
 
 					unset( $products['products'][ $key ] );
 				}
 			}
 
-
 			return $products;
-
 		}
 
 		public function is_enable() {
@@ -191,11 +184,14 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						}
 
 						if ( $new_stock < 0 ) {
-							do_action( 'woocommerce_product_on_backorder', array(
-								'product'  => $product,
-								'order_id' => WFOCU_WC_Compatibility::get_order_id( $order ),
-								'quantity' => $qty,
-							) );
+							do_action(
+								'woocommerce_product_on_backorder',
+								array(
+									'product'  => $product,
+									'order_id' => WFOCU_WC_Compatibility::get_order_id( $order ),
+									'quantity' => $qty,
+								)
+							);
 						}
 					}
 				}
@@ -228,7 +224,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				return $regular_price;
 			}
 
-			return $this->get_regular_price( $product ) * $options->quantity;
+			return (float) $this->get_regular_price( $product ) * (int) $options->quantity;
 		}
 
 		/**
@@ -242,16 +238,15 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				return $sale_price;
 			}
 
-			return $this->get_price( $product ) * $options->quantity;
+			return (float) $this->get_price( $product ) * (int) $options->quantity;
 		}
 
 
 		public function setup_bundle_discount_prices( $product_details, $output, $offer_data, $is_front, $hash_key ) {
 			if ( $product_details->data->is_type( 'bundle' ) && true === $is_front ) {
 
-
-				$product_details->regular_price_incl_tax = wc_get_price_including_tax( $product_details->data, array( 'price' => $this->get_regular_price( $product_details->data ) ) ) * $offer_data->fields->{$hash_key}->quantity;
-				$product_details->regular_price_excl_tax = wc_get_price_excluding_tax( $product_details->data, array( 'price' => $this->get_regular_price( $product_details->data ) ) ) * $offer_data->fields->{$hash_key}->quantity;
+				$product_details->regular_price_incl_tax = (float) wc_get_price_including_tax( $product_details->data, array( 'price' => $this->get_regular_price( $product_details->data ) ) ) * (int) $offer_data->fields->{$hash_key}->quantity;
+				$product_details->regular_price_excl_tax = (float) wc_get_price_excluding_tax( $product_details->data, array( 'price' => $this->get_regular_price( $product_details->data ) ) ) * (int) $offer_data->fields->{$hash_key}->quantity;
 
 				$product_details->sale_price_incl_tax        = WFOCU_Core()->offers->get_product_price( $product_details->data, $offer_data->fields->{$hash_key}, true, $offer_data );
 				$product_details->sale_price_raw_incl_tax    = WFOCU_Core()->offers->get_product_price( $product_details->data, $offer_data->fields->{$hash_key}, true, $offer_data );
@@ -273,7 +268,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				}
 				$product_details->tax = $product_details->sale_price_incl_tax - $product_details->sale_price_excl_tax;
 
-
 			}
 
 			return $product_details;
@@ -284,7 +278,7 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				return $package;
 			}
 			$new_package             = $package;
-			$new_package['products'] = [];
+			$new_package['products'] = array();
 			$current_offer_data      = WFOCU_Core()->data->get( '_current_offer_data', '', 'funnel' );
 			foreach ( $package['products'] as &$product ) {
 
@@ -292,21 +286,22 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 				$_offer_data = $product['_offer_data'];
 				if ( is_a( $get_product, 'WC_Product' ) && $get_product->is_type( 'bundle' ) ) {
 
-
-					$configuration = [];
-
+					$configuration = array();
 
 					$bundled_items         = $get_product->get_bundled_items();
-					$individual_price_data = [];
+					$individual_price_data = array();
 
-					$bundles = [];
+					$bundles = array();
 
 					/**
 					 * Loop over all the bundled items and setup price data to add to the order
 					 */
 					foreach ( $bundled_items as $item_id => $itemdata ) {
 
-						$bundles[ $item_id ] = array( 'product' => $itemdata->product, 'price' => 0 );
+						$bundles[ $item_id ] = array(
+							'product' => $itemdata->product,
+							'price'   => 0,
+						);
 						/**
 						 * Skip if not set to price individually, we ll deal it later below
 						 */
@@ -326,13 +321,13 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						$configuration[ $item_id ] = array(
 							'discount' => 0,
 							'args'     => array(
-								'total'    => WFOCU_Common::apply_discount( wc_get_price_excluding_tax( $itemdata->product, [ 'price' => $price ] ), $current_offer_data->fields->{$product['hash']}, $product ),
-								'subtotal' => WFOCU_Common::apply_discount( wc_get_price_excluding_tax( $itemdata->product, [ 'price' => $price ] ), $current_offer_data->fields->{$product['hash']}, $product )
-							)
+								'total'    => WFOCU_Common::apply_discount( wc_get_price_excluding_tax( $itemdata->product, array( 'price' => $price ) ), $current_offer_data->fields->{$product['hash']}, $product ),
+								'subtotal' => WFOCU_Common::apply_discount( wc_get_price_excluding_tax( $itemdata->product, array( 'price' => $price ) ), $current_offer_data->fields->{$product['hash']}, $product ),
+							),
 						);
 						$bundles[ $item_id ]       = array(
 							'product' => $itemdata->product,
-							'price'   => $configuration[ $item_id ]['args']['total']
+							'price'   => $configuration[ $item_id ]['args']['total'],
 						);
 
 						/**
@@ -356,7 +351,6 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						$product['price']          = 0;
 						$new_package['products'][] = $product;
 
-
 					} else {
 
 						/**
@@ -376,8 +370,8 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						$offer_data->name          = $item_data['product']->get_title();
 						$offer_data->type          = $item_data['product']->get_type();
 						$new_package['products'][] = array(
-							'id'  => $item_data['product']->get_id(),
-							'qty' => $product['qty'],
+							'id'               => $item_data['product']->get_id(),
+							'qty'              => $product['qty'],
 
 							'price'            => $item_data['price'],
 							'args'             => array(
@@ -392,13 +386,9 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 							'_bundle_item_id'  => $item_id,
 						);
 					}
-
-
 				} else {
 					$new_package['products'][] = $product;
 				}
-
-
 			}
 
 			return $new_package;
@@ -410,11 +400,17 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 			$price_fn      = 'get_' . $price_prop;
 			$qty           = 1;
 			$bundled_items = $get_product->get_bundled_items();
-			$price         = wc_format_decimal( WC_PB_Product_Prices::get_product_price( $get_product, array(
-				'price' => $get_product->$price_fn(),
-				'qty'   => $qty,
-				'calc'  => '',
-			) ), wc_get_price_decimals() );
+			$price         = wc_format_decimal(
+				WC_PB_Product_Prices::get_product_price(
+					$get_product,
+					array(
+						'price' => $get_product->$price_fn(),
+						'qty'   => $qty,
+						'calc'  => '',
+					)
+				),
+				wc_get_price_decimals()
+			);
 			if ( ! empty( $bundled_items ) ) {
 				foreach ( $bundled_items as $bundled_item ) {
 					if ( false === $bundled_item->is_purchasable() ) {
@@ -425,7 +421,13 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						continue;
 					}
 
-					$bundled_item_qty = $qty * $bundled_item->get_quantity( 'min', array( 'context' => 'price', 'check_optional' => 'min' === 'min' ) );
+					$bundled_item_qty = $qty * $bundled_item->get_quantity(
+						'min',
+						array(
+							'context'        => 'price',
+							'check_optional' => 'min' === 'min',
+						)
+					);
 
 					if ( $bundled_item_qty ) {
 						/**
@@ -444,31 +446,39 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 								 */
 								$price += wc_format_decimal( 0, wc_get_price_decimals() );
 							} else {
-								$price += wc_format_decimal( $bundled_item->calculate_price( array(
-									'min_or_max' => 'min',
-									'qty'        => $bundled_item_qty,
-									'calc'       => '',
-									'prop'       => 'regular_price',
-									'recurring'  => true,
-								) ), wc_get_price_decimals() );
+								$price += wc_format_decimal(
+									$bundled_item->calculate_price(
+										array(
+											'min_or_max' => 'min',
+											'qty'        => $bundled_item_qty,
+											'calc'       => '',
+											'prop'       => 'regular_price',
+											'recurring'  => true,
+										)
+									),
+									wc_get_price_decimals()
+								);
 
 							}
 						} else {
-							$price += wc_format_decimal( $bundled_item->calculate_price( array(
-								'min_or_max' => 'min',
-								'qty'        => $bundled_item_qty,
-								'calc'       => '',
-								'prop'       => 'regular_price',
-								'recurring'  => true,
-							) ), wc_get_price_decimals() );
+							$price += wc_format_decimal(
+								$bundled_item->calculate_price(
+									array(
+										'min_or_max' => 'min',
+										'qty'        => $bundled_item_qty,
+										'calc'       => '',
+										'prop'       => 'regular_price',
+										'recurring'  => true,
+									)
+								),
+								wc_get_price_decimals()
+							);
 						}
 					}
-
 				}
 			}
 
 			return $price;
-
 		}
 
 		/**
@@ -482,11 +492,18 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 			$price_fn      = 'get_' . $price_prop;
 			$qty           = 1;
 			$bundled_items = $get_product->get_bundled_items();
-			$price         = wc_format_decimal( WC_PB_Product_Prices::get_product_price( $get_product, array(
-				'price' => $get_product->$price_fn(),
-				'qty'   => $qty,
-				'calc'  => '',
-			) ), wc_get_price_decimals() );
+			$price         = wc_format_decimal(
+				WC_PB_Product_Prices::get_product_price(
+					$get_product,
+					array(
+						'price' => $get_product->$price_fn(),
+						'qty'   => $qty,
+						'calc'  => '',
+					)
+				),
+				wc_get_price_decimals()
+			);
+
 			if ( ! empty( $bundled_items ) ) {
 				foreach ( $bundled_items as $bundled_item ) {
 					if ( false === $bundled_item->is_purchasable() ) {
@@ -497,24 +514,64 @@ if ( ! class_exists( 'WFOCU_Compatibility_With_Product_Bundles' ) ) {
 						continue;
 					}
 
-					$bundled_item_qty = $qty * $bundled_item->get_quantity( 'min', array( 'context' => 'price', 'check_optional' => 'min' === 'min' ) );
+					$bundled_item_qty = $qty * $bundled_item->get_quantity(
+						'min',
+						array(
+							'context'        => 'price',
+							'check_optional' => 'min' === 'min',
+						)
+					);
 
 					if ( $bundled_item_qty ) {
 
-						$price += wc_format_decimal( $bundled_item->calculate_price( array(
-							'min_or_max' => 'min',
-							'qty'        => $bundled_item_qty,
-							'calc'       => '',
-							'prop'       => 'price',
-							'recurring'  => true,
-						) ), wc_get_price_decimals() );
-					}
+						/**
+												 * Handle bundle item subscription product case
+												 */
+						if ( $bundled_item->is_subscription() && class_exists( 'WC_Subscriptions_Product' ) ) {
 
+							/**
+							 * get signup fees and add in total
+							 */
+							$price += WC_Subscriptions_Product::get_sign_up_fee( $bundled_item->get_product() );
+
+							if ( 0 !== absint( WC_Subscriptions_Product::get_trial_length( $bundled_item->get_product() ) ) ) {
+								/**
+								 * Set price 0 if subscription product have trial length
+								 */
+								$price += wc_format_decimal( 0, wc_get_price_decimals() );
+							} else {
+								$price += wc_format_decimal(
+									$bundled_item->calculate_price(
+										array(
+											'min_or_max' => 'min',
+											'qty'        => $bundled_item_qty,
+											'calc'       => '',
+											'prop'       => 'price',
+											'recurring'  => true,
+										)
+									),
+									wc_get_price_decimals()
+								);
+
+							}
+						} else {
+							$price += wc_format_decimal(
+								$bundled_item->calculate_price(
+									array(
+										'min_or_max' => 'min',
+										'qty'        => $bundled_item_qty,
+										'calc'       => '',
+										'prop'       => 'price',
+										'recurring'  => true,
+									)
+								),
+								wc_get_price_decimals()
+							);
+						}
+					}
 				}
 			}
-
 			return $price;
-
 		}
 	}
 

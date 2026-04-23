@@ -2,62 +2,62 @@
 if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Gutenberg_Template extends WFACP_Template_Common {
-		public $default_setting_el = [];
-		public $set_bredcrumb_data = [];
-		public $stepsData = [];
-		private $block_data = [];
+		public $default_setting_el = array();
+		public $set_bredcrumb_data = array();
+		public $stepsData          = array();
+		private $block_data        = array();
 
 		protected function __construct() {
 			parent::__construct();
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'get_ajax_exchange_keys' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'reset_session' ] );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'get_ajax_exchange_keys' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'reset_session' ) );
 
-			add_action( 'wfacp_internal_css', [ $this, 'get_divi_localize_data' ], 9 );
+			add_action( 'wfacp_internal_css', array( $this, 'get_divi_localize_data' ), 9 );
 			/* Add div ID  */
-			add_action( 'wfacp_before_form', [ $this, 'element_start_before_the_form' ], 9 );
-			add_action( 'wfacp_after_form', [ $this, 'element_end_after_the_form' ], 9 );
+			add_action( 'wfacp_before_form', array( $this, 'element_start_before_the_form' ), 9 );
+			add_action( 'wfacp_after_form', array( $this, 'element_end_after_the_form' ), 9 );
 			/* Add div for angel eye express checkout  */
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 'element_start_before_the_form' ], 9 );
-			add_action( 'wfacp_checkout_preview_form_end', [ $this, 'element_end_after_the_form' ], 9 );
-			add_filter( 'wfacp_css_js_deque', [ $this, 'remove_theme_styling' ], 10, 4 );
-			//Snippet Compatibility for header and footer JS Based
-			add_action( 'wp_head', [ $this, 'wfacp_header_print_in_head' ], 999 );
-			add_action( 'wp_footer', [ $this, 'wfacp_footer_before_print_scripts' ], - 1 );
-			add_action( 'wp_footer', [ $this, 'wfacp_footer_after_print_scripts' ], 999 );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 'element_start_before_the_form' ), 9 );
+			add_action( 'wfacp_checkout_preview_form_end', array( $this, 'element_end_after_the_form' ), 9 );
+			add_filter( 'wfacp_css_js_deque', array( $this, 'remove_theme_styling' ), 10, 4 );
+			// Snippet Compatibility for header and footer JS Based
+			add_action( 'wp_head', array( $this, 'wfacp_header_print_in_head' ), 999 );
+			add_action( 'wp_footer', array( $this, 'wfacp_footer_before_print_scripts' ), - 1 );
+			add_action( 'wp_footer', array( $this, 'wfacp_footer_after_print_scripts' ), 999 );
 
-			add_filter( 'wfacp_mini_cart_hide_coupon', [ $this, 'enable_collapsed_coupon_field' ], 10 );
-			add_filter( 'wfacp_order_summary_cols_span', [ $this, 'change_col_span_for_order_summary' ] );
-			add_filter( 'wfacp_order_total_cols_span', [ $this, 'change_col_span_for_order_summary' ] );
+			add_filter( 'wfacp_mini_cart_hide_coupon', array( $this, 'enable_collapsed_coupon_field' ), 10 );
+			add_filter( 'wfacp_order_summary_cols_span', array( $this, 'change_col_span_for_order_summary' ) );
+			add_filter( 'wfacp_order_total_cols_span', array( $this, 'change_col_span_for_order_summary' ) );
 
-			add_filter( 'body_class', [ $this, 'add_body_class' ] );
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 'add_checkout_preview_div_start' ] );
-			add_action( 'wfacp_checkout_preview_form_end', [ $this, 'add_checkout_preview_div_end' ] );
-			add_action( 'wfacp_before_progress_bar', [ $this, 'before_cart_link' ] );
-			add_action( 'wfacp_before_breadcrumb', [ $this, 'before_cart_link' ] );
-			add_action( 'wfacp_after_next_button', [ $this, 'before_return_to_cart_link' ] );
-			add_action( 'woocommerce_before_checkout_form', [ $this, 'add_form_steps' ], 999 );
-			add_action( 'woocommerce_before_checkout_form', [ $this, 'display_progress_bar' ], 999 );
-			add_filter( 'woocommerce_order_button_html', [ $this, 'add_class_change_place_order' ], 11 );
-			add_filter( 'wfacp_change_back_btn', [ $this, 'change_back_step_label' ], 11, 3 );
-			add_filter( 'wfacp_blank_back_text', [ $this, 'add_blank_back_text' ], 11, 3 );
+			add_filter( 'body_class', array( $this, 'add_body_class' ) );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 'add_checkout_preview_div_start' ) );
+			add_action( 'wfacp_checkout_preview_form_end', array( $this, 'add_checkout_preview_div_end' ) );
+			add_action( 'wfacp_before_progress_bar', array( $this, 'before_cart_link' ) );
+			add_action( 'wfacp_before_breadcrumb', array( $this, 'before_cart_link' ) );
+			add_action( 'wfacp_after_next_button', array( $this, 'before_return_to_cart_link' ) );
+			add_action( 'woocommerce_before_checkout_form', array( $this, 'add_form_steps' ), 999 );
+			add_action( 'woocommerce_before_checkout_form', array( $this, 'display_progress_bar' ), 999 );
+			add_filter( 'woocommerce_order_button_html', array( $this, 'add_class_change_place_order' ), 11 );
+			add_filter( 'wfacp_change_back_btn', array( $this, 'change_back_step_label' ), 11, 3 );
+			add_filter( 'wfacp_blank_back_text', array( $this, 'add_blank_back_text' ), 11, 3 );
 			add_filter( 'wfacp_form_coupon_widgets_enable', '__return_true' );
-			add_action( 'wfacp_form_apply_coupon_button_text', [ $this, 'get_form_coupon_button_text' ] );
-			add_action( 'wfacp_collapsible_apply_coupon_button_text', [ $this, 'get_collapsible_coupon_button_text' ] );
+			add_action( 'wfacp_form_apply_coupon_button_text', array( $this, 'get_form_coupon_button_text' ) );
+			add_action( 'wfacp_collapsible_apply_coupon_button_text', array( $this, 'get_collapsible_coupon_button_text' ) );
 
-			add_filter( 'wfacp_cart_show_product_thumbnail', [ $this, 'display_order_summary_thumb' ], 99 );
+			add_filter( 'wfacp_cart_show_product_thumbnail', array( $this, 'display_order_summary_thumb' ), 99 );
 			add_action( 'wfacp_cart_show_product_thumbnail_collapsible', array( $this, 'display_order_summary_thumb_collapsed' ), 99 );
-			add_filter( 'wfacp_form_step_count', [ $this, 'form_step_count' ] );
+			add_filter( 'wfacp_form_step_count', array( $this, 'form_step_count' ) );
 			add_filter( 'wfacp_show_product_thumbnail_collapsible_show', '__return_true' );
 			if ( ! is_admin() ) {
-				add_shortcode( 'wfacp_gutenberg_mini_cart', [ $this, 'print_mini_cart' ], 10 );
-				add_shortcode( 'wfacp_gutenberg_checkout_form', [ $this, 'print_checkout_form' ], 10 );
+				add_shortcode( 'wfacp_gutenberg_mini_cart', array( $this, 'print_mini_cart' ), 10 );
+				add_shortcode( 'wfacp_gutenberg_checkout_form', array( $this, 'print_checkout_form' ), 10 );
 			}
 		}
 
 		private function read_block_attrs( $blocks ) {
 			foreach ( $blocks as $block ) {
 				if ( ! is_object( $block ) && is_array( $block ) && isset( $block['blockName'] ) ) {
-					if ( in_array( $block['blockName'], [ 'bwfblocks/mini-cart', 'bwfblocks/checkout-form' ] ) ) {
+					if ( in_array( $block['blockName'], array( 'bwfblocks/mini-cart', 'bwfblocks/checkout-form' ) ) ) {
 						$unique_id                      = $block['attrs']['uniqueID'];
 						$this->block_data[ $unique_id ] = $block['attrs'];
 					}
@@ -128,8 +128,8 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			WFACP_Gutenberg::set_locals( 'wfacp_form', $attr['uniqueid'] );
 			$section_data    = WFACP_GutenBerg::register_section_fields();
 			$section_classes = WFACP_GutenBerg::class_section();
-			$form_attr       = isset( $section_data['attributes'] ) ? $section_data['attributes'] : [];
-			$classes_attr    = isset( $section_classes['attributes'] ) ? $section_classes['attributes'] : [];
+			$form_attr       = isset( $section_data['attributes'] ) ? $section_data['attributes'] : array();
+			$classes_attr    = isset( $section_classes['attributes'] ) ? $section_classes['attributes'] : array();
 			$default_attr    = array_merge( WFACP_GutenBerg::form_attributes(), $form_attr, $classes_attr );
 			$settings        = wp_parse_args( $attributes, $default_attr );
 			$template        = wfacp_template();
@@ -162,9 +162,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public function element_start_before_the_form() {
 			$template_slug = $this->get_template_slug();
 
-
 			if ( strpos( $template_slug, 'gutenberg' ) !== false ) {
-
 
 				echo "<div id=wfacp-e-form><div id='wfacp-sec-wrapper'>";
 
@@ -176,15 +174,13 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					$label_position = $this->form_data['wfacp_label_position'];
 				}
 
-
 				if ( is_array( $this->form_data ) ) {
 
-					$mbDevices = [ 'wfacp_collapsible_order_summary_wrap', $label_position ];
+					$mbDevices = array( 'wfacp_collapsible_order_summary_wrap', $label_position );
 
 					if ( isset( $this->form_data['enable_callapse_order_summary'] ) && true === $this->form_data['enable_callapse_order_summary'] ) {
 						$mbDevices[] = 'wfacp_desktop';
 					}
-
 
 					if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && true === $this->form_data['enable_callapse_order_summary_tablet'] ) {
 						$mbDevices[] = 'wfacp_tablet';
@@ -193,41 +189,38 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 						$mbDevices[] = 'wfacp_mobile';
 					}
 
-					if ( isset( $this->form_data['enable_callapse_order_summary_page_width'] ) && "on" === $this->form_data['enable_callapse_order_summary_page_width'] ) {
+					if ( isset( $this->form_data['enable_callapse_order_summary_page_width'] ) && 'on' === $this->form_data['enable_callapse_order_summary_page_width'] ) {
 						$mbDevices[] = 'wfacp_table_landscape';
 					}
 					$deviceClass = implode( ' ', $mbDevices );
-
 
 					if ( empty( $deviceClass ) ) {
 						$deviceClass = 'wfacp_not_active';
 					}
 
-
 					echo "<div class='" . esc_attr( $deviceClass ) . "'>";
 
 					$template->get_mobile_mini_cart( $this->form_data );
-					echo "</div>";
+					echo '</div>';
 
 				}
-				echo "<div class='" . implode( ' ', [ 'wfacp-form', $label_position ] ) . "'>";
+				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
 
 			}
-
 		}
 
 		public function element_end_after_the_form() {
 			$template_slug = $this->get_template_slug();
 			if ( strpos( $template_slug, 'gutenberg' ) !== false ) {
-				echo "</div>";
-				echo "</div>";
-				echo "</div>";
+				echo '</div>';
+				echo '</div>';
+				echo '</div>';
 			}
 		}
 
 		public function reset_session() {
-			WFACP_Common::set_session( 'wfacp_order_total_widgets', [] );
-			WFACP_Common::set_session( 'wfacp_min_cart_widgets', [] );
+			WFACP_Common::set_session( 'wfacp_order_total_widgets', array() );
+			WFACP_Common::set_session( 'wfacp_min_cart_widgets', array() );
 		}
 
 		public function get_ajax_exchange_keys() {
@@ -305,13 +298,13 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			if ( true === $status ) {
 				return $text;
 			}
-			if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) {
+			if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				return $text;
 			}
 
 			$order_total = '';
 			if ( isset( $this->form_data['enable_price_in_place_order_button'] ) && true == trim( $this->form_data['enable_price_in_place_order_button'] ) ) {
-				$order_total = "&nbsp;&nbsp;" . WFACP_Common::wfacp_order_total( [] );
+				$order_total = '&nbsp;&nbsp;' . WFACP_Common::wfacp_order_total( array() );
 			}
 
 			if ( isset( $this->form_data['wfacp_payment_place_order_text'] ) && '' != trim( $this->form_data['wfacp_payment_place_order_text'] ) ) {
@@ -354,7 +347,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			}
 			$key = 'payment_button_back_' . $i . '_text';
 			if ( isset( $this->form_data[ $key ] ) && $this->form_data[ $key ] === '' ) {
-				return "wfacp_back_link_empty";
+				return 'wfacp_back_link_empty';
 			}
 
 			return $label;
@@ -362,9 +355,9 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 
 		public function get_divi_localize_data() {
-			$localData = [];
+			$localData = array();
 			if ( isset( $this->form_data['wfacp_make_button_sticky_on_mobile'] ) && $this->form_data['wfacp_make_button_sticky_on_mobile'] === true ) {
-				$localData['wfacp_make_button_sticky_on_mobile'] = "yes";
+				$localData['wfacp_make_button_sticky_on_mobile'] = 'yes';
 			}
 			wp_localize_script( 'wfacp_checkout_js', 'wfacp_elementor_data', $localData );
 		}
@@ -428,8 +421,8 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 		public function breadcrumb_start() {
 			$number_of_steps    = $this->get_step_count();
-			$step_form_data     = [];
-			$progress_form_data = [];
+			$step_form_data     = array();
+			$progress_form_data = array();
 			$cls                = 'wfacp_one_step';
 			if ( absint( $number_of_steps ) === 2 ) {
 				$cls = 'wfacp_two_step';
@@ -437,7 +430,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				$cls = 'wfacp_three_step';
 			}
 			$progress_bar_type = isset( $this->form_data['select_type'] ) ? $this->form_data['select_type'] : '';
-			$devices           = [ $progress_bar_type ];
+			$devices           = array( $progress_bar_type );
 			if ( isset( $this->form_data['enable_progress_bar'] ) && true === $this->form_data['enable_progress_bar'] ) {
 				$devices[] = 'wfacp_desktop';
 			}
@@ -448,7 +441,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				$devices[] = 'wfacp_mobile';
 			}
 			$deviceClass = implode( ' ', $devices );
-			$wrapClass   = [];
+			$wrapClass   = array();
 			if ( ! empty( $cls ) ) {
 				$wrapClass[] = $cls;
 			}
@@ -462,13 +455,13 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			}
 			ob_start();
 			echo "<div class='" . esc_attr( $stepWrapClass ) . "'>";
-			for ( $i = 0; $i < $number_of_steps; $i ++ ) {
+			for ( $i = 0; $i < $number_of_steps; $i++ ) {
 				$tab_heading_key    = '';
 				$tab_subheading_key = '';
 				$progress_bar_text  = '';
 				if ( 'tab' === $progress_bar_type ) {
-					$tab_heading_key    = "step_" . $i . "_heading";
-					$tab_subheading_key = "step_" . $i . "_subheading";
+					$tab_heading_key    = 'step_' . $i . '_heading';
+					$tab_subheading_key = 'step_' . $i . '_subheading';
 				}
 				if ( $tab_heading_key !== '' && is_array( $this->form_data ) && isset( $this->form_data[ $tab_heading_key ] ) ) {
 					$step_form_data[ $i ]['heading'] = $this->form_data[ $tab_heading_key ];
@@ -478,10 +471,10 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					$this->set_bredcrumb_data['tab_data'] = $step_form_data;
 				}
 				if ( 'tab' !== $progress_bar_type ) {
-					$progress_bar_text = "step_" . $i . "_progress_bar";
+					$progress_bar_text = 'step_' . $i . '_progress_bar';
 				}
 				if ( isset( $this->form_data['select_type'] ) && $this->form_data['select_type'] === 'bredcrumb' ) {
-					$progress_bar_text = "step_" . $i . "_bredcrumb";
+					$progress_bar_text = 'step_' . $i . '_bredcrumb';
 				}
 				if ( $progress_bar_text !== '' && is_array( $this->form_data ) && isset( $this->form_data[ $progress_bar_text ] ) ) {
 					$progress_form_data[]                      = $this->form_data[ $progress_bar_text ];
@@ -490,19 +483,19 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			}
 			if ( ( is_array( $step_form_data ) && count( $step_form_data ) > 0 ) ) {
 				?>
-                <div class="wfacp_form_steps">
-                    <div class="wfacp-payment-title wfacp-hg-by-box">
-                        <div class="wfacp-payment-tab-wrapper">
+				<div class="wfacp_form_steps">
+					<div class="wfacp-payment-title wfacp-hg-by-box">
+						<div class="wfacp-payment-tab-wrapper">
 							<?php
 							$count          = 1;
 							$count_of_steps = sizeof( $step_form_data );
-							$steps          = [ 'single_step', 'two_step', 'third_step' ];
-							$addfull_width  = "full_width_cls";
+							$steps          = array( 'single_step', 'two_step', 'third_step' );
+							$addfull_width  = 'full_width_cls';
 							if ( $count_of_steps === 2 ) {
-								$addfull_width = "wfacpef_two_step";
+								$addfull_width = 'wfacpef_two_step';
 							}
 							if ( $count_of_steps === 3 ) {
-								$addfull_width = "wfacpef_third_step";
+								$addfull_width = 'wfacpef_third_step';
 							}
 							$active_breadcrumb = apply_filters( 'wfacp_el_bread_crumb_active_class_key', 0, $this );
 							foreach ( $step_form_data as $key => $value ) {
@@ -514,7 +507,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 								$bread_visited = '';
 								if ( $count === 2 ) {
 									$page_class = 'two_step';
-								} else if ( $count === 3 ) {
+								} elseif ( $count === 3 ) {
 									$page_class = 'third_step';
 								} else {
 									$page_class = 'single_step';
@@ -527,24 +520,24 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 								}
 								$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $active, $count, $number_of_steps );
 								?>
-                                <div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass ) . ' ' . esc_attr( $page_class ) . " " . esc_attr( $addfull_width ) . ' ' . esc_attr( $bread_visited ); ?>  wfacp-tab<?php echo esc_attr( $count ); ?>"
-                                     step="<?php echo esc_attr( $steps_count_here ); ?>">
-                                    <div class="wfacp-order2StepNumber"><?php echo esc_attr( $count ); ?></div>
-                                    <div class="wfacp-order2StepHeaderText">
-                                        <div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
-                                        <div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
-                                    </div>
-                                </div>
+								<div class="wfacp-payment-tab-list <?php echo esc_attr( $activeClass ) . ' ' . esc_attr( $page_class ) . ' ' . esc_attr( $addfull_width ) . ' ' . esc_attr( $bread_visited ); ?>  wfacp-tab<?php echo esc_attr( $count ); ?>"
+									step="<?php echo esc_attr( $steps_count_here ); ?>">
+									<div class="wfacp-order2StepNumber"><?php echo esc_attr( $count ); ?></div>
+									<div class="wfacp-order2StepHeaderText">
+										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
+										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
+									</div>
+								</div>
 								<?php
-								$count ++;
+								++$count;
 							}
 							?>
-                        </div>
-                    </div>
-                </div>
+						</div>
+					</div>
+				</div>
 				<?php
 			}
-			$steps_arr = [ 'single_step', 'two_step', 'third_step' ];
+			$steps_arr = array( 'single_step', 'two_step', 'third_step' );
 			if ( 'progress_bar' === $progress_bar_type ) {
 				if ( ( is_array( $progress_form_data ) && count( $progress_form_data ) > 0 ) ) {
 					echo '<div class="wfacp_custom_breadcrumb wfacp_custom_breadcrumb_el">';
@@ -566,18 +559,18 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					echo '</ul></div></div></div>';
 				}
 			}
-			echo "</div>";
+			echo '</div>';
 			$result                                = ob_get_clean();
 			$this->stepsData[ $progress_bar_type ] = $result;
-			if ( "progress_bar" !== $progress_bar_type ) {
+			if ( 'progress_bar' !== $progress_bar_type ) {
 				echo $result;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
 		public function add_form_steps() {
 			$number_of_steps = $this->get_step_count();
-			$steps_arr       = [ 'single_step', 'two_step', 'third_step' ];
-			$devices         = [];
+			$steps_arr       = array( 'single_step', 'two_step', 'third_step' );
+			$devices         = array();
 			if ( $number_of_steps <= 1 || ! isset( $this->form_data['enable_progress_bar'] ) || $this->form_data['enable_progress_bar'] === '' || $this->form_data['enable_progress_bar'] === false ) {
 				return;
 			}
@@ -595,11 +588,11 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				$deviceClass = 'wfacp_not_active';
 			}
 			$select_type = $this->form_data['select_type'];
-			echo "<div class='" . esc_attr( $deviceClass ) . " " . esc_attr( $select_type ) . "' >";
+			echo "<div class='" . esc_attr( $deviceClass ) . ' ' . esc_attr( $select_type ) . "' >";
 			if ( isset( $this->form_data['select_type'] ) && 'bredcrumb' === $this->form_data['select_type'] ) {
 				if ( isset( $this->set_bredcrumb_data['progress_data'] ) && is_array( $this->set_bredcrumb_data['progress_data'] ) ) {
 					$progress_form_data = $this->set_bredcrumb_data['progress_data'];
-					printf( '<div class="%s">', "wfacp_steps_wrap wfacp_breadcrumb_wrap_here" );
+					printf( '<div class="%s">', 'wfacp_steps_wrap wfacp_breadcrumb_wrap_here' );
 					echo '<div class=wfacp_steps_sec>';
 					echo '<ul>';
 					do_action( 'wfacp_before_breadcrumb', $progress_form_data );
@@ -618,8 +611,8 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 						$class      = 'wfacp_step_' . $key . ' wfacp_bred ' . $bread_visited . ' ' . $active . ' ' . $step;
 						echo "<li class='" . esc_attr( $class ) . "' step='" . esc_attr( $step ) . "'>";
 						?>
-                        <a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link"
-                           data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_attr( $value ); ?></a>
+						<a href='javascript:void(0)' class="<?php echo esc_attr( $text_class ); ?> wfacp_breadcrumb_link"
+							data-text="<?php echo esc_attr( sanitize_title( $value ) ); ?>"><?php echo esc_attr( $value ); ?></a>
 						<?php
 						echo '</li>';
 					}
@@ -627,19 +620,18 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					echo '</ul></div></div>';
 				}
 			}
-			echo "</div>";
+			echo '</div>';
 		}
 
 
 		public function add_body_class( $classes ) {
 			$classes[] = 'wfacp_gutenberg_template';
 
-			if ( isset( $_REQUEST['preview_id'] ) && isset( $_REQUEST['preview_nonce'] ) ) {
+			if ( isset( $_REQUEST['preview_id'] ) && isset( $_REQUEST['preview_nonce'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				$classes[] = 'wfacp_editor_active';
-			} else {
-				if ( ! in_array( 'wfacp_anim_active', $classes ) ) {
-					//$classes[] = 'wfacp_anim_active';
-				}
+			} elseif ( ! in_array( 'wfacp_anim_active', $classes ) ) {
+					// $classes[] = 'wfacp_anim_active';
+
 			}
 
 			return $classes;
@@ -674,14 +666,15 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				return;
 			}
 			$select_type = $this->form_data['select_type'];
-			$key         = "step_cart_" . $select_type . "_link";
+			$key         = 'step_cart_' . $select_type . '_link';
 			if ( ! isset( $this->form_data[ $key ] ) ) {
 				return;
 			}
 			$cartName     = $this->form_data[ $key ];
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
-			echo "<li class='df_cart_link wfacp_bred_visited'><a href='" . esc_url( $cartURL ) . "'>" . wp_kses_post( $cartName ) . "</a></li>";//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$cartURL      = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
+			echo "<li class='df_cart_link wfacp_bred_visited'><a href='" . esc_url( $cartURL ) . "'>" . wp_kses_post( $cartName ) . '</a></li>';//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		public function before_return_to_cart_link( $current_action ) {
@@ -701,11 +694,11 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
 			?>
-            <div class="btm_btn_sec wfacp_back_cart_link">
-                <div class="wfacp-back-btn-wrap">
-                    <a href="<?php echo esc_attr( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
-                </div>
-            </div>
+			<div class="btm_btn_sec wfacp_back_cart_link">
+				<div class="wfacp-back-btn-wrap">
+					<a href="<?php echo esc_attr( $cartURL ); ?>"><?php echo wp_kses_post( $this->form_data['return_to_cart_text'] );//phpcs:ignore WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl ?></a>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -723,7 +716,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 				return $btn_html;
 			}
 			$output            = '';
-			$key               = "payment_button_back_" . $stepCount . "_text";
+			$key               = 'payment_button_back_' . $stepCount . '_text';
 			$black_backbtn_cls = '';
 			if ( isset( $this->form_data[ $key ] ) && $this->form_data[ $key ] === '' ) {
 				$black_backbtn_cls = 'wfacp_back_link_empty';
@@ -740,7 +733,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 					$last_step = 'two_step';
 				}
 				if ( $back_btn_text !== '' ) {
-					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';
+					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';//phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 				}
 			}
 			$output .= '</div>';
@@ -748,7 +741,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			return $output;
 		}
 
-		//Mini Cart Settings
+		// Mini Cart Settings
 		public function mini_cart_heading() {
 			return $this->mini_cart_data['mini_cart_heading'];
 		}
@@ -798,7 +791,6 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			}
 
 			return parent::get_coupon_button_text();
-
 		}
 
 		public function get_form_coupon_button_text() {
@@ -807,7 +799,6 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			}
 
 			return parent::get_coupon_button_text();
-
 		}
 
 		public function set_form_data( $settings ) {
@@ -822,7 +813,7 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 			if ( ! empty( $this->current_open_step ) && 'single_step' !== $this->current_open_step ) {
 				if ( 'two_step' == $this->current_open_step ) {
 					$active = 1;
-				} else if ( 'third_step' == $this->current_open_step ) {
+				} elseif ( 'third_step' == $this->current_open_step ) {
 					$active = 2;
 				} else {
 					$active = 0;
@@ -834,12 +825,12 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 
 		public function set_active_step_on_cookie() {
 			if ( isset( $_COOKIE['wfacp_gutenberg_open_page'] ) && wp_doing_ajax() ) {
-				$cookie            = $_COOKIE['wfacp_gutenberg_open_page'];
+				$cookie            = sanitize_text_field( wp_unslash( $_COOKIE['wfacp_gutenberg_open_page'] ) );
 				$parts             = explode( '@', $cookie );
 				$current_open_step = $parts[1];
 				if ( ! empty( $current_open_step ) && 'single_step' !== $current_open_step ) {
 					$this->set_current_open_step( $current_open_step );
-					add_filter( 'wfacp_el_bread_crumb_active_class_key', [ $this, 'set_breadcrumb' ], 10, 2 );
+					add_filter( 'wfacp_el_bread_crumb_active_class_key', array( $this, 'set_breadcrumb' ), 10, 2 );
 				}
 			}
 		}
@@ -878,10 +869,9 @@ if ( ! class_exists( 'WFACP_Gutenberg_Template' ) ) {
 		public function should_hide_order_summary_by_default() {
 			// Check if any device has collapsed enabled
 			return $this->enable_order_field_collapsed_by_default( 'desktop' ) ||
-			       $this->enable_order_field_collapsed_by_default( 'tablet' ) ||
-			       $this->enable_order_field_collapsed_by_default( 'mobile' );
+					$this->enable_order_field_collapsed_by_default( 'tablet' ) ||
+					$this->enable_order_field_collapsed_by_default( 'mobile' );
 		}
-
 	}
 
 }

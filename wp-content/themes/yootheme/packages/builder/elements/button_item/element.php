@@ -94,7 +94,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'link && !lightbox',
@@ -168,7 +168,7 @@ return [
         'dialog_close_outside' => [
             'type' => 'checkbox',
             'text' => 'Display outside',
-            'enable' => 'dialog && !link && dialog_layout == \'modal\'',
+            'enable' => "dialog && !link && dialog_layout == 'modal'",
         ],
         'dialog_modal_width' => [
             'label' => 'Modal Width',
@@ -178,18 +178,18 @@ return [
                 'Container' => 'container',
                 'Expand' => 'expand',
             ],
-            'enable' => 'dialog && !link && dialog_layout == \'modal\'',
+            'enable' => "dialog && !link && dialog_layout == 'modal'",
         ],
         'dialog_offcanvas_flip' => [
             'label' => 'Offcanvas',
             'type' => 'checkbox',
             'text' => 'Display on the right',
-            'enable' => 'dialog && !link && dialog_layout == \'offcanvas\'',
+            'enable' => "dialog && !link && dialog_layout == 'offcanvas'",
         ],
         'dialog_offcanvas_overlay' => [
             'type' => 'checkbox',
             'text' => 'Overlay the site',
-            'enable' => 'dialog && !link && dialog_layout == \'offcanvas\'',
+            'enable' => "dialog && !link && dialog_layout == 'offcanvas'",
         ],
         'name' => '${builder.nameItem}',
         'status' => '${builder.statusItem}',

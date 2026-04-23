@@ -237,12 +237,29 @@ class Module_Settings extends Base_Model implements Model_Interface, Initiable_I
             'max'      => '100',
             'min'      => '1',
         );
+        // Store Credit General - Minimum redemption amount.
+        $options[] = array(
+            'id'       => $this->_constants->MIN_STORE_CREDITS_AMOUNT_REDEEM,
+            'title'    => __( 'Minimum store credit redemption amount', 'advanced-coupons-for-woocommerce' ),
+            'default'  => 0,
+            'type'     => 'price',
+            'desc_tip' => __( 'Set the minimum amount of store credits a customer must redeem per order. Customers will not be able to apply store credits below this amount. Set to 0 to disable the minimum.', 'advanced-coupons-for-woocommerce' ),
+        );
         // Store Credit General - Automatically revoke cashback coupons.
         $options[] = array(
             'id'    => $this->_constants->AUTO_REVOKE_CASHBACK_COUPON_STORE_CREDITS,
             'title' => __( 'Automatically revoke cashback coupons from refunded orders', 'advanced-coupons-for-woocommerce' ),
             'type'  => 'checkbox',
             'desc'  => __( 'Enable this option to automatically revoke cashback coupons when an order is refunded. This ensures that customers do not retain cashback credits for orders that have been refunded.', 'advanced-coupons-for-woocommerce' ),
+        );
+        // Store Credits General - Auto apply available amount.
+        $options[] = array(
+            'id'       => $this->_constants->STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT,
+            'title'    => __( 'Automatically apply available store credits amount', 'advanced-coupons-for-woocommerce' ),
+            'type'     => 'checkbox',
+            'desc'     => __( 'Enable this to automatically apply the available store credits amount to the order.', 'advanced-coupons-for-woocommerce' ),
+            'desc_tip' => __( 'When enabled, the available store credits amount will be applied to the order automatically.', 'advanced-coupons-for-woocommerce' ),
+            'default'  => 'no',
         );
 
         // Store Credit Reminder - Subtitle.

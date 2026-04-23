@@ -14,6 +14,81 @@
     }
   }
 
+  // Template Settings Box in Sidebar (for AI templates).
+  .template-settings-box {
+    margin-top: 1.5em;
+    border: 1px solid #d5d5d5;
+    background: #fff;
+
+    &.premium-locked {
+      cursor: pointer;
+    }
+
+    .template-settings-header {
+      background: transparent;
+      padding: 0.6em 0.8em;
+      font-weight: 600;
+      font-size: 0.9em;
+      color: #1d2327;
+      border-bottom: 1px solid #d5d5d5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .premium-label {
+        font-weight: 400;
+        font-size: 0.9em;
+        color: #6bb738;
+        margin-left: 0.3em;
+      }
+    }
+
+    .template-settings-content {
+      padding: 1em 1.5em 3em;
+      position: relative;
+
+      // Ensure input fields maintain text cursor
+      input,
+      textarea {
+        cursor: text;
+      }
+    }
+
+    .save-template-section {
+      margin-bottom: 1em;
+      padding-bottom: 0;
+      border-bottom: none;
+
+      .ant-checkbox-wrapper {
+        font-size: 0.9em;
+        cursor: default;
+      }
+    }
+
+    .template-settings-field {
+      margin-bottom: 1em;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.8em;
+        color: #50575e;
+        margin-bottom: 0.4em;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      input,
+      textarea {
+        font-size: 0.9em;
+      }
+    }
+  }
+
   .form-instruction {
     padding: 1.5em 0;
     text-align: center;

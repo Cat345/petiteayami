@@ -18,8 +18,6 @@ use function YOOtheme\trans;
 class TaxonomyArchiveQueryType
 {
     /**
-     * @param WP_Taxonomy $taxonomy
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Taxonomy $taxonomy): array
@@ -67,6 +65,7 @@ class TaxonomyArchiveQueryType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                     ],
 
@@ -80,7 +79,6 @@ class TaxonomyArchiveQueryType
                                     ['%post_type%' => $type->labels->singular_name],
                                 ),
                                 'type' => 'number',
-                                'default' => 0,
                                 'modifier' => 1,
                                 'attrs' => [
                                     'min' => 1,
@@ -103,9 +101,11 @@ class TaxonomyArchiveQueryType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => null,
                         ],
                     ],
 
@@ -123,7 +123,6 @@ class TaxonomyArchiveQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -170,11 +169,6 @@ class TaxonomyArchiveQueryType
     public static function resolvePosts($root, array $args): array
     {
         global $wp_query;
-
-        $args += [
-            'offset' => 0,
-            'limit' => null,
-        ];
 
         if ($args['offset'] || $args['limit']) {
             return array_slice(

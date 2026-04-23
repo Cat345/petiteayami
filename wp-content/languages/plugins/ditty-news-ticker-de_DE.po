@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Ditty – Responsive News Tickers, Sliders, and Lists - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-28 22:40:39+0000\n"
+"PO-Revision-Date: 2026-04-05 02:28:57+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -569,10 +569,6 @@ msgstr "Rechts"
 #: legacy/inc/admin/meta-boxes.php:825
 msgid "Disable"
 msgstr "Deaktivieren"
-
-#: legacy/inc/help.php:110
-msgid "For more information:"
-msgstr "Für weiterführende Informationen:"
 
 #: legacy/inc/admin/meta-boxes.php:513
 msgid "Width"
@@ -1152,3 +1148,7 @@ msgstr "Alle Typen anzeigen"
 #: includes/post-types.php:87 legacy/inc/post-types.php:16
 msgid "Add New"
 msgstr "Hinzufügen"
+
+#: legacy/inc/help.php:110
+msgid "For more information:"
+msgstr "Weitere Informationen:"

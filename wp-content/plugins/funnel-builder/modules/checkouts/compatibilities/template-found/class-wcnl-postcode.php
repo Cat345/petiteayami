@@ -10,11 +10,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 	 */
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Wcnl_Postcode {
-		private $billing_country_nl = false;
-		private $shipping_country_nl = false;
-		private $wcnl_postcode_field_keys = [];
-		private $main_object = null;
-		protected static $instance = null;
+		private $billing_country_nl       = false;
+		private $shipping_country_nl      = false;
+		private $wcnl_postcode_field_keys = array();
+		private $main_object              = null;
+		protected static $instance        = null;
 
 		public static function get_instance() {
 			if ( is_null( self::$instance ) ) {
@@ -26,14 +26,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 
 		private function __construct() {
 
-			add_filter( 'wfacp_form_section', [ $this, 'checkout_billing_sections' ], 8 );
-			add_filter( 'wfacp_form_section', [ $this, 'checkout_shipping_sections' ], 12 );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'validation_fields' ] );
-			add_filter( 'wfacp_template_localize_data', [ $this, 'remove_optional_shipping_field_validation_error' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-
-
+			add_filter( 'wfacp_form_section', array( $this, 'checkout_billing_sections' ), 8 );
+			add_filter( 'wfacp_form_section', array( $this, 'checkout_shipping_sections' ), 12 );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'validation_fields' ) );
+			add_filter( 'wfacp_template_localize_data', array( $this, 'remove_optional_shipping_field_validation_error' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 		}
 
 
@@ -46,28 +44,31 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 
 		public function actions() {
 			try {
-				add_action( 'wp_footer', [ $this, 'add_js' ] );
-				add_filter( 'woocommerce_country_locale_field_selectors', function ( $locale_fields ) {
-					if ( ! class_exists( 'WPO\WC\Postcode_Checker\WC_NLPostcode_Fields' ) ) {
-						return $locale_fields;
-					}
-					$locale_fields['address_1'] = '#billing_address_1_field, #shipping_address_1_field';
-					$locale_fields['address_2'] = '#billing_address_2_field, #shipping_address_2_field';
+				add_action( 'wp_footer', array( $this, 'add_js' ) );
+				add_filter(
+					'woocommerce_country_locale_field_selectors',
+					function ( $locale_fields ) {
+						if ( ! class_exists( 'WPO\WC\Postcode_Checker\WC_NLPostcode_Fields' ) ) {
+							return $locale_fields;
+						}
+						$locale_fields['address_1'] = '#billing_address_1_field, #shipping_address_1_field';
+						$locale_fields['address_2'] = '#billing_address_2_field, #shipping_address_2_field';
 
-					return $locale_fields;
-				}, 50 );
+						return $locale_fields;
+					},
+					50
+				);
 				$this->main_object = WFACP_Common::remove_actions( 'wp_enqueue_scripts', 'PostcodeNl\AddressAutocomplete\Main', 'enqueueScripts' );
 				WFACP_Common::add_actions( 'wp_enqueue_scripts', 'enqueueScripts', $this->main_object );
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 			}
-
 		}
 
 		/**
 		 * Get countries that require postcode fields
 		 */
 		private function get_postcode_countries() {
-			$postcode_countries = [];
+			$postcode_countries = array();
 			try {
 				$obj = WFACP_Common::remove_actions( 'woocommerce_billing_fields', 'WPO\WC\Postcode_Checker\WC_NLPostcode_Fields', 'nl_billing_fields' );
 				if ( function_exists( 'WPO_WCNLPC' ) && WPO_WCNLPC()->countries instanceof WPO_WCNLPC_Countries && method_exists( 'WPO_WCNLPC_Countries', 'get_countries_requiring_postcode_fields' ) ) {
@@ -77,23 +78,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 				if ( empty( $postcode_countries ) && ! empty( $obj ) && $obj instanceof WPO\WC\Postcode_Checker\WC_NLPostcode_Fields && method_exists( $obj, 'postcode_field_countries' ) ) {
 					$postcode_countries = $obj->postcode_field_countries();
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 			}
 
 			return $postcode_countries;
 		}
 
 		public function validation_fields() {
-			add_filter( 'wfacp_checkout_fields', [ $this, 'make_validation' ] );
-			add_filter( 'woocommerce_checkout_posted_data', [ $this, 'toev_field' ] );
+			add_filter( 'wfacp_checkout_fields', array( $this, 'make_validation' ) );
+			add_filter( 'woocommerce_checkout_posted_data', array( $this, 'toev_field' ) );
 		}
 
 		public function toev_field( $posted_data ) {
-			if ( isset( $_REQUEST['billing_house_number_suffix'] ) ) {
-				$posted_data['billing_house_number_suffix'] = $_REQUEST['billing_house_number_suffix'];
+			if ( isset( $_REQUEST['billing_house_number_suffix'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce checkout field filter, nonce verification handled by WooCommerce
+				$posted_data['billing_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['billing_house_number_suffix'] ) );
 			}
-			if ( isset( $_REQUEST['shipping_house_number_suffix'] ) ) {
-				$posted_data['shipping_house_number_suffix'] = $_REQUEST['shipping_house_number_suffix'];
+			if ( isset( $_REQUEST['shipping_house_number_suffix'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce checkout field filter, nonce verification handled by WooCommerce
+				$posted_data['shipping_house_number_suffix'] = sanitize_text_field( wp_unslash( $_REQUEST['shipping_house_number_suffix'] ) );
 			}
 
 			return $posted_data;
@@ -112,13 +113,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 			}
 
 			if ( isset( $template_fields['billing'] ) ) {
-				$form                                                  = 'billing';
-				$template_fields['billing'][ $form . '_street_name' ]  = [
+				$form = 'billing';
+				$template_fields['billing'][ $form . '_street_name' ]  = array(
 					'label'       => __( 'Street name', 'wpo_wcnlpc' ),
 					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
 					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ),
 					'required'    => $required,
-				];
+				);
 				$template_fields['billing'][ $form . '_house_number' ] = array(
 					'label'             => $house_number_label,
 					'placeholder'       => $house_number_label,
@@ -134,13 +135,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 				$required = in_array( $shipping_country, $postcode_countries );
 			}
 			if ( isset( $template_fields['shipping'] ) ) {
-				$form                                                   = 'shipping';
-				$template_fields['shipping'][ $form . '_street_name' ]  = [
+				$form = 'shipping';
+				$template_fields['shipping'][ $form . '_street_name' ]  = array(
 					'label'       => __( 'Street name', 'wpo_wcnlpc' ),
 					'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
 					'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-first' ), $form, 'street_name' ),
 					'required'    => $required,
-				];
+				);
 				$template_fields['shipping'][ $form . '_house_number' ] = array(
 					'label'             => $house_number_label,
 					'placeholder'       => $house_number_label,
@@ -163,9 +164,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 
 					$end_address_found     = false;
 					$end_address_closser   = $sections['fields']['wfacp_end_divider_billing'];
-					$after_address_element = [];
+					$after_address_element = array();
 					$is_hidedable          = false;
-					$keysVal               = [];
+					$keysVal               = array();
 					foreach ( $sections['fields'] as $index => $field ) {
 						if ( isset( $field['id'] ) && isset( $field['priority'] ) ) {
 							$keysVal[ $field['id'] ] = $field['priority'];
@@ -218,7 +219,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					$new_fields[] = array(
 						'label'       => __( 'Street name', 'wpo_wcnlpc' ),
 						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
-						'cssready'    => [ "wfacp_postcode_checker $class1" ],
+						'cssready'    => array( "wfacp_postcode_checker $class1" ),
 						'id'          => $form . '_street_name',
 						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-first', $class1 ), $form, 'street_name' ),
 						'required'    => $required, // Only required for NL
@@ -232,7 +233,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 						'required'          => $required, // Only required for NL
 						'type'              => 'number',
 						'id'                => $form . '_house_number',
-						'cssready'          => [ "wfacp_postcode_checker $class1" ],
+						'cssready'          => array( "wfacp_postcode_checker $class1" ),
 						'custom_attributes' => array( 'pattern' => '[0-9]*' ),
 						'priority'          => $base_priority + 2,
 					);
@@ -240,18 +241,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					$new_fields[] = array(
 						'label'       => $house_number_suffix,
 						'placeholder' => $house_number_suffix,
-						'cssready'    => [ "wfacp_postcode_checker $class2" ],
+						'cssready'    => array( "wfacp_postcode_checker $class2" ),
 						'id'          => $form . '_house_number_suffix',
 						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ),
 						'required'    => false,
 						'priority'    => $base_priority + 3,
 					);
 
-//                $new_fields[]=$address_fields;
+					// $new_fields[]=$address_fields;
 					$this->wcnl_postcode_field_keys = array_merge( $this->wcnl_postcode_field_keys, $new_fields );
 					if ( is_array( $new_fields ) && count( $new_fields ) > 0 ) {
 						foreach ( $new_fields as $fkey => $fvalue ) {
-
 
 							if ( $is_hidedable ) {
 								$fvalue['class'][] = 'wfacp_billing_fields';
@@ -284,9 +284,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 							}
 						}
 					}
-
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 			}
 
 			return $sections;
@@ -307,7 +306,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 				if ( isset( $sections['fields']['wfacp_end_divider_shipping'] ) ) {
 					$end_address_found     = false;
 					$end_address_closser   = $sections['fields']['wfacp_end_divider_shipping'];
-					$after_address_element = [];
+					$after_address_element = array();
 					$is_hidedable          = false;
 					foreach ( $sections['fields'] as $index => $field ) {
 						if ( $end_address_found ) {
@@ -335,7 +334,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 					$new_fields[]        = array(
 						'label'       => __( 'Street name', 'wpo_wcnlpc' ),
 						'placeholder' => __( 'Street name', 'wpo_wcnlpc' ),
-						'cssready'    => [ "wfacp_postcode_checker $class1" ],
+						'cssready'    => array( "wfacp_postcode_checker $class1" ),
 						'id'          => $form . '_street_name',
 						'class'       => apply_filters( 'nl_custom_address_field_class1', array( 'form-row-first', $class1 ), $form, 'street_name' ),
 						'required'    => $required, // Only required for NL
@@ -354,14 +353,14 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 						'required'          => $required, // Only required for NL
 						'type'              => 'number',
 						'id'                => $form . '_house_number',
-						'cssready'          => [ "wfacp_postcode_checker $class1" ],
+						'cssready'          => array( "wfacp_postcode_checker $class1" ),
 						'custom_attributes' => array( 'pattern' => '[0-9]*' ),
 					);
 					// Add house number Suffix
 					$new_fields[]                     = array(
 						'label'       => $house_number_suffix,
 						'placeholder' => $house_number_suffix,
-						'cssready'    => [ "wfacp_postcode_checker $class2" ],
+						'cssready'    => array( "wfacp_postcode_checker $class2" ),
 						'id'          => $form . '_house_number_suffix',
 						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'wfacp_postcode_checker form-row-quart', $class1 ), $form, 'house_number_suffix' ),
 						'required'    => false,
@@ -398,9 +397,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 							}
 						}
 					}
-
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 			}
 
 			return $sections;
@@ -415,39 +413,40 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 			}
 			$px = $instance->get_template_type_px();
 			?>
-            <style>
-                #billing_house_number_suffix_field.form-row-quart .optional {
-                    display: inline-block;
-                }
+			<style>
+				#billing_house_number_suffix_field.form-row-quart .optional {
+					display: inline-block;
+				}
 
-                .wfacp_main_form.woocommerce form .form-row-third {
-                    margin-right: 0;
-                    width: 100%;
-                    clear: both;
-                }
+				.wfacp_main_form.woocommerce form .form-row-third {
+					margin-right: 0;
+					width: 100%;
+					clear: both;
+				}
 
-                <?php
-			   if ( isset($px) ) {echo "body .wfacp_main_form p.wcnlpc-manual {padding: 0 $px".'px;';}
-				   ?>
-                .wfacp_main_form .woocommerce-page form .form-row-quart-first, .woocommerce form .form-row-quart-first {
-                    margin-right: 0 !important;
-                }
+				<?php
+				if ( isset( $px ) ) {
+					echo "body .wfacp_main_form p.wcnlpc-manual {padding: 0 $px" . 'px;';}
+				?>
+				.wfacp_main_form .woocommerce-page form .form-row-quart-first, .woocommerce form .form-row-quart-first {
+					margin-right: 0 !important;
+				}
 
-                .wfacp_main_form .wfacp_main_form.woocommerce form.checkout input[readonly] {
-                    background: transparent;
-                }
+				.wfacp_main_form .wfacp_main_form.woocommerce form.checkout input[readonly] {
+					background: transparent;
+				}
 
-                .woocommerce form .form-row-quart, .woocommerce-page form .form-row-quart,
-                .woocommerce form .form-row-quart-first, .woocommerce-page form .form-row-quart-first {
-                    width: auto;
-                }
+				.woocommerce form .form-row-quart, .woocommerce-page form .form-row-quart,
+				.woocommerce form .form-row-quart-first, .woocommerce-page form .form-row-quart-first {
+					width: auto;
+				}
 
-                p.wcnlpc-manual {
-                    padding: 0 7px;;
-                    font-size: 14px;
-                    line-height: 1.5;
-                }
-            </style>
+				p.wcnlpc-manual {
+					padding: 0 7px;;
+					font-size: 14px;
+					line-height: 1.5;
+				}
+			</style>
 			<?php
 		}
 
@@ -457,99 +456,99 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Wcnl_Postcode' ) ) {
 			}
 			?>
 
-            <style>
-                body #wfacp-sec-wrapper .wcnlpc-error {
-                    float: none;
-                    flex: 0 0 auto;
-                    width: 100%;
-                    margin: 0 0 8px;
-                }
-            </style>
-            <script>
-                window.addEventListener('load', function () {
-                    (function ($) {
-                        var billing_country_nl, shipping_country_nl;
-                        billing_country_nl = "<?php echo $this->billing_country_nl; ?>";
-                        shipping_country_nl = "<?php echo $this->shipping_country_nl; ?>";
+			<style>
+				body #wfacp-sec-wrapper .wcnlpc-error {
+					float: none;
+					flex: 0 0 auto;
+					width: 100%;
+					margin: 0 0 8px;
+				}
+			</style>
+			<script>
+				window.addEventListener('load', function () {
+					(function ($) {
+						var billing_country_nl, shipping_country_nl;
+						billing_country_nl = "<?php echo $this->billing_country_nl; ?>";
+						shipping_country_nl = "<?php echo $this->shipping_country_nl; ?>";
 
-                        function execute_toggle_slide(country, wrapper) {
-                            var thisform = wrapper;
-                            var $postcodefield = thisform.find('#billing_postcode_field, #shipping_postcode_field');
-                            var $countryfield = thisform.find('#billing_country_field, #shipping_country_field');
-                            var $housenumber = thisform.find('#billing_house_number_field, #shipping_house_number_field');
-                            if ($.inArray(country, wpo_wcnlpc.postcode_field_countries) !== -1) {
-                                $postcodefield.insertBefore($housenumber);
-                            } else if (country !== 'NL') {
-                                $postcodefield.insertBefore($countryfield);
-                            }
-                        }
+						function execute_toggle_slide(country, wrapper) {
+							var thisform = wrapper;
+							var $postcodefield = thisform.find('#billing_postcode_field, #shipping_postcode_field');
+							var $countryfield = thisform.find('#billing_country_field, #shipping_country_field');
+							var $housenumber = thisform.find('#billing_house_number_field, #shipping_house_number_field');
+							if ($.inArray(country, wpo_wcnlpc.postcode_field_countries) !== -1) {
+								$postcodefield.insertBefore($housenumber);
+							} else if (country !== 'NL') {
+								$postcodefield.insertBefore($countryfield);
+							}
+						}
 
-                        function execute_toggle_slide_previous_version(country, wrapper) {
-                            var thisform = wrapper;
-                            var $postcodefield = thisform.find('#billing_postcode_field, #shipping_postcode_field');
-                            var $cityfield = thisform.find('#billing_country_field, #shipping_country_field');
-                            if ($.inArray(country, wpo_wcnlpc.postcode_field_countries) !== -1) {
-                                $postcodefield.insertAfter($cityfield);
-                            } else if (country !== 'NL') {
-                                $postcodefield.insertBefore($cityfield);
-                            }
-                        }
+						function execute_toggle_slide_previous_version(country, wrapper) {
+							var thisform = wrapper;
+							var $postcodefield = thisform.find('#billing_postcode_field, #shipping_postcode_field');
+							var $cityfield = thisform.find('#billing_country_field, #shipping_country_field');
+							if ($.inArray(country, wpo_wcnlpc.postcode_field_countries) !== -1) {
+								$postcodefield.insertAfter($cityfield);
+							} else if (country !== 'NL') {
+								$postcodefield.insertBefore($cityfield);
+							}
+						}
 
-                        if ($('.wfacp_divider_billing').length > 0) {
-                            execute_toggle_slide($('#billing_country').val(), $('.wfacp_divider_billing'));
-                        }
-                        if ($('.wfacp_divider_shipping').length > 0) {
-                            execute_toggle_slide($('#shipping_country').val(), $('.wfacp_divider_shipping'));
-                        }
-                        $(document.body).bind('country_to_state_changing', function (event, country, wrapper) {
-                            execute_toggle_slide(country, wrapper);
-                        });
-                        $(document.body).on("change", "#shipping_country", function (e) {
-                            check_field_class($(this));
-                        });
-                        $(document.body).on("change", "#billing_same_as_shipping_field", function (e) {
-                            check_field_class($(this));
-                        });
-                        $(document.body).on("change", "#shipping_same_as_billing_field", function (e) {
-                            check_field_class($(this));
-                        });
-                        $(document).on('change', '#billing_country', function () {
-                            check_field_class($(this));
-                        });
-                        $(document.body).on('wpo_wcnlpc_fields_updated', function () {
-                            remove_hide_animate();
-                        });
+						if ($('.wfacp_divider_billing').length > 0) {
+							execute_toggle_slide($('#billing_country').val(), $('.wfacp_divider_billing'));
+						}
+						if ($('.wfacp_divider_shipping').length > 0) {
+							execute_toggle_slide($('#shipping_country').val(), $('.wfacp_divider_shipping'));
+						}
+						$(document.body).bind('country_to_state_changing', function (event, country, wrapper) {
+							execute_toggle_slide(country, wrapper);
+						});
+						$(document.body).on("change", "#shipping_country", function (e) {
+							check_field_class($(this));
+						});
+						$(document.body).on("change", "#billing_same_as_shipping_field", function (e) {
+							check_field_class($(this));
+						});
+						$(document.body).on("change", "#shipping_same_as_billing_field", function (e) {
+							check_field_class($(this));
+						});
+						$(document).on('change', '#billing_country', function () {
+							check_field_class($(this));
+						});
+						$(document.body).on('wpo_wcnlpc_fields_updated', function () {
+							remove_hide_animate();
+						});
 
-                        function remove_hide_animate() {
-                            var addresses = ['billing', 'shipping'];
-                            for (var i in addresses) {
-                                var key = addresses[i];
-                                $(".wfacp_divider_" + key + " .form-row").each(function () {
-                                    let field_id = $(this).attr("id");
-                                    if (field_id != '') {
-                                        let field_val_id1 = field_id.replace('_field', '');
-                                        let field_val = $('#' + field_val_id1).val();
-                                        if (field_val != '' && field_val != null && !$(this).hasClass('wfacp-anim-wrap')) {
-                                            $(this).addClass("wfacp-anim-wrap");
-                                        }
-                                    }
-                                });
-                            }
-                        }
+						function remove_hide_animate() {
+							var addresses = ['billing', 'shipping'];
+							for (var i in addresses) {
+								var key = addresses[i];
+								$(".wfacp_divider_" + key + " .form-row").each(function () {
+									let field_id = $(this).attr("id");
+									if (field_id != '') {
+										let field_val_id1 = field_id.replace('_field', '');
+										let field_val = $('#' + field_val_id1).val();
+										if (field_val != '' && field_val != null && !$(this).hasClass('wfacp-anim-wrap')) {
+											$(this).addClass("wfacp-anim-wrap");
+										}
+									}
+								});
+							}
+						}
 
-                        function check_field_class() {
-                            if (typeof wpo_wcnlpc == "undefined") {
-                                return;
-                            }
-                            if (wpo_wcnlpc.street_city_visibility == 'readonly') {
-                                $('.form-row ').each(function () {
-                                    $(this).find('input[readonly]').parents('.form-row').addClass("wfacp_readonly");
-                                });
-                            }
-                        }
-                    })(jQuery);
-                });
-            </script>
+						function check_field_class() {
+							if (typeof wpo_wcnlpc == "undefined") {
+								return;
+							}
+							if (wpo_wcnlpc.street_city_visibility == 'readonly') {
+								$('.form-row ').each(function () {
+									$(this).find('input[readonly]').parents('.form-row').addClass("wfacp_readonly");
+								});
+							}
+						}
+					})(jQuery);
+				});
+			</script>
 			<?php
 		}
 	}

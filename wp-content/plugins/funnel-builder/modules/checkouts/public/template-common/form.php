@@ -23,17 +23,17 @@ $totalStepCount = $instance->get_step_count();
 $stepClassName  = 'wfacp_single_step_form';
 $stepMultiClass = 'wfacp_single_step_form';
 if ( $totalStepCount > 1 && $totalStepCount == 2 ) {
-	$stepMultiClass = "wfacp_two_step";
+	$stepMultiClass = 'wfacp_two_step';
 } else {
-	$stepMultiClass = "wfacp_three_step";
+	$stepMultiClass = 'wfacp_three_step';
 }
 if ( $totalStepCount > 1 ) {
 	$stepClassName = 'wfacp_single_multi_form';
 }
 do_action( 'wfacp_before_form' );
 $is_global_checkout_f = WFACP_Core()->public->is_checkout_override();
-$global_cls           = "";
-$form_class           = [];
+$global_cls           = '';
+$form_class           = array();
 if ( ! empty( $stepClassName ) ) {
 	$form_class[] = $stepClassName;
 }
@@ -41,23 +41,24 @@ if ( ! empty( $stepMultiClass ) ) {
 	$form_class[] = $stepMultiClass;
 }
 if ( $is_global_checkout_f === true ) {
-	$form_class[] = "wfacp_global_checkout_wrap";
+	$form_class[] = 'wfacp_global_checkout_wrap';
 }
 $is_theme_builder = WFACP_Common::is_theme_builder();
 
 ?>
-    <div class="wfacp_main_form woocommerce <?php echo implode( ' ', $form_class ); ?>">
-		<?php $payment_needed   = false;
-		$stepData               = [];
-		$checkout               = WC()->checkout();
-		$fieldsets              = $instance->get_fieldsets();
-		$current_step           = $instance->get_current_step();
-		$selected_template_slug = $instance->get_template_slug();
-		$template_type          = $instance->get_template_type();
-		$have_shipping_address  = $instance->have_shipping_address();
-		$have_billing_address   = $instance->have_billing_address();
-		$shipping_billing_index = $instance->get_shipping_billing_index();
-		$instance->already_printed_fields = [];
+	<div class="wfacp_main_form woocommerce <?php echo implode( ' ', $form_class ); ?>">
+		<?php
+		$payment_needed                   = false;
+		$stepData                         = array();
+		$checkout                         = WC()->checkout();
+		$fieldsets                        = $instance->get_fieldsets();
+		$current_step                     = $instance->get_current_step();
+		$selected_template_slug           = $instance->get_template_slug();
+		$template_type                    = $instance->get_template_type();
+		$have_shipping_address            = $instance->have_shipping_address();
+		$have_billing_address             = $instance->have_billing_address();
+		$shipping_billing_index           = $instance->get_shipping_billing_index();
+		$instance->already_printed_fields = array();
 		if ( ! $is_theme_builder ) {
 			do_action( 'woocommerce_before_checkout_form_cart_notices' );
 			do_action( 'woocommerce_check_cart_items' );
@@ -67,16 +68,15 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 		 * Now calling via  include because of bug created in order bump suddenly payment gateway hides
 		 * IN order form addon we use do_shortcode at wp hook form_internal_css included once that time
 		 *But when printing form in page formal_internal_css not included again due include once
-		 *
 		 */
-		include __DIR__ . '/form_internal_css.php';
+		require __DIR__ . '/form_internal_css.php';
 		$print_aero_form = true;
 		if ( ! $is_theme_builder ) {
 
 			WC()->cart->calculate_totals();
 			if ( empty( $_POST ) && wc_notice_count( 'error' ) > 0 && apply_filters( 'wfacp_print_cart_error_notice', true, wc_notice_count( 'error' ) ) ) { // WPCS: input var ok, CSRF ok.
 
-				remove_action( 'woocommerce_get_cart_page_permalink', [ $instance, 'change_cancel_url' ], 999 );
+				remove_action( 'woocommerce_get_cart_page_permalink', array( $instance, 'change_cancel_url' ), 999 );
 				wc_get_template( 'checkout/cart-errors.php', array( 'checkout' => $checkout ) );
 				wc_clear_notices();
 				$print_aero_form = false;
@@ -85,7 +85,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 		$print_aero_form = apply_filters( 'wfacp_force_print_form', $print_aero_form, $instance );
 		if ( true == $print_aero_form ) {
 			do_action( 'woocommerce_before_checkout_form', $checkout );
-			$required_messages          = [];
+			$required_messages          = array();
 			$billing_country_find       = false;
 			$permalink                  = get_the_permalink();
 			$cart_contains_subscription = 0;
@@ -93,19 +93,19 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 				$cart_contains_subscription = 1;
 			}
 			?>
-            <form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( $permalink ); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
-                <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php esc_html_e( WFACP_Common::get_id() ); ?>">
-                <input type="hidden" name="wfacp_cart_hash" value="<?php esc_html_e( WC()->session->get( 'wfacp_cart_hash', '' ) ); ?>">
-                <input type="hidden" name="wfacp_has_active_multi_checkout" id="wfacp_has_active_multi_checkout" value="">
-                <input type="hidden" id="billing_shipping_index" value="<?php esc_html_e( $shipping_billing_index ); ?>">
-                <input type="hidden" id="wfacp_source" name="wfacp_source" value="<?php echo esc_url( $permalink ); ?>">
-                <input type="hidden" id="product_switcher_need_refresh" name="product_switcher_need_refresh" value="0">
-                <input type="hidden" id="wfacp_cart_contains_subscription" name="wfacp_cart_contains_subscription" value="<?php esc_html_e( $cart_contains_subscription ); ?>">
+			<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( $permalink ); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
+				<input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php esc_html_e( WFACP_Common::get_id() ); ?>">
+				<input type="hidden" name="wfacp_cart_hash" value="<?php esc_html_e( WC()->session->get( 'wfacp_cart_hash', '' ) ); ?>">
+				<input type="hidden" name="wfacp_has_active_multi_checkout" id="wfacp_has_active_multi_checkout" value="">
+				<input type="hidden" id="billing_shipping_index" value="<?php esc_html_e( $shipping_billing_index ); ?>">
+				<input type="hidden" id="wfacp_source" name="wfacp_source" value="<?php echo esc_url( $permalink ); ?>">
+				<input type="hidden" id="product_switcher_need_refresh" name="product_switcher_need_refresh" value="0">
+				<input type="hidden" id="wfacp_cart_contains_subscription" name="wfacp_cart_contains_subscription" value="<?php esc_html_e( $cart_contains_subscription ); ?>">
 
-                <input type="hidden" id="wfacp_exchange_keys" name="wfacp_exchange_keys" class="wfacp_exchange_keys" value="">
-                <input type="hidden" id="wfacp_input_hidden_data" name="wfacp_input_hidden_data" class="wfacp_input_hidden_data" value="{}">
-                <input type="hidden" id="wfacp_input_phone_field" name="wfacp_input_phone_field" class="wfacp_input_phone_field" value="{}">
-                <input type="hidden" id="wfacp_timezone" name="wfacp_timezone" value="">
+				<input type="hidden" id="wfacp_exchange_keys" name="wfacp_exchange_keys" class="wfacp_exchange_keys" value="">
+				<input type="hidden" id="wfacp_input_hidden_data" name="wfacp_input_hidden_data" class="wfacp_input_hidden_data" value="{}">
+				<input type="hidden" id="wfacp_input_phone_field" name="wfacp_input_phone_field" class="wfacp_input_phone_field" value="{}">
+				<input type="hidden" id="wfacp_timezone" name="wfacp_timezone" value="">
 				<?php
 				if ( $have_billing_address && 'billing' === $shipping_billing_index ) {
 					echo '<input type="hidden" name="wfacp_billing_same_as_shipping" id="wfacp_billing_same_as_shipping" value="0">';
@@ -122,7 +122,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 				do_action( 'wfacp_before_checkout_form_fields', $checkout );
 				do_action( 'woocommerce_checkout_before_customer_details' );            // check last is empty means user want last step to payment gateway
 				if ( ! isset( $fieldsets[ $current_step ] ) ) {
-					$fieldsets[ $current_step ] = [];
+					$fieldsets[ $current_step ] = array();
 				}
 				foreach ( $fieldsets as $step => $sections ) {
 					do_action( 'wfacp_template_before_step', $step, $sections );
@@ -131,7 +131,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 						$last_step = 'wfacp_last_page';
 					}
 					?>
-                    <div class="wfacp-left-panel wfacp_page <?php echo $template_type . ' ' . $step . ' ' . $last_step; ?>" data-step="<?php echo $step ?>">
+					<div class="wfacp-left-panel wfacp_page <?php echo $template_type . ' ' . $step . ' ' . $last_step; ?>" data-step="<?php echo $step; ?>">
 						<?php
 						$count_increment = 0;
 						do_action( 'wfacp_form_' . $step . '_start', $step, $instance, $last_step );
@@ -177,20 +177,20 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 								do_action( 'wfacp_template_section_start', $step, $section_index, $section );
 								do_action( 'wfacp_template_section_' . $section_index . '_' . $step . '_start', $step, $section_index, $section );
 								?>
-                                <div class="wfacp-section wfacp-hg-by-box <?php echo $custom_class . ' ' . $section_class ?>" data-field-count="<?php echo count( $fields ) ?>">
-                                    <div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class() ?>">
-                                        <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $section['name'] ?></h2>
+								<div class="wfacp-section wfacp-hg-by-box <?php echo $custom_class . ' ' . $section_class; ?>" data-field-count="<?php echo count( $fields ); ?>">
+									<div class="wfacp_internal_form_wrap wfacp-comm-title <?php echo $instance->get_heading_title_class(); ?>">
+										<h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class(); ?>"><?php echo $section['name']; ?></h2>
 										<?php
 										if ( isset( $section['sub_heading'] ) && '' != $section['sub_heading'] ) {
 											?>
-                                            <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $section['sub_heading'] ?></h4>
+											<h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $section['sub_heading']; ?></h4>
 											<?php
 										}
 										?>
-                                    </div>
+									</div>
 									<?php do_action( 'wfacp_template_after_' . $section_index . '_' . $step . '_section_heading', $step, $section_index, $section ); ?>
-                                    <div class="wfacp-comm-form-detail clearfix">
-                                        <div class="wfacp-row">
+									<div class="wfacp-comm-form-detail clearfix">
+										<div class="wfacp-row">
 											<?php
 											do_action( 'wfacp_template_before_' . $section_index . '_' . $step . '_section_form_print', $step, $section_index, $section );
 											do_action( 'wfacp_template_before_section', $step, $section['fields'] );
@@ -213,6 +213,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 												if ( 'billing_email' === $key && isset( $field['placeholder'] ) && 'abc@exmple.com' === $field['placeholder'] ) {
 													$field['placeholder'] = ' ';
 												}
+												$field['class'] = (array) ( $field['class'] ?? array() );
 												if ( $sectionLastKey == $key ) {
 													$field['class'][] = 'wfacp_last_section_fields';
 												}
@@ -224,7 +225,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 												}
 												$field_value = $checkout->get_value( $key );
 												$field_value = apply_filters( 'wfacp_default_values', $field_value, $key, $field );
-												if ( in_array( $key, [ 'billing_same_as_shipping', 'shipping_same_as_billing' ] ) ) {
+												if ( in_array( $key, array( 'billing_same_as_shipping', 'shipping_same_as_billing' ) ) ) {
 													$field_value = apply_filters( 'wfacp_check_different_shipping', null, $key, $field );
 												}
 												do_action( 'wfacp_before_' . $key . '_field', $key, $field, $field_value );
@@ -239,7 +240,7 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 													}
 												}
 
-// Allow Blank key. We add Divider (Div wrapper for address field ) when form is not saved & served directly then address field wrapper div not closed
+												// Allow Blank key. We add Divider (Div wrapper for address field ) when form is not saved & served directly then address field wrapper div not closed
 												if ( ! isset( $instance->already_printed_fields[ $key ] ) || empty( $key ) ) {
 													wfacp_form_field( $key, $field, $field_value );
 													$instance->already_printed_fields[ $key ] = 'yes';
@@ -249,18 +250,18 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 												if ( 'wfacp_after_' . $key . '_field' !== 'wfacp_after_order_total_field' ) {
 													do_action( 'wfacp_after_' . $key . '_field', $key, $field, $field_value );
 												}
-												$counterInnerFields ++;
+												++$counterInnerFields;
 											}
 											do_action( 'wfacp_template_after_section', $step, $sections, $section_index );
 											do_action( 'wfacp_template_after_' . $section_index . '_' . $step . '_section_form_print', $step, $section_index, $section );
 											?>
-                                        </div>
-                                    </div>
-                                </div>
+										</div>
+									</div>
+								</div>
 								<?php
 								do_action( 'wfacp_template_section_' . $section_index . '_' . $step . '_end', $step, $section_index, $section );
 								do_action( 'wfacp_template_section_end', $step, $section_index, $section );
-								$count_increment ++;
+								++$count_increment;
 							}
 						}
 						do_action( 'wfacp_form_' . $step . '_end', $step, $instance );
@@ -268,8 +269,9 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 							do_action( 'wfacp_template_before_payment', $step, $current_step, $instance );
 							$instance->get_payment_box();
 						}
-						do_action( 'wfacp_template_after_step', $step, $current_step, $instance ); ?>
-                    </div>
+						do_action( 'wfacp_template_after_step', $step, $current_step, $instance );
+						?>
+					</div>
 					<?php
 				}
 				if ( false == $billing_country_find ) {
@@ -283,16 +285,17 @@ $is_theme_builder = WFACP_Common::is_theme_builder();
 					if ( ! $temp_st || 'billing' == $shipping_billing_index ) {
 						$is_checked = 'checked';
 					}
-					echo( "<div id='ship-to-different-address'><input id='ship-to-different-address-checkbox' class='ship_to_different_address' type='checkbox' name='ship_to_different_address' style='display:none' " . esc_attr( $is_checked ) . " ></div>" );
+					echo( "<div id='ship-to-different-address'><input id='ship-to-different-address-checkbox' class='ship_to_different_address' type='checkbox' name='ship_to_different_address' style='display:none' " . esc_attr( $is_checked ) . ' ></div>' );
 				}
 				do_action( 'wfacp_after_checkout_form_fields', $checkout );
 
 				?>
-            </form>
-			<?php do_action( 'woocommerce_after_checkout_form', $checkout );
+			</form>
+			<?php
+			do_action( 'woocommerce_after_checkout_form', $checkout );
 		}
 		?>
-    </div>
+	</div>
 <?php
 do_action( 'wfacp_after_form' );
 ?>

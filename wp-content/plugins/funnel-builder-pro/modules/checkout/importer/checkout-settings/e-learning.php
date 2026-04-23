@@ -1,9 +1,9 @@
 <?php
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
-$settings       = [
-	'show_on_next_step' => [
-		'single_step' => [
+$settings       = array(
+	'show_on_next_step' => array(
+		'single_step' => array(
 			'billing_email'       => 'false',
 			'billing_first_name'  => 'false',
 			'billing_last_name'   => 'false',
@@ -11,31 +11,31 @@ $settings       = [
 			'shipping-address'    => 'false',
 			'billing_phone'       => 'false',
 			'shipping_calculator' => 'false',
-		],
-	],
-];
+		),
+	),
+);
 
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'no',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
 
 
@@ -43,9 +43,9 @@ $steps = [
 if ( ! isset( $advanced_field['shipping_calculator']['data_label'] ) ) {
 	$advanced_field['shipping_calculator']['data_label'] = __( 'Shipping Method', 'woocommerce' );
 }
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
+	'fieldsets'                   => array(
 		'single_step' => array(
 			array(
 				'name'        => __( 'Your Information', 'woofunnels-aero-checkout' ),
@@ -63,11 +63,11 @@ $pageLayout = [
 						'validate'     => array(
 							0 => 'email',
 						),
-						'autocomplete' => 'email username',
+						'autocomplete' => 'email',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
-						'placeholder'  =>'',
+						'placeholder'  => '',
 					),
 					array(
 						'label'        => __( 'First name', 'woocommerce' ),
@@ -99,18 +99,18 @@ $pageLayout = [
 
 				),
 			),
-			[
+			array(
 				'name'        => __( 'Your Plans', 'woofunnels-aero-checkout' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'product_switching' => 'true',
 					'order_coupon'      => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 					$product_field['product_switching'],
-				],
-			],
+				),
+			),
 			array(
 				'name'        => __( 'Your Billing Address', 'woofunnels-aero-checkout' ),
 				'class'       => '',
@@ -121,11 +121,11 @@ $pageLayout = [
 
 			),
 
-		)
+		),
 
 
-	],
-	'product_settings'            => [
+	),
+	'product_settings'            => array(
 		'coupons'                             => '',
 		'enable_coupon'                       => 'false',
 		'disable_coupon'                      => 'false',
@@ -146,7 +146,7 @@ $pageLayout = [
 		'preferred_countries_enable'          => 'false',
 		'preferred_countries'                 => '',
 		'product_switcher_template'           => 'default',
-	],
+	),
 	'have_coupon_field'           => 'false',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'false',
@@ -155,6 +155,9 @@ $pageLayout = [
 	'enabled_product_switching'   => 'no',
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'single_step',
-];
+);
 
-return [ 'page_layout' => $pageLayout, 'page_settings' => $settings ];
+return array(
+	'page_layout'   => $pageLayout,
+	'page_settings' => $settings,
+);

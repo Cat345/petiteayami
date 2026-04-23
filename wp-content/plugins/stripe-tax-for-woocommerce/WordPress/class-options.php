@@ -64,7 +64,7 @@ class Options {
 			),
 			OBJECT_K
 		);
-		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP );
+		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -93,7 +93,7 @@ class Options {
 		$cached[ $option_name ]               = new stdClass();
 		$cached[ $option_name ]->option_name  = $option_name;
 		$cached[ $option_name ]->option_value = $option_value;
-		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP );
+		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Options {
 		static::init_cache( $force_update_from_db );
 		$cached = wp_cache_get( static::CACHE_KEY, static::CACHE_GROUP );
 		unset( $cached[ $option_name ] );
-		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP );
+		wp_cache_set( static::CACHE_KEY, $cached, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**

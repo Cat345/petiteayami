@@ -85,7 +85,7 @@ class Plugin_Constants {
             // Configuration Constants.
             'TOKEN'                                      => 'acfwp',
             'INSTALLED_VERSION'                          => 'acfwp_installed_version',
-            'VERSION'                                    => '4.0.6.1',
+            'VERSION'                                    => '4.0.7',
             'TEXT_DOMAIN'                                => 'advanced-coupons-for-woocommerce',
             'THEME_TEMPLATE_PATH'                        => 'advanced-coupons-for-woocommerce',
             'META_PREFIX'                                => '_acfw_',
@@ -220,7 +220,10 @@ class Plugin_Constants {
 
             // Store Credits.
             'MAX_STORE_CREDITS_AMOUNT_REDEEM'            => 'acfw_max_store_credits_amount_redeem',
+            'MIN_STORE_CREDITS_AMOUNT_REDEEM'            => 'acfw_min_store_credits_amount_redeem',
             'AUTO_REVOKE_CASHBACK_COUPON_STORE_CREDITS'  => 'acfw_auto_revoke_cashback_coupon_store_credits',
+            'STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT'  => 'acfw_store_credits_auto_apply_available_amount',
+            'STORE_CREDITS_MANUALLY_REMOVED'             => 'acfw_store_credits_manually_removed',
         );
 
         if ( $main_plugin ) {

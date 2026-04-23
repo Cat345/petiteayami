@@ -18,8 +18,6 @@ use function YOOtheme\trans;
 class TaxonomyType
 {
     /**
-     * @param WP_Taxonomy $taxonomy
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Taxonomy $taxonomy): array
@@ -103,8 +101,6 @@ class TaxonomyType
     }
 
     /**
-     * @param WP_Taxonomy $taxonomy
-     *
      * @return array<string, FieldConfig>
      */
     public static function configHierarchicalFields(WP_Taxonomy $taxonomy): array
@@ -138,9 +134,11 @@ class TaxonomyType
                 'args' => [
                     'order' => [
                         'type' => 'String',
+                        'defaultValue' => 'term_order',
                     ],
                     'order_direction' => [
                         'type' => 'String',
+                        'defaultValue' => 'ASC',
                     ],
                 ],
                 'metadata' => [
@@ -155,7 +153,6 @@ class TaxonomyType
                                 'order' => [
                                     'label' => trans('Order'),
                                     'type' => 'select',
-                                    'default' => 'term_order',
                                     'options' => [
                                         trans('Term Order') => 'term_order',
                                         trans('Alphabetical') => 'name',
@@ -164,7 +161,6 @@ class TaxonomyType
                                 'order_direction' => [
                                     'label' => trans('Direction'),
                                     'type' => 'select',
-                                    'default' => 'ASC',
                                     'options' => [
                                         trans('Ascending') => 'ASC',
                                         trans('Descending') => 'DESC',
@@ -201,18 +197,22 @@ class TaxonomyType
                     ],
                     'date_range' => [
                         'type' => 'String',
+                        'defaultValue' => 'relative',
                     ],
                     'date_relative' => [
                         'type' => 'String',
+                        'defaultValue' => 'next',
                     ],
                     'date_relative_value' => [
                         'type' => 'Int',
                     ],
                     'date_relative_unit' => [
                         'type' => 'String',
+                        'defaultValue' => 'day',
                     ],
                     'date_relative_unit_this' => [
                         'type' => 'String',
+                        'defaultValue' => 'day',
                     ],
                     'date_relative_start_today' => [
                         'type' => 'Boolean',
@@ -231,15 +231,19 @@ class TaxonomyType
                     ],
                     'offset' => [
                         'type' => 'Int',
+                        'defaultValue' => 0,
                     ],
                     'limit' => [
                         'type' => 'Int',
+                        'defaultValue' => 10,
                     ],
                     'order' => [
                         'type' => 'String',
+                        'defaultValue' => 'date',
                     ],
                     'order_direction' => [
                         'type' => 'String',
+                        'defaultValue' => 'DESC',
                     ],
                     'order_alphanum' => [
                         'type' => 'Boolean',
@@ -266,8 +270,9 @@ class TaxonomyType
                         ],
                         '_date' => [
                             'label' => trans('Filter by Date'),
-                            'description' =>
+                            'description' => trans(
                                 'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                            ),
                             'type' => 'grid',
                             'width' => '1-2',
                             'fields' => [
@@ -286,7 +291,6 @@ class TaxonomyType
                                 ],
                                 'date_range' => [
                                     'type' => 'select',
-                                    'default' => 'relative',
                                     'options' => [
                                         trans('Relative Range') => 'relative',
                                         trans('Fixed Range') => 'fixed',
@@ -303,7 +307,6 @@ class TaxonomyType
                             'fields' => [
                                 'date_relative' => [
                                     'type' => 'select',
-                                    'default' => 'next',
                                     'options' => [
                                         trans('Is in the next') => 'next',
                                         trans('Is in this') => 'this',
@@ -317,11 +320,10 @@ class TaxonomyType
                                         'class' => 'uk-form-width-xsmall',
                                         'placeholder' => '∞',
                                     ],
-                                    'show' => 'date_relative !== \'this\'',
+                                    'show' => "date_relative !== 'this'",
                                 ],
                                 'date_relative_unit' => [
                                     'type' => 'select',
-                                    'default' => 'day',
                                     'options' => [
                                         trans('Days') => 'day',
                                         trans('Weeks') => 'week',
@@ -331,34 +333,35 @@ class TaxonomyType
                                         trans('Calendar Months') => 'month_calendar',
                                         trans('Calendar Years') => 'year_calendar',
                                     ],
-                                    'show' => 'date_relative !== \'this\'',
+                                    'show' => "date_relative !== 'this'",
                                 ],
                                 'date_relative_unit_this' => [
                                     'type' => 'select',
-                                    'default' => 'day',
                                     'options' => [
                                         trans('Day') => 'day',
                                         trans('Week') => 'week',
                                         trans('Month') => 'month',
                                         trans('Year') => 'year',
                                     ],
-                                    'show' => 'date_relative === \'this\'',
+                                    'show' => "date_relative === 'this'",
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'relative\'',
+                            'show' => "date_column && date_range === 'relative'",
                         ],
                         'date_relative_start_today' => [
                             'type' => 'checkbox',
                             'text' => trans('Start today'),
-                            'description' =>
+                            'description' => trans(
                                 'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
-                            'enable' => 'date_relative !== \'this\'',
-                            'show' => 'date_column && date_range === \'relative\'',
+                            ),
+                            'enable' => "date_relative !== 'this'",
+                            'show' => "date_column && date_range === 'relative'",
                         ],
                         '_date_range_fixed' => [
                             'type' => 'grid',
-                            'description' =>
+                            'description' => trans(
                                 'Set only one date to load all posts either before or after that date.',
+                            ),
                             'width' => '1-2',
                             'fields' => [
                                 'date_start' => [
@@ -370,12 +373,13 @@ class TaxonomyType
                                     'type' => 'datetime',
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'fixed\'',
+                            'show' => "date_column && date_range === 'fixed'",
                         ],
                         '_date_range_custom' => [
                             'type' => 'grid',
-                            'description' =>
+                            'description' => trans(
                                 'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                            ),
                             'width' => '1-2',
                             'fields' => [
                                 'date_start_custom' => [
@@ -398,7 +402,7 @@ class TaxonomyType
                                     ],
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'custom\'',
+                            'show' => "date_column && date_range === 'custom'",
                         ],
                         '_offset' => [
                             'description' => trans(
@@ -411,7 +415,6 @@ class TaxonomyType
                                 'offset' => [
                                     'label' => trans('Start'),
                                     'type' => 'number',
-                                    'default' => 0,
                                     'modifier' => 1,
                                     'attrs' => [
                                         'min' => 1,
@@ -421,7 +424,6 @@ class TaxonomyType
                                 'limit' => [
                                     'label' => trans('Quantity'),
                                     'type' => 'limit',
-                                    'default' => 10,
                                     'attrs' => [
                                         'min' => 1,
                                     ],
@@ -436,7 +438,6 @@ class TaxonomyType
                                 'order' => [
                                     'label' => trans('Order'),
                                     'type' => 'select',
-                                    'default' => 'date',
                                     'options' => [
                                         [
                                             'evaluate' =>
@@ -450,7 +451,6 @@ class TaxonomyType
                                 'order_direction' => [
                                     'label' => trans('Direction'),
                                     'type' => 'select',
-                                    'default' => 'DESC',
                                     'options' => [
                                         ['text' => trans('Ascending'), 'value' => 'ASC'],
                                         ['text' => trans('Descending'), 'value' => 'DESC'],
@@ -516,11 +516,6 @@ class TaxonomyType
      */
     public static function children(WP_Term $term, array $args)
     {
-        $args += [
-            'order' => 'term_order',
-            'order_direction' => 'ASC',
-        ];
-
         $query = [
             'taxonomy' => $args['taxonomy'],
             'orderby' => $args['order'],

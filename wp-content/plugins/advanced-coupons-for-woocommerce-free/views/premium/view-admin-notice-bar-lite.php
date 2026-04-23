@@ -89,7 +89,7 @@ exit;} // Exit if accessed directly ?>
             sprintf(
                 /* translators: 1: opening link tag, 2: closing link tag */
                 __( "You're using the free version of the Advanced Coupons plugin. To unlock more features consider %1\$supgrading to Premium%2\$s", 'advanced-coupons-for-woocommerce-free' ),
-                '<a href="' . \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'litebar' ) . ' target="_blank">',
+                '<a href="' . \ACFWF()->Helper_Functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'litebar' ) . '" target="_blank">',
                 '</a>'
             ),
         );

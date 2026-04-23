@@ -33,7 +33,7 @@ if ( ! class_exists( 'WFOP_Optin_Form' ) ) {
 				$input_name = isset( $field['InputName'] ) ? $field['InputName'] : '';
 				$label      = isset( $field['label'] ) ? $field['label'] : '';
 				if ( ! empty( $input_name ) && ! empty( $label ) ) {
-					$this->add_select( $form_id, $input_name, __( $label, 'funnel-builder' ), $options, $default );
+					$this->add_select( $form_id, $input_name, $label, $options, $default );
 				}
 			}
 		}
@@ -62,11 +62,10 @@ if ( ! class_exists( 'WFOP_Optin_Form' ) ) {
 
 		$font_side_default = [ 'default' => '14px', 'unit' => 'px' ];
 		$default           = '|400|||||||';
-
 		$label_selector = '%%order_class%% .bwfac_form_sec > label, %%order_class%% .bwfac_form_sec.bwfac_form_field_radio label';
 		$this->add_typography( $form_id, $key . '_label_typography', $label_selector, '', $default, $condition, $font_side_default );
-
 		$this->add_color( $form_id, $key . '_label_color', $label_selector, __( 'Text', 'funnel-builder' ), '', $condition );
+
 		$this->add_color( $form_id, $key . '_mark_required_color', '%%order_class%% .bwfac_form_sec > label > span,  %%order_class%% .bwfac_form_sec.bwfac_form_field_radio label > span', __( 'Asterisk', 'funnel-builder' ), '', $condition );
 
 		$this->add_subheading( $form_id, __( 'Input Typography', 'funnel-builder' ) );
@@ -78,6 +77,7 @@ if ( ! class_exists( 'WFOP_Optin_Form' ) ) {
 
 		$this->add_subheading( $form_id, __( 'Input Color', 'funnel-builder' ) );
 		$this->add_color( $form_id, $key . '_field_text_color', '%%order_class%% .bwfac_form_sec .wffn-optin-input, %%order_class%% .bwfac_form_sec .wffn-optin-input::placeholder', __( 'Text', 'funnel-builder' ), '#3F3F3F' );
+
 		$this->add_background_color( $form_id, $key . '_field_background_color', '%%order_class%% .bwfac_form_sec .wffn-optin-input', '#ffffff', __( 'Background', 'funnel-builder' ) );
 
 		$this->add_select( $form_id, 'input_size', __( 'Field Size', 'funnel-builder' ), self::get_input_fields_sizes(), '12px' );

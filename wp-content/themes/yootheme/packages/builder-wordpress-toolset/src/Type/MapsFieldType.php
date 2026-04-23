@@ -51,7 +51,6 @@ class MapsFieldType
 
     /**
      * @param mixed $value
-     * @return ?string
      */
     public static function coordinates($value): ?string
     {

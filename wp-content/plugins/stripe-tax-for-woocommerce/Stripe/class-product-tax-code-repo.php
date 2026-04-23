@@ -40,6 +40,15 @@ abstract class Product_Tax_Code_Repo {
 			case 'fee':
 				return Options::get_fee_tax_code();
 			case 'line_item':
+				$product = wc_get_product( $item_id );
+
+				if ( $product ) {
+					$product_parent_id = $product->get_parent_id();
+
+					if ( 0 !== $product_parent_id ) {
+						$item_id = $product_parent_id;
+					}
+				}
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 				$result = $wpdb->get_row(
 					$wpdb->prepare(

@@ -10,6 +10,7 @@ namespace WPDesk\FS\TableRate\ImporterExporter\Importer;
 use WC_Admin_Settings;
 use WPDesk\FS\TableRate\ImporterExporter\Importer\Exception\ImportCSVException;
 use WPDesk\FS\TableRate\Rule\Condition\ConditionsFactory;
+use WPDesk\FS\TableRate\ShippingMethod\CommonMethodSettings;
 use WPDesk_Flexible_Shipping;
 
 /**
@@ -70,7 +71,7 @@ class CSV extends AbstractImporter {
 	 */
 	private function convert_rows_to_named_values( array $csv_array ) {
 		$first   = true;
-		$columns = array();
+		$columns = [];
 		foreach ( $csv_array as $row_key => $csv_row ) {
 			if ( $first ) {
 				$columns = $csv_row;
@@ -94,7 +95,7 @@ class CSV extends AbstractImporter {
 	 * @throws ImportCSVException Exception.
 	 */
 	private function new_shipping_method( array $csv_row, $import_row_count ) {
-		$new_shipping_method = array( 'method_enabled' => 'no' );
+		$new_shipping_method = [ 'method_enabled' => 'no' ];
 		if ( ! isset( $csv_row['Method Title'] ) || '' === trim( $csv_row['Method Title'] ) ) {
 			throw new ImportCSVException(
 				__(
@@ -104,11 +105,12 @@ class CSV extends AbstractImporter {
 			);
 		}
 
-		$new_shipping_method['id']                 = $this->flexible_shipping_method->shipping_method_next_id( $this->shipping_methods );
-		$new_shipping_method['id_for_shipping']    = $this->flexible_shipping_method->id . '_' . $this->flexible_shipping_method->instance_id . '_' . $new_shipping_method['id'];
-		$new_shipping_method['method_title']       = $this->get_new_method_title( $csv_row['Method Title'] );
-		$new_shipping_method['instance_id']        = $this->flexible_shipping_method->instance_id;
-		$new_shipping_method['method_description'] = $csv_row['Method Description'];
+		$new_shipping_method['id']                                   = $this->flexible_shipping_method->shipping_method_next_id( $this->shipping_methods );
+		$new_shipping_method['id_for_shipping']                      = $this->flexible_shipping_method->id . '_' . $this->flexible_shipping_method->instance_id . '_' . $new_shipping_method['id'];
+		$new_shipping_method['method_title']                         = $this->get_new_method_title( $csv_row['Method Title'] );
+		$new_shipping_method['instance_id']                          = $this->flexible_shipping_method->instance_id;
+		$new_shipping_method['method_description']                   = $csv_row['Method Description'];
+		$new_shipping_method[ CommonMethodSettings::METHOD_LOGO_ID ] = isset( $csv_row['Method Logo ID'] ) ? absint( $csv_row['Method Logo ID'] ) : 0;
 
 		if ( '' !== trim( $csv_row['Free Shipping'] ) && ! is_numeric( str_replace( ',', '.', $csv_row['Free Shipping'] ) ) ) {
 			throw new ImportCSVException(
@@ -136,7 +138,7 @@ class CSV extends AbstractImporter {
 		$new_shipping_method['cart_calculation']          = isset( $csv_row['Cart Calculation'] ) ? $csv_row['Cart Calculation'] : '';
 		if ( ! in_array(
 			$new_shipping_method['method_calculation_method'],
-			array( 'sum', 'lowest', 'highest' ),
+			[ 'sum', 'lowest', 'highest' ],
 			true
 		) ) {
 			throw new ImportCSVException(
@@ -155,7 +157,7 @@ class CSV extends AbstractImporter {
 		if ( 'yes' !== $new_shipping_method['method_default'] ) {
 			$new_shipping_method['method_default'] = 'no';
 		}
-		$new_shipping_method['method_rules'] = array();
+		$new_shipping_method['method_rules'] = [];
 
 		return $new_shipping_method;
 	}
@@ -195,12 +197,12 @@ class CSV extends AbstractImporter {
 	 * @throws ImportCSVException Exception.
 	 */
 	private function maybe_populate_and_create_shipping_classes( $shipping_classes ) {
-		$data = array();
+		$data = [];
 
 		$rule_shipping_classes = explode( ',', trim( $shipping_classes ) );
 
 		foreach ( $rule_shipping_classes as $rule_shipping_class ) {
-			if ( ! in_array( $rule_shipping_class, array( 'all', 'any', 'none' ), true ) ) {
+			if ( ! in_array( $rule_shipping_class, [ 'all', 'any', 'none' ], true ) ) {
 				$term_id = $this->find_shipping_class_by_name( $rule_shipping_class );
 				if ( null === $term_id ) {
 					$term_id = $this->create_shipping_class( $rule_shipping_class, $rule_shipping_class );
@@ -224,7 +226,7 @@ class CSV extends AbstractImporter {
 	 * @throws ImportCSVException Exception.
 	 */
 	private function new_rule( array $csv_row, $import_row_count ) {
-		$rule             = array();
+		$rule             = [];
 		$rule['based_on'] = $csv_row['Based on'];
 
 		$conditions = array_keys( ( new ConditionsFactory() )->get_conditions() );
@@ -242,13 +244,13 @@ class CSV extends AbstractImporter {
 		$rule['cost_per_order'] = $this->get_numeric_value_from_row( $csv_row, 'Cost per order', $import_row_count );
 
 		// Conditions.
-		$rule['conditions'] = array();
+		$rule['conditions'] = [];
 
-		$condition = array(
+		$condition = [
 			'condition_id' => $csv_row['Based on'],
 			'min'          => $this->get_numeric_value_from_row( $csv_row, 'Min', $import_row_count ),
 			'max'          => $this->get_numeric_value_from_row( $csv_row, 'Max', $import_row_count ),
-		);
+		];
 
 		if ( ! empty( $condition['min'] ) || ! empty( $condition['max'] ) ) {
 			$rule['conditions'][] = $condition;
@@ -258,10 +260,10 @@ class CSV extends AbstractImporter {
 		$rule['shipping_class'] = trim( $csv_row['Shipping Class'] );
 
 		if ( ! empty( $rule['shipping_class'] ) && 'all' !== $rule['shipping_class'] ) {
-			$rule['conditions'][] = array(
+			$rule['conditions'][] = [
 				'condition_id'   => 'shipping_class',
 				'shipping_class' => $this->maybe_populate_and_create_shipping_classes( $rule['shipping_class'] ),
-			);
+			];
 		}
 
 		// Special Actions.
@@ -277,11 +279,11 @@ class CSV extends AbstractImporter {
 		$cost_additional = $this->get_numeric_value_from_row( $csv_row, 'Additional cost', $import_row_count );
 
 		if ( ! empty( $cost_additional ) ) {
-			$rule['additional_costs'][] = array(
+			$rule['additional_costs'][] = [
 				'additional_cost' => $cost_additional,
 				'per_value'       => $this->get_numeric_value_from_row( $csv_row, 'Value', $import_row_count ),
 				'based_on'        => $rule['based_on'],
-			);
+			];
 		}
 
 		return $rule;
@@ -299,10 +301,10 @@ class CSV extends AbstractImporter {
 		$first                    = true;
 		$current_method_title     = '';
 		$method_title             = '';
-		$imported_shipping_method = array();
+		$imported_shipping_method = [];
 		$import_row_count         = 0;
 		foreach ( $csv_array as $row_key => $csv_row ) {
-			$import_row_count ++;
+			++$import_row_count;
 			$new_method = false;
 			if ( ! $first ) {
 				if ( ! isset( $csv_row['Method Title'] ) || $current_method_title !== $csv_row['Method Title'] || ! isset( $csv_row['Based on'] ) || '' === $csv_row['Based on'] ) {

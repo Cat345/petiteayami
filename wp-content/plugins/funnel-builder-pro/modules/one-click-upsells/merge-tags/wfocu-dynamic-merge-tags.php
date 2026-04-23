@@ -2,7 +2,7 @@
 if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 	class WFOCU_Dynamic_Merge_Tags {
 
-		public static $threshold_to_date = 30;
+		public static $threshold_to_date  = 30;
 		protected static $_data_shortcode = array();
 
 		public static function init() {
@@ -21,7 +21,7 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 		public static function maybe_parse_merge_tags( $content = '' ) {
 			$get_all      = self::get_all_tags();
 			$get_all_tags = wp_list_pluck( $get_all, 'tag' );
-			//iterating over all the merge tags
+			// iterating over all the merge tags
 			if ( $get_all_tags && is_array( $get_all_tags ) && count( $get_all_tags ) > 0 ) {
 				foreach ( $get_all_tags as $tag ) {
 
@@ -29,23 +29,20 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 					$re      = sprintf( '/\{{%s(.*?)\}}/', $tag );
 					$str     = $content;
 
-					//trying to find match w.r.t current tag
+					// trying to find match w.r.t current tag
 					preg_match_all( $re, $str, $matches );
 
-
-					//if match found
+					// if match found
 					if ( $matches && is_array( $matches ) && count( $matches ) > 0 ) {
 
-
-						//iterate over the found matches
+						// iterate over the found matches
 						foreach ( $matches[0] as $exact_match ) {
 
-							//preserve old match
+							// preserve old match
 							$old_match = $exact_match;
 
-
-							$single = str_replace( "{{", "", $old_match );
-							$single = str_replace( "}}", "", $single );
+							$single = str_replace( '{{', '', $old_match );
+							$single = str_replace( '}}', '', $single );
 
 							if ( method_exists( __CLASS__, $single ) ) {
 								$get_parsed_value = call_user_func( array( __CLASS__, $single ) );
@@ -61,91 +58,90 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 
 		public static function get_all_tags() {
 
-
 			$tags = array(
 				array(
-					'name' => __( "Customer ID", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_user_id'
+					'name' => __( 'Customer ID', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_user_id',
 				),
 				array(
-					'name' => __( "Customer First Name", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_first_name'
+					'name' => __( 'Customer First Name', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_first_name',
 				),
 				array(
-					'name' => __( "Customer Last Name", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_last_name'
+					'name' => __( 'Customer Last Name', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_last_name',
 				),
 				array(
-					'name' => __( "Customer Full Name Uppercase", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_full_name_cap'
+					'name' => __( 'Customer Full Name Uppercase', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_full_name_cap',
 				),
 				array(
-					'name' => __( "Customer First Name Uppercase", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_first_name_cap'
+					'name' => __( 'Customer First Name Uppercase', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_first_name_cap',
 				),
 				array(
-					'name' => __( "Customer Email", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_email'
+					'name' => __( 'Customer Email', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_email',
 				),
 				array(
-					'name' => __( "Customer Phone", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_phone'
+					'name' => __( 'Customer Phone', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_phone',
 				),
 				array(
-					'name' => __( "Order Number", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_no'
+					'name' => __( 'Order Number', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_no',
 				),
 				array(
-					'name' => __( "Order Status", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_status'
+					'name' => __( 'Order Status', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_status',
 				),
 				array(
-					'name' => __( "Order Date", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_date'
+					'name' => __( 'Order Date', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_date',
 				),
 				array(
-					'name' => __( "Order Total", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_total'
+					'name' => __( 'Order Total', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_total',
 				),
 				array(
-					'name' => __( "Order Items Count", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_itemscount'
+					'name' => __( 'Order Items Count', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_itemscount',
 				),
 				array(
-					'name' => __( "Order Shipping method", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_shipping_method'
+					'name' => __( 'Order Shipping method', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_shipping_method',
 				),
 				array(
-					'name' => __( "Order payment method", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_payment_method'
+					'name' => __( 'Order payment method', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_payment_method',
 				),
 				array(
-					'name' => __( "Order Billing Country", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_billing_country'
+					'name' => __( 'Order Billing Country', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_billing_country',
 				),
 				array(
-					'name' => __( "Order Shipping Country", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_shipping_country'
+					'name' => __( 'Order Shipping Country', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_shipping_country',
 				),
 				array(
-					'name' => __( "Order Billing Address", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_billing_address'
+					'name' => __( 'Order Billing Address', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_billing_address',
 				),
 				array(
-					'name' => __( "Order Shipping Address", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_shipping_address'
+					'name' => __( 'Order Shipping Address', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_shipping_address',
 				),
 				array(
-					'name' => __( "Order Customer Note", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_customer_note'
+					'name' => __( 'Order Customer Note', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_customer_note',
 				),
 				array(
-					'name' => __( "Users IP Address", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'order_ip'
+					'name' => __( 'Users IP Address', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'order_ip',
 				),
 				array(
-					'name' => __( "Customer Provided Note", 'woofunnels-upstroke-one-click-upsell' ),
-					'tag'  => 'customer_provided_note'
+					'name' => __( 'Customer Provided Note', 'woofunnels-upstroke-one-click-upsell' ),
+					'tag'  => 'customer_provided_note',
 				),
 
 				/**
@@ -169,8 +165,7 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 				 * 'name' => __( "Subscription End Date", 'woofunnels-upstroke-one-click-upsell' ),
 				 * 'tag'  => 'subscription_end_date'
 				 * ),
-				 **/
-
+				 */
 
 			);
 
@@ -181,7 +176,7 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 
 			$tags = array(
 				array(
-					'name' => __( "Countdown Timer", 'woofunnels-upstroke-one-click-upsell' ),
+					'name' => __( 'Countdown Timer', 'woofunnels-upstroke-one-click-upsell' ),
 					'tag'  => 'countdown_timer style="square_fill" align="left"',
 					'desc' => '2 attributes allowed<br/>style: square_fill | default & align: left | center | right',
 				),
@@ -236,7 +231,7 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 				return '{' . __FUNCTION__ . '}';
 			}
 
-			return ucwords( self::customer_first_name() . " " . self::customer_last_name() );
+			return ucwords( self::customer_first_name() . ' ' . self::customer_last_name() );
 		}
 
 		public static function customer_first_name() {
@@ -268,7 +263,7 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 				return '{' . __FUNCTION__ . '}';
 			}
 
-			return strtoupper( self::customer_first_name() . " " . self::customer_last_name() );
+			return strtoupper( self::customer_first_name() . ' ' . self::customer_last_name() );
 		}
 
 		public static function order_no() {
@@ -391,13 +386,12 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 			$comments = array();
 			if ( is_array( $order->get_customer_order_notes() ) && count( $order->get_customer_order_notes() ) > 0 ) {
 
-
 				foreach ( $order->get_customer_order_notes() as $comment ) {
 					$comments[] = $comment->comment_content;
 				}
 			}
 
-			return implode( "<br/>", $comments );
+			return implode( '<br/>', $comments );
 		}
 
 		public static function customer_provided_note() {
@@ -514,7 +508,6 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 
 				$subscription = current( $subscriptions );
 
-
 				$date_type = 'end_date';
 
 				if ( 0 === $subscription->get_time( $date_type, 'gmt' ) ) {
@@ -539,7 +532,6 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 
 				$subscription = current( $subscriptions );
 
-
 				return $subscription->get_date_to_display( 'last_order_date_created' );
 			}
 
@@ -547,9 +539,12 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 		}
 
 		public static function process_order_data( $attr ) {
-			$attr = shortcode_atts( array(
-				'key' => '',
-			), $attr );
+			$attr = shortcode_atts(
+				array(
+					'key' => '',
+				),
+				$attr
+			);
 
 			$all_tags     = self::get_all_tags();
 			$get_all_tags = wp_list_pluck( $all_tags, 'tag' );
@@ -570,13 +565,11 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 				return '{' . $attr['key'] . '}';
 			}
 
-
 			return call_user_func( array( 'WFOCU_Dynamic_Merge_Tags', $attr['key'] ) );
 		}
 
 
 		public static function get_fallback( $key ) {
-
 
 			$user = wp_get_current_user();
 			if ( ! $user instanceof WP_User || empty( $user->ID ) ) {
@@ -617,9 +610,9 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 				return '{' . __FUNCTION__ . '}';
 			}
 
-			return WFOCU_WC_Compatibility::get_order_data( $order, $key );
+			$value = WFOCU_WC_Compatibility::get_order_data( $order, $key );
+			return is_string( $value ) ? esc_html( $value ) : $value;
 		}
-
 	}
 
 	WFOCU_Dynamic_Merge_Tags::init();
@@ -630,6 +623,5 @@ if ( ! class_exists( 'WFOCU_Dynamic_Merge_Tags' ) ) {
 		}
 
 		return call_user_func( array( 'WFOCU_Dynamic_Merge_Tags', $key ) );
-
 	}
 }

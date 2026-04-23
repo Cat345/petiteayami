@@ -113,19 +113,19 @@
     "src": "packages/acfwp-checkout-block/index.tsx"
   },
   "packages/acfwp-edit-advanced-coupon/index-legacy.ts": {
-    "file": "packages/acfwp-edit-advanced-coupon/index-legacy.5dfa4ca8.js",
+    "file": "packages/acfwp-edit-advanced-coupon/index-legacy.2917a84e.js",
     "isEntry": true,
     "src": "packages/acfwp-edit-advanced-coupon/index-legacy.ts"
   },
   "packages/acfwp-edit-advanced-coupon/index.css": {
-    "file": "assets/index-e5466a30.css",
+    "file": "assets/index-813b5fa8.css",
     "src": "packages/acfwp-edit-advanced-coupon/index.css"
   },
   "packages/acfwp-edit-advanced-coupon/index.ts": {
     "css": [
-      "assets/index-e5466a30.css"
+      "assets/index-813b5fa8.css"
     ],
-    "file": "packages/acfwp-edit-advanced-coupon/index.a11a6248.js",
+    "file": "packages/acfwp-edit-advanced-coupon/index.9a28d2b7.js",
     "isEntry": true,
     "src": "packages/acfwp-edit-advanced-coupon/index.ts"
   },
@@ -201,6 +201,16 @@
     "file": "packages/acfwp-mu-license/index.06ba5887.js",
     "isEntry": true,
     "src": "packages/acfwp-mu-license/index.ts"
+  },
+  "packages/acfwp-order-pay/index-legacy.ts": {
+    "file": "packages/acfwp-order-pay/index-legacy.a299f172.js",
+    "isEntry": true,
+    "src": "packages/acfwp-order-pay/index-legacy.ts"
+  },
+  "packages/acfwp-order-pay/index.ts": {
+    "file": "packages/acfwp-order-pay/index.9d9bd0dd.js",
+    "isEntry": true,
+    "src": "packages/acfwp-order-pay/index.ts"
   },
   "vite/legacy-polyfills-legacy": {
     "file": "polyfills-legacy.2213d714.js",

@@ -34,7 +34,7 @@ class ElementTransform
 
         $this->customAttributes($node);
 
-        if (!($type->element || $type->container)) {
+        if (!$type->element && !$type->container) {
             return;
         }
 

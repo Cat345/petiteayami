@@ -38,7 +38,7 @@ class BWFAN_Compatibilities {
 			'plugins/class-bwfan-compatibility-with-gtranslate.php'                    => function_exists( 'bwfan_is_gtranslate_active' ) && bwfan_is_gtranslate_active(),
 
 			//rest
-			'rest/class-bwfan-compability-with-permatters.php'                         => defined( 'PERFMATTERS_VERSION' ),
+			'rest/class-bwfan-compatibility-with-perfmatters.php'                      => defined( 'PERFMATTERS_VERSION' ),
 			'rest/class-bwfan-compatibilities-with-force-login.php'                    => function_exists( 'v_forcelogin_rest_access' ),
 			'rest/class-bwfan-compatibilities-with-logged-in-only.php'                 => function_exists( 'logged_in_only_rest_api' ),
 			'rest/class-bwfan-compatibilities-with-password-protected.php'             => class_exists( 'Password_Protected' ),
@@ -50,6 +50,8 @@ class BWFAN_Compatibilities {
 			'rest/class-bwfan-compatibility-with-image-optimisation.php'               => defined( 'IMAGE_OPTIMIZATION_VERSION' ),
 			'rest/class-bwfan-compatibility-with-atom-stock-manager.php'               => defined( 'ATUM_VERSION' ),
 			'rest/class-bwfan-compatibility-with-security-by-cleantalk.php'            => defined( 'SPBC_VERSION' ),
+			'rest/class-bwfan-compatibility-with-shield-security.php'                 => class_exists( 'ICWP_WPSF_Shield_Security' ),
+			'rest/class-bwfan-compatibility-with-aios.php'                            => defined( 'AIO_WP_SECURITY_VERSION' ),
 			'rest/class-bwfan-compatibility-with-tec.php'                              => class_exists( 'Tribe__Events__Main' ),
 			'rest/class-bwfan-compatibility-with-hostinger-reach.php'                  => class_exists( 'Hostinger\Reach\Jobs\ActionScheduler' ),
 

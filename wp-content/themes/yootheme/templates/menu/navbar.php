@@ -48,7 +48,7 @@ foreach ($items as $item) {
 
     // Markup
     if ($title && $subtitle && $image) {
-        $title = "<div class=\"uk-grid uk-grid-small" . ($level >= 1 && ($config("$menuposition.image_align") == 'center') ? ' uk-flex-middle' : '') . "\"><div class=\"uk-width-auto\">{$image}</div><div class=\"uk-width-expand\">{$title}</div></div>";
+        $title = '<div class="uk-grid uk-grid-small' . ($level >= 1 && ($config("$menuposition.image_align") == 'center') ? ' uk-flex-middle' : '') . "\"><div class=\"uk-width-auto\">{$image}</div><div class=\"uk-width-expand\">{$title}</div></div>";
     } elseif ($title && $subtitle) {
         $title = "<div>{$title}</div>";
     } elseif ($image) {
@@ -203,9 +203,7 @@ foreach ($items as $item) {
         } elseif ($item->type === 'heading') {
             echo "{$indention}<li{$this->attrs($attrs)}>{$title}</li>";
 
-            if ($children) {
-                echo $this->self(['items' => $item->children, 'level' => $level]);
-            }
+            echo $this->self(['items' => $item->children, 'level' => $level]);
 
             continue;
         } else {

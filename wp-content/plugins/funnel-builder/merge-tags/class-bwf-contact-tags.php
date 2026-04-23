@@ -6,13 +6,13 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 		/**
 		 * @var WooFunnels_Contact $contact
 		 */
-		private $contact = null;
+		private $contact   = null;
 		public $shortcodes = array(
 			'id',
 			'first_name',
 			'last_name',
 			'email',
-			'custom'
+			'custom',
 		);
 
 		public function __construct() {
@@ -31,7 +31,7 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -49,7 +49,6 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 		}
 
 		public function get_id() {
-
 		}
 
 		public function get_first_name( $attr ) {
@@ -86,14 +85,13 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 			return $this->get_default( $attr, 'custom' );
 		}
 
-	public function get_default( $attr, $key ) {
-		if ( isset( $attr['default'] ) ) {
-			return esc_html( $attr['default'] );
+		public function get_default( $attr, $key ) {
+			if ( isset( $attr['default'] ) ) {
+				return esc_html( $attr['default'] );
+			}
+
+			return '';
 		}
-
-		return '';
-
-	}
 
 		public function is_valid_contact( $bwf_contact = '' ) {
 			if ( empty( $bwf_contact ) ) {
@@ -108,8 +106,7 @@ if ( ! class_exists( 'BWF_Contact_Tags' ) ) {
 
 		public function maybe_set_contact() {
 
-
-			$content = filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW );
+			$content = sanitize_text_field( filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW ) );
 
 			if ( empty( $content ) ) {
 				return;

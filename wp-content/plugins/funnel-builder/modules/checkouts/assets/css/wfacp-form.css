@@ -1107,7 +1107,7 @@ body button.button.wfacp-coupon-btn:disabled[disabled] {
 
 #wfacp-e-form .wfacp-form-control-wrapper {
 
-    padding: 0 8px;;
+    padding: 0 8px;
     margin-bottom: 16px;
     position: relative;
 }
@@ -1206,7 +1206,7 @@ body button.button.wfacp-coupon-btn:disabled[disabled] {
 
 
 #wfacp-e-form form.woocommerce-form.woocommerce-form-login.login p.lost_password {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 
@@ -1453,7 +1453,7 @@ body #wfacp-sec-wrapper  #account_password_field span.woocommerce-input-wrapper.
 
 #wfacp-sec-wrapper .show-password-input.display-password::after,
 #wfacp-sec-wrapper .show-password-input.display-password::after {
-    color: #585858
+    color: #585858;
 }
 
 /* ORDER SUMMARY SECTION CSS */
@@ -1516,34 +1516,7 @@ body #wfacp-sec-wrapper  #account_password_field span.woocommerce-input-wrapper.
     background-color: transparent;
 }
 
-#wfacp-e-form .wfacp_order_summary .wfacp-pro-thumb {
-    display: inline-block;
-    position: relative;
-}
-
-.wfacp-qty-ball {
-    position: absolute;
-    right: -11px;
-    top: -11px;
-    z-index: 10;
-}
-
-body .wfacp-qty-count {
-    display: inline-block;
-    vertical-align: top;
-    margin: 6px 3px 0 5px;
-    padding: 0 5px;
-    min-width: 22px;
-    height: 22px;
-    border-radius: 11px;
-    background-color: #999999;
-    color: #fff;
-    font-size: 11px;
-    line-height: 22px;
-    text-align: center;
-    z-index: 26;
-}
-
+#wfacp-e-form .wfacp_order_summary .wfacp-pro-thumb,
 .wfacp-pro-thumb {
     display: inline-block;
     position: relative;
@@ -1654,7 +1627,7 @@ body .wfacp_main_form .woocommerce-checkout .button.wfacp_next_page_button:hover
 }
 
 #wfacp-e-form .wfacp-form .wfacp_order_summary_layout_9 {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 #wfacp-e-form .wfacp_order_summary_layout_9 .wfacp-pro-thumb {
@@ -2032,7 +2005,7 @@ body #wfacp-e-form .wfacp-coupon-page + .wfacp_coupon_field_box .wfacp_coupon_re
 }
 
 body #wfacp-e-form .wfacp_coupon_error_msg {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 #wfacp-e-form .wfacp_main_form .aelia_wc_eu_vat_assistant.wfacp-col-left-half.wfacp-anim-wrap label.wfacp-form-control-label,
@@ -2086,7 +2059,7 @@ body #wfacp-e-form .wfacp-login-wrapper {
 }
 
 #wfacp-e-form .wfacp_main_form .wfacp-row .wfob_bump_wrapper {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 #wfacp-e-form .wfacp_woocommerce_form_coupon.wfacp_template_9_coupon .wfacp-coupon-page {
@@ -2101,7 +2074,7 @@ body #wfacp-e-form .wfacp-login-wrapper {
 
 
 #wfacp-e-form .wfacp_main_form .wfacp-login-wrapper .wc-social-login.form-row-wide {
-    padding: 0 8px;;
+    padding: 0 8px;
     margin: 0 0 16px;
 }
 
@@ -2157,22 +2130,26 @@ body .wfacp_form_cart .cart_item .product-image {
 }
 
 
-#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr td {
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr td,
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .wfacp_border .wfacp_shipping_table.wfacp_shipping_recurring tr td {
     padding-top: 16px;
 }
 
-#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td {
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td,
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .wfacp_border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td {
     padding-top: 0;
 }
 
 #wfacp-e-form .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_remove_msg,
 #wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border,
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .wfacp_border,
 #wfacp-e-form .wfacp_main_form .woocommerce-terms-and-conditions-wrapper {
     margin-top: 16px;
 }
 
 #wfacp-e-form .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_remove_msg:empty,
-#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border:first-child {
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .border:first-child,
+#wfacp-e-form .wfacp_main_form .wfacp_shipping_calculator .wfacp_border:first-child {
     margin-top: 0;
 }
 
@@ -2743,7 +2720,7 @@ body #wfacp-e-form .wfacp_main_form.woocommerce .select2-container--default .sel
 }
 
 body #wfacp-e-form .wfacp_main_form.woocommerce .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 body #wfacp-e-form #wc_checkout_add_ons {
@@ -2894,10 +2871,6 @@ body .wfacp_main_form del {
     text-align: right;
     padding-left: 25px;
     word-break: break-all;
-}
-
-body #wfacp-e-form .wfacp-qty-count {
-    line-height: 22px;
 }
 
 /* -------------------------------------Hide CSS-------------------------------------------------------*/
@@ -3084,7 +3057,7 @@ body #wfacp-e-form .col-xs-10,
 body #wfacp-e-form .col-xs-11,
 body #wfacp-e-form .col-xs-12,
 #wfacp-e-form #woocommerce_billing_fields_ro h3 {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 
@@ -3222,6 +3195,13 @@ body #wfacp-e-form * {
     font-size: 14px;
 }
 
+body #wfacp-e-form .wfacp-qty-ball,
+body #wfacp-e-form .wfacp-qty-count,
+body #wfacp-e-form .wfacp-pro-count {
+    line-height: initial;
+    font-size: initial;
+}
+
 
 .wfacp_funnel_6_form #wfacp-e-form .wfacp-form {
     padding: 0 !important;
@@ -3229,7 +3209,7 @@ body #wfacp-e-form * {
 
 
 body.wfacp_main_wrapper .wfacp_order_summary {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 body #wfacp-e-form .wfacp_main_form table.wfacp_shipping_table ul li .wfacp_shipping_radio {
@@ -3343,7 +3323,7 @@ body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-info a {
 }
 
 body #wfacp-e-form .form-row .select2-container {
-    margin-bottom: 0
+    margin-bottom: 0;
 }
 
 body #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_table ul#shipping_method li {
@@ -4414,22 +4394,6 @@ body #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_s
     margin-right: 3px;
 }
 
-body #wfacp-e-form .wfacp-qty-count,
-body .wfacp-qty-count {
-    display: inline-block;
-    vertical-align: top;
-    margin: 0;
-    padding: 0;
-    width: 20px;
-    border-radius: 50%;
-    height: 20px;
-    background-color: #82838e;
-
-    text-align: center;
-    min-width: 1px;
-    z-index: 26;
-    line-height: 20px;
-}
 
 body #wfacp-e-form .wfacp-qty-count span,
 body .wfacp-qty-count span {
@@ -4597,6 +4561,11 @@ body #wfacp-e-form .wfacp_main_form.woocommerce #payment ul.payment_methods li l
     float: none;
 }
 
+/* This is for the reepay payment gateway logo */
+body #wfacp-e-form .wfacp_main_form.woocommerce #payment ul.payment_methods li label li.reepay-logo img{
+    height: 28px;
+}
+
 body #wfacp-e-form p#e_deliverydate_field:not(.wfacp-anim-wrap) label {
     top: 30px;
     bottom: auto;
@@ -4675,7 +4644,7 @@ body #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_delete_active td.product-tota
     text-align: right;
 }
 
-body #wfacp-e-form .wfacp_mb_mini_cart_wrap span {
+body #wfacp-e-form .wfacp_mb_mini_cart_wrap span:not(.wfacp-pro-count) {
     font-size: 14px;
     font-weight: 400;
 }
@@ -5121,7 +5090,7 @@ body #wfacp-e-form .wfacp_show_price_wrap span bdi {
 }
 
 #wfacp-e-form .wc-amazon-payments-advanced-populated .create-account p {
-    padding: 0 8px;;
+    padding: 0 8px;
 }
 
 #wfacp-e-form .wc-amazon-payments-advanced-populated .create-account {
@@ -5248,10 +5217,10 @@ body:not(.wfacpef_page):not(.wfacp_oxygen_template) #wfacp-e-form .woocommerce .
 
 
 body .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message,
-body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_sucuss),
+body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_success),
 body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content div.woocommerce-error,
 body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content ul.woocommerce-error,
-body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_sucuss),
+body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_success),
 body #wfacp-sec-wrapper #order_coupon_field div.woocommerce-error,
 body #wfacp-sec-wrapper #order_coupon_field ul.woocommerce-error,
 body .wfacp_product_restore_wrap,
@@ -5270,12 +5239,12 @@ body #wfacp-sec-wrapper .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp
 body .wfacp-coupon-page .wfacp_coupon_remove_msg,
 body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg,
 body .wfacp_main_form.woocommerce #wfacp-sec-wrapper .wfacp_coupon_field_msg > .wfacp_single_coupon_msg,
-body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_sucuss),
-body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_sucuss),
-body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_sucuss),
-body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_sucuss),
-body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_sucuss),
-body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_sucuss),
+body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_success),
+body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_success),
+body #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_success),
+body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_success),
+body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_success),
+body #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_success),
 body #wfacp-sec-wrapper #order_coupon_field .wfacp_coupon_remove_msg,
 body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg {
     padding: 0 0 0 16px;
@@ -5288,7 +5257,7 @@ body #wfacp-sec-wrapper .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp
     background-size: 12px;
 }
 
-body #wfacp-sec-wrapper .woocommerce-message:not(.wfacp_sucuss) * {
+body #wfacp-sec-wrapper .woocommerce-message:not(.wfacp_success) * {
     color: #24ae4e !important;
 }
 
@@ -5373,7 +5342,7 @@ body button.button.wfacp-coupon-btn {
     }
 }
 
-@media (min-width: 768px)and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
 
     body #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-coupon-page p.form-row-first {
         width: 60% !important;
@@ -5505,19 +5474,19 @@ body button.button.wfacp-coupon-btn {
     }
 }
 
-@media (min-width: 668px)and (max-width: 956px) {
+@media (min-width: 668px) and (max-width: 956px) {
     #wfacp-e-form .wfacp-container.wfacp-inner-header p {
         padding: 0 18px 8px;
     }
 }
 
-@media (min-width: 481px)and (max-width: 767px) {
+@media (min-width: 481px) and (max-width: 767px) {
     body .wfacp_main_form.woocommerce .wfacp_qty_price_wrap {
         width: 40%;
     }
 }
 
-@media (min-width: 320px)and (max-width: 767px) {
+@media (min-width: 320px) and (max-width: 767px) {
 
     #wfacp-e-form .mob_list {
         display: block;
@@ -5637,7 +5606,7 @@ body button.button.wfacp-coupon-btn {
 
 
     body #wfacp-e-form .wfacp_order_summary {
-        padding: 0 8px;;
+        padding: 0 8px;
     }
 
 
@@ -5810,7 +5779,7 @@ body button.button.wfacp-coupon-btn {
 
 
     #wfacp-e-form .wfacp-form .wfacp_order_summary {
-        padding: 0 8px;;
+        padding: 0 8px;
     }
 
 
@@ -5917,17 +5886,17 @@ body button.button.wfacp-coupon-btn {
 
     body #wfacp-e-form .wfacp_main_form.woocommerce p.form-row.wfacp-mobile-col-half {
         width: 50% !important;
-        float: left !important;;
+        float: left !important;
     }
 
     body #wfacp-e-form .wfacp_main_form.woocommerce p.form-row.wfacp-mobile-col-one-third {
-        width: 33.3% !important;;
-        float: left !important;;
+        width: 33.3% !important;
+        float: left !important;
     }
 
     body #wfacp-e-form .wfacp_main_form.woocommerce p.form-row.wfacp-mobile-col-two-third {
-        width: 66.66% !important;;
-        float: left !important;;
+        width: 66.66% !important;
+        float: left !important;
     }
 
     body #wfacp-e-form .wfacp_main_form.woocommerce p.form-row-wide.wfacp-mobile-col-half,
@@ -6073,7 +6042,7 @@ body button.button.wfacp-coupon-btn {
     }
 
     #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content {
-        padding: 10px 10px 0 10px
+        padding: 10px 10px 0 10px;
     }
 
     .wfacp_quantity.q_h {

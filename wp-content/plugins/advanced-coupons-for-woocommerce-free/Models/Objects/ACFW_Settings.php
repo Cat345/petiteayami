@@ -411,6 +411,14 @@ class ACFW_Settings extends \WC_Settings_Page {
             ),
 
             array(
+                'title'   => __( 'Hide coupon creation popup', 'advanced-coupons-for-woocommerce-free' ),
+                'type'    => 'checkbox',
+                'desc'    => __( 'If checked, hides the popup that appears when creating a new coupon.', 'advanced-coupons-for-woocommerce-free' ),
+                'id'      => Plugin_Constants::HIDE_COUPON_CREATION_POPUP,
+                'default' => 'no',
+            ),
+
+            array(
                 'type' => 'sectionend',
                 'id'   => 'acfw_general_sectionend',
             ),
@@ -794,6 +802,17 @@ class ACFW_Settings extends \WC_Settings_Page {
                 'desc'    => __( 'Activate this setting to verify the integrity of JavaScript and CSS files, ensuring they are untampered and secure.', 'advanced-coupons-for-woocommerce-free' ),
                 'id'      => ACFWF()->Plugin_Constants->ENABLE_ASSET_INTEGRITY_CHECK,
                 'default' => 'no',
+            ),
+
+            array(
+                'title'  => __( 'Delete invalid store credit entries', 'advanced-coupons-for-woocommerce-free' ),
+                'type'   => 'acfw_clear_detached_store_credits',
+                'id'     => 'acfw_clear_detached_store_credits',
+                'desc'   => __( 'Deletes invalid entries in the store credit table relating to deleted users that are no longer present.', 'advanced-coupons-for-woocommerce-free' ),
+                'labels' => array(
+                    'running' => __( 'Running...', 'advanced-coupons-for-woocommerce-free' ),
+                    'run'     => __( 'Run', 'advanced-coupons-for-woocommerce-free' ),
+                ),
             ),
 
             array(

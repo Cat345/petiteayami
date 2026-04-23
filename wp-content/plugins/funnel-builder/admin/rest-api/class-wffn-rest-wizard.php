@@ -32,7 +32,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -42,81 +42,101 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		 * Register the routes for taxes.
 		 */
 		public function register_routes() {
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/activate-builder', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/activate-builder',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'activate_builder' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'status'          => array(
-							'description'       => __( 'Check plugin status', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'slug'            => array(
-							'description'       => __( 'Check plugin slug', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'init'            => array(
-							'description'       => __( 'Check builder status', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'default_builder' => array(
-							'description'       => __( 'Set default builder status', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'activate_builder' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'status'          => array(
+								'description'       => __( 'Check plugin status', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'slug'            => array(
+								'description'       => __( 'Check plugin slug', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'init'            => array(
+								'description'       => __( 'Check builder status', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'default_builder' => array(
+								'description'       => __( 'Set default builder status', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/other-plugins', array(
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/other-plugins',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'other_plugins' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/optin-setup', array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'other_plugins' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/optin-setup',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'setup_optin' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'op_name'  => array(
-							'description'       => __( 'Get optin name', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'op_email' => array(
-							'description'       => __( 'Get optin email', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'setup_optin' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'op_name'  => array(
+								'description'       => __( 'Get optin name', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'op_email' => array(
+								'description'       => __( 'Get optin email', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/optin-track', array(
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/optin-track',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'track_optin' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'track_optin' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/get-steps-data', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/get-steps-data',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'maybe_update_steps_data' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'maybe_update_steps_data' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -135,7 +155,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 			$resp = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
 			);
 
 			$plugin_init     = $request->get_param( 'init' );
@@ -187,7 +207,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 						'slug'   => $plugin_slug,
 					);
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				$resp = array(
 					'status' => true,
 					'slug'   => $plugin_slug,
@@ -205,7 +225,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 			$resp = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
 			);
 
 			try {
@@ -221,16 +241,25 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 						'status' => WFFN_Common::get_plugin_status( 'wp-marketing-automations/wp-marketing-automations.php' ),
 					),
 					array(
-						'slug'   => 'funnelkit-stripe-woo-payment-gateway',
-						'init'   => 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php',
-						'status' => WFFN_Common::get_plugin_status( 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php' ),
-					),
-					array(
 						'slug'   => 'cart-for-woocommerce',
 						'init'   => 'cart-for-woocommerce/plugin.php',
 						'status' => WFFN_Common::get_plugin_status( 'cart-for-woocommerce/plugin.php' ),
-					)
+					),
 				);
+				if ( ! WFFN_Common::is_wc_square_active() ) {
+					$plugins[] = array(
+						'slug'   => 'funnelkit-stripe-woo-payment-gateway',
+						'init'   => 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php',
+						'status' => WFFN_Common::get_plugin_status( 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php' ),
+					);
+				}
+				if ( WFFN_Common::is_wc_square_active() ) {
+					$plugins[] = array(
+						'slug'   => 'funnelkit-payment-gateway-square-for-woocommerce',
+						'init'   => 'funnelkit-payment-gateway-square-for-woocommerce/funnelkit-square.php',
+						'status' => WFFN_Common::get_plugin_status( 'funnelkit-payment-gateway-square-for-woocommerce/funnelkit-square.php' ),
+					);
+				}
 
 				if ( ! function_exists( 'activate_plugin' ) ) {
 					include_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -248,7 +277,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 					}
 					$activate = activate_plugin( $plugin_init, '', false, true );
 
-					if ( "woocommerce/woocommerce.php" === $plugin_init ) {
+					if ( 'woocommerce/woocommerce.php' === $plugin_init ) {
 						update_option( 'bwf_needs_rewrite', 'yes', true );
 					}
 
@@ -261,9 +290,8 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 
 						return rest_ensure_response( $resp );
 					}
-
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 
@@ -279,7 +307,7 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		public function maybe_update_steps_data() {
 			$resp = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
 			);
 
 			if ( ! class_exists( 'WFFN_Common' ) ) {
@@ -301,16 +329,14 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 		public function setup_optin( $request ) {
 			$resp = array(
 				'status'  => false,
-				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' )
+				'message' => __( 'Something went wrong. Please try again', 'funnel-builder' ),
 			);
 
 			$op_email = $request->get_param( 'op_email' );
 
-
 			$op_email = isset( $op_email ) ? trim( $op_email ) : '';
 
 			if ( $op_email !== '' ) {
-
 
 				if ( ! is_email( $op_email ) ) {
 					$resp['message'] = __( 'Please enter a valid email address', 'funnel-builder' );
@@ -321,18 +347,19 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 				$api_params = array(
 					'action' => 'woofunnelsapi_email_optin',
 					'data'   => array(
-						'email' => $op_email,
-						'site'  => home_url(),
-						'locale'  => get_locale(),
+						'email'  => $op_email,
+						'site'   => home_url(),
+						'locale' => get_locale(),
 					),
 				);
 
-				$request_args = WooFunnels_API::get_request_args( array(
-					'timeout'   => 0.5, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
-					'sslverify' => WooFunnels_API::$is_ssl,
-					'body'      => urlencode_deep( $api_params ),
-				) );
-
+				$request_args = WooFunnels_API::get_request_args(
+					array(
+						'timeout' => 0.5, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+					'sslverify'   => WooFunnels_API::$is_ssl,
+					'body'        => urlencode_deep( $api_params ),
+					)
+				);
 
 				/**
 				 * We do not need to track the result of the call, simply move forward and show success to the user
@@ -361,12 +388,12 @@ if ( ! class_exists( 'WFFN_REST_Wizard' ) ) {
 				'status' => true,
 			);
 
-
 			return rest_ensure_response( $resp );
 		}
 
 		/**
 		 * Avoid error and db error in wizard api
+		 *
 		 * @return void
 		 */
 		function suppress_warnings() {

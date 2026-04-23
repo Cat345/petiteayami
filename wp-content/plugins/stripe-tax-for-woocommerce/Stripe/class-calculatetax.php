@@ -976,7 +976,7 @@ class CalculateTax {
 		$items = wp_cache_get( self::CACHE_KEY, self::CACHE_GROUP );
 		if ( is_array( $items ) || array_key_exists( $this->md5_concat, $items ) ) {
 			unset( $items[ $this->md5_concat ] );
-			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP );
+			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 		}
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -1012,7 +1012,7 @@ class CalculateTax {
 
 		if ( $this->is_expired( $items[ $this->md5_concat ] ) ) {
 			unset( $items[ $this->md5_concat ] );
-			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP );
+			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 
 			return null;
 		}
@@ -1036,7 +1036,7 @@ class CalculateTax {
 
 		$cache[ $this->md5_concat ] = $response;
 
-		wp_cache_set( self::CACHE_KEY, $cache, self::CACHE_GROUP );
+		wp_cache_set( self::CACHE_KEY, $cache, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**

@@ -366,15 +366,33 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 			$event_automation_meta = isset( $meta['event_meta'] ) ? $meta['event_meta'] : array();
 		}
 
-		$event = BWFAN_Core()->sources->get_event( $event );
+		/** Support for multiple events - normalize to array */
+		$event_slugs = is_array( $event ) ? $event : array( $event );
 
-		if ( ! $event instanceof BWFAN_Event ) {
+		/** Get event objects for all provided event slugs */
+		$events      = array();
+		$event_names = array();
+		foreach ( $event_slugs as $event_slug ) {
+			$event_obj = BWFAN_Core()->sources->get_event( $event_slug );
+			if ( $event_obj instanceof BWFAN_Event ) {
+				$events[]      = $event_obj;
+				$event_names[] = $event_obj->get_slug();
+			}
+		}
+
+		if ( empty( $events ) ) {
 			return [];
 		}
 
-		$event_rule_groups = $event->get_rule_group();
-		$rules_groups      = BWFAN_Core()->rules->get_all_groups();
-		$rules             = apply_filters( 'bwfan_rule_get_rule_types', array() );
+		/** Merge rule groups from all events (union) */
+		$event_rule_groups = array();
+		foreach ( $events as $event_obj ) {
+			$event_rule_groups = array_merge( $event_rule_groups, $event_obj->get_rule_group() );
+		}
+		$event_rule_groups = array_unique( $event_rule_groups );
+
+		$rules_groups = BWFAN_Core()->rules->get_all_groups();
+		$rules        = apply_filters( 'bwfan_rule_get_rule_types', array() );
 
 		$event_rules = array();
 		foreach ( $event_rule_groups as $group ) {
@@ -386,25 +404,25 @@ class BWFAN_Rules_Loader extends BWFAN_Rules {
 
 			$group_rules = $rules[ $group ];
 			if ( 'wc_subscription' === $group ) {
-				if ( 'wcs_note_added' !== $event->get_slug() ) {
+				if ( ! in_array( 'wcs_note_added', $event_names, true ) ) {
 					if ( isset( $group_rules['subscription_note_text_match'] ) ) {
 						unset( $rules[ $group ]['subscription_note_text_match'] );
 					}
 				}
-				if ( 'wcs_status_changed' !== $event->get_slug() ) {
+				if ( ! in_array( 'wcs_status_changed', $event_names, true ) ) {
 					if ( isset( $group_rules['subscription_old_status'] ) ) {
 						unset( $rules[ $group ]['subscription_old_status'] );
 					}
 				}
 				$allowed_events = [ 'wcs_status_changed', 'wcs_note_added', 'wcs_renewal_payment_complete', 'wcs_before_renewal', 'wcs_before_end', 'wcs_renewal_payment_failed', 'wcs_trial_end' ];
-				if ( ! in_array( $event->get_slug(), $allowed_events, true ) ) {
+				if ( empty( array_intersect( $event_names, $allowed_events ) ) ) {
 					if ( isset( $group_rules['subscription_payment_count'] ) ) {
 						unset( $rules[ $group ]['subscription_payment_count'] );
 					}
 				}
 			}
 			if ( 'wc_order' === $group ) {
-				if ( 'wc_order_note_added' !== $event->get_slug() && isset( $group_rules['order_note_text_match'] ) ) {
+				if ( ! in_array( 'wc_order_note_added', $event_names, true ) && isset( $group_rules['order_note_text_match'] ) ) {
 					unset( $rules[ $group ]['order_note_text_match'] );
 				}
 			}

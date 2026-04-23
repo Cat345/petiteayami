@@ -34,6 +34,16 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		public static $DISPLAY_STATUS_SOFT_BOUNCED = 5;
 		public static $DISPLAY_STATUS_COMPLAINT = 6;
 
+		/** Unsubscribe source types (c_type in bwfan_message_unsubscribe). */
+		const UNSUBSCRIBE_SOURCE_AUTOMATION   = 1;
+		const UNSUBSCRIBE_SOURCE_BROADCAST    = 2;
+		const UNSUBSCRIBE_SOURCE_MANUAL       = 3;
+		const UNSUBSCRIBE_SOURCE_FORM         = 4;
+		const UNSUBSCRIBE_SOURCE_IMPORTER     = 5;
+		const UNSUBSCRIBE_SOURCE_BULK_ACTION  = 6;
+		const UNSUBSCRIBE_SOURCE_LINK_TRIGGER = 7;
+		const UNSUBSCRIBE_SOURCE_TRANSACTIONAL_MAIL = 8;
+
 		public $unsubscribe_date = null;
 
 		/** Temporary terms storage for hooks firing */
@@ -41,6 +51,8 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		public $assigned_lists = array();
 		public $removed_tags = array();
 		public $removed_lists = array();
+
+		private $unsubscribe_context = [];
 
 		/**
 		 * Constructor
@@ -979,12 +991,20 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$filters = bwfan_is_autonami_pro_active() ? BWFCRM_Filters::maybe_add_unsubscribe_lists_filter( $filters ) : [];
 			}
 
-			$filter_match = isset( $filters['match'] ) && ! empty( $filters['match'] ) ? $filters['match'] : 'all';
-			$filter_match = ( 'any' === $filter_match ? ' OR ' : ' AND ' );
-			$filters      = bwfan_is_autonami_pro_active() ? BWFCRM_Filters::_normalize_input_filters( $filters ) : [];
+			if ( bwfan_is_autonami_pro_active() && class_exists( 'BWFCRM_Load_Filters' ) ) {
+				$old_filters = BWFCRM_Filters::_normalize_for_new_filters( $filters );
+				$filters     = ! empty( $old_filters ) ? $old_filters : $filters;
 
-			/** Get Contacts from DB */
-			$contact_data = BWFCRM_Model_Contact::get_contacts( $search, $limit, $offset, $filters, $additional_info, $filter_match );
+				/** Get Contacts from DB */
+				$contact_data = BWFCRM_Model_Contact::get_contacts_from_filters( $search, $limit, $offset, $filters, $additional_info );
+			} else {
+				$filters      = bwfan_is_autonami_pro_active() ? BWFCRM_Filters::_normalize_input_filters( $filters ) : [];
+				$filter_match = isset( $filters['match'] ) && ! empty( $filters['match'] ) ? $filters['match'] : 'all';
+				$filter_match = ( 'any' === $filter_match ? ' OR ' : ' AND ' );
+
+				/** Get Contacts from DB */
+				$contact_data = BWFCRM_Model_Contact::get_contacts( $search, $limit, $offset, $filters, $additional_info, $filter_match );
+			}
 
 			/** Return WP_Error in-case any WP_Error */
 			if ( is_wp_error( $contact_data ) ) {
@@ -2394,6 +2414,52 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			return $return;
 		}
 
+		/**
+		 * Set unsubscribe context (object_id, step_id, source_type) for source tracking.
+		 * @param int $object_id
+		 * @param int $step_id
+		 * @param int $source_type
+		 * @return void
+		 */
+		public function set_unsubscribe_context( $object_id = 0, $step_id = 0, $source_type = 0 ) {
+			$this->unsubscribe_context = [
+				'object_id'   => $object_id,
+				'step_id'     => $step_id,
+				'source_type' => $source_type,
+			];
+		}
+
+		/**
+		 * Get human-readable label for unsubscribe source (c_type).
+		 * Use filter bwfan_unsubscribe_source_labels to add more sources.
+		 *
+		 * @param int $c_type Unsubscribe source type from bwfan_message_unsubscribe.c_type. See UNSUBSCRIBE_SOURCE_* constants.
+		 * @return string
+		 */
+		public static function get_unsubscribe_source_label( $c_type ) {
+			$c_type = absint( $c_type );
+			$labels = array(
+				self::UNSUBSCRIBE_SOURCE_AUTOMATION   => __( 'Automation', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_BROADCAST    => __( 'Broadcast', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_MANUAL       => __( 'Manual', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_FORM         => __( 'Form', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_IMPORTER     => __( 'Importer', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_BULK_ACTION  => __( 'Bulk Action', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_LINK_TRIGGER => __( 'Link Trigger', 'wp-marketing-automations' ),
+				self::UNSUBSCRIBE_SOURCE_TRANSACTIONAL_MAIL => __( 'Transactional Mail', 'wp-marketing-automations' ),
+			);
+			$labels = apply_filters( 'bwfan_unsubscribe_source_labels', $labels );
+
+			return isset( $labels[ $c_type ] ) ? $labels[ $c_type ] : __( 'Manual', 'wp-marketing-automations' );
+		}
+
+		/**
+		 * Unsubscribe contact. Use set_unsubscribe_context() before calling to pass object_id, step_id, source_type for source tracking.
+		 * Backward compatible: when context not set, uses Manual. Pro plugin callers can use set_unsubscribe_context() or call without.
+		 *
+		 * @param bool $stop_hooks Whether to skip bwfcrm_after_contact_unsubscribed hook.
+		 * @return bool
+		 */
 		public function unsubscribe( $stop_hooks = false ) {
 			if ( ! $this->is_contact_exists() ) {
 				return false;
@@ -2410,7 +2476,21 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				$to_be_added[] = $this->contact->get_contact_no();
 			}
 
-			return BWFAN_Model_Message_Unsubscribe::add_unsubscribers( $to_be_added, 0, 0, $stop_hooks );
+			$object_id   = 0;
+			$step_id     = 0;
+			$object_type = self::UNSUBSCRIBE_SOURCE_MANUAL;
+
+			if ( ! empty( $this->unsubscribe_context ) && is_array( $this->unsubscribe_context ) ) {
+				$object_id   = isset( $this->unsubscribe_context['object_id'] ) ? absint( $this->unsubscribe_context['object_id'] ) : 0;
+				$step_id     = isset( $this->unsubscribe_context['step_id'] ) ? absint( $this->unsubscribe_context['step_id'] ) : 0;
+				$object_type = isset( $this->unsubscribe_context['source_type'] ) && 0 < (int) $this->unsubscribe_context['source_type'] ? absint( $this->unsubscribe_context['source_type'] ) : self::UNSUBSCRIBE_SOURCE_MANUAL;
+				if ( $object_id > 0 && self::UNSUBSCRIBE_SOURCE_MANUAL === $object_type ) {
+					$object_type = self::UNSUBSCRIBE_SOURCE_AUTOMATION;
+				}
+				$this->unsubscribe_context = array();
+			}
+
+			return BWFAN_Model_Message_Unsubscribe::add_unsubscribers( $to_be_added, $object_id, $object_type, $stop_hooks, $step_id );
 		}
 
 		public function remove_unsubscribe_status() {
@@ -2503,6 +2583,7 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				'city',
 				'postcode',
 			);
+
 			$arr4 = array(
 				'total_order_count',
 				'total_order_value',
@@ -2527,66 +2608,85 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 
 			foreach ( $fields as $ed ) {
 				$fieldVal = '';
-				if ( in_array( $ed, $arr1 ) ) {
-					$field    = 'get_' . $ed;
-					$fieldVal = $this->contact->$field();
-				} elseif ( in_array( $ed, $arr2 ) ) {
-					$field    = 'get_all_' . $ed;
-					$fieldVal = $this->$field();
-					if ( is_array( $fieldVal ) ) {
-						$value = array();
-						foreach ( $fieldVal as $val ) {
-							$value[] = $val['name'];
-						}
-						$fieldVal = implode( ',', $value );
-					}
-				} elseif ( in_array( $ed, $arr3 ) ) {
-					$fieldVal = $this->get_field_by_slug( $ed );
-				} elseif ( strpos( $ed, 'bwf_cf' ) !== false ) {
-					$fieldId  = str_replace( 'bwf_cf', '', $ed );
-					$fieldVal = isset( $this->fields[ $fieldId ] ) ? $this->fields[ $fieldId ] : '';
-				} elseif ( in_array( $ed, $arr4 ) && $this->customer ) {
-					$fieldVal = isset( $customer_data[ $ed ] ) ? $customer_data[ $ed ] : '';
-					if ( is_array( $fieldVal ) ) {
-						$value = array();
-						foreach ( $fieldVal as $val ) {
-							if ( isset( $val['name'] ) ) {
-								$value[] = $val['name'];
-							} else {
-								$value[] = $val;
-							}
-						}
-						$fieldVal = implode( ',', $value );
-					}
-				} elseif ( in_array( $ed, $arr5 ) ) {
-					switch ( $ed ) {
-						case 'has_purchased':
-							$fieldVal = intval( $customer_data['total_order_count'] ) > 0;
-							break;
-						case 'has_used_any_coupons':
-							$fieldVal = count( $customer_data['used_coupons'] ) > 0;
-							break;
-						case 'l_order_days':
-							$fieldVal = 0;
-							if ( isset( $customer_data['l_order_date'] ) ) {
-								$fieldVal = self::get_creation_days( self::get_date_value( $customer_data['l_order_date'], 'Y-m-d H:i:s' ) );
-							}
-							break;
-						case 'f_order_days':
-							$fieldVal = 0;
-							if ( isset( $customer_data['f_order_date'] ) ) {
-								$fieldVal = self::get_creation_days( self::get_date_value( $customer_data['f_order_date'], 'Y-m-d H:i:s' ) );
-							}
-							break;
-						case 'creation_days':
-							$fieldVal = self::get_creation_days( self::get_date_value( $this->contact->get_creation_date(), 'Y-m-d H:i:s' ) );
-							break;
-						case 'aov' :
-							$fieldVal = wc_format_decimal( $customer_data['aov'], wc_get_price_decimals() );
 
-					}
-				} elseif ( 'status' === $ed ) {
-					$fieldVal = $this->get_marketing_status();
+				switch ( true ) {
+					case in_array( $ed, $arr1 ):
+						$field    = 'get_' . $ed;
+						$fieldVal = $this->contact->$field();
+						break;
+
+					case in_array( $ed, $arr2 ):
+						$field    = 'get_all_' . $ed;
+						$fieldVal = $this->$field();
+						if ( is_array( $fieldVal ) ) {
+							$value = array();
+							foreach ( $fieldVal as $val ) {
+								$value[] = $val['name'];
+							}
+							$fieldVal = implode( ',', $value );
+						}
+						break;
+
+					case in_array( $ed, $arr3 ):
+						$fieldVal = $this->get_field_by_slug( $ed );
+						break;
+
+					case strpos( $ed, 'bwf_cf' ) !== false:
+						$fieldId  = str_replace( 'bwf_cf', '', $ed );
+						$fieldVal = isset( $this->fields[ $fieldId ] ) ? $this->fields[ $fieldId ] : '';
+						break;
+
+					case in_array( $ed, $arr4 ) && $this->customer:
+						$fieldVal = isset( $customer_data[ $ed ] ) ? $customer_data[ $ed ] : '';
+						if ( is_array( $fieldVal ) ) {
+							$value = array();
+							foreach ( $fieldVal as $val ) {
+								if ( isset( $val['name'] ) ) {
+									$value[] = $val['name'];
+								} else {
+									$value[] = $val;
+								}
+							}
+							$fieldVal = implode( ',', $value );
+						}
+						break;
+
+					case in_array( $ed, $arr5 ):
+						switch ( $ed ) {
+							case 'has_purchased':
+								$fieldVal = intval( $customer_data['total_order_count'] ) > 0;
+								break;
+							case 'has_used_any_coupons':
+								$fieldVal = count( $customer_data['used_coupons'] ) > 0;
+								break;
+							case 'l_order_days':
+								$fieldVal = 0;
+								if ( isset( $customer_data['l_order_date'] ) ) {
+									$fieldVal = self::get_creation_days( self::get_date_value( $customer_data['l_order_date'], 'Y-m-d H:i:s' ) );
+								}
+								break;
+							case 'f_order_days':
+								$fieldVal = 0;
+								if ( isset( $customer_data['f_order_date'] ) ) {
+									$fieldVal = self::get_creation_days( self::get_date_value( $customer_data['f_order_date'], 'Y-m-d H:i:s' ) );
+								}
+								break;
+							case 'creation_days':
+								$fieldVal = self::get_creation_days( self::get_date_value( $this->contact->get_creation_date(), 'Y-m-d H:i:s' ) );
+								break;
+							case 'aov':
+								$fieldVal = wc_format_decimal( $customer_data['aov'], wc_get_price_decimals() );
+								break;
+						}
+						break;
+
+					case 'status' === $ed:
+						$fieldVal = $this->get_marketing_status();
+						break;
+
+					default:
+						$fieldVal = '';
+						break;
 				}
 
 				$data[] = apply_filters( 'bwfan_get_contact_field_by_slug', $fieldVal, $ed, $this );
@@ -2955,6 +3055,124 @@ if ( ! class_exists( 'BWFCRM_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			$this->contact->set_meta( 'last_status', [ 'status' => $this->get_display_status(), 'time' => current_time( 'mysql', 1 ) ] );
+		}
+
+		/**
+		 * Get sublium subscriptions array
+		 *
+		 * @param int $offset
+		 * @param int $limit
+		 *
+		 * @return array
+		 */
+		public function get_sublium_subscriptions_array( $offset = 0, $limit = 10 ) {
+			if ( ! bwfan_is_sublium_active() ) {
+				return [];
+			}
+
+			$user_id = $this->contact->get_wpid();
+			if ( empty( $user_id ) ) {
+				return [];
+			}
+			$subscriptions_db = new \Sublium_WCS\Includes\database\subscriptions();
+			$subscriptions = $subscriptions_db->read( [ 'user_id' => $user_id ], $limit, $offset, 'id', 'DESC' );
+
+			if ( empty( $subscriptions ) ) {
+				return array();
+			}
+
+			$contact_subscription_data = array();
+			$co_id                     = 0;
+			$sublium_statuses          = \Sublium_WCS\Includes\Controller\Subscriptions\Subscription::get_default_status();
+
+			foreach ( $subscriptions as $subscription_record ) {
+				if ( ! isset( $subscription_record['id'] ) || empty( $subscription_record['id'] ) ) {
+					continue;
+				}
+
+				$subscription = new \Sublium_WCS\Includes\Controller\Subscriptions\Subscription( $subscription_record['id'] );
+				if ( ! $subscription->exists ) {
+					continue;
+				}
+
+				$subscription_status = $subscription->get_status();
+				$status_label        = isset( $sublium_statuses[ $subscription_status ] ) ? $sublium_statuses[ $subscription_status ] : '';
+
+				$contact_subscription_data['subscriptions'][ $co_id ]['id']                = $subscription->get_id();
+				$contact_subscription_data['subscriptions'][ $co_id ]['date']              = $subscription->get_created_at();
+				$contact_subscription_data['subscriptions'][ $co_id ]['status']            = $status_label;
+				$contact_subscription_data['subscriptions'][ $co_id ]['status_arr']        = [
+					'label' => $status_label,
+					'value' => $subscription_status
+				];
+
+				// Get billing name from parent order or meta
+				$first_name = '';
+				$last_name  = '';
+				$parent_order_id = $subscription->get_parent_order_id();
+				if ( ! empty( $parent_order_id ) ) {
+					$order = wc_get_order( $parent_order_id );
+					if ( $order instanceof WC_Order ) {
+						$first_name = $order->get_billing_first_name();
+						$last_name  = $order->get_billing_last_name();
+					}
+				}
+				if ( empty( $first_name ) || empty( $last_name ) ) {
+					$billing_details = $subscription->get_meta( 'billing_details' );
+					if ( is_array( $billing_details ) ) {
+						$first_name = isset( $billing_details['first_name'] ) ? $billing_details['first_name'] : '';
+						$last_name  = isset( $billing_details['last_name'] ) ? $billing_details['last_name'] : '';
+					}
+				}
+
+				$contact_subscription_data['subscriptions'][ $co_id ]['first_name']        = $first_name;
+				$contact_subscription_data['subscriptions'][ $co_id ]['last_name']         = $last_name;
+				$contact_subscription_data['subscriptions'][ $co_id ]['total']             = BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $subscription->get_totals(), $subscription->get_currency() );
+
+				// Get item count from subscription items (only product items)
+				$subscription_items = $subscription->get_subscription_items();
+				$item_count        = 0;
+				if ( is_array( $subscription_items ) ) {
+					foreach ( $subscription_items as $item ) {
+						if ( is_array( $item ) && isset( $item['item_type'] ) && (int) $item['item_type'] === 1 ) {
+							$item_count++;
+						}
+					}
+				}
+				$contact_subscription_data['subscriptions'][ $co_id ]['item_count']         = $item_count;
+				$contact_subscription_data['subscriptions'][ $co_id ]['next_renewal_date'] = $subscription->get_next_payment_date();
+
+				// Get renewal count (successful payments)
+				$renewal_count = $subscription->get_renewal_count();
+				if ( empty( $renewal_count ) ) {
+					$renewal_count = $subscription->get_successful_payment_count();
+				}
+				$contact_subscription_data['subscriptions'][ $co_id ]['total_renewal'] = $renewal_count;
+
+				$co_id ++;
+			}
+
+			return $contact_subscription_data;
+		}
+
+		/**
+		 * Get total sublium subscriptions
+		 *
+		 * @return int
+		 */
+		public function get_total_sublium_subscriptions() {
+			if ( ! bwfan_is_sublium_active() ) {
+				return 0;
+			}
+
+			$user_id = $this->contact->get_wpid();
+			if ( empty( $user_id ) ) {
+				return 0;
+			}
+
+			$subscriptions_db = new \Sublium_WCS\Includes\database\subscriptions();
+
+			return $subscriptions_db->count( array( 'user_id' => absint( $user_id ) ) );
 		}
 	}
 }

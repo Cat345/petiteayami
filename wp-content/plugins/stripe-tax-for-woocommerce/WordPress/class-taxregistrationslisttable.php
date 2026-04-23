@@ -160,7 +160,7 @@ class TaxRegistrationsListTable extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$tax_registrations_instance                = $this->getTaxRegistrations();
-		$tax_registrations                         = $tax_registrations_instance->get_registrations();
+		$tax_registrations                         = $tax_registrations_instance->get_registrations( false, true );
 		$tax_data                                  = $tax_registrations->data;
 		$items                                     = array();
 		$tax_registration_countries                = StripeTaxPluginHelper::get_allowed_tax_registration_countries();

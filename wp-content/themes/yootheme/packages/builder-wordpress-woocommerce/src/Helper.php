@@ -24,9 +24,7 @@ class Helper
     }
 
     /**
-     * @param string $name
      * @param int|false $priority
-     * @return Closure
      */
     public static function removeFilter(string $name, $priority = false): Closure
     {
@@ -57,7 +55,6 @@ class Helper
 
     /**
      * @param WC_Product $product
-     * @return bool
      */
     public static function isPageSource($product): bool
     {

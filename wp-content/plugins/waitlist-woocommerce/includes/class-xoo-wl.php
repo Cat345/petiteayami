@@ -31,7 +31,7 @@ class Xoo_Wl{
 		$this->define( "XOO_WL_PATH", plugin_dir_path( XOO_WL_PLUGIN_FILE ) ); // Plugin path
 		$this->define( "XOO_WL_PLUGIN_BASENAME",plugin_basename( XOO_WL_PLUGIN_FILE ) );
 		$this->define( "XOO_WL_URL", untrailingslashit( plugins_url( '/', XOO_WL_PLUGIN_FILE ) ) ); // plugin url
-		$this->define( "XOO_WL_VERSION", "2.8.8" ); //Plugin version
+		$this->define( "XOO_WL_VERSION", "2.8.9" ); //Plugin version
 		$this->define( "XOO_WL_LITE", true );
 	}
 

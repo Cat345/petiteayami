@@ -294,34 +294,9 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
             return $template;
         }
 
-        // prepend coupon code field.
-        $template['fields'] = array(
-            array(
-                'field'            => 'coupon_code',
-                'field_value'      => 'editable',
-                'fixtures'         => $this->_get_field_fixture_data( 'coupon_code' ),
-                'is_required'      => true,
-                'pre_filled_value' => '',
-            ),
-            array(
-                'field'            => 'discount_type',
-                'field_value'      => 'editable',
-                'fixtures'         => $this->_get_field_fixture_data( 'discount_type' ),
-                'is_required'      => true,
-                'pre_filled_value' => $template['discount_type'],
-            ),
-        );
-
-        foreach ( $template['template_data'] as $row ) {
-            $row['fixtures']      = $this->_get_field_fixture_data( $row['field'] );
-            $template['fields'][] = $row;
-        }
-
-        if ( ! empty( $template['cart_conditions'] ) ) {
-            $template['cart_conditions'] = $this->_prepare_template_cart_condition_data( $template['cart_conditions'] );
-        }
-
-        unset( $template['template_data'] );
+        // Use shared processor (DRY).
+        $processor = new Template_Processor( $this->_constants, $this->_helper_functions );
+        $template  = $processor->process_template( $template );
 
         return rest_ensure_response( $template );
     }
@@ -793,52 +768,6 @@ class API_Coupon_Templates extends Base_Model implements Model_Interface {
             $this->_constants->RECENT_COUPON_TEMPLATES,
             $this->_helper_functions->array_unique_multidimensional( $recent_templates )
         );
-    }
-
-    /**
-     * Prepare the cart condition data for the template.
-     *
-     * @since 4.6.3
-     * @access private
-     *
-     * @param array $cart_conditions Cart conditions data.
-     * @return array Prepared cart conditions data.
-     */
-    private function _prepare_template_cart_condition_data( $cart_conditions ) {
-        $prepared    = array();
-        $fields_i18n = \ACFWF()->Cart_Conditions->condition_fields_localized_data( array() );
-
-        foreach ( $cart_conditions as $group ) {
-            if ( 'group_logic' === $group['type'] ) {
-                $prepared[] = $group;
-                continue;
-            }
-
-            // Append the i18n data to the fields.
-            $group['fields'] = array_map(
-                function ( $field ) use ( $fields_i18n ) {
-                    if ( 'logic' === $field['type'] ) {
-                        return $field;
-                    }
-
-                    // append the translatable strings data to the condition fields.
-                    $field_type    = str_replace( '-', '_', $field['type'] );
-                    $field['i18n'] = isset( $fields_i18n['cart_condition_fields'][ $field_type ] ) ? $this->_helper_functions->decode_html_entities_recursive( $fields_i18n['cart_condition_fields'][ $field_type ] ) : array();
-
-                    // Append user role options to the role related cart condition fields.
-                    if ( strpos( $field['type'], 'customer-user-role' ) !== false ) {
-                        $field['i18n']['options'] = $this->_helper_functions->get_default_allowed_user_roles();
-                    }
-
-                    return $field;
-                },
-                $group['fields']
-            );
-
-            $prepared[] = $group;
-        }
-
-        return $prepared;
     }
 
     /*

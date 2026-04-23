@@ -53,7 +53,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 				$sidebar_messages .= sprintf( '<div class="woocommerce-message1 wfacp_coupon_success">%s %s</div>', $success_message, $remove_link );
 
 			}
-			$fragments['.wfacp_coupon_msg .woocommerce-message'] = '<div class="woocommerce-message wfacp_sucuss">' . $sidebar_messages . '</div>';
+			$fragments['.wfacp_coupon_msg .woocommerce-message'] = '<div class="woocommerce-message wfacp_success">' . $sidebar_messages . '</div>';
 
 			$fragments['.wfacp_coupon_field_msg'] = '<div class="wfacp_coupon_field_msg"><div class="wfacp_single_coupon_msg">' . $messages . '</div></div>';
 

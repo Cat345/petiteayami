@@ -5,20 +5,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Analytics_GA extends WFACP_Analytics {
-		private static $self = null;
-		protected $slug = 'google_ua';
-		protected $shipping_data = [];
+		private static $self     = null;
+		protected $slug          = 'google_ua';
+		protected $shipping_data = array();
 
 		protected function __construct() {
 			parent::__construct();
 			$this->admin_general_settings = BWF_Admin_General_Settings::get_instance();
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'print_tag_js_wfacp' ] );
-
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'print_tag_js_wfacp' ) );
 		}
 
 		public static function get_instance() {
 			if ( is_null( self::$self ) ) {
-				self::$self = new self;
+				self::$self = new self();
 			}
 
 			return self::$self;
@@ -35,7 +34,7 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 		}
 
 		public function print_tag_js_wfacp() {
-			add_action( 'wp_head', [ $this, 'print_tag_js' ] );
+			add_action( 'wp_head', array( $this, 'print_tag_js' ) );
 		}
 
 		public function print_tag_js() {
@@ -70,8 +69,8 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			$options['checkout'] = $data;
 
 			// Always prepare shipping info data for add_shipping_info event
-			$shipping_data = $this->get_items_data();
-			$this->shipping_data = $shipping_data;
+			$shipping_data            = $this->get_items_data();
+			$this->shipping_data      = $shipping_data;
 			$options['shipping_info'] = $shipping_data;
 
 			return $options;
@@ -81,24 +80,24 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			if ( ! $product instanceof WC_Product ) {
 				return parent::get_item( $product, $cart_item );
 			}
-			$data = [
+			$data = array(
 				'price' => 0,
-				'items' => []
-			];
+				'items' => array(),
+			);
 
 			$product_data = $this->prepare_product_data( $cart_item );
 			if ( ! empty( $product_data ) ) {
-				$data['price']   += floatval( $product_data['price'] );
+				$data['price']  += floatval( $product_data['price'] );
 				$data['items'][] = $product_data['item'];
 			}
 
-			return [
+			return array(
 				'value'        => $data['price'],
 				'content_type' => 'product',
 				'currency'     => get_woocommerce_currency(),
 				'items'        => $data['items'],
 				'user_roles'   => WFACP_Common::get_current_user_role(),
-			];
+			);
 		}
 
 
@@ -115,7 +114,6 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			if ( wc_string_to_bool( $options['settings']['checkout'] ) ) {
 				$this->checkout_data = $data;
 			}
-
 
 			return $this->checkout_data;
 		}
@@ -143,10 +141,10 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			if ( empty( $contents ) ) {
 				return $output;
 			}
-			$data = [
+			$data = array(
 				'price' => 0,
-				'items' => []
-			];
+				'items' => array(),
+			);
 			foreach ( $contents as $cart_item ) {
 				if ( $cart_item['data'] instanceof WC_Product ) {
 					if ( true === $is_cart ) {
@@ -154,20 +152,19 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 					}
 					$product_data = $this->prepare_product_data( $cart_item );
 					if ( ! empty( $product_data ) ) {
-						$data['price']   += floatval( $product_data['price'] );
+						$data['price']  += floatval( $product_data['price'] );
 						$data['items'][] = $product_data['item'];
 					}
-
 				}
 			}
 
-			$event_data = [
+			$event_data = array(
 				'value'        => $data['price'],
 				'content_type' => 'product',
 				'currency'     => get_woocommerce_currency(),
 				'items'        => $data['items'],
 				'user_roles'   => WFACP_Common::get_current_user_role(),
-			];
+			);
 
 			// Add shipping information for add_shipping_info event
 			if ( ! $is_cart ) {
@@ -181,10 +178,10 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 		}
 
 		public function prepare_product_data( $cart_item ) {
-			$data    = [
+			$data    = array(
 				'price' => 0,
-				'item'  => []
-			];
+				'item'  => array(),
+			);
 			$is_cart = false;
 			if ( $cart_item['data'] instanceof WC_Product ) {
 				$product = $cart_item['data'];
@@ -198,7 +195,7 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 				if ( $cart_item['variation_id'] ) {
 					$product = wc_get_product( $cart_item['variation_id'] );
 					if ( $product->get_type() === 'variation' && false === ( $this->do_treat_variable_as_simple( 'google_ua' ) ) ) {
-						$variation_name = implode( "/", $product->get_variation_attributes() );
+						$variation_name = implode( '/', $product->get_variation_attributes() );
 						$categories     = $this->get_object_terms( 'product_cat', $product->get_parent_id() );
 					} else {
 						$variation_name = null;
@@ -230,7 +227,7 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 					'item_name' => $name,
 					'quantity'  => absint( $cart_item['quantity'] ),
 					'price'     => floatval( $sub_total ),
-					'currency'  => $currency
+					'currency'  => $currency,
 				);
 
 				if ( ! is_null( $variation_name ) ) {
@@ -241,15 +238,14 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 					foreach ( $categories as $cat ) {
 						$item_category          = ( 0 === $cat_count ) ? 'item_category' : 'item_category' . $cat_count;
 						$item[ $item_category ] = $cat;
-						$cat_count ++;
+						++$cat_count;
 					}
 				}
 				$data['price'] += absint( $price );
-				$data['item']  = $item;
+				$data['item']   = $item;
 			}
 
 			return $data;
-
 		}
 
 		public function is_global_pageview_enabled() {
@@ -271,28 +267,29 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			$packages = WC()->shipping->get_packages();
 			if ( ! empty( $packages ) ) {
 				$package = $packages[0];
-				
+
 				// Get selected shipping method
-				$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+				$shipping_method = null;
+				$chosen_methods  = WC()->session->get( 'chosen_shipping_methods' );
 				if ( ! empty( $chosen_methods ) && isset( $chosen_methods[0] ) ) {
-					$shipping_method = $chosen_methods[0];
+					$shipping_method                  = $chosen_methods[0];
 					$shipping_info['shipping_method'] = $shipping_method;
 				}
 
 				// Get shipping cost
 				$shipping_cost = 0;
-				if ( isset( $package['rates'] ) && ! empty( $package['rates'] ) ) {
+				if ( isset( $package['rates'] ) && ! empty( $package['rates'] ) && ! is_null( $shipping_method ) ) {
 					foreach ( $package['rates'] as $rate ) {
-						if ( $rate->get_id() === $shipping_method ) {
+						if ( ! empty( $shipping_method ) && $rate->get_id() === $shipping_method ) {
 							$shipping_cost = $rate->get_cost();
 							break;
 						}
 					}
 				}
 
-				if ( $shipping_cost > 0 ) {
+				if ( $shipping_cost > 0 && ! is_null( $shipping_method ) ) {
 					$shipping_info['shipping_value'] = floatval( $shipping_cost );
-					$shipping_info['shipping_tier'] = $shipping_method;
+					$shipping_info['shipping_tier']  = $shipping_method;
 				}
 			}
 
@@ -311,21 +308,21 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 
 			// Get shipping address from cart using correct WooCommerce methods
 			$shipping_address = array(
-				'city' => WC()->cart->get_customer()->get_shipping_city(),
-				'country' => WC()->cart->get_customer()->get_shipping_country(),
+				'city'        => WC()->cart->get_customer()->get_shipping_city(),
+				'country'     => WC()->cart->get_customer()->get_shipping_country(),
 				'postal_code' => WC()->cart->get_customer()->get_shipping_postcode(),
-				'street' => WC()->cart->get_customer()->get_shipping_address_1(),
-				'region' => WC()->cart->get_customer()->get_shipping_state(),
+				'street'      => WC()->cart->get_customer()->get_shipping_address_1(),
+				'region'      => WC()->cart->get_customer()->get_shipping_state(),
 			);
-			
+
 			// Only add address data if we have meaningful information
 			if ( ! empty( $shipping_address['country'] ) || ! empty( $shipping_address['city'] ) ) {
 				$address_data['shipping_address'] = array(
-					'city' => $shipping_address['city'] ?: '',
-					'country' => $shipping_address['country'] ?: '',
+					'city'        => $shipping_address['city'] ?: '',
+					'country'     => $shipping_address['country'] ?: '',
 					'postal_code' => $shipping_address['postal_code'] ?: '',
-					'street' => $shipping_address['street'] ?: '',
-					'region' => $shipping_address['region'] ?: '',
+					'street'      => $shipping_address['street'] ?: '',
+					'region'      => $shipping_address['region'] ?: '',
 				);
 			}
 
@@ -334,8 +331,8 @@ if ( ! class_exists( 'WFACP_Analytics_GA' ) ) {
 			if ( $current_user->ID > 0 ) {
 				$address_data['user_data'] = array(
 					'sha256_email_address' => array( hash( 'sha256', strtolower( $current_user->user_email ) ) ),
-					'sha256_first_name' => hash( 'sha256', strtolower( $current_user->first_name ) ),
-					'sha256_last_name' => hash( 'sha256', strtolower( $current_user->last_name ) ),
+					'sha256_first_name'    => hash( 'sha256', strtolower( $current_user->first_name ) ),
+					'sha256_last_name'     => hash( 'sha256', strtolower( $current_user->last_name ) ),
 				);
 
 				// Add phone if available

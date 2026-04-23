@@ -6,9 +6,7 @@ $root = __DIR__;
 $cache = "{$root}/cache";
 $loader = require "{$root}/vendor/autoload.php";
 
-if (!is_dir($cache)) {
-    mkdir($cache);
-}
+File::makeDir($cache);
 
 Path::setAlias('~theme', $root);
 Path::setAlias('~assets', "{$root}/assets");

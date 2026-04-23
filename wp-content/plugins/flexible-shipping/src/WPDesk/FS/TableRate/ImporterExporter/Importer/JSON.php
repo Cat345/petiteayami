@@ -10,6 +10,7 @@ namespace WPDesk\FS\TableRate\ImporterExporter\Importer;
 use WC_Admin_Settings;
 use WPDesk\FS\TableRate\ImporterExporter\Importer\Exception\FileNotExists;
 use WPDesk\FS\TableRate\ImporterExporter\Importer\Exception\InvalidFile;
+use WPDesk\FS\TableRate\ShippingMethod\CommonMethodSettings;
 
 /**
  * Class JSON
@@ -81,6 +82,7 @@ class JSON extends AbstractImporter {
 		$new_shipping_method['instance_id']                           = $this->flexible_shipping_method->instance_id;
 		$new_shipping_method['woocommerce_method_instance_id']        = $this->flexible_shipping_method->instance_id;
 		$new_shipping_method['method_description']                    = $this->get_field_value( $shipping_method, 'method_description' );
+		$new_shipping_method[ CommonMethodSettings::METHOD_LOGO_ID ]  = absint( $this->get_field_value( $shipping_method, CommonMethodSettings::METHOD_LOGO_ID, 0 ) );
 		$new_shipping_method['method_free_shipping_requires']         = $this->get_field_value( $shipping_method, 'method_free_shipping_requires' );
 		$new_shipping_method['method_free_shipping']                  = $this->get_field_price( $shipping_method, 'method_free_shipping' );
 		$new_shipping_method['method_free_shipping_ignore_discounts'] = $this->get_field_value( $shipping_method, 'method_free_shipping_ignore_discounts' );

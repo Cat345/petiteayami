@@ -1,0 +1,49 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "text_align": "textAlign.*",
+    "slider_enabled": "sliderEnabled.*",
+
+    "image_border_margin": "featureImageGallery.decoration.spacing.*.margin",
+    "spacing_thumbs_margin": "thumbnailImage.decoration.spacing.*.margin",
+    "width_width": "featureImage.decoration.sizing.*.width"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "image_border": "featureImage.decoration.border",
+      "thumbs_border": "thumbnailImage.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "image_border_margin": "convertSpacing",
+    "spacing_thumbs_margin": "convertSpacing"
+  }
+}

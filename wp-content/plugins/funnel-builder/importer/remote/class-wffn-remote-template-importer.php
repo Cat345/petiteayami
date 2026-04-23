@@ -3,6 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class WFFN_Remote_Template_Importer
+ *
  * @package WFFN
  * @author XlPlugins
  */
@@ -20,12 +21,12 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 		}
 
 		public static function get_error_message( $code ) {
-			$messages = [
+			$messages = array(
 				'license-or-domain-invalid' => __( 'This site does not have access to template library.  To get access activate the license. For any further help contact support.', 'funnel-builder' ),
 				'license-expired'           => __( 'This site does not have access to template library as license has expired. To get access renew the license. For any further help contact support.', 'funnel-builder' ),
 				'invalid-step'              => sprintf( __( 'Please check if you have valid license key. Try activating the license again. For any further help contact support. <a href=%s target="_blank">Go to Licenses</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings' ) ) ),
-				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'funnel-builder' )
-			];
+				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'funnel-builder' ),
+			);
 			if ( isset( $messages[ $code ] ) ) {
 				return $messages[ $code ];
 			}
@@ -43,7 +44,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 		 *
 		 * @return array|false|mixed|string
 		 */
-		public function get_remote_template( $step, $template_slug, $builder, $steps = [] ) {
+		public function get_remote_template( $step, $template_slug, $builder, $steps = array() ) {
 
 			if ( empty( $step ) || empty( $template_slug ) || empty( $builder ) ) {
 				return '';
@@ -52,15 +53,19 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			$license = $this->get_license_key();
 
 			$requestBody = array(
-				"step"     => $step,
-				"domain"   => $this->get_domain(),
-				"license"  => $license,
-				"template" => $template_slug,
-				"builder"  => $builder,
-				"version"  => 4,
-				"builder_version" => WFFN_Common::get_builder_version( $builder ),
-				"locale" => get_locale()
+				'step'            => $step,
+				'domain'          => $this->get_domain(),
+				'license'         => $license,
+				'template'        => $template_slug,
+				'builder'         => $builder,
+				'version'         => 4,
+				'builder_version' => WFFN_Common::get_builder_version( $builder ),
+				'locale'          => get_locale(),
 			);
+
+			if ( 'elementor' === $builder && class_exists( 'WFFN_Common' ) ) {
+				$requestBody['elementor_container'] = WFFN_Common::is_elementor_container_active() ? 'active' : 'inactive';
+			}
 
 			if ( 'funnel' === $step && count( $steps ) > 0 ) {
 				$requestBody['steps'] = $steps;
@@ -69,19 +74,22 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			$requestBody = wp_json_encode( $requestBody );
 
 			$endpoint_url = $this->get_template_api_url();
-			$response     = wp_remote_post( $endpoint_url, array(
-				"body"    => $requestBody,
-				"timeout" => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
-				'headers' => array(
-					'content-type' => 'application/json'
+			$response     = wp_remote_post(
+				$endpoint_url,
+				array(
+					'body'    => $requestBody,
+					'timeout' => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+				'headers'     => array(
+					'content-type' => 'application/json',
+				),
 				)
-			) );
+			);
 
 			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			if ( $response instanceof WP_Error ) {
 				if ( is_object( $response ) && $response->errors ) {
 					if ( is_array( $response->errors ) && $response->errors['http_request_failed'] ) {
-						return [ 'error' => isset( $response->errors['http_request_failed'][0] ) ? $response->errors['http_request_failed'] : __( 'HTTP Request Failed', 'funnel-builder' ) ];
+						return array( 'error' => isset( $response->errors['http_request_failed'][0] ) ? $response->errors['http_request_failed'] : __( 'HTTP Request Failed', 'funnel-builder' ) );
 					}
 				}
 
@@ -89,19 +97,19 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 			}
 			$response = json_decode( $response['body'], true );
 			if ( ! is_array( $response ) ) {
-				return [ 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'funnel-builder' ) ];
+				return array( 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'funnel-builder' ) );
 			}
 
 			if ( isset( $response['error'] ) ) {
-				return [ 'error' => self::get_error_message( $response['error'] ) ];
+				return array( 'error' => self::get_error_message( $response['error'] ) );
 			}
 
 			if ( 'funnel' !== $step && ! isset( $response[ $step ] ) ) {
-				return [ 'error' => __( 'No Template found', 'funnel-builder' ) ];
+				return array( 'error' => __( 'No Template found', 'funnel-builder' ) );
 			}
 
 			if ( 'funnel' === $step ) {
-				$funnels = [];
+				$funnels = array();
 				foreach ( $steps as $type => $template ) {
 
 					if ( isset( $response[ $type ] ) ) {
@@ -122,23 +130,23 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 								'state'         => true,
 								'meta'          => array(
 									'_wfocu_setting' => array(
-										'products'       => [],
-										'fields'         => [],
+										'products'       => array(),
+										'fields'         => array(),
 										'template'       => '',
 										'template_group' => '',
-										'settings'       => [],
-									)
-								)
+										'settings'       => array(),
+									),
+								),
 							);
 						}
 						if ( 'wc_checkout' === $type && isset( $response['wc_order_bump'] ) ) {
 
-							$order_bump_json          = $response['wc_order_bump'];
-							$order_bump_data          = json_decode( $order_bump_json, true );
+							$order_bump_json = $response['wc_order_bump'];
+							$order_bump_data = json_decode( $order_bump_json, true );
 							if ( is_array( $order_bump_data ) ) {
-								$order_bump_data['products'] = [];
+								$order_bump_data['products'] = array();
 							}
-							$data['meta']['substeps'] = [ 'wc_order_bump' => [ $order_bump_data ] ];
+							$data['meta']['substeps'] = array( 'wc_order_bump' => array( $order_bump_data ) );
 
 						}
 
@@ -154,24 +162,21 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 						}
 
-
 						if ( ! is_dir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ) ) {
 							mkdir( WFFN_TEMPLATE_UPLOAD_DIR . '/' . $builder . '/' . $type ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 						}
 						$template_path = WFFN_TEMPLATE_UPLOAD_DIR . $directory . '.json';
-						file_put_contents( $template_path, $response[ $type ] ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+						file_put_contents( $template_path, $response[ $type ] ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
 
 					}
-
 				}
 
 				if ( 0 === count( $funnels ) ) {
-					return [ 'error' => __( 'No Template found', 'funnel-builder' ) ];
+					return array( 'error' => __( 'No Template found', 'funnel-builder' ) );
 				}
 
 				return array( $funnels );
 			}
-
 
 			return $response[ $step ];
 		}
@@ -206,9 +211,8 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				if ( is_array( $active_plugins ) && in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) {
 					$domain = get_site_url( get_network()->site_id );
 				}
-
 			}
-			$domain = str_replace( [ 'https://', 'http://' ], '', $domain );
+			$domain = str_replace( array( 'https://', 'http://' ), '', $domain );
 			$domain = trim( $domain, '/' );
 
 			return $domain;
@@ -216,6 +220,7 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 
 		/**
 		 * Get license key.
+		 *
 		 * @return mixed
 		 */
 		public function get_license_key( $additional_info = false ) {
@@ -230,9 +235,9 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 				$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
 				if ( is_array( $active_plugins ) && defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && ( in_array( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) ) {
-					$woofunnels_data = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', [] );
+					$woofunnels_data = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', array() );
 				} else {
-					$woofunnels_data = get_option( 'woofunnels_plugins_info', [] );
+					$woofunnels_data = get_option( 'woofunnels_plugins_info', array() );
 				}
 			} else {
 				$woofunnels_data = get_option( 'woofunnels_plugins_info' );
@@ -261,19 +266,18 @@ if ( ! class_exists( 'WFFN_Remote_Template_Importer' ) ) {
 		}
 
 		public function get_step_title( $type ) {
-			$args = [
+			$args = array(
 				'landing'     => __( 'Landing Page', 'funnel-builder' ),
 				'wc_checkout' => __( 'Checkout Page', 'funnel-builder' ),
 				'wc_upsells'  => __( 'Upsells', 'funnel-builder' ),
 				'wc_thankyou' => __( 'Thank you Page', 'funnel-builder' ),
 				'optin'       => __( 'Optin', 'funnel-builder' ),
 				'optin_ty'    => __( 'Optin Confirmation Page', 'funnel-builder' ),
-			];
+			);
 			if ( isset( $args[ $type ] ) ) {
 				return $args[ $type ];
 			}
 		}
-
 	}
 
 	WFFN_Core::register( 'remote_importer', 'WFFN_Remote_Template_Importer' );

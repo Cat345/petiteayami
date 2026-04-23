@@ -1,0 +1,542 @@
+{
+  "name": "wfop/optin-form",
+  "d4Shortcode": "et_wfop_optin_form",
+  "title": "FK Optin Form",
+  "titles": "FK Optin Forms",
+  "category": "module",
+  "attributes": {
+    "module": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "styleProps": {
+        "spacing": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {},
+          "border": {},
+          "boxShadow": {},
+          "filters": {},
+          "spacing": {},
+          "transform": {},
+          "animation": {},
+          "sizing": {}
+        },
+        "advanced": {
+          "link": {},
+          "htmlAttributes": {},
+          "position": {},
+          "overflow": {},
+          "zIndex": {},
+          "css": {},
+          "disabledOn": {},
+          "scroll": {}
+        }
+      }
+    },
+    "button_text": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Send Me My Free Guide"
+          }
+        }
+      }
+    },
+    "subtitle": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "button_submitting_text": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Submitting..."
+          }
+        }
+      }
+    },
+    "show_labels": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "input_size": {
+      "type": "string",
+      "default": "12px"
+    },
+    "wfop_optin_form_label_typography": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec > label, {{selector}} .bwfac_form_sec.bwfac_form_field_radio label",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_field_typography": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec .wffn-optin-input, {{selector}} .bwfac_form_sec .wffn-optin-input::placeholder",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#3f3f3f"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_text_typo": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit .bwf_heading",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "textAlign": "center",
+                  "color": "#ffffff",
+                  "size": "16px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_subheading_text_typo": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit .bwf_subheading",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "15px",
+                  "font": "|400|||||||"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_mark_required_color": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec > label > span, {{selector}} .bwfac_form_sec.bwfac_form_field_radio label > span",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_field_background_color": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec .wffn-optin-input",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "desktop": {
+              "value": {
+                "color": "#ffffff"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_field_border": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec .wffn-optin-input",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "desktop": {
+              "value": {
+                "radius": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px",
+                  "sync": "on"
+                },
+                "styles": {
+                  "all": {
+                    "width": "2px",
+                    "color": "#d8d8d8"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_column_gap_padding": {
+      "type": "object",
+      "selector": "{{selector}} .wffn-custom-optin-from .bwfac_form_sec",
+      "styleProps": {
+        "spacing": {
+          "padding": {}
+        }
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "padding": {
+              "desktop": {
+                "value": {
+                  "top": "0px",
+                  "right": "5px",
+                  "bottom": "0px",
+                  "left": "5px"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_row_gap_margin": {
+      "type": "object",
+      "selector": "{{selector}} .wffn-custom-optin-from .bwfac_form_sec",
+      "styleProps": {
+        "spacing": {
+          "margin": {}
+        }
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "margin": {
+              "desktop": {
+                "value": {
+                  "top": "",
+                  "right": "",
+                  "bottom": "10px",
+                  "left": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_submit_button_text": {
+      "type": "object",
+      "selector": "{{selector}} .wffn-custom-optin-from #bwf-custom-button-wrap",
+      "styleProps": {},
+      "default": {
+        "advanced": {
+          "text": {
+            "text": {
+              "desktop": {
+                "value": {
+                  "align": "left",
+                  "orientation": "left"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_width": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit",
+      "styleProps": {
+        "sizing": {}
+      },
+      "default": {
+        "decoration": {
+          "sizing": {
+            "maxWidth": {
+              "desktop": {
+                "value": {
+                  "value": "100",
+                  "unit": "%"
+                }
+              }
+            },
+            "desktop": {
+              "value": {
+                "maxWidth": "100%"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#E69500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit:hover .bwf_heading, {{selector}} .bwfac_form_sec #wffn_custom_optin_submit:hover .bwf_subheading",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_hover_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit:hover",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#E69500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "bwf_button_border": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "desktop": {
+              "value": {
+                "radius": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px",
+                  "sync": "on"
+                },
+                "styles": {
+                  "all": {
+                    "width": "2px",
+                    "color": "#E69500"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfop_optin_form_button_text_padding": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit",
+      "styleProps": {
+        "spacing": {
+          "padding": {},
+          "margin": {}
+        }
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "padding": {
+              "desktop": {
+                "value": {
+                  "top": "15px",
+                  "syncVertical": "off",
+                  "syncHorizontal": "off",
+                  "bottom": "15px",
+                  "left": "0px",
+                  "right": "0px"
+                }
+              }
+            },
+            "margin": {
+              "desktop": {
+                "value": {
+                  "top": "15px",
+                  "syncVertical": "off",
+                  "syncHorizontal": "off",
+                  "bottom": "15px",
+                  "left": "0px",
+                  "right": "0px"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "button_text_alignment_box_shadow": {
+      "type": "object",
+      "selector": "{{selector}} .bwfac_form_sec #wffn_custom_optin_submit",
+      "styleProps": {
+        "boxShadow": {}
+      },
+      "default": {
+        "decoration": {
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

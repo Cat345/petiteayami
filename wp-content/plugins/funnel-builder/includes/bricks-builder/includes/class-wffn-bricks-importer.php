@@ -13,7 +13,7 @@ if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
 		/**
 		 * Imports a module with the given module ID and export content.
 		 *
-		 * @param int $module_id The ID of the module to import.
+		 * @param int    $module_id The ID of the module to import.
 		 * @param string $export_content The export content of the module.
 		 *
 		 * @return mixed  The status of the import process.
@@ -31,10 +31,12 @@ if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
 		 * @param int $post_id post ID.
 		 */
 		public function import_template_single( $post_id, $template_data ) {
-			wp_update_post( array(
-				'ID'           => $post_id,
-				'post_content' => '',
-			) );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			if ( empty( $template_data ) ) {
 				$this->clear_cache();
@@ -86,23 +88,24 @@ if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
 
 			// Update content.
 			update_post_meta( $post_id, $meta_key, apply_filters( 'wffn_import_bricks_content', $elements, $post_id ) );
-			wp_update_post( array(
-				'ID'           => $post_id,
-				'post_content' => '',
-			) );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			$this->clear_cache();
 
 			return true;
 		}
 
 		public function clear_cache() {
-
 		}
 
 		/**
 		 * Export the module data.
 		 *
-		 * @param int $module_id The ID of the module.
+		 * @param int    $module_id The ID of the module.
 		 * @param string $slug The slug of the module.
 		 *
 		 * @return array The exported data.
@@ -131,16 +134,16 @@ if ( ! class_exists( '\FunnelKit\WFFN_Bricks_Importer' ) ) {
 		 * @return void
 		 */
 		public function delete_bricks_data( $post_id ) {
-			wp_update_post( array(
-				'ID'           => $post_id,
-				'post_content' => '',
-			) );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			delete_post_meta( $post_id, BRICKS_DB_PAGE_CONTENT );
 			delete_post_meta( $post_id, BRICKS_DB_PAGE_SETTINGS );
 		}
-
-
 	}
 
 	$response = Bricks_Integration::check_builder_status();

@@ -51,7 +51,12 @@ abstract class TaxTransaction {
 		$order = wc_get_order( $order_id );
 		$order->calculate_totals( true );
 
-		$tax_calculation        = Calculator::$calculations[ $order_id ];
+		$tax_calculation = Calculator::$calculations[ $order_id ];
+
+		if ( ! $tax_calculation ) {
+			return;
+		}
+
 		$tax_calculation_input  = $tax_calculation['input'];
 		$tax_calculation_result = $tax_calculation['result'];
 

@@ -15,30 +15,36 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 		}
 
 		public function get_shortcodes() {
-			return apply_filters( 'wfocu_shortcodes', array(
-				'wfocu_yes_link',
-				'wfocu_no_link',
-				'wfocu_variation_selector_form',
-				'wfocu_qty_selector',
-				'wfocu_product_image_slider',
-				'wfocu_product_title',
-				'wfocu_product_short_description',
-			) );
+			return apply_filters(
+				'wfocu_shortcodes',
+				array(
+					'wfocu_yes_link',
+					'wfocu_no_link',
+					'wfocu_variation_selector_form',
+					'wfocu_qty_selector',
+					'wfocu_product_image_slider',
+					'wfocu_product_title',
+					'wfocu_product_short_description',
+				)
+			);
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
 		}
 
 		public function wfocu_yes_link_output( $atts, $html = '' ) {
-			$atts = shortcode_atts( array(
-				'key'   => 1,
-				'class' => '',
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'key'   => 1,
+					'class' => '',
+				),
+				$atts
+			);
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 			if ( ! isset( $data->products ) ) {
 				return $this->generate_demo_yes_link( $atts, $html );
@@ -47,7 +53,6 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 			if ( ! isset( $data->products->{$atts['key']} ) ) {
 				$atts['key'] = WFOCU_Core()->offers->get_product_key_by_index( $atts['key'], $data->products );
 			}
-
 
 			ob_start();
 			WFOCU_Core()->template_loader->add_attributes_to_buy_button();
@@ -58,19 +63,20 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 
 		public function generate_demo_yes_link( $atts, $html, $attributes = '' ) {
 			return sprintf( '<a href="javascript:void(0);" class="%s" %s>%s</a>', 'wfocu_yes_btn ' . esc_attr( $atts['class'] ), $attributes, do_shortcode( $html ) );
-
 		}
 
 		public function generate_demo_no_link( $atts, $html, $attributes = '' ) {
 			return sprintf( '<a href="javascript:void(0);" class="%s" %s>%s</a>', 'wfocu_no_btn ' . esc_attr( $atts['class'] ), $attributes, do_shortcode( $html ) );
-
 		}
 
 		public function wfocu_no_link_output( $atts, $html = '' ) {
-			$atts = shortcode_atts( array(
-				'key'   => 1,
-				'class' => '',
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'key'   => 1,
+					'class' => '',
+				),
+				$atts
+			);
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 			if ( ! isset( $data->products ) ) {
@@ -85,20 +91,20 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 		}
 
 		public function wfocu_variation_selector_form_output( $atts ) {
-			
 
-			$atts = shortcode_atts( array(
-				'key'     => 1,
-				'label'   => __( 'No, thanks', 'woofunnels-upstroke-one-click-upsell' ),
-				'display' => 'yes',
-			), $atts );
-
+			$atts = shortcode_atts(
+				array(
+					'key'     => 1,
+					'label'   => __( 'No, thanks', 'woofunnels-upstroke-one-click-upsell' ),
+					'display' => 'yes',
+				),
+				$atts
+			);
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 			if ( false === $data ) {
 				return '';
 			}
-
 
 			if ( ! isset( $data->products->{$atts['key']} ) ) {
 				$atts['key'] = WFOCU_Core()->offers->get_product_key_by_index( $atts['key'], $data->products );
@@ -122,11 +128,13 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 		}
 
 		public function wfocu_qty_selector_output( $atts ) {
-			$atts = shortcode_atts( array(
-				'key'   => 1,
-				'label' => __( 'Quantity', 'woocommerce' ),
-			), $atts );
-
+			$atts = shortcode_atts(
+				array(
+					'key'   => 1,
+					'label' => __( 'Quantity', 'woocommerce' ),
+				),
+				$atts
+			);
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 
@@ -154,13 +162,15 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 		}
 
 		public function wfocu_product_image_slider_output( $atts ) {
-			$atts = shortcode_atts( array(
-				'key'   => 1,
-				'label' => __( 'Product Image Slider', 'woofunnels-upstroke-one-click-upsell' ),
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'key'   => 1,
+					'label' => __( 'Product Image Slider', 'woofunnels-upstroke-one-click-upsell' ),
+				),
+				$atts
+			);
 
 			$key = $atts['key'];
-
 
 			/** Gallery */
 			if ( ! isset( WFOCU_Core()->template_loader->product_data->products ) ) {
@@ -207,41 +217,43 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 
 				if ( ! empty( $main_img ) ) {
 					ob_start();
-					WFOCU_Core()->template_loader->get_template_part( 'product/slider', array(
-						'key'     => $key,
-						'gallery' => $gallery,
-						'product' => $product_obj,
-						'title'   => '',
-						'style'   => 2,
-					) );
+					WFOCU_Core()->template_loader->get_template_part(
+						'product/slider',
+						array(
+							'key'     => $key,
+							'gallery' => $gallery,
+							'product' => $product_obj,
+							'title'   => '',
+							'style'   => 2,
+						)
+					);
 
 					$scripts = WFOCU_Core()->assets->get_scripts();
 
-					wp_register_script( 'flickity', $scripts['flickity']['path'], [], true );
+					wp_register_script( 'flickity', $scripts['flickity']['path'], array(), true );
 					wp_enqueue_script( 'flickity' );
-
 
 					wp_print_styles( array( 'flickity', 'flickity-common' ) );
 					?>
-                    <script>
-                        jQuery(document).ready(function () {
-                            jQuery('.wfocu-product-carousel').each(function () {
-                                var flickity_attr = jQuery(this).attr('data-flickity');
-                                if (undefined !== flickity_attr) {
-                                    jQuery(this).flickity(JSON.parse(flickity_attr));
-                                }
-                            });
-                            if (jQuery('.wfocu-product-carousel-nav').length > 0) {
-                                jQuery('.wfocu-product-carousel-nav').each(function () {
-                                    var flickity_attr = jQuery(this).attr('data-flickity');
-                                    if (undefined !== flickity_attr) {
-                                        jQuery(this).flickity(JSON.parse(flickity_attr));
-                                    }
-                                });
-                            }
-                        });
+					<script>
+						jQuery(document).ready(function () {
+							jQuery('.wfocu-product-carousel').each(function () {
+								var flickity_attr = jQuery(this).attr('data-flickity');
+								if (undefined !== flickity_attr) {
+									jQuery(this).flickity(JSON.parse(flickity_attr));
+								}
+							});
+							if (jQuery('.wfocu-product-carousel-nav').length > 0) {
+								jQuery('.wfocu-product-carousel-nav').each(function () {
+									var flickity_attr = jQuery(this).attr('data-flickity');
+									if (undefined !== flickity_attr) {
+										jQuery(this).flickity(JSON.parse(flickity_attr));
+									}
+								});
+							}
+						});
 
-                    </script>
+					</script>
 					<?php
 
 					return ob_get_clean();
@@ -253,9 +265,12 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 
 		public function wfocu_product_title_output( $atts ) {
 
-			$atts = shortcode_atts( array(
-				'key' => 1
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'key' => 1,
+				),
+				$atts
+			);
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 
@@ -284,14 +299,16 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 				return;
 			}
 
-
 			return $title;
 		}
 
 		public function wfocu_product_short_description_output( $atts ) {
-			$atts = shortcode_atts( array(
-				'key' => 1
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'key' => 1,
+				),
+				$atts
+			);
 
 			$data = WFOCU_Core()->data->get( '_current_offer_data' );
 
@@ -328,8 +345,6 @@ if ( ! class_exists( 'WFOCU_Shortcodes' ) ) {
 
 			return $short_description;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

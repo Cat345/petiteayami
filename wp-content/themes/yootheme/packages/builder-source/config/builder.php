@@ -39,7 +39,7 @@ return [
                         'options' => [
                             [
                                 'evaluate' =>
-                                    'yootheme.builder.helpers.Source.getSourceField(this.builder.path(this.node)).type.kind === \'LIST\' ? yootheme.builder.sources.conditionMultipleOptions : []',
+                                    "yootheme.builder.helpers.Source.getSourceField(this.builder.path(this.node)).type.kind === 'LIST' ? yootheme.builder.sources.conditionMultipleOptions : []",
                             ],
                         ],
                     ],
@@ -85,7 +85,7 @@ return [
                             ],
                         ],
                         'show' =>
-                            'yootheme.builder.helpers.Source.getProp(this.node, \'_condition\').name',
+                            "yootheme.builder.helpers.Source.getProp(this.node, '_condition').name",
                     ],
                 ],
                 'show' =>

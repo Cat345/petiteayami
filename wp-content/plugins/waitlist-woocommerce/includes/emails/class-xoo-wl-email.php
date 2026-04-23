@@ -47,10 +47,11 @@ abstract class Xoo_Wl_Email{
 
 			$this->placeholders = array_merge(
 				array(
-					'[product_id]' 		=> $product->get_id(),
-					'[product_name]' 	=> $product->get_name(),
-					'[product_link]' 	=> '<a href="'.$product->get_permalink().'">'.$product->get_name().'</a>',
-					'[product_price]' 	=> $product->get_price()
+					'[product_id]' 			=> $product->get_id(),
+					'[product_name]' 		=> $product->get_name(),
+					'[product_link]' 		=> '<a href="'.$product->get_permalink().'">'.$product->get_name().'</a>',
+					'[product_link_raw]' 	=> $product->get_permalink(),
+					'[product_price]' 		=> $product->get_price()
 				),
 				$this->placeholders
 			);

@@ -1,0 +1,66 @@
+/**
+ * Frontend Styles
+ *
+ * @package FunnelKit_Checkout_Conditional_Fields
+ */
+
+/* Hidden Field */
+.fkcf-hidden {
+	display: none !important;
+}
+
+/* Ensure smooth transitions */
+.wfacp-form .fkcf-hidden {
+	opacity: 0;
+	visibility: hidden;
+	height: 0;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+/* Optional: Add fade transition for better UX */
+.wfacp-form .wfacp_main_form div,
+.wfacp-form .wfacp_main_form p {
+	transition: opacity 0.2s ease-in-out;
+}
+
+/* Section Visibility - Phase 2 */
+.fkcf-section-hidden {
+	display: none !important;
+	opacity: 0;
+	visibility: hidden;
+	height: 0;
+	overflow: hidden;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Section transitions */
+.wfacp_billing_fields,
+.wfacp_shipping_fields,
+.wfacp_account_fields,
+.wfacp_order_fields,
+.wfacp_advanced_fields,
+.woocommerce-billing-fields,
+.woocommerce-shipping-fields,
+.woocommerce-account-fields,
+.woocommerce-order-fields {
+	transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
+	overflow: hidden;
+}
+
+/* Section visible state */
+.wfacp_billing_fields:not(.fkcf-section-hidden),
+.wfacp_shipping_fields:not(.fkcf-section-hidden),
+.wfacp_account_fields:not(.fkcf-section-hidden),
+.wfacp_order_fields:not(.fkcf-section-hidden),
+.wfacp_advanced_fields:not(.fkcf-section-hidden),
+.woocommerce-billing-fields:not(.fkcf-section-hidden),
+.woocommerce-shipping-fields:not(.fkcf-section-hidden),
+.woocommerce-account-fields:not(.fkcf-section-hidden),
+.woocommerce-order-fields:not(.fkcf-section-hidden) {
+	opacity: 1;
+	visibility: visible;
+	max-height: none;
+}

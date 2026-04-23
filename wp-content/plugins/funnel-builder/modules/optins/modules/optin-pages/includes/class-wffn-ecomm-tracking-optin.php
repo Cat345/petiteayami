@@ -3,12 +3,13 @@
 /**
  * This class take care of ecommerce tracking setup
  * It renders necessary javascript code to fire events as well as creates dynamic data for the tracking
+ *
  * @author woofunnels.
  */
 if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Ecomm_Tracking_Optin extends WFFN_Ecomm_Tracking_Common {
+	class WFFN_Ecomm_Tracking_Optin extends WFFN_Ecomm_Tracking_Common {
 		private static $ins = null;
 
 		public function __construct() {
@@ -56,7 +57,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -73,7 +73,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function do_track_ga_view() {
@@ -121,7 +120,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -154,7 +152,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function should_render( $check_valid_session = false ) {
@@ -180,7 +177,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_custom_event_name() {
@@ -189,7 +185,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			} elseif ( WFOPP_Core()->optin_ty_pages->is_wfoty_page() ) {
 				return 'WooFunnels_OptinConfirmation';
 			}
-
 		}
 
 		public function lead_event_data( $localized ) {
@@ -198,8 +193,8 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 					'fb'   => array(
 						'enable'    => BWF_Admin_General_Settings::get_instance()->get_option( 'is_fb_lead_op' ),
 						'fb_pixels' => $this->is_fb_pixel(),
-						'event_ID'  => "Lead" . "_" . time(),
-						'currency'  => ( function_exists( 'get_woocommerce_currency' ) ) ? get_woocommerce_currency() : 'USD'
+						'event_ID'  => 'Lead' . '_' . time(),
+						'currency'  => ( function_exists( 'get_woocommerce_currency' ) ) ? get_woocommerce_currency() : 'USD',
 					),
 					'ga'   => array(
 						'enable' => BWF_Admin_General_Settings::get_instance()->get_option( 'is_ga_lead_op' ),
@@ -211,9 +206,10 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 						'labels' => $this->gad_lead_label(),
 					),
 					'pint' => array(
-						'enable' => BWF_Admin_General_Settings::get_instance()->get_option( 'is_pint_lead_op' ),
-						'pixels' => $this->is_pint_pixel(),
-					)
+						'enable'   => BWF_Admin_General_Settings::get_instance()->get_option( 'is_pint_lead_op' ),
+						'pixels'   => $this->is_pint_pixel(),
+						'advanced' => $this->get_pinterest_advanced_data_for_optin(),
+					),
 				);
 				$localized['op_should_render'] = apply_filters( 'wffn_allow_op_tracking_js', true );
 			}
@@ -231,7 +227,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			if ( is_array( $get_each_pixel_id ) && count( $get_each_pixel_id ) > 0 ) {
 
 				foreach ( $get_each_pixel_id as $key => $pixel_id ) {
-
 
 					$access_token = $this->get_conversion_api_access_token();
 					$access_token = explode( ',', $access_token );
@@ -258,12 +253,10 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 						return null;
 					}
 
-
 					$instance->set_event_id( filter_input( INPUT_GET, 'lead_event_id' ) );
-					$instance->set_user_data( $this->get_user_data( 'Lead' ) );
+					$instance->set_user_data( $this->get_user_data( 'Lead', true ) );
 					$instance->set_event_source_url( $this->getRequestUri( true ) );
-					$instance->set_event_data( 'Lead', [] );
-
+					$instance->set_event_data( 'Lead', array() );
 
 					$response = $instance->execute();
 
@@ -275,7 +268,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 		public function get_custom_event_params() {
 			$funnel = WFFN_Core()->data->get_session_funnel();
 			if ( wffn_is_valid_funnel( $funnel ) ) {
-				$params = [];
+				$params = array();
 				if ( is_singular() ) {
 					global $post;
 					$params['page_title'] = $post->post_title;
@@ -313,6 +306,27 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking_Optin' ) ) {
 			return empty( $get_gad_conversion_label ) ? false : $get_gad_conversion_label;
 		}
 
+		/**
+		 * Get Pinterest advanced matching data for optin using existing filter
+		 * Uses send_optin_data_in_advanced_matching filter which adds email from form
+		 */
+		public function get_pinterest_advanced_data_for_optin() {
+			$args = array();
 
+			$params = apply_filters( 'wffn_advanced_matching_data', WFFN_Common::advanced_matching_data() );
+			if ( ! is_array( $params ) || 0 === count( $params ) ) {
+				return $args;
+			}
+
+			if ( isset( $params['em'] ) && ! empty( $params['em'] ) ) {
+				$args['em'] = hash( 'sha256', strtolower( trim( $params['em'] ) ) );
+			}
+			if ( isset( $params['external_id'] ) && ! empty( $params['external_id'] ) ) {
+				$external_id         = $params['external_id'];
+				$args['external_id'] = is_numeric( $external_id ) ? hash( 'sha256', (string) $external_id ) : $external_id;
+			}
+
+			return $args;
+		}
 	}
 }

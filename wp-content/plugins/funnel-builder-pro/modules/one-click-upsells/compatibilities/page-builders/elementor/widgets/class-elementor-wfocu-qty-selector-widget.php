@@ -84,9 +84,33 @@ if ( ! class_exists( 'Elementor_WFOCU_Qty_Selector_Widget' ) ) {
 			] );
 
 			if ( false === $qty_selector_enabled ) {
+				$upsell_id = get_post_meta( $offer_id, '_funnel_id', true );
+				$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
+
+				if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
+					$products_url = add_query_arg( array(
+						'page'      => 'bwf',
+						'path'      => '/funnel-offer/' . $offer_id . '/product',
+						'funnel_id' => $funnel_id,
+					), admin_url( 'admin.php' ) );
+				} else {
+					$products_url = add_query_arg( array(
+						'page'    => 'upstroke',
+						'section' => 'offers',
+						'edit'    => $upsell_id,
+					), admin_url( 'admin.php' ) );
+				}
+
+				$message = sprintf(
+					/* translators: %1$s: Opening anchor tag, %2$s: Closing anchor tag */
+					'%1$s' . __( 'The quantity selector is currently unavailable for this offer. Please enable customers to choose their preferred quantity when purchasing this upsell product(s) from the "Products" tab', 'woofunnels-upstroke-one-click-upsell' ) . '%2$s',
+					'<a href="' . esc_url( $products_url ) . '" target="_blank">',
+					'</a>'
+				);
+
 				$this->add_control( 'wfocu_el_qty_error_notice', [
 					'type'            => Controls_Manager::RAW_HTML,
-					'raw'             => __( 'Quantity selector is not available for this offer. Kindly allow customer to chose the quantity while purchasing this upsell product(s) from "Offers" tab.', 'woofunnels-upstroke-one-click-upsell' ),
+					'raw'             => $message,
 					'content_classes' => 'elementor-panel-alert elementor-panel-alert-danger',
 				] );
 			}
@@ -349,7 +373,7 @@ if ( ! class_exists( 'Elementor_WFOCU_Qty_Selector_Widget' ) ) {
 
 			$this->add_render_attribute( 'wrapper', 'class', 'elementor-button-wrapper' );
 			?>
-            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+            <div <?php echo $this->get_render_attribute_string( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<?php
 				if ( ! empty( $product_key ) ) {
 					echo do_shortcode( '[wfocu_qty_selector key="' . $product_key . '" label="' . $qty_text . '"]' );

@@ -25,12 +25,8 @@ class LoadImageSvg
             return $element->withoutAttr('uk-svg');
         }
 
-        if ($image->getWidth() && $image->getHeight()) {
-            if ($width xor $height) {
-                $element = $element->withAttrs(
-                    $image->ratio(['width' => $width, 'height' => $height]),
-                );
-            }
+        if ($image->getWidth() && $image->getHeight() && ($width xor $height)) {
+            $element = $element->withAttrs($image->ratio(['width' => $width, 'height' => $height]));
         }
 
         return $element;

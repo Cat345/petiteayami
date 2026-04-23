@@ -276,7 +276,7 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         // Replace extract() with explicit variable assignment for security.
         $coupon_id         = isset( $attributes['coupon_id'] ) ? $attributes['coupon_id'] : 0;
         $contentVisibility = isset( $attributes['contentVisibility'] ) ? $attributes['contentVisibility'] : array();
-        $className         = isset( $attributes['className'] ) ? $attributes['className'] : '';
+        $className         = isset( $attributes['className'] ) ? implode( ' ', $this->_helper_functions->sanitize_css_classes( $attributes['className'] ) ) : '';
 
         // Security: Validate coupon access before rendering.
         if ( ! $this->_can_user_view_coupon( absint( $coupon_id ) ) ) {
@@ -340,7 +340,7 @@ class Editor_Blocks implements Model_Interface, Initializable_Interface {
         // add custom class value from "Advanced" panel.
         // Check if className key exists in attributes to match original extract() behavior.
         if ( isset( $attributes['className'] ) && ! empty( $attributes['className'] ) ) {
-            $classnames[] = $attributes['className'];
+            $classnames = array_merge( $classnames, $this->_helper_functions->sanitize_css_classes( $attributes['className'] ) );
         }
 
         $this->_helper_functions->load_template(

@@ -80,37 +80,113 @@ class BWFAN_AS_V2 {
 	/**
 	 * Set claim_id 0 for orphaned actions where claim_id exists
 	 *
+	 * Uses a threshold based on the worker execution time to avoid clearing claims
+	 * that are still being actively processed by a running worker.
+	 *
 	 * @return void
 	 * @throws Exception
 	 */
 	public function unset_orphaned_claims() {
 		global $wpdb;
 
+		/** Use worker execution time + buffer to determine orphan threshold */
+		$per_call_time    = apply_filters( 'bwfan_as_per_call_time', 30 );
+		$orphan_threshold = max( intval( $per_call_time ) + 120, 300 );
+
 		$now = new DateTime( '', new DateTimeZone( 'UTC' ) );
-		$now->modify( "-3 minutes" );
+		$now->modify( "-{$orphan_threshold} seconds" );
 		$date_limit = $now->format( 'Y-m-d H:i:s' );
 
-		$ids   = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_contact_claim` WHERE `created_at` < %s", $date_limit ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		if ( empty( $ids ) ) {
-			return;
-		}
-
-		$time = time();
-		do {
-			foreach ( $ids as $k => $id ) {
-				$updated = $wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact` SET `claim_id` = 0 WHERE `claim_id` = %d", $id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				if ( 0 === intval( $updated ) ) {
-					/** No rows to update */
-					$wpdb->delete( $wpdb->prefix . 'bwfan_automation_contact_claim', [ 'ID' => $id ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-					unset( $ids[ $k ] );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}bwfan_automation_contact_claim` WHERE `created_at` < %s", $date_limit ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( ! empty( $ids ) ) {
+			$time = time();
+			do {
+				foreach ( $ids as $k => $id ) {
+					$updated = self::query_with_deadlock_retry( $wpdb->prepare( "UPDATE `{$wpdb->prefix}bwfan_automation_contact` SET `claim_id` = 0 WHERE `claim_id` = %d", $id ) );
+					if ( false === $updated ) {
+						/** DB error — stop processing this batch */
+						break 2;
+					}
+					if ( 0 === intval( $updated ) ) {
+						/** No rows to update */
+						$wpdb->delete( $wpdb->prefix . 'bwfan_automation_contact_claim', [ 'ID' => $id ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						unset( $ids[ $k ] );
+					}
+					if ( time() - 10 > $time ) {
+						break;
+					}
 				}
 				if ( time() - 10 > $time ) {
 					break;
 				}
+			} while ( ! empty( $ids ) );
+		}
+
+		/**
+		 * Fix contacts stuck by past deadlocks: claim_id is non-zero but the matching
+		 * claim row no longer exists in the claim table (deleted or never committed).
+		 * These contacts would never be picked up by normal orphan cleanup above.
+		 *
+		 * Includes all non-terminal statuses:
+		 * 1 (Active), 3 (Paused), 4 (Wait), 6 (Retry)
+		 * Status 3/4 can get stuck because unpause and goal-met transitions
+		 * (update_status_by_multiple_ids) do not reset claim_id.
+		 * Status 2 (Failed) and 5 (Terminate) are excluded — they won't re-enter the queue.
+		 */
+		$stuck_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT ac.`ID` FROM `{$wpdb->prefix}bwfan_automation_contact` ac
+				LEFT JOIN `{$wpdb->prefix}bwfan_automation_contact_claim` acc ON ac.`claim_id` = acc.`ID`
+				WHERE ac.`claim_id` != 0
+				AND ac.`status` IN (%d, %d, %d, %d)
+				AND acc.`ID` IS NULL
+				LIMIT %d",
+				1, 3, 4, 6, 100
+			)
+		); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		if ( ! empty( $stuck_ids ) ) {
+			$placeholders = array_fill( 0, count( $stuck_ids ), '%d' );
+			$format       = implode( ', ', $placeholders );
+			$sql          = $wpdb->prepare(
+				"UPDATE `{$wpdb->prefix}bwfan_automation_contact` SET `claim_id` = 0 WHERE `ID` IN ({$format})", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				...$stuck_ids
+			);
+			self::query_with_deadlock_retry( $sql );
+		}
+	}
+
+	/**
+	 * Execute a query with deadlock retry logic
+	 *
+	 * @param string $sql Prepared SQL query
+	 * @param int $max_retries Maximum number of retry attempts
+	 *
+	 * @return int|false Number of rows affected or false on failure
+	 */
+	public static function query_with_deadlock_retry( $sql, $max_retries = 3 ) {
+		global $wpdb;
+
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			$result = $wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+
+			if ( false !== $result ) {
+				return $result;
 			}
-			if ( time() - 10 > $time ) {
-				break;
+
+			/** Check if the error is a deadlock */
+			if ( false === strpos( $wpdb->last_error, 'Deadlock found' ) ) {
+				/** Not a deadlock error, don't retry */
+				return false;
 			}
-		} while ( ! empty( $ids ) );
+
+			if ( $attempt < $max_retries ) {
+				error_log( 'BWFAN: Deadlock detected, retry attempt ' . ( $attempt + 1 ) . ' of ' . $max_retries ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				/** Brief pause before retry with exponential backoff */
+				usleep( ( $attempt + 1 ) * 100000 );
+			}
+		}
+
+		return false;
 	}
 }

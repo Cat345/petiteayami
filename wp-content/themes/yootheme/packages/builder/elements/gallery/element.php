@@ -223,7 +223,7 @@ return [
             'description' => 'Show a divider between grid columns.',
             'type' => 'checkbox',
             'text' => 'Show dividers',
-            'enable' => 'grid_column_gap != \'collapse\' && grid_row_gap != \'collapse\'',
+            'enable' => "grid_column_gap != 'collapse' && grid_row_gap != 'collapse'",
         ],
         'grid_column_align' => [
             'label' => 'Alignment',
@@ -354,7 +354,7 @@ return [
             'label' => 'Manual Order',
             'description' =>
                 'Enter a comma-separated list of tags to manually order the filter navigation.',
-            'enable' => 'filter && filter_order == \'manual\'',
+            'enable' => "filter && filter_order == 'manual'",
         ],
         'filter_style' => [
             'label' => 'Style',
@@ -404,7 +404,7 @@ return [
             'description' =>
                 'Set whether filter items are forced into one line or can wrap into multiple lines.',
             'type' => 'checkbox',
-            'text' => 'Don\'t wrap into multiple lines',
+            'text' => "Don't wrap into multiple lines",
             'enable' => 'filter',
         ],
         'filter_align' => [
@@ -417,7 +417,7 @@ return [
                 'Center' => 'center',
                 'Justify' => 'justify',
             ],
-            'enable' => 'filter && filter_position == \'top\'',
+            'enable' => "filter && filter_position == 'top'",
         ],
         'filter_margin' => [
             'label' => 'Margin',
@@ -431,7 +431,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'filter && filter_position == \'top\'',
+            'enable' => "filter && filter_position == 'top'",
         ],
         'filter_grid_width' => [
             'label' => 'Grid Width',
@@ -642,7 +642,7 @@ return [
         'overlay_transition_background' => [
             'type' => 'checkbox',
             'text' => 'Animate background only',
-            'enable' => 'overlay_hover && overlay_mode == \'cover\' && overlay_style',
+            'enable' => "overlay_hover && overlay_mode == 'cover' && overlay_style",
         ],
         'overlay_style' => [
             'label' => 'Style',
@@ -729,7 +729,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Inverse the text color on hover',
             'enable' =>
-                '!overlay_style && (show_hover_image || show_hover_video) || overlay_style && overlay_mode == \'cover\' && overlay_hover && overlay_transition_background',
+                "!overlay_style && (show_hover_image || show_hover_video) || overlay_style && overlay_mode == 'cover' && overlay_hover && overlay_transition_background",
         ],
         'text_blend' => [
             'type' => 'checkbox',
@@ -908,7 +908,7 @@ return [
                 'Slide Right 100%' => 'slide-right',
             ],
             'enable' =>
-                'show_title && overlay_hover && (title_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_title && overlay_hover && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_style' => [
             'label' => 'Style',
@@ -934,7 +934,7 @@ return [
                 'Text Small' => 'text-small',
                 'Text Large' => 'text-large',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_link' => [
             'label' => 'Link',
@@ -942,7 +942,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Link title',
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && show_link',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && show_link",
         ],
         'title_hover_style' => [
             'label' => 'Hover Style',
@@ -954,7 +954,7 @@ return [
                 'Default Link' => '',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && show_link && (title_link || overlay_link)',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && show_link && (title_link || overlay_link)",
         ],
         'title_decoration' => [
             'label' => 'Decoration',
@@ -967,7 +967,7 @@ return [
                 'Bullet' => 'bullet',
                 'Line' => 'line',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_font_family' => [
             'label' => 'Font Family',
@@ -981,12 +981,12 @@ return [
                 'Secondary' => 'secondary',
                 'Tertiary' => 'tertiary',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -999,7 +999,7 @@ return [
                 'Danger' => 'danger',
                 'Background' => 'background',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_element' => [
             'label' => 'HTML Element',
@@ -1015,7 +1015,7 @@ return [
                 'h6' => 'h6',
                 'div' => 'div',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_margin' => [
             'label' => 'Margin Top',
@@ -1031,13 +1031,13 @@ return [
                 'X-Large' => 'xlarge',
                 'None' => 'remove',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_margin_auto' => [
             'label' => 'Margin Bottom',
             'type' => 'checkbox',
             'text' => 'Auto',
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'meta_transition' => [
             'label' => 'Transition',
@@ -1179,7 +1179,7 @@ return [
                 'Slide Right 100%' => 'slide-right',
             ],
             'enable' =>
-                'show_content && overlay_hover && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && overlay_hover && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_style' => [
             'label' => 'Style',
@@ -1206,7 +1206,7 @@ return [
                 'Heading H6' => 'h6',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_margin' => [
             'label' => 'Margin Top',
@@ -1223,14 +1223,14 @@ return [
                 'None' => 'remove',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_margin_auto' => [
             'label' => 'Margin Bottom',
             'type' => 'checkbox',
             'text' => 'Auto',
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'link_text' => [
             'label' => 'Text',
@@ -1269,7 +1269,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link && !lightbox',
@@ -1420,7 +1420,7 @@ return [
                                 [
                                     'label' => 'Parallax Start/End',
                                     'description' =>
-                                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the element\'s height.',
+                                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the element's height.",
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => ['grid_parallax_start', 'grid_parallax_end'],

@@ -15,6 +15,14 @@ export interface ICouponTemplatesStore {
     sortBy: 'title' | 'date';
     sortOrder: 'asc' | 'desc';
   };
+  // AI Generator state
+  aiGeneratorModal: boolean;
+  aiGenerating: boolean;
+  // AI Template Storage state
+  savedAITemplates: ISavedAITemplate[];
+  // StoreAgent Upsell state
+  storeagentUpsellModal: boolean;
+  storeagentUpsellMode: 'install' | 'activate' | 'connect';
 }
 
 export interface ICouponTemplateListItem {
@@ -84,6 +92,13 @@ export interface ICouponTemplateFieldResponseData {
   key: string;
   label: string;
   value: string;
+}
+
+export interface ISavedAITemplate {
+  id: string;
+  title: string;
+  prompt?: string;
+  created_at: string;
 }
 
 export interface ICreateCouponFromTemplateResponse {

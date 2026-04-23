@@ -25,9 +25,10 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 		/**
 		 * contain all loaded elements
+		 *
 		 * @var array
 		 */
-		private static $load_elements = [];
+		private static $load_elements = array();
 
 
 		private $post_id = 0;
@@ -39,8 +40,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			$this->define_constants();
 			add_action( 'after_setup_theme', array( $this, 'init' ) );
 			add_filter( 'option_bricks_global_settings', array( $this, 'setup_supported_post_types' ) );
-
-
 		}
 
 		/**
@@ -62,7 +61,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		 * Sets the local variable with the given name and ID.
 		 *
 		 * @param string $name The name of the local variable.
-		 * @param int $id The ID of the local variable.
+		 * @param int    $id The ID of the local variable.
 		 *
 		 * @return void
 		 */
@@ -136,7 +135,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				return;
 			}
 
-
 			add_action( 'wp', array( $this, 'wp_register_elements' ), 8 );
 
 			add_action( 'wp_ajax_bricks_save_post', array( $this, 'wp_register_elements' ), - 1 );
@@ -149,7 +147,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			add_filter( 'bricks/element/render', array( $this, 'maybe_setup_template' ), 10 );
 			add_filter( 'bricks/frontend/render_data', array( $this, 'maybe_render_shortcodes' ), 10, 2 );
 			add_filter( 'bricks/builder/i18n', array( $this, 'i18n_strings' ) );
-
 
 			add_filter( 'wfacp_register_templates', array( $this, 'register_templates_checkout' ) );
 			add_filter( 'wfacp_locate_template', array( $this, 'add_wfacp_template' ) );
@@ -172,16 +169,20 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 			add_action( 'wp_loaded', array( $this, 'load_wfacp_importer' ) );
 			add_action( 'wffn_import_completed', array( $this, 'setup_default_template' ), 10, 3 );
 
-			add_action( 'wfacp_checkout_page_found', function ( $post_id ) {
-				$this->post_id = $post_id;
-				add_filter( 'bricks/builder/data_post_id', function () {
-					return $this->post_id;
-				} );
-			} );
+			add_action(
+				'wfacp_checkout_page_found',
+				function ( $post_id ) {
+					$this->post_id = $post_id;
+					add_filter(
+						'bricks/builder/data_post_id',
+						function () {
+							return $this->post_id;
+						}
+					);
+				}
+			);
 
-			add_action( 'wfacp_template_removed', [ $this, 'delete_data' ] );
-
-
+			add_action( 'wfacp_template_removed', array( $this, 'delete_data' ) );
 		}
 
 		/**
@@ -235,7 +236,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 			if ( class_exists( 'WFACP_Common' ) && ( ( WFACP_Common::get_post_type_slug() === get_post_type( $post_id ) ) || ( WFACP_Common::get_post_type_slug() === get_post_type( $this->post_id ) ) ) ) {
 
-				if ( 0 === did_action( 'wfacp_template_class_found' ) && !is_null( WFACP_Core()->template_loader )) {
+				if ( 0 === did_action( 'wfacp_template_class_found' ) && ! is_null( WFACP_Core()->template_loader ) ) {
 					WFACP_Core()->template_loader::$is_checkout = true;
 					WFACP_Common::set_id( $post_id );
 					WFACP_Core()->template_loader->maybe_setup_page();
@@ -243,7 +244,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 				$this->register_elements( 'checkout' );
 			}
-
 
 			if ( ! is_null( WFFN_Core()->thank_you_pages ) && WFFN_Core()->thank_you_pages->get_post_type_slug() === get_post_type( $post_id ) ) {
 				$this->register_elements( 'thankyou-pages' );
@@ -261,15 +261,22 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		 * such as thankyou-pages, optin-pages, and checkout.
 		 */
 		public function rest_register_elements() {
-			$this->register_elements( 'thankyou-pages' );
+			if ( wffn_is_wc_active() ) {
+				$this->register_elements( 'thankyou-pages' );
+			}
 			$this->register_elements( 'optin-pages' );
-			add_filter( 'rest_request_before_callbacks', function ( $response, $handler, $request ) {
-				if ( $request->get_param( 'action' ) === 'bricks_render_element' ) {
-					$this->register_elements( 'checkout' );
-				}
+			add_filter(
+				'rest_request_before_callbacks',
+				function ( $response, $handler, $request ) {
+					if ( $request->get_param( 'action' ) === 'bricks_render_element' ) {
+						$this->register_elements( 'checkout' );
+					}
 
-				return $response;
-			}, 10, 3 );
+					return $response;
+				},
+				10,
+				3
+			);
 		}
 
 		/**
@@ -302,7 +309,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				return;
 			}
 
-
 			if ( $builder === 'bricks' && class_exists( 'WFACP_Common' ) && ( ( WFACP_Common::get_post_type_slug() === get_post_type( $id ) ) ) ) {
 
 				if ( 0 === did_action( 'wfacp_template_class_found' ) ) {
@@ -312,7 +318,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				}
 				$this->register_elements( 'checkout' );
 			}
-
 		}
 
 		/**
@@ -342,7 +347,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		/**
 		 * Checks if there are any shortcodes in the content and renders them if present.
 		 *
-		 * @param string $content The content to check for shortcodes.
+		 * @param string   $content The content to check for shortcodes.
 		 * @param \WP_Post $post The post object.
 		 *
 		 * @return string The modified content with the rendered shortcodes.
@@ -421,7 +426,7 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		public function enqueue_scripts() {
 			if ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
 
-				wp_enqueue_script( 'funnelkit-bricks-integration-scripts', plugin_dir_url( WFFN_PLUGIN_FILE ) . 'includes/bricks-builder/assets/js/scripts.js', WFFN_VERSION, true );
+				wp_enqueue_script( 'funnelkit-bricks-integration-scripts', plugin_dir_url( WFFN_PLUGIN_FILE ) . 'includes/bricks-builder/assets/js/scripts.js', WFFN_VERSION, true );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 
 				if ( defined( 'WFTY_PLUGIN_FILE' ) ) {
 					wp_enqueue_style( 'wffn_woo_thankyou_page', plugin_dir_url( WFTY_PLUGIN_FILE ) . 'assets/css/wffn-woo-thankyou-el-widgets.css', array(), WFFN_VERSION, 'all' );
@@ -488,13 +493,17 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 		public function allow_theme_css( $args ) {
 			global $post;
-			if ( ( ! empty( $post ) && in_array( $post->post_type, array(
+			if ( ( ! empty( $post ) && in_array(
+				$post->post_type,
+				array(
 					'wffn_landing',
 					'wffn_ty',
 					'wffn_optin',
 					'wffn_oty',
 
-				), true ) ) ) { // change here particular post type
+				),
+				true
+			) ) ) { // change here particular post type
 				array_push( $args, 'bricks' );
 
 				return $args;
@@ -508,11 +517,11 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 
 			if ( true === bricks_is_builder_iframe() && ! is_null( $post ) && WFOPP_Core()->optin_pages->get_post_type_slug() === $post->post_type ) {
 				?>
-                <style>
-                    div.brxe-wffn-optin-popup {
-                        transform: none !important;
-                    }
-                </style>
+				<style>
+					div.brxe-wffn-optin-popup {
+						transform: none !important;
+					}
+				</style>
 				<?php
 			}
 		}
@@ -559,7 +568,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 				update_post_meta( $module_id, '_wp_page_template', 'default' );
 
 			}
-
 		}
 
 		public function delete_data( $aero_id ) {
@@ -576,6 +584,6 @@ if ( ! class_exists( '\FunnelKit\Bricks_Integration' ) ) {
 		return Bricks_Integration::get_instance();
 	}
 
-// Calls the bricks_integration function.
+	// Calls the bricks_integration function.
 	bricks_integration();
 }

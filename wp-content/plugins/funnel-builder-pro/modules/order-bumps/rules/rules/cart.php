@@ -29,10 +29,9 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total_Full' ) ) {
 			$items  = WC()->cart->get_cart();
 			$price  = 0;
 			foreach ( $items as $index => $cart ) {
-				if ( isset( $cart['_wfob_product'] ) ) {
+				if ( isset( $cart['_wfob_product'] ) && apply_filters( 'wfob_exclude_bump_price_from_cart_total', true, $cart, __CLASS__ ) ) {
 					$price += $cart['line_subtotal'] + $cart['line_subtotal_tax'];
 				}
-
 			}
 			$cart_total = WC()->cart->get_total( 'total' );
 			$cart_total = floatval( $cart_total );
@@ -69,7 +68,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total_Full' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Total' ) ) {
@@ -145,7 +143,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Total' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
@@ -156,7 +153,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
 		}
 
 		public function get_possible_rule_values() {
-
 		}
 
 		public function get_possible_rule_operators() {
@@ -187,7 +183,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
 			$quantity = $rule_data['condition']['qty'];
 			$type     = $rule_data['operator'];
 			if ( ! is_array( $products ) || empty( $products ) ) {
-				$products = [];
+				$products = array();
 			}
 			$found_quantity = 0;
 
@@ -222,7 +218,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Product' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
@@ -230,7 +225,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 
 		public function __construct() {
 			parent::__construct( 'cart_category' );
-
 		}
 
 		public function get_possible_rule_operators() {
@@ -248,9 +242,12 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$terms = get_terms( 'product_cat', array(
-				'hide_empty' => false,
-			) );
+			$terms = get_terms(
+				'product_cat',
+				array(
+					'hide_empty' => false,
+				)
+			);
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					$result[ absint( $term->term_id ) ] = $term->name;
@@ -283,7 +280,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 			$cart_contents   = $woocommerce->cart->get_cart();
 			$categories      = $rule_data['condition']['categories'];
 			$type            = $rule_data['operator'];
-			$all_terms       = [];
+			$all_terms       = array();
 			$contain_exactly = null;
 			if ( empty( $categories ) ) {
 				return false;
@@ -296,9 +293,13 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
 						continue;
 					}
-					$terms = wp_get_object_terms( $cart_item['product_id'], 'product_cat', array(
-						'fields' => 'ids',
-					) );
+					$terms = wp_get_object_terms(
+						$cart_item['product_id'],
+						'product_cat',
+						array(
+							'fields' => 'ids',
+						)
+					);
 					if ( $type === '==' && false !== $contain_exactly ) {
 						$contain_exactly = $this->match_exactly( $categories, $terms );
 
@@ -322,17 +323,17 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 					}
 					break;
 				case '>':
-					//Any Matched
+					// Any Matched
 					if ( is_array( $categories ) && is_array( $all_terms ) ) {
 						$result = count( array_intersect( $categories, $all_terms ) ) >= 1;
 					}
 					break;
 				case '==':
-					//contain exactly
+					// contain exactly
 					$result = $contain_exactly;
 					break;
 				case 'none':
-					//Do not match
+					// Do not match
 					if ( is_array( $categories ) && is_array( $all_terms ) ) {
 						$result = count( array_intersect( $categories, $all_terms ) ) === 0;
 					}
@@ -344,7 +345,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Category' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
@@ -369,15 +369,17 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$terms = get_terms( 'product_tag', array(
-				'hide_empty' => false,
-			) );
+			$terms = get_terms(
+				'product_tag',
+				array(
+					'hide_empty' => false,
+				)
+			);
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					$result[ absint( $term->term_id ) ] = $term->name;
 				}
 			}
-
 
 			return $result;
 		}
@@ -407,7 +409,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 			$cart_contents = $woocommerce->cart->get_cart();
 			$categories    = $rule_data['condition']['categories'];
 			$type          = $rule_data['operator'];
-			$all_terms     = [];
+			$all_terms     = array();
 			if ( empty( $categories ) ) {
 				return false;
 			}
@@ -420,9 +422,13 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
 						continue;
 					}
-					$terms = wp_get_object_terms( $cart_item['product_id'], 'product_tag', array(
-						'fields' => 'ids',
-					) );
+					$terms = wp_get_object_terms(
+						$cart_item['product_id'],
+						'product_tag',
+						array(
+							'fields' => 'ids',
+						)
+					);
 					if ( $type === '==' && false !== $contain_exactly ) {
 						$contain_exactly = $this->match_exactly( $categories, $terms );
 
@@ -446,7 +452,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 					}
 					break;
 				case '>':
-					//Any Matched
+					// Any Matched
 					if ( is_array( $categories ) && is_array( $all_terms ) ) {
 						$result = count( array_intersect( $categories, $all_terms ) ) >= 1;
 					}
@@ -455,7 +461,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 					$result = $contain_exactly;
 					break;
 				case 'none':
-					//Do not match
+					// Do not match
 					if ( is_array( $categories ) && is_array( $all_terms ) ) {
 						$result = count( array_intersect( $categories, $all_terms ) ) === 0;
 					}
@@ -467,7 +473,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_tags' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Items_Count' ) ) {
@@ -538,7 +543,80 @@ if ( ! class_exists( 'wfob_Rule_Cart_Items_Count' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
+	}
+}
+if ( ! class_exists( 'wfob_Rule_Cart_Per_Item_Count' ) ) {
+	class wfob_Rule_Cart_Per_Item_Count extends wfob_Rule_Base {
+		private $items_count = 0;
 
+		public function __construct() {
+			parent::__construct( 'cart_per_item_count' );
+		}
+
+		public function get_possible_rule_operators() {
+			$operators = array(
+				'==' => __( 'is equal to', 'woofunnels-order-bump' ),
+				'!=' => __( 'is not equal to', 'woofunnels-order-bump' ),
+				'>'  => __( 'is greater than', 'woofunnels-order-bump' ),
+				'<'  => __( 'is less than', 'woofunnels-order-bump' ),
+				'>=' => __( 'is greater or equal to', 'woofunnels-order-bump' ),
+				'<=' => __( 'is less or equal to', 'woofunnels-order-bump' ),
+			);
+
+			return $operators;
+		}
+
+		public function get_condition_input_type() {
+			return 'Text';
+		}
+
+
+		public function is_match( $rule_data ) {
+			$cart_contents = WC()->cart->get_cart_contents();
+			foreach ( $cart_contents as $cart_item ) {
+				if ( apply_filters( 'wfob_exclude_cart_item_in_rule', false, $cart_item, __CLASS__ ) ) {
+					continue;
+				}
+				if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
+					continue;
+				}
+				if ( ! $this->_match_rule( $rule_data, $cart_item['quantity'] ) ) {
+					return $this->return_is_match( false, $rule_data );
+				}
+			}
+
+			return $this->return_is_match( true, $rule_data );
+		}
+		public function _match_rule( $rule_data, $count ) {
+			$result = false;
+			if ( isset( $rule_data['condition'] ) ) {
+				$value = (float) $rule_data['condition'];
+				switch ( $rule_data['operator'] ) {
+					case '==':
+						$result = $count == $value;
+						break;
+					case '!=':
+						$result = $count != $value;
+						break;
+					case '>':
+						$result = $count > $value;
+						break;
+					case '<':
+						$result = $count < $value;
+						break;
+					case '>=':
+						$result = $count >= $value;
+						break;
+					case '<=':
+						$result = $count <= $value;
+						break;
+					default:
+						$result = false;
+						break;
+				}
+			}
+			return $result;
+		}
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item_Count' ) ) {
@@ -577,7 +655,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Count' ) ) {
 					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $item['_wfob_product'] ), $item, __CLASS__ ) ) {
 						continue;
 					}
-					$count ++;
+					++$count;
 				}
 			}
 			if ( isset( $rule_data['condition'] ) ) {
@@ -609,7 +687,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Count' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
@@ -634,9 +711,12 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$terms = get_terms( 'product_type', array(
-				'hide_empty' => false,
-			) );
+			$terms = get_terms(
+				'product_type',
+				array(
+					'hide_empty' => false,
+				)
+			);
 			if ( $terms && ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					$result[ $term->term_id ] = $term->name;
@@ -671,7 +751,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 						continue;
 					}
 
-
 					$product = $cart_item['data'];
 					if ( ! $product instanceof WC_Product ) {
 						continue;
@@ -679,9 +758,13 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 					$product_id = $product->get_id();
 					$product_id = ( WFOB_Common::get_product_parent_id( $product ) ) ? WFOB_Common::get_product_parent_id( $product ) : $product_id;
 
-					$product_types = wp_get_post_terms( $product_id, 'product_type', array(
-						'fields' => 'ids',
-					) );
+					$product_types = wp_get_post_terms(
+						$product_id,
+						'product_type',
+						array(
+							'fields' => 'ids',
+						)
+					);
 					$all_types     = array_merge( $all_types, $product_types );
 
 				}
@@ -716,7 +799,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item_Type' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Coupons' ) ) {
@@ -740,11 +822,13 @@ if ( ! class_exists( 'wfob_Rule_Cart_Coupons' ) ) {
 		public function get_possible_rule_values() {
 			$result = array();
 
-			$coupons = get_posts( array(
-				'post_type'      => 'shop_coupon',
-				'posts_per_page' => defined( 'REST_REQUEST' ) ? 5 : - 1,
+			$coupons = get_posts(
+				array(
+					'post_type'      => 'shop_coupon',
+					'posts_per_page' => defined( 'REST_REQUEST' ) ? 5 : - 1,
 
-			) );
+				)
+			);
 
 			foreach ( $coupons as $coupon ) {
 				$result[ sanitize_title( $coupon->post_title ) ] = $coupon->post_title;
@@ -800,7 +884,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Coupons' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Payment_Gateway' ) ) {
@@ -846,10 +929,10 @@ if ( ! class_exists( 'wfob_Rule_Cart_Payment_Gateway' ) ) {
 			$condition = $rule_data['condition'];
 
 			if ( ! is_array( $condition ) || empty( $condition ) ) {
-				$condition = [];
+				$condition = array();
 			}
 			$payment = WC()->session->get( 'wfob_payment_method', '' );
-			//      WC()->cart->get_gat
+			// WC()->cart->get_gat
 
 			if ( empty( $payment ) ) {
 				if ( $type == 'is_not' ) {
@@ -874,7 +957,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Payment_Gateway' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Country' ) ) {
@@ -939,7 +1021,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Country' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Billing_Country' ) ) {
@@ -1004,7 +1085,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Billing_Country' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Method' ) ) {
@@ -1030,10 +1110,12 @@ if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Method' ) ) {
 
 			foreach ( WC()->shipping()->get_shipping_methods() as $method_id => $method ) {
 				// get_method_title() added in WC 2.6
-				$result[ $method_id ] = is_callable( array(
-					$method,
-					'get_method_title'
-				) ) ? $method->get_method_title() : $method->get_title();
+				$result[ $method_id ] = is_callable(
+					array(
+						$method,
+						'get_method_title',
+					)
+				) ? $method->get_method_title() : $method->get_title();
 			}
 
 			return $result;
@@ -1080,9 +1162,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Shipping_Method' ) ) {
 			}
 
 			return $method_ids;
-
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
@@ -1119,7 +1199,7 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
 			$items    = WC()->cart->get_cart_contents();
 			$products = $rule_data['condition']['products'];
 			if ( ! is_array( $products ) || empty( $products ) ) {
-				$products = [];
+				$products = array();
 			}
 			$quantity       = $rule_data['condition']['qty'];
 			$type           = $rule_data['operator'];
@@ -1130,7 +1210,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
 					if ( apply_filters( 'wfob_exclude_cart_item_in_rule', false, $cart_item, __CLASS__ ) ) {
 						continue;
 					}
-
 
 					if ( apply_filters( 'wfob_dont_allow_bump_item_in_rule', isset( $cart_item['_wfob_product'] ), $cart_item, __CLASS__ ) ) {
 						continue;
@@ -1177,7 +1256,6 @@ if ( ! class_exists( 'wfob_Rule_Cart_Item' ) ) {
 
 			return $this->return_is_match( $result, $rule_data );
 		}
-
 	}
 }
 if ( ! class_exists( 'wfob_Rule_Cart_Sublium' ) ) {
@@ -1435,20 +1513,17 @@ if ( ! class_exists( 'wfob_Rule_Order_Coupon_Text_Match' ) ) {
 			$type         = $rule_data['operator'];
 			$used_coupons = array();
 
-
 			$cart_contents = WC()->cart->get_coupons();
 			if ( $cart_contents && is_array( $cart_contents ) && count( $cart_contents ) > 0 ) {
 				$used_coupons = array_keys( $cart_contents );
 			}
 
-
 			$result = false;
 			if ( empty( $used_coupons ) || empty( $rule_data['condition'] ) ) {
 
-				if ( $type === "doesnt_contain" ) {
+				if ( $type === 'doesnt_contain' ) {
 					$result = true;
 				}
-
 
 				return $this->return_is_match( $result, $rule_data );
 			}
@@ -1481,6 +1556,5 @@ if ( ! class_exists( 'wfob_Rule_Order_Coupon_Text_Match' ) ) {
 
 			return $this->return_is_match( $matched, $rule_data );
 		}
-
 	}
 }

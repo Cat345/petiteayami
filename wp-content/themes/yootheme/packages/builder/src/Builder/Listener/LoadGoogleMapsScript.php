@@ -74,9 +74,13 @@ class LoadGoogleMapsScript
 
     public function handle(): void
     {
-        $this->config->update('customizer.script.types', function ($types = []): array {
-            return [...$types, ['text' => trans('Google Maps'), 'value' => self::TYPE]];
-        });
+        $this->config->update(
+            'customizer.script.types',
+            fn($types = []): array => [
+                ...$types,
+                ['text' => trans('Google Maps'), 'value' => self::TYPE],
+            ],
+        );
 
         $this->config->add('customizer.panels', [
             self::TYPE => [

@@ -3,9 +3,9 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Oxygen_Elementor_conflict {
 		public function __construct() {
-			add_action( 'template_redirect', [ $this, 'remove_all_filter' ] );
-			add_action( 'save_post', [ $this, 'delete_elementor_meta' ], 10, 2 );
-			add_action( 'elementor/document/after_save', [ $this, 'delete_oxygen_data' ], 10, 2 );
+			add_action( 'template_redirect', array( $this, 'remove_all_filter' ) );
+			add_action( 'save_post', array( $this, 'delete_elementor_meta' ), 10, 2 );
+			add_action( 'elementor/document/after_save', array( $this, 'delete_oxygen_data' ), 10, 2 );
 		}
 
 		public function is_enabled() {
@@ -17,12 +17,12 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 				global $post;
 
 				$elementor_open = false;
-				if ( isset( $_GET['action'] ) && $_GET['action'] == 'elementor' && isset( $_GET['post'] ) ) {
-					$post           = get_post( $_GET['post'] );
+				if ( isset( $_GET['action'] ) && 'elementor' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) && isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+					$post           = get_post( absint( wp_unslash( $_GET['post'] ) ) );
 					$elementor_open = true;
 
-				} else if ( isset( $_GET['elementor-preview'] ) ) {
-					$post           = get_post( $_GET['elementor-preview'] );
+				} elseif ( isset( $_GET['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+					$post           = get_post( absint( wp_unslash( $_GET['elementor-preview'] ) ) );
 					$elementor_open = true;
 				}
 
@@ -46,7 +46,7 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 		public function remove_all_filter() {
 			if ( $this->is_enabled() ) {
 				remove_all_filters( 'template_include' );
-				add_filter( 'template_include', [ $this, 'adding_our_default_template' ] );
+				add_filter( 'template_include', array( $this, 'adding_our_default_template' ) );
 			}
 		}
 
@@ -60,7 +60,7 @@ if ( ! class_exists( 'WFACP_Oxygen_Elementor_conflict' ) ) {
 		}
 
 		public function delete_elementor_meta( $post_id, $post ) {
-			if ( isset( $_GET['action'] ) && $_GET['action'] == "ct_save_components_tree" && ! is_null( $post ) && $post->post_type = WFACP_Common::get_post_type_slug() ) {
+			if ( isset( $_GET['action'] ) && $_GET['action'] == 'ct_save_components_tree' && ! is_null( $post ) && $post->post_type = WFACP_Common::get_post_type_slug() ) {
 				delete_post_meta( $post_id, '_elementor_version' );
 				delete_post_meta( $post_id, '_elementor_template_type' );
 				delete_post_meta( $post_id, '_elementor_edit_mode' );

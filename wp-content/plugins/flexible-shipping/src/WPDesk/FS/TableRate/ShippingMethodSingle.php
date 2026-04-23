@@ -165,6 +165,7 @@ class ShippingMethodSingle extends WC_Shipping_Method {
 	 */
 	public function process_integrations_settings( $settings ) {
 		$settings = apply_filters( 'flexible_shipping_process_admin_options', $settings );
+		$settings['method_logo_id'] = absint( $settings['method_logo_id'] ?? 0 );
 
 		return $settings;
 	}

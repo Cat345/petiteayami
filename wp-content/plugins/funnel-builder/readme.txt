@@ -2,9 +2,9 @@
 Contributors: amans2k, xlplugins, teamwoofunnels
 Tags: Funnel Builder, WooCommerce Checkout, Sales Funnels, One Click Upsells
 Requires at least: 5.4.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.13.1.6
+Stable tag: 3.15.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,8 +30,8 @@ FunnelKit provides you with pre-built templates that are 100% mobile-responsive 
 
 Use FunnelKit's Funnel Builder to create:
 
-- Beautiful opt-in and landing pages
 - Optimized WooCommerce checkout pages (global & one page checkouts)
+- Beautiful sales/ landing and opt-in pages.
 - Highly targeted order bumps
 - Rule-based one-click upsell offers
 - Custom thank you or order confirmation pages
@@ -379,34 +379,159 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 
 == Change log ==
 
-= 3.13.1.6 (Dec 09, 2025) =
+= 3.15.0.2 =
+* Fixed: Critical security patch for SQL queries related to views for Optin/Sales pages. (#8826)
+* Fixed: Funnel: Compatibility issues with Divi5 checkout module is resolved. (#8831)
+
+= 3.15.0.1 =
+* Improved: Funnel: Compatibility with divi page builder improved to handle few edge cases.  (#8813, #8809, #8815)
+
+= 3.15.0 =
+* Added: Funnel: Deep compatibility with Divi5 theme with New & improved templates. (#8310)
+* Added: Funnel: Added per Product Checkout Redirect feature to allow dedicated checkout pages to open in regular store flow. (#8612)
+* Added: Funnel: Added product stock status as a display condition for order bump rules. (#8628)
+* Added: Funnel: Added compatibility with Etch theme for landing pages, thank you pages, and opt-in pages. (#8682)
+* Improved: Checkout: Improved compatibility with WordPress 7.0 for Gutenberg blocks. (#8545)
+* Improved: Checkout: Improved compatibility with PS Delivery Module. (#8576)
+* Improved: Checkout: Improved compatibility with CookieYes. (#8643)
+* Improved: Checkout: Improved compatibility with WooPayments. (#8650)
+* Improved: Checkout: Improved compatibility with Oxygen Builder. (#8664)
+* Improved: Checkout: Improved compatibility with Germanized for WooCommerce. (#8667)
+* Improved: Checkout: Improved compatibility with hCaptcha. (#8685)
+* Improved: Checkout: Improved compatibility with WooCommerce Subscriptions. (#8689, #8692)
+* Improved: Checkout: Improved compatibility with Enfold theme. (#8696)
+* Improved: Checkout: Improved compatibility with Spectra. (#8706)
+* Improved: Checkout: Improved compatibility with Woostify theme. (#8709)
+* Improved: Checkout: Optimized checkout module initialisation by consolidating redundant database queries. (#8728)
+* Improved: Funnel: Improved compatibility with Complianz. (#8540, #8712)
+* Improved: Funnel: Improved sticky header behaviour on the funnel listing screen. (#8670)
+* Improved: Funnel: Improved compatibility with Elementor. (#8622)
+* Added: Checkout: Added a ‘Continue Shopping’ link when the cart is empty on checkout pages. (#8632)
+* Fixed: Checkout: Fixed missing CSS for the address field search icon on RTL checkout pages. (#8589)
+* Fixed: Checkout: Fixed mini cart accordion becoming un-clickable due to nested element structure. (#8614)
+* Fixed: Checkout: Fixed Bulgarian phone number validation accepting incomplete mobile numbers. (#8634)
+* Fixed: Checkout: Resolved script dependency notice in the checkout Editor caused by a missing checkout script. (#8659)
+* Fixed: Checkout: Resolved fatal error caused by WooCommerce Store API SessionHandler incompatibility. (#8680)
+* Fixed: Checkout: Fixed radio button alignment in the product switcher when product images are visible. (#8701)
+* Fixed: Funnel: Fixed character encoding corruption for non-Latin characters in opt-in email form submissions. (#8606)
+* Fixed: Funnel: Restored missing strike-through price and total savings message controls in the checkout builder for subscription products. (#8626)
+* Fixed: Funnel: Fixed sales page URL not updating correctly when the page name contains quote characters. (#8655)
+* Fixed: Funnel: Fixed billing email field unable to be repositioned in the multi-step checkout builder. (#8657)
+* Fixed: Thank you Page: Resolved unintended HTML stripping in order total labels on thank you pages. (#8596)
+* Fixed: Funnel - Admin Pages to handle Funnel titles in non-English character languages. (#8736)
+
+= 3.14.0.3 =
+* Improved: Funnel: Enhanced plugin security for optin related SQL queries. (#8759)
+
+= 3.14.0.2 =
+* Fixed: Checkout: Compatibility with MailPoet And Order Delivery Date by Tyche plugins updated for css rendering issue.(#8640)
+
+= 3.14.0.1 =
+* Fixed: Checkout: Compatibility with Astra and Avada themes updated for css rendering issue.(#8617)
+
+= 3.14.0 =
+* Added: Checkout: Added compatibility with DPD France shipping plugin. (#8297)
+* Added: Checkout: Added compatibility with WooCommerce Address Validation plugin. (#8377)
+* Added: Checkout: Added filter hook to customize the return to cart link URL. (#8393)
+* Added: Checkout: Added JavaScript filter hook for the add_to_cart tracking event. (#8407)
+* Added: Checkout: Added compatibility with Cornerstone page builder for checkout pages. (#8449)
+* Added: Checkout: Added compatibility with Greenshift by Wpsoul page builder. (#8510)
+* Added: Funnel: Added filter hook to customize CAPI log event types. (#8375)
+* Improved: Checkout: Improved compatibility with Mercado Pago gateway. (#8567)
+* Improved: Checkout: Improved smart button loading speed for faster checkout experience. (#7985)
+* Improved: Checkout: Added CSS isolation to prevent third-party plugins from overriding the Place Order button style. (#8040)
+* Improved: Checkout: Improved compatibility with WooCommerce Subscriptions Gifting. (#8070)
+* Improved: Checkout: Improved compatibility with MailPoet. (#8094)
+* Improved: Checkout: Improved compatibility with SiteGround Optimizer. (#8311)
+* Improved: Checkout: Improved compatibility with YITH Points and Rewards. (#8346)
+* Improved: Checkout: Improved product display consistency and UI for the product switcher at checkout. (#8351)
+* Improved: Checkout: Improved compatibility with Customer Reviews for WooCommerce in Elementor. (#8372)
+* Improved: Checkout: Improved compatibility with Magic Login Pro. (#8479)
+* Improved: Checkout: Improved compatibility with PS Delivery Module. (#8515)
+* Improved: Checkout: Added built-in Econt Delivery address field support with improved order review fragment handling. (#8538)
+* Improved: Checkout: Improved compatibility with shipping plugins that append pickup point selection buttons. (#8563)
+* Improved: Checkout: Added an admin notice when multiple checkout forms are detected on a single page. (#8569)
+* Improved: Checkout: Improved compatibility with Boxcar theme. (#8256)
+* Improved: Checkout: Improved compatibility with Spectra. (#8260)
+* Improved: Checkout: Improved compatibility with Bricks Builder. (#8295)
+* Improved: Checkout: Improved compatibility with the Block editor. (#8316, #8431)
+* Improved: Checkout: Improved compatibility with PayU. (#8323)
+* Improved: Checkout: Improved compatibility with Extra Product Options & Add-Ons. (#8335)
+* Improved: Checkout: Improved compatibility with third-party field registration plugins. (#8338)
+* Improved: Checkout: Improved compatibility with WooPayments. (#8405)
+* Improved: Checkout: Improved compatibility with Rey theme. (#8412)
+* Improved: Checkout: Improved compatibility with Germanized for WooCommerce. (#8453, #8535)
+* Improved: Checkout: Improved compatibility with Jubelio Shipment. (#8455)
+* Improved: Checkout: Improved compatibility with PublicSquare Payments. (#8457)
+* Improved: Checkout: Improved compatibility with FunnelKit Stripe. (#8483)
+* Improved: Funnel: Enhanced Facebook Advanced Matching to include contact data for more accurate event tracking. (#7834)
+* Improved: Funnel: Enhanced Pinterest event tracking with improved data formatting. (#8283)
+* Improved: Funnel: Improved template import logic with container status detection. (#8345)
+* Improved: Funnel: Hardened plugin security across admin and checkout modules. (#8387)
+* Improved: Funnel: Resolved security issues in the checkout and thank you page modules. (#8417)
+* Improved: Funnel: Improved TikTok pixel event tracking accuracy. (#8426)
+* Improved: Funnel: Added payment gateway tracking support for BORICA Payments. (#8477)
+* Improved: Funnel: Updated CAPI event_id parameter generation for better event deduplication. (#8496)
+* Improved: Funnel: Added protection against activation of nulled plugin licenses. (#8501)
+* Improved: Funnel: Improved compatibility with Bricks Builder. (#7981, #8032)
+* Improved: Funnel: Improved compatibility with WPML and Polylang. (#8308, #8343)
+* Improved: Funnel: Improved compatibility with ElementsKit. (#8550)
+* Fixed: Checkout: Fixed step breadcrumb not displaying in Elementor builder on mobile devices. (#6398)
+* Fixed: Checkout: Fixed coupon section alignment distortion across all page builder templates. (#8249)
+* Fixed: Checkout: Fixed shipping number and neighborhood fields not saving correctly for new user registrations. (#8254)
+* Fixed: Checkout: Handled potential fatal error when WooCommerce CartCheckoutUtils method is unavailable. (#8258)
+* Fixed: Checkout: Fixed phone number tooltip display when flag icons are disabled. (#8264)
+* Fixed: Checkout: Fixed phone number validation for Lebanese customers. (#8276)
+* Fixed: Checkout: Fixed PHP undefined property warnings in the checkout template loader. (#8358)
+* Fixed: Checkout: Fixed smart login popup not behaving correctly on email field submission. (#8360)
+* Fixed: Checkout: Fixed bundle product quantity selector behavior in the mini cart at checkout. (#8446)
+* Fixed: Checkout: Fixed Shipping Method field not appearing in the checkout form builder for Lite plan users. (#8460)
+* Fixed: Checkout: Fixed Date of Birth field appearing in order meta when it was not added to the checkout form. (#8488)
+* Fixed: Checkout: Resolved fatal error caused by invalid argument type in the checkout module. (#8499)
+* Fixed: Checkout: Fixed Google address autocomplete not populating address line 2 for UK subpremise addresses. (#8504)
+* Fixed: Checkout: Fixed email URL pre-fill failing when the address contains a + character. (#8520)
+* Fixed: Checkout: Fixed currency symbol display in the Place Order button on RTL sites. (#8528)
+* Fixed: Checkout: Updated WooCommerce text domain references for improved translation support. (#8530)
+* Fixed: Checkout: Fixed inline CSS being incorrectly sanitized through wp_kses_post in the Lite checkout module. (#8543)
+* Fixed: Funnel: Fixed cart analytics display issue in the contact details screen. (#7662)
+* Fixed: Funnel: Fixed cart category rule options not listing when duplicate category names exist. (#8326)
+* Fixed: Funnel: Fixed database upgrade script execution order on plugin updates. (#8328)
+* Fixed: Funnel: Fixed HTML markup being stripped from checkbox field labels in checkout and optin forms. (#8333)
+* Fixed: Funnel: Corrected typo on the automations screen in the admin dashboard. (#8349)
+* Fixed: Funnel: Fixed PHP warning for undefined WP_Post_Type property across multiple funnel modules. (#8361)
+* Fixed: Funnel: Fixed analytics crash when switching comparison view in funnel analytics. (#8366)
+* Fixed: Funnel: Suppressed external plugin PHP notices appearing in the React admin interface. (#8394)
+* Fixed: Funnel: Fixed order bump analytics not showing data when product price is $0 and A/B testing is enabled. (#8433)
+* Fixed: Funnel: Fixed global checkout navigation links incorrectly redirecting within funnels. (#8440)
+
+= 3.13.1.6 =
 * Improved: Funnel: Enhanced plugin security for optin related SQL queries. (#8402)
 
-= 3.13.1.5 (Nov 28, 2025) =
+= 3.13.1.5 =
 * Fixed: Admin dashboard widget was not working correctly for WooCommerce version below 10.3.0 (#8353)
 * Fixed: Admin notifications for the admin steps screen conditions fixed. (#8353)
 
-= 3.13.1.4 (Nov 27, 2025) =
+= 3.13.1.4 =
 * Improved: Checkout: Compatibility updated with Order Delivery Date for WooCommerce plugin by Tychesoftwares. (#8352)
 * Improved: UX enhancements for the admin notifications. (#8342)
 
-= 3.13.1.3 (Nov 17, 2025) =
+= 3.13.1.3 =
 * Improved: Funnel: Enhanced plugin security for optin personalized shortcodes. (#8315)
 * Improved: Checkout: Updated compatibility with Elementor for cache support. (#8270)
 * Improved: Funnel: Enhanced product selection in admin interface to handle edge cases more reliably. (#8280)
 * Fixed: Funnel: Resolved PHP error in admin interface when WooCommerce products are unavailable after funnel import. (#8305)
 
-= 3.13.1.2 (October 24, 2025) =
+= 3.13.1.2 =
 * Fixed: Compatibility issues with FunnelKit Automations resolved. (#8244)
 
-= 3.13.1.1 (October 23, 2025) =
+= 3.13.1.1 =
 * Improved: Checkout: Compatibility updated with MailerLite plugin. (#8237)
 * Fixed: Checkout: Issue with oxygen templates getting overridden by checkout page if set for boxed or Canvas template. (#8235)
 
-= 3.13.1 (October 23, 2025) =
+= 3.13.1 =
 * Fixed: PHP deprecated warnings with WooCommerce v10.3.0 resolved for funnel pages. (#8231)
 
-= 3.13.0 (October 22, 2025) =
+= 3.13.0 =
 * Added: Checkout: Google Ads BeginCheckout event added. (#8159)
 * Added: Checkout: Google Analytics AddShippingInfo event added. (#8159)
 * Added: Checkout: Added compatibility with GLS and Nukium plugins, optimizing Google Maps API loading. (#7962)
@@ -473,12 +598,12 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 * Fixed: Checkout: Always display billing and shipping phone fields in FunnelKit Checkout, bypassing WooCommerce hidden settings. (#8195)
 * Fixed: Checkout: Resolved an issue with the coupon input field's background color affecting the label in the checkout module. (#8091)
 
-= 3.12.0.1 (August 04, 2025) =
+= 3.12.0.1 =
 * Improved: Plugin security improved for checkout block editor preview. (#8133)
 * Improved: Checkout: Compatibility with flatsome theme updated for loader experience. (#8085)
 * Imporved: Checkout: Compatibility with AISEO plugin updated for checkout template override. (#8057)
 
-= 3.12.0 (August 04, 2025) =
+= 3.12.0 =
 * Added: Funnels: Compatibility with Sequential Order Numbers plugin to improve order tracking and consistency. (#7602)
 * Added: Checkout: Added a new setting to open the collapsible order summary by default for every page builder widget. (#7904)
 * Added: Thank you Page: New setting to display additional WooCommerce content/hooks on thank you pages for improved compatibility with payment gateways and plugins. (#7831)
@@ -509,19 +634,19 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 * Improved: Checkout: Compatibility with Authorize.net CIM gateway related to store checkout. (#7881)
 * Fixed: Checkout: Collapsible Order summary was not updating with elementor in case of only enabled for mobile devices. (#7828)
 
-= 3.11.1 (July 04, 2025) =
+= 3.11.1 =
 * Fixed: Checkout: Checkout form fields were flickering on focus since the last update. (#7806)
 * Fixed: Funnel: version check improved to ensure no errors in admin UI. (#7802)
 
-= 3.11.0.2 (July 02, 2025) =
+= 3.11.0.2 =
 * Improved: Funnel: Admin tool for "verify tables" improved to recover missing columns. (#7768)
 * Fixed: Checkout: Compatibility with Klaviyo plugin updated for checkout fields default value. (#7790)
 
-= 3.11.0.1 (July 01, 2025) =
+= 3.11.0.1 =
 * Fixed: Funnel: Site Wide pixel tracking events was not working for Facebook, Google Analytics and Google Ads. (#7782)
 * Fixed: Funnel: Prevent showing label ID for Google ads conversion labels in settings when empty. (#7786)
 
-= 3.11.0 (July 01, 2025) =
+= 3.11.0 =
 * Added: Funnel : A new settings feature to add conversion labels on opt-in submit and add-to-cart events for Google Ads, improving tracking and insights. (#5700)
 * Added: Funnel: A new feature to download the funnel export while deleting the steps/funnel, streamlining the process. (#7525)
 * Added: Checkout: Language translations for a smoother user experience after template import, making the platform more accessible globally. (#6538)
@@ -866,7 +991,7 @@ If you face any difficulties with FunnelKit, feel free to contact our [Support T
 * Fixed: AddtoCart tracking event is now working for the rewards added by the FK cart plugin. (#5946)
 * Fixed: Incorrect product price display in the backend for variable products (#5894)
 * Fixed: Restricted phone number to prevent sending empty values on TikTok (#5283)
-* Fixed: Checkout: Adding a new checkout page from canvas not working correctly when checkout already exists. (#5981)
+* Fixed: Checkout: Adding a new checkout page from canvas not working correctly when checkout already exists in canvas mode. (#5981)
 * Fixed: Checkout: Deprecated function PHP notice resolved with Woo Subscriptions. (#6003)
 
 = 3.2.4 (Feb 22, 2024) =

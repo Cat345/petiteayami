@@ -50,6 +50,7 @@ class SiteType
                     'args' => [
                         'query' => [
                             'type' => 'Boolean',
+                            'defaultValue' => false,
                         ],
                     ],
                     'metadata' => [
@@ -59,7 +60,6 @@ class SiteType
                                 'label' => trans('Query String'),
                                 'type' => 'checkbox',
                                 'text' => trans('Include query string'),
-                                'default' => false,
                             ],
                         ],
                     ],

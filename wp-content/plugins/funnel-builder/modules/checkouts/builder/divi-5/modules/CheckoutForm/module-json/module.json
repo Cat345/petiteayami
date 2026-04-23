@@ -1,0 +1,5632 @@
+{
+  "name": "wfacp/checkout-form",
+  "d4Shortcode": "wfacp_checkout_form",
+  "title": "FK Checkout Form",
+  "titles": "FK Checkout Forms",
+  "category": "module",
+  "attributes": {
+    "module": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "styleProps": {},
+      "default": {},
+      "settings": {
+        "meta": {
+          "adminLabel": {}
+        },
+        "advanced": {
+          "htmlAttributes": {},
+          "text": {}
+        },
+        "decoration": {
+          "attributes": {},
+          "background": {},
+          "sizing": {},
+          "boxShadow": {},
+          "filters": {},
+          "transform": {},
+          "animation": {},
+          "overflow": {},
+          "disabledOn": {},
+          "transition": {},
+          "position": {},
+          "zIndex": {},
+          "scroll": {},
+          "sticky": {}
+        }
+      }
+    },
+    "enable_callapse_order_summary": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        },
+        "tablet": {
+          "value": "off"
+        },
+        "mobile": {
+          "value": "off"
+        }
+      }
+    },
+    "order_summary_enable_product_image_collapsed": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "enable_order_field_collapsed": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        },
+        "tablet": {
+          "value": "off"
+        },
+        "mobile": {
+          "value": "off"
+        }
+      }
+    },
+    "cart_collapse_title": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Show Order Summary"
+          }
+        }
+      }
+    },
+    "cart_expanded_title": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Hide Order Summary"
+          }
+        }
+      }
+    },
+    "collapse_enable_coupon": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "collapse_enable_coupon_collapsible": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      }
+    },
+    "collapse_coupon_button_text": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Apply"
+          }
+        }
+      }
+    },
+    "collapse_order_quantity_switcher": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "collapse_order_delete_item": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "order_summary_enable_product_image": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "on"
+        }
+      }
+    },
+    "collapsible_order_summary_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#f7f7f7"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCollapsibleOrderSummaryBackground",
+              "attrName": "collapsible_order_summary_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Collapsed Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "expanded_order_summary_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#f7f7f7"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCollapsibleOrderSummaryBackground",
+              "attrName": "expanded_order_summary_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Expanded Background",
+              "render": true,
+              "priority": 20,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "expanded_order_summary_link_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_show_icon_wrap a span, {{selector}} #wfacp-e-form .wfacp_show_price_wrap span",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#323232"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCollapsibleOrderSummaryBackground",
+              "priority": 30,
+              "render": true,
+              "attrName": "expanded_order_summary_link_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Text Color",
+                  "fieldLabel": "Text Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_step_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_step_count_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_step_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_step_count_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_step_count_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_step_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp_tcolor",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_step_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp_tcolor",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_step_count_border_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_step_count_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_step_count_border_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inactive_tab_border_bottom_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-payment-tab-list",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_tab_border_bottom_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-payment-tab-list.wfacp-active",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_collapsible_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd",
+                      "style": "solid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCollapsibleOrderSummaryBackground",
+              "priority": 50,
+              "render": true,
+              "attrName": "wfacp_collapsible_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Border",
+                  "fieldLabel": "Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_collapsible_margin": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_collapsible_order_summary_wrap",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "bottom": "10px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCollapsibleOrderSummaryBackground",
+              "priority": 40,
+              "render": true,
+              "attrName": "wfacp_collapsible_margin.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Spacing",
+                  "fieldLabel": "Spacing"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_tab_margin": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .tab",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "15px",
+                  "left": "0px"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tab_heading_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-order2StepTitle.wfacp-order2StepTitleS1",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "17px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tab_subheading_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_form_steps .wfacp-order2StepSubTitle.wfacp-order2StepSubTitleS1",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "13px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "enable_progress_bar": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "off"
+        }
+      }
+    },
+    "select_type": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "tab"
+        }
+      }
+    },
+    "step_0_bredcrumb": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 1"
+          }
+        }
+      }
+    },
+    "step_0_progress_bar": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 1"
+          }
+        }
+      }
+    },
+    "step_0_heading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Shipping"
+          }
+        }
+      }
+    },
+    "step_0_subheading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "step_1_bredcrumb": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 2"
+          }
+        }
+      }
+    },
+    "step_1_progress_bar": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 2"
+          }
+        }
+      }
+    },
+    "step_1_heading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Products"
+          }
+        }
+      }
+    },
+    "step_1_subheading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "step_2_bredcrumb": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 3"
+          }
+        }
+      }
+    },
+    "step_2_progress_bar": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Step 3"
+          }
+        }
+      }
+    },
+    "step_2_heading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Payment"
+          }
+        }
+      }
+    },
+    "step_2_subheading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "step_cart_link_enable": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "yes"
+        }
+      }
+    },
+    "step_cart_progress_bar_link": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Cart"
+          }
+        }
+      }
+    },
+    "step_cart_bredcrumb_link": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Cart"
+          }
+        }
+      }
+    },
+    "breadcrumb_heading_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "breadcrumb_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#000000"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "breadcrumb_text_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a:hover",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_cart_item_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_item_name, {{selector}} #wfacp-e-form table.shop_table tbody .product-name .product-quantity, {{selector}} #wfacp-e-form table.shop_table tbody td.product-total, {{selector}} #wfacp-e-form table.shop_table tbody .cart_item .product-total span, {{selector}} #wfacp-e-form table.shop_table tbody .cart_item .product-total span.amount, {{selector}} #wfacp-e-form table.shop_table tbody .cart_item .product-total span.amount bdi, {{selector}} #wfacp-e-form table.shop_table tbody .cart_item .product-total small, {{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_container dl, {{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_container dd, {{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_container dt, {{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_container p, {{selector}} #wfacp-e-form table.shop_table tbody tr span.amount, {{selector}} #wfacp-e-form table.shop_table tbody tr span.amount bdi, {{selector}} #wfacp-e-form table.shop_table tbody dl, {{selector}} #wfacp-e-form table.shop_table tbody dd, {{selector}} #wfacp-e-form table.shop_table tbody dt, {{selector}} #wfacp-e-form table.shop_table tbody p, {{selector}} #wfacp-e-form table.shop_table tbody tr td span:not(.wfacp-pro-count), {{selector}} #wfacp-e-form #wfacp-sec-wrapper .wfacp_show_icon_wrap, {{selector}} #wfacp-e-form #wfacp-sec-wrapper .wfacp_show_icon_wrap *, {{selector}} #wfacp-e-form #wfacp-sec-wrapper .wfacp_show_price_wrap *, {{selector}} #wfacp-e-form #wfacp-sec-wrapper .wfacp_show_price_wrap span bdi",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 10,
+              "render": true,
+              "attrName": "order_summary_cart_item_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Product",
+                  "fieldLabel": "Product"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_product_meta_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount), {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th span, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td span, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td small, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td span.woocommerce-Price-amount.amount bdi, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td span.amount, {{selector}} #wfacp-e-form table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 20,
+              "render": true,
+              "attrName": "order_summary_product_meta_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Subtotal",
+                  "fieldLabel": "Subtotal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_cart_total_label_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total th, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total th span, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total th small, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total th a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "18px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 30,
+              "render": true,
+              "attrName": "order_summary_cart_total_label_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Total Label",
+                  "fieldLabel": "Total Label"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_cart_subtotal_heading_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount bdi, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td p, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td span, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td small, {{selector}} #wfacp-e-form table.shop_table tfoot tr.order-total td a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "18px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 40,
+              "render": true,
+              "attrName": "order_summary_cart_subtotal_heading_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Total Price",
+                  "fieldLabel": "Total Price"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-section",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designSection",
+              "attrName": "section_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Background Color",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-section",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_spacing": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-section",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "15px",
+                  "left": "0px"
+                },
+                "padding": {
+                  "top": "",
+                  "right": "",
+                  "bottom": "",
+                  "left": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designSection",
+              "priority": 20,
+              "render": true,
+              "attrName": "section_spacing.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Spacing",
+                  "fieldLabel": "Spacing"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_box_shadow": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-section",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off",
+                  "vertical": "0px",
+                  "color": {
+                    "hex": "#000000"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designSection",
+              "priority": 40,
+              "render": true,
+              "attrName": "section_box_shadow.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Box Shadow",
+                  "fieldLabel": "Box Shadow"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_image_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tr.cart_item .product-image img",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 90,
+              "render": true,
+              "attrName": "order_summary_image_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Image Border",
+                  "fieldLabel": "Image Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_summary_divider_line_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form table.shop_table tbody .wfacp_order_summary_item_name, {{selector}} #wfacp-e-form table.shop_table tr.cart_item, {{selector}} #wfacp-e-form table.shop_table tr.cart-subtotal, {{selector}} #wfacp-e-form table.shop_table tr.order-total",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designOrderSummary",
+              "priority": 80,
+              "render": true,
+              "attrName": "order_summary_divider_line_color.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Divider",
+                  "fieldLabel": "Divider"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-section",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd",
+                      "style": "none"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designSection",
+              "priority": 30,
+              "render": true,
+              "attrName": "section_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Border",
+                  "fieldLabel": "Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_payment_method_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods p, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods p a, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods strong, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods input, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #add_payment_method #payment .payment_box p",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designPaymentMethod",
+              "priority": 15,
+              "render": true,
+              "attrName": "wfacp_form_payment_method_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_payment_method_description_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p strong",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designPaymentMethod",
+              "priority": 12,
+              "render": true,
+              "attrName": "wfacp_form_payment_method_description_color.decoration.background",
+              "subName": "color",
+              "label": "Description Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_payment_method_description_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designPaymentMethod",
+              "attrName": "wfacp_form_payment_method_description_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Description Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_privacy_policy_font": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form #payment .woocommerce-privacy-policy-text p, {{selector}} #wfacp-e-form #payment .woocommerce-privacy-policy-text a",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designPrivacyPolicy",
+              "priority": 10,
+              "render": true,
+              "attrName": "wfacp_privacy_policy_font.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_terms_conditions_font": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label, {{selector}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label span, {{selector}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label a, {{selector}} .wc-gzd-checkbox-placeholder *:not(a)",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designTermsConditions",
+              "priority": 10,
+              "render": true,
+              "attrName": "wfacp_terms_conditions_font.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_coupon_button_text": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Apply"
+          }
+        }
+      }
+    },
+    "wfacp_payment_method_heading_text": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "Payment"
+          }
+        }
+      }
+    },
+    "wfacp_payment_method_subheading": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "wfacp_payment_place_order_text": {
+      "type": "object"
+    },
+    "enable_price_in_place_order_button": {
+      "type": "object"
+    },
+    "text_below_placeorder_btn": {
+      "type": "object",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "order_coupon_coupon_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a, {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have ):not(.wfacp_cart_link)",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 35,
+              "render": true,
+              "attrName": "order_coupon_coupon_typography.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Code",
+                  "fieldLabel": "Coupon Code"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_label_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper label.wfacp-form-control-label",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 20,
+              "render": true,
+              "attrName": "order_coupon_label_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Label",
+                  "fieldLabel": "Label"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_input_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 25,
+              "render": true,
+              "attrName": "order_coupon_input_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Input",
+                  "fieldLabel": "Input"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_button_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn, {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 30,
+              "render": true,
+              "attrName": "order_coupon_button_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button",
+                  "fieldLabel": "Button"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_focus_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control:focus",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 16,
+              "render": true,
+              "attrName": "order_coupon_focus_color.decoration.background",
+              "subName": "color",
+              "label": "Input Focus Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_btn_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:not([disabled]), {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:not([disabled])",
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "attrName": "order_coupon_btn_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Button Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_btn_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:not([disabled]), {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:not([disabled])",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 40,
+              "render": true,
+              "attrName": "order_coupon_btn_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Text Color",
+                  "fieldLabel": "Button Text Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_btn_bg_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:not([disabled]):hover, {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:not([disabled]):hover",
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "attrName": "order_coupon_btn_bg_hover_color.decoration.background",
+              "subName": "color",
+              "label": "Button Hover Background",
+              "render": true,
+              "priority": 15,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_btn_bg_hover_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:not([disabled]):hover, {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:not([disabled]):hover",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 45,
+              "render": true,
+              "attrName": "order_coupon_btn_bg_hover_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Hover Text Color",
+                  "fieldLabel": "Button Hover Text Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "order_coupon_coupon_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page p.wfacp-form-control-wrapper .wfacp-form-control",
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "style": "solid",
+                  "width": {
+                    "top": "1px",
+                    "bottom": "1px",
+                    "left": "1px",
+                    "right": "1px"
+                  },
+                  "radius": {
+                    "topLeft": "4px",
+                    "topRight": "4px",
+                    "bottomLeft": "4px",
+                    "bottomRight": "4px"
+                  },
+                  "color": {
+                    "hex": "#bfbfbf"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCoupon",
+              "priority": 55,
+              "render": true,
+              "attrName": "order_coupon_coupon_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Coupon Border",
+                  "fieldLabel": "Coupon Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "selected_item_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_product_sec .wfacp_product_name_inner .wfacp_product_choosen_label_wrap *, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_quantity_selector input",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 35,
+              "render": true,
+              "attrName": "selected_item_typography.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Selected Item",
+                  "fieldLabel": "Selected Item"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "selected_you_save_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text span bdi",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 70,
+              "render": true,
+              "attrName": "selected_you_save_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "You Save Typography",
+                  "fieldLabel": "You Save Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_best_value_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 90,
+              "render": true,
+              "attrName": "product_switching_best_value_typography.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Best Value Typography",
+                  "fieldLabel": "Best Value Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_what_included_heading": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included h3",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 105,
+              "render": true,
+              "attrName": "product_switching_what_included_heading.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "What's Included Heading",
+                  "fieldLabel": "What's Included Heading"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_what_included_product_title": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description h4",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 110,
+              "render": true,
+              "attrName": "product_switching_what_included_product_title.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "What's Included Product Title",
+                  "fieldLabel": "What's Included Product Title"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_what_included_product_description": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 115,
+              "render": true,
+              "attrName": "product_switching_what_included_product_description.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "What's Included Product Description",
+                  "fieldLabel": "What's Included Product Description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_optional_item_typography": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner .wfacp_product_choosen_label_wrap *, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_quantity_selector input",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 125,
+              "render": true,
+              "attrName": "product_switching_optional_item_typography.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Optional Item Typography",
+                  "fieldLabel": "Optional Item Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "non_selected_you_save_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text span bdi",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 80,
+              "render": true,
+              "attrName": "non_selected_you_save_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Non-Selected You Save Typography",
+                  "fieldLabel": "Non-Selected You Save Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_heading_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_section_heading.wfacp_section_title",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "18px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "priority": 15,
+              "render": true,
+              "attrName": "section_heading_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Heading",
+                  "fieldLabel": "Heading"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "section_sub_heading_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-comm-title h4",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "priority": 20,
+              "render": true,
+              "attrName": "section_sub_heading_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Sub Heading",
+                  "fieldLabel": "Sub Heading"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_heading_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "attrName": "form_heading_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Background Color",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_heading_spacing": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {},
+                "padding": {}
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "priority": 25,
+              "render": true,
+              "attrName": "form_heading_spacing.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Spacing",
+                  "fieldLabel": "Spacing"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_heading_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-section .wfacp-comm-title",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd",
+                      "style": "none"
+                    }
+                  },
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designHeading",
+              "priority": 30,
+              "render": true,
+              "attrName": "form_heading_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Border",
+                  "fieldLabel": "Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_label_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp_checkbox_field label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .create-account label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .create-account label span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp_checkbox_field label span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper.wfacp_custom_field_radio_wrap > label , {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label abbr, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li p, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li p, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li .wfacp_shipping_price span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li .wfacp_shipping_price span bdi, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li .wfacp_shipping_price, {{selector}} #wfacp-e-form .wfacp-form.wfacp-top .form-row > label.wfacp-form-control-label",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "13px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 20,
+              "render": true,
+              "attrName": "wfacp_form_fields_label_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Label",
+                  "fieldLabel": "Label"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_input_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"text\"]:not(.select2-search__field), {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"email\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"tel\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"password\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"date\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"number\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce select, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce textarea, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce number, {{selector}} #wfacp-e-form .woocommerce-input-wrapper .wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered, body:not(.wfacp_pre_built) .select2-results__option, body:not(.wfacp_pre_built) .select2-container--default .select2-search--dropdown .select2-search__field",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 30,
+              "render": true,
+              "attrName": "wfacp_form_fields_input_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Input",
+                  "fieldLabel": "Input"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_label_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label abbr, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_allowed_countries strong",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#777"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 25,
+              "render": false,
+              "attrName": "wfacp_form_fields_label_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Label Color",
+                  "fieldLabel": "Label Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_input_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce select",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#404040"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 35,
+              "render": false,
+              "attrName": "wfacp_form_fields_input_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Input Color",
+                  "fieldLabel": "Input Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_input_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:not(.input-checkbox), {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce select, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control:not(.input-checkbox):not(.hidden), {{selector}} #wfacp-e-form .wfacp_allowed_countries strong, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=email], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=number], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=password], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=date], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=tel], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper select, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=text], {{selector}} #wfacp-e-form .wfacp-form.wfacp-inside .form-row .wfacp-form-control-label:not(.checkbox)",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "attrName": "wfacp_form_fields_input_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Input Background",
+              "render": true,
+              "priority": 5,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"text\"]:not(.select2-search__field), {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"email\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"tel\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"password\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=\"date\"], {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce select, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce textarea, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type=\"number\"].wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type=\"text\"].wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type=\"emal\"].wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_allowed_countries strong, {{selector}} #wfacp-e-form .iti__selected-flag, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "style": "solid",
+                      "color": "#bfbfbf"
+                    }
+                  },
+                  "radius": {
+                    "topLeft": "4px",
+                    "topRight": "4px",
+                    "bottomLeft": "4px",
+                    "bottomRight": "4px",
+                    "sync": "on"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 40,
+              "render": true,
+              "attrName": "wfacp_form_fields_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Input Border",
+                  "fieldLabel": "Input Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_focus_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) input[type=\"radio\"]:focus, {{selector}} #wfacp-e-form p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.input-checkbox):focus, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp_coupon_failed .wfacp_coupon_code, {{selector}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 10,
+              "render": true,
+              "attrName": "wfacp_form_fields_focus_color.decoration.background",
+              "subName": "color",
+              "label": "Focus Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_fields_validation_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field .wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-email .wfacp-form-control, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_coupon_failed .wfacp_coupon_code",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#d50000"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designFields",
+              "priority": 15,
+              "render": true,
+              "attrName": "wfacp_form_fields_validation_color.decoration.background",
+              "subName": "color",
+              "label": "Error Validation Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_label_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .product-name .wfacp_product_switcher_item, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 40,
+              "render": true,
+              "attrName": "product_switching_label_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Label Color",
+                  "fieldLabel": "Label Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_price_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span bdi, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span bdi span",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 45,
+              "render": true,
+              "attrName": "product_switching_price_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Price Color",
+                  "fieldLabel": "Price Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_variant_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span:last-child, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span",
+      "styleProps": {
+        "font": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#666666"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 50,
+              "render": true,
+              "attrName": "product_switching_variant_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Variant Color",
+                  "fieldLabel": "Variant Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "selected_you_save_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_you_save_text span bdi, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol), {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_product_switcher_col_2 .wfacp_product_subs_details lebel, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel .wfacp-selected-product .wfacp_product_switcher_col_2 .wfacp_product_subs_details span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol)",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#b22323"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 65,
+              "render": true,
+              "attrName": "selected_you_save_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "You Save Color",
+                  "fieldLabel": "You Save Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_best_value_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_left_corner, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_right_corner",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 85,
+              "render": true,
+              "attrName": "product_switching_best_value_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Best Value Text Color",
+                  "fieldLabel": "Best Value Text Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_optional_label_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .product-name .wfacp_product_switcher_item, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 130,
+              "render": true,
+              "attrName": "product_switching_optional_label_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Optional Label Color",
+                  "fieldLabel": "Optional Label Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_optional_price_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .product-price, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp_product_price_sec span",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 135,
+              "render": true,
+              "attrName": "product_switching_optional_price_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Optional Price Color",
+                  "fieldLabel": "Optional Price Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "non_selected_you_save_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_you_save_text span bdi, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol), {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details lebel, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol)",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#b22323"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 75,
+              "render": true,
+              "attrName": "non_selected_you_save_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Non-Selected You Save Color",
+                  "fieldLabel": "Non-Selected You Save Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_item_background": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "background": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "attrName": "product_switching_item_background.decoration.background",
+              "subName": "color",
+              "label": "Item Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_best_value_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_left_corner, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_right_corner",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "background": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "attrName": "product_switching_best_value_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Best Value Background",
+              "render": true,
+              "priority": 15,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_what_included_bg": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "background": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "attrName": "product_switching_what_included_bg.decoration.background",
+              "subName": "color",
+              "label": "What's Included Background",
+              "render": true,
+              "priority": 20,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_optional_background": {
+      "type": "object",
+      "selector": "{{selector}} .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product)",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "background": {
+              "desktop": {
+                "value": {
+                  "color": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "attrName": "product_switching_optional_background.decoration.background",
+              "subName": "color",
+              "label": "Optional Item Background",
+              "render": true,
+              "priority": 25,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_optional_background_hover": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product):hover",
+      "styleProps": {
+        "background": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "background": {
+              "desktop": {
+                "value": {
+                  "color": "#fbfbfb"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "attrName": "product_switching_optional_background_hover.decoration.background",
+              "subName": "color",
+              "label": "Optional Item Hover Background",
+              "render": true,
+              "priority": 30,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_best_value_border_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form .shop_table.wfacp-product-switch-panel .woocommerce-cart-form__cart-item.cart_item.wfacp_best_val_wrap",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 100,
+              "render": true,
+              "attrName": "product_switching_best_value_border_color.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Best Value Border Color",
+                  "fieldLabel": "Best Value Border Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_item_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 55,
+              "render": true,
+              "attrName": "product_switching_item_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Item Border",
+                  "fieldLabel": "Item Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_best_value_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_left_corner, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_right_corner",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 95,
+              "render": true,
+              "attrName": "product_switching_best_value_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Best Value Border",
+                  "fieldLabel": "Best Value Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_what_included_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#efefef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 120,
+              "render": true,
+              "attrName": "product_switching_what_included_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "What's Included Border",
+                  "fieldLabel": "What's Included Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "product_switching_border_non_selected": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product)",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {}
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designProductSwitcher",
+              "priority": 60,
+              "render": true,
+              "attrName": "product_switching_border_non_selected.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Non-Selected Border",
+                  "fieldLabel": "Non-Selected Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_label_position": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "wfacp-inside"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentFormFields",
+          "priority": 10,
+          "render": true,
+          "attrName": "wfacp_label_position",
+          "label": "Label Position",
+          "description": "Position of form field labels",
+          "defaultAttr": {
+            "desktop": {
+              "value": "wfacp-inside"
+            }
+          },
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/select",
+            "type": "field",
+            "props": {
+              "options": {
+                "wfacp-modern-label": {
+                  "label": "Floating"
+                },
+                "wfacp-top": {
+                  "label": "Outside"
+                },
+                "wfacp-inside": {
+                  "label": "Inside"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_font_family_typography": {
+      "type": "object",
+      "selector": "body.wfacp_main_wrapper, body #wfacp-e-form *, body #wfacp-e-form *:not(i), body .wfacp_qv-main *, body:not(.wfacp_pre_built) .select2-results__option, body:not(.wfacp_pre_built) .select2-container--default .select2-search--dropdown .select2-search__field, {{selector}} #wfacp-e-form .wfacp_main_form input[type=\"text\"], {{selector}} #wfacp-e-form .wfacp_main_form input[type=\"email\"], {{selector}} #wfacp-e-form .wfacp_main_form input[type=\"tel\"], {{selector}} #wfacp-e-form .wfacp_main_form input[type=\"number\"], {{selector}} #wfacp-e-form .wfacp_main_form select, {{selector}} #wfacp-e-form .wfacp_main_form textarea, {{selector}} #wfacp-e-form .wfacp_main_form .select2-container .select2-selection--single .select2-selection__rendered, {{selector}} #et-boc .et-l span.select2-selection.select2-selection--multiple, {{selector}} #wfacp-e-form .wfacp_main_form p, {{selector}} #wfacp-e-form .wfacp_main_form a, {{selector}} #wfacp-e-form .wfacp_main_form span, {{selector}} #wfacp-e-form .wfacp_main_form label, {{selector}} #wfacp-e-form .wfacp_main_form label span a, {{selector}} #wfacp-e-form .wfacp_main_form ul li, {{selector}} #wfacp-e-form .wfacp_main_form ul li span, {{selector}} #wfacp-e-form .wfacp_main_form ul li p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_section_title, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-section h4, {{selector}} #wfacp-e-form .wfacp_main_form p label.wfacp-form-control-label, {{selector}} #wfacp-e-form .wfacp_main_form label.checkbox, {{selector}} #wfacp-e-form .wfacp_main_form button, {{selector}} #wfacp-e-form #payment #place_order, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-payment-dec, {{selector}} #wfacp-e-form .wfacp_collapsible_order_summary_wrap *, {{selector}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-section .woocommerce-info .wfacp_showcoupon, {{selector}} #wfacp-e-form .wfacp-coupon-section .woocommerce-info > a, {{selector}} #wfacp-e-form .wfacp-coupon-section .woocommerce-info > a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have):not(.wfacp_cart_link), {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-title > div, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_table ul li label, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_quantity_selector input, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_product_sec *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_quantity_selector input, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_product_price_sec span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_best_value, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel .wfacp_product_switcher_col_2 .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel .wfacp_whats_included .wfacp_product_switcher_description h4, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_best_value, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol), {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol), {{selector}} #wfacp-e-form .wfacp_main_form label.woocommerce-form__label span, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr th, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr td, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr td span.amount, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr td span bdi, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr td p, {{selector}} #wfacp-e-form .wfacp_main_form table tbody .wfacp_order_summary_item_name, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) td small, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) th small, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr.order-total td small, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_item_name, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .product-name .product-quantity, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody td.product-total, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_container dl, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_container dd, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_container dt, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_container p, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody tr span.amount, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody tr span.amount bdi, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .wfacp_order_summary_item_name, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total small, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span.amount, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .cart_item .product-total span.amount bdi, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody .product-name .product-quantity, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody td.product-total, {{selector}} #wfacp-e-form .wfacp_main_form table tbody dl, {{selector}} #wfacp-e-form .wfacp_main_form table tbody dd, {{selector}} #wfacp-e-form .wfacp_main_form table tbody dt, {{selector}} #wfacp-e-form .wfacp_main_form table tbody p, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody tr span.amount, {{selector}} #wfacp-e-form .wfacp_main_form table.shop_table tbody tr span.amount bdi, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_row_wrap .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_msg, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-coupon-page .wfacp_coupon_remove_msg, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-coupon-page .wfacp_coupon_error_msg, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_order_total_field table.wfacp_order_total_wrap tr td, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_order_total_field table.wfacp_order_total_wrap tr td span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_order_total .wfacp_order_total_wrap, {{selector}} #wfacp-e-form .wfacp_main_form #payment button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-checkout button.button.button-primary.wfacp_next_page_button, {{selector}} #wfacp-e-form .wfacp-order2StepTitle.wfacp-order2StepTitleS1, {{selector}} #wfacp-e-form .wfacp-order2StepSubTitle.wfacp-order2StepSubTitleS1, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_steps_sec ul li a, {{selector}} #wfacp-e-form .wfacp_custom_breadcrumb ul li a, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr td span, {{selector}} #wfacp-e-form .wfacp_main_form p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label abbr, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset .wfacp_you_save_text, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_row_wrap .wfacp_you_save_text span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_row_wrap .wfacp_product_subs_details span, {{selector}} #wfacp-e-form .wfacp_main_form p.wfacp-form-control-wrapper.wfacp_checkbox_field label, {{selector}} #wfacp-e-form .wfacp_main_form .create-account label, {{selector}} #wfacp-e-form .wfacp_main_form .create-account label span, {{selector}} #wfacp-e-form .wfacp_main_form p.wfacp-form-control-wrapper.wfacp_checkbox_field label span, {{selector}} #wfacp-e-form .wfacp_main_form p.wfacp-form-control-wrapper.wfacp_custom_field_radio_wrap > label, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) ul, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) ul li, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) ul li label, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) td span.woocommerce-Price-amount.amount, {{selector}} #wfacp-e-form .wfacp_main_form table tfoot tr:not(.order-total) td span.woocommerce-Price-amount.amount bdi, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_name_inner *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_quantity_selector input, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_subs_details span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_subs_details *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_quantity_selector input, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details *, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-section .wfacp-coupon-field-btn, {{selector}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content form.checkout_coupon button.button.wfacp-coupon-btn, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_options, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_options ul li, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_options ul li p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_options ul li .wfacp_shipping_price span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_shipping_options ul li .wfacp_shipping_price, {{selector}} .shop_table tbody .wfacp_order_summary_item_name, {{selector}} .shop_table tbody .product-name .product-quantity, {{selector}} .shop_table tbody .product-total, {{selector}} .shop_table tbody .cart_item .product-total span, {{selector}} .shop_table tbody .cart_item .product-total span.amount, {{selector}} .shop_table tbody .cart_item .product-total span.amount bdi, {{selector}} .shop_table tbody .cart_item .product-total small, {{selector}} .shop_table tbody .wfacp_order_summary_container dl, {{selector}} .shop_table tbody .wfacp_order_summary_container dd, {{selector}} .shop_table tbody .wfacp_order_summary_container dt, {{selector}} .shop_table tbody .wfacp_order_summary_container p, {{selector}} .shop_table tbody tr span.amount, {{selector}} .shop_table tbody tr span.amount bdi, {{selector}} .shop_table tbody tr td span:not(.wfacp-pro-count), {{selector}} .shop_table tbody dl, {{selector}} .shop_table tbody dd, {{selector}} .shop_table tbody dt, {{selector}} .shop_table tbody p, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount), {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) td, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) th, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) th span, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) td span, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) td small, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) td bdi, {{selector}} .shop_table tfoot tr:not(.order-total):not(.cart-discount) td a, {{selector}} .shop_table tfoot tr.cart-discount th .wfacp_coupon_code, {{selector}} .shop_table tfoot tr.cart-discount th, {{selector}} .shop_table tfoot tr.cart-discount td, {{selector}} .shop_table tfoot tr.cart-discount td span, {{selector}} .shop_table tfoot tr.cart-discount td a, {{selector}} .shop_table tfoot tr.cart-discount td span, {{selector}} .shop_table tfoot tr.cart-discount td span bdi, {{selector}} .shop_table tfoot tr.order-total, {{selector}} .shop_table tfoot tr.order-total th, {{selector}} .shop_table tfoot tr.order-total th span, {{selector}} .shop_table tfoot tr.order-total th small, {{selector}} .shop_table tfoot tr.order-total th a, {{selector}} .shop_table tfoot tr.order-total td, {{selector}} .shop_table tfoot tr.order-total td span.amount, {{selector}} .shop_table tfoot tr.order-total td span.amount bdi, {{selector}} .shop_table tfoot tr.order-total td p, {{selector}} .shop_table tfoot tr.order-total td span, {{selector}} .shop_table tfoot tr.order-total td small, {{selector}} .shop_table tfoot tr.order-total td a, {{selector}} .shop_table tfoot tr.order-total td p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment p span, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment p a, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment label, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment ul, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment ul li, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment ul li input, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment #add_payment_method #payment div.payment_box, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment #add_payment_method #payment .payment_box p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp-order-place-btn-wrap button:after, {{selector}} #wfacp-e-form .wfacp-next-btn-wrap button:after, {{selector}} #wfacp-e-form .wfacp_main_form #payment button#place_order:after",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "14px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "font-family": true,
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "priority": 30,
+              "render": true,
+              "attrName": "wfacp_font_family_typography.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Default Font",
+                  "fieldLabel": "Default Font"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_form_payment_button_typo": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout button.button.button-primary.wfacp_next_page_button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "25px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 20,
+              "render": true,
+              "attrName": "wfacp_form_payment_button_typo.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Typography",
+                  "fieldLabel": "Button Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "checkout_button_sub_text_font_size": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:after, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order:after",
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "12px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": true
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 50,
+              "render": true,
+              "attrName": "checkout_button_sub_text_font_size.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Subtext",
+                  "fieldLabel": "Size"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_width_width": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {
+        "sizing": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "sizing": {
+            "width": {
+              "desktop": {
+                "value": {
+                  "value": "100",
+                  "unit": "%"
+                }
+              }
+            },
+            "desktop": {
+              "value": {
+                "width": "100%"
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "sizing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "attrName": "wfacp_button_width_width.decoration.sizing",
+              "subName": "width",
+              "label": "Button Width (in %)",
+              "render": true,
+              "priority": 5,
+              "defaultAttr": {
+                "decoration": {
+                  "sizing": {
+                    "width": {
+                      "desktop": {
+                        "value": {
+                          "value": "100",
+                          "unit": "%"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "features": {
+                "sticky": false,
+                "dynamicContent": false
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/range",
+                "props": {
+                  "defaultUnit": "%",
+                  "allowedUnits": [
+                    "%"
+                  ],
+                  "defaultValue": "100"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce  button#place_order, #wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button, body #wfob_qr_model_wrap .wfob_qr_wrap .button, body #wfob_qr_model_wrap .wfob_option_btn, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "attrName": "wfacp_button_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Button Background",
+              "render": true,
+              "priority": 8,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_label_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce  button#place_order, #wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button, body #wfob_qr_model_wrap .wfob_qr_wrap .button, body #wfob_qr_model_wrap .wfob_option_btn, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {
+        "font": {}
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 25,
+              "render": false,
+              "attrName": "wfacp_button_label_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Label Color",
+                  "fieldLabel": "Button Label Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_bg_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce  button#place_order:hover, #wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button:hover, body #wfob_qr_model_wrap .wfob_qr_wrap .button:hover, body #wfob_qr_model_wrap .wfob_option_btn:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button:hover",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "attrName": "wfacp_button_bg_hover_color.decoration.background",
+              "subName": "color",
+              "label": "Button Hover Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_label_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce  button#place_order:hover, #wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button:hover, body #wfob_qr_model_wrap .wfob_qr_wrap .button:hover, body #wfob_qr_model_wrap .wfob_option_btn:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button:hover",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 12,
+              "render": true,
+              "attrName": "wfacp_button_label_hover_color.decoration.font.font",
+              "subName": "color",
+              "label": "Button Hover Label Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_border": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "style": "solid",
+                  "width": {
+                    "top": "0px",
+                    "bottom": "0px",
+                    "left": "0px",
+                    "right": "0px"
+                  },
+                  "radius": {
+                    "value": "0px"
+                  },
+                  "styles": {
+                    "all": {
+                      "color": {
+                        "hex": ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 40,
+              "render": true,
+              "attrName": "wfacp_button_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Border",
+                  "fieldLabel": "Button Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_padding": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "padding": {
+                  "top": "15px",
+                  "right": "15px",
+                  "bottom": "25px",
+                  "left": "25px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 30,
+              "render": true,
+              "attrName": "wfacp_button_padding.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Spacing",
+                  "fieldLabel": "Button Spacing"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfacp_button_margin": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .button.wfacp_next_page_button",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "top": "",
+                  "right": "",
+                  "bottom": "",
+                  "left": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 35,
+              "render": false,
+              "attrName": "wfacp_button_margin.decoration.spacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Button Margin",
+                  "fieldLabel": "Button Margin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "step_back_link_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp-back-btn-wrap a, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .place_order_back_btn a",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 55,
+              "render": true,
+              "attrName": "step_back_link_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Return Link Typography",
+                  "fieldLabel": "Return Link Typography"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "step_back_link_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp-back-btn-wrap a:hover, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .place_order_back_btn a:hover",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 16,
+              "render": true,
+              "attrName": "step_back_link_hover_color.decoration.font.font",
+              "subName": "color",
+              "label": "Return Link Hover Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "additional_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "priority": 60,
+              "render": true,
+              "attrName": "additional_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Additional Text Color",
+                  "fieldLabel": "Additional Text Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "additional_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "attrName": "additional_bg_color.decoration.background",
+              "subName": "color",
+              "label": "Additional Text Background",
+              "render": true,
+              "priority": 20,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "checkout_button_icon_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before, {{selector}} #wfacp-e-form .wfacp-next-btn-wrap button:before",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 14,
+              "render": true,
+              "attrName": "checkout_button_icon_color.decoration.font.font",
+              "subName": "color",
+              "label": "Button Icon Color",
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "checkout_button_sub_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after, {{selector}} #wfacp-e-form .wfacp-next-btn-wrap button:after",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutButtons",
+              "priority": 45,
+              "render": false,
+              "attrName": "checkout_button_sub_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Subtext",
+                  "fieldLabel": "Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_background_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_form_divi_container",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "attrName": "form_background_color.decoration.background",
+              "subName": "color",
+              "label": "Form Background",
+              "render": true,
+              "priority": 10,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "default_primary_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form #payment li.wc_payment_method input.input-radio:checked::before, {{selector}} #wfacp-e-form #payment.wc_payment_method input[type=radio]:checked:before, {{selector}} #wfacp-e-form button[type=submit]:not(:disabled):not(.white):not(.black), {{selector}} #wfacp-e-form button[type=button]:not(:disabled):not(.white):not(.black), {{selector}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn, {{selector}} #wfacp-e-form input[type=checkbox]:checked, {{selector}} #wfacp-e-form #payment input[type=checkbox]:checked, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:checked, {{selector}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=checkbox]:checked, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment #ppcp-hosted-fields .button, {{selector}} #wfacp-e-form .wfacp_main_form .button.button#place_order, {{selector}} #wfacp-e-form .wfacp_main_form .button.wfacp_next_page_button, body #wfacp_qr_model_wrap .wfacp_qr_wrap .wfacp_qv-summary .button, body #wfob_qr_model_wrap .wfob_qr_wrap .button, body #wfob_qr_model_wrap .wfob_option_btn",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "attrName": "default_primary_color.decoration.background",
+              "subName": "color",
+              "label": "Primary Color",
+              "render": true,
+              "priority": 15,
+              "features": {
+                "sticky": false,
+                "dynamicContent": {
+                  "type": "color"
+                }
+              },
+              "component": {
+                "type": "field",
+                "name": "divi/color-picker"
+              }
+            }
+          }
+        }
+      }
+    },
+    "default_text_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-form-login.login p, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-privacy-policy-text p, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-info .message-container, {{selector}} #wfacp-e-form .wfacp_main_form #wc_checkout_add_ons .description, {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-checkout-review-order h3, {{selector}} #wfacp-e-form .wfacp_main_form .aw_addon_wrap label, {{selector}} #wfacp-e-form .wfacp_main_form p:not(.woocommerce-shipping-contents):not(.wfacp_dummy_preview_heading):not(.checkout-inline-error-message), {{selector}} #wfacp-e-form .wfacp_main_form p label:not(.wfacp-form-control-label):not(.wfob_title):not(.wfob_span):not(.checkbox), {{selector}} #wfacp-e-form .wfacp_main_form .woocommerce-error, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_payment h4, {{selector}} #wfacp-e-form #payment .woocommerce-privacy-policy-text p, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p, {{selector}} #wfacp-e-form .wfacp-form label.woocommerce-form__label .woocommerce-terms-and-conditions-checkbox-text, {{selector}} #wfacp-e-form fieldset, {{selector}} #wfacp-e-form fieldset legend, {{selector}} #wfacp-e-form .wfacp_main_form #payment .woocommerce-terms-and-conditions-wrapper .form-row",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "priority": 40,
+              "render": true,
+              "attrName": "default_text_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Content Color",
+                  "fieldLabel": "Content Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "default_link_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a, {{selector}} #wfacp-e-form a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have):not(.wfacp_cart_link):not(.wfacp_summary_link):not(.wfacp_collapsible), {{selector}} #wfacp-e-form a:not(.wfacp_summary_link) span:not(.wfob_btn_text_added):not(.wfob_btn_text_remove), {{selector}} #wfacp-e-form label a, {{selector}} #wfacp-e-form ul li a:not(.wfacp_breadcrumb_link), {{selector}} #wfacp-e-form table tr td a, {{selector}} #wfacp-e-form .wfacp_steps_sec ul li a, {{selector}} #wfacp-e-form a.wfacp_remove_coupon, {{selector}} #wfacp-e-form a:not(.button-social-login):not(.wfob_read_more_link):not(.wfacp_collapsible):not(.wfob_btn_add), {{selector}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible svg, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible span",
+      "styleProps": {
+        "font": {}
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "priority": 50,
+              "render": true,
+              "attrName": "default_link_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Link Color",
+                  "fieldLabel": "Link Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "default_link_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a:hover, {{selector}} #wfacp-e-form a:not(.wfacp_close_icon):not(.button-social-login):hover:not(.wfob_btn_add):hover:not(.ywcmas_shipping_address_button_new):hover:not(.wfacp_cart_link):hover:not(.wfacp_back_page_button):hover:not(.wfacp_summary_link), {{selector}} #wfacp-e-form a:not(.wfacp_summary_link) span:not(.wfob_btn_text_added):not(.wfob_btn_text_remove):hover, {{selector}} #wfacp-e-form label a:hover, {{selector}} #wfacp-e-form ul li a:not(.wfacp_breadcrumb_link):hover, {{selector}} #wfacp-e-form table tr td a:hover, {{selector}} #wfacp-e-form a.wfacp_remove_coupon:hover, {{selector}} #wfacp-e-form a:not(.button-social-login):not(.wfob_read_more_link):not(.wfacp_collapsible):not(.wfob_btn_add):hover, {{selector}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button:hover, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible:hover, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible:hover svg, {{selector}} #wfacp-e-form .wfacp_main_form .wfacp_collapsible:hover span",
+      "styleProps": {
+        "font": {}
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designCheckoutForm",
+              "priority": 55,
+              "render": true,
+              "attrName": "default_link_hover_color.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Link Hover Color",
+                  "fieldLabel": "Link Hover Color"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "form_spacing": {
+      "type": "object",
+      "selector": "{{selector}} #wfacp-e-form .wfacp-form",
+      "styleProps": {
+        "spacing": {}
+      },
+      "default": {
+        "decoration": {
+          "spacing": {
+            "desktop": {
+              "value": {
+                "margin": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                },
+                "padding": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupSlug": "designCheckoutForm",
+            "priority": 70,
+            "render": true,
+            "attrName": "form_spacing.decoration.spacing"
+          }
+        }
+      }
+    },
+    "form_border": {
+      "type": "object",
+      "selector": "{{selector}} .wfacp_form_divi_container",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "desktop": {
+              "value": {
+                "styles": {
+                  "all": {
+                    "width": "1px",
+                    "color": "#dddddd",
+                    "style": "none"
+                  }
+                }
+              }
+            },
+            "border": {
+              "desktop": {
+                "value": {
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd",
+                      "style": "none"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designBorder",
+              "priority": 10,
+              "render": true,
+              "attrName": "form_border.decoration.border",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Form Border",
+                  "fieldLabel": "Form Border"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "design": "auto",
+    "advanced": "auto",
+    "groups": {
+      "contentCollapsibleOrderSummary": {
+        "panel": "content",
+        "priority": 20,
+        "groupName": "contentCollapsibleOrderSummary",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Collapsible Order Summary"
+          }
+        }
+      },
+      "contentCoupon": {
+        "panel": "content",
+        "priority": 50,
+        "groupName": "contentCoupon",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Coupon"
+          }
+        }
+      },
+      "contentOrderSummary": {
+        "panel": "content",
+        "priority": 60,
+        "groupName": "contentOrderSummary",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Order Summary"
+          }
+        }
+      },
+      "contentPaymentGateway": {
+        "panel": "content",
+        "priority": 70,
+        "groupName": "contentPaymentGateway",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Payment Gateways"
+          }
+        }
+      },
+      "contentCheckoutButtons": {
+        "panel": "content",
+        "priority": 80,
+        "groupName": "contentCheckoutButtons",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Checkout Button(s)"
+          }
+        }
+      },
+      "designCollapsibleOrderSummaryBackground": {
+        "panel": "design",
+        "priority": 10,
+        "groupName": "designCollapsibleOrderSummaryBackground",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Collapsible Order Summary",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designCheckoutButtons": {
+        "panel": "design",
+        "priority": 150,
+        "groupName": "designCheckoutButtons",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Checkout Button's",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designHeading": {
+        "panel": "design",
+        "priority": 20,
+        "groupName": "designHeading",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Heading",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designFields": {
+        "panel": "design",
+        "priority": 30,
+        "groupName": "designFields",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Fields",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designSection": {
+        "panel": "design",
+        "priority": 40,
+        "groupName": "designSection",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Section"
+          }
+        }
+      },
+      "designOrderSummary": {
+        "panel": "design",
+        "priority": 50,
+        "groupName": "designOrderSummary",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Order Summary",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designPaymentMethod": {
+        "panel": "design",
+        "priority": 60,
+        "groupName": "designPaymentMethod",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Payment Method",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designCheckoutForm": {
+        "panel": "design",
+        "priority": 5,
+        "groupName": "designCheckoutForm",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Checkout Form",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designHeaderTab": {
+        "panel": "design",
+        "priority": 6,
+        "groupName": "designHeaderTab",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Header Tab"
+          }
+        }
+      },
+      "designHeaderBreadcrumb": {
+        "panel": "design",
+        "priority": 7,
+        "groupName": "designHeaderBreadcrumb",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Header Breadcrumb"
+          }
+        }
+      },
+      "designProductSwitcher": {
+        "panel": "design",
+        "priority": 90,
+        "groupName": "designProductSwitcher",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Product Switcher",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designCoupon": {
+        "panel": "design",
+        "priority": 55,
+        "groupName": "designCoupon",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Coupon",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designBorder": {
+        "panel": "design",
+        "priority": 125,
+        "groupName": "designBorder",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Border"
+          }
+        }
+      },
+      "designPrivacyPolicy": {
+        "panel": "design",
+        "priority": 140,
+        "groupName": "designPrivacyPolicy",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Privacy Policy",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      },
+      "designTermsConditions": {
+        "panel": "design",
+        "priority": 145,
+        "groupName": "designTermsConditions",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Terms & Conditions",
+            "presetGroup": "wfacp/font"
+          }
+        }
+      }
+    }
+  }
+}

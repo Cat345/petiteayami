@@ -45,6 +45,8 @@ class SeoRules
         add_filter( 'post_updated_messages', [$this, 'seoRulesActionsMessages'] );
         add_filter( 'bulk_post_updated_messages', [ $this, 'seoRulesBulkActionsMessages' ], 10, 2 );
 
+        add_action('admin_notices', [$this, 'adminSeoRuleNotices'] );
+
         add_filter( 'page_row_actions', [$this, 'seoRulesRowActions'], 10, 2 );
 
         add_action( 'restrict_manage_posts', [$this, 'restrictManagePosts'], 999 );
@@ -262,7 +264,7 @@ class SeoRules
         if( isset( $attributes['id'] ) ){
 
             if( $attributes['id'] == $this->generateInputID('rule_post_type') ){
-                $settingsUrl = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=seorules' );
+                $settingsUrl = admin_url( 'edit.php?post_type=filter-set&page=filters-settings&tab=seorules#wpc_seo_rules_post' );
                 $seoRules = new SeoRulesTab();
 
                 $html = __( 'There are no Post Types with filters available for SEO rules yet.<br />', 'filter-everything'); // Escaped later
@@ -597,18 +599,18 @@ class SeoRules
 
             $fields = array_merge( $noSelection, $fields );
 
-            $input['archive_title'] = array(
-                'type'      => 'Select',
-                'label'     => '{archive_title}',
-                'title'     => esc_html__( 'Page archive for:', 'filter-everything' ),
-                'slug'      => 'archive_title',
-                'name'      => $this->generateInputName( 'wp_entity' ),
-                'id'        => $this->generateInputID( 'wp_entity' ),
-                'class'     => 'wpc-field-rule-wp-entity',
-                'options'   => $fields,
-                'default'   => '0',
+            $input = ['archive_title' => array(
+                'type'         => 'Select',
+                'label'        => '{archive_title}',
+                'title'        => esc_html__('Page archive for:', 'filter-everything'),
+                'slug'         => 'archive_title',
+                'name'         => $this->generateInputName('wp_entity'),
+                'id'           => $this->generateInputID('wp_entity'),
+                'class'        => 'wpc-field-rule-wp-entity',
+                'options'      => $fields,
+                'default'      => '0',
                 'instructions' => esc_html__('Include a WordPress page for SEO rule', 'filter-everything')
-            );
+            )];
         }
 
         return $input;
@@ -860,6 +862,8 @@ class SeoRules
         // Update meta_fields
         update_post_meta( $ruleFields['ID'], 'wpc_seo_rule_post_type', $_ruleFields['rule_post_type'] );
 
+        do_action('wpc_after_seo_rule_save', $ruleFields['ID'], $_ruleFields['rule_post_type'], $filterFields);
+
         return $ruleFields;
     }
 
@@ -1085,7 +1089,7 @@ class SeoRules
             $authorId = $entity->getTermId($value);
             $section .= $this->sep . $authorId;
 
-        }else if( in_array( $filter['entity'], array('post_meta', 'post_meta_exists') ) ) {
+        }else if( in_array( $filter['entity'], array('post_meta', 'post_meta_exists', 'post_meta_date') ) ) {
 
             $section .= $this->sep . $value;
 
@@ -1272,7 +1276,6 @@ class SeoRules
                 }
             }
         }
-
         return apply_filters( 'wpc_validate_seo_rules', $valid, $filterFields );
     }
 
@@ -1371,6 +1374,20 @@ class SeoRules
     private function verifyNonce( $nonce )
     {
         return wp_verify_nonce( $nonce, self::NONCE_ACTION );
+    }
+
+    public function adminSeoRuleNotices()
+    {
+        global $post;
+        $post_id = isset($post->ID) ? $post->ID : 0;
+        if (!empty(get_post_meta($post_id , '_wpc_indexing_deep_setting_warning'))) {
+            $error_str = '<div class="notice notice-warning is-dismissible"><p>%s</p></div>';
+            printf(
+                $error_str,
+                esc_html__( "Indexing for your SEO rule will not work because you need to increase the filter's indexing depth setting", 'filter-everything')
+            );
+            delete_post_meta($post_id, '_wpc_indexing_deep_setting_warning');
+        }
     }
 }
 

@@ -476,7 +476,7 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			/* fetching available payment method before modifying bump */
 			$available_before_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-			$before_cart_total         = WC()->cart->get_total( 'no' );
+			$before_needs_payment      = WC()->cart->needs_payment();
 
 			$bump_action_data = json_decode( $post_data['wfob_input_hidden_data'], true );
 
@@ -497,7 +497,6 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 				self::$output_resp['response']         = $response;
 				self::$output_resp['bump_global_data'] = $bump_global_data;
 			}
-			$after_cart_total                      = WC()->cart->get_total( 'no' );
 			self::$bump_action_data                = $action;
 			self::$output_resp['wfob_product_key'] = $bump_action_data['product_key'];
 			self::$output_resp['wfob_id']          = $bump_action_data['wfob_id'];
@@ -506,10 +505,11 @@ if ( ! class_exists( 'WFOB_AJAX_Controller' ) ) {
 
 			/* fetching available payment method after modifying bump */
 			$available_after_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+			$after_needs_payment      = WC()->cart->needs_payment();
 
-			self::$gateway_change = ( array_keys( $available_after_gateways ) != array_keys( $available_before_gateways ) );
-			if ( false == self::$gateway_change ) {
-				self::$gateway_change = ( $before_cart_total != $after_cart_total ) && ( 0 == absint( $before_cart_total ) || 0 == absint( $after_cart_total ) );
+			self::$gateway_change = ( array_keys( $available_after_gateways ) !== array_keys( $available_before_gateways ) );
+			if ( false === self::$gateway_change ) {
+				self::$gateway_change = ( $before_needs_payment !== $after_needs_payment );
 			}
 
 			self::$gateway_change = apply_filters( 'wfob_need_payment_gateway_refresh', self::$gateway_change, $available_after_gateways, self::$output_resp, $bump_action_data );

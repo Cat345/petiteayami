@@ -11,68 +11,76 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 
 			add_action( 'customize_controls_enqueue_scripts', array( $this, 'override_theme_customizer_functionality' ), 999 );
 
-			add_action( 'wfacp_footer_before_print_scripts', [ $this, 'remove_flatsome_hooks' ] );
+			add_action( 'wfacp_footer_before_print_scripts', array( $this, 'remove_flatsome_hooks' ) );
 
-
-			add_action( 'wfacp_internal_css', [ $this, 'add_custom_css' ], 99 );
-
+			add_action( 'wfacp_internal_css', array( $this, 'add_custom_css' ), 99 );
 
 			/**
 			 * Add compatibility For davinci Theme
 			 */
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_checkout_hooks' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_checkout_hooks' ) );
 
 			/**
 			 * Customizer compatibility for buzzstorepro theme
 			 */
 			if ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_customizer() ) {
 
-				add_action( 'after_setup_theme', function () {
+				add_action(
+					'after_setup_theme',
+					function () {
 
-					remove_action( 'customize_register', 'buzzstorepro_customize_register' );
-
-				} );
+						remove_action( 'customize_register', 'buzzstorepro_customize_register' );
+					}
+				);
 			}
 			/**
 			 * Customizer compatibility for Easy Google Fonts plugin
 			 */
-			add_action( 'plugins_loaded', function () {
+			add_action(
+				'plugins_loaded',
+				function () {
 
-				if ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_customizer() ) {
+					if ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_customizer() ) {
 
-					if ( class_exists( 'EGF_Customize_Manager' ) ) {
-						remove_action( 'customize_register', array( EGF_Customize_Manager::get_instance(), 'register_font_control_type' ) );
+						if ( class_exists( 'EGF_Customize_Manager' ) ) {
+							remove_action( 'customize_register', array( EGF_Customize_Manager::get_instance(), 'register_font_control_type' ) );
 
+						}
 					}
+				},
+				9999
+			);
+
+			add_action(
+				'init',
+				function () {
+					if ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_customizer() ) {
+						remove_action( 'customize_register', 'et_divi_customize_register' );
+					}
+
+					if ( class_exists( 'Kirki_Init' ) && WFACP_Common::is_customizer() ) {
+						WFACP_Common::remove_actions( 'wp_loaded', 'Kirki_Init', 'add_to_customizer' );
+					}
+				},
+				9999
+			);
+
+			add_action( 'wfacp_checkout_page_not_found', array( $this, 'our_not_checkout_pages_actions' ) );
+			add_action( 'wfacp_checkout_page_found', array( $this, 'our_checkout_actions' ) );
+			add_action( 'woocommerce_review_order_after_shipping', array( $this, 'remove_shoptimizer_checkout_custom_field' ) );
+
+			add_action(
+				'wfacp_remove_panel_section',
+				function () {
+					global $wp_customize;
+					$wp_customize->remove_panel( 'shoptimizer_panel_layout' );
+					$wp_customize->remove_panel( 'header' );
+					$wp_customize->remove_panel( 'style' );
+					$wp_customize->remove_panel( 'blog' );
+					$wp_customize->remove_panel( 'woocommerce' );
+					$wp_customize->remove_section( 'footer' );
 				}
-
-			}, 9999 );
-
-			add_action( 'init', function () {
-				if ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_customizer() ) {
-					remove_action( 'customize_register', 'et_divi_customize_register' );
-				}
-
-				if ( class_exists( 'Kirki_Init' ) && WFACP_Common::is_customizer() ) {
-					WFACP_Common::remove_actions( 'wp_loaded', 'Kirki_Init', 'add_to_customizer' );
-				}
-
-			}, 9999 );
-
-			add_action( 'wfacp_checkout_page_not_found', [ $this, 'our_not_checkout_pages_actions' ] );
-			add_action( 'wfacp_checkout_page_found', [ $this, 'our_checkout_actions' ] );
-			add_action( 'woocommerce_review_order_after_shipping', [ $this, 'remove_shoptimizer_checkout_custom_field' ] );
-
-			add_action( 'wfacp_remove_panel_section', function () {
-				global $wp_customize;
-				$wp_customize->remove_panel( 'shoptimizer_panel_layout' );
-				$wp_customize->remove_panel( 'header' );
-				$wp_customize->remove_panel( 'style' );
-				$wp_customize->remove_panel( 'blog' );
-				$wp_customize->remove_panel( 'woocommerce' );
-				$wp_customize->remove_section( 'footer' );
-			} );
-
+			);
 		}
 
 
@@ -83,23 +91,21 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 				return;
 			}
 
-			$bodyClass     = "body ";
+			$bodyClass     = 'body ';
 			$template_type = $instance->get_template_type();
 			if ( 'pre_built' !== $template_type ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 			$important = '';
 			if ( 'divi' === $template_type ) {
 				$important = ' !important';
 			}
 
+			$cssHtml = '<style>';
 
-			$cssHtml = "<style>";
-
-
-			$cssHtml .= $bodyClass . "#wfacp-sec-wrapper .wfacp-top label.wfacp-form-control-label {position: relative;left: 0;right: 0;bottom: 0;top: 0;margin-top: 0;line-height:1.5;background: transparent;display: block;margin-bottom: 4px;opacity:1;}";
-			$cssHtml .= $bodyClass . ".wfacp-top .wfacp_main_form.woocommerce #wfacp_checkout_form p.wfacp-form-control-wrapper:not(.wfacp_checkbox_field):not(.checkbox):not(.wfacp_textarea_fields):not(.wfacp_collapsible_field_wrap):not(.wfacp-checkbox-radio) {min-height:78px;}";
+			$cssHtml .= $bodyClass . '#wfacp-sec-wrapper .wfacp-top label.wfacp-form-control-label {position: relative;left: 0;right: 0;bottom: 0;top: 0;margin-top: 0;line-height:1.5;background: transparent;display: block;margin-bottom: 4px;opacity:1;}';
+			$cssHtml .= $bodyClass . '.wfacp-top .wfacp_main_form.woocommerce #wfacp_checkout_form p.wfacp-form-control-wrapper:not(.wfacp_checkbox_field):not(.checkbox):not(.wfacp_textarea_fields):not(.wfacp_collapsible_field_wrap):not(.wfacp-checkbox-radio) {min-height:78px;}';
 			$cssHtml .= $bodyClass . ".none{display: block $important; }";
 			$cssHtml .= $bodyClass . ".wfacp-top .wfacp_main_form.woocommerce input[type=email]{padding: 12px 12px $important;}";
 			$cssHtml .= $bodyClass . ".wfacp-top .wfacp_main_form.woocommerce input[type=number]{padding: 12px 12px $important;}";
@@ -113,27 +119,32 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 			$cssHtml .= $bodyClass . ".wfacp-top .wfacp_main_form.woocommerce select,.wfacp-form.wfacp-top .wfacp_main_form.woocommerce textarea{padding: 12px 12px $important; }";
 			$cssHtml .= $bodyClass . ".wfacp-top .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered{padding: 12px 12px $important;}";
 
-
-			$cssHtml .= "</style>";
+			$cssHtml .= '</style>';
 
 			if ( function_exists( 'get_woocommerce_currency_symbol' ) ) {
 
-
-				$currencyArr     = [ 'UZS' ];
+				$currencyArr     = array( 'UZS' );
 				$currencySysmbol = get_woocommerce_currency_symbol();
 
 				if ( in_array( $currencySysmbol, $currencyArr ) ) {
-					$cssHtml = "<style>@media (max-width: 767px) {";
-					$cssHtml .= $bodyClass . ".wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_product_price_sec span {font-size: 13px !important;}";
-					$cssHtml .= $bodyClass . ".wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet.wfacp_for_mb_style .wfacp_ps_title_wrap {-ms-flex: 0 0 50%;flex: 0 0 50%;max-width: 50%;}";
-					$cssHtml .= $bodyClass . ".wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet.wfacp_for_mb_style .wfacp_product_sec_start {-ms-flex: 0 0 50%;flex: 0 0 50%;max-width: 50%;}";
-					$cssHtml .= "}</style>";
+					$cssHtml  = '<style>@media (max-width: 767px) {';
+					$cssHtml .= $bodyClass . '.wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_product_price_sec span {font-size: 13px !important;}';
+					$cssHtml .= $bodyClass . '.wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet.wfacp_for_mb_style .wfacp_ps_title_wrap {-ms-flex: 0 0 50%;flex: 0 0 50%;max-width: 50%;}';
+					$cssHtml .= $bodyClass . '.wfacp_main_form #product_switching_field.wfacp_for_desktop_tablet.wfacp_for_mb_style .wfacp_product_sec_start {-ms-flex: 0 0 50%;flex: 0 0 50%;max-width: 50%;}';
+					$cssHtml .= '}</style>';
 				}
-
 			}
-			echo $cssHtml;
-
-
+			$allowed_html = array_merge(
+				wp_kses_allowed_html( 'post' ),
+				array(
+					'style' => array(
+						'type'  => array(),
+						'id'    => array(),
+						'media' => array(),
+					),
+				)
+			);
+			echo wp_kses( $cssHtml, $allowed_html );
 		}
 
 		public function our_not_checkout_pages_actions() {
@@ -141,7 +152,6 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 			if ( function_exists( 'et_divi_add_customizer_css' ) ) {
 				et_divi_add_customizer_css();
 			}
-
 		}
 
 		public function flatsome_hooks() {
@@ -161,12 +171,10 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 			if ( $tempSlug != '' && $tempSlug == 'pre_built' ) {
 				$this->flatsome_hooks();
 			}
-
 		}
 
 		public function remove_shoptimizer_checkout_custom_field() {
 			remove_action( 'woocommerce_review_order_after_submit', 'shoptimizer_checkout_custom_field', 15 );
-
 		}
 
 		public function register_fake_kirki() {
@@ -180,7 +188,6 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 			}
 			include_once __DIR__ . '/class-kirki.php';
 			add_action( 'customize_controls_init', array( $this, 'remove_actions_filters' ) );
-
 		}
 
 		public function remove_actions_filters() {
@@ -227,7 +234,6 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 				remove_filter( 'the_content', 'adswth_add_bootstrap_table_class_end' );
 			}
 
-
 			if ( function_exists( 'ccfw_criticalcss' ) ) {
 				remove_action( 'wp_head', 'ccfw_criticalcss', 5 );
 			}
@@ -237,14 +243,16 @@ if ( ! class_exists( 'WFACP_Plugins_Compatibility' ) ) {
 
 			if ( function_exists( 'buddyboss_scripts_styles' ) ) {
 
-				add_action( 'wp_enqueue_scripts', function () {
-					wp_deregister_script( 'selectboxes' );
-					wp_dequeue_script( 'selectboxes' );
-				} );
+				add_action(
+					'wp_enqueue_scripts',
+					function () {
+						wp_deregister_script( 'selectboxes' );
+						wp_dequeue_script( 'selectboxes' );
+					}
+				);
 
 			}
 		}
-
 	}
 
 	new WFACP_Plugins_Compatibility();

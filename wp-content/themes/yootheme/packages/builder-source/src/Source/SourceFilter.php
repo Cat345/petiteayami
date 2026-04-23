@@ -212,6 +212,6 @@ trait SourceFilter
             return @preg_match($conditionValue, $propertyValue) > 0;
         }
 
-        return !!$propertyValue;
+        return (bool) $propertyValue;
     }
 }

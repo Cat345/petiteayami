@@ -9,8 +9,6 @@ class CsrfMiddleware
 {
     /**
      * Current token.
-     *
-     * @var string
      */
     protected string $token;
 
@@ -34,7 +32,6 @@ class CsrfMiddleware
      * Handles CSRF token from request.
      *
      * @param Request  $request
-     * @param callable $next
      */
     public function handle($request, callable $next): Response
     {

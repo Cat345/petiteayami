@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, mailch
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 5.22.0
+Stable tag: 5.23.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -57,6 +57,10 @@ Our [support site](https://kb.mailpoet.com/) has plenty of articles. You can wri
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 5.23.0 - 2026-04-06 =
+* Added: Automation templates for WooCommerce Bookings;
+* Updated: Update JavaScript dependencies with security patches.
 
 = 5.22.0 - 2026-03-03 =
 * Added: Add booking-starts automation trigger that fires before or after a booking's scheduled start date.

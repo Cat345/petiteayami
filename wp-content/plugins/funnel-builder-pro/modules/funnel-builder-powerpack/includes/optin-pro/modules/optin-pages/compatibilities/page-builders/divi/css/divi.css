@@ -106,6 +106,10 @@ body.et-db #et-boc .et-l .bwf_pp_effect_fade.show_popup_form .bwf_pp_wrap {
     display: inline-block;
 }
 
+body.et-db #et-boc .et-l .bwf-custom-button .et-pb-icon {
+    font-family: ETmodules !important;
+}
+
 .et-db #et-boc .et-l .bwf_pp_bar_wrap.on span.pp-bar-text.inside {
     display: none;
 }

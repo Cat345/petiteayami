@@ -55,8 +55,6 @@ class Routes implements IteratorAggregate
      *
      * @param string|callable $handler
      * @param array<string, mixed> $attributes
-     *
-     * @return Route
      */
     public function post(string $path, $handler, array $attributes = []): Route
     {
@@ -69,8 +67,6 @@ class Routes implements IteratorAggregate
      * @param string|string[] $path
      * @param string|callable $handler
      * @param array<string, mixed> $attributes
-     *
-     * @return Route
      */
     public function put($path, $handler, array $attributes = []): Route
     {
@@ -83,8 +79,6 @@ class Routes implements IteratorAggregate
      * @param string|string[] $path
      * @param string|callable $handler
      * @param array<string, mixed> $attributes
-     *
-     * @return Route
      */
     public function patch($path, $handler, array $attributes = []): Route
     {
@@ -97,8 +91,6 @@ class Routes implements IteratorAggregate
      * @param string|string[] $path
      * @param string|callable $handler
      * @param array<string, mixed> $attributes
-     *
-     * @return Route
      */
     public function delete($path, $handler, array $attributes = []): Route
     {

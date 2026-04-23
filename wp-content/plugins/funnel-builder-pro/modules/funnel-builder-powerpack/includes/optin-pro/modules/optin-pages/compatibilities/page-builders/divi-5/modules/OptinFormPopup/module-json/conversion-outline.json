@@ -1,0 +1,130 @@
+{
+  "module": {
+    "btn_text": "btn_text.innerContent.*",
+    "btn_subheading_text": "btn_subheading_text.innerContent.*",
+    "btn_icon": "btn_icon_field.*",
+    "btn_icon_position": "btn_icon_field_position.*",
+    "popup_open_animation": "popup_open_animation",
+    "enable_popup_bar_on_builder": "enable_popup_bar_on_builder.*",
+    "popup_bar_pp": "popup_bar_pp.*",
+    "popup_bar_text_position": "popup_bar_text_position.*",
+    "popup_bar_animation": "popup_bar_animation.*",
+    "popup_bar_text": "popup_bar_text.innerContent.*",
+    "popup_heading": "popup_heading.innerContent.*",
+    "popup_sub_heading": "popup_sub_heading.innerContent.*",
+    "show_labels": "show_labels.*",
+    "button_text": "button_text.innerContent.*",
+    "subtitle": "subtitle.innerContent.*",
+    "button_submitting_text": "button_submitting_text.innerContent.*",
+    "popup_footer_text": "popup_footer_text.innerContent.*",
+    "input_size": "input_size",
+
+    "wfop_optin_form_popup_popup_heading_color": "wfop_optin_form_popup_popup_heading_color.decoration.font.font.*.color",
+    "wfop_optin_form_popup_popup_subheading_color": "wfop_optin_form_popup_popup_subheading_color.decoration.font.font.*.color",
+    "wfop_optin_form_popup_progress_text_color": "wfop_optin_form_popup_progress_text_color.decoration.font.font.*.color",
+    "wfop_optin_form_popup_text_after_submit_color": "wfop_optin_form_popup_text_after_submit_color.decoration.font.font.*.color",
+    "label_color": "label_color.decoration.font.font.*.color",
+    "mark_required_color": "mark_required_color.decoration.font.font.*.color",
+    "field_text_color": "field_text_color.decoration.font.font.*.color",
+    "button_color": "button_color.decoration.font.font.*.color",
+    "button_hover_color": "button_hover_color.decoration.font.font.*.color",
+    "wfop_optin_form_popup_btn_color": "wfop_optin_form_popup_btn_color.decoration.font.font.*.color",
+    "wfop_optin_form_popup_btn_hover_color": "wfop_optin_form_popup_btn_hover_color.decoration.font.font.*.color",
+    "close_button_color": "close_button_color.decoration.font.font.*.color",
+    "close_button_hover_color": "close_button_hover_color.decoration.font.font.*.color",
+
+    "field_background_color": "field_background_color.decoration.background.*.color",
+    "button_bg_color": "button_bg_color.decoration.background.*.color",
+    "button_hover_bg_color": "button_hover_bg_color.decoration.background.*.color",
+    "wfop_optin_form_popup_btn_bg_color": "wfop_optin_form_popup_btn_bg_color.decoration.background.*.color",
+    "wfop_optin_form_popup_btn_hover_bg_color": "wfop_optin_form_popup_btn_hover_bg_color.decoration.background.*.color",
+    "wfop_optin_form_popup_progress_background_color": "wfop_optin_form_popup_progress_background_color.decoration.background.*.color",
+    "wfop_optin_form_popup_progress_color": "wfop_optin_form_popup_progress_color.decoration.background.*.color",
+    "close_button_background_color": "close_button_background_color.decoration.background.*.color",
+    "close_button_hover_background_color": "close_button_hover_background_color.decoration.background.*.color",
+
+    "wfop_optin_form_popup_popup_bar_width_width": "wfop_optin_form_popup_popup_bar_width.decoration.sizing.*.maxWidth",
+    "wfop_optin_form_popup_popup_progress_bar_width_width": "wfop_optin_form_popup_popup_progress_bar_width.decoration.sizing.*.width",
+    "wfop_optin_form_popup_popup_progress_bar_height_height": "wfop_optin_form_popup_popup_progress_bar_height.decoration.sizing.*.height",
+    "wfop_optin_form_popup_button_width_width": "wfop_optin_form_popup_button_width.decoration.sizing.*.maxWidth",
+    "wfop_optin_form_popup_popup_button_width_width": "wfop_optin_form_popup_popup_button_width.decoration.sizing.*.width",
+
+    "wfop_optin_form_popup_popup_padding": "wfop_optin_form_popup_popup_padding.decoration.spacing.*.padding",
+    "wfop_optin_form_popup_popup_progress_bar_padding": "wfop_optin_form_popup_popup_progress_bar_padding.decoration.spacing.*.padding",
+    "wfop_optin_form_popup_pop_column_gap_padding": "wfop_optin_form_popup_pop_column_gap_padding.decoration.spacing.*.padding",
+    "wfop_optin_form_popup_pop_row_gap_margin": "wfop_optin_form_popup_pop_row_gap_margin.decoration.spacing.*.margin",
+    "button_text_padding": "button_text_padding.decoration.spacing.*.padding",
+    "button_text_margin": "button_text_margin.decoration.spacing.*.margin",
+    "wfop_optin_form_popup_btn_text_padding": "wfop_optin_form_popup_btn_text_spacing.decoration.spacing.*.padding",
+    "wfop_optin_form_popup_btn_text_margin": "wfop_optin_form_popup_btn_text_spacing.decoration.spacing.*.margin",
+    "wfop_optin_form_popup_close_icon_position_margin": "wfop_optin_form_popup_close_icon_position_margin.decoration.spacing.*.margin",
+    "wfop_optin_form_popup_close_btn_inner_gap_padding": "wfop_optin_form_popup_close_btn_inner_gap_padding.decoration.spacing.*.padding"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "text": "module.advanced.text",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "field_border": "field_border.decoration.border",
+      "bwf_button_border": "bwf_button_border.decoration.border",
+      "wfop_optin_form_popup_btn_text_alignment_border": "wfop_optin_form_popup_btn_text_alignment_border.decoration.border",
+      "wfop_optin_form_popup_close_btn_border": "wfop_optin_form_popup_close_btn_border.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "button_text_alignment": "button_text_alignment_box_shadow.decoration.boxShadow",
+      "wfop_optin_form_popup_btn_text_alignment": "wfop_optin_form_popup_btn_text_alignment_box_shadow.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfop_optin_form_popup_progress_bar_typography": "wfop_optin_form_popup_progress_bar_typography.decoration.font",
+      "wfop_optin_form_popup_popup_heading": "wfop_optin_form_popup_popup_heading.decoration.font",
+      "wfop_optin_form_popup_popup_subheading_typography": "wfop_optin_form_popup_popup_subheading_typography.decoration.font",
+      "wfop_optin_form_popup_icon_size_font_size": "wfop_optin_form_popup_icon_size_font_size.decoration.font",
+      "label_typography": "label_typography.decoration.font",
+      "field_typography": "field_typography.decoration.font",
+      "button_text_typo": "button_text_typo.decoration.font",
+      "button_subheading_text_typo": "button_subheading_text_typo.decoration.font",
+      "wfop_optin_form_popup_text_after_submit_typography": "wfop_optin_form_popup_text_after_submit_typography.decoration.font",
+      "wfop_optin_form_popup_btn_text_typo": "wfop_optin_form_popup_btn_text_typo.decoration.font",
+      "wfop_optin_form_popup_btn_subheading_text_typo": "wfop_optin_form_popup_btn_subheading_text_typo.decoration.font"
+    },
+    "text_shadow": {
+      "default": "module.advanced.text.textShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfop_optin_form_popup_popup_padding": "convertSpacing",
+    "wfop_optin_form_popup_popup_progress_bar_padding": "convertSpacing",
+    "wfop_optin_form_popup_pop_column_gap_padding": "convertSpacing",
+    "wfop_optin_form_popup_pop_row_gap_margin": "convertSpacing",
+    "button_text_padding": "convertSpacing",
+    "button_text_margin": "convertSpacing",
+    "wfop_optin_form_popup_btn_text_padding": "convertSpacing",
+    "wfop_optin_form_popup_btn_text_margin": "convertSpacing",
+    "wfop_optin_form_popup_close_icon_position_margin": "convertSpacing",
+    "wfop_optin_form_popup_close_btn_inner_gap_padding": "convertSpacing"
+  }
+}

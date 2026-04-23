@@ -31,7 +31,7 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -42,80 +42,98 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		 */
 		public function register_routes() {
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base, array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base,
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_step' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_steps_collection() ),
-				),
-			) );
-
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<step_id>[\d]+)', array(
-				'args' => array(
-					'funnel_id' => array(
-						'description' => __( 'Unique funnel id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-					'step_id'   => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-					),
-				),
-
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_step' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ), $this->get_update_steps_collection() )
-				),
-
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_step' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => $this->get_delete_steps_collection()
-				),
-
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
-
-			register_rest_route( $this->namespace, '/funnels/step/search', array(
-
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_entity' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						's'          => array(
-							'description'       => __( 'search term', 'funnel-builder' ),
-							'type'              => 'string',
-							'required'          => false,
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'type'       => array(
-							'description'       => __( 'Type of step', 'funnel-builder' ),
-							'type'              => 'string',
-							'required'          => true,
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'is_substep' => array(
-							'description'       => __( 'if the query is for substep', 'funnel-builder' ),
-							'default'           => false,
-							'type'              => 'boolean',
-							'sanitize_callback' => 'wffn_string_to_bool',
-							'validate_callback' => 'rest_validate_request_arg',
+					'args' => array(
+						'funnel_id' => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
 						),
 					),
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'create_step' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), $this->get_create_steps_collection() ),
+					),
+				)
+			);
 
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<step_id>[\d]+)',
+				array(
+					'args'   => array(
+						'funnel_id' => array(
+							'description' => __( 'Unique funnel id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+						'step_id'   => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
+					),
+
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_step' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ), $this->get_update_steps_collection() ),
+					),
+
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'delete_step' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => $this->get_delete_steps_collection(),
+					),
+
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/funnels/step/search',
+				array(
+
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_entity' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							's'                 => array(
+								'description'       => __( 'search term', 'funnel-builder' ),
+								'type'              => 'string',
+								'required'          => false,
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'type'              => array(
+								'description'       => __( 'Type of step', 'funnel-builder' ),
+								'type'              => 'string',
+								'required'          => true,
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'is_substep'        => array(
+								'description'       => __( 'if the query is for substep', 'funnel-builder' ),
+								'default'           => false,
+								'type'              => 'boolean',
+								'sanitize_callback' => 'wffn_string_to_bool',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'checkout_redirect' => array(
+								'description'       => __( 'When true, restricts results to wfacp_checkout post type only and excludes the configured store checkout step.', 'funnel-builder' ),
+								'default'           => false,
+								'type'              => 'boolean',
+								'sanitize_callback' => 'wffn_string_to_bool',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+						),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -160,16 +178,16 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 			BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
 
 			if ( ! function_exists( 'media_handle_sideload' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/media.php' );
-				require_once( ABSPATH . 'wp-admin/includes/file.php' );
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 
 			if ( $funnel_id > 0 && ! empty( $type ) ) {
 
 				if ( $type === 'wc_checkout' || $type === 'wc_upsells' || $type === 'wc_thankyou' ) {
 					if ( ( function_exists( 'wfocu_is_woocommerce_active' ) && ! wfocu_is_woocommerce_active() ) || ( function_exists( 'wfacp_is_woocommerce_active' ) && ! wfacp_is_woocommerce_active() ) ) {
-						$resp['msg'] = __( "Funnel Builder needs WooCommerce to run this step.", 'funnel-builder' );
+						$resp['msg'] = __( 'Funnel Builder needs WooCommerce to run this step.', 'funnel-builder' );
 
 						return true === $return ? $resp : rest_ensure_response( $resp );
 					}
@@ -182,21 +200,20 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 						$posted_data['design']            = $design;
 						$posted_data['design_name']['id'] = $inherit_id;
 						$posted_data['existing']          = 'true';
-						$posted_data['_data']             = [];
+						$posted_data['_data']             = array();
 						$posted_data['_data']['desc']     = $get_step->get_entity_description( $inherit_id );
 						$data                             = $get_step->duplicate_step( $funnel_id, $inherit_id, $posted_data );
 
 					} elseif ( $duplicate_id > 0 ) {
 						$posted_data['original_id']     = $duplicate_id;
 						$posted_data['step_id']         = $duplicate_id;
-						$posted_data['_data']           = [];
+						$posted_data['_data']           = array();
 						$posted_data['_data']['title']  = $get_step->get_entity_title( $duplicate_id );
 						$posted_data['_data']['desc']   = $get_step->get_entity_description( $duplicate_id );
 						$posted_data['_data']['status'] = $get_step->get_entity_status( $duplicate_id );
 						$posted_data['_data']['edit']   = $get_step->get_entity_edit_link( $duplicate_id );
 						$posted_data['_data']['view']   = $get_step->get_entity_view_link( $duplicate_id );
 						$data                           = $get_step->duplicate_step( $funnel_id, $duplicate_id, $posted_data );
-
 
 					} else {
 						$posted_data['title'] = $title;
@@ -217,11 +234,11 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 						if ( ! empty( $data ) && $data->id > 0 ) {
 
 							if ( $builder !== '' && $template !== '' ) {
-								$step_args = [
+								$step_args = array(
 									'id'       => $data->id,
 									'builder'  => $builder,
-									'template' => $template
-								];
+									'template' => $template,
+								);
 
 								if ( ! empty( $canvas_data ) ) {
 									$this->import_step( $step_args, $type, $funnel_id, $request );
@@ -250,11 +267,11 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 						foreach ( $steps as $step ) {
 							if ( $data->id === $step['id'] ) {
 								$step_data = $get_step->populate_data_properties( $step, $funnel_id );
-								if ( $duplicate_id > 0 && isset( $step_data['_data'] ) && !isset( $step_data['_data']['view_link'] ) ) {
-									$get_step_data = wffn_rest_api_helpers()->add_step_edit_details( [ $step_data ] );
+								if ( $duplicate_id > 0 && isset( $step_data['_data'] ) && ! isset( $step_data['_data']['view_link'] ) ) {
+									$get_step_data = wffn_rest_api_helpers()->add_step_edit_details( array( $step_data ) );
 									if ( is_array( $get_step_data ) && isset( $get_step_data[0] ) ) {
 										$step_data = $get_step_data[0];
-									}								
+									}
 								}
 								break;
 							}
@@ -271,7 +288,6 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 						$resp['status'] = true;
 					}
-
 				}
 			}
 			$funnel = new WFFN_Funnel( $funnel_id );
@@ -281,7 +297,6 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 			);
 
 			return $resp;
-
 		}
 
 		/**
@@ -293,27 +308,37 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		 * @return array
 		 */
 		public function maybe_canvas_mode( $canvas_data, $new_step, $funnel, $step_object ) {
-			$step_data = [];
+			$step_data = array();
 			if ( ! empty( $canvas_data ) ) {
 				if ( ! empty( $funnel ) ) {
 					$funnel->maybe_update_canvas( $new_step['id'], $canvas_data );
 				}
-				$prepare_data               = [];
-				$prepare_data['steps_list'] = [];
-				$prepare_data['groups']     = [];
+				$prepare_data               = array();
+				$prepare_data['steps_list'] = array();
+				$prepare_data['groups']     = array();
 				if ( 'wc_upsells' === $new_step['type'] ) {
 					$get_object  = WFFN_Core()->steps->get_integration_object( 'wc_upsells' );
-					$upsell_step = $get_object->populate_data_properties( array( 'type' => 'wc_upsells', 'id' => $new_step['id'] ), 0 );
+					$upsell_step = $get_object->populate_data_properties(
+						array(
+							'type' => 'wc_upsells',
+							'id'   => $new_step['id'],
+						),
+						0
+					);
 
-					$prepare_data['groups'][0]                     = [ 'type' => 'wc_upsells', 'id' => $new_step['id'], 'substeps' => [] ];
+					$prepare_data['groups'][0]                     = array(
+						'type'     => 'wc_upsells',
+						'id'       => $new_step['id'],
+						'substeps' => array(),
+					);
 					$prepare_data['steps_list'][ $new_step['id'] ] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( $upsell_step );
 					if ( isset( $upsell_step['substeps']['offer'] ) ) {
 
 						foreach ( $upsell_step['substeps']['offer'] as $key => $offer ) {
-							$prepare_data['groups'][0]['substeps'][] = [
+							$prepare_data['groups'][0]['substeps'][] = array(
 								'id'   => $offer['id'],
-								'type' => 'offer'
-							];
+								'type' => 'offer',
+							);
 							$offer['type']                           = 'offer';
 
 							$prepare_data['steps_list'][ $offer['id'] ] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( $offer );
@@ -355,7 +380,6 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 							$offer_data['accept'] = $accepted_id;
 							$offer_data['reject'] = $rejected_id;
 
-
 							$prepare_data['steps_list'][ $offer['id'] ] = $offer_data;
 
 						}
@@ -369,19 +393,22 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 				}
 
 				$prepare_data['steps_list'][ $new_step['id'] ] = WFFN_REST_Funnel_Canvas::get_instance()->map_list_step( $new_step );
-				$substeps_final                                = [];
+				$substeps_final                                = array();
 				if ( isset( $step_object['substeps'] ) ) {
 					foreach ( $step_object['substeps'] as $key => $substeps ) {
 						foreach ( $substeps as $substep ) {
-							$substeps_final[] = [
+							$substeps_final[] = array(
 								'id'   => $substep['id'],
-								'type' => $key
-							];
+								'type' => $key,
+							);
 						}
-
 					}
 				}
-				$prepare_data['groups'][0]  = [ 'type' => $new_step['type'], 'id' => $new_step['id'], 'substeps' => $substeps_final ];
+				$prepare_data['groups'][0]  = array(
+					'type'     => $new_step['type'],
+					'id'       => $new_step['id'],
+					'substeps' => $substeps_final,
+				);
 				$prepare_data['steps_list'] = wffn_rest_api_helpers()->add_step_edit_details( $prepare_data['steps_list'] );
 				$prepare_data['steps_list'] = apply_filters( 'wffn_rest_get_funnel_steps', $prepare_data['steps_list'], false );
 
@@ -392,7 +419,6 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		}
 
 		public function import_step( $step_args, $type, $funnel_id, $request ) {
-
 
 			if ( $type === 'landing' ) {
 				return $this->import_lp_template( $step_args );
@@ -422,10 +448,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		}
 
 		public function import_lp_template( $args ) {
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder  = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id       = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -440,10 +466,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 			if ( true === $result['success'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'      => $template,
-					'selected_type' => $builder
-				];
+					'selected_type' => $builder,
+				);
 
 				do_action( 'wffn_design_saved', $id, $builder, 'landing' );
 
@@ -451,7 +477,7 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 				do_action( 'wflp_page_design_updated', $id, $update_design );
 
 				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 			} else {
 				$resp['error'] = $result['error'];
 			}
@@ -460,10 +486,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		}
 
 		public function import_op_template( $args ) {
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder  = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id       = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -478,17 +504,17 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 			if ( true === $result['success'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'      => $template,
-					'selected_type' => $builder
-				];
+					'selected_type' => $builder,
+				);
 				do_action( 'wffn_design_saved', $id, $builder, 'optin' );
 
 				WFOPP_Core()->optin_pages->update_page_design( $id, $update_design );
 				do_action( 'wfop_page_design_updated', $id, $update_design );
 
 				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 			} else {
 				$resp['error'] = $result['error'];
 			}
@@ -497,10 +523,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		}
 
 		public function import_oty_template( $args ) {
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder  = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id       = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -515,17 +541,17 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 			if ( true === $result['success'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'      => $template,
-					'selected_type' => $builder
-				];
+					'selected_type' => $builder,
+				);
 				do_action( 'wffn_design_saved', $id, $builder, 'optin_ty' );
 
 				WFOPP_Core()->optin_ty_pages->update_page_design( $id, $update_design );
 				do_action( 'wfoty_page_design_updated', $id, $update_design );
 
 				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 			} else {
 				$resp['error'] = $result['error'];
 			}
@@ -534,10 +560,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		}
 
 		public function import_ty_template( $args ) {
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder  = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id       = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -552,17 +578,17 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 			if ( true === $result['success'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'      => $template,
-					'selected_type' => $builder
-				];
+					'selected_type' => $builder,
+				);
 				do_action( 'wffn_design_saved', $id, $builder, 'wc_thankyou' );
 
 				WFFN_Core()->thank_you_pages->update_page_design( $id, $update_design );
 				do_action( 'wfty_page_design_updated', $id, $update_design );
 
 				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 			} else {
 				$resp['error'] = $result['error'];
 			}
@@ -572,10 +598,10 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 		public function import_wc_template( $args ) {
 
-			$resp     = [
+			$resp     = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder  = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id       = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -588,34 +614,31 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 				$resp['msg'] = $result['error'];
 			}
 
-
-
 			if ( isset( $result['status'] ) && true === $result['status'] ) {
 
-				$update_design = [
+				$update_design = array(
 					'selected'        => $template,
 					'selected_type'   => $builder,
-					'template_active' => 'yes'
-				];
+					'template_active' => 'yes',
+				);
 
 				WFACP_Common::update_page_design( $id, $update_design );
 
 				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 			} else {
 				$resp['error'] = $result['error'];
 			}
 
 			return $resp;
-
 		}
 
 		public function import_upsell_template( $args ) {
 
-			$resp        = [
+			$resp        = array(
 				'status' => false,
 				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
+			);
 			$builder     = isset( $args['builder'] ) ? sanitize_text_field( $args['builder'] ) : '';
 			$template    = isset( $args['template'] ) ? sanitize_text_field( $args['template'] ) : '';
 			$id          = isset( $args['id'] ) ? sanitize_text_field( $args['id'] ) : '';
@@ -643,25 +666,23 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 					}
 
 					$resp['status'] = true;
-					$resp['msg']    = __( 'Importing of template finished' . __FUNCTION__, 'funnel-builder' );
+					$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
 				}
-
 			}
 
 			return $resp;
-
 		}
 
 
 		public function get_create_steps_collection() {
-			$params                 = array();
-			$params['type']         = array(
+			$params         = array();
+			$params['type'] = array(
 				'description' => __( 'Step type.', 'funnel-builder' ),
 				'type'        => 'string',
 				'required'    => true,
 
 			);
-			$params['title']        = array(
+			$params['title'] = array(
 				'description' => __( 'Step name.', 'funnel-builder' ),
 				'type'        => 'string',
 
@@ -669,7 +690,7 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 			$params['design']       = array(
 				'description' => __( 'Step Design.', 'funnel-builder' ),
 				'type'        => 'string',
-				'default'     => 'scratch'
+				'default'     => 'scratch',
 			);
 			$params['inherit_from'] = array(
 				'description' => __( 'Inherit Step.', 'funnel-builder' ),
@@ -789,11 +810,12 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 		 * @return WP_Error|WP_HTTP_Response|WP_REST_Response
 		 */
 		public function search_entity( WP_REST_Request $request ) {
-			$search     = $request->get_param( 's' );
-			$type       = $request->get_param( 'type' );
-			$is_substep = $request->get_param( 'is_substep' );
-			$funnel_id  = $request->get_param( 'funnel_id' );
-			$funnel_id  = ( empty( $funnel_id ) || 'undefined' === $funnel_id ) ? 0 : $funnel_id;
+			$search            = $request->get_param( 's' );
+			$type              = $request->get_param( 'type' );
+			$is_substep        = $request->get_param( 'is_substep' );
+			$funnel_id         = $request->get_param( 'funnel_id' );
+			$funnel_id         = ( empty( $funnel_id ) || 'undefined' === $funnel_id ) ? 0 : $funnel_id;
+			$checkout_redirect = (bool) $request->get_param( 'checkout_redirect' );
 
 			if ( true === $is_substep ) {
 				if ( 'offer' === $type ) {
@@ -805,11 +827,9 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 					$get_substep = WFFN_Core()->substeps->get_integration_object( $type );
 					$designs     = $get_substep->get_substep_designs( $search, $funnel_id );
 				}
-
-
 			} else {
 				$get_step = WFFN_Core()->steps->get_integration_object( $type );
-				$designs  = $get_step->get_step_designs( $search, $funnel_id );
+				$designs  = $get_step->get_step_designs( $search, $funnel_id, array( 'checkout_redirect' => $checkout_redirect ) );
 			}
 
 			/**
@@ -823,7 +843,6 @@ if ( ! class_exists( 'WFFN_REST_Steps' ) ) {
 
 			return rest_ensure_response( $designs );
 		}
-
 	}
 
 	if ( ! function_exists( 'wffn_rest_steps' ) ) {

@@ -65,12 +65,12 @@ class ImageSvg extends Image
             while (($line = fgets($resource, 4096)) !== false) {
                 if ($result) {
                     $result .= $line;
-                } elseif (str_contains($line, '<svg')) {
-                    $result = $line;
+                } else {
+                    $result = stristr($line, '<svg');
                 }
 
                 if ($result && str_contains($line, '>')) {
-                    $result = substr($result, 0, strpos($line, '>') - (strlen($line) - 1));
+                    $result = strstr($result, '>', true);
                     break;
                 }
             }

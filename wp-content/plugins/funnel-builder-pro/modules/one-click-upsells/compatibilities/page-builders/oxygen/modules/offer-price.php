@@ -1,11 +1,11 @@
 <?php
 if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 	class WFOCU_Oxy_Offer_Price extends WFOCU_Oxy_HTML_BLOCK {
-		public $slug = 'wfocu_offer_price';
+		public $slug  = 'wfocu_offer_price';
 		protected $id = 'wfocu_offer_price';
 
 		public function __construct() {
-			$this->name = __( "WF Offer Price" );
+			$this->name = __( 'WF Offer Price' );
 
 			parent::__construct();
 		}
@@ -33,33 +33,30 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 			$this->add_text_alignments( $tab_id, 'text_align', '.wfocu-price-wrapper' );
 			$this->add_margin( $tab_id, 'sale_price_margin', '.wfocu-price-wrapper:not(.wfocu-price_block-yes)', __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ) );
 
-
 			$this->style_field( $subscriptions );
 		}
 
 		public function style_field( $subscriptions ) {
 
-			//Regular Price Start
+			// Regular Price Start
 			$r_tab_id = $this->add_tab( __( 'Regular Price', 'woofunnels-upstroke-one-click-upsell' ) );
 
 			$this->add_switcher( $r_tab_id, 'show_reg_price', __( 'Show', 'woofunnels-upstroke-one-click-upsell' ), 'on' );
-			$condition = [ 'show_reg_price' => 'on' ];
+			$condition = array( 'show_reg_price' => 'on' );
 			$this->add_text( $r_tab_id, 'reg_label', __( 'Label', 'woofunnels-upstroke-one-click-upsell' ), '', $condition );
 			$this->add_margin( $r_tab_id, 'reg_label_margin', '.reg_wrapper', __( 'Spacing ', 'woofunnels-upstroke-one-click-upsell' ) );
-
 
 			$this->add_typography( $r_tab_id, 'reg_label_typography', '.wfocu-price-wrapper .wfocu-reg-label', __( 'Label Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_typography( $r_tab_id, 'reg_price_typography', '.wfocu-price-wrapper .wfocu-regular-price *', __( 'Price Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 
-			//Regular Price End
+			// Regular Price End
 
-
-			//Offer Price Start
+			// Offer Price Start
 			$r_tab_id = $this->add_tab( __( 'Offer Price', 'woofunnels-upstroke-one-click-upsell' ) );
 			$this->add_switcher( $r_tab_id, 'show_offer_price', __( 'Show', 'woofunnels-upstroke-one-click-upsell' ), 'on' );
 			$this->add_switcher( $r_tab_id, 'offer_slider_enabled', __( 'Stacked', 'woofunnels-upstroke-one-click-upsell' ), 'on' );
 
-			$condition = [ 'show_offer_price' => 'on', ];
+			$condition = array( 'show_offer_price' => 'on' );
 
 			$this->add_text( $r_tab_id, 'offer_label', __( 'Label', 'woofunnels-upstroke-one-click-upsell' ), '', $condition );
 			$this->add_margin( $r_tab_id, 'offer_label_margin', '.offer_wrapper', __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ) );
@@ -71,7 +68,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 
 				$r_tab_id = $this->add_tab( __( 'Signup Fee', 'woofunnels-upstroke-one-click-upsell' ) );
 				$this->add_switcher( $r_tab_id, 'show_signup_fee', __( 'Show', 'woofunnels-upstroke-one-click-upsell' ), 'off', '' );
-				$condition = [ 'show_signup_fee' => 'on' ];
+				$condition = array( 'show_signup_fee' => 'on' );
 
 				$this->add_text( $r_tab_id, 'signup_label', __( 'Label', 'woofunnels-upstroke-one-click-upsell' ), '', $condition );
 				$this->add_margin( $r_tab_id, 'signup_label_margin', '.signup_details_wrap', __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ) );
@@ -80,7 +77,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 
 				$r_tab_id = $this->add_tab( __( 'Recurring Price', 'woofunnels-upstroke-one-click-upsell' ) );
 				$this->add_switcher( $r_tab_id, 'show_rec_price', __( 'Show', 'woofunnels-upstroke-one-click-upsell' ), 'on', '' );
-				$condition = [ 'show_rec_price' => 'on' ];
+				$condition = array( 'show_rec_price' => 'on' );
 				$this->add_text( $r_tab_id, 'recurring_label', __( 'Label', 'woofunnels-upstroke-one-click-upsell' ), '', $condition );
 				$this->add_margin( $r_tab_id, 'rec_label_margin', '.recurring_details_wrap', __( 'Spacing', 'woofunnels-upstroke-one-click-upsell' ) );
 
@@ -88,12 +85,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 				$this->add_typography( $r_tab_id, 'rec_price_typography', '.wfocu-price-wrapper .recurring_details_wrap .subscription-details, .wfocu-price-wrapper .recurring_details_wrap .amount, .wfocu-price-wrapper .recurring_details_wrap .amount span', __( 'Price Typography', 'woofunnels-upstroke-one-click-upsell' ) );
 			}
 
-			$key       = "wfocu_offer_price";
+			$key       = 'wfocu_offer_price';
 			$border_id = $this->add_tab( __( 'Border', 'woofunnels-upstroke-one-click-upsell' ) );
 
 			$this->add_border( $border_id, $key . '_border', '.wfocu-price-wrapper ' );
 			$this->add_box_shadow( $border_id, $key . '_box_shadow', '.wfocu-price-wrapper ' );
-
 		}
 
 
@@ -112,13 +108,14 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 			echo '</style>';
 
 			?>
-            <div class="wfocu_offer_price">
+			<div class="wfocu_offer_price">
 				<?php
-				if ( '' !== $product_key ) { ?>
+				if ( '' !== $product_key ) {
+					?>
 
-                    <div class="wfocu-element wfocu-element wfocu-widget wfocu-widget-wfocu_price">
-                        <div class="wfocu-widget-container">
-                            <div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
+					<div class="wfocu-element wfocu-element wfocu-widget wfocu-widget-wfocu_price">
+						<div class="wfocu-widget-container">
+							<div class="wfocu-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 								<?php
 
 								if ( $product instanceof WC_Product ) {
@@ -131,57 +128,59 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
 									$reg_label   = ( isset( $settings['reg_label'] ) && ! empty( $settings['reg_label'] ) ) ? '<span class="wfocu-reg-label">' . $settings['reg_label'] . '</span>' : '';
 									$offer_label = ( isset( $settings['offer_label'] ) && ! empty( $settings['offer_label'] ) ) ? '<span class="wfocu-offer-label">' . $settings['offer_label'] . '</span>' : '';
 
-									$price_output = '';
+									$enable_dynamic_tax = WFOCU_Core()->data->is_dynamic_tax_enabled();
+									$show_tax_price     = WFOCU_Core()->funnels->show_prices_including_tax();
+									$is_preview         = ( isset( WFOCU_Core()->public ) && method_exists( WFOCU_Core()->public, 'if_is_preview' ) ) ? WFOCU_Core()->public->if_is_preview() : false;
+									$shimmer_class      = ( $enable_dynamic_tax && $show_tax_price && ! $is_preview ) ? ' wfocu-price-shimmer' : '';
+									$price_output       = '';
 									if ( round( $sale_price_raw, 2 ) !== round( $regular_price_raw, 2 ) ) {
 										if ( isset( $settings['show_reg_price'] ) && 'on' === $settings['show_reg_price'] ) {
 
 											$price_output .= '<span class="reg_wrapper">' . $reg_label . '<span class="wfocu-regular-price"><strike>' . $regular_price . '</strike></span></span>';
 										}
 										if ( isset( $settings['show_offer_price'] ) && 'on' === $settings['show_offer_price'] ) {
-											$price_output .= '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>';
+											$price_output .= '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>';
 										}
+									} elseif ( 'variable' === $product->get_type() ) {
+
+											$price_output .= sprintf( '<span class="wfocu-regular-price"><strike><span class="wfocu_variable_price_regular" style="display: none;" data-key="%s"></span></strike></span>', $product_key );
+											$price_output .= $sale_price ? '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
 									} else {
 
-										if ( 'variable' === $product->get_type() ) {
-											$price_output .= sprintf( '<span class="wfocu-regular-price"><strike><span class="wfocu_variable_price_regular" style="display: none;" data-key="%s"></span></strike></span>', $product_key );
-											$price_output .= $sale_price ? '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
-										} else {
-
-											$price_output .= $regular_price ? '<span class="reg_wrapper">' . $reg_label . '<span class="wfocu-regular-price">' . $regular_price . '</span></span>' : '';
-											$price_output .= $sale_price ? '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
-										}
+										$price_output .= $regular_price ? '<span class="reg_wrapper">' . $reg_label . '<span class="wfocu-regular-price">' . $regular_price . '</span></span>' : '';
+										$price_output .= $sale_price ? '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
 									}
 
 									echo $price_output;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 									if ( isset( $settings['show_signup_fee'] ) && 'on' === $settings['show_signup_fee'] ) {
 										$signup_label = isset( $settings['signup_label'] ) ? $settings['signup_label'] : '';
-										echo WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label="' . $signup_label . '"}}' );
+										echo WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label="' . $signup_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Merge tag output is pre-sanitized
 									}
 
 									if ( isset( $settings['show_rec_price'] ) && 'on' === $settings['show_rec_price'] ) {
 										$recurring_label = isset( $settings['recurring_label'] ) ? $settings['recurring_label'] : '';
-										echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' );
+										echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Merge tag output is pre-sanitized
 									}
 								}
 
 								?>
 
-                            </div>
+							</div>
 
-                            <div class="jdsh"></div>
-                        </div>
-                    </div>
+							<div class="jdsh"></div>
+						</div>
+					</div>
 					<?php
 				}
 				?>
-            </div>
+			</div>
 			<?php
 		}
 
 		public function defaultCSS() {
 
-			$defaultCSS = "
+			$defaultCSS = '
 			.wfocu-price-wrapper .recurring_details_wrap .subscription-details,
 			.wfocu-price-wrapper .recurring_details_wrap .amount,
 			.wfocu-price-wrapper .recurring_details_wrap .amount span,
@@ -267,13 +266,11 @@ if ( ! class_exists( 'WFOCU_Oxy_Offer_Price' ) ) {
     			margin-right: 5px;
 			}
 
-		";
+		';
 
 			return $defaultCSS;
 		}
-
-
 	}
 
-	return new WFOCU_Oxy_Offer_Price;
+	return new WFOCU_Oxy_Offer_Price();
 }

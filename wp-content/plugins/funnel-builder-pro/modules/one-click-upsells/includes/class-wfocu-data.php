@@ -6,21 +6,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WFOCU_Data' ) ) {
 	/**
 	 * Class WFOCU_Data
+	 *
 	 * @package UpStroke
 	 * @author WooFunnels
 	 */
 	#[AllowDynamicProperties]
 	class WFOCU_Data extends WFOCU_Session_Handler {
 
-		private static $ins = null;
-		protected $cache = array();
-		private $page_id = false;
-		private $page_link = false;
-		private $order_id = false;
-		private $order = false;
-		private $page_layout = false;
+		private static $ins       = null;
+		protected $cache          = array();
+		private $page_id          = false;
+		private $page_link        = false;
+		private $order_id         = false;
+		private $order            = false;
+		private $page_layout      = false;
 		private $page_layout_info = false;
-		private $options = null;
+		private $options          = null;
 
 		public function __construct() {
 			add_action( 'init', array( $this, 'setup_options' ), 26 );
@@ -44,7 +45,7 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 
 		public static function get_instance() {
 			if ( self::$ins === null ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -54,7 +55,7 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 		 * This method try to sets up the funnel by firing methods for rule matching and behaves as controller function between database and logical operation
 		 * Function differs its behavior based on the env provided, as cart is the one with standard matching, whereas order is placed for some special rules to take care of.
 		 *
-		 * @param bool $skip_rules
+		 * @param bool   $skip_rules
 		 * @param string $env
 		 */
 		public function setup_funnel( $skip_rules = false, $env = 'cart' ) {
@@ -91,7 +92,7 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			 */
 			$get_the_decided_funnel = WFOCU_Core()->rules->find_match();
 
-			//if we have the funnel
+			// if we have the funnel
 			if ( $get_the_decided_funnel ) {
 
 				$get_funnel        = apply_filters( 'wfocu_front_funnel_filter', $get_the_decided_funnel );
@@ -125,7 +126,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			}
 
 			return;
-
 		}
 
 		public function get_funnel_id() {
@@ -145,7 +145,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			}
 
 			return $default;
-
 		}
 
 		public function get_page_link() {
@@ -173,7 +172,7 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			}
 
 			if ( $order_id === 0 ) {
-				$order_id = ( isset( $_GET['order_id'] ) && ( $_GET['order_id'] !== '' ) ) ? wc_clean( $_GET['order_id'] ) : 0;  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$order_id = ( isset( $_GET['order_id'] ) && ( $_GET['order_id'] !== '' ) ) ? absint( wp_unslash( $_GET['order_id'] ) ) : 0;  // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for order_id parameter
 			}
 			if ( $order_id !== 0 ) {
 				$this->order_id = $order_id;
@@ -213,7 +212,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 		public function update_options( $data ) {
 
 			update_option( 'wfocu_global_settings', $data );
-
 		}
 
 		public function setup_options() {
@@ -229,50 +227,72 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 		public function get_options_defaults( $existing ) {
 			$get_all_supported_gateways = WFOCU_Core()->gateways->get_supported_gateways();
 
-			return apply_filters( 'wfocu_common_default_options', array(
+			return apply_filters(
+				'wfocu_common_default_options',
+				array(
 
-				'gateways'                                => array_keys( $get_all_supported_gateways ),
-				'gateway_test'                            => array(),
-				'paypal_ref_trans'                        => 'no',
-				'sepa_gateway_trans'                      => 'no',
-				'scripts'                                 => '',
-				'scripts_head'                            => '',
-				'enable_log'                              => true,
-				'ttl_funnel'                              => '15', //in minutes
-				'send_processing_mail_on'                 => 'end', //start or end
-				'send_processing_mail_on_no_batch'        => 'start', //start or end
-				'send_processing_mail_on_no_batch_cancel' => 'end', //start or end
-				'primary_order_status_title'              => _x( 'Primary Order Accepted', 'Order status', 'woofunnels-upstroke-one-click-upsell' ),
-				'flat_shipping_label'                     => __( 'Flat Rate', 'woofunnels-upstroke-one-click-upsell' ),
-				'create_new_order_status_fail'            => 'wc-pending',
-				'order_copy_meta_keys'                    => '',
-				'offer_header_text'                       => __( 'Confirm Your upgrade', 'woofunnels-upstroke-one-click-upsell' ),
-				'offer_yes_btn_text'                      => __( 'Yes! I accept', 'woofunnels-upstroke-one-click-upsell' ),
-				'offer_skip_link_text'                    => __( 'No, I do not want this offer', 'woofunnels-upstroke-one-click-upsell' ),
-				'cart_opener_text'                        => __( 'Confirm Your Order', 'woofunnels-upstroke-one-click-upsell' ),
-				'offer_yes_btn_bg_cl'                     => '#70dc1d',
-				'offer_yes_btn_sh_cl'                     => '#00A300',
-				'offer_yes_btn_txt_cl'                    => '#ffffff',
-				'offer_yes_btn_bg_cl_h'                   => '#00A300',
-				'offer_yes_btn_sh_cl_h'                   => '#00A300',
-				'offer_yes_btn_txt_cl_h'                  => '#ffffff',
-				'offer_no_btn_txt_cl'                     => '#414349',
-				'offer_no_btn_txt_cl_h'                   => '#414349',
-				'cart_opener_text_color'                  => '#ffffff',
-				'cart_opener_background_color'            => '#70dc1d',
-				'treat_variable_as_simple'                => true,
-				'enable_noconflict_mode'                  => false,
+					'gateways'                         => array_keys( $get_all_supported_gateways ),
+					'gateway_test'                     => array(),
+					'paypal_ref_trans'                 => 'no',
+					'sepa_gateway_trans'               => 'no',
+					'scripts'                          => '',
+					'scripts_head'                     => '',
+					'enable_log'                       => true,
+					'ttl_funnel'                       => '15', // in minutes
+					'send_processing_mail_on'          => 'end', // start or end
+					'send_processing_mail_on_no_batch' => 'start', // start or end
+					'send_processing_mail_on_no_batch_cancel' => 'end', // start or end
+					'primary_order_status_title'       => _x( 'Primary Order Accepted', 'Order status', 'woofunnels-upstroke-one-click-upsell' ),
+					'flat_shipping_label'              => __( 'Flat Rate', 'woofunnels-upstroke-one-click-upsell' ),
+					'create_new_order_status_fail'     => 'wc-pending',
+					'order_copy_meta_keys'             => '',
+					'offer_header_text'                => __( 'Confirm Your upgrade', 'woofunnels-upstroke-one-click-upsell' ),
+					'offer_yes_btn_text'               => __( 'Yes! I accept', 'woofunnels-upstroke-one-click-upsell' ),
+					'offer_skip_link_text'             => __( 'No, I do not want this offer', 'woofunnels-upstroke-one-click-upsell' ),
+					'cart_opener_text'                 => __( 'Confirm Your Order', 'woofunnels-upstroke-one-click-upsell' ),
+					'offer_yes_btn_bg_cl'              => '#70dc1d',
+					'offer_yes_btn_sh_cl'              => '#00A300',
+					'offer_yes_btn_txt_cl'             => '#ffffff',
+					'offer_yes_btn_bg_cl_h'            => '#00A300',
+					'offer_yes_btn_sh_cl_h'            => '#00A300',
+					'offer_yes_btn_txt_cl_h'           => '#ffffff',
+					'offer_no_btn_txt_cl'              => '#414349',
+					'offer_no_btn_txt_cl_h'            => '#414349',
+					'cart_opener_text_color'           => '#ffffff',
+					'cart_opener_background_color'     => '#70dc1d',
+					'treat_variable_as_simple'         => true,
+					'enable_noconflict_mode'           => false,
 
-			), $existing );
+				),
+				$existing
+			);
 		}
 
 		public function get_option( $key = '' ) {
+
+			if ( null === $this->options ) {
+				$this->setup_options();
+			}
 
 			if ( $key !== '' ) {
 				return ( isset( $this->options[ $key ] ) ? $this->options[ $key ] : '' );
 			}
 
 			return $this->options;
+		}
+
+		/**
+		 * Check if dynamic tax calculation is enabled globally.
+		 *
+		 * @return bool True if dynamic tax is enabled, false otherwise.
+		 */
+		public function is_dynamic_tax_enabled() {
+			if ( ! class_exists( 'WFFN_Core' ) && ! class_exists( 'WFFN_Pro_Core' ) ) {
+				return false;
+			}
+			$enable_dynamic_tax = $this->get_option( 'enable_dynamic_tax' );
+
+			return ( ! empty( $enable_dynamic_tax ) && is_array( $enable_dynamic_tax ) && in_array( 'true', $enable_dynamic_tax, true ) );
 		}
 
 		public function setup_options_offer_settings() {
@@ -310,7 +330,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 
 		public function is_funnel_exists() {
 			return $this->get_funnel_id();
-
 		}
 
 		/**
@@ -332,7 +351,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			$get_order = $this->get( 'porder', false, '_orders' );
 
 			return $get_order;
-
 		}
 
 		/**
@@ -343,7 +361,6 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			$get_offer = $this->get( 'current_offer', false );
 
 			return $get_offer;
-
 		}
 
 		public function get_options_defaults_offer_confirmation() {
@@ -387,14 +404,10 @@ if ( ! class_exists( 'WFOCU_Data' ) ) {
 			$get_order = $this->get( 'porder', false, '_orders' );
 
 			return $get_order;
-
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Data' ) ) {
 		WFOCU_Core::register( 'data', 'WFOCU_Data' );
 	}
-
 }

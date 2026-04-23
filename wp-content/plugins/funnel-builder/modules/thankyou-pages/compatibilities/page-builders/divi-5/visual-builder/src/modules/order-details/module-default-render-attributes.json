@@ -1,0 +1,155 @@
+{
+  "order_details_heading": {
+    "innerContent": { "desktop": { "value": "Order Details" } }
+  },
+  "order_subscription_heading": {
+    "innerContent": { "desktop": { "value": "Subscription" } }
+  },
+  "order_download_heading": {
+    "innerContent": { "desktop": { "value": "Downloads" } }
+  },
+  "order_downloads_btn_text": {
+    "innerContent": { "desktop": { "value": "Download" } }
+  },
+  "order_details_img": {
+    "innerContent": { "desktop": { "value": "on" } }
+  },
+  "order_downloads_file": {
+    "innerContent": { "desktop": { "value": "off" } }
+  },
+  "order_downloads_file_expiry": {
+    "innerContent": { "desktop": { "value": "off" } }
+  },
+  "wfty_order_details_heading_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "24px",
+              "lineHeight": "1.5em",
+              "color": "#000000",
+              "textAlign": "left"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_product_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "15px",
+              "lineHeight": "1.5em",
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_subtotal_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "15px",
+              "lineHeight": "1.5em",
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_total_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "20px",
+              "lineHeight": "1.5em",
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_variation_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "12px",
+              "lineHeight": "1.5em",
+              "color": "#000000"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_divider_color": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_subscription_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "15px",
+              "lineHeight": "1.5em",
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_download_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "15px",
+              "lineHeight": "1.5em",
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfty_order_details_download_text_color": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "color": "#565656"
+            }
+          }
+        }
+      }
+    }
+  }
+}

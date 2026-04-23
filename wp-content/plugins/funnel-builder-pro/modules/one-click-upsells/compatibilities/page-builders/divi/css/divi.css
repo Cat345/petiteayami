@@ -59,8 +59,34 @@ body #et-boc .et-l .wfocu-widget-container .alignright {
     text-align: left;
 }
 
+/* Variation Selector Stacked/Inline Layout Styles - Similar to Quantity Selector pattern */
+/* When stacked toggle is ON - block layout (label above dropdown) */
+.wfocu_variation_selector_form.wfocu-variation-block .variations td,
+.wfocu-variation-block .wfocu_variation_selector_form .variations td,
+.wfocu-variation-block .variations td {
+    display: block !important;
+}
+
+.wfocu_variation_selector_form.wfocu-variation-block .variations td label,
+.wfocu_variation_selector_form.wfocu-variation-block .variations td select option,
+.wfocu-variation-block .wfocu_variation_selector_form .variations td label,
+.wfocu-variation-block .wfocu_variation_selector_form .variations td select option,
+.wfocu-variation-block .variations td label,
+.wfocu-variation-block .variations td select option {
+    font-weight: normal !important;
+}
+
+/* When stacked toggle is OFF - inline layout (label beside dropdown) */
+.wfocu_variation_selector_form.wfocu-variation-inline .variations td,
+.wfocu-variation-inline .wfocu_variation_selector_form .variations td,
+.wfocu-variation-inline .variations td {
+    display: table-cell !important;
+}
+
+/* Quantity Selector Styles - Works for both Divi 4 and Divi 5 */
 .wfocu-prod-qty-wrapper {
     display: inline-block;
+    margin-bottom: 1.2em;
 }
 
 .wfocu-prod-qty-wrapper > label {
@@ -75,54 +101,68 @@ body #et-boc .et-l .wfocu-widget-container .alignright {
     padding-bottom: 0;
 }
 
-.wfocu-prod-qty-wrapper label {
-    font-weight: 300;
-    line-height: 1;
-    padding-bottom: 8px;
-    display: block;
-    background: transparent;
-    font-weight: normal;
+/* Label styles - ensure they apply on frontend */
+.wfocu-prod-qty-wrapper label,
+body .wfocu-prod-qty-wrapper label,
+.et-db #et-boc .et-l .wfocu-prod-qty-wrapper label {
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    padding-bottom: 8px !important;
+    display: block !important;
+    background: transparent !important;
+    font-weight: normal !important;
 }
 
-.wfocu-prod-qty-wrapper .wfocu-select-qty-input {
-    color: #8d8e92;
-    background-color: #ffffff;
-    width: 250px;
-    text-align: left;
-    display: inline-block;
-    height: auto;
+/* Dropdown/Select input styles - ensure they apply on frontend */
+.wfocu-prod-qty-wrapper .wfocu-select-qty-input,
+body .wfocu-prod-qty-wrapper .wfocu-select-qty-input,
+.et-db #et-boc .et-l .wfocu-prod-qty-wrapper .wfocu-select-qty-input {
+    color: #8d8e92 !important;
+    background-color: #ffffff !important;
+    width: 250px !important;
+    text-align: left !important;
+    display: inline-block !important;
+    height: auto !important;
+    padding: 8px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 0 !important;
+    -webkit-appearance: menulist !important;
+    -moz-appearance: menulist !important;
+    appearance: menulist !important;
 }
 
-.wfocu-prod-qty-wrapper .wfocu-select-qty-input option {
-    font-weight: 300;
-    color: #333;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-
-}
-
-.wfocu-prod-qty-wrapper {
-    margin-bottom: 1.2em;
+.wfocu-prod-qty-wrapper .wfocu-select-qty-input option,
+body .wfocu-prod-qty-wrapper .wfocu-select-qty-input option {
+    font-weight: 300 !important;
+    color: #333 !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
 }
 
 .wfocu-product-attr-wrapper {
     display: inline-block;
 }
 
-select {
-    padding: 8px;
-    height: auto;
-    font-size: 14px;
-    line-height: 1.5;
+/* Generic select styles - ensure they apply */
+select.wfocu-select-qty-input,
+.wfocu-prod-qty-wrapper select,
+body .wfocu-prod-qty-wrapper select {
+    padding: 8px !important;
+    height: auto !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
 }
 
 table.variations td label {
     font-weight: normal;
 }
 
-.wfocu-prod-qty-wrapper .wfocu-select-wrapper select {
-    width: 100%;
+.wfocu-prod-qty-wrapper .wfocu-select-wrapper select,
+body .wfocu-prod-qty-wrapper .wfocu-select-wrapper select {
+    width: 100% !important;
 }
 
 .wfocu-product-attr-wrapper select {
@@ -162,7 +202,7 @@ table.variations td label {
 
 body.et-db #et-boc .et-l .et_pb_module .wfocu-button-wrapper a {
     display: inline-block;
-    padding-bottom: 0;
+
 }
 
 body.et-db #et-boc .et-l .et_pb_module .wfocu-button-wrapper a:not(.wfocu-accept-button-link) {

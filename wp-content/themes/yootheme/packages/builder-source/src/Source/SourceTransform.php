@@ -45,7 +45,7 @@ class SourceTransform
      *
      * @param array<string, mixed> $params
      *
-     * @return bool|void
+     * @return bool|null
      */
     public function prerender(object $node, array &$params)
     {
@@ -54,13 +54,13 @@ class SourceTransform
         }
 
         if (empty($node->source->query->name)) {
-            return;
+            return null;
         }
 
         if ($node->source->query->name === SourceQuery::PARENT) {
             // Ignore if no field is mapped
             if (empty($node->source->props) && empty($node->source->children)) {
-                return;
+                return null;
             }
 
             return $this->resolveSource($node, $params);
@@ -70,6 +70,7 @@ class SourceTransform
             $params['data'] = $result['data'] ?? null;
             return $this->resolveSource($node, $params);
         }
+        return null;
     }
 
     /**

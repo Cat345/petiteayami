@@ -124,7 +124,6 @@ class CustomMenuItemQueryType
                                     'Only load menu items from the selected menu heading.',
                                 ),
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Include heading itself'),
                             ],
                             'ids' => [
@@ -188,7 +187,7 @@ class CustomMenuItemQueryType
                 if (empty($found)) {
                     if ((string) $item->ID === $args['heading']) {
                         $found = $item;
-                        if (!empty($args['include_heading'])) {
+                        if ($args['include_heading']) {
                             $result[] = $item;
                         }
                     }

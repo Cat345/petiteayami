@@ -86,7 +86,7 @@ return [
                 'Hyphen' => 'hyphen',
                 'Image Bullet' => 'bullet',
             ],
-            'enable' => 'list_type == \'vertical\'',
+            'enable' => "list_type == 'vertical'",
         ],
         'list_marker_color' => [
             'label' => 'Marker Color',
@@ -99,7 +99,7 @@ return [
                 'Primary' => 'primary',
                 'Secondary' => 'secondary',
             ],
-            'enable' => 'list_type == \'vertical\' && list_marker != \'bullet\'',
+            'enable' => "list_type == 'vertical' && list_marker != 'bullet'",
         ],
         'list_style' => [
             'label' => 'Style',
@@ -110,7 +110,7 @@ return [
                 'Divider' => 'divider',
                 'Striped' => 'striped',
             ],
-            'enable' => 'list_type == \'vertical\'',
+            'enable' => "list_type == 'vertical'",
         ],
         'list_size' => [
             'label' => 'Size',
@@ -121,12 +121,12 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'list_type == \'vertical\'',
+            'enable' => "list_type == 'vertical'",
         ],
         'list_horizontal_separator' => [
             'label' => 'Separator',
             'description' => 'Set the separator between list items.',
-            'enable' => 'list_type == \'horizontal\'',
+            'enable' => "list_type == 'horizontal'",
         ],
         'column' => [
             'label' => 'Columns',
@@ -162,18 +162,18 @@ return [
         ],
         'list_element' => [
             'label' => 'HTML Element',
-            'description' => 'Set whether it\'s an ordered or unordered list.',
+            'description' => "Set whether it's an ordered or unordered list.",
             'type' => 'select',
             'options' => [
                 'ul' => 'ul',
                 'ol' => 'ol',
             ],
-            'enable' => 'list_type == \'vertical\'',
+            'enable' => "list_type == 'vertical'",
         ],
         'html_element' => [
             'type' => 'checkbox',
             'text' => 'Wrap with nav element',
-            'enable' => 'list_type == \'vertical\'',
+            'enable' => "list_type == 'vertical'",
         ],
         'content_style' => [
             'label' => 'Style',
@@ -282,7 +282,7 @@ return [
         ],
         'link_style' => [
             'label' => 'Style',
-            'description' => 'This option doesn\'t apply unless a URL has been added to the item.',
+            'description' => "This option doesn't apply unless a URL has been added to the item.",
             'type' => 'select',
             'options' => [
                 'None' => '',

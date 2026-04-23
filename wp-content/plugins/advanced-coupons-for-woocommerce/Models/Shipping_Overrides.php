@@ -81,6 +81,12 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
         $overrides = $coupon->get_advanced_prop( 'shipping_overrides', array() );
         $discounts = array();
 
+        // For backward compatibility, if enable_shipping_overrides is not set but has data, consider it enabled.
+        $enable_state = $coupon->get_advanced_prop( 'enable_shipping_overrides' );
+        if ( 'no' === $enable_state || ( '' === $enable_state && empty( $overrides ) ) ) {
+            return false;
+        }
+
         if ( ! is_array( $overrides ) || empty( $overrides ) ) {
             return false;
         }
@@ -185,8 +191,9 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
     /**
      * Calculate the shipping cost for a specific shipping class in the cart.
      *
-     * This function loops through the cart items and returns the `class_cost_{term_id}`
-     * value from the shipping method settings if a matching shipping class is found.
+     * This function loops through the cart items and calculates the total cost
+     * for products in the specified shipping class, evaluating any cost formulas
+     * with [qty] placeholders.
      *
      * @since 4.0.4
      *
@@ -196,28 +203,45 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
      * @return float The shipping cost for the specified shipping class.
      */
     private function _get_shipping_class_total_cost( $term_id, $shipping_rate ) {
-        $cost = 0;
+        $settings = get_option( 'woocommerce_' . $shipping_rate->get_method_id() . '_' . $shipping_rate->get_instance_id() . '_settings' );
+        $key      = 'class_cost_' . $term_id;
 
+        // Return 0 if no settings found for this shipping class.
+        if ( ! isset( $settings[ $key ] ) || '' === $settings[ $key ] ) {
+            return 0;
+        }
+
+        $cost_formula = $settings[ $key ];
+        $qty          = 0;
+
+        // Calculate total quantity for this shipping class.
         foreach ( \WC()->cart->get_cart() as $cart_item ) {
-            $product_id        = $cart_item['product_id'];
-            $product           = wc_get_product( $product_id );
+            $product = $cart_item['data'];
+
+            if ( ! $product instanceof \WC_Product ) {
+                continue;
+            }
+
             $shipping_class_id = $product->get_shipping_class_id();
 
             if ( $term_id === $shipping_class_id ) {
-                $settings = get_option( 'woocommerce_' . $shipping_rate->get_method_id() . '_' . $shipping_rate->get_instance_id() . '_settings' );
-                $key      = 'class_cost_' . $term_id;
-
-                if ( isset( $settings[ $key ] ) ) {
-                    $cost = floatval( $settings[ $key ] );
-                }
+                $qty += $cart_item['quantity'];
             }
         }
+
+        // Replace [qty] placeholder and evaluate using WC's built-in math evaluator.
+        include_once \WC()->plugin_path() . '/includes/libraries/class-wc-eval-math.php';
+
+        $sum  = str_replace( '[qty]', (string) $qty, $cost_formula );
+        $sum  = preg_replace( '/\s+/', '', $sum );
+        $sum  = rtrim( ltrim( $sum, "\t\n\r\0\x0B+*/" ), "\t\n\r\0\x0B+-*/" );
+        $cost = $sum ? (float) \WC_Eval_Math::evaluate( $sum ) : 0;
 
         return $cost;
     }
 
     /**
-     * Calculatet the discounts based on the valid overrides detected in the cart.
+     * Calculate the discounts based on the valid overrides detected in the cart.
      *
      * @since 3.5.2
      * @access private

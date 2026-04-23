@@ -27,12 +27,12 @@ body #wfacp-e-form .wfacp_cart_empty, body .wfacp_cart_empty {
     border-left: 0;
 }
 
-body #wfacp-e-form .wfacp-success, body #wfacp-e-form .wfacp_coupon_remove_msg, body #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg, body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-message, body #wfacp-e-form .wfacp_success, body #wfacp-e-form .wfacp_sucuss, body #wfacp-e-form .woocommerce-message, body .wfacp-coupon-page .wfacp_coupon_remove_msg, body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg, body .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss) {
+body #wfacp-e-form .wfacp-success, body #wfacp-e-form .wfacp_coupon_remove_msg, body #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg, body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-message, body #wfacp-e-form .wfacp_success, body #wfacp-e-form .wfacp_success, body #wfacp-e-form .woocommerce-message, body .wfacp-coupon-page .wfacp_coupon_remove_msg, body .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg, body .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success) {
     border-right: 2px solid #24ae4e;
     border-left: 0;
 }
 
-body #wfacp-e-form .wfacp-error, body #wfacp-e-form .wfacp_error, body #wfacp-e-form .wfacp_main_form .woocommerce-error, body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-error, body #wfacp-e-form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message, body .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss), body .wfacp_mini_cart_start_h div.woocommerce-error, body .wfacp_mini_cart_start_h ul.woocommerce-error, body .wfacp_product_restore_wrap, body .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message {
+body #wfacp-e-form .wfacp-error, body #wfacp-e-form .wfacp_error, body #wfacp-e-form .wfacp_main_form .woocommerce-error, body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-error, body #wfacp-e-form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message, body .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success), body .wfacp_mini_cart_start_h div.woocommerce-error, body .wfacp_mini_cart_start_h ul.woocommerce-error, body .wfacp_product_restore_wrap, body .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message {
     border-right: 2px solid #d0011b;
     border-left:none;
 

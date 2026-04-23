@@ -254,7 +254,11 @@ if (!\class_exists('FSVendor\WPDesk_Basic_Requirement_Checker')) {
          */
         public static function is_wp_at_least($min_version)
         {
-            return \version_compare(\get_bloginfo('version'), $min_version, '>=');
+            $wp_version = \get_bloginfo('version');
+            if ($wp_version === null || $wp_version === '') {
+                return \false;
+            }
+            return \version_compare($wp_version, $min_version, '>=');
         }
         /**
          * Are plugins loaded so we can check the version
@@ -274,7 +278,10 @@ if (!\class_exists('FSVendor\WPDesk_Basic_Requirement_Checker')) {
          */
         public static function is_wc_at_least($min_version)
         {
-            return \defined('WC_VERSION') && \version_compare(\WC_VERSION, $min_version, '>=');
+            if (!\defined('WC_VERSION') || \WC_VERSION === null || \WC_VERSION === '') {
+                return \false;
+            }
+            return \version_compare(\WC_VERSION, $min_version, '>=');
         }
         /**
          * Checks if ssl version is valid
@@ -299,7 +306,7 @@ if (!\class_exists('FSVendor\WPDesk_Basic_Requirement_Checker')) {
             $required_plugins = $this->retrieve_required_plugins_data();
             if (\count($required_plugins) > 0) {
                 foreach ($required_plugins as $plugin) {
-                    if (isset($plugin['Version']) && \version_compare($plugin['Version'], $plugin[self::PLUGIN_INFO_APPEND_PLUGIN_DATA], '<=')) {
+                    if (isset($plugin['Version']) && $plugin['Version'] !== null && $plugin['Version'] !== '' && \version_compare($plugin['Version'], $plugin[self::PLUGIN_INFO_APPEND_PLUGIN_DATA], '<')) {
                         $notices[] = $this->prepare_notice_message(\sprintf(\__('The &#8220;%1$s&#8221; plugin requires at least %2$s version of %3$s to work correctly. Please update it to its latest release.', 'flexible-shipping'), \esc_html($this->plugin_name), $plugin[self::PLUGIN_INFO_APPEND_PLUGIN_DATA], $plugin['Name']));
                     }
                 }

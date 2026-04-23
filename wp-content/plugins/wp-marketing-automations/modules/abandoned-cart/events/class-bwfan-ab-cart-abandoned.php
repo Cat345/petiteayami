@@ -605,22 +605,37 @@ final class BWFAN_AB_Cart_Abandoned extends BWFAN_Event {
 			return false;
 		}
 
+		$statuses = wc_get_is_paid_statuses();
+		$statuses = ! is_array( $statuses ) ? [ 'wc-processing', 'wc-completed', 'wc-on-hold' ] : array_map( function( $status ) {
+				return 'wc-' . $status;
+			}, $statuses );
+		if( ! in_array( 'wc-on-hold', $statuses, true ) ) {
+			$statuses[] = 'wc-on-hold';
+		}
+
 		$orders = wc_get_orders( array(
 			'billing_email' => $cart_data['email'],
 			'date_after'    => $cart_data['created_time'],
+			'status'       	=> $statuses,
+			'type'         	=> 'shop_order',
 		) );
+
 		if ( empty( $orders ) ) {
 			return true;
 		}
 
-		$orders = array_filter( $orders, function ( $order ) {
-			return ! ( in_array( $order->get_status(), [ 'pending', 'failed', 'cancelled', 'trash' ], true ) );
-		} );
-		if ( empty( $orders ) ) {
-			return true;
+		/** Attribute recovery to the first qualifying order (mirrors V1 validate_event behavior) */
+		$first_order = reset( $orders );
+		if ( $first_order instanceof WC_Order ) {
+			$automation_id = isset( $data['global']['automation_id'] ) ? intval( $data['global']['automation_id'] ) : 0;
+			$first_order->update_meta_data( '_bwfan_ab_cart_recovered_a_id', $automation_id );
+			$first_order->update_meta_data( '_bwfan_recovered_ab_id', $cart_id );
+			$first_order->save_meta_data();
+
+			do_action( 'abandoned_cart_recovered', $cart_data, $first_order->get_id(), $first_order );
 		}
 
-		/** Delete abandoned cart  */
+		/** Delete abandoned cart */
 		BWFAN_Model_Abandonedcarts::delete( $cart_id );
 
 		return false;

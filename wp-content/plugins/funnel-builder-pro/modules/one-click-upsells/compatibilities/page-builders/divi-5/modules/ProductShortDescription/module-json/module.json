@@ -1,0 +1,534 @@
+{
+  "name": "wfocu/product-short-description",
+  "d4Shortcode": "et_wfocu_product_short_desc",
+  "title": "FK Upsell Product Short Description",
+  "titles": "FK Upsell Product Short Descriptions",
+  "category": "module",
+  "attributes": {
+    "module": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "margin": {
+              "desktop": {
+                "value": {
+                  "top": "",
+                  "right": "",
+                  "bottom": "",
+                  "left": ""
+                }
+              }
+            },
+            "padding": {
+              "desktop": {
+                "value": {
+                  "top": "",
+                  "right": "",
+                  "bottom": "",
+                  "left": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "meta": {
+          "adminLabel": {}
+        },
+        "advanced": {
+          "htmlAttributes": {}
+        },
+        "decoration": {
+          "attributes": {},
+          "overflow": {},
+          "disabledOn": {},
+          "transition": {},
+          "position": {},
+          "zIndex": {},
+          "scroll": {},
+          "sticky": {}
+        }
+      }
+    },
+    "selectedProduct": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "0"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProductShortDescription",
+          "priority": 10,
+          "render": true,
+          "attrName": "selectedProduct",
+          "label": "Product",
+          "description": "Select the product for this description",
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": false
+          },
+          "component": {
+            "name": "divi/select",
+            "type": "field",
+            "props": {
+              "options": {
+                "0": "--No Product--"
+              }
+            }
+          }
+        }
+      }
+    },
+    "textAlign": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "left"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentProductShortDescription",
+          "priority": 15,
+          "render": true,
+          "attrName": "textAlign",
+          "label": "Alignment",
+          "description": "Text alignment",
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": true
+          },
+          "component": {
+            "type": "field",
+            "name": "divi/button-options",
+            "props": {
+              "options": {
+                "left": {
+                  "icon": "divi/align-left"
+                },
+                "center": {
+                  "icon": "divi/align-center"
+                },
+                "right": {
+                  "icon": "divi/align-right"
+                }
+              },
+              "showLabel": false
+            }
+          }
+        }
+      }
+    },
+    "description": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-widget-container",
+      "styleProps": {
+        "boxShadow": {
+          "important": true
+        },
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#414349"
+                  }
+                }
+              },
+              "background": {
+                "desktop": {
+                  "value": {
+                    "hex": ""
+                  }
+                }
+              }
+            },
+            "hover": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": ""
+                  }
+                }
+              },
+              "background": {
+                "desktop": {
+                  "value": {
+                    "hex": ""
+                  }
+                }
+              }
+            }
+          },
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "weight": "400"
+                }
+              }
+            }
+          },
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "style": "none",
+                  "width": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "color": {
+                    "hex": "#dddddd"
+                  },
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomRight": "0px",
+                    "bottomLeft": "0px"
+                  }
+                }
+              }
+            }
+          },
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off",
+                  "type": "",
+                  "horizontal": "0px",
+                  "vertical": "0px",
+                  "blur": "0px",
+                  "spread": "0px",
+                  "color": {
+                    "hex": "#00B211"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designTypography",
+              "priority": 10,
+              "render": true,
+              "attrName": "description.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": false,
+                  "showTextAlignment": false,
+                  "fields": {
+                    "textAlign": {
+                      "render": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "colors": {
+            "groupType": "group",
+            "items": {
+              "normal": {
+                "groupType": "group-item",
+                "item": {
+                  "groupSlug": "designTypography",
+                  "priority": 20,
+                  "render": true,
+                  "attrName": "description.decoration.colors.normal",
+                  "label": "Normal",
+                  "component": {
+                    "type": "group",
+                    "name": "divi/colors",
+                    "props": {
+                      "grouped": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_product_short_desc_title_bg_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-widget-container",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "background": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designBackground"
+            }
+          }
+        }
+      }
+    },
+    "wfocu_product_short_desc_border": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-widget-container",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "1px",
+                      "color": "#dddddd"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "border": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designBorder",
+              "component": {
+                "type": "group",
+                "name": "divi/border",
+                "props": {
+                  "grouped": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_product_short_desc_box_shadow": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-widget-container",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off",
+                  "vertical": "0px",
+                  "color": {
+                    "hex": "#000000"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "boxShadow": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designBoxShadow",
+              "component": {
+                "type": "group",
+                "name": "divi/box-shadow",
+                "props": {
+                  "grouped": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_product_short_desc_margin_padding": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-widget-container",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "margin": {
+              "desktop": {
+                "value": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            },
+            "padding": {
+              "desktop": {
+                "value": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "decoration": {
+          "spacing": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designSpacing",
+              "component": {
+                "type": "group",
+                "name": "divi/spacing",
+                "props": {
+                  "grouped": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "customCssFields": {
+    "description": {
+      "subName": "description",
+      "selector": "div{{selector}}",
+      "selectorSuffix": " .wfocu-widget-container"
+    }
+  },
+  "settings": {
+    "design": "auto",
+    "advanced": "auto",
+    "groups": {
+      "contentProductShortDescription": {
+        "panel": "content",
+        "priority": 10,
+        "groupName": "contentProductShortDescription",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Offer Product Description"
+          }
+        }
+      },
+      "designBackground": {
+        "panel": "design",
+        "priority": 50,
+        "groupName": "designBackground",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Background"
+          }
+        }
+      },
+      "designBorder": {
+        "panel": "design",
+        "priority": 60,
+        "groupName": "designBorder",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Border"
+          }
+        }
+      },
+      "designBoxShadow": {
+        "panel": "design",
+        "priority": 70,
+        "groupName": "designBoxShadow",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Box Shadow"
+          }
+        }
+      },
+      "designSpacing": {
+        "panel": "design",
+        "priority": 80,
+        "groupName": "designSpacing",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Spacing"
+          }
+        }
+      },
+      "designTypography": {
+        "panel": "design",
+        "priority": 40,
+        "groupName": "designTypography",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Typography"
+          }
+        }
+      }
+    }
+  }
+}

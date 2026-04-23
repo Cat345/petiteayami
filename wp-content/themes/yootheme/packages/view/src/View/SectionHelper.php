@@ -18,8 +18,6 @@ class SectionHelper
 
     /**
      * Constructor.
-     *
-     * @param View $view
      */
     public function __construct(View $view)
     {

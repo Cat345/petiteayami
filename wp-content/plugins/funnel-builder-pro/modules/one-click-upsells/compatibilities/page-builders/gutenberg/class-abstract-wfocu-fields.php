@@ -1,23 +1,23 @@
 <?php
 if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 	abstract class WFOCU_Guten_Field {
-		protected $media_settings = [];
-		protected $name = '';
-		protected $ajax = false;
-		public $slug = '';
-		protected $id = '';
-		protected $settings = [];
-		protected $post_id = 0;
-		protected $tabs = [];
-		protected $sub_tabs = [];
-		protected $html_fields = [];
-		private $add_tab_number = 1;
-		protected static $product_options = [];
-		protected $style_box = null;
-		protected $props = [];
-		protected $modules_fields = [];
-		protected $style_selector = [];
-		static $css_build = false;
+		protected $media_settings         = array();
+		protected $name                   = '';
+		protected $ajax                   = false;
+		public $slug                      = '';
+		protected $id                     = '';
+		protected $settings               = array();
+		protected $post_id                = 0;
+		protected $tabs                   = array();
+		protected $sub_tabs               = array();
+		protected $html_fields            = array();
+		private $add_tab_number           = 1;
+		protected static $product_options = array();
+		protected $style_box              = null;
+		protected $props                  = array();
+		protected $modules_fields         = array();
+		protected $style_selector         = array();
+		static $css_build                 = false;
 
 		public function name() {
 			return $this->name;
@@ -35,41 +35,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		public function __construct() {
 			$this->setup_widget();
 
-
-			add_shortcode( "{$this->slug}_gutenberg", [ $this, 'shortcode' ] );
-			if ( true === $this->ajax ) {
-				add_action( 'wp_ajax_' . $this->slug . '_gutenberg', [ $this, 'render_ajax' ] );
-
-			}
-			add_action( 'wp_ajax_' . $this->slug . '_save_block_gutenberg', [ $this, 'save_block_data' ] );
-		}
-
-		public function render_ajax() {
-
-			//$this->props = $_REQUEST;
-			$request_body = file_get_contents( 'php://input' );
-			$this->props  = json_decode( $request_body, true );
-			echo $this->html( $this->props );
-			exit;
-		}
-
-		public function save_block_data() {
-			//$this->props = $_REQUEST;
-			$request_body = file_get_contents( 'php://input' );
-
-			$post_id = $_REQUEST['bwf_post_id'];
-			if ( empty( $request_body ) ) {
-				wp_send_json( [ 'status' => 'failed' ] );
-			}
-			$input = json_decode( $request_body, true );
-			if ( ! is_array( $input ) || empty( $input ) ) {
-				wp_send_json( [ 'status' => 'failed' ] );
-			}
-			$block_id = $input['attributes']['widget_block_id'];
-			update_post_meta( $post_id, $block_id . '_data', $input );
-
-			wp_send_json( [ 'status' => 'success' ] );
-
+			add_shortcode( "{$this->slug}_gutenberg", array( $this, 'shortcode' ) );
 		}
 
 		public function shortcode( $attributes ) {
@@ -81,11 +47,12 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				return '';
 			}
 			ob_start();
-			echo "<style>{$block_data['css']}</style>";
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS is stored from trusted admin input in block data
+			echo '<style>' . $block_data['css'] . '</style>';
 			?>
-            <div id="bwf_block-<?php echo $block_data['attributes']['widget_block_id'] ?>" class="bwf_widget_container">
+			<div id="bwf_block-<?php echo esc_attr( $block_data['attributes']['widget_block_id'] ); ?>" class="bwf_widget_container">
 				<?php $this->html( $block_data['attributes'] ); ?>
-            </div>
+			</div>
 			<?php
 			$html = ob_get_clean();
 
@@ -93,12 +60,9 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		}
 
 		public function get_settings() {
-
 		}
 
 		public function init() {
-
-
 		}
 
 		public function get_tabs() {
@@ -107,9 +71,12 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 		public function get_section_fields() {
 			$tabs    = $this->tabs;
-			$section = array_filter( $tabs, function ( $arr ) {
-				return ( $arr['control_type'] == 1 );
-			} );
+			$section = array_filter(
+				$tabs,
+				function ( $arr ) {
+					return ( $arr['control_type'] == 1 );
+				}
+			);
 			$section = array_values( $section );
 
 			return $section;
@@ -117,9 +84,12 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 		public function get_style_fields() {
 			$tabs    = $this->tabs;
-			$section = array_filter( $tabs, function ( $arr ) {
-				return ( $arr['control_type'] == 2 );
-			} );
+			$section = array_filter(
+				$tabs,
+				function ( $arr ) {
+					return ( $arr['control_type'] == 2 );
+				}
+			);
 			$section = array_values( $section );
 
 			return $section;
@@ -131,9 +101,12 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 		public function get_advanced_fields() {
 			$tabs    = $this->tabs;
-			$section = array_filter( $tabs, function ( $arr ) {
-				return ( $arr['control_type'] == 3 );
-			} );
+			$section = array_filter(
+				$tabs,
+				function ( $arr ) {
+					return ( $arr['control_type'] == 3 );
+				}
+			);
 			$section = array_values( $section );
 
 			return $section;
@@ -145,7 +118,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			if ( empty( $tabs ) ) {
 				return new stdClass();
 			}
-			$attributes = [];
+			$attributes = array();
 			foreach ( $tabs as $tab ) {
 				if ( empty( $tab['fields'] ) ) {
 					continue;
@@ -153,24 +126,27 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$fields = $tab['fields'];
 				foreach ( $fields as $field ) {
 
-					if ( in_array( $field['type'], [ 'heading', 'sub_heading' ] ) ) {
+					if ( in_array( $field['type'], array( 'heading', 'sub_heading' ) ) ) {
 						continue;
 					}
 					$key                = $field['slug'];
-					$attributes[ $key ] = [ 'type' => $field['type'], 'default' => $field['default'] ];
+					$attributes[ $key ] = array(
+						'type'    => $field['type'],
+						'default' => $field['default'],
+					);
 				}
-
 			}
 
-			$attributes['widget_block_id'] = [ 'type' => 'text', 'default' => '' ];
-
+			$attributes['widget_block_id'] = array(
+				'type'    => 'text',
+				'default' => '',
+			);
 
 			return $attributes;
-
 		}
 
 
-		protected function add_tab( $title = 'Test', $type = 1, $condition = [] ) {
+		protected function add_tab( $title = 'Test', $type = 1, $condition = array() ) {
 
 			$key                = $this->get_unique_id();
 			$this->tabs[ $key ] = array(
@@ -179,134 +155,133 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				'slug'         => $key,
 				'control_type' => $type,
 				'className'    => 'wfacp_heading_divi_builder',
-				'fields'       => [],
-				'conditions'   => $condition
+				'fields'       => array(),
+				'conditions'   => $condition,
 			);
 
 			return $key;
 		}
 
-		public function add_heading( $tab_key, $heading, $separator = '', $conditions = [] ) {
+		public function add_heading( $tab_key, $heading, $separator = '', $conditions = array() ) {
 			$key = $this->get_unique_id();
 
 			if ( isset( $this->tabs[ $tab_key ] ) ) {
-				$this->tabs[ $tab_key ]['fields'][] = [
+				$this->tabs[ $tab_key ]['fields'][] = array(
 					'key'        => $key,
 					'label'      => $heading,
 					'type'       => 'heading',
 					'className'  => '',
 					'conditions' => $conditions,
-					'default'    => ''
-				];
+					'default'    => '',
+				);
 			}
-
 
 			return $key;
 		}
 
-		public function add_sub_heading( $control, $heading, $conditions = [] ) {
+		public function add_sub_heading( $control, $heading, $conditions = array() ) {
 			$key = $this->get_unique_id();
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'key'        => $key,
 					'label'      => $heading,
 					'type'       => 'sub_heading',
 					'className'  => '',
 					'conditions' => $conditions,
-					'default'    => ''
-				];
+					'default'    => '',
+				);
 			}
-
 
 			return $key;
 		}
 
-		protected function add_switcher( $control, $key, $label = '', $default = true, $conditions = [] ) {
-
+		protected function add_switcher( $control, $key, $label = '', $default = true, $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Enable', 'woofunnels-aero-checkout' );
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'key'        => $key,
 					'label'      => $label,
 					'slug'       => $key,
 					'type'       => 'switch',
-					"options"    => [ 'on' => __( "Yes" ), "off" => __( 'No' ) ],
+					'options'    => array(
+						'on'  => __( 'Yes' ),
+						'off' => __( 'No' ),
+					),
 					'conditions' => $conditions,
-					'default'    => $default
-				];
+					'default'    => $default,
+				);
 			}
 
 			return $key;
 		}
 
-		protected function add_icon( $control, $key, $label = 'Icon', $default = '', $conditions = [], $selector = '' ) {
+		protected function add_icon( $control, $key, $label = 'Icon', $default = '', $conditions = array(), $selector = '' ) {
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'label'      => $label,
 					'type'       => 'icon_finder',
 					'slug'       => $key,
 					'conditions' => $conditions,
-					'default'    => ''
-				];
+					'default'    => '',
+				);
 			}
 
 			return $key;
 		}
 
-		protected function add_select( $control, $key, $label, $options, $default, $conditions = [] ) {
-
+		protected function add_select( $control, $key, $label, $options, $default, $conditions = array() ) {
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'select',
 					'label'      => $label,
 					'slug'       => $key,
 					'options'    => $options,
 					'default'    => $default,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
 			return $key;
 		}
 
-		public function add_text( $control, $key, $label, $default = '', $conditions = [], $description = '', $placeholder = '' ) {
+		public function add_text( $control, $key, $label, $default = '', $conditions = array(), $description = '', $placeholder = '' ) {
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'        => 'textfield',
 					'label'       => $label,
 					'slug'        => $key,
 					'default'     => $default,
 					'conditions'  => $conditions,
 					'placeholder' => $placeholder,
-				];
+				);
 			}
 
 			return $key;
 		}
 
-		protected function add_textArea( $control, $key, $label, $default = '', $conditions = [] ) {
+		protected function add_textArea( $control, $key, $label, $default = '', $conditions = array() ) {
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'textarea',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => $default,
 					'conditions' => $conditions,
-				];
+				);
 			}
 
 			return $key;
 		}
 
-		protected function add_typography( $control, $key, $selectors = '', $label = '', $default = [], $condition = [] ) {
+		protected function add_typography( $control, $key, $selectors = '', $label = '', $default = array(), $condition = array() ) {
 			$color = '';
 			if ( isset( $default['color'] ) ) {
 				$color = $default['color'];
@@ -314,43 +289,43 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			$this->add_color( $control, $key . '_color', $selectors, '', $color, $condition );
 			$this->custom_typography( $control, $key, $selectors, $label, $default, $condition );
 
-			//$this->set_selector( $key, $selectors, 'font_family', $default );
+			// $this->set_selector( $key, $selectors, 'font_family', $default );
 			return $key;
 		}
 
-		protected function add_font( $control, $key, $selectors = '', $label = 'Color', $default = '', $conditions = [] ) {
+		protected function add_font( $control, $key, $selectors = '', $label = 'Color', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Font Family';
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'fonts',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'font_family', $default );
 
 			return $key;
 		}
 
-		protected function add_color( $control, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = [] ) {
+		protected function add_color( $control, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Color';
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'color',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
 			$this->set_selector( $key, $selectors, 'color', $default );
@@ -358,46 +333,45 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_background_color( $control, $key, $selectors = [], $default = '#000000', $label = '', $conditions = [] ) {
+		protected function add_background_color( $control, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Background', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'background',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'background', $default );
 
 			return $key;
 		}
 
-		protected function add_border_color( $control, $key, $selectors = [], $default = '#000000', $label = '', $box_shadow = false, $conditions = [] ) {
+		protected function add_border_color( $control, $key, $selectors = array(), $default = '#000000', $label = '', $box_shadow = false, $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Border Color', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'border_color',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'border_color', $default );
 
 			return $key;
 		}
 
-		public function custom_typography( $tab_id, $key, $selector, $label = '', $default = [], $tab_condition = [] ) {
-
+		public function custom_typography( $tab_id, $key, $selector, $label = '', $default = array(), $tab_condition = array() ) {
 
 			$font_family    = '';
 			$font_size      = '';
@@ -429,7 +403,6 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 					$text_align = $default['text_align'];
 				}
 
-
 				if ( isset( $default['letter_spacing'] ) && ! empty( $default['letter_spacing'] ) ) {
 					$letter_spacing = $default['letter_spacing'];
 				}
@@ -441,24 +414,23 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				if ( isset( $default['decoration'] ) && ! empty( $default['decoration'] ) ) {
 					$decoration = $default['decoration'];
 				}
-
 			}
 			if ( ! empty( $label ) ) {
 				$this->add_heading( $tab_id, $label, '', $tab_condition );
 			}
-			$this->add_font_family( $tab_id, $key . '_font_family', $selector, "", $font_family, $tab_condition );
-			$this->add_font_size( $tab_id, $key . '_font_size', $selector, "", $font_size, $tab_condition );
-			$this->add_font_weight( $tab_id, $key . '_font_weight', $selector, "", $font_weight, $tab_condition );
-			$this->add_text_alignments( $tab_id, $key . '_text_align', $selector, "", $text_align, $tab_condition );
-			$this->add_line_height( $tab_id, $key . '_line_height', $selector, "", $line_height, $tab_condition );
-			$this->add_letter_spacing( $tab_id, $key . '_letter_spacing', $selector, "", $letter_spacing, $tab_condition );
-			$this->add_text_transform( $tab_id, $key . '_transform', $selector, "", $transform, $tab_condition );
-			$this->add_text_decoration( $tab_id, $key . '_decoration', $selector, "", $decoration, $tab_condition );
+			$this->add_font_family( $tab_id, $key . '_font_family', $selector, '', $font_family, $tab_condition );
+			$this->add_font_size( $tab_id, $key . '_font_size', $selector, '', $font_size, $tab_condition );
+			$this->add_font_weight( $tab_id, $key . '_font_weight', $selector, '', $font_weight, $tab_condition );
+			$this->add_text_alignments( $tab_id, $key . '_text_align', $selector, '', $text_align, $tab_condition );
+			$this->add_line_height( $tab_id, $key . '_line_height', $selector, '', $line_height, $tab_condition );
+			$this->add_letter_spacing( $tab_id, $key . '_letter_spacing', $selector, '', $letter_spacing, $tab_condition );
+			$this->add_text_transform( $tab_id, $key . '_transform', $selector, '', $transform, $tab_condition );
+			$this->add_text_decoration( $tab_id, $key . '_decoration', $selector, '', $decoration, $tab_condition );
 		}
 
 		/* Typography Fields  Start*/
 
-		protected function add_font_family( $control, $key, $selectors = '', $label = 'Font Family', $default = 'Inherit', $conditions = [] ) {
+		protected function add_font_family( $control, $key, $selectors = '', $label = 'Font Family', $default = 'Inherit', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Font Family', 'woofunnels-upstroke-one-click-upsell' );
@@ -468,16 +440,15 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$default = 'inherit';
 			}
 
-
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'font_family',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
 			$this->set_selector( $key, $selectors, 'font_family', $default );
@@ -485,7 +456,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_font_size( $control, $key, $selectors = '', $label = 'Color', $default = '', $conditions = [] ) {
+		protected function add_font_size( $control, $key, $selectors = '', $label = 'Color', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Font Size', 'woofunnels-upstroke-one-click-upsell' );
 			}
@@ -497,23 +468,22 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$default = 'inherit';
 			}
 
-
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'font_size',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'font_size', $default, 'px' );
 
 			return $key;
 		}
 
-		protected function add_font_weight( $control, $key, $selectors = '', $label = 'Font Weight', $default = 'noormal', $conditions = [] ) {
+		protected function add_font_weight( $control, $key, $selectors = '', $label = 'Font Weight', $default = 'noormal', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Font Weight', 'woofunnels-upstroke-one-click-upsell' );
@@ -523,14 +493,14 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'font_weight',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
 			$this->set_selector( $key, $selectors, 'font_weight', $default );
@@ -538,7 +508,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_line_height( $control, $key, $selectors = '', $label = 'Line Height', $default = '1.5', $conditions = [] ) {
+		protected function add_line_height( $control, $key, $selectors = '', $label = 'Line Height', $default = '1.5', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Line Height', 'woofunnels-upstroke-one-click-upsell' );
@@ -547,46 +517,45 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$default = '1.5';
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'line_height',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'line_height', $default );
 
 			return $key;
 		}
 
-		protected function add_text_alignments( $control, $key, $selectors = '', $label = '', $default = 'left', $conditions = [] ) {
+		protected function add_text_alignments( $control, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Alignment', 'woofunnels-upstroke-one-click-upsell' );
 			}
-
 
 			if ( empty( $default ) ) {
 				$default = 'left';
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'text_align',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'text_align', $default );
 
 			return $key;
 		}
 
-		protected function add_letter_spacing( $control, $key, $selectors = '', $label = 'Letter Spacing', $default = '1', $conditions = [] ) {
+		protected function add_letter_spacing( $control, $key, $selectors = '', $label = 'Letter Spacing', $default = '1', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Letter Spacing', 'woofunnels-upstroke-one-click-upsell' );
@@ -597,14 +566,14 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'letter_spacing',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
 			$this->set_selector( $key, $selectors, 'letter_spacing', $default, 'px' );
@@ -612,7 +581,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_text_transform( $control, $key, $selectors = '', $label = 'Text Transform', $default = 'none', $conditions = [] ) {
+		protected function add_text_transform( $control, $key, $selectors = '', $label = 'Text Transform', $default = 'none', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Text Transform', 'woofunnels-upstroke-one-click-upsell' );
@@ -621,21 +590,21 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$default = 'none';
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'text_transform',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'text_transform', $default );
 
 			return $key;
 		}
 
-		protected function add_text_decoration( $control, $key, $selectors = '', $label = 'Text Decoration', $default = 'none', $conditions = [] ) {
+		protected function add_text_decoration( $control, $key, $selectors = '', $label = 'Text Decoration', $default = 'none', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = __( 'Text Decoration', 'woofunnels-upstroke-one-click-upsell' );
@@ -645,14 +614,14 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'text_decoration',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'text_decoration', $default );
 
@@ -661,74 +630,74 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 		/* Typography Fields End*/
 
-		protected function add_border_radius( $control, $key, $selector, $conditions = [], $default = 0 ) {
+		protected function add_border_radius( $control, $key, $selector, $conditions = array(), $default = 0 ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Border Radius', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'border_radius',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selector,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selector, 'border_radius', $default, '%' );
 
 			return $key;
 		}
 
-		protected function add_padding( $control, $key, $selector, $label = '', $default = [], $condition = [] ) {
+		protected function add_padding( $control, $key, $selector, $label = '', $default = array(), $condition = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Padding', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( empty( $default ) ) {
-				$default = [
+				$default = array(
 					'top'    => '0',
 					'right'  => '0',
 					'left'   => '0',
-					'bottom' => '0'
-				];
+					'bottom' => '0',
+				);
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'padding',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selector,
-					'conditions' => $condition
-				];
+					'conditions' => $condition,
+				);
 			}
 			$this->set_selector( $key, $selector, 'padding', $default, 'px' );
 
 			return $key;
 		}
 
-		protected function add_margin( $control, $key, $selector, $label = '', $default = [], $condition = [] ) {
+		protected function add_margin( $control, $key, $selector, $label = '', $default = array(), $condition = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Margin', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( empty( $default ) ) {
-				$default = [
+				$default = array(
 					'top'    => '0',
 					'right'  => '0',
 					'left'   => '0',
-					'bottom' => '0'
-				];
+					'bottom' => '0',
+				);
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'margin',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selector,
-					'conditions' => $condition
-				];
+					'conditions' => $condition,
+				);
 			}
 
 			$this->set_selector( $key, $selector, 'margin', $default, 'px' );
@@ -737,11 +706,11 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		}
 
 
-		protected function add_border( $control, $key, $selector, $label = '', $default = [], $condition = [] ) {
+		protected function add_border( $control, $key, $selector, $label = '', $default = array(), $condition = array() ) {
 			if ( empty( $label ) ) {
-				$label = __( "Border" );
+				$label = __( 'Border' );
 			}
-			$default = [
+			$default = array(
 				'top'    => 0,
 				'right'  => 0,
 				'bottom' => 0,
@@ -749,16 +718,16 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				'color'  => '#FFFFFF',
 				'style'  => 'none',
 				'radius' => 0,
-			];
+			);
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'border',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selector,
-					'conditions' => $condition
-				];
+					'conditions' => $condition,
+				);
 			}
 			$this->set_selector( $key, $selector, 'border', $default, 'px' );
 
@@ -766,29 +735,29 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		}
 
 
-		protected function add_box_shadow( $control, $key, $selector, $label = '', $default = [], $condition = [] ) {
+		protected function add_box_shadow( $control, $key, $selector, $label = '', $default = array(), $condition = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Border Shadow', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( empty( $default ) ) {
-				$default = [
+				$default = array(
 					'h_offset' => '0',
 					'v_offset' => '0',
 					'blur'     => '0',
 					'spread'   => '0',
 					'color'    => 'transparent',
 					'inset'    => '0',
-				];
+				);
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'box_shadow',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selector,
-					'conditions' => $condition
-				];
+					'conditions' => $condition,
+				);
 			}
 			$this->set_selector( $key, $selector, 'box_shadow', $default, 'px' );
 
@@ -796,82 +765,82 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		}
 
 
-		protected function add_width( $control, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_width( $control, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Width', 'woofunnels-upstroke-one-click-upsell' );
 			}
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'width',
-					'unit'       => "%",
+					'unit'       => '%',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'width', $default, 'px' );
 
 			return $key;
 		}
 
-		protected function slider_measure_box( $control, $key, $selectors = '', $label = '', $default = [], $conditions = [], $property = "margin-bottom" ) {
+		protected function slider_measure_box( $control, $key, $selectors = '', $label = '', $default = array(), $conditions = array(), $property = 'margin-bottom' ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Icon Font Size', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'range',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
 					'property'   => $property,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 
-			//$this->set_selector( $key, $selectors, 'width', $default );
+			// $this->set_selector( $key, $selectors, 'width', $default );
 
 			return $key;
 		}
 
-		protected function add_height( $control, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_height( $control, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Height', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'height',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'height', $default, 'px' );
 
 			return $key;
 		}
 
-		protected function add_min_width( $control, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_min_width( $control, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_attr__( 'Min Width', 'woofunnels-upstroke-one-click-upsell' );
 			}
 
 			if ( isset( $this->tabs[ $control ] ) ) {
-				$this->tabs[ $control ]['fields'][] = [
+				$this->tabs[ $control ]['fields'][] = array(
 					'type'       => 'min_width',
 					'label'      => $label,
 					'slug'       => $key,
 					'default'    => '',
 					'selector'   => $selectors,
-					'conditions' => $conditions
-				];
+					'conditions' => $conditions,
+				);
 			}
 			$this->set_selector( $key, $selectors, 'min_width', $default, 'px' );
 
@@ -892,79 +861,135 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			$property_value = $css_data['value'];
 
 			if ( ! isset( $this->style_selector[ $selector ] ) ) {
-				$this->style_selector[ $selector ] = [];
+				$this->style_selector[ $selector ] = array();
 			}
-			$this->style_selector[ $selector ][] = [ 'key' => $key, 'property' => $property, 'value' => $property_value, 'unit' => $unit ];
-
+			$this->style_selector[ $selector ][] = array(
+				'key'      => $key,
+				'property' => $property,
+				'value'    => $property_value,
+				'unit'     => $unit,
+			);
 		}
 
 		protected function create_css_property( $type, $default = '' ) {
-			$property = [];
+			$property = array();
 			switch ( $type ) {
-				case  'text_align':
+				case 'text_align':
 					$default  = ! empty( $default ) ? $default : ( is_rtl() ? 'right' : 'left' );
-					$property = [ 'property' => 'text-align', 'value' => $default ];
+					$property = array(
+						'property' => 'text-align',
+						'value'    => $default,
+					);
 					break;
-				case  'letter_spacing':
-					$property = [ 'property' => 'letter-spacing', 'value' => $default ];
+				case 'letter_spacing':
+					$property = array(
+						'property' => 'letter-spacing',
+						'value'    => $default,
+					);
 					break;
-				case  'line_height':
-					$property = [ 'property' => 'line-height', 'value' => $default ];
+				case 'line_height':
+					$property = array(
+						'property' => 'line-height',
+						'value'    => $default,
+					);
 					break;
-				case  'width':
-					$property = [ 'property' => 'width', 'value' => $default ];
+				case 'width':
+					$property = array(
+						'property' => 'width',
+						'value'    => $default,
+					);
 					break;
-				case  'min_width':
-					$property = [ 'property' => 'min-width', 'value' => $default ];
+				case 'min_width':
+					$property = array(
+						'property' => 'min-width',
+						'value'    => $default,
+					);
 					break;
-				case  'margin':
-					$property = [ 'property' => 'margin', 'value' => $default ];
+				case 'margin':
+					$property = array(
+						'property' => 'margin',
+						'value'    => $default,
+					);
 					break;
-				case  'padding':
-					$property = [ 'property' => 'padding', 'value' => $default ];
+				case 'padding':
+					$property = array(
+						'property' => 'padding',
+						'value'    => $default,
+					);
 					break;
-				case  'border_radius':
-					$property = [ 'property' => 'border-radius', 'value' => $default ];
+				case 'border_radius':
+					$property = array(
+						'property' => 'border-radius',
+						'value'    => $default,
+					);
 					break;
-				case  'border_color':
-					$property = [ 'property' => 'border-color', 'value' => $default ];
+				case 'border_color':
+					$property = array(
+						'property' => 'border-color',
+						'value'    => $default,
+					);
 					break;
-				case  'border':
-					$property = [ 'property' => 'border', 'value' => $default ];
+				case 'border':
+					$property = array(
+						'property' => 'border',
+						'value'    => $default,
+					);
 					break;
-				case  'background_color':
-				case  'background':
-					$property = [ 'property' => 'background-color', 'value' => $default ];
+				case 'background_color':
+				case 'background':
+					$property = array(
+						'property' => 'background-color',
+						'value'    => $default,
+					);
 					break;
-				case  'color':
-					$property = [ 'property' => 'color', 'value' => $default ];
+				case 'color':
+					$property = array(
+						'property' => 'color',
+						'value'    => $default,
+					);
 					break;
-				case  'font_size':
-					$property = [ 'property' => 'font-size', 'value' => $default ];
+				case 'font_size':
+					$property = array(
+						'property' => 'font-size',
+						'value'    => $default,
+					);
 					break;
-				case  'font_family':
-					$property = [ 'property' => 'font-family', 'value' => $default ];
+				case 'font_family':
+					$property = array(
+						'property' => 'font-family',
+						'value'    => $default,
+					);
 					break;
 
-				case  'text_transform':
-					$property = [ 'property' => 'text-transform', 'value' => $default ];
+				case 'text_transform':
+					$property = array(
+						'property' => 'text-transform',
+						'value'    => $default,
+					);
 					break;
-				case  'text_decoration':
-					$property = [ 'property' => 'text-decoration', 'value' => $default ];
+				case 'text_decoration':
+					$property = array(
+						'property' => 'text-decoration',
+						'value'    => $default,
+					);
 					break;
-				case  'font_weight':
-					$property = [ 'property' => 'font-weight', 'value' => $default ];
+				case 'font_weight':
+					$property = array(
+						'property' => 'font-weight',
+						'value'    => $default,
+					);
 					break;
 
-				case  'box_shadow':
-					$property = [ 'property' => 'box-shadow', 'value' => '' ];
+				case 'box_shadow':
+					$property = array(
+						'property' => 'box-shadow',
+						'value'    => '',
+					);
 					break;
 				default:
 					break;
 
-
 			}
-
 
 			return $property;
 		}
@@ -976,7 +1001,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				return '';
 			}
 
-			$output = [];
+			$output = array();
 			foreach ( $condition as $key => $value ) {
 				if ( is_array( $value ) ) {
 					$value = implode( ',', $value );
@@ -989,7 +1014,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 		protected function get_unique_id() {
 			static $count = 0;
-			$count ++;
+			++$count;
 			$key = md5( 'wfocu_' . $count );
 
 			return $key;
@@ -1014,7 +1039,6 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 
 			// checking for when builder is open
 
-
 			$wffn_post_id = 0;
 			if ( isset( $_REQUEST['post'] ) ) {//phpcs:ignore
 				$wffn_post_id = $_REQUEST['post'];//phpcs:ignore
@@ -1023,7 +1047,6 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 			} else if ( isset( $_REQUEST['bwf_post_id'] ) && wp_doing_ajax() ) {//phpcs:ignore
 				$wffn_post_id = $_REQUEST['bwf_post_id'];//phpcs:ignore
 			}
-
 
 			if ( $wffn_post_id > 0 ) {
 				$post = get_post( $wffn_post_id );//phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -1036,11 +1059,9 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				}
 			}
 
-
 			if ( is_null( $post ) || ( ! is_null( $post ) && $post->post_type !== WFOCU_Common::get_offer_post_type_slug() ) ) {
-				return [];
+				return array();
 			}
-
 
 			$this->setup_offer();
 			$this->setup_data();
@@ -1052,7 +1073,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		function get_gallery_images( $product_data ) {
 
 			$images_taken = array();
-			$thumbnails   = [];
+			$thumbnails   = array();
 
 			/**
 			 * @var WC_Product $product_obj
@@ -1087,15 +1108,17 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 						}
 					}
 				}
-
 			}
 
-			return [ "large" => $images_taken, "thumbnails" => $thumbnails ];
+			return array(
+				'large'      => $images_taken,
+				'thumbnails' => $thumbnails,
+			);
 		}
 
 		private function setup_offer() {
 			if ( empty( self::$product_options ) ) {
-				self::$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );;
+				self::$product_options = array( '0' => __( '--No Product--', 'woofunnels-upstroke-one-click-upsell' ) );
 
 				if ( is_null( WFOCU_Core()->template_loader->product_data ) ) {
 					return;
@@ -1103,7 +1126,7 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 				$products = WFOCU_Core()->template_loader->product_data->products;
 
 				if ( ! empty( $products ) ) {
-					self::$product_options = [];
+					self::$product_options = array();
 					foreach ( $products as $key => $product ) {
 						$product_key = WFOCU_Common::default_selected_product_key( $key );
 						$product_key = ( $product_key !== false ) ? $product_key : '';
@@ -1115,17 +1138,17 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 						if ( round( $sale_price_raw, 2 ) === round( $regular_price_raw, 2 ) ) {
 							$regular_price = false;
 						}
-						$product_type = $product->data->get_type();
-						$is_subscription = in_array($product_type, ['subscription', 'subscription_variation', 'variable-subscription']);
-						$signup_fee = '';
+						$product_type    = $product->data->get_type();
+						$is_subscription = in_array( $product_type, array( 'subscription', 'subscription_variation', 'variable-subscription' ) );
+						$signup_fee      = '';
 						$recurring_total = '';
-						
-						if ($is_subscription) {
-							$signup_fee = WFOCU_Common::maybe_parse_merge_tags('{{product_signup_fee key="' . $product_key . '" signup_label=" " }}');
-							$recurring_total = WFOCU_Common::maybe_parse_merge_tags('{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label=" " }}');
+
+						if ( $is_subscription ) {
+							$signup_fee      = WFOCU_Common::maybe_parse_merge_tags( '{{product_signup_fee key="' . $product_key . '" signup_label=" " }}' );
+							$recurring_total = WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label=" " }}' );
 						}
-						
-						self::$product_options[ $key ] = [
+
+						self::$product_options[ $key ] = array(
 							'value'               => $key,
 							'label'               => $product->data->get_name(),
 							'images'              => $this->get_gallery_images( $product ),
@@ -1134,14 +1157,13 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 							'is_variation'        => $product->data->is_type( 'variable' ) ? true : false,
 							'offer_price'         => $sale_price,
 							'regular_price'       => $regular_price,
-							'type'        		  => $product_type,
+							'type'                => $product_type,
 							'is_subscription'     => $is_subscription,
 							'signup_fee'          => $signup_fee,
 							'recurring_total'     => $recurring_total,
-						];
+						);
 					}
 				}
-
 			}
 		}
 
@@ -1162,7 +1184,5 @@ if ( ! class_exists( 'WFOCU_Guten_Field' ) ) {
 		public static function get_product_lists() {
 			return self::$product_options;
 		}
-
-
 	}
 }

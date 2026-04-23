@@ -15,14 +15,14 @@ if ( ! class_exists( 'ET_Core_Portability' ) ) {
 if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Divi_Importer extends ET_Core_Portability {
-		private $slug = '';
-		private $post_id = 0;
-		private $settings_file = '';
-		private $builder = 'divi';
+		protected $slug          = '';
+		protected $post_id       = 0;
+		protected $settings_file = '';
+		protected $builder       = 'divi';
 		public $delete_page_meta = true;
 
 		public function __construct( $context ) {
-			//Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
+			// Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
 		}
 
 		public function import_child( $aero_id, $slug, $is_multi = 'no' ) {
@@ -34,13 +34,17 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 
 			update_post_meta( $aero_id, '_et_pb_use_builder', 'on' );
 			if ( 'divi_1' === $slug ) {
-				wp_update_post( [ 'ID' => $this->post_id, 'post_content' => '' ] );
+				wp_update_post(
+					array(
+						'ID'           => $this->post_id,
+						'post_content' => '',
+					)
+				);
 				$this->delete_template_data( $this->post_id );
 				update_post_meta( $this->post_id, '_wp_page_template', 'wfacp-canvas.php' );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
-
 
 			$templates = WFACP_Core()->template_loader->get_templates( $this->builder );
 			if ( isset( $templates[ $slug ]['settings_file'] ) ) {
@@ -49,11 +53,10 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 			if ( $templates[ $slug ] && isset( $templates[ $slug ]['build_from_scratch'] ) ) {
 				$this->save_data( $aero_id );
 
-				return [ 'status' => true ];
+				return array( 'status' => true );
 			}
 
-			$data = WFACP_Core()->importer->get_remote_template( $slug, 'divi' );
-
+			$data = WFACP_Core()->importer->get_remote_template( $slug, $this->builder );
 
 			if ( isset( $data['error'] ) ) {
 				return $data;
@@ -64,15 +67,14 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 				$status = $this->import_aero_template( $content );
 				$this->save_data( $this->post_id );
 
-				return [ 'status' => $status ];
+				return array( 'status' => $status );
 			}
 
-
-			return [ 'status' => true ];
+			return array( 'status' => true );
 		}
 
 
-		private function save_data( $post_id, $content = '' ) {
+		protected function save_data( $post_id, $content = '' ) {
 			if ( true == $this->delete_page_meta ) {
 				$this->delete_template_data( $post_id );
 			}
@@ -84,11 +86,9 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 				$file_path = __DIR__ . '/checkout-settings/' . $this->settings_file;
 				WFACP_Common::import_checkout_settings( $post_id, $file_path );
 			}
-
-
 		}
 
-		private function delete_template_data( $post_id ) {
+		protected function delete_template_data( $post_id ) {
 			WFACP_Common::delete_page_layout( $post_id );
 		}
 
@@ -107,10 +107,13 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 			if ( ! empty( $content ) ) {
 				$translation_list = WFACP_Common::get_translation_field_aero_checkout_domain();
 
-
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $content, $key ) ) {
@@ -118,34 +121,38 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 					}
 				}
 
-
 				$translation_list = WFACP_Common::get_translation_field_funnel_buider_domain();
 
-				$translation_list = array_filter( $translation_list, function ( $key, $val ) {
-					return ! ( $key === $val );
-				}, ARRAY_FILTER_USE_BOTH );
+				$translation_list = array_filter(
+					$translation_list,
+					function ( $key, $val ) {
+						return ! ( $key === $val );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
 
 				foreach ( $translation_list as $key => $value ) {
 					if ( false !== strpos( $content, $key ) ) {
 						$data['data'] = str_replace( $key, $value, $content );
 					}
 				}
-
 			}
-
 
 			$import = json_decode( $content, true );
 			// Upload images and replace current urls.
 
-
 			$data = $import['data'];
-
 
 			// Pass the post content and let js save the post.
 
 			$data    = reset( $data );
 			$success = true;
-			$result  = wp_update_post( [ 'ID' => $this->post_id, 'post_content' => $data ] );
+			$result  = wp_update_post(
+				array(
+					'ID'           => $this->post_id,
+					'post_content' => $data,
+				)
+			);
 			if ( $result instanceof WP_Error ) {
 				$success = false;
 			}
@@ -156,7 +163,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 
 		public function update_product_switcher_settings() {
 			if ( false !== strpos( $this->slug, 'divi_' ) ) {
-				$pageProductSetting = [
+				$pageProductSetting = array(
 					'coupons'                             => '',
 					'enable_coupon'                       => 'false',
 					'disable_coupon'                      => 'false',
@@ -177,12 +184,12 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 					'preferred_countries_enable'          => 'false',
 					'preferred_countries'                 => '',
 					'product_switcher_template'           => 'default',
-				];
+				);
 
-				$product_settings                     = [];
+				$product_settings                     = array();
 				$product_settings['settings']         = $pageProductSetting;
-				$product_settings['products']         = [];
-				$product_settings['default_products'] = [];
+				$product_settings['products']         = array();
+				$product_settings['default_products'] = array();
 				if ( is_array( $product_settings ) && count( $product_settings ) > 0 ) {
 					update_post_meta( $this->post_id, '_wfacp_product_switcher_setting', $product_settings );
 				}
@@ -192,14 +199,13 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 		/**
 		 * Serialize images in chunks.
 		 *
-		 * @param array $images
-		 * @param string $method Method applied on images.
-		 * @param string $id Unique ID to use for temporary files.
+		 * @param array   $images
+		 * @param string  $method Method applied on images.
+		 * @param string  $id Unique ID to use for temporary files.
 		 * @param integer $chunk
 		 *
 		 * @return array
 		 * @since 4.0
-		 *
 		 */
 		protected function chunk_images( $images, $method, $id, $chunk = 0 ) {
 			$images_per_chunk = 100;
@@ -211,7 +217,6 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 			 * @param bool $paginate_images Default `true`.
 			 *
 			 * @since 3.0.99
-			 *
 			 */
 			$paginate_images = apply_filters( 'et_core_portability_paginate_images', true );
 

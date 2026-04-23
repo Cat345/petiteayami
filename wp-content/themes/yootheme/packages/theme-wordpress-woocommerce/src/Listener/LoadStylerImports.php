@@ -24,7 +24,7 @@ class LoadStylerImports
         if (!class_exists('WooCommerce', false)) {
             $woocommerce = __DIR__ . '/../../assets/less/woocommerce.less';
 
-            foreach ($this->styler->resolveImports($woocommerce) as $file => $data) {
+            foreach (array_keys($this->styler->resolveImports($woocommerce)) as $file) {
                 unset($imports[$file]);
             }
         }

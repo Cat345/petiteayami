@@ -19,7 +19,31 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 
 			$tab_id = $this->add_tab( __( 'Quantity Selector', 'woofunnels-upstroke-one-click-upsell' ) );
 			if ( false === $qty_selector_enabled ) {
-				$this->add_sub_heading( $tab_id, __( 'Quantity selector is not available for this offer. Kindly allow customer to chose the quantity while purchasing this upsell product(s) from "Offers" tab.', 'woofunnels-upstroke-one-click-upsell' ) );
+				$upsell_id = get_post_meta( $offer_id, '_funnel_id', true );
+				$funnel_id = get_post_meta( $upsell_id, '_bwf_in_funnel', true );
+
+				if ( ! empty( $funnel_id ) && absint( $funnel_id ) > 0 ) {
+					$products_url = add_query_arg( array(
+						'page'      => 'bwf',
+						'path'      => '/funnel-offer/' . $offer_id . '/product',
+						'funnel_id' => $funnel_id,
+					), admin_url( 'admin.php' ) );
+				} else {
+					$products_url = add_query_arg( array(
+						'page'    => 'upstroke',
+						'section' => 'offers',
+						'edit'    => $upsell_id,
+					), admin_url( 'admin.php' ) );
+				}
+
+				$message = sprintf(
+					/* translators: %1$s: Opening anchor tag, %2$s: Closing anchor tag */
+					'%1$s' . __( 'The quantity selector is currently unavailable for this offer. Please enable customers to choose their preferred quantity when purchasing this upsell product(s) from the "Products" tab', 'woofunnels-upstroke-one-click-upsell' ) . '%2$s',
+					'<a href="' . esc_url( $products_url ) . '" target="_blank" style="color:#fff">',
+					'</a>'
+				);
+
+				$this->add_sub_heading( $tab_id, $message );
 
 				return;
 			}
@@ -119,7 +143,7 @@ if ( ! class_exists( 'WFOCU_Oxy_Quantity_Selector' ) ) {
 			$selector   = isset( $settings['selector'] ) ? '#' . $settings['selector'] : '';
 			if ( 'on' === $slider_enabled ) {
 				$class_name = "wfocu_proqty_block";
-				echo "<style> " . $selector . " .wfocu-prod-qty-wrapper, " . $selector . " .wfocu-prod-qty-wrapper{display:flex !important;}</style>";
+				echo "<style> " . $selector . " .wfocu-prod-qty-wrapper, " . $selector . " .wfocu-prod-qty-wrapper{display:flex !important;}</style>"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			}
 

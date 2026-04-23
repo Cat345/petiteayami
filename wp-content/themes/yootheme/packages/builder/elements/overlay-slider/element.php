@@ -148,13 +148,13 @@ return [
                 'step' => 10,
                 'class' => 'uk-form-width-xsmall',
             ],
-            'enable' => 'slider_width && height_viewport == \'viewport\'',
+            'enable' => "slider_width && height_viewport == 'viewport'",
         ],
         'height_viewport_offset' => [
             'type' => 'checkbox',
             'text' => 'Subtract height above',
             'enable' =>
-                'slider_width && height_viewport == \'viewport\' && (height_viewport_height || 0) <= 100 || height_viewport == \'section\'',
+                "slider_width && height_viewport == 'viewport' && (height_viewport_height || 0) <= 100 || height_viewport == 'section'",
         ],
         'height_expand' => [
             'type' => 'checkbox',
@@ -373,7 +373,7 @@ return [
                 'Column' => '!.tm-grid-expand>*',
                 'Row' => '!.tm-grid-expand',
                 'Section' => '!.uk-section',
-                'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
             ],
             'enable' => 'slider_parallax',
         ],
@@ -535,7 +535,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'slidenav == \'outside\' && !slider_parallax',
+            'enable' => "slidenav == 'outside' && !slider_parallax",
         ],
         'image_expand' => [
             'label' => 'Height',
@@ -573,12 +573,12 @@ return [
         'overlay_active_first' => [
             'type' => 'checkbox',
             'text' => 'Make only first item active',
-            'enable' => 'overlay_display == \'active\'',
+            'enable' => "overlay_display == 'active'",
         ],
         'overlay_transition_background' => [
             'type' => 'checkbox',
             'text' => 'Animate background only',
-            'enable' => 'overlay_display && overlay_mode == \'cover\' && overlay_style',
+            'enable' => "overlay_display && overlay_mode == 'cover' && overlay_style",
         ],
         'overlay_style' => [
             'label' => 'Style',
@@ -665,7 +665,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Inverse on hover or when active',
             'enable' =>
-                '!overlay_style && (show_hover_image || show_hover_video) || overlay_style && overlay_mode == \'cover\' && overlay_display && overlay_transition_background',
+                "!overlay_style && (show_hover_image || show_hover_video) || overlay_style && overlay_mode == 'cover' && overlay_display && overlay_transition_background",
         ],
         'text_blend' => [
             'type' => 'checkbox',
@@ -855,7 +855,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -906,7 +906,7 @@ return [
             'label' => 'Margin Bottom',
             'type' => 'checkbox',
             'text' => 'Auto',
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'meta_transition' => [
             'label' => 'Transition',
@@ -1135,7 +1135,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',
@@ -1329,7 +1329,7 @@ return [
                                 [
                                     'label' => 'Parallax Start/End',
                                     'description' =>
-                                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => ['slider_parallax_start', 'slider_parallax_end'],

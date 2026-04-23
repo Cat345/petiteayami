@@ -102,17 +102,17 @@ if ( ! class_exists( 'WFFN_RESET_API_EndPoint' ) ) {
 
 			$ids[] = $funnel_id;
 
-			foreach ( $ids as $id ) {
-				$wfco_table = $wpdb->prefix . "wfco_report_views";
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wfco_table} WHERE object_id=%d", $id ) );
+			$wfco_table = $wpdb->prefix . 'wfco_report_views';
+			if ( ! empty( $ids ) ) {
+				$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wfco_table} WHERE object_id IN ({$placeholders})", $ids ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 
 			/**
 			 * Delete native checkout data if store checkout funnel not have checkout steps
 			 */
 			if ( method_exists( 'WFFN_Common', 'get_store_checkout_id' ) && WFFN_Common::get_store_checkout_id() === absint( $funnel_id ) ) {
-				$wfco_table = $wpdb->prefix . "wfco_report_views";
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wfco_table} WHERE WHERE object_id= %d AND type = %d", 0, 4 ) );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wfco_table} WHERE object_id = %d AND type = %d", 0, 4 ) );
 			}
 
 			WooFunnels_Transient::get_instance()->delete_transient( '_bwf_contacts_funnels_' . $funnel_id );

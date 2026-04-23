@@ -35,13 +35,13 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			$external_users          = BWF_Admin_General_Settings::get_instance()->get_option( 'bwf_external_user' );
 			$notification_time       = BWF_Admin_General_Settings::get_instance()->get_option( 'bwf_notification_time' );
 
-			return [
+			return array(
 				'bwf_enable_notification'        => $bwf_enable_notification,
 				'bwf_notification_frequency'     => $frequency,
 				'bwf_notification_user_selector' => $users,
 				'bwf_external_user'              => $external_users,
 				'bwf_notification_time'          => $notification_time,
-			];
+			);
 		}
 
 		/**
@@ -63,7 +63,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * This method includes the specified template file and allows passing arguments to it.
 		 *
 		 * @param string $template The name of the template file to include.
-		 * @param array $args Optional. An array of arguments to pass to the template file. Default is an empty array.
+		 * @param array  $args Optional. An array of arguments to pass to the template file. Default is an empty array.
 		 *
 		 * @return string
 		 */
@@ -166,9 +166,12 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			}
 
 			/** Filter out the frequencies if an email was already sent */
-			return array_filter( $frequencies, function ( $frequency ) {
-				return ! self::mail_sent( $frequency );
-			} );
+			return array_filter(
+				$frequencies,
+				function ( $frequency ) {
+					return ! self::mail_sent( $frequency );
+				}
+			);
 		}
 
 		/**
@@ -179,13 +182,12 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * @return array
 		 * @throws DateMalformedStringException
 		 */
-		public static function prepare_frequencies( $frequencies = [] ) {
+		public static function prepare_frequencies( $frequencies = array() ) {
 			$final = array();
 
 			if ( array_search( 'weekly', $frequencies ) !== false ) { // @codingStandardsIgnoreLine
 				$final['weekly'] = WFFN_Common::get_notification_week_range();
 			}
-
 
 			if ( array_search( 'monthly', $frequencies ) !== false ) { // @codingStandardsIgnoreLine
 				$final['monthly'] = WFFN_Common::get_notification_month_range();
@@ -204,11 +206,14 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		public static function mail_sent( $frequency ) {
 			$timezone = wp_timezone();
 			$today    = new DateTime( 'now', $timezone );
-			
-			self::$executed_last = get_option( 'wffn_email_notification_updated', array(
-				'weekly'  => '',
-				'monthly' => '',
-			) );
+
+			self::$executed_last = get_option(
+				'wffn_email_notification_updated',
+				array(
+					'weekly'  => '',
+					'monthly' => '',
+				)
+			);
 
 			/** Check if the last execution time for the given frequency is not set */
 			if ( ! isset( self::$executed_last[ $frequency ] ) || empty( self::$executed_last[ $frequency ] ) ) {
@@ -217,7 +222,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 
 			try {
 				$last_sent = new DateTime( self::$executed_last[ $frequency ] );
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				WFFN_Core()->logger->log( "Frequency {$frequency} and value " . self::$executed_last[ $frequency ], 'notification-error', true );
 				WFFN_Core()->logger->log( "Exception {$e->getMessage()}", 'notification-error', true );
 
@@ -270,16 +275,18 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			// Update the last execution time if the email was sent.
 			if ( isset( $sent ) && $sent ) {
 				/** Fetch the saved notifications data */
-				self::$executed_last               = get_option( 'wffn_email_notification_updated', array(
-					'weekly'  => '',
-					'monthly' => '',
-				) );
+				self::$executed_last = get_option(
+					'wffn_email_notification_updated',
+					array(
+						'weekly'  => '',
+						'monthly' => '',
+					)
+				);
 				// Store current time in site timezone
-				$now = new DateTime( 'now', wp_timezone() );
+				$now                               = new DateTime( 'now', wp_timezone() );
 				self::$executed_last[ $frequency ] = $now->format( 'c' );
 				update_option( 'wffn_email_notification_updated', self::$executed_last );
 			}
-
 		}
 
 		/**
@@ -288,7 +295,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * @return array The recipients for the email.
 		 */
 		private static function get_recipients() {
-			$recipients = [];
+			$recipients = array();
 
 			if ( isset( self::$global_settings['bwf_notification_user_selector'] ) && is_array( self::$global_settings['bwf_notification_user_selector'] ) ) {
 				foreach ( self::$global_settings['bwf_notification_user_selector'] as $user ) {
@@ -310,9 +317,12 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			}
 
 			/** Filter array */
-			$recipients = array_filter( $recipients, function ( $email ) {
-				return ( strpos( $email, 'support@' ) === false );
-			} );
+			$recipients = array_filter(
+				$recipients,
+				function ( $email ) {
+					return ( strpos( $email, 'support@' ) === false );
+				}
+			);
 			$recipients = array_unique( $recipients );
 
 			return $recipients;
@@ -322,7 +332,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * Get the email subject.
 		 *
 		 * @param string $frequency The frequency of the email.
-		 * @param array $dates The dates to use in the email subject.
+		 * @param array  $dates The dates to use in the email subject.
 		 *
 		 * @return string The email subject.
 		 */
@@ -368,7 +378,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		public static function format_date( $date_string ) {
 			// Convert date string to a DateTime object
 			$timezone = wp_timezone();
-			$date = new DateTime( $date_string, $timezone );
+			$date     = new DateTime( $date_string, $timezone );
 
 			return $date->format( 'F j, Y' );
 		}
@@ -424,8 +434,8 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 		 * @return array The response status.
 		 */
 		public static function save_settings( $options ) {
-			$resp       = [];
-			$get_config = get_option( 'bwf_gen_config', [] );
+			$resp       = array();
+			$get_config = get_option( 'bwf_gen_config', array() );
 			foreach ( $options as $key => $value ) {
 				$get_config[ $key ] = $value;
 			}
@@ -453,25 +463,28 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 			if ( empty( self::$global_settings['bwf_enable_notification'] ) ) {
 				return;
 			}
-			$timezone = wp_timezone();
-			$today    = new DateTime( 'now', $timezone );
+			$timezone    = wp_timezone();
+			$today       = new DateTime( 'now', $timezone );
 			$frequencies = self::get_frequencies();
 
 			/** Filter out the frequencies if an email was already sent */
-			$frequencies = array_filter( $frequencies, function ( $frequency ) use ( $today ) {
-				/** Case: weekly. Not Monday */
-				if ( 'weekly' === $frequency && 1 === intval( $today->format( 'N' ) ) ) {
-					/** 1 means Monday */
-					return true;
-				}
+			$frequencies = array_filter(
+				$frequencies,
+				function ( $frequency ) use ( $today ) {
+					/** Case: weekly. Not Monday */
+					if ( 'weekly' === $frequency && 1 === intval( $today->format( 'N' ) ) ) {
+						/** 1 means Monday */
+						return true;
+					}
 
-				/** Case: monthly. Not 1st */
-				if ( 'monthly' === $frequency && 1 === intval( $today->format( 'd' ) ) ) {
-					return true;
-				}
+					/** Case: monthly. Not 1st */
+					if ( 'monthly' === $frequency && 1 === intval( $today->format( 'd' ) ) ) {
+						return true;
+					}
 
-				return false;
-			} );
+					return false;
+				}
+			);
 			if ( empty( $frequencies ) ) {
 				return;
 			}
@@ -485,7 +498,7 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 
 			if ( wp_next_scheduled( 'wffn_performance_notification' ) === false ) {
 				$result = wp_schedule_single_event( $desired_timestamp, 'wffn_performance_notification' );
-				if(function_exists('bwf_schedule_single_action')) {
+				if ( function_exists( 'bwf_schedule_single_action' ) ) {
 					$desired_timestamp = $desired_timestamp + ( 30 * MINUTE_IN_SECONDS );
 					bwf_schedule_single_action( $desired_timestamp, 'wffn_performance_notification' );
 				}
@@ -495,7 +508,5 @@ if ( ! class_exists( 'WFFN_Email_Notification' ) ) {
 
 			return false;
 		}
-
-
 	}
 }

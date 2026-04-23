@@ -67,8 +67,8 @@ body.wfacpef_page #wfacp-e-form .wfacp-payment-title.wfacp-hg-by-box.wfacp_embed
 }
 
 #wfacp-e-form .wfacp-order-summary-toggle-text {
-    padding-right: 0;;
-    padding-left: 12px
+    padding-right: 0;
+    padding-left: 12px;
 }
 
 #wfacp-e-form .wfacp-order-summary-toggle-price {
@@ -113,7 +113,7 @@ body .wfacp_main_form.woocommerce .mc4wp-checkbox label span {
 #wfacp-e-form .wfacp_form_cart .wfacp-coupon-page .woocommerce-error {
     padding: 0 10px 0 0 !important;
     border-left: none !important;
-    border-right: 2px solid #24ae4e !important
+    border-right: 2px solid #24ae4e !important;
 }
 
 body #wfacp-e-form .wfacp_form_cart .wfacp-coupon-page .woocommerce-error {
@@ -490,17 +490,17 @@ body .wfacp_mini_cart_start_h .wfacp_delete_item_wrap a:before {
 
 .wfacp_mini_cart_start_h ul.woocommerce-error,
 .wfacp_mini_cart_start_h div.woocommerce-error,
-.wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss) {
+.wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success) {
     border-left: none !important;
     border-right: 2px solid #d0011b !important;
 }
 
-.wfacp_mini_cart_start_h .woocommerce-message.wfacp_sucuss {
+.wfacp_mini_cart_start_h .woocommerce-message.wfacp_success {
     border-left: none !important;
     border-right: 2px solid #24ae4e !important;
 }
 
-.wfacp_mini_cart_start_h .woocommerce-message.wfacp_sucuss .woocommerce-message1 {
+.wfacp_mini_cart_start_h .woocommerce-message.wfacp_success .woocommerce-message1 {
     border-left: none !important;
     border-right: 2px solid #24ae4e !important;
 }
@@ -1269,12 +1269,39 @@ body .woocommerce-Price-bidi {
     unicode-bidi: inherit;
 }
 
+body.rtl #wfacp-e-form .wfacp-form:not(.wfacp-top) p.wfacp-form-control-wrapper.wfacp-anim-wrap:not(.fattura24) label.wfacp-form-control-label:not(.radio):not(.checkbox){
+    right: 20px;
+}
 
-@media (min-width: 768px)and (max-width: 1024px) {
+body #wfacp-e-form #wfacp-sec-wrapper .wfacp_drop_list .woocommerce-input-wrapper select, body #wfacp-sec-wrapper .wfacp_dropdown .woocommerce-input-wrapper select {
+    background: url(../img/select-dropdown-icon.svg) no-repeat 2% center;
+	background-size: 14px;
+    transition: none;
+}
+
+body #wfacp-e-form #wfacp-sec-wrapper #wfacp_checkout_form .select2-container--default .select2-selection--single .select2-selection__arrow {
+    background: url(../img/select-dropdown-icon.svg) no-repeat center center;
+    height: 12px;
+    position: absolute;
+    top: 50%;
+    margin-top: -6px;
+    right: auto;
+	left: 12px;
+    z-index: 99;
+    background-size: 14px;
+    width: 14px;
+}
+
+body.rtl #wfacp-sec-wrapper .woocommerce-input-wrapper span.wfacp-search-icon {
+    right: auto;
+    left: 12px;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
     #wfacp-e-form .wfacp-terms-footer span.woocommerce-terms-and-conditions-checkbox-text {
         text-align: right;
         padding-left: 0;
-        padding-right: 5px
+        padding-right: 5px;
     }
 }
 
@@ -1291,7 +1318,7 @@ body .woocommerce-Price-bidi {
     }
 }
 
-@media (min-width: 320px)and (max-width: 767px) {
+@media (min-width: 320px) and (max-width: 767px) {
     #wfacp-e-form .step-by-step ul li {
         margin-left: 0;
     }

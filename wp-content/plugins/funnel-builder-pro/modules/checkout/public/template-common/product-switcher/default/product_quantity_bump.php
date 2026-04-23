@@ -12,7 +12,7 @@ $hide_quantity_switcher                        = wc_string_to_bool( $switcher_se
 $enable_delete_item                            = wc_string_to_bool( $switcher_settings['settings']['enable_delete_item'] );
 $classes                                       = isset( $field['cssready'] ) ? implode( ' ', $field['cssready'] ) : '';
 $label_products                                = isset( $field['label'] ) ? $field['label'] : __( 'Products', 'woocommerce' );
-$product_switcher_description_html             = [];
+$product_switcher_description_html             = array();
 $show_additional_information_and_you_save_text = apply_filters( 'show_additional_information_and_you_save_text', false );
 $hide_product_image                            = isset( $switcher_settings['settings']['hide_product_image'] ) ? wc_string_to_bool( $switcher_settings['settings']['hide_product_image'] ) : false;
 
@@ -43,7 +43,7 @@ if ( ( $detectDevice->isMobile() && ! $detectDevice->istablet() ) || $mb_style =
 	if ( $step_form_max_width <= 374 ) {
 		$wfacp_hide_img_wrap = apply_filters( 'wfacp_hide_product_image_for_less_width_form', 'wfacp_hideimg_wrap' );
 		$deviceType          = 'wfacp_for_desktop_tablet wfacp_for_mb_style ' . $wfacp_hide_img_wrap . ' ';
-	} else if ( $step_form_max_width >= 375 && $step_form_max_width <= 600 ) {
+	} elseif ( $step_form_max_width >= 375 && $step_form_max_width <= 600 ) {
 
 		$deviceType = 'wfacp_for_desktop_tablet wfacp_for_mb_style wfacp_ps_mb_active ';
 	}
@@ -62,12 +62,12 @@ if ( $hide_quantity_switcher == true ) {
 }
 
 
-$ps_cls_settings = [
+$ps_cls_settings = array(
 	'ps_productSelection'    => 'wfacp_force_all',
 	'ps_other_image_setting' => 'wfacp_setting_not_image_hide',
 	'ps_other_qty_setting'   => 'wfacp_setting_not_qty_hide',
 	'ps_delete_item'         => 'wfacp_enable_delete_item',
-];
+);
 
 
 $ps_other_image_setting = 'wfacp_setting_not_image_hide';
@@ -80,7 +80,6 @@ if ( isset( $switcher_settings['settings']['hide_product_image'] ) ) {
 		$ps_other_image_setting                    = 'wfacp_setting_image_hide';
 		$ps_cls_settings['ps_other_image_setting'] = $ps_other_image_setting;
 	}
-
 }
 
 if ( true === $hide_quantity_switcher ) {
@@ -119,27 +118,28 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 }
 
 ?>
-    <div class="wfacp_anim wfacp_pro_switch <?php echo $deviceType . ' ' . $ps_setting_wrapper_class; ?> shop_table wfacp-product-switch-panel <?php echo $classes ?> wfacp_df_ps" cellspacing="0" id="product_switching_field" <?php echo WFACP_Common::get_fragments_attr() ?> >
+	<div class="wfacp_anim wfacp_pro_switch <?php echo $deviceType . ' ' . $ps_setting_wrapper_class; ?> shop_table wfacp-product-switch-panel <?php echo $classes; ?> wfacp_df_ps" cellspacing="0" id="product_switching_field" <?php echo WFACP_Common::get_fragments_attr(); ?> >
 
 
-        <div class="wfacp_cross_enabled1">
-			<?php do_action( 'wfacp_before_product_switcher_html' );
+		<div class="wfacp_cross_enabled1">
+			<?php
+			do_action( 'wfacp_before_product_switcher_html' );
 
 			if ( empty( $wfacp_cart ) ) {
 				WFACP_Common::show_cart_empty_message();
 			} else {
 
 				?>
-                <div class="wfacp-product-switch-title">
-                    <div class="product-remove"><?php echo $label_products; ?></div>
+				<div class="wfacp-product-switch-title">
+					<div class="product-remove"><?php echo $label_products; ?></div>
 
-                    <div class="wfacp_qty_price_wrap">
+					<div class="wfacp_qty_price_wrap">
 						<?php if ( ! $hide_quantity_switcher ) { ?>
-                            <div class="product-quantity"><?php _e( 'Qty', 'woocommerce' ); ?></div>
+							<div class="product-quantity"><?php _e( 'Qty', 'woocommerce' ); ?></div>
 						<?php } ?>
-                        <div class="product-name"><?php _e( 'Price', 'woocommerce' ); ?></div>
-                    </div>
-                </div>
+						<div class="product-name"><?php _e( 'Price', 'woocommerce' ); ?></div>
+					</div>
+				</div>
 				<?php
 				$is_sold_individually = false;
 				do_action( 'woocommerce_review_order_before_cart_contents' );
@@ -153,12 +153,12 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 					$_product        = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 					$qty             = $cart_item['quantity'];
 					if ( $_product && $_product->exists() && $qty > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
-						$price_data = [];
+						$price_data = array();
 						$pro        = $cart_item['data'];
 						if ( $pro instanceof WC_Product ) {
 							$price_data = WFACP_Common::get_cart_product_price_data( $pro, $cart_item, $qty );
 						}
-						$product_data = [];
+						$product_data = array();
 						if ( isset( $cart_item['_wfacp_options'] ) ) {
 							$product_data = $cart_item['_wfacp_options'];
 						}
@@ -179,7 +179,6 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 								$temp_data['is_added_cart']          = true;
 								$product_switcher_description_html[] = WFACP_Common::get_product_switcher_row_description( $temp_data, $_product, $switcher_settings, true );
 							}
-
 						}
 
 
@@ -197,7 +196,7 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 							if ( ( false !== $have_saving_value_merge_tag || false !== $have_saving_percentage_merge_tag ) ) {
 
 								if ( $subscription_tryl > 0 || $subscription_signup > 0 ) {
-									//available  for future updates
+									// available  for future updates
 								} else {
 									$saveTextHtml = WFACP_Common::product_switcher_merge_tags( $you_save_text_temp, $price_data, $pro, $product_data, $cart_item, $cart_item_key );
 
@@ -227,10 +226,10 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 						add_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set' );
 						$row_item_class = apply_filters( 'woocommerce_cart_item_class', 'woocommerce-cart-form__cart-item cart_item wfacp_product_row wfacp-selected-product', $cart_item, $cart_item_key );
 						?>
-                        <div class="<?php echo $row_item_class ?>" cart_key="<?php echo $cart_item_key; ?>">
-                            <div class="wfacp_row_wrap <?php echo $enable_hide_img . " " . $hide_qty_switcher_cls . ' ' . $wfacp_you_save_text_html; ?>">
-                                <div class="wfacp_ps_title_wrap">
-                                    <div class="wfacp_product_switcher_col wfacp_product_switcher_col_1">
+						<div class="<?php echo esc_attr( $row_item_class ); ?>" cart_key="<?php echo esc_attr( $cart_item_key ); ?>">
+							<div class="wfacp_row_wrap <?php echo $enable_hide_img . ' ' . $hide_qty_switcher_cls . ' ' . $wfacp_you_save_text_html; ?>">
+								<div class="wfacp_ps_title_wrap">
+									<div class="wfacp_product_switcher_col wfacp_product_switcher_col_1">
 										<?php
 										$yes_enableDeleteItem = apply_filters( 'wfacp_enable_delete_item', $enableDeleteItem, $cart_item, $cart_item_key );
 										if ( true === $yes_enableDeleteItem ) {
@@ -242,17 +241,17 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" fill="currentColor"></path>
 </svg>';
 											?>
-                                            <div class="wfacp_product_switcher_remove_product wfacp_delete_item">
-                                                <a href="javascript:void(0)" class="<?php echo $item_class; ?>" data-cart_key="<?php echo $cart_item_key; ?>"><?php echo $item_icon; ?></a>
-                                            </div>
+											<div class="wfacp_product_switcher_remove_product wfacp_delete_item">
+												<a href="javascript:void(0)" class="<?php echo esc_attr( $item_class ); ?>" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>"><?php echo $item_icon; ?></a>
+											</div>
 											<?php
 										}
 										if ( false == $hide_product_image ) {
 
-											$default_size = apply_filters( 'wfacp_product_image_size', [ 100, 100 ] );
-											$thumbnail    = $pro->get_image( $default_size, [ 'srcset' => false ] );
+											$default_size = apply_filters( 'wfacp_product_image_size', array( 100, 100 ) );
+											$thumbnail    = $pro->get_image( $default_size, array( 'srcset' => false ) );
 
-											echo sprintf( '<div class="product-image"><div class="wfacp-pro-thumb">%s</div>%s</div>', $thumbnail, $qtyHtml );
+											printf( '<div class="product-image"><div class="wfacp-pro-thumb">%s</div>%s</div>', $thumbnail, $qtyHtml );
 										}
 										?>
                                     </div>
@@ -306,14 +305,14 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 											do_action( 'wfacp_after_product_quantity_bump_item_title_section', $cart_item, $cart_item_key );
 											if ( '' !== $saveTextHtml || '' != $subscription_product_string ) {
 												?>
-                                                <div class="wfacp_ps_div_row">
+												<div class="wfacp_ps_div_row">
 													<?php
 													if ( true == $enable_you_save ) {
 														echo $saveTextHtml;
 													}
 													echo $subscription_product_string;
 													?>
-                                                </div>
+												</div>
 												<?php
 											}
 											do_action( 'wfacp_after_product_switcher_you_save_string', $product_data, $pro, $cart_item_key );
@@ -322,7 +321,7 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
                                     </div>
                                 </div>
 
-                                <div class="wfacp_product_sec_start">
+								<div class="wfacp_product_sec_start">
 									<?php
 									$clssaleIndi = '';
 									if ( $_product->is_sold_individually() ) {
@@ -331,8 +330,8 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 
 									?>
 
-                                    <div class="wfacp_product_switcher_col wfacp_product_switcher_col_3 <?php echo $clssaleIndi; ?>">
-                                        <div class="wfacp_product_quantity_container">
+									<div class="wfacp_product_switcher_col wfacp_product_switcher_col_3 <?php echo $clssaleIndi; ?>">
+										<div class="wfacp_product_quantity_container">
 											<?php
 
 											$cart_item_quantity = apply_filters( 'wfacp_item_quantity', $cart_item['quantity'], $cart_item );
@@ -342,22 +341,31 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 												}
 												if ( ! $_product->is_sold_individually() && ! $hide_quantity_switcher ) {
 
-													$minMax = apply_filters( 'wfacp_cart_item_min_max_quantity', [ 'min' => 0, 'max' => '', 'step' => '1' ], $cart_item, $cart_item_key );
+													$minMax = apply_filters(
+														'wfacp_cart_item_min_max_quantity',
+														array(
+															'min'  => 0,
+															'max'  => '',
+															'step' => '1',
+														),
+														$cart_item,
+														$cart_item_key
+													);
 													?>
-                                                    <div class="wfacp_quantity_selector">
-                                                        <div class="wfacp_quantity q_h">
-                                                            <div class="wfacp_qty_wrap">
-                                                                <div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'')" value="Decrease Value">-</div>
-                                                                <input type="number" step="<?php echo $minMax['step'] ?>" min="<?php echo $minMax['min'] ?>" max="<?php echo $minMax['max'] ?>" value="<?php echo $cart_item_quantity; ?>" data-value="<?php echo $cart_item['quantity']; ?>" onfocusout="this.value = (Math.abs(this.value)==0?0:Math.abs(this.value))" class="wfacp_product_switcher_quantity wfacp_product_global_quantity_bump wfacp_product_quantity_number_field">
-                                                                <div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'')" value="Increase Value">+</div>
-                                                            </div>
-                                                        </div>
+													<div class="wfacp_quantity_selector">
+														<div class="wfacp_quantity q_h">
+															<div class="wfacp_qty_wrap">
+																<div class="value-button wfacp_decrease_item" onclick="decreaseItmQty(this,'')" value="Decrease Value">-</div>
+																<input type="number" step="<?php echo $minMax['step']; ?>" min="<?php echo $minMax['min']; ?>" max="<?php echo $minMax['max']; ?>" value="<?php echo $cart_item_quantity; ?>" data-value="<?php echo $cart_item['quantity']; ?>" onfocusout="this.value = (Math.abs(this.value)==0?0:Math.abs(this.value))" class="wfacp_product_switcher_quantity wfacp_product_global_quantity_bump wfacp_product_quantity_number_field">
+																<div class="value-button wfacp_increase_item" onclick="increaseItmQty(this,'')" value="Increase Value">+</div>
+															</div>
+														</div>
 
-                                                    </div>
+													</div>
 													<?php
 												} elseif ( $is_sold_individually ) {
 													?>
-                                                    <span>1</span>
+													<span>1</span>
 													<?php
 												}
 											} else {
@@ -365,9 +373,9 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 											}
 											?>
 
-                                        </div>
-                                        <div class="wfacp_product_price_container product-price">
-                                            <div class="wfacp_product_price_sec">
+										</div>
+										<div class="wfacp_product_price_container product-price">
+											<div class="wfacp_product_price_sec">
 												<?php
 
 												if ( apply_filters( 'wfacp_show_item_price', true, $cart_item ) ) {
@@ -376,9 +384,10 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 														echo $price_show;
 
 													} else {
-														/* $price_data['price'] > 0 Condition removed because when 100% Discount
-										                    added on products the price strike was not displaying
-										               */
+														/*
+														$price_data['price'] > 0 Condition removed because when 100% Discount
+															added on products the price strike was not displaying
+														*/
 														if ( absint( $price_data['price'] ) !== absint( $price_data['regular_org'] ) ) {
 															if ( $price_data['price'] > $price_data['regular_org'] ) {
 																echo wc_price( $price_data['price'] );
@@ -393,8 +402,8 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 													do_action( 'wfacp_show_item_price_placeholder', $_product, $cart_item, $cart_item_key );
 												}
 												?>
-                                            </div>
-                                        </div>
+											</div>
+										</div>
 										<?php
 
 										if ( true === $yes_enableDeleteItem && $cart_count > 0 ) {
@@ -404,20 +413,20 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" fill="currentColor"></path>
 </svg>';
 											?>
-                                            <div class="wfacp_crossicon_for_mb">
-                                                <div class="wfacp_product_switcher_remove_product wfacp_delete_item">
-                                                    <a href="javascript:void(0)" class="<?php echo $item_class; ?>" data-cart_key="<?php echo $cart_item_key; ?>"><?php echo $item_icon; ?></a>
-                                                </div>
-                                            </div>
+											<div class="wfacp_crossicon_for_mb">
+												<div class="wfacp_product_switcher_remove_product wfacp_delete_item">
+													<a href="javascript:void(0)" class="<?php echo esc_attr( $item_class ); ?>" data-cart_key="<?php echo esc_attr( $cart_item_key ); ?>"><?php echo $item_icon; ?></a>
+												</div>
+											</div>
 											<?php
 										}
 
 										?>
 
 
-                                    </div>
+									</div>
 
-                                </div>
+								</div>
 
                             </div>
 							<?php do_action( 'wfacp_after_product_switcher_row', $product_data, $pro, $cart_item_key ); ?>
@@ -432,29 +441,29 @@ if ( isset( $switcher_settings['products'] ) && count( $switcher_settings['produ
 					if ( '' !== $product_switcher_description_html ) {
 
 						?>
-                        <div class="wfacp_whats_included ">
+						<div class="wfacp_whats_included ">
 							<?php
 							echo $sec_heading ? '<h3>' . $sec_heading . '</h3>' : '';
 							echo $product_switcher_description_html;
 							?>
-                        </div>
+						</div>
 						<?php
 					}
 				}
 				if ( true == $is_sold_individually && count( WC()->cart->get_cart() ) == 1 ) {
 					?>
-                    <style>
-                        .wfacp-product-switch-title .product-quantity {
-                            display: none
-                        }
-                    </style>
+					<style>
+						.wfacp-product-switch-title .product-quantity {
+							display: none
+						}
+					</style>
 					<?php
 				}
 			}
 			?>
-        </div>
+		</div>
 
-    </div>
+	</div>
 <?php
 remove_filter( 'wp_get_attachment_image_attributes', 'WFACP_Common::remove_src_set' );
 ?>

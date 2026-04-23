@@ -83,7 +83,7 @@ abstract class ImageResizable extends Image
      */
     public function resize($width = null, $height = null, string $background = 'crop'): self
     {
-        if ($background == 'cover') {
+        if ($background === 'cover') {
             return $this->crop($width, $height);
         }
 

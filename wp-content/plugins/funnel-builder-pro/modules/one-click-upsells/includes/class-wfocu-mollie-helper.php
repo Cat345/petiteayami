@@ -19,20 +19,20 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 		public static $slug;
 
 		public $gateway_dir_path = '/gateways/';
-		public $class_prefix = 'WFOCU_Gateway_Integration_';
+		public $class_prefix     = 'WFOCU_Gateway_Integration_';
 		public $container;
 		private $is_funnel_setup = false;
 
 		/**
 		 * WFOCU_Mollie_Helper constructor.
+		 *
 		 * @throws Exception
 		 */
 		public function __construct() {
 			$this->init_constants();
-			//Including gateways integration files
+			// Including gateways integration files
 			spl_autoload_register( array( $this, 'wfocu_mollie_integration_autoload' ) );
 			add_action( 'wfocu_loaded', array( $this, 'init_hooks' ) );
-
 		}
 
 		/**
@@ -75,56 +75,58 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			require_once 'class-wfocu-mollie-helper-compat.php'; // @codingStandardsIgnoreLine
 			// Initialize Localization
 
-
-			//Adding mollie gateways on global settings on upstroke admin page
+			// Adding mollie gateways on global settings on upstroke admin page
 			add_filter( 'wfocu_wc_get_supported_gateways', array( $this, 'wfocu_mollie_integration' ), 10, 1 );
 
 			/**
 			 * On API Mollie return try to setup the funnel so that we always know to only setup a funnel when order completed
 			 */
-			add_action( 'init', function () {
-				/**
-				 * Below we are trying to find the container that will be responsible to access all the other methods
-				 * Right now this seems like a hack but will see if we found a better way to get the container
-				 */
+			add_action(
+				'init',
+				function () {
+					/**
+					 * Below we are trying to find the container that will be responsible to access all the other methods
+					 * Right now this seems like a hack but will see if we found a better way to get the container
+					 */
 
-				global $wp_filter;
-				foreach ( $wp_filter['woocommerce_payment_gateways'][10] as $val ) {
-					$closure = $val['function'];
-					if ( ! $closure instanceof \Closure ) {
-						continue;
+					global $wp_filter;
+					foreach ( $wp_filter['woocommerce_payment_gateways'][10] as $val ) {
+						$closure = $val['function'];
+						if ( ! $closure instanceof \Closure ) {
+							continue;
+						}
+						$func     = new ReflectionFunction( $closure );
+						$all_vars = $func->getStaticVariables();
+						if ( is_array( $all_vars ) && array_key_exists( 'container', $all_vars ) && ( 'Mollie\WooCommerce\Vendor\Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) || 'Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) || 'Mollie\Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) ) ) {
+
+							$this->container = $all_vars['container'];
+						}
 					}
-					$func     = new ReflectionFunction( $closure );
-					$all_vars = $func->getStaticVariables();
-					if ( is_array( $all_vars ) && array_key_exists( 'container', $all_vars ) && ( 'Mollie\WooCommerce\Vendor\Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) || 'Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) || 'Mollie\Inpsyde\Modularity\Container\ReadOnlyContainer' === get_class( $all_vars['container'] ) ) ) {
+					add_action( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_customer_return_payment_success', array( $this, 'maybe_setup_funnel' ) );
+					add_filter( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_return_url', array( $this, 'maybe_append_si_to_return_url' ) );
+				},
+				999
+			);
 
-						$this->container = $all_vars['container'];
-					}
-
-				}
-				add_action( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_customer_return_payment_success', array( $this, 'maybe_setup_funnel' ) );
-				add_filter( WFOCU_Mollie_Helper_Compat::get_plugin_id( $this->container ) . '_return_url', array( $this, 'maybe_append_si_to_return_url' ) );
-			}, 999 );
-			
 			/**
 			 * Initialize webhook hooks based on Mollie version
 			 * Mollie 8.0.6+ uses REST API, older versions use WC API
 			 */
 			$this->init_webhook_hooks();
-			
-			//Adding order note on receiving response from Mollie Credit card (Live and test modes)
+
+			// Adding order note on receiving response from Mollie Credit card (Live and test modes)
 			add_action( 'woocommerce_api_batch_mollie_wc_gateway_creditcard', array( $this, 'onBatchWebhookAction_Processor_Credit_Cards' ), - 1 );
 
-			//Adding order note on receiving response from Mollie Ideal (Live modes)
+			// Adding order note on receiving response from Mollie Ideal (Live modes)
 			add_action( 'woocommerce_api_batch_mollie_wc_gateway_ideal', array( $this, 'onBatchWebhookAction_Processor_Ideal' ), - 1 );
 
-			//Adding order note on receiving response from Mollie Ideal (Live modes)
+			// Adding order note on receiving response from Mollie Ideal (Live modes)
 			add_action( 'woocommerce_api_batch_mollie_wc_gateway_sofort', array( $this, 'onBatchWebhookAction_Processor_Sofort' ), - 1 );
 
-			//Adding order note on receiving response from Mollie Bancontact (Live modes)
+			// Adding order note on receiving response from Mollie Bancontact (Live modes)
 			add_action( 'woocommerce_api_batch_mollie_wc_gateway_bancontact', array( $this, 'onBatchWebhookAction_Processor_Bancontact' ), - 1 );
 
-			//Storing dismiss notice in usermeta
+			// Storing dismiss notice in usermeta
 			add_action( 'admin_init', array( $this, 'wfocu_mollie_notice_dismissed_function' ) );
 
 			/**
@@ -133,13 +135,12 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			add_action( 'wfocu_after_normalize_order_status', array( $this, 'maybe_handle_ipn_stasuses' ), 10, 1 );
 
 			add_action( 'woocommerce_order_status_pending_to_failed', array( $this, 'maybe_mark_failed_in_upsell_record' ) );
-
 		}
 
 
 		/**
 		 * Get Mollie plugin version
-		 * 
+		 *
 		 * @return string Mollie plugin version or '0.0.0' if not found
 		 */
 		public function get_mollie_version() {
@@ -177,7 +178,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 		public function wfocu_mollie_integration( $gateways ) {
 			$get_mollie_gateways = $this->get_mollie_gateways();
 			$gateways            = array_merge( $gateways, $get_mollie_gateways );
-
 
 			return $gateways;
 		}
@@ -235,23 +235,23 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			$billing_last_name  = WFOCU_WC_Compatibility::get_billing_last_name( $order );
 			$billing_email      = WFOCU_WC_Compatibility::get_order_data( $order, 'billing_email' );
 
-
 			try {
 
-				$settings_helper = WFOCU_Mollie_Helper_Compat::get_settings_helper( WFOCU_Mollie_Helper::instance()->container );
+				$settings_helper = WFOCU_Mollie_Helper_Compat::get_settings_helper( self::instance()->container );
 
-				$customer = WFOCU_Mollie_Helper_Compat::get_api_client( WFOCU_Mollie_Helper::instance()->container, $settings_helper->isTestModeEnabled() )->customers->create( array(
-					'name'     => trim( $billing_first_name ),
-					'email'    => trim( $billing_email ),
-					'metadata' => array( 'Last Name' => $billing_last_name ),
-				) );
+				$customer = WFOCU_Mollie_Helper_Compat::get_api_client( self::instance()->container, $settings_helper->isTestModeEnabled() )->customers->create(
+					array(
+						'name'     => trim( $billing_first_name ),
+						'email'    => trim( $billing_email ),
+						'metadata' => array( 'Last Name' => $billing_last_name ),
+					)
+				);
 				if ( ! empty( $customer->id ) ) {
 					$order->update_meta_data( '_mollie_customer_id', $customer->id );
 					$order->save();
 
 					return $customer->id;
 				}
-
 			} catch ( \Mollie\Api\Exceptions\ApiException $e ) {
 				WFOCU_Core()->log->log( "Coundn't create a mollie customer: " . wp_json_encode( $e->getMessage(), true ) );
 			}
@@ -268,7 +268,7 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			 * Restricted attempt upsell setup only once
 			 */
 			if ( ( true === $this->is_funnel_setup ) ) {
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' already attempt upsell for setup' );
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' already attempt upsell for setup' );
 
 				return;
 			}
@@ -283,8 +283,8 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			$is_during_upsell = $order->get_meta( '_wfocu_upsell_abandoned', true );
 			$funnel_id        = $order->get_meta( '_wfocu_funnel_id', true );
 
-			if ( empty( $is_during_upsell ) && ! empty ( $funnel_id ) ) {
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' restricted upsell not setup after complete order for mollie ' );
+			if ( empty( $is_during_upsell ) && ! empty( $funnel_id ) ) {
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' restricted upsell not setup after complete order for mollie ' );
 
 				return;
 			}
@@ -296,7 +296,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 				WFOCU_Core()->orders->maybe_set_funnel_running_status( $order_new_object );
 			}
 
-
 			$get_current_offer = WFOCU_Core()->data->get_current_offer();
 
 			if ( empty( $get_current_offer ) && 0 === did_action( 'wfocu_front_init_funnel_hooks' ) && ( 'wfocu-pri-order' !== $order->get_status() ) ) {
@@ -307,12 +306,11 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 				if ( $get_gateway_integration instanceof WFOCU_Gateway && $get_gateway_integration->is_enabled( $order ) ) {
 					$get_gateway_integration->unlock_webhook_receival( $order ); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 				}
-
 			}
 			$gateway = wc_get_payment_gateway_by_order( $order );
 
 			if ( ! empty( $get_current_offer ) && 0 === did_action( 'wfocu_front_init_funnel_hooks' ) ) {
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' Mollie force opening upsells url for the multi redirect case ' );
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' Mollie force opening upsells url for the multi redirect case ' );
 				$get_upsell_url = WFOCU_Core()->public->get_the_upsell_url( $get_current_offer );
 				wp_redirect( $get_upsell_url );
 				exit();
@@ -320,29 +318,28 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			$returnRedirect = $gateway->get_return_url( $order );
 			wp_redirect( $returnRedirect );
 			exit();
-
 		}
 
 		public function onWebhookActionIdeal() {
-			remove_action( 'woocommerce_pre_payment_complete', [ WFOCU_Core()->public, 'maybe_setup_upsell' ], 99 );
+			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 			$get_integration = WFOCU_Core()->gateways->get_integration( 'mollie_wc_gateway_ideal' );
 			$get_integration->onWebhookAction(); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 		}
 
 		public function onWebhookActionSofort() {
-			remove_action( 'woocommerce_pre_payment_complete', [ WFOCU_Core()->public, 'maybe_setup_upsell' ], 99 );
+			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 			$get_integration = WFOCU_Core()->gateways->get_integration( 'mollie_wc_gateway_sofort' );
 			$get_integration->onWebhookAction(); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 		}
 
 		public function onWebhookActioncc() {
-			remove_action( 'woocommerce_pre_payment_complete', [ WFOCU_Core()->public, 'maybe_setup_upsell' ], 99 );
+			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 			$get_integration = WFOCU_Core()->gateways->get_integration( 'mollie_wc_gateway_creditcard' );
 			$get_integration->onWebhookAction(); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 		}
 
 		public function onWebhookActionbancontact() {
-			remove_action( 'woocommerce_pre_payment_complete', [ WFOCU_Core()->public, 'maybe_setup_upsell' ], 99 );
+			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 			$get_integration = WFOCU_Core()->gateways->get_integration( 'mollie_wc_gateway_bancontact' );
 			$get_integration->onWebhookAction(); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 		}
@@ -369,38 +366,49 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 		 * Intercept REST API webhook BEFORE Mollie processes it
 		 * We need to handle IPN hold and gateway-specific logic before Mollie runs
 		 *
-		 * @param mixed            $result  Response to replace the requested version with
-		 * @param WP_REST_Server   $server  Server instance
-		 * @param WP_REST_Request  $request Request used to generate the response
+		 * @param mixed           $result  Response to replace the requested version with
+		 * @param WP_REST_Server  $server  Server instance
+		 * @param WP_REST_Request $request Request used to generate the response
 		 * @return mixed
 		 */
 		public function intercept_rest_webhook( $result, $server, $request ) {
-			
+
 			if ( $request->get_route() !== '/mollie/v1/webhook' ) {
-				
+
 				return $result;
 			}
 
-			
 			$transaction_id = $request->get_param( 'id' );
 			if ( ! $transaction_id ) {
-				
-				return $result; 
+
+				return $result;
 			}
 
-			$orders = wc_get_orders( array( 'transaction_id' => $transaction_id, 'limit' => 2 ) );
+			$orders = wc_get_orders(
+				array(
+					'transaction_id' => $transaction_id,
+					'limit'          => 2,
+				)
+			);
 			if ( ! $orders ) {
 				$meta_key = ( substr( $transaction_id, 0, 4 ) === 'ord_' ) ? '_mollie_order_id' : '_mollie_payment_id';
-				$orders   = wc_get_orders( array( 'limit' => 2, 'meta_key' => $meta_key, 'meta_compare' => '=', 'meta_value' => $transaction_id ) );
+				$orders   = wc_get_orders(
+					array(
+						'limit'        => 2,
+						'meta_key'     => $meta_key,
+						'meta_compare' => '=',
+						'meta_value'   => $transaction_id,
+					)
+				);
 				if ( ! $orders ) {
-					
-					return $result; 
+
+					return $result;
 				}
 			}
 
 			if ( count( $orders ) > 1 ) {
-				
-				return $result; 
+
+				return $result;
 			}
 
 			$order      = $orders[0];
@@ -408,17 +416,17 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 
 			// Check if this is a Mollie gateway we support
 			if ( ! $this->is_mollie_gateway( $gateway_id ) ) {
-				
-				return $result; 
+
+				return $result;
 			}
 
 			$gateway_handlers = array(
-				'mollie_wc_gateway_directdebit'   => 'removeWebhookaction',
-				'mollie_wc_gateway_belfius'       => 'removeWebhookaction',
+				'mollie_wc_gateway_directdebit'    => 'removeWebhookaction',
+				'mollie_wc_gateway_belfius'        => 'removeWebhookaction',
 				'mollie_wc_gateway_kbc'            => 'removeWebhookaction',
-				'mollie_wc_gateway_giropay'       => 'removeWebhookaction',
+				'mollie_wc_gateway_giropay'        => 'removeWebhookaction',
 				'mollie_wc_gateway_paypal'         => 'removeWebhookaction',
-				'mollie_wc_gateway_klarnasliceit'   => 'removeWebhookaction',
+				'mollie_wc_gateway_klarnasliceit'  => 'removeWebhookaction',
 				'mollie_wc_gateway_klarnapaynow'   => 'removeWebhookaction',
 				'mollie_wc_gateway_klarnapaylater' => 'removeWebhookaction',
 				'mollie_wc_gateway_in3'            => 'removeWebhookaction',
@@ -426,44 +434,41 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 				'mollie_wc_gateway_ideal'          => 'handle_gateway_webhook',
 				'mollie_wc_gateway_sofort'         => 'handle_gateway_webhook',
 				'mollie_wc_gateway_creditcard'     => 'handle_gateway_webhook',
-				'mollie_wc_gateway_bancontact'      => 'handle_gateway_webhook',
+				'mollie_wc_gateway_bancontact'     => 'handle_gateway_webhook',
 			);
 
 			$handler_method = isset( $gateway_handlers[ $gateway_id ] ) ? $gateway_handlers[ $gateway_id ] : null;
 			if ( ! $handler_method ) {
-				
-				return $result; 
+
+				return $result;
 			}
 
 			$_GET['order_id'] = $order->get_id(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$_GET['key']      = $order->get_order_key(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$_POST['id']      = $transaction_id; // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
-			
 			if ( 'removeWebhookaction' === $handler_method ) {
-				
+
 				$this->removeWebhookaction();
 			} elseif ( 'handle_gateway_webhook' === $handler_method ) {
-				
+
 				remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 				$get_integration = WFOCU_Core()->gateways->get_integration( $gateway_id );
-				
+
 				$get_meta                        = $order->get_meta( '_wfocu_mollie_hold_ipn', true );
 				$get_transient                   = get_transient( 'wfocu_hold_ipn_mollie_' . $order->get_id() );
 				$funnel_id_in_meta               = $order->get_meta( '_wfocu_funnel_id', true );
 				$get_mollie_order_id_from_meta   = $order->get_meta( '_mollie_order_id', true );
 				$get_mollie_payment_id_from_meta = $order->get_meta( '_mollie_payment_id', true );
-				
+
 				if ( 'yes' === $get_meta && ( ! empty( $get_transient ) || ! empty( $funnel_id_in_meta ) ) && ( $transaction_id === $get_mollie_order_id_from_meta || $transaction_id === $get_mollie_payment_id_from_meta ) ) {
-					
+
 					$get_integration->onWebhookAction(); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 					return new \WP_REST_Response( null, 400 );
 				}
 			}
-			
-			
-			return $result;
 
+			return $result;
 		}
 
 
@@ -478,20 +483,19 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 		/**
 		 * @param WC_Order $order
 		 * @param $status
-		 * @param string $action
+		 * @param string   $action
 		 */
 		public function maybe_handle_ipn_stasuses( $order ) {
 
-
 			$gateway = $order->get_payment_method();
 			if ( false === $this->is_mollie_gateway( $gateway ) ) {
-				WFOCU_Core()->log->log( "not a mollie gateway in the process." );
+				WFOCU_Core()->log->log( 'not a mollie gateway in the process.' );
 
 				return;
 			}
 			$get_meta = $order->get_meta( '_wfocu_mollie_hold_ipn', true );
 			if ( 'yes' !== $get_meta ) {
-				WFOCU_Core()->log->log( "meta not found" );
+				WFOCU_Core()->log->log( 'meta not found' );
 
 				return;
 			}
@@ -501,7 +505,6 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			$get_gateway_integration = WFOCU_Core()->gateways->get_integration( $gateway );
 			$get_gateway_integration->onWebhookActionDelayed( $order, $payment_ID ); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
 			$get_gateway_integration->unlock_webhook_receival( $order ); // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Dynamic method call on gateway integration
-
 		}
 
 		public function is_mollie_gateway( $gateway ) {
@@ -511,11 +514,10 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_mollie_gateways() {
-			$gateways                                 = [];
+			$gateways                                 = array();
 			$gateways['mollie_wc_gateway_creditcard'] = 'WFOCU_Gateway_Integration_Mollie_Gateway_Credit_Cards';
 			$gateways['mollie_wc_gateway_ideal']      = 'WFOCU_Gateway_Integration_Mollie_Gateway_Ideal';
 			$gateways['mollie_wc_gateway_sofort']     = 'WFOCU_Gateway_Integration_Mollie_Gateway_Sofort';
@@ -531,29 +533,39 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 		}
 
 		public function maybe_mark_failed_in_upsell_record( $order_id ) {
-			$event_id = WFOCU_Core()->track->query_results( array(
-				'data'       => array(),
-				'where_meta' => array(
-					array(
-						'type'       => 'meta',
-						'meta_key'   => '_new_order',
-						'meta_value' => $order_id,
-						'operator'   => '=',
+			$event_id = WFOCU_Core()->track->query_results(
+				array(
+					'data'       => array(),
+					'where_meta' => array(
+						array(
+							'type'       => 'meta',
+							'meta_key'   => '_new_order',
+							'meta_value' => $order_id,
+							'operator'   => '=',
+						),
 					),
-				),
-				'order_by'   => 'events.id DESC',
-				'query_type' => 'get_var',
-			) );
-			if ( empty( $event_id ) ) {
+					'order_by'   => 'events.id DESC',
+					'query_type' => 'get_var',
+				)
+			);
+			$event_id = absint( $event_id );
+			if ( $event_id <= 0 ) {
 				return;
 			}
 			global $wpdb;
-			$event = $wpdb->get_row( "SELECT * FROM " . $wpdb->prefix . "wfocu_event WHERE id = " . $event_id . " AND object_type = 'offer'" );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$event = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wfocu_event WHERE id = %d AND object_type = 'offer'", $event_id ) );
 			if ( ! empty( $event ) ) {
-				$sess_total = $wpdb->get_var( "SELECT total FROM " . $wpdb->prefix . "wfocu_session WHERE id = " . $event->sess_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$sess_total = $wpdb->get_var( $wpdb->prepare( "SELECT total FROM {$wpdb->prefix}wfocu_session WHERE id = %d", absint( $event->sess_id ) ) );
 				$sess_total = $sess_total - $event->value;
-				$wpdb->update( $wpdb->prefix . "wfocu_event", [ 'action_type_id' => WFOCU_DB_Track::OFFER_PAYMENT_FAILED_ACTION_ID ], [ 'id' => $event_id, 'object_type' => 'offer' ] );
-				$wpdb->update( $wpdb->prefix . "wfocu_session", [ 'total' => $sess_total ], [ 'id' => $event->sess_id ] );
+				$wpdb->update(
+					$wpdb->prefix . 'wfocu_event',
+					array( 'action_type_id' => WFOCU_DB_Track::OFFER_PAYMENT_FAILED_ACTION_ID ),
+					array(
+						'id'          => $event_id,
+						'object_type' => 'offer',
+					)
+				);
+				$wpdb->update( $wpdb->prefix . 'wfocu_session', array( 'total' => $sess_total ), array( 'id' => absint( $event->sess_id ) ) );
 			}
 		}
 
@@ -568,17 +580,15 @@ if ( ! class_exists( 'WFOCU_Mollie_Helper' ) ) {
 			$deactivate_url = wp_nonce_url( $deactivate_url, 'deactivate-plugin_' . 'upstroke-woocommerce-one-click-upsell-mollie/upstroke-woocommerce-one-click-upsell-mollie.php' );
 
 			?>
-            <div class="notice notice-error is-dismissible">
-                <p>
+			<div class="notice notice-error is-dismissible">
+				<p>
 					<?php
 					echo wp_kses_post( sprintf( /* translators: %s: Deactivate URL */ __( '<strong>FunnelKit Mollie Integration:</strong> Compatibility of Mollie Payments with FunnelKit One Click Upsells is now part of Funnel Builder Pro. You can safely deactivate and uninstall <strong>FunnelKit One Click Upsell for Mollie</strong>. <a class="button button-secondary" href="%s">Deactivate Now</a>', 'upstroke-woocommerce-one-click-upsell-mollie' ), esc_url( $deactivate_url ) ) );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
-
-
 	}
 
 	WFOCU_Mollie_Helper::instance();

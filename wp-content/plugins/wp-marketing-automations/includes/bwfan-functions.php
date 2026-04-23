@@ -259,3 +259,20 @@ if ( ! function_exists( 'bwfan_is_breakdance_active' ) ) {
 		return BWFAN_Plugin_Dependency::bwfan_breakdance_check();
 	}
 }
+/**
+ * Oxygen builder detection
+ */
+if ( ! function_exists( 'bwfan_is_oxygen_builder_active' ) ) {
+	function bwfan_is_oxygen_builder_active() {
+		return defined('CT_VERSION');
+	}
+}
+
+/**
+ * Sublium plugin Detection
+ */
+if ( ! function_exists( 'bwfan_is_sublium_active' ) ) {
+	function bwfan_is_sublium_active() {
+		return BWFAN_Plugin_Dependency::sublium_active_check();
+	}
+}

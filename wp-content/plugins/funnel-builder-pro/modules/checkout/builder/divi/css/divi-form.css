@@ -92,7 +92,8 @@ body .et_pb_section.wfacp-divi-fullwidth .et_pb_row {
 .et-db #et-boc #wfacp-e-form input textarea,
 .et-db #et-boc #wfacp-e-form input[type=password],
 .et-db #et-boc #wfacp-e-form input[type=tel],
-.et-db #et-boc #wfacp-e-form input[type=text]:not(.select2-search__field) {
+.et-db #et-boc #wfacp-e-form input[type=text]:not(.select2-search__field), 
+.et-db #et-boc #wfacp-e-form .select2-selection__rendered { 
     font-size: 14px;
     line-height: 1.5;
     width: 100%;
@@ -118,7 +119,7 @@ body .et_pb_section.wfacp-divi-fullwidth .et_pb_row {
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h .woocommerce-message:empty {
-    display: none;
+    display: none !important;
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h table.shop_table tr.order-total td small.includes_tax {
@@ -227,7 +228,7 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
     font-weight: 400;
 }
 
-.et-db #et-boc .wfacp_mini_cart_start_h .wfacp_order_sum .product-image * {
+.et-db #et-boc .wfacp_mini_cart_start_h .product-image * {
     vertical-align: middle;
 }
 
@@ -347,9 +348,9 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
 
 
 .et-db #et-boc .wfacp_mini_cart_start_h .form-row button.wfacp-coupon-btn {
-    border-radius: 2px;
-    padding: 15px 15px;
-    line-height: 17px;
+    border-radius: 4px;
+    padding: 15px;
+    line-height: 1.5;
     margin: 0;
     color: #fff;
     display: block;
@@ -360,8 +361,9 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
     width: 100%;
     font-weight: normal;
     border: none;
-    min-height: 52px;
-    border-radius: 4px;
+    min-height: auto;
+    height: 50px;
+    box-sizing: border-box;
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h dd,
@@ -495,32 +497,17 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
     display: inline-block;
 }
 
-.et-db #et-boc .wfacp_mini_cart_start_h .woocommerce-message.wfacp_success {
-    padding: 1px 10px !important;
-    position: relative;
-    color: #737373 !important;
-    border: none;
-    border-left: 2px solid #24ae4e !important;
-    width: auto;
-    font-size: 14px !important;
-    margin: 0;
-    display: block;
-    background: transparent;
-    text-transform: none;
-}
-
 .et-db #et-boc .wfacp_mini_cart_start_h .woocommerce-message.wfacp_success .woocommerce-message1 {
-    padding: 1px 10px !important;
+    padding: 0 0 0 16px !important;
     position: relative;
-    color: #737373 !important;
+    color: #24ae4e !important;
     border: none;
-    border-left: 2px solid #24ae4e !important;
     width: auto;
-    font-size: 14px !important;
     margin: 0 0 10px;
     display: block;
-    background: transparent;
     text-transform: none;
+    line-height: 16px;
+    font-size: 12px !important;
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h .woocommerce-message.wfacp_success .woocommerce-message1:last-child {
@@ -535,13 +522,51 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
     border-bottom: none;
 }
 
-.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn:after,
-.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn:before {
+.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn:not(.wfacp_btn_clicked):after,
+.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn:not(.wfacp_btn_clicked):before {
     display: none;
 }
 
+/* Coupon button loader spinner (matches Elementor behavior) */
+.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn.wfacp_btn_clicked,
+.et-db #et-boc #wfacp-e-form button.wfacp-coupon-btn.wfacp_btn_clicked,
+.et-db #et-boc #wfacp-e-form .wfacp-coupon-field-btn.wfacp_btn_clicked {
+    color: transparent !important;
+    position: relative;
+    transition: none;
+}
+
+.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn.wfacp_btn_clicked:before,
+.et-db #et-boc #wfacp-e-form button.wfacp-coupon-btn.wfacp_btn_clicked:before,
+.et-db #et-boc #wfacp-e-form .wfacp-coupon-field-btn.wfacp_btn_clicked:before {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    content: '' !important;
+    width: 16px;
+    margin: -8px auto auto;
+    height: 16px;
+    border: 2px solid #fff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: block !important;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    opacity: 1;
+    z-index: 999;
+    filter: none;
+    font-family: inherit;
+}
+
+.et-db #et-boc .wfacp_mini_cart_start_h button.wfacp-coupon-btn.wfacp_btn_clicked:after,
+.et-db #et-boc #wfacp-e-form button.wfacp-coupon-btn.wfacp_btn_clicked:after,
+.et-db #et-boc #wfacp-e-form .wfacp-coupon-field-btn.wfacp_btn_clicked:after {
+    display: none !important;
+}
+
 .et-db #et-boc .wfacp_mini_cart_start_h .woocommerce-message.wfacp_success {
-    padding: 0;
+    padding: 0 !important;
     border: none;
 }
 
@@ -762,15 +787,18 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
 }
 
 
-.et-db #et-boc .wfacp_mini_cart_start_h .wfacp_order_sum .product-image {
+.et-db #et-boc .wfacp_mini_cart_start_h .product-image {
     max-width: 60px;
     float: left;
-    border: 1px solid #e1e1e1;
+
     margin-top: 0;
     margin-bottom: 0;
     display: inherit;
     vertical-align: top;
     padding: 0;
+}
+.et-db #et-boc .wfacp_mini_cart_start_h .product-image img {
+    border: 1px solid #e1e1e1;
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h .wfacp_order_sum .wfacp-pro-thumb {
@@ -899,9 +927,10 @@ body #wfacp-e-form p.woocommerce-store-notice.demo_store.wfacp_dummy_preview_hea
 .et-db #et-boc .wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal.cart-discount {
     border: none;
 }
-
+.et-db #et-boc #wfacp-e-form a.wfacp_remove_coupon,
 .et-db #et-boc .wfacp_mini_cart_start_h a.woocommerce-remove-coupon {
     color: #dd7575;
+    font-size: 12px !important;
 }
 
 .et-db #et-boc .wfacp_mini_cart_start_h table,
@@ -1302,7 +1331,7 @@ body #et-boc #et_builder_outer_content div.wfacp-payment-tab-wrapper {
 }
 
 /* Coupon */
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h div.woocommerce-error,
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h ul.woocommerce-error,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-error,
@@ -1312,30 +1341,25 @@ body #et-boc #et_builder_outer_content div.wfacp-payment-tab-wrapper {
 body #wfacp-e-form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message,
 .et-db #et-boc .et-l .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message {
     color: #e15334 !important;
-    border-radius: 8px;
-    background: #fae6e6;
-    padding: 5px 12px;
-    border: none;
-    border-left: 2px solid #e15334 !important;
-    margin: 0 0 16px;
-    min-height: 1px;
+    border-radius: 8px !important;
+    padding: 5px 12px !important;
+    border: none !important;
+    margin: 8px 0 0 !important;
+    min-height: 1px !important;
 }
 
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp-coupon-page .wfacp_coupon_remove_msg,
 .et-db #et-boc .et-l .wfacp_main_form .wfacp-success,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form .woocommerce-message,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-message,
 .et-db #et-boc .et-l .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg,
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg {
-    border-color: #24ae4e !important;
-    background: #d2f3dc;
-    padding: 5px 10px;
+    padding: 0 0 0 16px;
     border-radius: 8px;
     color: #24ae4e !important;
     border: none;
-    border-left: 2px solid #24ae4e;
     margin: 0 0 16px;
     min-height: 1px;
 }
@@ -1675,6 +1699,12 @@ body.et-db #et-boc .et-l .wfacp_main_form button[disabled],
     background-size: auto;
 }
 
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .et-db #et-boc .et-l .iti__flag {
+        background-size: auto 15px;
+    }
+}
+
 .et-db #et-boc .et-l .iti__country-list {
     position: absolute;
     z-index: 999;
@@ -1794,27 +1824,28 @@ body .woocommerce-page #content input.button:hover:after {
     transition: none;
     transform: none;
 }
+.et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message {
+    padding: 0 !important;
+}
 
-
-.et-db #et-boc .et-l #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l #wfacp-sec-wrapper #order_coupon_field .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l #wfacp-sec-wrapper #order_coupon_field div.woocommerce-error,
 .et-db #et-boc .et-l #wfacp-sec-wrapper #order_coupon_field ul.woocommerce-error,
-.et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content div.woocommerce-error,
 .et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_mb_mini_cart_sec_accordion_content ul.woocommerce-error,
 .et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_product_restore_wrap,
 .et-db #et-boc .et-l #wfacp-sec-wrapper .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message,
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h div.woocommerce-error,
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h ul.woocommerce-error,
 .et-db #et-boc .et-l .wfacp_product_restore_wrap,
 .et-db #et-boc .et-l .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_error_msg .woocommerce_single_error_message {
     color: #e15334 !important;
     border-radius: 3px;
-    background: 0 0;
-    padding: 0;
+    padding: 0 !important;
     border: none !important;
-    font-size: 12px;
+    font-size: 12px !important;
     line-height: 1.5;
 }
 
@@ -1833,8 +1864,13 @@ body .woocommerce-page #content input.button:hover:after {
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_display_block .wfacp_coupon_msg .woocommerce-message:empty,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_display_block .wfacp_coupon_msg .woocommerce-error:empty,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_display_none .wfacp_coupon_msg .woocommerce-message:empty,
-.et-db #et-boc .et-l #wfacp-e-form .wfacp_display_none .wfacp_coupon_msg .woocommerce-error:empty {
+.et-db #et-boc .et-l #wfacp-e-form .wfacp_display_none .wfacp_coupon_msg .woocommerce-error:empty,
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_display_block .wfacp_coupon_msg .woocommerce-message:empty,
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_display_block .wfacp_coupon_msg .woocommerce-error:empty,
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_display_none .wfacp_coupon_msg .woocommerce-message:empty,
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_display_none .wfacp_coupon_msg .woocommerce-error:empty {
     display: none;
+    padding: 0 !important;
 }
 
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_form_cart table.shop_table.woocommerce-checkout-review-order-table_layout_9 tfoot tr:not(.order-total) td,
@@ -1897,6 +1933,12 @@ body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-info {
 body.et-db #et-boc .et-l .et_pb_column {
     z-index: auto;
 }
+body #wfacp-e-form .wfacp_back_page_button {
+    font-weight: 300;
+}
+body #wfacp-e-form .wfacp-payment-dec {
+    font-weight: 400;
+}
 @media (min-width: 768px) {
     .et-db #et-boc .et-l .wfacp_main_form #product_switching_field.wfacp-product-switch-panel .value-button,
     .et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item .product-quantity .value-button {
@@ -1939,6 +1981,45 @@ body.et-db #et-boc .et-l .et_pb_column {
 
         flex-direction: column;
         align-items: baseline;
+    }
+
+	.et-db #et-boc .et-l .wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item .product-quantity .wfacp_quantity_selector input[type=number] {
+		width: 20px !important;
+		margin: 0 20px;
+
+	}
+	.wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item .product-quantity .value-button:before, body .cart_item .product-quantity .value-button:before, body .wfacp_main_form #product_switching_field.wfacp-product-switch-panel .value-button {
+		width: 20px;
+
+	}
+	.et-db #et-boc .wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item .product-quantity .value-button{
+		height: 24px;
+	}
+}
+
+/* Override Divi's static CSS that forces checkout form-row to full width on tablet */
+@media (max-width: 980px) {
+    #wfacp-e-form p.form-row.wfacp-col-full {
+        clear:both !important;
+        width: 100% !important;
+    }
+
+    #wfacp-e-form p.form-row.wfacp-col-left-half {
+        float: left !important;
+        width: 50% !important;
+        clear: none !important;
+    }
+
+    #wfacp-e-form p.form-row.wfacp-col-left-third {
+        width: 33.3% !important;
+        float: left !important;
+        clear: none !important;
+    }
+
+    #wfacp-e-form p.form-row.wfacp-col-two-third {
+        width: 66.7% !important;
+        float: left !important;
+        clear: none !important;
     }
 }
 

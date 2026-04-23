@@ -15,60 +15,62 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 		/**
 		 * @var WooCommerce_MyParcel_Frontend
 		 */
-		private $instance = null;
-		private $instance_new = null;
-		private $billing_fields_added = false;
+		private $instance              = null;
+		private $instance_new          = null;
+		private $billing_fields_added  = false;
 		private $shipping_fields_added = false;
-		private $billing_country_nl = false;
-		private $shipping_country_nl = false;
-		private $enable_plugin = false;
-		private $wcl_parcel_field_keys = [];
-		private $classess = [
-			'old' => [ 'wfacp-col-left-half', 'wfacp-col-middle-third', 'wfacp-col-right-third' ],
-			'new' => [ 'wfacp-col-left-half', 'wfacp-col-left-third', 'wfacp-col-left-third' ]
-		];
+		private $billing_country_nl    = false;
+		private $shipping_country_nl   = false;
+		private $enable_plugin         = false;
+		private $wcl_parcel_field_keys = array();
+		private $classess              = array(
+			'old' => array( 'wfacp-col-left-half', 'wfacp-col-middle-third', 'wfacp-col-right-third' ),
+			'new' => array( 'wfacp-col-left-half', 'wfacp-col-left-third', 'wfacp-col-left-third' ),
+		);
 
-		private $plugin_registered_fields = [
+		private $plugin_registered_fields = array(
 			'billing_street_name',
 			'billing_house_number',
 			'billing_house_number_suffix',
 
-		];
+		);
 
 		public function __construct() {
-			add_filter( 'wfacp_advanced_fields', [ $this, 'add_fields' ] );
+			add_filter( 'wfacp_advanced_fields', array( $this, 'add_fields' ) );
 			add_filter( 'wfacp_html_fields_wfacp_postcode_my_parcel', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'postcode_my_parcel' ], 10, 3 );
-			add_action( 'wfacp_internal_css', [ $this, 'get_instance' ], 101 );
-			add_filter( 'wfacp_form_section', [ $this, 'checkout_billing_sections' ] );
-			add_filter( 'wfacp_form_section', [ $this, 'checkout_shipping_sections' ] );
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'validation_fields' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
+			add_action( 'process_wfacp_html', array( $this, 'postcode_my_parcel' ), 10, 3 );
+			add_action( 'wfacp_internal_css', array( $this, 'get_instance' ), 101 );
+			add_filter( 'wfacp_form_section', array( $this, 'checkout_billing_sections' ) );
+			add_filter( 'wfacp_form_section', array( $this, 'checkout_shipping_sections' ) );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'validation_fields' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 
-			add_filter( 'wfacp_template_localize_data', [ $this, 'remove_optional_shipping_field_validation_error' ] );
-			add_filter( 'woocommerce_country_locale_field_selectors', [ $this, 'remove_street_address' ], 50 );
+			add_filter( 'wfacp_template_localize_data', array( $this, 'remove_optional_shipping_field_validation_error' ) );
+			add_filter( 'woocommerce_country_locale_field_selectors', array( $this, 'remove_street_address' ), 50 );
 
-			add_filter( 'wfacp_update_posted_data_vice_versa_keys', [ $this, 'update_address_data' ] );
-			add_filter( 'wfacp_unset_vice_versa_keys_shipping_keys', [ $this, 'unset_shipping_address_data' ] );
+			add_filter( 'wfacp_update_posted_data_vice_versa_keys', array( $this, 'update_address_data' ) );
+			add_filter( 'wfacp_unset_vice_versa_keys_shipping_keys', array( $this, 'unset_shipping_address_data' ) );
 
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 
-			add_filter( 'wfacp_checkout_before_order_review', [ $this, 'add_actions' ], 9 );
+			add_filter( 'wfacp_checkout_before_order_review', array( $this, 'add_actions' ), 9 );
 
 			/* prevent third party fields and wrapper*/
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_fields' ] );
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_fields' ) );
 		}
 
 		public function action() {
 			if ( ! $this->is_enabled() ) {
 				return;
 			}
-			add_action( 'wp_head', function () {
-				$position           = WCMYPA()->setting_collection->getByName( WCMYPA_Settings::SETTING_DELIVERY_OPTIONS_POSITION );
-				$this->instance_new = WFACP_Common::remove_actions( $position, 'WCMP_Checkout', 'output_delivery_options' );
-			} );
-
+			add_action(
+				'wp_head',
+				function () {
+					$position           = WCMYPA()->setting_collection->getByName( WCMYPA_Settings::SETTING_DELIVERY_OPTIONS_POSITION );
+					$this->instance_new = WFACP_Common::remove_actions( $position, 'WCMP_Checkout', 'output_delivery_options' );
+				}
+			);
 		}
 
 		private function is_enabled() {
@@ -82,24 +84,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 			}
 
 			if ( $this->enable_plugin === true ) {
-				$options = get_option( 'woocommerce_myparcel_checkout_settings', [] );
+				$options = get_option( 'woocommerce_myparcel_checkout_settings', array() );
 				if ( isset( $options['use_split_address_fields'] ) && wc_string_to_bool( $options['use_split_address_fields'] ) ) {
 					return true;
 				}
 			}
-
 
 			return false;
 		}
 
 		public function add_fields( $fields ) {
 			if ( $this->is_enabled() ) {
-				$fields['wfacp_postcode_my_parcel'] = [
+				$fields['wfacp_postcode_my_parcel'] = array(
 					'type'    => 'wfacp_html',
 					'default' => '',
 					'label'   => __( 'My Parcel', 'woocommerce-aero-checkout' ),
 					'id'      => 'wfacp_postcode_my_parcel',
-				];
+				);
 			}
 
 			return $fields;
@@ -108,11 +109,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 		public function postcode_my_parcel( $field, $key, $args ) {
 			if ( ! empty( $key ) && 'wfacp_postcode_my_parcel' === $key && $this->is_enabled() ) {
 				if ( ! is_null( $this->instance ) ) {
-					echo "<div id=wfacp_output_delivery_options>";
+					echo '<div id=wfacp_output_delivery_options>';
 					$this->instance->output_delivery_options();
-					echo "</div>";
+					echo '</div>';
 				}
-
 			}
 		}
 
@@ -121,7 +121,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 			if ( defined( 'WC_MYPARCEL_NL_VERSION' ) ) {
 				$this->instance = $this->instance_new;
 			}
-
 		}
 
 		public function remove_street_address( $locale_fields ) {
@@ -135,7 +134,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 		}
 
 		public function validation_fields() {
-			add_filter( 'wfacp_checkout_fields', [ $this, 'make_validation' ] );
+			add_filter( 'wfacp_checkout_fields', array( $this, 'make_validation' ) );
 		}
 
 		public function make_validation( $template_fields ) {
@@ -143,32 +142,29 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				return $template_fields;
 			}
 
-
 			$template = wfacp_template();
 			if ( is_null( $template ) ) {
 				return $template_fields;
 			}
-			$countries = [ 'NL', 'BE' ];
+			$countries = array( 'NL', 'BE' );
 			if ( $template->have_billing_address() ) {
 				WFACP_Common::remove_actions( 'woocommerce_billing_fields', 'Woocommerce_MyParcel_Postcode_Fields', 'nl_billing_fields' );
 				$billing_country = WC()->checkout()->get_value( 'billing_country' );
 
 				$required = in_array( $billing_country, $countries ) ? true : false;
 
-
-				if ( ! isset( $_REQUEST['billing_same_as_shipping'] ) && isset( $_POST['ship_to_different_address'] ) && isset( $_POST['wfacp_billing_same_as_shipping'] ) && $_POST['wfacp_billing_same_as_shipping'] == 0 ) {
+				if ( ! isset( $_REQUEST['billing_same_as_shipping'] ) && isset( $_POST['ship_to_different_address'] ) && isset( $_POST['wfacp_billing_same_as_shipping'] ) && $_POST['wfacp_billing_same_as_shipping'] == 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Missing , WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 					$required = false;
 				}
 
-
 				if ( isset( $template_fields['billing'] ) ) {
-					$form                                                         = 'billing';
-					$template_fields['billing'][ $form . '_street_name' ]         = [
+					$form = 'billing';
+					$template_fields['billing'][ $form . '_street_name' ]         = array(
 						'label'       => __( 'Street name', 'woocommerce-myparcel' ),
 						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
 						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
 						'required'    => $required,
-					];
+					);
 					$template_fields['billing'][ $form . '_house_number' ]        = array(
 						'label'             => __( 'No.', 'woocommerce-myparcel' ),
 						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ),
@@ -192,13 +188,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				$shipping_country = WC()->checkout()->get_value( 'shipping_country' );
 				$required         = in_array( $shipping_country, $countries ) ? true : false;
 				if ( isset( $template_fields['shipping'] ) ) {
-					$form                                                   = 'shipping';
-					$template_fields['shipping'][ $form . '_street_name' ]  = [
+					$form = 'shipping';
+					$template_fields['shipping'][ $form . '_street_name' ]  = array(
 						'label'       => __( 'Street name', 'woocommerce-myparcel' ),
 						'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
 						'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
 						'required'    => $required,
-					];
+					);
 					$template_fields['shipping'][ $form . '_house_number' ] = array(
 						'label'             => __( 'No.', 'woocommerce-myparcel' ),
 						'placeholder'       => __( 'No.', 'woocommerce-myparcel' ),
@@ -226,7 +222,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 		public function checkout_billing_sections( $sections ) {
 			try {
 
-
 				if ( $this->billing_fields_added ) {
 					return $sections;
 				}
@@ -236,16 +231,15 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				if ( ! $this->is_enabled() ) {
 					return $sections;
 				}
-		
 
 				if ( isset( $sections['fields']['wfacp_end_divider_billing'] ) ) {
 					try {
 						$this->billing_fields_added = true;
 						$end_address_found          = false;
 						$end_address_closser        = $sections['fields']['wfacp_end_divider_billing'];
-						$after_address_element      = [];
+						$after_address_element      = array();
 						$is_hidedable               = false;
-						$keysVal                    = [];
+						$keysVal                    = array();
 						foreach ( $sections['fields'] as $index => $field ) {
 							if ( isset( $field['id'] ) && isset( $field['priority'] ) ) {
 								$keysVal[ $field['id'] ] = $field['priority'];
@@ -268,7 +262,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields = array();
 						WFACP_Common::remove_actions( 'woocommerce_billing_fields', 'Woocommerce_MyParcel_Postcode_Fields', 'nl_billing_fields' );
 						$country   = WC()->checkout()->get_value( 'billing_country' );
-						$countries = [ 'NL', 'BE' ];
+						$countries = array( 'NL', 'BE' );
 						// Set required to true if country is NL
 						$required = in_array( $country, $countries ) ? true : false;
 						if ( true == $required ) {
@@ -277,12 +271,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$form         = 'billing';
 						$templateSlug = wfacp_template()->get_template_slug();
 
-
-
 						$class1 = $this->classess['new'][0];
 						$class2 = $this->classess['new'][1];
 						$class3 = $this->classess['new'][2];
-
 
 						if ( strpos( $templateSlug, 'embed_forms_' ) !== false ) {
 							$class1 = 'wfacp-col-full';
@@ -293,7 +284,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields[] = array(
 							'label'       => __( 'Street name', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class1" ],
+							'cssready'    => array( "wfacp_wc_parcel $class1" ),
 							'id'          => $form . '_street_name',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
 							'required'    => $required, // Only required for NL
@@ -302,7 +293,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields[] = array(
 							'label'       => __( 'No.', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'No.', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class2" ],
+							'cssready'    => array( "wfacp_wc_parcel $class2" ),
 							'id'          => $form . '_house_number',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
 							'required'    => $required, // Only required for NL
@@ -311,12 +302,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields[] = array(
 							'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class3" ],
+							'cssready'    => array( "wfacp_wc_parcel $class3" ),
 							'id'          => $form . '_house_number_suffix',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ),
 
-							'maxlength' => 4,
-							'priority'  => 62,
+							'maxlength'   => 4,
+							'priority'    => 62,
 						);
 
 						$this->wcl_parcel_field_keys = array_merge( $this->wcl_parcel_field_keys, $new_fields );
@@ -356,7 +347,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 					} catch ( Exception $e ) {
 					}
 				}
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 
 			}
 
@@ -375,7 +366,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 					return $sections;
 				}
 
-
 				$templateSlug = wfacp_template()->get_template_slug();
 
 				if ( strpos( $templateSlug, 'embed_forms_' ) !== false ) {
@@ -387,7 +377,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$this->shipping_fields_added = true;
 						$end_address_found           = false;
 						$end_address_closser         = $sections['fields']['wfacp_end_divider_shipping'];
-						$after_address_element       = [];
+						$after_address_element       = array();
 						$is_hidedable                = false;
 						foreach ( $sections['fields'] as $index => $field ) {
 							if ( $end_address_found ) {
@@ -405,26 +395,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields = array();
 						WFACP_Common::remove_actions( 'woocommerce_shipping_fields', 'WPO\WC\Postcode_Checker\WC_NLPostcode_Fields', 'nl_shipping_fields' );
 						$shipping_country = WC()->checkout()->get_value( 'shipping_country' );
-						$countries        = [ 'NL', 'BE' ];
+						$countries        = array( 'NL', 'BE' );
 						// Set required to true if country is NL
 						$required = in_array( $shipping_country, $countries ) ? true : false;
 						if ( true == $required ) {
 							$this->shipping_country_nl = true;
 						}
 
-
-
-						$class1  = $this->classess['new'][0];
-						$class2  = $this->classess['new'][1];
-						$class3  = $this->classess['new'][2];
-
+						$class1 = $this->classess['new'][0];
+						$class2 = $this->classess['new'][1];
+						$class3 = $this->classess['new'][2];
 
 						$form = 'shipping';
 						// Add street name
 						$new_fields[]                  = array(
 							'label'       => __( 'Street name', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'Street name', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class1" ],
+							'cssready'    => array( "wfacp_wc_parcel $class1" ),
 							'id'          => $form . '_street_name',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third first wfacp_street_name' ) ),
 							'required'    => $required, // Only required for NL
@@ -433,7 +420,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields[]                  = array(
 							'label'       => __( 'No.', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'No.', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class2" ],
+							'cssready'    => array( "wfacp_wc_parcel $class2" ),
 							'id'          => $form . '_house_number',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third wfacp_house_number' ) ),
 							'required'    => $required, // Only required for NL
@@ -442,7 +429,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 						$new_fields[]                  = array(
 							'label'       => __( 'Suffix', 'woocommerce-myparcel' ),
 							'placeholder' => __( 'Suffix', 'woocommerce-myparcel' ),
-							'cssready'    => [ "wfacp_wc_parcel $class3" ],
+							'cssready'    => array( "wfacp_wc_parcel $class3" ),
 							'id'          => $form . '_house_number_suffix',
 							'class'       => apply_filters( 'nl_custom_address_field_class', array( 'form-row-third last wfacp_house_number_suffix' ) ),
 							'maxlength'   => 4,
@@ -485,7 +472,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 					} catch ( Exception $e ) {
 					}
 				}
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 
 			}
 
@@ -507,9 +494,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 				return;
 			}
 
-			$bodyClass = "body ";
+			$bodyClass = 'body ';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
 			$css = "
@@ -656,17 +643,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
             $bodyClass .wfacp_main_form.woocommerce #wfacp_output_delivery_options {
                 margin-bottom: 15px;
             }
-            
+
 			$bodyClass #wfacp_output_delivery_options {
 			    clear: both;
 			    padding: 0 7px;
 			}
-			
+
 			$bodyClass #wfacp_output_delivery_options .myparcel-delivery-options__modal {
 			    padding: 0;
 			}
-			
-			
+
+
 			$bodyClass #wfacp_output_delivery_options h1,
 			$bodyClass #wfacp_output_delivery_options h2,
 			$bodyClass #wfacp_output_delivery_options h3,
@@ -676,7 +663,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 			    margin: 0 0 15px;
 			    line-height: 1.5;
 			}
-	
+
 			$bodyClass #wfacp_output_delivery_options p label {
 			    margin: 0;
 			}
@@ -699,13 +686,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 			$bodyClass #wfacp_output_delivery_options button:last-child {
    				 margin-right: 0;
 			}
-			
+
 			$bodyClass #wfacp_output_delivery_options button:hover {
 			    background-color: #878484;
 			    outline: 0;
 			    border: none;
 			}
-		
+
             @media (min-width: 768px) {
                 $bodyClass .wfacp_main_form.woocommerce form .form-row-third:not(.wfacp-draggable):not(.wfacp-col-left-third) {
                     margin-right: 0;
@@ -730,8 +717,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
             </style>
 		";
 
-			echo $css;
-
+			echo $css;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		public function update_address_data( $keys ) {
@@ -767,7 +753,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WC_Parcel' ) ) {
 					return;
 				}
 				$this->fragment_obj->injectShippingClassInput();
-			} catch ( \Exception|\Error $e ) {
+			} catch ( \Exception | \Error $e ) {
 
 			}
 		}

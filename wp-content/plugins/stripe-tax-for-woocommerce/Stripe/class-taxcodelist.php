@@ -133,7 +133,7 @@ class TaxCodeList {
 	 */
 	protected function set_to_object_cache( array $items ): void {
 		wp_cache_flush_group( static::CACHE_GROUP );
-		wp_cache_set( static::CACHE_KEY, $items, static::CACHE_GROUP );
+		wp_cache_set( static::CACHE_KEY, $items, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -267,7 +267,7 @@ class TaxCodeList {
 		}
 		$items        = $this->get( $skip_object_cache, $skip_database_cache );
 		$cached_value = array_combine( array_keys( $items ), array_column( $items, 'name' ) );
-		wp_cache_set( 'tax-codes-key-value', $cached_value, static::CACHE_GROUP );
+		wp_cache_set( 'tax-codes-key-value', $cached_value, static::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 
 		return $cached_value;
 	}

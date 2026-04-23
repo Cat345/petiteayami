@@ -6,10 +6,10 @@
 
 if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 	class WFFN_Tracking_SiteWide extends WFFN_Ecomm_Tracking_Common {
-		public $api_events = [];
-		public $gtag_rendered = false;
-		private static $ins = null;
-		private $pending_events = [];
+		public $api_events      = array();
+		public $gtag_rendered   = false;
+		private static $ins     = null;
+		private $pending_events = array();
 
 		public function __construct() {
 			$this->admin_general_settings = BWF_Admin_General_Settings::get_instance();
@@ -30,9 +30,8 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				$this->pending_events['pixel'][] = array(
 					'event'    => 'AddToCart',
 					'data'     => $this->get_add_to_cart_prams( $product_id, $variation_id, $quantity, 'pixel' ),
-					'event_id' => $this->get_event_id( 'AddToCart' )
+					'event_id' => $this->get_event_id( 'AddToCart' ),
 				);
-
 
 			}
 
@@ -47,51 +46,40 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			if ( $this->gad_code() && true === wffn_string_to_bool( $this->admin_general_settings->get_option( 'is_gad_add_to_cart_global' ) ) ) {
 
-
 				$this->pending_events['gad'][] = array(
 					'event' => 'add_to_cart',
 					'data'  => $this->get_add_to_cart_prams( $product_id, $variation_id, $quantity, 'google_ads' ),
 
 				);
 
-
 			}
 
-
 			if ( $this->is_pint_pixel() && true === wffn_string_to_bool( $this->admin_general_settings->get_option( 'is_pint_add_to_cart_global' ) ) ) {
-
 
 				$this->pending_events['pint'][] = array(
 					'event' => 'addtocart',
 					'data'  => $this->get_add_to_cart_prams( $product_id, $variation_id, $quantity, 'pint' ),
 				);
 
-
 			}
 
 			if ( '' !== $this->admin_general_settings->get_option( 'tiktok_pixel' ) && true === wffn_string_to_bool( $this->admin_general_settings->get_option( 'is_tiktok_add_to_cart_global' ) ) ) {
-
 
 				$this->pending_events['tiktok'][] = array(
 					'event' => 'AddToCart',
 					'data'  => $this->get_add_to_cart_prams( $product_id, $variation_id, $quantity, 'tiktok' ),
 				);
 
-
 			}
 
 			if ( '' !== $this->admin_general_settings->get_option( 'snapchat_pixel' ) && true === wffn_string_to_bool( $this->admin_general_settings->get_option( 'is_snapchat_add_to_cart_global' ) ) ) {
-
 
 				$this->pending_events['snapchat'][] = array(
 					'event' => 'ADD_CART',
 					'data'  => $this->get_add_to_cart_prams( $product_id, $variation_id, $quantity, 'snapchat' ),
 				);
 
-
 			}
-
-
 		}
 
 		public function get_add_to_cart_prams( $product_id, $variation_id, $quantity, $mode ) {
@@ -117,23 +105,22 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			if ( 'pint' === $mode ) {
 				// Prepare line item details including category information
-				$line_item = [
+				$line_item = array(
 					'product_id'       => $this->get_woo_product_content_id( $product_id, $mode ), // Ensure product ID is treated as a string
 					'product_name'     => esc_html( $product->get_name() ),
 					'product_price'    => floatval( $price ),
 					'product_quantity' => $quantity,
 					'product_category' => $category_names,
-				];
+				);
 
 				if ( ! empty( $variation_id ) && $variation_id > 0 ) {
 					$variation_product = wc_get_product( $variation_id );
-					if ( ! empty ( $variation_product ) ) {
-						$variation_name                  = implode( ",", $variation_product->get_variation_attributes() );
+					if ( ! empty( $variation_product ) ) {
+						$variation_name                  = implode( ',', $variation_product->get_variation_attributes() );
 						$line_item['product_variant_id'] = $variation_product->get_id();
 						$line_item['product_variant']    = $variation_name;
 					}
 				}
-
 
 				$tag_list = $this->get_product_tags( 'product_tag', $product->get_id() );
 				if ( count( $tag_list ) > 0 ) {
@@ -141,39 +128,52 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				}
 
 				// Prepare Pinterest-specific event data
-				$event_data = [
+				$order_value = floatval( $price ) * floatval( $quantity );
+				$event_data  = array(
 					'event_id'       => $this->get_event_id( 'AddToCart' ),
-					'value'          => floatval( $price ) * floatval( $quantity ),
+					'value'          => $order_value,
+					'order_value'    => $order_value,
 					'order_quantity' => $quantity,
 					'currency'       => get_woocommerce_currency(),
 					'content_type'   => 'product',
-					'line_items'     => [ $line_item ], // Include line item in an array
+					'line_items'     => array( $line_item ), // Include line item in an array
 					'traffic_source' => $this->get_traffic_source( 'source' ),
 					'user_role'      => $this->get_current_user_role(),
 					'event_url'      => $this->getEventRequestUri(),
 					'user_roles'     => $this->get_current_user_role(),
-				];
+				);
 
+				// Add email (em) and external_id for Pinterest Enhanced Match
+				$params = WFFN_Common::advanced_matching_data();
+				if ( ! empty( $params ) && is_array( $params ) ) {
+					if ( ! empty( $params['em'] ) ) {
+						$event_data['em'] = hash( 'sha256', strtolower( trim( $params['em'] ) ) );
+					}
+					if ( ! empty( $params['external_id'] ) ) {
+						$external_id               = $params['external_id'];
+						$event_data['external_id'] = is_numeric( $external_id ) ? hash( 'sha256', (string) $external_id ) : $external_id;
+					}
+				}
 
 				return $event_data;
 			}
 
-			$event_data = [
+			$event_data = array(
 				'value'        => $price,
 				'content_name' => esc_html( $product->get_name() ),
 				'content_type' => 'product',
 				'currency'     => get_woocommerce_currency(),
-				'content_ids'  => [ $this->get_woo_product_content_id( $product_id, $mode ) ],
-				'contents'     => [
-					[
+				'content_ids'  => array( $this->get_woo_product_content_id( $product_id, $mode ) ),
+				'contents'     => array(
+					array(
 						'id'         => $this->get_woo_product_content_id( $product_id, $mode ),
 						'item_price' => $price,
 						'quantity'   => $quantity,
 						'value'      => $price,
-					],
-				],
+					),
+				),
 				'user_roles'   => $this->get_current_user_role(),
-			];
+			);
 
 			if ( 'pixel' === $mode ) {
 				unset( $event_data['contents'][0]['value'] );
@@ -182,9 +182,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 					unset( $event_data['content_ids'] );
 					unset( $event_data['contents'] );
 				}
-
 			}
-
 
 			if ( 'tiktok' === $mode ) {
 				$event_data['content_id'] = $this->get_woo_product_content_id( $product_id, $mode );
@@ -208,7 +206,13 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			if ( 'google_ua' === $mode ) {
 				$total_price = $price;
 				if ( function_exists( 'wc_get_price_to_display' ) && absint( $quantity ) > 1 ) {
-					$total_price = (float) wc_get_price_to_display( $product, array( 'qty' => $quantity, 'price' => $price ) );
+					$total_price = (float) wc_get_price_to_display(
+						$product,
+						array(
+							'qty'   => $quantity,
+							'price' => $price,
+						)
+					);
 				}
 				$event_data['items'][0]['id']       = $product_id;
 				$event_data['items'][0]['name']     = esc_html( $product->get_name() );
@@ -221,14 +225,14 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 					$event_data['items'][0]['item_name'] = esc_html( $event_data['items'][0]['name'] );
 					$event_data['items'][0]['currency']  = get_woocommerce_currency();
 					if ( $product->is_type( 'variation' ) ) {
-						$event_data['items'][0]['item_variant'] = implode( "/", $product->get_variation_attributes() );
+						$event_data['items'][0]['item_variant'] = implode( '/', $product->get_variation_attributes() );
 					}
 					$cat_count = 0;
 					if ( is_array( $cat_list ) && count( $cat_list ) > 0 ) {
 						foreach ( $cat_list as $cat ) {
 							$item_category                            = ( 0 === $cat_count ) ? 'item_category' : 'item_category_' . $cat_count;
 							$event_data['items'][0][ $item_category ] = $cat;
-							$cat_count ++;
+							++$cat_count;
 						}
 					}
 
@@ -254,7 +258,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -278,7 +282,6 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 		public function track_event_data() {
 
-
 			$pixel          = false !== $this->is_fb_pixel() ? $this->is_fb_pixel() : '';
 			$ga             = false !== $this->ga_code() ? $this->ga_code() : '';
 			$gad            = false !== $this->gad_code() ? $this->gad_code() : '';
@@ -298,57 +301,56 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			$tiktok_event   = $this->admin_general_settings->get_option( 'is_tiktok_page_view_global' );
 			$snapchat_event = $this->admin_general_settings->get_option( 'is_snapchat_page_view_global' );
 
-
-			$data = [
-				'pixel'          => [
+			$data = array(
+				'pixel'          => array(
 					'id'             => $pixel,
-					'settings'       => [
+					'settings'       => array(
 						'page_view' => $pixel_event,
-					],
-					'data'           => [],
+					),
+					'data'           => array(),
 					'conversion_api' => $this->is_conversion_api(),
 					'fb_advanced'    => WFFN_Common::pixel_advanced_matching_data(),
-				],
-				'ga'             => [
+				),
+				'ga'             => array(
 					'id'       => $ga,
-					'settings' => [
+					'settings' => array(
 						'page_view' => $ga_event,
-					],
-					'data'     => []
-				],
-				'gad'            => [
+					),
+					'data'     => array(),
+				),
+				'gad'            => array(
 					'id'       => $gad,
 					'labels'   => $gad_labels,
-					'settings' => [
+					'settings' => array(
 						'page_view' => $gad_event,
-					],
-					'data'     => []
-				],
-				'tiktok'         => [
+					),
+					'data'     => array(),
+				),
+				'tiktok'         => array(
 					'id'       => $tiktok,
-					'settings' => [
+					'settings' => array(
 						'page_view' => $tiktok_event,
 
-					],
-					'data'     => [],
+					),
+					'data'     => array(),
 					'advanced' => WFFN_Common::tiktok_advanced_matching_data(),
-				],
-				'pint'           => [
+				),
+				'pint'           => array(
 					'id'       => $pinterest,
-					'settings' => [
+					'settings' => array(
 						'page_view' => $pint_event,
 
-					],
-					'data'     => []
-				],
-				'snapchat'       => [
+					),
+					'data'     => array(),
+				),
+				'snapchat'       => array(
 					'id'       => $snapchat,
-					'settings' => [
+					'settings' => array(
 						'page_view'  => $snapchat_event,
 						'user_email' => $this->get_user_email(),
-					],
-					'data'     => []
-				],
+					),
+					'data'     => array(),
+				),
 				'ajax_endpoint'  => admin_url( 'admin-ajax.php' ),
 				'restUrl'        => rest_url() . 'wffn/front',
 				'pending_events' => $this->pending_events,
@@ -356,7 +358,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				'should_render'  => apply_filters( 'wffn_allow_site_wide_tracking_js', true ),
 				'is_delay'       => 0,
 
-			];
+			);
 
 			if ( true === wffn_string_to_bool( $pixel_view ) && is_array( $this->get_add_to_product_data() ) && count( $this->get_add_to_product_data() ) > 0 ) {
 				$data['pixel']['settings']['view_content'] = $pixel_view;
@@ -412,12 +414,17 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				return false;
 			}
 
-			wp_enqueue_script( 'wffn-tracking', plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/tracks' . $suffix . '.js', [ 'jquery' ], WFFN_VERSION_DEV, array(
-				'is_footer' => false,
-				'strategy'  => 'defer'
-			) );
+			wp_enqueue_script(
+				'wffn-tracking',
+				plugin_dir_url( WFFN_PLUGIN_FILE ) . 'assets/' . $live_or_dev . '/js/tracks' . $suffix . '.js',
+				array( 'jquery' ),
+				WFFN_VERSION_DEV,
+				array(
+					'in_footer' => false,
+					'strategy'  => 'defer',
+				)
+			);
 			wp_localize_script( 'wffn-tracking', 'wffnTracking', $this->track_event_data() );
-
 		}
 
 		public function should_render_global() {
@@ -493,7 +500,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				return $event_data;
 			}
 
-			$event_data = [
+			$event_data = array(
 				'content_type'   => $product->get_type(),
 				'user_role'      => $this->get_current_user_role(),
 				'event_url'      => $this->getRequestUri(),
@@ -501,22 +508,22 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				'currency'       => get_woocommerce_currency(),
 				'value'          => $product->get_price(),
 				'content_name'   => $product->get_title(),
-				'content_ids'    => [ $this->get_woo_product_content_id( $product->get_id(), 'pixel' ) ],
+				'content_ids'    => array( $this->get_woo_product_content_id( $product->get_id(), 'pixel' ) ),
 				'product_price'  => $product->get_price(),
 				'post_id'        => $post->ID,
-				'contents'       => [
-					[
+				'contents'       => array(
+					array(
 						'id'       => $this->get_woo_product_content_id( $product->get_id(), 'pixel' ),
 						'quantity' => ( null !== $product->get_stock_quantity() ) ? $product->get_stock_quantity() : 1,
-					],
-				],
+					),
+				),
 				'traffic_source' => $this->get_traffic_source( 'source' ),
-			];
+			);
 
 			$landing_page = $this->get_traffic_source( 'referrer' );
-
-			if ( ! empty( $_COOKIE['wffn_referrer'] ) ) {
-				$landing_page = wffn_clean( $_COOKIE['wffn_referrer'] );
+			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_UNSAFE_RAW );
+			if ( $referrer ) {
+				$landing_page = wffn_clean( $referrer );
 			}
 
 			$event_data['landing_page'] = ! empty( $landing_page ) ? $landing_page : '';
@@ -568,15 +575,14 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			$price = $product->get_price();
 
-
 			// Prepare line item details including category information
-			$line_item = [
+			$line_item = array(
 				'product_id'       => $this->get_woo_product_content_id( $product_id, $mode ), // Ensure product ID is treated as a string
 				'product_name'     => $product->get_name(),
 				'product_price'    => floatval( $price ),
 				'product_quantity' => 1,
 				'product_category' => $category_names,
-			];
+			);
 
 			$tag_list = $this->get_product_tags( 'product_tag', $product->get_id() );
 			if ( count( $tag_list ) > 0 ) {
@@ -584,21 +590,22 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			}
 
 			// Prepare Pinterest-specific event data
-			$event_data = [
+			$event_data = array(
 				'event_id'       => $this->get_event_id( 'view' ),
 				'value'          => floatval( $price ),
 				'order_quantity' => 1,
 				'currency'       => get_woocommerce_currency(),
 				'content_type'   => 'product',
-				'line_items'     => [ $line_item ], // Include line item in an array
+				'line_items'     => array( $line_item ), // Include line item in an array
 				'traffic_source' => $this->get_traffic_source( 'source' ),
 				'user_role'      => $this->get_current_user_role(),
 				'event_url'      => $this->getEventRequestUri(),
-			];
+			);
 
 			$landing_page = $this->get_traffic_source( 'referrer' );
-			if ( ! empty( $_COOKIE['wffn_referrer'] ) ) {
-				$landing_page = wffn_clean( $_COOKIE['wffn_referrer'] );
+			$referrer     = filter_input( INPUT_COOKIE, 'wffn_referrer', FILTER_UNSAFE_RAW );
+			if ( $referrer ) {
+				$landing_page = wffn_clean( $referrer );
 			}
 			$event_data['referrer'] = ! empty( $landing_page ) ? $landing_page : '';
 
@@ -610,7 +617,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			$terms   = get_the_terms( $post_id, $taxonomy );
 			$results = array();
 
-			if ( is_wp_error( $terms ) || empty ( $terms ) ) {
+			if ( is_wp_error( $terms ) || empty( $terms ) ) {
 				return array();
 			}
 
@@ -620,7 +627,6 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			}
 
 			return $results;
-
 		}
 
 		public function get_view_items_data( $mode ) {
@@ -663,7 +669,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				'items'            => array(
 					array(
 						'id' => $this->get_woo_product_content_id( $product_id, $mode ),
-					)
+					),
 				),
 			);
 
@@ -693,7 +699,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 						foreach ( $cat_list as $cat ) {
 							$item_category                            = ( 0 === $cat_count ) ? 'item_category' : 'item_category' . $cat_count;
 							$event_data['items'][0][ $item_category ] = $cat;
-							$cat_count ++;
+							++$cat_count;
 						}
 					}
 
@@ -708,12 +714,11 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 			}
 
 			return $event_data;
-
 		}
 
 		public function is_ga4_tracking() {
 			$ga_id = $this->admin_general_settings->get_option( 'ga_key' );
-			if ( ! empty( $ga_id ) && strpos( $ga_id, "G-" ) !== false ) {
+			if ( ! empty( $ga_id ) && strpos( $ga_id, 'G-' ) !== false ) {
 				return true;
 			}
 
@@ -744,7 +749,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 				if ( isset( $parse['host'] ) ) {
 					return $parse['host'];// leave only domain (Issue #70)
 				} else {
-					return "direct";
+					return 'direct';
 				}
 			}
 
@@ -769,10 +774,7 @@ if ( ! class_exists( 'WFFN_Tracking_SiteWide' ) ) {
 
 			return apply_filters( 'bwf_analytics_number_format', $output, $value, $format_count, $this );
 		}
-
-
 	}
 
 
 }
-

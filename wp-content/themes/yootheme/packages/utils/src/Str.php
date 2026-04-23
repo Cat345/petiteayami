@@ -12,8 +12,6 @@ abstract class Str
     /**
      * Checks if string matches a given pattern.
      *
-     * @param string $pattern
-     * @param string $string
      *
      * @example
      * Str::is('foo/*', 'foo/bar/baz');

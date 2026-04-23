@@ -151,6 +151,12 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_GTRANSLATE' ) ) {
 				return $url;
 			}
 
+			// Default language: do not add prefix — main site URL is for the default language (from GTranslate; can be any language,
+			$default_language = isset( $gtranslate_settings['default_language'] ) ? $gtranslate_settings['default_language'] : '';
+			if ( $lang === $default_language ) {
+				return $url;
+			}
+
 			// Parse the URL
 			$url_parts = wp_parse_url( $url );
 			if ( false === $url_parts || ! isset( $url_parts['host'] ) ) {
@@ -181,14 +187,14 @@ if ( ! class_exists( 'BWFAN_Compatibility_With_GTRANSLATE' ) ) {
 					}
 				}
 
-				// Check if language exists in custom domains data
+				// If this language has a custom domain, use it and do not apply subdomain/subdirectory.
 				if ( is_array( $custom_domains_data ) && ! empty( $custom_domains_data ) && isset( $custom_domains_data[ $lang ] ) && ! empty( $custom_domains_data[ $lang ] ) ) {
 					$new_domain = $custom_domains_data[ $lang ];
-					$url        = $scheme . '://' . $new_domain . $path . $query . $fragment;
+					return $scheme . '://' . $new_domain . $path . $query . $fragment;
 				}
 			}
 
-			// Handle URL structure based on version
+			// Handle URL structure based on version (subdomain or subdirectory only when no custom domain for this lang)
 			if ( 'sub_domain' === $url_structure ) {
 				// Enterprise version: lang.domain.com/path
 				$url = $scheme . '://' . $lang . '.' . $base_domain . $path . $query . $fragment;

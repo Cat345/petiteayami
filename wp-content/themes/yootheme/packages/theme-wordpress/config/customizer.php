@@ -682,7 +682,7 @@ return [
                 'post.width' => [
                     'label' => 'Width',
                     'description' =>
-                        'Set the post width. The image and content can\'t expand beyond this width.',
+                        "Set the post width. The image and content can't expand beyond this width.",
                     'type' => 'select',
                     'options' => [
                         'X-Small' => 'xsmall',
@@ -713,14 +713,14 @@ return [
                 'post.content_width' => [
                     'label' => 'Content Width',
                     'description' =>
-                        'Set an optional content width which doesn\'t affect the image.',
+                        "Set an optional content width which doesn't affect the image.",
                     'type' => 'select',
                     'options' => [
                         'Auto' => '',
                         'X-Small' => 'xsmall',
                         'Small' => 'small',
                     ],
-                    'enable' => 'post.width != \'xsmall\'',
+                    'enable' => "post.width != 'xsmall'",
                 ],
                 'post.image_align' => [
                     'label' => 'Image Alignment',
@@ -746,7 +746,7 @@ return [
                         'X-Large' => 'xlarge',
                         'None' => 'remove',
                     ],
-                    'enable' => 'post.image_align == \'between\'',
+                    'enable' => "post.image_align == 'between'",
                 ],
                 'post.image_dimension' => [
                     'type' => 'grid',
@@ -969,7 +969,7 @@ return [
                         'Large' => 'large',
                         'None' => 'collapse',
                     ],
-                    'enable' => 'blog.column != \'1\'',
+                    'enable' => "blog.column != '1'",
                 ],
                 'blog.grid_row_gap' => [
                     'label' => 'Row Gap',
@@ -993,7 +993,7 @@ return [
                         'Large (Desktop)' => 'l',
                         'X-Large (Large Screens)' => 'xl',
                     ],
-                    'enable' => 'blog.column != \'1\'',
+                    'enable' => "blog.column != '1'",
                 ],
                 'blog.grid_masonry' => [
                     'label' => 'Masonry',
@@ -1001,7 +1001,7 @@ return [
                         'The masonry effect creates a layout free of gaps even if grid items have different heights. ',
                     'type' => 'checkbox',
                     'text' => 'Enable masonry effect',
-                    'enable' => 'blog.column != \'1\'',
+                    'enable' => "blog.column != '1'",
                 ],
                 'blog.grid_parallax' => [
                     'label' => 'Parallax',
@@ -1013,7 +1013,7 @@ return [
                         'max' => 600,
                         'step' => 10,
                     ],
-                    'enable' => 'blog.column != \'1\'',
+                    'enable' => "blog.column != '1'",
                 ],
                 'blog.image_align' => [
                     'label' => 'Image Alignment',
@@ -1039,7 +1039,7 @@ return [
                         'X-Large' => 'xlarge',
                         'None' => 'remove',
                     ],
-                    'enable' => 'blog.image_align == \'between\'',
+                    'enable' => "blog.image_align == 'between'",
                 ],
                 'blog.image_dimension' => [
                     'type' => 'grid',

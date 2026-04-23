@@ -1,0 +1,1080 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2026-04-06 12:29:07+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: ru\n"
+"Project-Id-Version: MailPoet - MailPoet Premium\n"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStartsTrigger.php:265
+msgid "At least one booking status must be selected."
+msgstr ""
+
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStartsTrigger.php:259
+msgid "Time unit must be \"minutes\", \"hours\", or \"days\"."
+msgstr ""
+
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStartsTrigger.php:253
+msgid "Time value must be at least 1."
+msgstr ""
+
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStartsTrigger.php:247
+msgid "Timing must be \"before\" or \"after\"."
+msgstr ""
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStartsTrigger.php:67
+msgid "Booking starts"
+msgstr "Бронирование начинается"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:133
+msgid "Woo Booking product tags"
+msgstr ""
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:112
+msgid "Woo Booking product categories"
+msgstr ""
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:101
+msgid "Woo Booking product"
+msgstr ""
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:414
+msgid "Booking All Day"
+msgstr "Бронирование на целый день"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:405
+msgid "Booking Product Name"
+msgstr "Название забронированного товара"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:396
+msgid "Booking End Date"
+msgstr "Дата окончания бронирования"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:387
+msgid "Booking Start Date"
+msgstr "Дата начала бронирования"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:378
+msgid "Booking Persons Count"
+msgstr "Количество бронирующих лиц"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:369
+msgid "Booking Status"
+msgstr "Статус бронирования"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:360
+msgid "Booking Modified Date"
+msgstr "Дата изменения бронирования"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:342
+msgid "Booking ID"
+msgstr "ID бронирования"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:338
+msgid "Booking"
+msgstr "Бронирование"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:321
+msgid "Subscription Is in Trial Period"
+msgstr "Подписка находится в пробном периоде"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:312
+msgid "Subscription Cancel Email Sent"
+msgstr "Отправлено письмо с отказом от рассылки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:303
+msgid "Subscription Requires Manual Renewal"
+msgstr "Подписку необходимо продлить вручную"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:294
+msgid "Subscription Billing Interval"
+msgstr "Интервал оплаты подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:285
+msgid "Subscription Billing Period"
+msgstr "Период оплаты подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:276
+msgid "Subscription Total Initial Payment"
+msgstr "Общая сумма первоначальной оплаты подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:267
+msgid "Subscription Payment Count"
+msgstr "Количество платежей по подписке"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:258
+msgid "Subscription Failed Payment Count"
+msgstr "Количество неудачных платежей по подписке"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:249
+msgid "Subscription Status"
+msgstr "Статус подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:240
+msgid "Subscription Title"
+msgstr "Название подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:231
+msgid "Subscription Modified Date"
+msgstr "Дата изменения подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:222
+msgid "Subscription Created"
+msgstr "Подписка создана"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:213
+msgid "Subscription ID"
+msgstr "ID подписки"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:209
+msgid "Subscription"
+msgstr "Подписка"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStatusChangedTrigger.php:36
+msgid "Booking status changed"
+msgstr "Статус бронирования изменен"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingCreatedTrigger.php:43
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTagManager.php:351
+msgid "Booking Created"
+msgstr "Бронирование создано"
+
+#. translators: %d is the booking ID.
+#: lib/Automation/Integrations/WooCommerceBookings/Subjects/WooCommerceBookingSubject.php:59
+msgid "WooCommerce Booking with ID '%d' not found."
+msgstr "Бронирование WooCommerce  с идентификатором '%d' не найдено."
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/WooCommerceBookings/Subjects/WooCommerceBookingSubject.php:39
+msgid "WooCommerce Booking"
+msgstr "Бронирование WooCommerce"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceBookings/Subjects/WooCommerceBookingStatusChangeSubject.php:21
+msgid "WooCommerce Booking status changed"
+msgstr "Статус бронирования WooCommerce изменился"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:92
+msgid "Woo Booking end"
+msgstr "Окончание бронирования Woo"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:83
+msgid "Woo Booking start"
+msgstr "Начало бронирования Woo"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:75
+msgid "Woo Booking all day"
+msgstr "Бронирование Woo целый день"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:67
+msgid "Woo Booking persons count"
+msgstr "Количество бронирований Woo по людям"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:56
+msgid "Woo Booking status"
+msgstr "Статус бронирования Woo"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:48
+msgid "Woo Booking modified date"
+msgstr "Измененная дата бронирования Woo"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:40
+msgid "Woo Booking created"
+msgstr "Бронирование Woo создано"
+
+#: lib/Automation/Integrations/WooCommerceBookings/Fields/BookingFields.php:32
+msgid "Woo Booking ID"
+msgstr "Идентификатор бронирования Woo"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/UserRoleChangedTrigger.php:43
+msgid "WordPress user role changed"
+msgstr "Роль пользователя WordPress изменена"
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/MailPoetPremium/Subjects/UserRoleChangeSubject.php:20
+msgid "WordPress user role changes"
+msgstr "Изменение роли пользователя WordPress"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:783
+msgid "We’d love to have you back"
+msgstr "Мы бы хотели, чтобы вы вернулись"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:781
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:782
+msgid "Here’s what’s new since you left"
+msgstr "Вот что нового произошло с тех пор, как вы ушли"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:750
+msgid "Re-engage former subscribers by showing what’s new and why it’s worth coming back."
+msgstr "Верните бывших подписчиков, показав им, что нового появилось и почему стоит вернуться."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:749
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:756
+msgid "Win back churned subscribers"
+msgstr "Верните ушедших подписчиков"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:732
+msgid "Let’s keep the good stuff going"
+msgstr "Давайте продолжим в том же духе"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:730
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:731
+msgid "How was your trial?"
+msgstr "Как вам пробный период?"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:717
+msgid "Check in with customers after their trial ends. Encourage them to keep enjoying the benefits of their subscription."
+msgstr "Свяжитесь с клиентами по окончании пробного периода. Поощряйте их продолжать пользоваться преимуществами подписки."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:716
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:723
+msgid "Follow up when trial ends"
+msgstr "Действия после окончания пробного периода"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:699
+msgid "Help us improve"
+msgstr "Помогите нам стать лучше"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:697
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:698
+msgid "Can we ask why you left?"
+msgstr "Можно узнать, почему вы ушли?"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:684
+msgid "Reach out to subscribers who canceled and ask for their feedback to help improve your service."
+msgstr "Свяжитесь с подписчиками, которые отменили подписку, и попросите их оставить отзыв, чтобы помочь улучшить ваш сервис."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:683
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:690
+msgid "Follow up on churned subscription"
+msgstr "Отслеживание отмененных подписок"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:666
+msgid "Let’s fix this together"
+msgstr "Давайте исправим это вместе"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:664
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:665
+msgid "Trouble renewing your subscription"
+msgstr "Проблемы с обновлением подписки"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:652
+msgid "Help customers fix failed payments and continue their subscription without disruption."
+msgstr "Помогите клиентам исправить неудачные платежи и продолжить подписку без перерывов."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:651
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:658
+msgid "Follow up after failed renewal"
+msgstr "Действия после неудачного обновления"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:634
+msgid "Here’s a reminder of the value you get"
+msgstr "Вот напоминание о том, какую ценность вы получаете"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:632
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:633
+msgid "Your subscription just renewed"
+msgstr "Ваша подписка только что продлена"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:620
+msgid "Reinforce the value of your subscription by reminding customers what they’re getting after every renewal."
+msgstr "Усильте ценность вашей подписки, напоминая клиентам о том, что они получают после каждого продления."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:619
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:626
+msgid "Follow up after a subscription renewal"
+msgstr "Действия после обновления подписки"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:600
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:601
+msgid "Welcome to your subscription"
+msgstr "Добро пожаловать в вашу подписку"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:587
+msgid "Thank new subscribers and let them know what to expect. A warm welcome goes a long way."
+msgstr "Поблагодарите новых подписчиков и расскажите им, чего им ожидать. Теплый прием имеет большое значение."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:586
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:593
+msgid "Follow up after a subscription purchase"
+msgstr "Действия после покупки подписки"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:569
+msgid "Let’s make things right"
+msgstr "Давайте исправим ситуацию"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:567
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:568
+msgid "Sorry to hear that – can we help?"
+msgstr "Сожалеем, что так вышло. Можем ли мы чем-то помочь?"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:546
+msgid "Reach out to unhappy customers and show you care. Offer help or gather more feedback to improve."
+msgstr "Обратитесь к недовольным клиентам и продемонстрируйте свою заботу. Предложите помощь или соберите дополнительные отзывы для улучшения."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:545
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:552
+msgid "Follow up on a negative review (1-2 stars)"
+msgstr "Действия после негативного отзыва (1-2 звездочки)"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:528
+msgid "We’re thrilled you had a good experience"
+msgstr "Мы рады, что вам понравилось"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:526
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:527
+msgid "Thanks for your review!"
+msgstr "Спасибо за отзыв!"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:505
+msgid "Thank your happy customers for their feedback and let them know you appreciate their support."
+msgstr "Поблагодарите довольных клиентов за их отзывы и дайте им понять, что вы цените их поддержку."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:504
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:511
+msgid "Follow up on a positive review (4-5 stars)"
+msgstr "Действия после положительного отзыва (4-5 звездочек)"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:480
+msgid "We’d love your feedback"
+msgstr "Будем рады получить ваши отзывы"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:478
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:479
+msgid "How was your experience?"
+msgstr "Вам понравилось?"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:430
+msgid "Encourage your customers to leave a review a few days after their purchase. Show them their opinion matters."
+msgstr "Поощряйте своих клиентов оставлять отзывы через несколько дней после покупки. Покажите им, что их мнение имеет значение."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:429
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:436
+msgid "Ask to leave a review post-purchase"
+msgstr "Попросите оставить отзыв после покупки"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:121
+msgid "Reviewer email"
+msgstr "Электронная почта автора отзыва"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:111
+msgid "Reviewer name"
+msgstr "Имя рецензента"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:101
+msgid "Reviewer ID"
+msgstr "ID автора отзыва"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:92
+msgid "Product price"
+msgstr "Цена товара"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:83
+msgid "Product URL"
+msgstr "URL Товара"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:74
+msgid "Product name"
+msgstr "Название товара"
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:64
+msgid "Product ID"
+msgstr "ID товара"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:143
+msgid "Special offer email"
+msgstr "Письмо со специальным предложением"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:135
+msgid "Introduction email"
+msgstr "Ознакомительное письмо"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:115
+msgid "Enjoy this discount"
+msgstr "Воспользуйтесь скидкой"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:114
+msgid "A special offer just for you"
+msgstr "Специальное предложение только для вас"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:109
+msgid "Learn more about us"
+msgstr "Узнайте о нас больше"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:108
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:602
+msgid "Here’s what to expect"
+msgstr "Чего следует ожидать"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:103
+msgid "Thanks for subscribing"
+msgstr "Спасибо, что подписались"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:102
+msgid "Welcome to our newsletter!"
+msgstr "Добро пожаловать в нашу рассылку!"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:96
+msgid "A sample automation template with email templates."
+msgstr "Образец шаблона автоматизации с шаблонами электронной почты."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:95
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:120
+msgid "Sample email series"
+msgstr "Образец серии писем"
+
+#: mailpoet-premium.php:43
+msgid "Please read our [link]instructions[/link] on how to upgrade your site."
+msgstr "Пожалуйста, прочтите нашу [link]инструкцию[/link] по обновлению сайта."
+
+#. translators: %1$s is the plugin name (MailPoet or MailPoet Premium), %2$s,
+#. %3$s, and %4$s are PHP version (e.g. "8.1.30")
+#: mailpoet-premium.php:36
+msgid "%1$s requires PHP version %2$s or newer (%3$s recommended). You are running version %4$s."
+msgstr "%1$s требуется PHP версии %2$s или новее (рекомендуется%3$s). У вас запущена версия %4$s."
+
+#. translators: used when the scheduled task is overdue, in "Time left:
+#. Overdue"
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Controller/RunLogController.php:140
+msgid "Overdue"
+msgstr "Просроченный"
+
+#. translators: %s is step ID
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Controller/RunLogController.php:184
+msgid "Unknown step: %s"
+msgstr "Неизвестный шаг: %s"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:404
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:405
+msgid "Your cart is waiting, and so is your 20% off!"
+msgstr "Ваша корзина ждет вас, как и 20%-ная скидка!"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:372
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:373
+msgid "Your cart is waiting"
+msgstr "Ваша корзина ждет вас"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:345
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:346
+msgid "It looks like you left something behind…"
+msgstr "Кажется, вы что-то забыли..."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:333
+msgid "Encourage your potential customers to finalize their purchase when they have added items to their cart but haven’t finished the order yet. Offer a coupon code as a last resort to convert them to customers."
+msgstr "Побуждайте ваших потенциальных клиентов завершить покупку, если они добавили товары в корзину, но еще не оформили заказ. В крайнем случае предложите код купона, чтобы превратить их в покупателей."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:332
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:339
+msgid "Abandoned cart campaign"
+msgstr "Кампания брошенной корзины"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:307
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:308
+msgid "We’ve missed you"
+msgstr "Мы по вам скучали"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:280
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:281
+msgid "It’s been a while…"
+msgstr "Давно не виделись..."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:248
+msgid "Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand."
+msgstr "Возобновите отношения с бывшими клиентами, напомнив им о любимых товарах и продемонстрировав новинки, что побудит их вернуться к вашему бренду."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:247
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:254
+msgid "Win back customers"
+msgstr "Отвоеванные клиенты"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:226
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:227
+msgid "Thank you for your loyalty"
+msgstr "Спасибо за вашу преданность"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:195
+msgid "These are your most important customers. Make them feel special by sending a thank you note for supporting your brand."
+msgstr "Это ваши наиболее важные клиенты. Дайте им почувствовать свою особенность, отправив записку с благодарностью за поддержку вашего бренда."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:194
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:201
+msgid "Thank loyal customers"
+msgstr "Отблагодарите лояльных клиентов"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionTrialStartedTrigger.php:37
+msgid "Woo Subscription trial started"
+msgstr "Начался пробный период подписки на Woo"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionTrialEndedTrigger.php:43
+msgid "Woo Subscription trial ended"
+msgstr "Закончился пробный период подписки на Woo"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionRenewedTrigger.php:37
+msgid "Woo Subscription renewed"
+msgstr "Подписка на Woo обновлена"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionPaymentFailedTrigger.php:36
+msgid "Woo Subscription payment failed"
+msgstr "Сбой оплаты подписки на Woo"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionExpiredTrigger.php:36
+msgid "Woo Subscription expired"
+msgstr "Подписка на Woo истекла"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionStatusChangedTrigger.php:38
+msgid "Woo Subscription status changed"
+msgstr "Изменился статус подписки на Woo"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionCreatedTrigger.php:42
+msgid "Woo Subscription started"
+msgstr "Начало подписки Woo"
+
+#. translators: %d is the order ID.
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Subjects/WooCommerceSubscriptionSubject.php:62
+msgid "Subscription with ID '%d' not found."
+msgstr "Подписка с ID '%d' не найдена."
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Subjects/WooCommerceSubscriptionSubject.php:43
+msgid "WooCommerce Subscription"
+msgstr "Подписка на WooCommerce"
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Subjects/WooCommerceSubscriptionStatusChangeSubject.php:22
+msgid "WooCommerce Subscription status change"
+msgstr "Изменение статуса подписки на WooCommerce"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:130
+msgid "Woo Subscription is in trial period"
+msgstr "Подписка на Woo Subscription находится в пробном периоде"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:122
+msgid "Woo Subscription cancel email sent"
+msgstr "Письмо об отмене подписки на Woo отправлено"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:114
+msgid "Woo Subscription requires manual renewal payments"
+msgstr "Подписка на Woo требует ручной оплаты продления"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:106
+msgid "Woo Subscription billing interval"
+msgstr "Интервал выставления счетов для подписки на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:95
+msgid "Woo Subscription billing period"
+msgstr "Период выставления счетов для подписки на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:87
+msgid "The total amount charged at the outset of the Subscription"
+msgstr "Общая сумма, взимаемая в начале подписки"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:79
+msgid "Woo Subscription number of payments"
+msgstr "Количество платежей по подписке на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:71
+msgid "Woo Subscription number of failed payments"
+msgstr "Количество неудачных платежей по подписке на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:60
+msgid "Woo Subscription status"
+msgstr "Статус подписки на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:52
+msgid "Woo Subscription title"
+msgstr "Заголовок подписки на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:44
+msgid "Woo Subscription modified date"
+msgstr "Дата изменения подписки на Woo"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:36
+msgid "Woo Subscription created"
+msgstr "Подписка на Woo создана"
+
+#: lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php:28
+msgid "Woo Subscription ID"
+msgstr "ID подписки на Woo"
+
+#. translators: %d is the ID of the segment
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:107
+msgid "Link with ID '%d' not found."
+msgstr "Ссылка с ID '%d' не найдена."
+
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:97
+msgid "Please select an operator."
+msgstr "Пожалуйста, выберите оператора."
+
+#. translators: %d is the ID of the segment
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:90
+msgid "Newsletter with ID '%d' not found."
+msgstr "Рассылка с ID '%d' не найдена."
+
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:83
+msgid "Please select a newsletter."
+msgstr "Пожалуйста, выберите рассылку."
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php:59
+msgid "Subscriber clicks a link in email"
+msgstr "Подписчик нажимает на ссылку в письме"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WooCommerce/Triggers/MadeAReviewTrigger.php:48
+msgid "Customer posts a review"
+msgstr "Клиент оставил отзыв"
+
+#. translators: %s is the name of the taxonomy
+#: lib/Automation/Integrations/WordPress/Triggers/MadeACommentTrigger.php:138
+msgid "The taxonomy “%s” is not registered."
+msgstr "Таксономия \"%s\" не зарегистрирована."
+
+#. translators: %d is the ID of the post not found.
+#: lib/Automation/Integrations/WordPress/Triggers/MadeACommentTrigger.php:115
+msgid "Post with ID '%d' not found."
+msgstr "Запись с идентификатором '%d' не найдена."
+
+#. translators: %s is the name of the post type.
+#: lib/Automation/Integrations/WordPress/Triggers/MadeACommentTrigger.php:91
+msgid "Post Type “%s” is not registered."
+msgstr "Тип записи “%s” не зарегистрирован."
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/WordPress/Triggers/MadeACommentTrigger.php:52
+msgid "User makes a comment"
+msgstr "Пользователь оставил комментарий"
+
+#: lib/Automation/Integrations/WooCommerce/Triggers/MadeAReviewTrigger.php:73
+msgid "The WooCommerce rating system is not enabled."
+msgstr "Система оценивания WooCommerce не включена."
+
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:56
+msgid "Review rating"
+msgstr "Оценка отзыва"
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php:42
+msgid "Review"
+msgstr "Проверка"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/TagRemovedTrigger.php:43
+msgid "Tag removed"
+msgstr "Метка снята"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/TagAddedTrigger.php:43
+msgid "Tag added"
+msgstr "Метка добавлена"
+
+#. translators: automation trigger title
+#: lib/Automation/Integrations/MailPoetPremium/Triggers/CustomTrigger.php:51
+msgid "Custom trigger"
+msgstr "Пользовательский триггер"
+
+#. translators: %d is the ID.
+#: lib/Automation/Integrations/MailPoetPremium/Subjects/TagSubject.php:50
+msgid "Tag with ID '%d' not found."
+msgstr "Метка с идентификатором '%d' не найдена."
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/MailPoetPremium/Subjects/TagSubject.php:36
+msgid "MailPoet tag"
+msgstr "Метка MailPoet"
+
+#. translators: automation subject (entity entering automation) title
+#: lib/Automation/Integrations/MailPoetPremium/Subjects/CustomDataSubject.php:25
+msgid "Custom data"
+msgstr "Пользовательские данные"
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/CustomAction.php:35
+msgid "Custom action"
+msgstr "Пользовательское действие"
+
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/SubscriberStatistics.php:216
+msgid "Completed"
+msgstr "Завершено"
+
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/SubscriberStatistics.php:214
+msgid "Cancelled"
+msgstr "Отменено"
+
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/SubscriberStatistics.php:212
+msgid "In Progress"
+msgstr "В процессе"
+
+#: lib/Automation/Integrations/MailPoetPremium/Analytics/Storage/SubscriberStatistics.php:210
+msgid "Failed"
+msgstr "Ошибка"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceBooking.php:153
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:119
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:134
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:149
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:153
+msgid "No"
+msgstr "Нет"
+
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceBooking.php:153
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:119
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:134
+#: lib/EmailEditor/Integrations/MailPoet/PersonalizationTags/WooCommerceSubscription.php:153
+msgid "Yes"
+msgstr "Да"
+
+#: lib/Automation/Integrations/MailPoetPremium/Actions/NotificationEmailAction.php:97
+msgid "MailPoet Automation Notification"
+msgstr "Уведомление об автоматизации MailPoet"
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/NotificationEmailAction.php:84
+msgid "Send notification email"
+msgstr "Отправить письмо с уведомлением"
+
+#. translators: %s is the actual error message
+#: lib/Automation/Integrations/MailPoetPremium/Actions/NotificationEmailAction.php:71
+msgid "Failed to send notification email: %s"
+msgstr "Не удалось отправить письмо с уведомлением: %s"
+
+#: lib/Automation/Integrations/MailPoetPremium/Actions/UpdateSubscriberAction.php:120
+msgid "Custom field '%1$s' with ID '%2$d' expects type '%3$s' but type '%4$s' was provided."
+msgstr "Пользовательское поле '%1$s' с ID '%2$d' ожидает тип '%3$s', но был предоставлен тип '%4$s'."
+
+#. translators: %d is the ID of the custom field
+#: lib/Automation/Integrations/MailPoetPremium/Actions/UpdateSubscriberAction.php:112
+msgid "Custom field with ID '%d' not found."
+msgstr "Пользовательское поле с ID '%d' не найдено."
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/UpdateSubscriberAction.php:38
+msgid "Update subscriber"
+msgstr "Обновить подписчика"
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/RemoveTagAction.php:45
+msgid "Remove tag"
+msgstr "Удалить метку"
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/RemoveFromListAction.php:39
+msgid "Remove from list"
+msgstr "Удалить из списка"
+
+#. translators: %d is the ID of the segment
+#: lib/Automation/Integrations/MailPoetPremium/Actions/AddToListAction.php:77
+#: lib/Automation/Integrations/MailPoetPremium/Actions/RemoveFromListAction.php:86
+msgid "Segment with ID '%s' not found."
+msgstr "Сегмент с ID '%s' не найден."
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/AddToListAction.php:39
+msgid "Add to list"
+msgstr "Добавить в список"
+
+#. translators: %d is the ID of the tag, which was not found.
+#: lib/Automation/Integrations/MailPoetPremium/Actions/AddTagAction.php:61
+msgid "Tag %d was not found."
+msgstr "Метка %d не найдена."
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/AddTagAction.php:47
+msgid "Add tag"
+msgstr "Добавить метку"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:164
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:171
+msgid "Welcome series for new WordPress users"
+msgstr "Серия приветствий для новых пользователей WordPress"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:165
+msgid "Welcome new WordPress users to your site. Send an email immediately after a WordPress user registers. Send a follow-up email two days later with more in-depth information."
+msgstr "Поприветствуйте новых пользователей WordPress на своем сайте. Отправьте письмо сразу после регистрации пользователя WordPress. Через два дня отправьте повторное письмо с более подробной информацией."
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:72
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:176
+msgid "Follow-up email"
+msgstr "Последующее письмо"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:70
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:127
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:174
+msgid "Welcome email"
+msgstr "Приветственное письмо"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:60
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:67
+msgid "Welcome series for new subscribers"
+msgstr "Серия приветствий для новых подписчиков"
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:61
+msgid "Welcome new subscribers and start building a relationship with them. Send an email immediately after someone subscribes to your list to introduce your brand and a follow-up two days later to keep the conversation going."
+msgstr "Поприветствуйте новых подписчиков и начните строить с ними отношения. Чтобы представить ваш бренд, отправьте письмо сразу после того, как кто-то подписался на ваш список, а через два дня отправьте повторное письмо, чтобы поддержать разговор."
+
+#. Author of the plugin
+#: mailpoet-premium.php
+msgid "MailPoet"
+msgstr "MailPoet"
+
+#. Description of the plugin
+#: mailpoet-premium.php
+msgid "This plugin adds Premium features to the free version of MailPoet and unlocks the subscribers limit. Enjoy!"
+msgstr "Этот плагин добавляет функции Premium в бесплатную версию MailPoet и разблокирует ограничение подписчиков. Наслаждайтесь!"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: mailpoet-premium.php
+msgid "https://www.mailpoet.com"
+msgstr "https://www.mailpoet.com"
+
+#. Plugin Name of the plugin
+#: mailpoet-premium.php
+msgid "MailPoet Premium"
+msgstr "MailPoet Premium"
+
+#: lib/Config/Hooks.php:68
+msgid "View MailPoet settings"
+msgstr "Просмотр настроек MailPoet"
+
+#. translators: automation action title
+#: lib/Automation/Integrations/MailPoetPremium/Actions/UnsubscribeAction.php:48
+msgid "Unsubscribe"
+msgstr "Отписаться"
+
+#: views/segments/dynamic_premium_translations.html:5
+msgctxt "Dynamic segment creation: The user can see logical operator between condition when has more than one"
+msgid "or"
+msgstr "или"
+
+#: views/segments/dynamic_premium_translations.html:4
+msgctxt "Dynamic segment creation: The user can see logical operator between condition when has more than one"
+msgid "and"
+msgstr "и"
+
+#: views/segments/dynamic_premium_translations.html:3
+msgctxt "Dynamic segment creation: The user can select join between condition when he has more than one"
+msgid "<strong>Any</strong> of the following conditions"
+msgstr "<strong>Любое</strong> из следующих условий"
+
+#: views/segments/dynamic_premium_translations.html:2
+msgctxt "Dynamic segment creation: The user can select join between condition when he has more than one"
+msgid "<strong>All</strong> of the following conditions"
+msgstr "<strong>Все</strong> следующие условия"
+
+#: views/newsletters/campaign_stats.html:27
+msgctxt "Subscriber status - subscriber bounced (w.wiki/45Qc) from a newsletter"
+msgid "Bounced"
+msgstr "Отклонено"
+
+#: views/newsletters/campaign_stats.html:19
+msgctxt "A notice, when no bounces (w.wiki/45Qc) exist for an email."
+msgid "No bounces found"
+msgstr "Отказов не найдено"
+
+#: views/newsletters/campaign_stats.html:24
+msgctxt "Subscriber engagement status - machine opened a newsletter"
+msgid "Machine-opened"
+msgstr "Открыто машиной"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:366
+msgctxt "Subscriber engagement filter - shows machine-opens for a given newsletter"
+msgid "Machine-opened"
+msgstr "Открыто машиной"
+
+#: views/subscribers/stats.html:8
+msgctxt "Prefix for order number e.g. Order #123"
+msgid "Order"
+msgstr "Порядок"
+
+#: views/newsletters/campaign_stats.html:33
+msgctxt "A fallback for an email of a deleted subscriber"
+msgid "Deleted subscriber"
+msgstr "Удаленный подписчик"
+
+#: views/newsletters/campaign_stats.html:29
+msgctxt "Button label on Subscriber engagement page"
+msgid "Create Segment"
+msgstr "Создать сегмент"
+
+#: views/newsletters/campaign_stats.html:28
+msgctxt "Subscriber engagement status - subscriber did not open a newsletter"
+msgid "Unopened"
+msgstr "Не открыто"
+
+#: views/newsletters/campaign_stats.html:26
+msgctxt "Subscriber engagement status - subscriber unsubscribed from a newsletter"
+msgid "Unsubscribed"
+msgstr "Отписано"
+
+#: views/newsletters/campaign_stats.html:25
+msgctxt "Subscriber engagement status - subscriber clicked a newsletter link"
+msgid "Clicked"
+msgstr "Нажато"
+
+#: views/newsletters/campaign_stats.html:23
+msgctxt "Subscriber engagement status - subscriber opened a newsletter"
+msgid "Opened"
+msgstr "Открыто"
+
+#: views/newsletters/campaign_stats.html:13
+msgctxt "For example: \"Total net revenue £25.32\""
+msgid "Total net revenue %1s"
+msgstr "Итого чистая выручка %1s"
+
+#: views/newsletters/campaign_stats.html:12
+msgctxt "For example: \"5 products sold\""
+msgid "%1s products sold"
+msgstr "%1s товаров продано"
+
+#: views/newsletters/campaign_stats.html:7
+msgctxt "For example: \"£451 from 3 orders\""
+msgid "%1s from %2s orders"
+msgstr "%1s от %2s заказов"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:387
+msgctxt "Subscriber engagement filter - filter those who did not open a newsletter"
+msgid "Unopened"
+msgstr "Не открыто"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:380
+msgctxt "Subscriber engagement filter - filter those who performed any action (e.g., clicked, opened, unsubscribed)"
+msgid "All engaged"
+msgstr "Все вовлеченные"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:371
+msgctxt "Subscriber engagement filter - filter those who unsubscribed from a newsletter"
+msgid "Unsubscribed"
+msgstr "Отписано"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:361
+msgctxt "Subscriber engagement filter - filter those who opened a newsletter"
+msgid "Opened"
+msgstr "Открыто"
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:356
+msgctxt "Subscriber engagement filter - filter those who clicked on a newsletter link"
+msgid "Clicked"
+msgstr "Нажато"
+
+#: views/subscribers/stats.html:7
+msgid "No stats"
+msgstr "Нет статистики"
+
+#: views/subscribers/stats.html:6
+msgid "Loading stats"
+msgstr "Загрузка статистики…"
+
+#: views/newsletters/campaign_stats.html:32
+msgid "Segment already exists."
+msgstr "Сегмент уже существует."
+
+#: views/newsletters/campaign_stats.html:31
+msgid "Segment \"%s\" created. [link]Create and send an email to it.[/link]"
+msgstr "Сегмент \"%s\" создан. [link]Создайте и отправьте ему письмо.[/link]"
+
+#: views/newsletters/campaign_stats.html:30
+msgid "Saving..."
+msgstr "Сохранение..."
+
+#: views/newsletters/campaign_stats.html:22
+msgid "Date and time"
+msgstr "Дата и время"
+
+#: views/newsletters/campaign_stats.html:18
+msgid "No engagement data found"
+msgstr "Не найдено данных для вовлечения"
+
+#: views/newsletters/campaign_stats.html:17
+msgid "Loading data..."
+msgstr "Загрузка даннных..."
+
+#: views/newsletters/campaign_stats.html:16
+msgid "Unique clicks"
+msgstr "Уникальные клики"
+
+#: views/newsletters/campaign_stats.html:15
+msgid "Link"
+msgstr "Ссылка"
+
+#: views/newsletters/campaign_stats.html:14
+msgid "No clicked links found"
+msgstr "Не найдено нажатых ссылок"
+
+#: views/newsletters/campaign_stats.html:11
+msgid "Or, if you haven’t tried out the products widget yet, [link]here’s how to get started[/link]."
+msgstr "А если вы еще не попробовали виджет товаров, [link]здесь вы узнаете как начать[/link]."
+
+#: views/newsletters/campaign_stats.html:10
+msgid "For best practice tips, check out our [link]guide to WooCommerce follow up emails[/link]."
+msgstr "Для получения советов по лучшей практике, ознакомьтесь с нашим  [link]руководством по рассылкам WooCommerce[/link]."
+
+#: views/newsletters/campaign_stats.html:9
+msgid "Unfortunately, no products were sold as a result of this email!"
+msgstr "К сожалению, не продано ни одного товара с помощью этого письма!"
+
+#: views/newsletters/campaign_stats.html:8
+msgid "Products Sold"
+msgstr "Товаров продано"
+
+#: views/newsletters/campaign_stats.html:6
+msgid "Revenues generated by customers who made a purchase within two weeks after they clicked on this email. This is the sum of the order totals including shipping and taxes."
+msgstr "Выручка, полученная от клиентов, совершивших покупку в течение двух недель после нажатия на это письмо. Это сумма заказа, включая доставку и налоги."
+
+#: mailpoet_initializer.php:92
+msgid "Your MailPoet Premium plugin is incompatible with the free MailPoet plugin. [link1]Register[/link1] your key or [link2]purchase one now[/link2] to update the Premium to the latest version."
+msgstr "Ваш плагин MailPoet Premium несовместим с бесплатным плагином MailPoet. [link1]Зарегистрируйте[/link1] ваш ключ или [link2]приобретите новый[/link2] для обновления Premium до последней версии."
+
+#: mailpoet_initializer.php:90
+msgid "You have an older version of the Premium plugin. The features have been disabled in order not to break MailPoet. Please update it in the Plugins page now."
+msgstr "У вас устаревшая версия Премиум-плагина. Некоторый функционал отключен, чтобы не сломать Mailpoet. Пожалуйста, скорее обновите его на странице Плагины."
+
+#. translators: %s is the MailPoet version.
+#: mailpoet_initializer.php:76
+msgid "You need to have MailPoet version %s or higher activated before using this version of MailPoet Premium."
+msgstr "Для работы MailPoet Premium вам необходимо установить и активировать плагин MailPoet версии %s или выше."
+
+#: mailpoet-premium.php:69
+msgid "MailPoet Premium cannot start because it is missing core files. Please reinstall the plugin."
+msgstr "MailPoet Premium не может функционировать, потому что не хватает ключевых файлов. Пожалуйста, переустановите плагин."
+
+#: lib/Newsletter/Stats/SubscriberEngagement.php:324
+msgid "Filter by link clicked"
+msgstr "Фильтровать по нажатой ссылке"
+
+#. translators: %1$s is the name of the template, %2$s the path to the cache
+#. folder and %3$s the error message.
+#: lib/Config/Renderer.php:106
+msgid "Failed to render template \"%1$s\". Please ensure the template cache folder \"%2$s\" exists and has write permissions. Terminated with error: \"%3$s\""
+msgstr "Произошла ошибка при отображении шаблона \"%1$s\". Пожалуйста, убедитесь, что папка с кешем шаблонов \"%2$s\" существует и у вас есть необходимые права на запись. Завершено с ошибкой: \"%3$s\""
+
+#: lib/Config/Hooks.php:45
+msgid "[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]"
+msgstr "[link1]Зарегистрируйте[/link1] вашу копию плагина MailPoet Premium для автоматического обновления и техподдержки. Нужен лицензионный ключ? [link2]Приобрети сейчас же.[/link2]"
+
+#: lib/API/JSON/v1/SubscriberDetailedStats.php:42
+msgid "Missing subscriber id."
+msgstr "Отсутствует идентификатор подписчика."
+
+#: lib/API/JSON/v1/Bounces.php:46 lib/API/JSON/v1/Stats.php:84
+#: lib/API/JSON/v1/Stats.php:116
+msgid "This newsletter is not sent yet."
+msgstr "Эта рассылка еще не разослана."
+
+#: lib/API/JSON/v1/Bounces.php:39 lib/API/JSON/v1/Stats.php:71
+#: lib/API/JSON/v1/Stats.php:109
+msgid "This newsletter does not exist."
+msgstr "Такой рассылки не существует."

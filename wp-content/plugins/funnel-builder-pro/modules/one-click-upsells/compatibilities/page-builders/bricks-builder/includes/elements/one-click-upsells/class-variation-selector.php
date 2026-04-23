@@ -11,8 +11,8 @@ use WC_Product;
 if ( ! class_exists( '\WfocuFunnelKit\Variation_Selector' ) ) {
 	class Variation_Selector extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-variation-selector';
-		public $icon = 'wfocu-icon-variation';
+		public $name     = 'wfocu-variation-selector';
+		public $icon     = 'wfocu-icon-variation';
 
 		/**
 		 * Retrieves the label for the Variation Selector element.
@@ -412,15 +412,15 @@ if ( ! class_exists( '\WfocuFunnelKit\Variation_Selector' ) ) {
 
 			if ( ! empty( $product_key ) ) {
 				?>
-                <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                    <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 						<?php
 						if ( true === $is_variable ) {
 							echo do_shortcode( '[wfocu_variation_selector_form key="' . $product_key . '"]' );
 						}
 						?>
-                    </div>
-                </div>
+					</div>
+				</div>
 				<?php
 			}
 		}

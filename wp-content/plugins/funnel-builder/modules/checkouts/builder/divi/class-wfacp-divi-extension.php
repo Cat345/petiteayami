@@ -50,7 +50,11 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		}
 
 		protected function _enqueue_bundles() {
-			//parent::_enqueue_bundles();
+			// Divi 5 uses its own module system — D4 extension bundles not needed
+			if ( function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled() ) {
+				return;
+			}
+
 			if ( WFACP_Common::is_theme_builder() ) {
 				$this->enqueue_module_js();
 			} else {
@@ -75,7 +79,7 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		private function get_modules() {
 			$modules = [
 				'checkout_form' => [
-					'name' => __( 'Checkout Form', 'woofunnels-aero-checkout' ),
+					'name' => __( 'Checkout Form', 'funnel-builder' ),
 					'path' => $this->module_path . 'class-divi-form.php',
 				]
 			];

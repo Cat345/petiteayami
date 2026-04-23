@@ -89,7 +89,7 @@
                       "target": "{{target}}"
                     },
                     "values": {
-                      "href": "{{contact_confirmation_link}}",
+                      "href": "{{contact_subscribe_link}}",
                       "target": "_self"
                     }
                   },

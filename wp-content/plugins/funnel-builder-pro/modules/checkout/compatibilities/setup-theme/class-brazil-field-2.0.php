@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Plugin: Brazilian Market on WooCommerce by Claudio Sanches v.4.0.2
  */
@@ -72,7 +71,12 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 			 */
 			add_filter( 'wfacp_merge_default_billing_fields_classes', [ $this, 'merge_default_billing_fields_classes' ], 11, 2 );
 
+			/* exclude brazil fields from aero registered checkout fields */
+			add_filter( 'wfacp_aero_registered_checkout_fields', [ $this, 'exclude_bzazil_fields' ] ,99);
+
 		}
+
+
 
 		private function is_enabled() {
 			return class_exists( 'Extra_Checkout_Fields_For_Brazil_Front_End' );
@@ -466,6 +470,12 @@ if ( ! class_exists( 'WFACP_Brazil_Field_2' ) ) {
 
 			return $status;
 
+		}
+
+		public function exclude_bzazil_fields( $fields ) {
+			$fields[] = 'shipping_number';
+			$fields[] = 'shipping_neighborhood';
+			return $fields;
 		}
 	}
 

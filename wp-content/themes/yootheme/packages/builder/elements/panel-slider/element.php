@@ -348,7 +348,7 @@ return [
                 'Column' => '!.tm-grid-expand>*',
                 'Row' => '!.tm-grid-expand',
                 'Section' => '!.uk-section',
-                'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
             ],
             'enable' => 'slider_parallax',
         ],
@@ -468,7 +468,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'slidenav == \'outside\' && !slider_parallax',
+            'enable' => "slidenav == 'outside' && !slider_parallax",
         ],
         'panel_style' => [
             'label' => 'Style',
@@ -517,7 +517,7 @@ return [
                 'Large' => 'large',
             ],
             'enable' =>
-                'panel_style || (!panel_style && (show_image || show_video) && image_align != \'between\')',
+                "panel_style || (!panel_style && (show_image || show_video) && image_align != 'between')",
         ],
         'panel_image_no_padding' => [
             'description' =>
@@ -525,7 +525,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Align image without padding',
             'show' => 'panel_style',
-            'enable' => '(show_image || show_video) && image_align != \'between\'',
+            'enable' => "(show_image || show_video) && image_align != 'between'",
         ],
         'panel_match' => [
             'label' => 'Height',
@@ -611,7 +611,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -675,7 +675,7 @@ return [
                 'X-Large' => 'xlarge',
                 '2X-Large' => '2xlarge',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_column_gap' => [
             'label' => 'Grid Column Gap',
@@ -688,7 +688,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_row_gap' => [
             'label' => 'Grid Row Gap',
@@ -701,7 +701,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_breakpoint' => [
             'label' => 'Grid Breakpoint',
@@ -714,7 +714,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_margin' => [
             'label' => 'Margin Top',
@@ -957,7 +957,7 @@ return [
                 'Pill' => 'pill',
             ],
             'enable' =>
-                '(show_image || show_video) && (!panel_style || (panel_style && (!panel_image_no_padding || image_align == \'between\')))',
+                "(show_image || show_video) && (!panel_style || (panel_style && (!panel_image_no_padding || image_align == 'between')))",
         ],
         'image_link' => [
             'label' => 'Link',
@@ -1078,7 +1078,7 @@ return [
                 'None' => 'remove',
             ],
             'enable' =>
-                '(show_image || show_video) && (image_align == \'between\' || (image_align == \'bottom\' && !(panel_style && panel_image_no_padding)))',
+                "(show_image || show_video) && (image_align == 'between' || (image_align == 'bottom' && !(panel_style && panel_image_no_padding)))",
         ],
         'image_svg_inline' => [
             'label' => 'Inline SVG',
@@ -1153,7 +1153,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',
@@ -1337,7 +1337,7 @@ return [
                                 [
                                     'label' => 'Parallax Start/End',
                                     'description' =>
-                                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => ['slider_parallax_start', 'slider_parallax_end'],

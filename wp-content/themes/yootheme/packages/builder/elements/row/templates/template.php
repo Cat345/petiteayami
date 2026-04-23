@@ -10,7 +10,7 @@ $el->attr([
 
         'uk-container {@width}',
         'uk-container-{width}{@width: xsmall|small|large|xlarge|expand}',
-        'uk-padding-remove-horizontal' => ($props['padding_remove_horizontal'] && $props['width'] && $props['width'] != 'expand') || $props['parent'] == 'layout',
+        'uk-padding-remove-horizontal' => $props['padding_remove_horizontal'] && $props['width'] && $props['width'] != 'expand',
         'uk-container-expand-{width_expand} {@width} {@!width:expand}',
     ],
 

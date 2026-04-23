@@ -13,12 +13,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 	class WFOCU_Gateway_Integration_Braintree_CC extends WFOCU_Gateway {
 
 
-		protected static $ins = null;
-		public $token = false;
-		public $cc_call_response = false;
+		protected static $ins          = null;
+		public $token                  = false;
+		public $cc_call_response       = false;
 		public $maybe_collect_response = false;
-		public $unset_opaque_value = false;
-		protected $key = 'braintree_credit_card';
+		public $unset_opaque_value     = false;
+		protected $key                 = 'braintree_credit_card';
 
 		/**
 		 * Constructor
@@ -46,7 +46,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 
 			add_action( 'wfocu_offer_new_order_created_' . $this->get_key(), array( $this, 'save_transaction_id' ), 10, 2 );
 
-
 			add_action( 'wfocu_footer_before_print_scripts', array( $this, 'maybe_render_in_offer_transaction_scripts' ), 999 );
 
 			/**
@@ -60,13 +59,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			add_filter( 'wfocu_upsell_package', array( $this, 'maybe_add_3ds_nonce_in_package' ), 99, 1 );
 
 			$this->refund_supported = true;
-
 		}
 
 		public static function get_instance() {
 
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -84,7 +82,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		 * @param $message
 		 * @param $order
 		 * @param $response
-		 *
 		 */
 		public function maybe_collect_response( $message, $order, $response ) {
 
@@ -99,10 +96,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			$order_base = wc_get_order( $order );
 			if ( $order_base instanceof WC_Order && $this->key === $order_base->get_payment_method() && $this->is_enabled( $order_base ) && $this->should_tokenize() ) {
 
-				$order = $this->get_wc_gateway()->get_order( $order );
+				$order   = $this->get_wc_gateway()->get_order( $order );
+				$payment = $this->get_payment_object( $order );
+
 				if ( $this->should_tokenize() && 0 === $order->get_user_id() ) {
 
-					if ( isset( $order->payment->token ) && $order->payment->token ) {
+					if ( isset( $payment->token ) && $payment->token ) {
 
 						// save the tokenized card info for completing the pre-order in the future
 						$this->get_wc_gateway()->add_transaction_data( $order );
@@ -142,7 +141,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		public function process_charge( $order ) {
 
 			$is_successful = false;
-
 
 			$this->handle_client_error();
 			$gateway = $this->get_wc_gateway();
@@ -190,10 +188,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 				$is_successful = true;
 			} else {
 				$is_successful = false;
-				throw new WFOCU_Payment_Gateway_Exception( sprintf( __( 'Braintree Upsell CC Transaction Failed (%s)', 'woocommerce-upstroke-one-click-upsell' ), $this->get_failure_message( $response ) ), $this->get_failure_code( $response ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message is internal, failure message and code are safe
+				throw new WFOCU_Payment_Gateway_Exception( sprintf( esc_html__( 'Braintree Upsell CC Transaction Failed (%s)', 'woocommerce-upstroke-one-click-upsell' ), esc_html( $this->get_failure_message( $response ) ) ), $this->get_failure_code( $response ) );
 
 			}
-
 
 			return $this->handle_result( $is_successful );
 		}
@@ -204,7 +202,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		 *
 		 * @return bool
 		 * @since 2.0.0
-		 *
 		 */
 		protected function is_braintree_auth() {
 
@@ -213,12 +210,14 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 
 		protected function set_charge_params( $order ) {
 
+			$payment = $this->get_payment_object( $order );
+
 			$get_package = WFOCU_Core()->data->get( '_upsell_package' );
 
 			$this->request_data = array(
-				'amount'            => $get_package['total'],
+				'amount'            => number_format( (float) $get_package['total'], 2, '.', '' ),
 				'orderId'           => $this->get_order_number( $order ),
-				'merchantAccountId' => ! isset( $order->payment->merchant_account_id ) ? null : $order->payment->merchant_account_id,
+				'merchantAccountId' => ! isset( $payment->merchant_account_id ) ? null : $payment->merchant_account_id,
 				'shipping'          => $this->get_shipping_address( $order ),
 				'options'           => array(
 					'submitForSettlement'              => 1,
@@ -226,7 +225,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 					'addBillingAddressToPaymentMethod' => 1,
 				),
 				'channel'           => 'buildwoofunnels_bt',
-				'deviceData'        => isset( $order->payment->device_data ) ? null : $order->payment->device_data,
+				'deviceData'        => isset( $payment->device_data ) ? $payment->device_data : null,
 				'taxAmount'         => $order->get_total_tax(),
 				'taxExempt'         => $order->get_user_id() > 0 && is_callable( array( WC()->customer, 'is_vat_exempt' ) ) ? WC()->customer->is_vat_exempt() : false,
 				'customer'          => array(
@@ -241,7 +240,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			$this->set_billing( $order );
 			$this->set_payment_method( $order, $get_package );
 			WFOCU_Core()->log->log( 'Order #' . WFOCU_Core()->data->get_current_order()->get_id() . ': ' . 'Data for the request to Braintree CC' . print_r( $this->request_data, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
 		}
 
 		public function get_token( $order ) {
@@ -251,7 +249,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			}
 
 			return '';
-
 		}
 
 		/**
@@ -262,7 +259,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		 * @return true on success false otherwise
 		 */
 		public function has_token( $order ) {
-			$this->token = WFOCU_Common::get_order_meta( $order, '_wc_' . $this->get_key() . '_payment_token' );;
+			$this->token = WFOCU_Common::get_order_meta( $order, '_wc_' . $this->get_key() . '_payment_token' );
+
 			if ( ! empty( $this->token ) ) {
 				return true;
 			}
@@ -286,10 +284,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 
 		protected function set_billing( $order ) {
 
-			if ( isset( $order->payment->billing_address_id ) ) {
+			$payment = $this->get_payment_object( $order );
+
+			if ( isset( $payment->billing_address_id ) ) {
 
 				// use the existing billing address when using a saved payment method
-				$this->request_data['billingAddressId'] = $order->payment->billing_address_id;
+				$this->request_data['billingAddressId'] = $payment->billing_address_id;
 
 			} else {
 
@@ -310,25 +310,25 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 
 		protected function set_payment_method( $order, $package ) {
 
+			$payment = $this->get_payment_object( $order );
+
 			if ( is_array( $package ) && isset( $package['_wc_braintree_token'] ) ) {
 				$this->request_data['paymentMethodNonce'] = $package['_wc_braintree_token'];
-			} elseif ( isset( $order->payment->token ) && ! isset( $order->payment->use_3ds_nonce ) ) {
+			} elseif ( isset( $payment->token ) && ! isset( $payment->use_3ds_nonce ) ) {
 
 				// use saved payment method (token)
-				$this->request_data['paymentMethodToken'] = $order->payment->token;
+				$this->request_data['paymentMethodToken'] = $payment->token;
 
 			} else {
 
-				$this->request_data['paymentMethodNonce'] = $order->payment->nonce;
+				$this->request_data['paymentMethodNonce'] = $payment->nonce;
 
 				// set cardholder name when adding a credit card, note this isn't possible
 				// when using a 3DS nonce
-				if ( 'credit_card' === $order->payment->type && empty( $order->payment->use_3ds_nonce ) ) {
+				if ( 'credit_card' === $payment->type && empty( $payment->use_3ds_nonce ) ) {
 					$this->request_data['creditCard'] = array( 'cardholderName' => $order->get_formatted_billing_full_name() );
 				}
 			}
-
-
 		}
 
 		protected function get_charge_params() {
@@ -409,7 +409,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			}
 
 			return $message;
-
 		}
 
 		public function get_transaction_id( $response ) {
@@ -430,8 +429,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		 * @return bool
 		 */
 		public function process_refund_offer( $order ) {
-
-			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin refund action, capability checked by admin context
+			$refund_data = $_POST;
 
 			$txn_id        = isset( $refund_data['txn_id'] ) ? $refund_data['txn_id'] : '';
 			$amnt          = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
@@ -459,7 +458,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			}
 
 			return $trasaction_id ? $trasaction_id : false;
-
 		}
 
 		/**
@@ -526,7 +524,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 				return $localized_data;
 			}
 
-
 			$token = $this->get_token( $get_order );
 
 			if ( empty( $token ) ) {
@@ -543,7 +540,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			}
 
 			if ( ! isset( $localized_data['payments'] ) ) {
-				$localized_data['payments'] = [];
+				$localized_data['payments'] = array();
 			}
 
 			/**
@@ -552,7 +549,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			$localized_data['payments']['_wc_braintree_cc_nonce'] = $nonce;
 
 			return $localized_data;
-
 		}
 
 		private function _get_nonce_from_token( $token ) {
@@ -577,6 +573,77 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		}
 
 		/**
+		 * Checks if SkyVerge Framework 6 OrderHelper is available.
+		 *
+		 * @return bool
+		 */
+		protected function has_order_helper() {
+			return class_exists( 'SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper' );
+		}
+
+		/**
+		 * Gets the payment object from the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return stdClass
+		 */
+		protected function get_payment_object( $order ) {
+			if ( $this->has_order_helper() ) {
+				return \SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::get_payment( $order );
+			}
+
+			if ( ! isset( $order->payment ) || ! is_object( $order->payment ) ) {
+				$order->payment = new stdClass();
+			}
+
+			return $order->payment;
+		}
+
+		/**
+		 * Sets the payment object on the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 * @param stdClass $payment
+		 */
+		protected function set_payment_object( $order, $payment ) {
+			if ( $this->has_order_helper() ) {
+				\SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::set_payment( $order, $payment );
+			} else {
+				$order->payment = $payment;
+			}
+		}
+
+		/**
+		 * Gets the customer ID from the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return string
+		 */
+		protected function get_order_customer_id( $order ) {
+			if ( $this->has_order_helper() ) {
+				return \SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::get_customer_id( $order );
+			}
+
+			return isset( $order->customer_id ) ? $order->customer_id : '';
+		}
+
+		/**
+		 * Sets the customer ID on the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 * @param string   $customer_id
+		 */
+		protected function set_order_customer_id( $order, $customer_id ) {
+			if ( $this->has_order_helper() ) {
+				\SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::set_customer_id( $order, $customer_id );
+			} else {
+				$order->customer_id = $customer_id;
+			}
+		}
+
+		/**
 		 * Adds pre-orders data to the order object.  Filtered onto SV_WC_Payment_Gateway::get_order()
 		 *
 		 * @param WC_Order $order the order
@@ -584,72 +651,79 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 		 * @return WC_Order the orders
 		 * @since 4.1.0
 		 * @see SV_WC_Payment_Gateway::get_order()
-		 *
 		 */
 		public function get_order( $order ) {
+
+			$payment = $this->get_payment_object( $order );
 
 			if ( $this->has_token( $order ) && ! is_checkout_pay_page() ) {
 
 				// if this is a pre-order release payment with a tokenized payment method, get the payment token to complete the order
 
 				// retrieve the payment token
-				$order->payment->token = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
+				$payment->token = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
+
+				// clear 3DS nonce flag so set_payment_method() uses the vault token path,
+				// not the one-time 3DS nonce from the original checkout which is already consumed
+				unset( $payment->use_3ds_nonce );
 
 				// retrieve the optional customer id
-				$order->customer_id = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' );
+				$this->set_order_customer_id( $order, $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' ) );
 
 				// set token data on order
-				if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $order->payment->token ) ) {
+				if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $payment->token ) ) {
 
 					// an existing registered user with a saved payment token
-					$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $order->payment->token );
+					$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $payment->token );
 
 					// account last four
-					$order->payment->account_number = $token->get_last_four();
+					$payment->account_number = $token->get_last_four();
 
 					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
 
 						// card type
-						$order->payment->card_type = $token->get_card_type();
+						$payment->card_type = $token->get_card_type();
 
 						// exp month/year
-						$order->payment->exp_month = $token->get_exp_month();
-						$order->payment->exp_year  = $token->get_exp_year();
+						$payment->exp_month = $token->get_exp_month();
+						$payment->exp_year  = $token->get_exp_year();
 
 					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
 
 						// account type (checking/savings)
-						$order->payment->account_type = $token->get_account_type();
+						$payment->account_type = $token->get_account_type();
 					}
 				} else {
 
 					// a guest user means that token data must be set from the original order
 
 					// account number
-					$order->payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
+					$payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
 
 					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
 
 						// card type
-						$order->payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
-						$expiry_date               = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_expiry_date' );
+						$payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
+						$expiry_date        = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_expiry_date' );
 						// expiry date
 						if ( ! empty( $expiry_date ) ) {
 							list( $exp_year, $exp_month ) = explode( '-', $expiry_date );
-							$order->payment->exp_month = $exp_month;
-							$order->payment->exp_year  = $exp_year;
+							$payment->exp_month           = $exp_month;
+							$payment->exp_year            = $exp_year;
 						}
 					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
 
 						// account type
-						$order->payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
+						$payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
 					}
 				}
 			}
 
-			if ( true === $this->unset_opaque_value && isset( $order->payment->opaque_value ) ) {
-				unset( $order->payment->opaque_value );
+			if ( true === $this->unset_opaque_value && isset( $payment->opaque_value ) ) {
+				unset( $payment->opaque_value );
 			}
+
+			$this->set_payment_object( $order, $payment );
 
 			return $order;
 		}
@@ -671,161 +745,174 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_CC' ) ) {
 			if ( $this->get_key() !== $order->get_payment_method() ) {
 				return;
 			}
-			$this->request_data = [];
+			$this->request_data = array();
 			$this->set_billing( $order );
 			$last_four = WFOCU_WC_Compatibility::get_order_data( $order, '_wc_braintree_credit_card_account_four' );
 			$last_four = ! empty( $last_four ) ? $last_four : '';
 			?>
-            <style>.wfocuswal-container{z-index:999999 !important}</style>
-            <script src="https://js.braintreegateway.com/v1/braintree-data.js"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-            <script src="https://js.braintreegateway.com/web/<?php echo esc_html( class_exists( '\WC_Braintree\WC_Braintree' ) ? \WC_Braintree\WC_Braintree::BRAINTREE_JS_SDK_VERSION : WC_Braintree::BRAINTREE_JS_SDK_VERSION ); ?>/js/three-d-secure.min.js?ver=2.2.6"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-            <script src="https://js.braintreegateway.com/web/<?php echo esc_html( class_exists( '\WC_Braintree\WC_Braintree' ) ? \WC_Braintree\WC_Braintree::BRAINTREE_JS_SDK_VERSION : WC_Braintree::BRAINTREE_JS_SDK_VERSION ); ?>/js/client.min.js?ver=2.2.6"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-            <script>
-                (
-                    function ($) {
-                        "use strict";
+			<style>.wfocuswal-container{z-index:999999 !important}</style>
+			<script src="https://js.braintreegateway.com/v1/braintree-data.js"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script src="https://js.braintreegateway.com/web/<?php echo esc_html( class_exists( '\WC_Braintree\WC_Braintree' ) ? \WC_Braintree\WC_Braintree::BRAINTREE_JS_SDK_VERSION : WC_Braintree::BRAINTREE_JS_SDK_VERSION ); ?>/js/three-d-secure.min.js?ver=2.2.6"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script src="https://js.braintreegateway.com/web/<?php echo esc_html( class_exists( '\WC_Braintree\WC_Braintree' ) ? \WC_Braintree\WC_Braintree::BRAINTREE_JS_SDK_VERSION : WC_Braintree::BRAINTREE_JS_SDK_VERSION ); ?>/js/client.min.js?ver=2.2.6"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script>
+				(
+					function ($) {
+						"use strict";
 
 
-                        var wfocuBrainTreePayments = {
-                            'Bucket': null,
-                            'id': '<?php echo esc_js( $this->get_key() ); ?>',
-                            'client_token_nonce': '<?php echo esc_js( wp_create_nonce( 'wc_' . $this->get_key() . '_get_client_token' ) );?>',
-                            'threeDSecure': null,
-                            'PreventDefault': true,
-                            'IsApiReady': false,
-                            'init': function () {
-                                var r = this;
-                                return this.get_client_token().done(function (e) {
-                                    return e.success ? braintree.client.create({
-                                        authorization: e.data
-                                    }).then(function (e) {
-                                        return r.client = e, r.setup_integration();
-                                    }).catch(function (e) {
-                                        return r.HandleApiError(e)
-                                    }) : r.HandleApiError(e.data)
-                                }).fail(function (e, t, n) {
-                                    return r.HandleApiError({"message": "Could not retrieve the client token via AJAX: " + n})
-                                });
-                            },
-                            'get_client_token': function () {
-                                var e;
-                                return this.id, e = {
-                                    action: "wc_" + this.id + "_get_client_token",
-                                    nonce: this.client_token_nonce
-                                }, jQuery.post(window.wfocu_vars.ajax_url, e)
-                            },
-                            'setup_integration': function () {
-                                var t = this;
-                                /**
-                                 * Check if 3dsecure is enabled or not at gateway level
-                                 * if not then stop creating threedsecure object and enable buttons
-                                 * */
-                                if (false === t.client.getConfiguration().gatewayConfiguration.threeDSecureEnabled) {
-                                    return t.IsApiReady = true, t.Bucket.EnableButtonState()
-                                }
+						var wfocuBrainTreePayments = {
+							'Bucket': null,
+							'id': '<?php echo esc_js( $this->get_key() ); ?>',
+							'client_token_nonce': '<?php echo esc_js( wp_create_nonce( 'wc_' . $this->get_key() . '_get_client_token' ) ); ?>',
+							'threeDSecure': null,
+							'PreventDefault': true,
+							'IsApiReady': false,
+							'hasVaultToken': <?php echo $this->has_token( $order ) ? 'true' : 'false'; ?>,
+							'init': function () {
+								var r = this;
+								return this.get_client_token().done(function (e) {
+									return e.success ? braintree.client.create({
+										authorization: e.data
+									}).then(function (e) {
+										return r.client = e, r.setup_integration();
+									}).catch(function (e) {
+										return r.HandleApiError(e)
+									}) : r.HandleApiError(e.data)
+								}).fail(function (e, t, n) {
+									return r.HandleApiError({"message": "Could not retrieve the client token via AJAX: " + n})
+								});
+							},
+							'get_client_token': function () {
+								var e;
+								return this.id, e = {
+									action: "wc_" + this.id + "_get_client_token",
+									nonce: this.client_token_nonce
+								}, jQuery.post(window.wfocu_vars.ajax_url, e)
+							},
+							'setup_integration': function () {
+								var t = this;
+								/**
+								 * Check if 3dsecure is enabled or not at gateway level
+								 * if not then stop creating threedsecure object and enable buttons
+								 * */
+								if (false === t.client.getConfiguration().gatewayConfiguration.threeDSecureEnabled) {
+									return t.IsApiReady = true, t.Bucket.EnableButtonState()
+								}
 
-                                return braintree.threeDSecure.create({
-                                    version: 2,
-                                    client: this.client
-                                }).then(function (e) {
-                                    return t.IsApiReady = true, t.Bucket.EnableButtonState(), t.threeDSecure = e
-                                }).catch(function (e) {
-                                    return t.HandleApiError(e)
-                                });
-                            },
-                            'processPaymentInit': function () {
-                                var r = this;
+								return braintree.threeDSecure.create({
+									version: 2,
+									client: this.client
+								}).then(function (e) {
+									return t.IsApiReady = true, t.Bucket.EnableButtonState(), t.threeDSecure = e
+								}).catch(function (e) {
+									return t.HandleApiError(e)
+								});
+							},
+							'processPaymentInit': function () {
+								var r = this;
 
-                                /**
-                                 * Check if we have successfull 3dsecure object , if not then process the bucket
-                                 *
-                                 * */
-                                if (_.isNull(r.threeDSecure)) {
-                                    this.PreventDefault = false;
-                                    this.Bucket.sendBucket();
-                                    return;
-                                }
-                                var c = {
-                                    nonce: wfocu_vars.payments._wc_braintree_cc_nonce,
-                                    amount: r.Bucket.formatPrice(r.Bucket.getTotal(), 2, "", "."),
-                                    email: '<?php echo esc_js( WFOCU_WC_Compatibility::get_order_data( $order, 'billing_email' ) ); ?>',
-                                    billingAddress: <?php echo wp_kses_post( wp_json_encode( $this->request_data['billing'] ) ); ?>,
-                                    additionalInformation: [],
-                                    onLookupComplete: function (e, t) {
-                                        return t()
-                                    }
-                                };
-                                var lastFour = '<?php echo esc_js( $last_four ); ?>';
-                                if ('' !== lastFour) {
-                                    c.bin = lastFour
-                                }
-                                this.threeDSecure.verifyCard(c).then(function (e) {
-                                    return r.Process3dsSuccess(e.nonce), true
-                                }).catch(function (e) {
-                                    return r.HandleApiError(e)
-                                });
-                            },
-                            'Process3dsSuccess': function (nonce) {
-                                this.PreventDefault = false;
-                                wfocuCommons.addFilter('wfocu_front_charge_data', function (e) {
-                                    e._wc_3ds_nonce = nonce;
-                                    return e;
-                                });
-                                this.Bucket.sendBucket();
-                            },
-                            'HandleApiError': function (e) {
-                                this.unblockNativeTransaction();
-                                wfocuCommons.addFilter('wfocu_front_charge_data', function (eD) {
-                                    eD._client_error = e;
-                                    return eD;
-                                });
-                            },
-                            'blockNativeTransaction': function () {
+								/**
+								 * If a vault token exists for this order, skip 3DS verification entirely.
+								 * The server-side will charge using paymentMethodToken directly.
+								 * Forcing verifyCard() on a vaulted token causes frictionless 3DS failures
+								 * for cards that did not require 3DS at checkout.
+								 */
+								if (r.hasVaultToken) {
+									this.PreventDefault = false;
+									this.Bucket.sendBucket();
+									return;
+								}
 
-                                this.Bucket.inOfferTransaction = true;
-                                this.processPaymentInit();
-                                this.PreventDefault = false;
-                            },
-                            'unblockNativeTransaction': function () {
-                                this.PreventDefault = false;
-                                this.Bucket.inOfferTransaction = false;
-                                this.Bucket.EnableButtonState();
-                            }
-                        };
-                        /**
-                         * Save the bucket instance at several
-                         */
-                        $(document).on('wfocuBucketCreated', function (e, Bucket) {
+								/**
+								 * Check if we have successfull 3dsecure object , if not then process the bucket
+								 *
+								 * */
+								if (_.isNull(r.threeDSecure)) {
+									this.PreventDefault = false;
+									this.Bucket.sendBucket();
+									return;
+								}
+								var c = {
+									nonce: wfocu_vars.payments._wc_braintree_cc_nonce,
+									amount: r.Bucket.formatPrice(r.Bucket.getTotal(), 2, "", "."),
+									email: '<?php echo esc_js( WFOCU_WC_Compatibility::get_order_data( $order, 'billing_email' ) ); ?>',
+									billingAddress: <?php echo wp_kses_post( wp_json_encode( $this->request_data['billing'] ) ); ?>,
+									additionalInformation: [],
+									onLookupComplete: function (e, t) {
+										return t()
+									}
+								};
+								var lastFour = '<?php echo esc_js( $last_four ); ?>';
+								if ('' !== lastFour) {
+									c.bin = lastFour
+								}
+								this.threeDSecure.verifyCard(c).then(function (e) {
+									return r.Process3dsSuccess(e.nonce), true
+								}).catch(function (e) {
+									return r.HandleApiError(e)
+								});
+							},
+							'Process3dsSuccess': function (nonce) {
+								this.PreventDefault = false;
+								wfocuCommons.addFilter('wfocu_front_charge_data', function (e) {
+									e._wc_3ds_nonce = nonce;
+									return e;
+								});
+								this.Bucket.sendBucket();
+							},
+							'HandleApiError': function (e) {
+								this.unblockNativeTransaction();
+								wfocuCommons.addFilter('wfocu_front_charge_data', function (eD) {
+									eD._client_error = e;
+									return eD;
+								});
+							},
+							'blockNativeTransaction': function () {
 
-                            wfocuBrainTreePayments.Bucket = Bucket;
-                            wfocuBrainTreePayments.init();
-                        });
-                        $(document).on('wfocu_external', function (e, Bucket) {
+								this.Bucket.inOfferTransaction = true;
+								this.processPaymentInit();
+								this.PreventDefault = false;
+							},
+							'unblockNativeTransaction': function () {
+								this.PreventDefault = false;
+								this.Bucket.inOfferTransaction = false;
+								this.Bucket.EnableButtonState();
+							}
+						};
+						/**
+						 * Save the bucket instance at several
+						 */
+						$(document).on('wfocuBucketCreated', function (e, Bucket) {
 
-                            /**
-                             * Check if we need to mark inoffer transaction to prevent default behavior of page
-                             */
-                            if (0 !== Bucket.getTotal() && true === wfocuBrainTreePayments.PreventDefault) {
-                                wfocuBrainTreePayments.blockNativeTransaction();
-                            } else {
-                                wfocuBrainTreePayments.unblockNativeTransaction();
-                            }
+							wfocuBrainTreePayments.Bucket = Bucket;
+							wfocuBrainTreePayments.init();
+						});
+						$(document).on('wfocu_external', function (e, Bucket) {
 
-                        });
+							/**
+							 * Check if we need to mark inoffer transaction to prevent default behavior of page
+							 */
+							if (0 !== Bucket.getTotal() && true === wfocuBrainTreePayments.PreventDefault) {
+								wfocuBrainTreePayments.blockNativeTransaction();
+							} else {
+								wfocuBrainTreePayments.unblockNativeTransaction();
+							}
 
-                        $(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
-                            wfocuBrainTreePayments.Bucket = Bucket;
-                        });
-                        $(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
-                            wfocuBrainTreePayments.Bucket = Bucket;
+						});
 
-                            if (false === wfocuBrainTreePayments.IsApiReady) {
-                                wfocuBrainTreePayments.Bucket.DisableButtonState();
-                            }
-                        });
-                    })
-                (jQuery);
-            </script>
+						$(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
+							wfocuBrainTreePayments.Bucket = Bucket;
+						});
+						$(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
+							wfocuBrainTreePayments.Bucket = Bucket;
+
+							if (false === wfocuBrainTreePayments.IsApiReady) {
+								wfocuBrainTreePayments.Bucket.DisableButtonState();
+							}
+						});
+					})
+				(jQuery);
+			</script>
 			<?php
 		}
 

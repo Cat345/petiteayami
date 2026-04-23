@@ -46,26 +46,20 @@ class BWFAN_API_Get_Automation_stats extends BWFAN_API_Base {
 			}
 
 			if ( is_array( $automation_ids ) && count( $automation_ids ) > 0 ) {
-				$active_automation   = BWFAN_Model_Automation_Contact::get_active_count( $automation_ids, 'active' );
+				/** Single query for active, failed, paused counts grouped by aid */
+				$status_counts       = BWFAN_Model_Automation_Contact::get_all_status_counts_by_aids( $automation_ids );
 				$complete_automation = BWFAN_Model_Automation_Complete_Contact::get_automation_complete_contact_count( $ids );
-				$failed_automation   = BWFAN_Model_Automation_Contact::get_active_count( $automation_ids, BWFAN_Automation_Controller::$STATUS_FAILED );
-				$paused_automation   = BWFAN_Model_Automation_Contact::get_active_count( $automation_ids, BWFAN_Automation_Controller::$STATUS_PAUSED );
-
-				$active_aids   = empty( $active_automation ) ? [] : array_column( $active_automation, 'aid' );
-				$complete_aids = empty( $complete_automation ) ? [] : array_column( $complete_automation, 'aid' );
-				$failed_aids   = empty( $failed_automation ) ? [] : array_column( $failed_automation, 'aid' );
-				$paused_aids   = empty( $paused_automation ) ? [] : array_column( $paused_automation, 'aid' );
+				$complete_map        = array();
+				foreach ( $complete_automation as $row ) {
+					$complete_map[ $row['aid'] ] = intval( $row['count'] );
+				}
 
 				foreach ( $automation_ids as $aid ) {
-					$active_index   = array_search( $aid, $active_aids );
-					$complete_index = array_search( $aid, $complete_aids );
-					$failed_index   = array_search( $aid, $failed_aids );
-					$paused_index   = array_search( $aid, $paused_aids );
-					$data[ $aid ]   = [
-						'active'   => ( false !== $active_index && isset( $active_automation[ $active_index ]['count'] ) ) ? $active_automation[ $active_index ]['count'] : 0,
-						'complete' => ( false !== $complete_index && isset( $complete_automation[ $complete_index ]['count'] ) ) ? $complete_automation[ $complete_index ]['count'] : 0,
-						'failed'   => ( false !== $failed_index && isset( $failed_automation[ $failed_index ]['count'] ) ) ? $failed_automation[ $failed_index ]['count'] : 0,
-						'paused'   => ( false !== $paused_index && isset( $paused_automation[ $paused_index ]['count'] ) ) ? $paused_automation[ $paused_index ]['count'] : 0,
+					$data[ $aid ] = [
+						'active'   => isset( $status_counts[ $aid ]['active'] ) ? $status_counts[ $aid ]['active'] : 0,
+						'complete' => isset( $complete_map[ $aid ] ) ? $complete_map[ $aid ] : 0,
+						'failed'   => isset( $status_counts[ $aid ]['failed'] ) ? $status_counts[ $aid ]['failed'] : 0,
+						'paused'   => isset( $status_counts[ $aid ]['paused'] ) ? $status_counts[ $aid ]['paused'] : 0,
 					];
 				}
 				BWFAN_Common::validate_scheduled_recurring_actions();

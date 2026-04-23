@@ -265,6 +265,11 @@ class Force_Apply extends Base_Model implements Model_Interface {
             return;
         }
 
+        // Clear applied coupons if the coupon is applied via Store API.
+        if ( $this->_apply_coupon_store_api ) {
+            \WC()->cart->set_applied_coupons( array( $this->_force_applied_coupon->get_code() ) );
+        }
+
         $discounts = new \WC_Discounts( \WC()->cart );
 
         foreach ( $this->_applied_coupons as $applied_coupon ) {

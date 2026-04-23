@@ -14,8 +14,6 @@ use function YOOtheme\trans;
 class PostSearchQueryType
 {
     /**
-     * @param WP_Post_Type $type
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Post_Type $type): array
@@ -33,9 +31,11 @@ class PostSearchQueryType
                             'type' => [
                                 'listOf' => 'String',
                             ],
+                            'defaultValue' => [],
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                     ],
 
@@ -52,7 +52,6 @@ class PostSearchQueryType
                                     'Filter items visually by the selected post types.',
                                 ),
                                 'type' => 'select',
-                                'default' => [],
                                 'options' => [
                                     [
                                         'evaluate' =>
@@ -70,7 +69,6 @@ class PostSearchQueryType
                                     ['%post_type%' => $type->labels->singular_name],
                                 ),
                                 'type' => 'number',
-                                'default' => 0,
                                 'modifier' => 1,
                                 'attrs' => [
                                     'min' => 1,
@@ -97,12 +95,15 @@ class PostSearchQueryType
                             'type' => [
                                 'listOf' => 'String',
                             ],
+                            'defaultValue' => [],
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => null,
                         ],
                     ],
 
@@ -119,7 +120,6 @@ class PostSearchQueryType
                                     'Filter items visually by the selected post types.',
                                 ),
                                 'type' => 'select',
-                                'default' => [],
                                 'options' => [
                                     [
                                         'evaluate' =>
@@ -141,7 +141,6 @@ class PostSearchQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -180,12 +179,6 @@ class PostSearchQueryType
     public static function resolve($root, array $args)
     {
         global $wp_query;
-
-        $args += [
-            'offset' => 0,
-            'limit' => null,
-            'post_type_filter' => [],
-        ];
 
         if ((is_search() || ($root['template'] ?? '') === '_search') && !get_search_query()) {
             return [];

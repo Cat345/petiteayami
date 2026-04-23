@@ -94,6 +94,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Porto' ) ) {
 			$cssHtml = "<style>";
 			$cssHtml .= $bodyClass . "#wfacp_affiliate_referrals_wc {padding-left:$px;padding-right:$px;}";
 			$cssHtml .= $bodyClass . '#shipping_calculator_field .border {border: none !important;}';
+			$cssHtml .= $bodyClass . '#shipping_calculator_field .wfacp_border {border: none !important;}';
 			$cssHtml .= $bodyClass . '#product_switching_field.shop_table {border: none;}';
 			$cssHtml .= $bodyClass . '#wfacp_qr_model_wrap .single_variation_wrap label.description_label_head {font-weight: bold;}';
 			$cssHtml .= $bodyClass . '#wfacp_qr_model_wrap .single_variation_wrap {padding-top: 0;margin: 10px 0 0;}';

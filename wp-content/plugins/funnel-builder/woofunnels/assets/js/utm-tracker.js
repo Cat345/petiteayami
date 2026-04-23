@@ -183,7 +183,9 @@ function wffnGetTrafficSource() {
 }
 
 function wffnManageCookies() {
-
+    if (true === window.wffnUtmCookiesInitialized) {
+        return;
+    }
 
     try {
         var source = wffnGetTrafficSource();
@@ -211,6 +213,7 @@ function wffnManageCookies() {
             }
         }
 
+        window.wffnUtmCookiesInitialized = true;
     } catch (e) {
         console.log(e);
     }
@@ -356,4 +359,35 @@ function wffnDetectBrowser(string, data) {
     return {name: 'unknown', version: 0};
 }
 
+/**
+ * Complianz: `cmplz_known_script_tags` (PHP) blocks this script until marketing consent.
+ * When the script runs, either Complianz is inactive or consent allows it — run once here.
+ * `cmplz_enable_category` is a jQuery event (not a window function); do not gate on it.
+ */
 wffnManageCookies();
+
+try {
+    if (typeof jQuery !== 'undefined' && jQuery.fn && jQuery.fn.on) {
+        jQuery(document).on("cmplz_enable_category", function(event) {
+            try {
+                if (!event || !event.originalEvent || !event.originalEvent.detail) {
+                    return;
+                }
+
+                var category = event.originalEvent.detail.category;
+                if (!category) {
+                    return;
+                }
+
+                if (category === 'marketing') {
+                    window.wffnUtmCookiesInitialized = false;
+                    wffnManageCookies();
+                }
+            } catch (error) {
+                console.log(error, 'WFFN UTM Consent Handler');
+            }
+        });
+    }
+} catch (error) {
+    console.log(error, 'WFFN UTM Consent Setup');
+}

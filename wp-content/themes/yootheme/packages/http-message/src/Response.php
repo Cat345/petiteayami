@@ -193,7 +193,7 @@ class Response extends BaseResponse
      */
     public function isOk(): bool
     {
-        return $this->getStatusCode() == 200;
+        return $this->getStatusCode() === 200;
     }
 
     /**
@@ -233,7 +233,7 @@ class Response extends BaseResponse
      */
     public function isForbidden(): bool
     {
-        return $this->getStatusCode() == 403;
+        return $this->getStatusCode() === 403;
     }
 
     /**
@@ -241,7 +241,7 @@ class Response extends BaseResponse
      */
     public function isNotFound(): bool
     {
-        return $this->getStatusCode() == 404;
+        return $this->getStatusCode() === 404;
     }
 
     /**

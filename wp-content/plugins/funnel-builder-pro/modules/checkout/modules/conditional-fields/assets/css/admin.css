@@ -1,0 +1,306 @@
+/**
+ * Admin Styles
+ *
+ * @package FunnelKit_Checkout_Conditional_Fields
+ */
+
+/* Settings Page */
+.fkcf-settings-wrap {
+	max-width: 1200px;
+}
+
+.fkcf-tabs-wrapper {
+	margin: 20px 0;
+}
+
+.fkcf-checkout-dropdown-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.fkcf-checkout-dropdown-label {
+	font-weight: 600;
+	margin: 0;
+}
+
+.fkcf-checkout-select {
+	min-width: 280px;
+	max-width: 100%;
+	padding: 6px 10px;
+	font-size: 14px;
+}
+
+.fkcf-checkout-content {
+	position: relative;
+	margin-top: 20px;
+}
+
+/* Loading Overlay */
+.fkcf-loading-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.9);
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.fkcf-spinner {
+	border: 4px solid #f3f3f3;
+	border-top: 4px solid #2271b1;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	animation: fkcf-spin 1s linear infinite;
+}
+
+@keyframes fkcf-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* Fields Table */
+.fkcf-fields-table {
+	margin-top: 20px;
+}
+
+.fkcf-col-field-name {
+	width: 30%;
+}
+
+.fkcf-col-section {
+	width: 15%;
+}
+
+.fkcf-col-type {
+	width: 15%;
+}
+
+.fkcf-col-status {
+	width: 20%;
+}
+
+.fkcf-col-actions {
+	width: 20%;
+}
+
+.fkcf-status-badge {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.fkcf-status-active {
+	background: #d7f4dd;
+	color: #1e8e3e;
+}
+
+.fkcf-status-none {
+	background: #f0f0f1;
+	color: #646970;
+}
+
+/* Modal */
+.fkcf-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 100000;
+}
+
+.fkcf-modal-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+}
+
+.fkcf-modal-content {
+	position: relative;
+	width: 90%;
+	max-width: 900px;
+	max-height: 90vh;
+	margin: 50px auto;
+	background: #fff;
+	border-radius: 4px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	display: flex;
+	flex-direction: column;
+}
+
+.fkcf-modal-header {
+	padding: 20px;
+	border-bottom: 1px solid #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.fkcf-modal-header h2 {
+	margin: 0;
+}
+
+.fkcf-modal-close {
+	background: none;
+	border: none;
+	font-size: 28px;
+	cursor: pointer;
+	color: #666;
+	line-height: 1;
+	padding: 0;
+	width: 30px;
+	height: 30px;
+}
+
+.fkcf-modal-close:hover {
+	color: #000;
+}
+
+.fkcf-modal-body {
+	padding: 20px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.fkcf-modal-footer {
+	padding: 20px;
+	border-top: 1px solid #ddd;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+body.fkcf-modal-open {
+	overflow: hidden;
+}
+
+/* Field Info */
+.fkcf-field-info {
+	background: #f7f7f7;
+	padding: 15px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+}
+
+/* Rule Settings */
+.fkcf-rule-settings {
+	margin-bottom: 20px;
+	padding: 15px;
+	background: #f9f9f9;
+	border-radius: 4px;
+}
+
+.fkcf-setting-row {
+	margin-bottom: 15px;
+}
+
+.fkcf-setting-row:last-child {
+	margin-bottom: 0;
+}
+
+.fkcf-setting-row label {
+	margin-right: 15px;
+}
+
+/* Rule Groups */
+.fkcf-rule-group {
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 15px;
+	margin-bottom: 15px;
+	background: #fff;
+}
+
+.fkcf-group-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 15px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #eee;
+}
+
+.fkcf-group-header h4 {
+	margin: 0;
+}
+
+.fkcf-group-logic {
+	display: flex;
+	gap: 15px;
+}
+
+.fkcf-conditions-container {
+	margin-bottom: 15px;
+}
+
+/* Conditions */
+.fkcf-condition {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px;
+	background: #f9f9f9;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.fkcf-condition select,
+.fkcf-condition input {
+	flex: 1;
+}
+
+.fkcf-condition-value {
+	display: flex;
+	gap: 10px;
+	flex: 2;
+}
+
+.fkcf-remove-condition {
+	background: #dc3232;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	padding: 5px 10px;
+	cursor: pointer;
+	font-size: 16px;
+	line-height: 1;
+}
+
+.fkcf-remove-condition:hover {
+	background: #c62d2d;
+}
+
+.fkcf-add-group-container {
+	margin-top: 20px;
+	text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+	.fkcf-modal-content {
+		width: 95%;
+		margin: 20px auto;
+	}
+
+	.fkcf-condition {
+		flex-wrap: wrap;
+	}
+
+	.fkcf-condition select,
+	.fkcf-condition input {
+		flex: 1 1 100%;
+	}
+}

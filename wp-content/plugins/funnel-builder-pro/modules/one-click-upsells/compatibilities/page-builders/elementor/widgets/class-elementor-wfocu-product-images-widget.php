@@ -15,6 +15,7 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 
 		/**
 		 * Get widget name.
+		 *
 		 * @return string
 		 */
 		public function get_name() {
@@ -23,6 +24,7 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 
 		/**
 		 * Get widget title.
+		 *
 		 * @return string|void
 		 */
 		public function get_title() {
@@ -31,6 +33,7 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 
 		/**
 		 * Get widget icon.
+		 *
 		 * @return string
 		 */
 		public function get_icon() {
@@ -41,20 +44,21 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 		 * Get widget categories.
 		 *
 		 * Retrieve the list of categories the widget belongs to.
+		 *
 		 * @access public
 		 *
 		 * @return array Widget categories.
 		 */
 		public function get_categories() {
-			return [ 'upstroke' ];
+			return array( 'upstroke' );
 		}
 
 		public function get_script_depends() {
-			return [ 'jquery', 'wfocu-product' ];
+			return array( 'jquery', 'wfocu-product' );
 		}
 
 		public function get_keywords() {
-			return [ 'woocommerce', 'shop', 'store', 'image', 'product', 'gallery', 'lightbox' ];
+			return array( 'woocommerce', 'shop', 'store', 'image', 'product', 'gallery', 'lightbox' );
 		}
 
 		/**
@@ -75,206 +79,254 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 				$product_options = array();
 			}
 
-			$this->start_controls_section( 'section_button', [
-				'label' => __( 'Offer Product Images', 'woofunnels-upstroke-one-click-upsell' ),
-				'tab'   => Controls_Manager::TAB_CONTENT,
-			] );
+			$this->start_controls_section(
+				'section_button',
+				array(
+					'label' => __( 'Offer Product Images', 'woofunnels-upstroke-one-click-upsell' ),
+					'tab'   => Controls_Manager::TAB_CONTENT,
+				)
+			);
 
 			foreach ( $products as $key => $product ) {
 				$product_options[ $key ] = $product->data->get_name();
 			}
-			$this->add_control( 'selected_product', [
-				'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => key( $product_options ),
-				'options' => $product_options,
-			] );
+			$this->add_control(
+				'selected_product',
+				array(
+					'label'   => __( 'Product', 'woofunnels-upstroke-one-click-upsell' ),
+					'type'    => Controls_Manager::SELECT,
+					'default' => key( $product_options ),
+					'options' => $product_options,
+				)
+			);
 
 			do_action( 'wfocu_add_elementor_controls', $this, $offer_id, $products );
 
-			$this->add_control( 'slider_enabled', [
-				'label'        => __( 'Enable Slider', 'elementor-pro' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'return_value' => 'yes',
-				'default'      => 'yes',
-				'condition'    => [
-					'selected_product!' => '',
-				],
-				'description'  => "Note: Slider will only show if gallary images are available.",
-			] );
+			$this->add_control(
+				'slider_enabled',
+				array(
+					'label'        => __( 'Enable Slider', 'elementor-pro' ),
+					'type'         => Controls_Manager::SWITCHER,
+					'return_value' => 'yes',
+					'default'      => 'yes',
+					'condition'    => array(
+						'selected_product!' => '',
+					),
+					'description'  => 'Note: Slider will only show if gallary images are available.',
+				)
+			);
 
-			$this->add_responsive_control( 'text_align', [
-				'label'     => __( 'Alignment', 'elementor' ),
-				'type'      => Controls_Manager::CHOOSE,
-				'default'   => 'none',
-				'options'   => [
-					'left'   => [
-						'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-left',
-					],
-					'center' => [
-						'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-center',
-					],
-					'right'  => [
-						'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
-						'icon'  => 'eicon-text-align-right',
-					],
-				],
-				'selectors' => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'float: {{VALUE}}; margin: 0 auto;',
+			$this->add_responsive_control(
+				'text_align',
+				array(
+					'label'     => __( 'Alignment', 'elementor' ),
+					'type'      => Controls_Manager::CHOOSE,
+					'default'   => 'none',
+					'options'   => array(
+						'left'   => array(
+							'title' => __( 'Left', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-left',
+						),
+						'center' => array(
+							'title' => __( 'Center', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-center',
+						),
+						'right'  => array(
+							'title' => __( 'Right', 'woofunnels-upstroke-one-click-upsell' ),
+							'icon'  => 'eicon-text-align-right',
+						),
+					),
+					'selectors' => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'float: {{VALUE}}; margin: 0 auto;',
 
-				],
-			] );
+					),
+				)
+			);
 
 			$this->end_controls_section();
 
-			$this->start_controls_section( 'section_product_gallery_style', [
-				'label' => __( 'Style', 'elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			] );
+			$this->start_controls_section(
+				'section_product_gallery_style',
+				array(
+					'label' => __( 'Style', 'elementor' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				)
+			);
 
-			$this->add_control( 'wc_style_warning', [
-				'type'            => Controls_Manager::RAW_HTML,
-				'raw'             => __( 'The style of this widget is often affected by your theme and plugins. If you experience any such issue, try to switch to a basic theme and deactivate related plugins.', 'elementor' ),
-				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-			] );
+			$this->add_control(
+				'wc_style_warning',
+				array(
+					'type'            => Controls_Manager::RAW_HTML,
+					'raw'             => __( 'The style of this widget is often affected by your theme and plugins. If you experience any such issue, try to switch to a basic theme and deactivate related plugins.', 'elementor' ),
+					'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+				)
+			);
 
-			$this->add_control( 'heading_featured_style', [
-				'label'     => __( 'Featured Image', 'elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-			] );
+			$this->add_control(
+				'heading_featured_style',
+				array(
+					'label'     => __( 'Featured Image', 'elementor' ),
+					'type'      => Controls_Manager::HEADING,
+					'separator' => 'before',
+				)
+			);
 
-			$this->add_group_control( Group_Control_Border::get_type(), [
-				'name'     => 'image_border',
-				'selector' => '.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img',
-			] );
+			$this->add_group_control(
+				Group_Control_Border::get_type(),
+				array(
+					'name'     => 'image_border',
+					'selector' => '.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img',
+				)
+			);
 
-			$this->add_responsive_control( 'image_border_radius', [
-				'label'      => __( 'Border Radius', 'elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
-				'selectors'  => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}',
-				],
-			] );
+			$this->add_responsive_control(
+				'image_border_radius',
+				array(
+					'label'      => __( 'Border Radius', 'elementor' ),
+					'type'       => Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', '%' ),
+					'selectors'  => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}',
+					),
+				)
+			);
 
-			$this->add_control( 'spacing', [
-				'label'       => __( 'Spacing', 'elementor' ),
-				'type'        => Controls_Manager::SLIDER,
-				'size_units'  => [ 'px', 'em' ],
-				'description' => __( 'Between main image and gallery slider(if slider available)', 'elementor' ),
-				'default'     => [
-					'size' => 5,
-					'unit' => 'px',
-				],
-				'selectors'   => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery' => 'margin-bottom: {{SIZE}}{{UNIT}}',
-				],
-			] );
-			$this->add_responsive_control( 'width', [
-				'label'          => __( 'Width', 'elementor' ),
-				'type'           => Controls_Manager::SLIDER,
-				'default'        => [
-					'unit' => '%',
-				],
-				'tablet_default' => [
-					'unit' => '%',
-					'size' => '300'
-				],
-				'mobile_default' => [
-					'unit' => '%',
-				],
-				'size_units'     => [ '%', 'px', 'vw' ],
-				'range'          => [
-					'%'  => [
-						'min' => 1,
-						'max' => 100,
-					],
-					'px' => [
-						'min' => 1,
-						'max' => 1000,
-					],
-					'vw' => [
-						'min' => 1,
-						'max' => 100,
-					],
-				],
-				'selectors'      => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'width: {{SIZE}}{{UNIT}}; height: auto;',
-				],
-			] );
+			$this->add_control(
+				'spacing',
+				array(
+					'label'       => __( 'Spacing', 'elementor' ),
+					'type'        => Controls_Manager::SLIDER,
+					'size_units'  => array( 'px', 'em' ),
+					'description' => __( 'Between main image and gallery slider(if slider available)', 'elementor' ),
+					'default'     => array(
+						'size' => 5,
+						'unit' => 'px',
+					),
+					'selectors'   => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery' => 'margin-bottom: {{SIZE}}{{UNIT}}',
+					),
+				)
+			);
+			$this->add_responsive_control(
+				'width',
+				array(
+					'label'          => __( 'Width', 'elementor' ),
+					'type'           => Controls_Manager::SLIDER,
+					'default'        => array(
+						'unit' => '%',
+					),
+					'tablet_default' => array(
+						'unit' => '%',
+						'size' => '300',
+					),
+					'mobile_default' => array(
+						'unit' => '%',
+					),
+					'size_units'     => array( '%', 'px', 'vw' ),
+					'range'          => array(
+						'%'  => array(
+							'min' => 1,
+							'max' => 100,
+						),
+						'px' => array(
+							'min' => 1,
+							'max' => 1000,
+						),
+						'vw' => array(
+							'min' => 1,
+							'max' => 100,
+						),
+					),
+					'selectors'      => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'width: {{SIZE}}{{UNIT}}; height: auto;',
+					),
+				)
+			);
 
-			$this->add_responsive_control( 'max_width', [
-				'label'          => __( 'Max Width', 'elementor' ) . ' (%)',
-				'type'           => Controls_Manager::SLIDER,
-				'default'        => [
-					'unit' => '%',
-				],
-				'tablet_default' => [
-					'unit' => '%',
-				],
-				'mobile_default' => [
-					'unit' => '%',
-				],
-				'size_units'     => [ '%' ],
-				'range'          => [
-					'%' => [
-						'min' => 1,
-						'max' => 100,
-					],
-				],
-				'selectors'      => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'max-width: {{SIZE}}{{UNIT}};',
-				],
-			] );
+			$this->add_responsive_control(
+				'max_width',
+				array(
+					'label'          => __( 'Max Width', 'elementor' ) . ' (%)',
+					'type'           => Controls_Manager::SLIDER,
+					'default'        => array(
+						'unit' => '%',
+					),
+					'tablet_default' => array(
+						'unit' => '%',
+					),
+					'mobile_default' => array(
+						'unit' => '%',
+					),
+					'size_units'     => array( '%' ),
+					'range'          => array(
+						'%' => array(
+							'min' => 1,
+							'max' => 100,
+						),
+					),
+					'selectors'      => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-gallery img' => 'max-width: {{SIZE}}{{UNIT}};',
+					),
+				)
+			);
 
-			$this->add_control( 'heading_thumbs_style', [
-				'label'     => __( 'Thumbnails', 'elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-			] );
+			$this->add_control(
+				'heading_thumbs_style',
+				array(
+					'label'     => __( 'Thumbnails', 'elementor' ),
+					'type'      => Controls_Manager::HEADING,
+					'separator' => 'before',
+				)
+			);
 
-			$this->add_group_control( Group_Control_Border::get_type(), [
-				'name'     => 'thumbs_border',
-				'selector' => '.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col a',
-			] );
+			$this->add_group_control(
+				Group_Control_Border::get_type(),
+				array(
+					'name'     => 'thumbs_border',
+					'selector' => '.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col a',
+				)
+			);
 
-			$this->add_responsive_control( 'thumbs_border_radius', [
-				'label'      => __( 'Border Radius', 'elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
-				'selectors'  => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col a' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}',
-				],
-			] );
+			$this->add_responsive_control(
+				'thumbs_border_radius',
+				array(
+					'label'      => __( 'Border Radius', 'elementor' ),
+					'type'       => Controls_Manager::DIMENSIONS,
+					'size_units' => array( 'px', '%' ),
+					'selectors'  => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col a' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}',
+					),
+				)
+			);
 
-			$this->add_control( 'spacing_thumbs', [
-				'label'      => __( 'Spacing', 'elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', 'em' ],
-				'range'      => [
-					'em' => [
-						'min'  => 0,
-						'max'  => 3,
-						'step' => 0.1,
-					],
-					'px' => [
-						'min' => 2,
-						'max' => 50,
-					],
-				],
-				'default'    => [
-					'size' => 5,
-					'unit' => 'px',
-				],
-				'selectors'  => [
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col' => 'padding: {{SIZE}}{{UNIT}};',
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .flickity-prev-next-button'                 => 'width: 36px; height: 36px; padding: 0; top: 50%; -webkit-transform: translateY(0%); transform: translateY(0%); margin-top: -18px;',
-					'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .flickity-prev-next-button svg'             => '-moz-transform: none; -webkit-transform:none; transform: none; padding: 0',
-				],
-			] );
+			$this->add_control(
+				'spacing_thumbs',
+				array(
+					'label'      => __( 'Spacing', 'elementor' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => array( 'px', 'em' ),
+					'range'      => array(
+						'em' => array(
+							'min'  => 0,
+							'max'  => 3,
+							'step' => 0.1,
+						),
+						'px' => array(
+							'min' => 2,
+							'max' => 50,
+						),
+					),
+					'default'    => array(
+						'size' => 5,
+						'unit' => 'px',
+					),
+					'selectors'  => array(
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .wfocu-product-thumbnails .wfocu-thumb-col' => 'padding: {{SIZE}}{{UNIT}};',
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .flickity-prev-next-button'                 => 'width: 36px; height: 36px; padding: 0; top: 50%; -webkit-transform: translateY(0%); transform: translateY(0%); margin-top: -18px;',
+						'.single-wfocu_offer {{WRAPPER}} .elementor-widget-container .flickity-prev-next-button svg'             => '-moz-transform: none; -webkit-transform:none; transform: none; padding: 0',
+					),
+				)
+			);
 
 			$this->end_controls_section();
 		}
@@ -336,60 +388,67 @@ if ( ! class_exists( 'WFOCU_Product_Images_Widget' ) ) {
 							}
 						}
 					} ?>
-                    <link rel="stylesheet" id="flickity-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/flickity/flickity.css" type="text/css" media="all">
-                    <link rel="stylesheet" id="flickity-common-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/css/flickity-common.css" type="text/css" media="all">
+                    <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<link rel="stylesheet" id="flickity-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/flickity/flickity.css" type="text/css" media="all">
+                    <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<link rel="stylesheet" id="flickity-common-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/css/flickity-common.css" type="text/css" media="all">
 					<?php
 					if ( ! empty( $main_img ) ) {
-						WFOCU_Core()->template_loader->get_template_part( 'product/slider', array(
-							'key'     => $settings['selected_product'],
-							'gallery' => $gallery,
-							'product' => $product_obj,
-							'title'   => '',
-							'style'   => 2,
-						) );
+						WFOCU_Core()->template_loader->get_template_part(
+							'product/slider',
+							array(
+								'key'     => $settings['selected_product'],
+								'gallery' => $gallery,
+								'product' => $product_obj,
+								'title'   => '',
+								'style'   => 2,
+							)
+						);
 					}
 				}
-
 			}
-			if ( empty( $main_img ) ) { ?>
-                <link rel="stylesheet" id="flickity-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/flickity/flickity.css" type="text/css" media="all">
-                <link rel="stylesheet" id="flickity-common-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/css/flickity-common.css" type="text/css" media="all">
-                <div class="elementor-widget-container">
-                    <div class="wfocu-product-gallery ">
-                        <div class="wfocu-product-carousel wfocu-product-image-single ">
-                            <div class="wfocu-carousel-cell">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                        </div>
-                    </div>
+			if ( empty( $main_img ) ) {
+				?>
+                <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<link rel="stylesheet" id="flickity-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/flickity/flickity.css" type="text/css" media="all">
+                <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<link rel="stylesheet" id="flickity-common-css" href="<?php echo plugin_dir_url( WFOCU_PLUGIN_FILE ); ?>/assets/css/flickity-common.css" type="text/css" media="all">
+				<div class="elementor-widget-container">
+					<div class="wfocu-product-gallery ">
+						<div class="wfocu-product-carousel wfocu-product-image-single ">
+							<div class="wfocu-carousel-cell">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+						</div>
+					</div>
 					<?php if ( false && isset( $settings['slider_enabled'] ) && 'yes' === $settings['slider_enabled'] ) { ?>
-                        <div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
-                            <div class="wfocu-thumb-col is-nav-selected">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                            <div class="wfocu-thumb-col">
-                                <a><img src="<?php echo esc_url( wc_placeholder_img_src('thumbnail') ); ?>" alt="" title=""></a>
-                            </div>
-                        </div>
+						<div class="wfocu-product-carousel-nav wfocu-product-thumbnails" data-flickity='{"asNavFor":".wfocu-product-carousel-nav","contain":true,"pageDots":false,"imagesLoaded":true}'>
+							<div class="wfocu-thumb-col is-nav-selected">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+							<div class="wfocu-thumb-col">
+								<a><img src="<?php echo esc_url( wc_placeholder_img_src( 'thumbnail' ) ); ?>" alt="" title=""></a>
+							</div>
+						</div>
 						<?php
 
-					} ?>
-                </div>
+					}
+					?>
+				</div>
 				<?php
 			}
-
 		}
 	}
 }

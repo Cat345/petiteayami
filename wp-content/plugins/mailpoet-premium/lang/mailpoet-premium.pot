@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the MailPoet Premium plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: MailPoet Premium 5.22.0\n"
+"Project-Id-Version: MailPoet Premium 5.23.0\n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
 "Last-Translator: MailPoet i18n (https://www.transifex.com/organization/wysija)\n"
 "Language-Team: MailPoet i18n <https://www.transifex.com/organization/wysija>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-03T10:12:24+00:00\n"
+"POT-Creation-Date: 2026-04-06T12:54:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -338,290 +338,413 @@ msgstr ""
 msgid "WordPress user role changes"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:60
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:67
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:74
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:81
 msgid "Welcome series for new subscribers"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:61
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:75
 msgid "Welcome new subscribers and start building a relationship with them. Send an email immediately after someone subscribes to your list to introduce your brand and a follow-up two days later to keep the conversation going."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:70
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:127
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:174
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:84
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:141
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:188
 msgid "Welcome email"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:72
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:176
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:86
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:190
 msgid "Follow-up email"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:95
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:120
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:109
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:134
 msgid "Sample email series"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:96
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:110
 msgid "A sample automation template with email templates."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:102
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:116
 msgid "Welcome to our newsletter!"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:103
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:117
 msgid "Thanks for subscribing"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:108
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:602
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:122
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:616
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:870
 msgid "Here’s what to expect"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:109
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:123
 msgid "Learn more about us"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:114
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:128
 msgid "A special offer just for you"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:115
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:129
 msgid "Enjoy this discount"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:135
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:149
 msgid "Introduction email"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:143
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:157
 msgid "Special offer email"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:164
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:171
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:178
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:185
 msgid "Welcome series for new WordPress users"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:165
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:179
 msgid "Welcome new WordPress users to your site. Send an email immediately after a WordPress user registers. Send a follow-up email two days later with more in-depth information."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:194
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:201
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:208
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:215
 msgid "Thank loyal customers"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:195
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:209
 msgid "These are your most important customers. Make them feel special by sending a thank you note for supporting your brand."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:226
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:227
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:240
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:241
 msgid "Thank you for your loyalty"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:247
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:254
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:261
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:268
 msgid "Win back customers"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:248
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:262
 msgid "Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what’s new, encouraging a return to your brand."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:280
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:281
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:294
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:295
 msgid "It’s been a while…"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:307
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:308
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:321
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:322
 msgid "We’ve missed you"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:332
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:339
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:346
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:353
 msgid "Abandoned cart campaign"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:333
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:347
 msgid "Encourage your potential customers to finalize their purchase when they have added items to their cart but haven’t finished the order yet. Offer a coupon code as a last resort to convert them to customers."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:345
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:346
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:359
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:360
 msgid "It looks like you left something behind…"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:372
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:373
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:386
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:387
 msgid "Your cart is waiting"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:404
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:405
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:418
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:419
 msgid "Your cart is waiting, and so is your 20% off!"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:429
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:436
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:443
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:450
 msgid "Ask to leave a review post-purchase"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:430
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:444
 msgid "Encourage your customers to leave a review a few days after their purchase. Show them their opinion matters."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:478
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:479
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:492
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:493
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:983
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:984
 msgid "How was your experience?"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:480
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:494
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:985
 msgid "We’d love your feedback"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:504
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:511
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:518
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:525
 msgid "Follow up on a positive review (4-5 stars)"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:505
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:519
 msgid "Thank your happy customers for their feedback and let them know you appreciate their support."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:526
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:527
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:540
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:541
 msgid "Thanks for your review!"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:528
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:542
 msgid "We’re thrilled you had a good experience"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:545
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:552
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:559
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:566
 msgid "Follow up on a negative review (1-2 stars)"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:546
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:560
 msgid "Reach out to unhappy customers and show you care. Offer help or gather more feedback to improve."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:567
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:568
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:581
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:582
 msgid "Sorry to hear that – can we help?"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:569
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:583
 msgid "Let’s make things right"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:586
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:593
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:600
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:607
 msgid "Follow up after a subscription purchase"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:587
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:601
 msgid "Thank new subscribers and let them know what to expect. A warm welcome goes a long way."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:600
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:601
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:614
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:615
 msgid "Welcome to your subscription"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:619
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:626
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:633
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:640
 msgid "Follow up after a subscription renewal"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:620
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:634
 msgid "Reinforce the value of your subscription by reminding customers what they’re getting after every renewal."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:632
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:633
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:646
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:647
 msgid "Your subscription just renewed"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:634
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:648
 msgid "Here’s a reminder of the value you get"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:651
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:658
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:665
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:672
 msgid "Follow up after failed renewal"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:652
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:666
 msgid "Help customers fix failed payments and continue their subscription without disruption."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:664
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:665
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:678
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:679
 msgid "Trouble renewing your subscription"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:666
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:680
 msgid "Let’s fix this together"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:683
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:690
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:697
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:704
 msgid "Follow up on churned subscription"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:684
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:698
 msgid "Reach out to subscribers who canceled and ask for their feedback to help improve your service."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:697
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:698
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:711
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:712
 msgid "Can we ask why you left?"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:699
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:713
 msgid "Help us improve"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:716
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:723
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:730
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:737
 msgid "Follow up when trial ends"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:717
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:731
 msgid "Check in with customers after their trial ends. Encourage them to keep enjoying the benefits of their subscription."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:730
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:731
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:744
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:745
 msgid "How was your trial?"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:732
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:746
 msgid "Let’s keep the good stuff going"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:749
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:756
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:763
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:770
 msgid "Win back churned subscribers"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:750
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:764
 msgid "Re-engage former subscribers by showing what’s new and why it’s worth coming back."
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:781
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:782
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:795
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:796
 msgid "Here’s what’s new since you left"
 msgstr ""
 
-#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:783
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:797
 msgid "We’d love to have you back"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:821
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:828
+msgid "Abandoned booking reminder"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:822
+msgid "Remind customers who left a booking in their cart to complete their reservation."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:835
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:836
+msgid "Your spot is waiting"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:837
+msgid "Complete your booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:854
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:861
+msgid "Follow-up after a new booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:855
+msgid "Send a confirmation email after a new booking is created."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:868
+msgid "Booking confirmation"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:869
+msgid "Your booking is confirmed"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:887
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:894
+msgid "Pre-visit reminder"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:888
+msgid "Send a reminder before a booking starts. Customize the timing in the trigger settings."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:908
+msgid "Getting ready for your appointment"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:909
+msgid "A reminder about your upcoming booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:910
+msgid "See you soon"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:927
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:934
+msgid "Educational drip after booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:928
+msgid "Send a series of emails after a booking is created to help customers prepare for their visit."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:941
+msgid "What to expect"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:942
+msgid "Prepare for your visit"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:943
+msgid "Everything you need to know"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:950
+msgid "Make the most of your booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:951
+msgid "Tips for your upcoming booking"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:952
+msgid "Get the most out of your experience"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:969
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:976
+msgid "Post-booking review request"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:970
+msgid "Ask for feedback after a booking is completed."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1002
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1009
+msgid "Next booking nudge"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1003
+msgid "Encourage customers to rebook after their booking is completed."
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1016
+msgid "Ready to book again?"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1017
+msgid "It’s time for your next visit"
+msgstr ""
+
+#: lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php:1018
+msgid "Book your next appointment"
 msgstr ""
 
 #. translators: automation trigger title

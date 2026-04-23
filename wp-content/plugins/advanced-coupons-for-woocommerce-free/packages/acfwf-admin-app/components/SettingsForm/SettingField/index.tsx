@@ -10,6 +10,7 @@ import { sanitizeHtml } from '../../../../shared/utils';
 // Components
 import FunnelKitUpsell from './FunnelKitUpsell';
 import ImportStoreCreditsField from './ImportStoreCreditsField';
+import ClearDetachedStoreCreditsField from './ClearDetachedStoreCreditsField';
 
 // Styles
 import './index.scss';
@@ -89,6 +90,11 @@ const SettingField = (props: IProps) => {
   // store credits importer field.
   if ('acfw_store_credits_importer' === id) {
     return <ImportStoreCreditsField field={field} />;
+  }
+
+  // clear detached store credit entries (Advanced tab).
+  if ('acfw_clear_detached_store_credits' === id) {
+    return <ClearDetachedStoreCreditsField field={field} />;
   }
 
   // return empty

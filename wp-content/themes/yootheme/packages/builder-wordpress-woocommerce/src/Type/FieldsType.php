@@ -38,6 +38,7 @@ class FieldsType
                     'args' => [
                         'type' => [
                             'type' => 'String',
+                            'defaultValue' => '',
                         ],
                     ],
                     'metadata' => [
@@ -50,7 +51,6 @@ class FieldsType
                                     'Show the active price, or only the sale or regular price.',
                                 ),
                                 'type' => 'select',
-                                'default' => '',
                                 'options' => [
                                     trans('Default') => '',
                                     trans('Sale price only') => 'sale',
@@ -78,6 +78,7 @@ class FieldsType
                     'args' => [
                         'link' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                     ],
                     'metadata' => [
@@ -89,7 +90,6 @@ class FieldsType
                                 'description' => trans('Show or hide the reviews link.'),
                                 'type' => 'checkbox',
                                 'text' => trans('Show reviews link'),
-                                'default' => true,
                             ],
                         ],
                     ],
@@ -173,15 +173,19 @@ class FieldsType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'rand',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'DESC',
                         ],
                         'order_alphanum' => [
                             'type' => 'Boolean',
@@ -198,7 +202,6 @@ class FieldsType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -208,7 +211,6 @@ class FieldsType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -223,7 +225,6 @@ class FieldsType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'rand',
                                         'options' => [
                                             [
                                                 'evaluate' =>
@@ -238,7 +239,6 @@ class FieldsType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'DESC',
                                         'options' => [
                                             trans('Ascending') => 'ASC',
                                             trans('Descending') => 'DESC',
@@ -263,15 +263,19 @@ class FieldsType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'rand',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'DESC',
                         ],
                         'order_alphanum' => [
                             'type' => 'Boolean',
@@ -288,7 +292,6 @@ class FieldsType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -298,7 +301,6 @@ class FieldsType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -313,7 +315,6 @@ class FieldsType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'rand',
                                         'options' => [
                                             [
                                                 'evaluate' =>
@@ -328,7 +329,6 @@ class FieldsType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'DESC',
                                         'options' => [
                                             'Ascending' => 'ASC',
                                             'Descending' => 'DESC',
@@ -353,15 +353,19 @@ class FieldsType
                     'args' => [
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'menu_order',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'DESC',
                         ],
                         'order_alphanum' => [
                             'type' => 'Boolean',
@@ -378,7 +382,6 @@ class FieldsType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -388,7 +391,6 @@ class FieldsType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -403,7 +405,6 @@ class FieldsType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'menu_order',
                                         'options' => [
                                             [
                                                 'evaluate' =>
@@ -418,7 +419,6 @@ class FieldsType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'DESC',
                                         'options' => [
                                             'Ascending' => 'ASC',
                                             'Descending' => 'DESC',
@@ -482,8 +482,6 @@ class FieldsType
      */
     public static function price($product, $args)
     {
-        $args += ['type' => ''];
-
         if ($args['type']) {
             $price =
                 $args['type'] === 'regular'
@@ -549,7 +547,6 @@ class FieldsType
      */
     public static function rating($product, $args)
     {
-        $args += ['link' => true];
         $count = $product->get_rating_count();
         $average = $product->get_average_rating();
 

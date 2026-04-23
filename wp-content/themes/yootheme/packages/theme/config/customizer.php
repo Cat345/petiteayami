@@ -154,40 +154,40 @@ return [
                 'site.boxed.alignment' => [
                     'type' => 'checkbox',
                     'text' => 'Center',
-                    'enable' => 'site.layout == \'boxed\'',
+                    'enable' => "site.layout == 'boxed'",
                 ],
                 'site.boxed.margin_top' => [
                     'type' => 'checkbox',
                     'text' => 'Add top margin',
-                    'enable' => 'site.layout == \'boxed\'',
+                    'enable' => "site.layout == 'boxed'",
                 ],
                 'site.boxed.margin_bottom' => [
                     'type' => 'checkbox',
                     'text' => 'Add bottom margin',
-                    'enable' => 'site.layout == \'boxed\'',
+                    'enable' => "site.layout == 'boxed'",
                 ],
                 'site.boxed.header_outside' => [
                     'type' => 'checkbox',
                     'text' => 'Display header outside the container',
-                    'enable' => 'site.layout == \'boxed\'',
+                    'enable' => "site.layout == 'boxed'",
                 ],
                 'site.boxed.header_transparent' => [
                     'type' => 'checkbox',
                     'text' => 'Make header transparent',
-                    'enable' => 'site.layout == \'boxed\' && site.boxed.header_outside',
+                    'enable' => "site.layout == 'boxed' && site.boxed.header_outside",
                 ],
                 'site.boxed.media' => [
                     'label' => 'Image',
                     'description' =>
                         'Upload an optional background image that covers the page. It will be fixed while scrolling.',
                     'type' => 'image',
-                    'enable' => 'site.layout == \'boxed\'',
+                    'enable' => "site.layout == 'boxed'",
                 ],
                 'site.boxed._media' => [
                     'type' => 'button-panel',
                     'panel' => 'site-media',
                     'text' => 'Edit Settings',
-                    'show' => 'site.layout == \'boxed\' && site.boxed.media',
+                    'show' => "site.layout == 'boxed' && site.boxed.media",
                 ],
                 'site.boxed.header_text_color' => [
                     'label' => 'Text Color',
@@ -198,7 +198,7 @@ return [
                         'Dark Text' => 'dark',
                     ],
                     'enable' =>
-                        'site.layout == \'boxed\' && site.boxed.header_outside && (site.boxed.header_transparent || header.transparent) && site.boxed.media',
+                        "site.layout == 'boxed' && site.boxed.header_outside && (site.boxed.header_transparent || header.transparent) && site.boxed.media",
                 ],
                 'site.toolbar_width' => [
                     'label' => 'Toolbar',
@@ -342,7 +342,7 @@ return [
                         'max' => 600,
                         'step' => 10,
                     ],
-                    'show' => 'site.image_effect == \'parallax\'',
+                    'show' => "site.image_effect == 'parallax'",
                 ],
                 'site.image_parallax_bgy' => [
                     'text' => 'Translate Y',
@@ -352,7 +352,7 @@ return [
                         'max' => 600,
                         'step' => 10,
                     ],
-                    'show' => 'site.image_effect == \'parallax\'',
+                    'show' => "site.image_effect == 'parallax'",
                 ],
                 'site.image_parallax_easing' => [
                     'label' => 'Parallax Easing',
@@ -364,7 +364,7 @@ return [
                         'max' => 2,
                         'step' => 0.1,
                     ],
-                    'show' => 'site.image_effect == \'parallax\'',
+                    'show' => "site.image_effect == 'parallax'",
                 ],
                 'site.image_parallax_breakpoint' => [
                     'label' => 'Parallax Breakpoint',
@@ -378,7 +378,7 @@ return [
                         'Large (Desktop)' => 'l',
                         'X-Large (Large Screens)' => 'x',
                     ],
-                    'show' => 'site.image_effect == \'parallax\'',
+                    'show' => "site.image_effect == 'parallax'",
                 ],
                 'site.image_visibility' => [
                     'label' => 'Visibility',
@@ -395,7 +395,7 @@ return [
                 'site.media_background' => [
                     'label' => 'Background Color',
                     'description' =>
-                        'Use the background color in combination with blend modes, a transparent image or to fill the area if the image doesn\'t cover the whole page.',
+                        "Use the background color in combination with blend modes, a transparent image or to fill the area if the image doesn't cover the whole page.",
                     'type' => 'color',
                 ],
                 'site.media_blend_mode' => [
@@ -579,7 +579,7 @@ return [
                     'enable' => 'header.transparent && !header.blend',
                 ],
                 'header.blend' => [
-                    'description' => 'Make the header transparent even when it\'s sticky.',
+                    'description' => "Make the header transparent even when it's sticky.",
                     'type' => 'checkbox',
                     'text' => 'Blend with page content',
                     'enable' => 'header.transparent',
@@ -766,14 +766,14 @@ return [
                     'text' => 'Edit Dropdown',
                     'panel' => 'search-dropdown',
                     'show' =>
-                        'header.search_layout == \'input-dropdown\' || header.search_layout == \'dropdown\'',
+                        "header.search_layout == 'input-dropdown' || header.search_layout == 'dropdown'",
                     'enable' => 'header.search && !$match(header.search, \'^dialog\')',
                 ],
                 'header.search_modal' => [
                     'type' => 'button-panel',
                     'text' => 'Edit Modal',
                     'panel' => 'search-modal',
-                    'show' => 'header.search_layout == \'modal\'',
+                    'show' => "header.search_layout == 'modal'",
                     'enable' => 'header.search && !$match(header.search, \'^dialog\')',
                 ],
                 'header.search_dropbar' => [
@@ -781,7 +781,7 @@ return [
                     'text' => 'Edit Dropbar',
                     'panel' => 'search-dropbar',
                     'show' =>
-                        'header.search_layout == \'input-dropbar\' || header.search_layout == \'dropbar\'',
+                        "header.search_layout == 'input-dropbar' || header.search_layout == 'dropbar'",
                     'enable' => 'header.search && !$match(header.search, \'^dialog\')',
                 ],
                 'header.search_description' => [
@@ -1028,7 +1028,7 @@ return [
                         'Stretch the modal to the width of the navbar or the navbar container, or show a full modal window.',
                     'type' => 'checkbox',
                     'text' => 'Show close icon',
-                    'enable' => 'header.search_modal.width != \'full\'',
+                    'enable' => "header.search_modal.width != 'full'",
                 ],
             ],
         ],
@@ -1177,7 +1177,7 @@ return [
                     'type' => 'checkbox',
                     'text' => 'Remove left logo padding',
                     'show' =>
-                        'mobile.breakpoint && mobile.header.layout != \'horizontal-center-logo\'',
+                        "mobile.breakpoint && mobile.header.layout != 'horizontal-center-logo'",
                 ],
                 'mobile.navbar.sticky' => [
                     'label' => 'Navbar',
@@ -1204,7 +1204,7 @@ return [
                     'enable' => 'mobile.header.transparent && !mobile.header.blend',
                 ],
                 'mobile.header.blend' => [
-                    'description' => 'Make the header transparent even when it\'s sticky.',
+                    'description' => "Make the header transparent even when it's sticky.",
                     'type' => 'checkbox',
                     'text' => 'Blend with page content',
                     'show' => 'mobile.breakpoint',
@@ -1377,7 +1377,7 @@ return [
                     'text' => 'Edit Dropdown',
                     'panel' => 'mobile.search-dropdown',
                     'show' =>
-                        'mobile.breakpoint && (mobile.header.search_layout == \'input-dropdown\' || mobile.header.search_layout == \'dropdown\')',
+                        "mobile.breakpoint && (mobile.header.search_layout == 'input-dropdown' || mobile.header.search_layout == 'dropdown')",
                     'enable' =>
                         'mobile.header.search && !$match(mobile.header.search, \'^dialog\')',
                 ],
@@ -1385,7 +1385,7 @@ return [
                     'type' => 'button-panel',
                     'text' => 'Edit Modal',
                     'panel' => 'mobile.search-modal',
-                    'show' => 'mobile.breakpoint && mobile.header.search_layout == \'modal\'',
+                    'show' => "mobile.breakpoint && mobile.header.search_layout == 'modal'",
                     'enable' =>
                         'mobile.header.search && !$match(mobile.header.search, \'^dialog\')',
                 ],
@@ -1394,7 +1394,7 @@ return [
                     'text' => 'Edit Dropbar',
                     'panel' => 'mobile.search-dropbar',
                     'show' =>
-                        'mobile.breakpoint && (mobile.header.search_layout == \'input-dropbar\' || mobile.header.search_layout == \'dropbar\')',
+                        "mobile.breakpoint && (mobile.header.search_layout == 'input-dropbar' || mobile.header.search_layout == 'dropbar')",
                     'enable' =>
                         'mobile.header.search && !$match(mobile.header.search, \'^dialog\')',
                 ],
@@ -1613,7 +1613,7 @@ return [
                         'Stretch the modal to the width of the navbar or the navbar container, or show a full modal window.',
                     'type' => 'checkbox',
                     'text' => 'Show close icon',
-                    'enable' => 'mobile.header.search_modal.width != \'full\'',
+                    'enable' => "mobile.header.search_modal.width != 'full'",
                 ],
             ],
         ],
@@ -1826,7 +1826,7 @@ return [
                         'X-Large' => 'xlarge',
                     ],
                     'show' => '$match(this.panel.position, \'^dialog\')',
-                    'enable' => 'style == \'primary\'',
+                    'enable' => "style == 'primary'",
                 ],
                 '_image_dimensions' => [
                     'type' => 'grid',
@@ -1968,7 +1968,7 @@ return [
                                 'min' => 0,
                                 'step' => 10,
                             ],
-                            'enable' => 'top.height == \'viewport\'',
+                            'enable' => "top.height == 'viewport'",
                         ],
                     ],
                 ],
@@ -1978,7 +1978,7 @@ return [
                     'type' => 'checkbox',
                     'text' => 'Subtract height above section',
                     'enable' =>
-                        'top.height == \'viewport\' && (top.height_viewport || 0) <= 100 || top.height == \'section\'',
+                        "top.height == 'viewport' && (top.height_viewport || 0) <= 100 || top.height == 'section'",
                 ],
                 'top.vertical_align' => [
                     'label' => 'Vertical Alignment',
@@ -2008,12 +2008,12 @@ return [
                 'top.padding_remove_top' => [
                     'type' => 'checkbox',
                     'text' => 'Remove top padding',
-                    'enable' => 'top.padding != \'none\'',
+                    'enable' => "top.padding != 'none'",
                 ],
                 'top.padding_remove_bottom' => [
                     'type' => 'checkbox',
                     'text' => 'Remove bottom padding',
-                    'enable' => 'top.padding != \'none\'',
+                    'enable' => "top.padding != 'none'",
                 ],
                 'top.header_transparent' => [
                     'label' => 'Transparent Header',
@@ -2068,7 +2068,7 @@ return [
                     'description' => 'Show a divider between grid columns.',
                     'type' => 'checkbox',
                     'text' => 'Show dividers',
-                    'enable' => 'top.column_gap != \'collapse\' && top.row_gap != \'collapse\'',
+                    'enable' => "top.column_gap != 'collapse' && top.row_gap != 'collapse'",
                 ],
                 'top.match' => [
                     'label' => 'Panels',
@@ -2207,7 +2207,7 @@ return [
                 'top.media_background' => [
                     'label' => 'Background Color',
                     'description' =>
-                        'Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn\'t cover the whole section.',
+                        "Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn't cover the whole section.",
                     'type' => 'color',
                 ],
                 'top.media_blend_mode' => [
@@ -2249,7 +2249,7 @@ return [
                 'main_sidebar.width' => [
                     'label' => 'Width',
                     'description' =>
-                        'Set a sidebar width in percent and the content column will adjust accordingly. The width will not go below the Sidebar\'s min-width, which you can set in the Style section.',
+                        "Set a sidebar width in percent and the content column will adjust accordingly. The width will not go below the Sidebar's min-width, which you can set in the Style section.",
                     'type' => 'select',
                     'options' => [
                         '20%' => '1-5',
@@ -2393,7 +2393,7 @@ return [
                                 'min' => 0,
                                 'step' => 10,
                             ],
-                            'enable' => 'bottom.height == \'viewport\'',
+                            'enable' => "bottom.height == 'viewport'",
                         ],
                     ],
                 ],
@@ -2425,12 +2425,12 @@ return [
                 'bottom.padding_remove_top' => [
                     'type' => 'checkbox',
                     'text' => 'Remove top padding',
-                    'enable' => 'bottom.padding != \'none\'',
+                    'enable' => "bottom.padding != 'none'",
                 ],
                 'bottom.padding_remove_bottom' => [
                     'type' => 'checkbox',
                     'text' => 'Remove bottom padding',
-                    'enable' => 'bottom.padding != \'none\'',
+                    'enable' => "bottom.padding != 'none'",
                 ],
                 'bottom.column_gap' => [
                     'label' => 'Column Gap',
@@ -2462,7 +2462,7 @@ return [
                     'type' => 'checkbox',
                     'text' => 'Show dividers',
                     'enable' =>
-                        'bottom.column_gap != \'collapse\' && bottom.row_gap != \'collapse\'',
+                        "bottom.column_gap != 'collapse' && bottom.row_gap != 'collapse'",
                 ],
                 'bottom.match' => [
                     'label' => 'Panels',
@@ -2591,7 +2591,7 @@ return [
                 'bottom.media_background' => [
                     'label' => 'Background Color',
                     'description' =>
-                        'Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn\'t cover the whole section.',
+                        "Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn't cover the whole section.",
                     'type' => 'color',
                 ],
                 'bottom.media_blend_mode' => [

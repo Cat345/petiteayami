@@ -2,102 +2,100 @@
 if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFACP_Divi_Template extends WFACP_Template_Common {
-		public $default_setting_el = [];
-		public $set_bredcrumb_data = [];
-		public $stepsData = [];
+		public $default_setting_el = array();
+		public $set_bredcrumb_data = array();
+		public $stepsData          = array();
 
 		protected $mini_cart_widget_id = 'order_summary';
 
 		protected function __construct() {
 			parent::__construct();
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'get_ajax_exchange_keys' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'reset_session' ] );
-			add_filter( 'wfacp_forms_field', [ $this, 'hide_product_switcher' ], 10, 2 );
-			add_filter( 'wfacp_cart_show_product_thumbnail', [ $this, 'display_order_summary_thumb' ] );
-			add_action( 'process_wfacp_html', [ $this, 'layout_order_summary' ], 55, 4 );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'get_ajax_exchange_keys' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'reset_session' ) );
+			add_filter( 'wfacp_forms_field', array( $this, 'hide_product_switcher' ), 10, 2 );
+			add_filter( 'wfacp_cart_show_product_thumbnail', array( $this, 'display_order_summary_thumb' ) );
+			add_action( 'process_wfacp_html', array( $this, 'layout_order_summary' ), 55, 4 );
 			add_filter( 'wfacp_html_fields_order_summary', '__return_false' );
-			add_action( 'wfacp_internal_css', [ $this, 'get_divi_localize_data' ], 9 );
+			add_action( 'wfacp_internal_css', array( $this, 'get_divi_localize_data' ), 9 );
 			/* Add div ID  */
-			add_action( 'wfacp_before_form', [ $this, 'element_start_before_the_form' ], 9 );
-			add_action( 'wfacp_after_form', [ $this, 'element_end_after_the_form' ], 9 );
+			add_action( 'wfacp_before_form', array( $this, 'element_start_before_the_form' ), 9 );
+			add_action( 'wfacp_after_form', array( $this, 'element_end_after_the_form' ), 9 );
 
 			/* Add div for angel eye express checkout  */
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 'element_start_before_the_form' ], 9 );
-			add_action( 'wfacp_checkout_preview_form_end', [ $this, 'element_end_after_the_form' ], 9 );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 'element_start_before_the_form' ), 9 );
+			add_action( 'wfacp_checkout_preview_form_end', array( $this, 'element_end_after_the_form' ), 9 );
 
-			add_filter( 'wfacp_css_js_deque', [ $this, 'remove_theme_styling' ], 10, 4 );
-			//Snippet Compatibility for header and footer JS Based
-			add_action( 'wp_head', [ $this, 'wfacp_header_print_in_head' ], 999 );
-			add_action( 'wp_footer', [ $this, 'wfacp_footer_before_print_scripts' ], - 1 );
-			add_action( 'wp_footer', [ $this, 'wfacp_footer_after_print_scripts' ], 999 );
-			add_filter( 'wfacp_show_form_coupon', [ $this, 'check_layout_9_sidebar_hide_coupon' ], 10 );
-			add_filter( 'wfacp_mini_cart_hide_coupon', [ $this, 'enable_collapsed_coupon_field' ], 10 );
-			add_filter( 'wfacp_order_summary_cols_span', [ $this, 'change_col_span_for_order_summary' ] );
-			add_filter( 'wfacp_order_total_cols_span', [ $this, 'change_col_span_for_order_summary' ] );
-			add_filter( 'wfacp_for_mb_style', [ $this, 'get_product_switcher_mobile_style' ] );
-			add_filter( 'body_class', [ $this, 'add_body_class' ] );
-			add_action( 'wfacp_checkout_preview_form_start', [ $this, 'add_checkout_preview_div_start' ] );
-			add_action( 'wfacp_checkout_preview_form_end', [ $this, 'add_checkout_preview_div_end' ] );
-			add_action( 'wp', [ $this, 'run_divi_styling' ] );
+			add_filter( 'wfacp_css_js_deque', array( $this, 'remove_theme_styling' ), 10, 4 );
+			// Snippet Compatibility for header and footer JS Based
+			add_action( 'wp_head', array( $this, 'wfacp_header_print_in_head' ), 999 );
+			add_action( 'wp_footer', array( $this, 'wfacp_footer_before_print_scripts' ), - 1 );
+			add_action( 'wp_footer', array( $this, 'wfacp_footer_after_print_scripts' ), 999 );
+			add_filter( 'wfacp_show_form_coupon', array( $this, 'check_layout_9_sidebar_hide_coupon' ), 10 );
+			add_filter( 'wfacp_mini_cart_hide_coupon', array( $this, 'enable_collapsed_coupon_field' ), 10 );
+			add_filter( 'wfacp_order_summary_cols_span', array( $this, 'change_col_span_for_order_summary' ) );
+			add_filter( 'wfacp_order_total_cols_span', array( $this, 'change_col_span_for_order_summary' ) );
+			add_filter( 'wfacp_for_mb_style', array( $this, 'get_product_switcher_mobile_style' ) );
+			add_filter( 'body_class', array( $this, 'add_body_class' ) );
+			add_action( 'wfacp_checkout_preview_form_start', array( $this, 'add_checkout_preview_div_start' ) );
+			add_action( 'wfacp_checkout_preview_form_end', array( $this, 'add_checkout_preview_div_end' ) );
+			add_action( 'wp', array( $this, 'run_divi_styling' ) );
 
-			add_action( 'wfacp_before_progress_bar', [ $this, 'before_cart_link' ] );
-			add_action( 'wfacp_before_breadcrumb', [ $this, 'before_cart_link' ] );
-			add_action( 'wfacp_after_next_button', [ $this, 'before_return_to_cart_link' ] );
-			add_action( 'woocommerce_before_checkout_form', [ $this, 'add_form_steps' ], 999 );
-			add_action( 'woocommerce_before_checkout_form', [ $this, 'display_progress_bar' ], 999 );
-			add_filter( 'woocommerce_order_button_html', [ $this, 'add_class_change_place_order' ], 11 );
-			add_filter( 'wfacp_change_back_btn', [ $this, 'change_back_step_label' ], 11, 3 );
-			add_filter( 'wfacp_blank_back_text', [ $this, 'add_blank_back_text' ], 11, 3 );
+			add_action( 'wfacp_before_progress_bar', array( $this, 'before_cart_link' ) );
+			add_action( 'wfacp_before_breadcrumb', array( $this, 'before_cart_link' ) );
+			add_action( 'wfacp_after_next_button', array( $this, 'before_return_to_cart_link' ) );
+			add_action( 'woocommerce_before_checkout_form', array( $this, 'add_form_steps' ), 999 );
+			add_action( 'woocommerce_before_checkout_form', array( $this, 'display_progress_bar' ), 999 );
+			add_filter( 'woocommerce_order_button_html', array( $this, 'add_class_change_place_order' ), 11 );
+			add_filter( 'wfacp_change_back_btn', array( $this, 'change_back_step_label' ), 11, 3 );
+			add_filter( 'wfacp_blank_back_text', array( $this, 'add_blank_back_text' ), 11, 3 );
 			add_filter( 'wfacp_form_coupon_widgets_enable', '__return_true' );
 
 			add_action( 'wfacp_before_sidebar_content', array( $this, 'wfacp_collapsible_order_summary_content' ), 11 );
 
-			add_filter( 'wfacp_form_step_count', [ $this, 'form_step_count' ] );
+			add_filter( 'wfacp_form_step_count', array( $this, 'form_step_count' ) );
 			add_filter( 'wfacp_show_product_thumbnail_collapsible_show', '__return_true' );
-			add_filter( 'wfacp_cart_show_product_thumbnail_collapsible', [ $this, 'display_order_summary_thumb_collapsed' ], 12 );
+			add_filter( 'wfacp_cart_show_product_thumbnail_collapsible', array( $this, 'display_order_summary_thumb_collapsed' ), 12 );
 
-			add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 101 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 101 );
 
-
-			add_action( 'wfacp_template_body_top', [ $this, 'page_container_div' ] );
-			add_action( 'wfacp_template_wp_footer', [ $this, 'page_container_close' ] );
+			add_action( 'wfacp_template_body_top', array( $this, 'page_container_div' ) );
+			add_action( 'wfacp_template_wp_footer', array( $this, 'page_container_close' ) );
 
 			/* Coupon button text */
-			add_action( 'wfacp_collapsible_apply_coupon_button_text', [ $this, 'get_collapsible_coupon_button_text' ] );
-			add_action( 'wfacp_form_apply_coupon_button_text', [ $this, 'get_form_coupon_button_text' ] );
-			add_action( 'wfacp_sidebar_apply_coupon_button_text', [ $this, 'get_mini_cart_coupon_button_text' ] );
+			add_action( 'wfacp_collapsible_apply_coupon_button_text', array( $this, 'get_collapsible_coupon_button_text' ) );
+			add_action( 'wfacp_form_apply_coupon_button_text', array( $this, 'get_form_coupon_button_text' ) );
+			add_action( 'wfacp_sidebar_apply_coupon_button_text', array( $this, 'get_mini_cart_coupon_button_text' ) );
 
-			/* Button Icon */
+			/*
+			Button Icon */
 			/* for step one */
-			add_action( 'wfacp_before_step_next_button_single_step', [ $this, 'display_button_icon_step_1' ] );
+			add_action( 'wfacp_before_step_next_button_single_step', array( $this, 'display_button_icon_step_1' ) );
 
 			/* for step Two */
-			add_action( 'wfacp_before_step_next_button_two_step', [ $this, 'display_button_icon_step_2' ] );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'maybe_unset_mini_cart_block_scripts' ] );
-
+			add_action( 'wfacp_before_step_next_button_two_step', array( $this, 'display_button_icon_step_2' ) );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'maybe_unset_mini_cart_block_scripts' ) );
 
 			/**
 			 * Mini Cart Strike Through Discounted Price
 			 */
 
-			add_filter( 'wfacp_order_summary_field_enable_strike_through_price', [ $this, 'order_summary_field_enable_strike_through_price' ] );
-			add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', [ $this, 'collapsible_mini_cart_enable_strike_through_price' ] );
-			add_filter( 'wfacp_mini_cart_enable_strike_through_price', [ $this, 'mini_cart_enable_strike_through_price' ] );
+			add_filter( 'wfacp_order_summary_field_enable_strike_through_price', array( $this, 'order_summary_field_enable_strike_through_price' ) );
+			add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', array( $this, 'collapsible_mini_cart_enable_strike_through_price' ) );
+			add_filter( 'wfacp_mini_cart_enable_strike_through_price', array( $this, 'mini_cart_enable_strike_through_price' ) );
 
 			/**
 			 * Display Low Stock Trigger Message
 			 */
-			add_action( 'wfacp_mini_cart_after_product_title', [ $this, 'mini_cart_low_stock_trigger' ] );
-			add_action( 'wfacp_order_summary_field_after_product_title', [ $this, 'order_summary_field_after_product_title' ] );
-			add_action( 'wfacp_collapsible_mini_cart_after_product_title', [ $this, 'collapsible_mini_cart_field_after_product_title' ] );
+			add_action( 'wfacp_mini_cart_after_product_title', array( $this, 'mini_cart_low_stock_trigger' ) );
+			add_action( 'wfacp_order_summary_field_after_product_title', array( $this, 'order_summary_field_after_product_title' ) );
+			add_action( 'wfacp_collapsible_mini_cart_after_product_title', array( $this, 'collapsible_mini_cart_field_after_product_title' ) );
 
 			/**
 			 * Display Saving Price Row After Order Total in mini cart
 			 */
-			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'mini_cart_saving_price' ], 9999 );
-			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', [ $this, 'order_summary_field_saving_price' ], 9999 );
-			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'collapsible_mini_cart_saving_price' ], 9999 );
-
+			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'mini_cart_saving_price' ), 9999 );
+			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', array( $this, 'order_summary_field_saving_price' ), 9999 );
+			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'collapsible_mini_cart_saving_price' ), 9999 );
 		}
 
 
@@ -109,7 +107,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				wp_enqueue_style( 'wfacp-divi-form', WFACP_Core()->url( '/builder/divi/css/divi-form.min.css' ) );
 			}
 
-
 			if ( is_rtl() ) {
 				wp_enqueue_style( 'wfacp-divi-form-rtl', WFACP_Core()->url( '/builder/divi/css/divi-form-rtl.css' ) );
 
@@ -119,7 +116,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		public function form_step_count( $step_count ) {
 
 			$progress_bar_type = isset( $this->form_data['select_type'] ) ? $this->form_data['select_type'] : '';
-
 
 			if ( ! empty( $progress_bar_type ) && $progress_bar_type == 'breadcrumb' ) {
 				return $step_count + 1;
@@ -158,66 +154,210 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$this->breadcrumb_start();
 
 				if ( is_array( $this->form_data ) ) {
-					$mbDevices = [ 'wfacp_collapsible_order_summary_wrap', $label_position ];
+					// CRITICAL: Prevent duplicate rendering of collapsible order summary in Divi 5 REST API context
+					// The hook wfacp_before_form can fire multiple times, causing get_mobile_mini_cart() to be called multiple times
+					$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-					if ( isset( $this->form_data['enable_callapse_order_summary'] ) && "on" === $this->form_data['enable_callapse_order_summary'] ) {
-						$mbDevices[] = 'wfacp_desktop';
+					if ( $is_divi5 ) {
+						// Divi 5: Use global flag to prevent duplicate rendering of mobile mini cart wrapper
+						global $wfacp_rendered_mobile_mini_cart;
+						if ( isset( $wfacp_rendered_mobile_mini_cart ) && $wfacp_rendered_mobile_mini_cart === true ) {
+							// Skip rendering mobile mini cart if already rendered
+						} else {
+							$wfacp_rendered_mobile_mini_cart = true;
+
+							$mbDevices = array( 'wfacp_collapsible_order_summary_wrap', $label_position );
+
+							if ( isset( $this->form_data['enable_callapse_order_summary'] ) && 'on' === $this->form_data['enable_callapse_order_summary'] ) {
+								$mbDevices[] = 'wfacp_desktop';
+							}
+
+							if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && 'on' === $this->form_data['enable_callapse_order_summary_tablet'] ) {
+								$mbDevices[] = 'wfacp_tablet';
+							}
+							if ( isset( $this->form_data['enable_callapse_order_summary_phone'] ) && 'on' === $this->form_data['enable_callapse_order_summary_phone'] ) {
+								$mbDevices[] = 'wfacp_mobile';
+							}
+							$deviceClass = implode( ' ', $mbDevices );
+
+							if ( empty( $deviceClass ) ) {
+								$deviceClass = 'wfacp_not_active';
+							}
+
+							echo "<div class='" . $deviceClass . "'>";
+
+							$template->get_mobile_mini_cart( $this->form_data );
+							echo '</div>';
+						}
+					} else {
+						// Divi 4: Original behavior (no deduplication)
+						$mbDevices = array( 'wfacp_collapsible_order_summary_wrap', $label_position );
+
+						if ( isset( $this->form_data['enable_callapse_order_summary'] ) && 'on' === $this->form_data['enable_callapse_order_summary'] ) {
+							$mbDevices[] = 'wfacp_desktop';
+						}
+
+						if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && 'on' === $this->form_data['enable_callapse_order_summary_tablet'] ) {
+							$mbDevices[] = 'wfacp_tablet';
+						}
+						if ( isset( $this->form_data['enable_callapse_order_summary_phone'] ) && 'on' === $this->form_data['enable_callapse_order_summary_phone'] ) {
+							$mbDevices[] = 'wfacp_mobile';
+						}
+						$deviceClass = implode( ' ', $mbDevices );
+
+						if ( empty( $deviceClass ) ) {
+							$deviceClass = 'wfacp_not_active';
+						}
+
+						echo "<div class='" . $deviceClass . "'>";
+
+						$template->get_mobile_mini_cart( $this->form_data );
+						echo '</div>';
 					}
-
-
-					if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && "on" === $this->form_data['enable_callapse_order_summary_tablet'] ) {
-						$mbDevices[] = 'wfacp_tablet';
-					}
-					if ( isset( $this->form_data['enable_callapse_order_summary_phone'] ) && "on" === $this->form_data['enable_callapse_order_summary_phone'] ) {
-						$mbDevices[] = 'wfacp_mobile';
-					}
-					$deviceClass = implode( ' ', $mbDevices );
-
-
-					if ( empty( $deviceClass ) ) {
-						$deviceClass = 'wfacp_not_active';
-					}
-
-
-					echo "<div class='" . $deviceClass . "'>";
-
-					$template->get_mobile_mini_cart( $this->form_data );
-					echo "</div>";
 
 				}
 
-				echo "<div class='" . implode( ' ', [ 'wfacp-form', $label_position ] ) . "'>";
+				echo "<div class='" . implode( ' ', array( 'wfacp-form', $label_position ) ) . "'>";
 
 			}
-
 		}
 
 		public function element_end_after_the_form() {
 			$template_slug = $this->get_template_slug();
 			if ( strpos( $template_slug, 'divi' ) !== false ) {
-				echo "</div></div></div>";
+				echo '</div></div></div>';
 			}
-
 		}
 
 
 		public function reset_session() {
-			WFACP_Common::set_session( 'wfacp_order_total_widgets', [] );
-			WFACP_Common::set_session( 'wfacp_min_cart_widgets', [] );
-
+			WFACP_Common::set_session( 'wfacp_order_total_widgets', array() );
+			WFACP_Common::set_session( 'wfacp_min_cart_widgets', array() );
 		}
 
-		public function get_ajax_exchange_keys() {
-			$keys = WFACP_Common::$exchange_keys;
-			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi'] ) ) {
-				$form_id         = $keys['divi']['wfacp_form'];
-				$this->form_data = WFACP_Common::get_session( $form_id );
-				if ( isset( $keys['divi']['order_summary'] ) ) {
-					$mini_cart_form_id    = $keys['divi']['order_summary'];
-					$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
+	public function get_ajax_exchange_keys() {
+		$keys = WFACP_Common::$exchange_keys;
+		$form_id = null;
+
+		if ( is_array( $keys ) && ! empty( $keys ) && isset( $keys['divi'] ) && isset( $keys['divi']['wfacp_form'] ) ) {
+			$form_id = $keys['divi']['wfacp_form'];
+		} else {
+			// FALLBACK: During AJAX calls, exchange_keys may not be set
+			// Try to find the widget_id from session by checking common patterns
+			
+			// Method 1: Check if we stored widget_id in a known session key
+			if ( class_exists( '\WFACP_Common' ) && method_exists( '\WFACP_Common', 'get_session' ) ) {
+				// Try common widget_id patterns
+				$possible_widget_ids = [
+					'wfacp/checkout-form-0',
+					'wfacp/checkout-form-1',
+					'wfacp/checkout-form-2',
+				];
+				
+				foreach ( $possible_widget_ids as $possible_id ) {
+					$test_session = WFACP_Common::get_session( $possible_id );
+					if ( is_array( $test_session ) && ! empty( $test_session ) && isset( $test_session['order_summary_enable_product_image'] ) ) {
+						$form_id = $possible_id;
+						break;
+					}
+				}
+				
+				// Method 2: Try to get from WooCommerce session if stored
+				if ( ! $form_id && function_exists( 'WC' ) && WC()->session ) {
+					$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
+					if ( ! empty( $stored_widget_id ) ) {
+						$form_id = $stored_widget_id;
+					}
 				}
 			}
 		}
+
+		if ( $form_id ) {
+			$session_data = WFACP_Common::get_session( $form_id );
+
+			// CRITICAL: Always load from session if session data exists, regardless of existing form_data
+			// This ensures that even if form_data is empty or partially set, we load the complete data from session
+			// The session is the source of truth for Divi 5 modules
+			if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+				// Define Order Summary fields that must be preserved from session
+				$order_summary_fields = [
+					'order_summary_enable_product_image',
+					'order_summary_field_enable_strike_through_price',
+					'order_summary_field_enable_low_stock_trigger',
+					'order_summary_field_low_stock_message',
+					'order_summary_field_enable_saving_price_message',
+					'order_summary_field_saving_price_message',
+				];
+				
+				// Define Collapsible Order Summary fields that must be preserved from session
+				$collapsible_order_summary_fields = [
+					'enable_callapse_order_summary',
+					'enable_callapse_order_summary_tablet',
+					'enable_callapse_order_summary_phone',
+					'order_summary_enable_product_image_collapsed',
+					'enable_order_field_collapsed',
+					'enable_order_field_collapsed_tablet',
+					'enable_order_field_collapsed_phone',
+					'cart_collapse_title',
+					'cart_expanded_title',
+					'collapse_enable_coupon',
+					'collapse_enable_coupon_collapsible',
+					'collapse_coupon_button_text',
+					'collapse_order_quantity_switcher',
+					'collapse_order_delete_item',
+					'collapsible_mini_cart_enable_strike_through_price',
+					'collapsible_mini_cart_enable_low_stock_trigger',
+					'collapsible_mini_cart_low_stock_message',
+					'collapsible_mini_cart_enable_saving_price_message',
+					'collapsible_mini_cart_saving_price_message',
+				];
+				
+				// Store Order Summary fields from session before merge (if they exist)
+				$preserved_order_summary_fields = [];
+				foreach ( $order_summary_fields as $field_key ) {
+					if ( isset( $session_data[ $field_key ] ) ) {
+						$preserved_order_summary_fields[ $field_key ] = $session_data[ $field_key ];
+					}
+				}
+				
+				// Store Collapsible Order Summary fields from session before merge (if they exist)
+				$preserved_collapsible_fields = [];
+				foreach ( $collapsible_order_summary_fields as $field_key ) {
+					if ( isset( $session_data[ $field_key ] ) ) {
+						$preserved_collapsible_fields[ $field_key ] = $session_data[ $field_key ];
+					}
+				}
+				
+				// Check if form_data is empty (null, false, empty array, or array with no keys)
+				$is_form_data_empty = empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 );
+
+				if ( $is_form_data_empty ) {
+					// form_data is empty, load from session
+					$this->form_data = $session_data;
+				} else {
+					// form_data has some data, merge: session data is base, existing form_data overrides
+					$this->form_data = array_merge( $session_data, $this->form_data );
+				}
+				
+				// CRITICAL: Always restore Order Summary fields from session after merge
+				// This ensures these fields persist during AJAX calls, even if form_data had different values
+				foreach ( $preserved_order_summary_fields as $field_key => $field_value ) {
+					$this->form_data[ $field_key ] = $field_value;
+				}
+				
+				// CRITICAL: Always restore Collapsible Order Summary fields from session after merge
+				// This ensures these fields persist during AJAX calls, matching Order Summary behavior
+				foreach ( $preserved_collapsible_fields as $field_key => $field_value ) {
+					$this->form_data[ $field_key ] = $field_value;
+				}
+			}
+
+			if ( isset( $keys['divi']['order_summary'] ) ) {
+				$mini_cart_form_id    = $keys['divi']['order_summary'];
+				$this->mini_cart_data = WFACP_Common::get_session( $mini_cart_form_id );
+			}
+		}
+	}
 
 		public function get_localize_data() {
 			$data                          = parent::get_localize_data();
@@ -226,21 +366,57 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return $data;
 		}
 
-		protected function get_field_css_ready( $template_slug, $field_index ) {
+	protected function get_field_css_ready( $template_slug, $field_index ) {
 
-			if ( '' == $field_index ) {
-				return '';
-			}
-			$field_key_index    = 'wfacp_' . $template_slug . '_' . $field_index . '_field';
-			$field_custom_class = 'wfacp_' . $template_slug . '_' . $field_index . '_field_class';
-			if ( isset( $this->form_data[ $field_key_index ] ) ) {
-
-				return $this->form_data[ $field_key_index ] . ' ' . $this->form_data[ $field_custom_class ];
-			}
-
+		if ( '' == $field_index ) {
 			return '';
-
 		}
+		
+		// CRITICAL: Ensure form_data is loaded from session if empty
+		// This handles cases where get_field_css_ready is called before get_ajax_exchange_keys
+		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+			$keys = WFACP_Common::$exchange_keys;
+			if ( ! empty( $keys ) && is_array( $keys ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+				$session_data = WFACP_Common::get_session( $form_id );
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					$this->form_data = $session_data;
+				}
+			} else {
+				// Fallback: Try to get from WooCommerce session
+				if ( function_exists( 'WC' ) && WC()->session ) {
+					$stored_widget_id = WC()->session->get( 'wfacp_divi_widget_id' );
+					if ( ! empty( $stored_widget_id ) ) {
+						$session_data = WFACP_Common::get_session( $stored_widget_id );
+						if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+							$this->form_data = $session_data;
+						}
+					}
+				}
+			}
+		}
+		
+		$field_key_index    = 'wfacp_' . $template_slug . '_' . $field_index . '_field';
+		$field_custom_class = 'wfacp_' . $template_slug . '_' . $field_index . '_field_class';
+		
+		$class_value = '';
+		$custom_class_value = '';
+		
+		if ( isset( $this->form_data[ $field_key_index ] ) ) {
+			$class_value = $this->form_data[ $field_key_index ];
+		}
+		
+		if ( isset( $this->form_data[ $field_custom_class ] ) && ! empty( $this->form_data[ $field_custom_class ] ) ) {
+			$custom_class_value = $this->form_data[ $field_custom_class ];
+		}
+		
+		if ( ! empty( $class_value ) ) {
+			$result = trim( $class_value . ' ' . $custom_class_value );
+			return $result;
+		}
+
+		return '';
+	}
 
 
 		public function payment_heading() {
@@ -248,29 +424,25 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				return trim( $this->form_data['wfacp_payment_method_heading_text'] );
 			}
 
-
 			return parent::payment_heading();
 		}
 
-		public function payment_sub_heading() {
+	public function payment_sub_heading() {
 
-
-			if ( isset( $this->form_data['wfacp_payment_method_subheading'] ) ) {
-				return trim( $this->form_data['wfacp_payment_method_subheading'] );
-			}
-
-			return parent::payment_sub_heading();
+		if ( isset( $this->form_data['wfacp_payment_method_subheading'] ) ) {
+			return trim( $this->form_data['wfacp_payment_method_subheading'] );
 		}
 
-		public function get_payment_desc() {
+		return parent::payment_sub_heading();
+	}
 
+		public function get_payment_desc() {
 
 			if ( isset( $this->form_data['text_below_placeorder_btn'] ) ) {
 				return trim( $this->form_data['text_below_placeorder_btn'] );
 			}
 
 			return parent::get_payment_desc();
-
 		}
 
 
@@ -302,10 +474,13 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			$order_total = '';
 
 			if ( isset( $this->form_data['enable_price_in_place_order_button'] ) && 'on' == trim( $this->form_data['enable_price_in_place_order_button'] ) ) {
-				$order_total = "&nbsp;&nbsp;" . WFACP_Common::wfacp_order_total( [] );
+				$order_total = '&nbsp;&nbsp;' . WFACP_Common::wfacp_order_total( array() );
 			}
 			if ( isset( $this->form_data['wfacp_payment_place_order_text'] ) && '' != trim( $this->form_data['wfacp_payment_place_order_text'] ) ) {
 				$text = trim( $this->form_data['wfacp_payment_place_order_text'] ) . $order_total;
+			} elseif ( '' !== $order_total ) {
+				// No custom button text set (D5 default) — use WC default + price.
+				$text = __( 'Place order', 'woocommerce' ) . $order_total;
 			}
 			$this->place_order_btn_text = $text;
 
@@ -342,11 +517,9 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 			$key = 'payment_button_back_' . $i . '_text';
 
-
 			if ( isset( $this->form_data[ $key ] ) ) {
 				return trim( $this->form_data[ $key ] );
 			}
-
 
 			return $text;
 		}
@@ -361,15 +534,26 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 			$key = 'payment_button_back_' . $i . '_text';
 
-
 			if ( isset( $this->form_data[ $key ] ) && $this->form_data[ $key ] == '' ) {
-				return "wfacp_back_link_empty";
+				return 'wfacp_back_link_empty';
 			}
-
 
 			return $label;
 		}
 
+		/**
+		 * Ensure mini cart fragments are added for Divi even when exchange_keys
+		 * were not sent in the request (e.g. mini-cart-only layout or AJAX without form).
+		 */
+		public function add_checkout_fragments( $fragments ) {
+			$fragments = parent::add_checkout_fragments( $fragments );
+			$min_cart_key     = 'wfacp_mini_cart_widgets_' . $this->get_template_type();
+			$min_cart_widgets = WFACP_Common::get_session( $min_cart_key );
+			if ( ! empty( $min_cart_widgets ) ) {
+				$fragments = $this->add_mini_cart_fragments( $fragments );
+			}
+			return $fragments;
+		}
 
 		public function add_mini_cart_fragments( $fragments ) {
 			$min_cart_key     = 'wfacp_mini_cart_widgets_' . $this->get_template_type();
@@ -395,60 +579,69 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$us_as_widget = get_post_meta( $wfacp_id, '_wfacp_el_product_switcher_us_a_widget', true );
 				if ( 'yes' == $us_as_widget ) {
 
-					$fields = [];
+					$fields = array();
 				}
-
-
 			}
 
 			return $fields;
 		}
 
-		public function display_order_summary_thumb( $status ) {
-			if ( isset( $this->form_data['order_summary_enable_product_image'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image'] ) ) {
-				$status = true;
-			}
-
-			return $status;
-
+	public function display_order_summary_thumb( $status ) {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Order Summary fields are available when the filter is called
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image'] ) ) {
+			$this->get_ajax_exchange_keys();
 		}
 
-		public function display_order_summary_thumb_collapsed() {
-			$status = false;
-			if ( isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
-				$status = true;
-			}
-
-			return $status;
-
+		if ( isset( $this->form_data['order_summary_enable_product_image'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image'] ) ) {
+			$status = true;
 		}
+
+		return $status;
+	}
+
+	public function display_order_summary_thumb_collapsed() {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Collapsible Order Summary fields are available when the filter is called
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
+			$this->get_ajax_exchange_keys();
+		}
+
+		$status = false;
+		if ( isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image_collapsed'] ) ) {
+			$status = true;
+		}
+
+		return $status;
+	}
 
 		/* Override the order summary section */
 
-		public function add_fragment_order_summary( $fragments ) {
+	public function add_fragment_order_summary( $fragments ) {
+		// CRITICAL: Ensure form_data is loaded from session before processing fragments
+		// This ensures Order Summary fields persist during AJAX fragment updates
+		$this->get_ajax_exchange_keys();
 
-
-			$input_data = $this->form_data;
+		$input_data = $this->form_data;
 			if ( isset( $this->checkout_fields['advanced'] ) && isset( $this->checkout_fields['advanced']['order_summary'] ) ) {
 				ob_start();
 				include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
 				$fragments['.wfacp_order_summary'] = ob_get_clean();
 			}
 
-			$mbDevices = [];
-			if ( isset( $this->form_data['enable_callapse_order_summary'] ) && "on" === $this->form_data['enable_callapse_order_summary'] ) {
+			$mbDevices = array();
+			if ( isset( $this->form_data['enable_callapse_order_summary'] ) && 'on' === $this->form_data['enable_callapse_order_summary'] ) {
 				$mbDevices[] = 'wfacp_desktop';
 			}
-			if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && "on" === $this->form_data['enable_callapse_order_summary_tablet'] ) {
+			if ( isset( $this->form_data['enable_callapse_order_summary_tablet'] ) && 'on' === $this->form_data['enable_callapse_order_summary_tablet'] ) {
 				$mbDevices[] = 'wfacp_tablet';
 			}
-			if ( isset( $this->form_data['enable_callapse_order_summary_phone'] ) && "on" === $this->form_data['enable_callapse_order_summary_phone'] ) {
+			if ( isset( $this->form_data['enable_callapse_order_summary_phone'] ) && 'on' === $this->form_data['enable_callapse_order_summary_phone'] ) {
 				$mbDevices[] = 'wfacp_mobile';
 			}
 			if ( empty( $mbDevices ) ) {
 				return $fragments;
 			}
-
 
 			$path = WFACP_BUILDER_DIR . '/customizer/templates/layout_9';
 			ob_start();
@@ -459,7 +652,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			include $path . '/views/template-parts/order-total.php';
 			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_template_9_cart_total_details'] = ob_get_clean();
 
-
 			ob_start();
 			include $path . '/views/template-parts/order-total.php';
 			$fragments['.wfacp_mb_mini_cart_sec_accordion_content .wfacp_mini_cart_reviews'] = ob_get_clean();
@@ -469,32 +661,40 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			$fragments['.wfacp_cart_mb_fragment_price'] = ob_get_clean();
 			$order_summary_cart_price                   = apply_filters( 'wfacp_collapsible_order_summary_cart_price', wc_price( WC()->cart->total ) );
 
-			$fragments['.wfacp_show_price_wrap'] = '<div class="wfacp_show_price_wrap">' . do_action( "wfacp_before_mini_price" ) . '<strong>' . $order_summary_cart_price . '</strong>' . do_action( 'wfacp_after_mini_price' ) . '</div>';
-
+			$fragments['.wfacp_show_price_wrap'] = '<div class="wfacp_show_price_wrap">' . do_action( 'wfacp_before_mini_price' ) . '<strong>' . $order_summary_cart_price . '</strong>' . do_action( 'wfacp_after_mini_price' ) . '</div>';
 
 			return $fragments;
 		}
 
-		public function layout_order_summary( $field, $key, $args, $value ) {
+	public function layout_order_summary( $field, $key, $args, $value ) {
 
-			if ( 'order_summary' === $key ) {
-				WC()->session->set( 'wfacp_order_summary_' . WFACP_Common::get_id(), $args );
-				include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
+		if ( 'order_summary' === $key ) {
+			// CRITICAL: Prevent duplicate rendering of order summary
+			// If order summary has already been rendered, skip rendering again
+			static $order_summary_rendered = false;
+			if ( $order_summary_rendered ) {
+				return;
 			}
+
+			WC()->session->set( 'wfacp_order_summary_' . WFACP_Common::get_id(), $args );
+			include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/main-order-summary.php';
+
+			// Mark as rendered to prevent duplicates
+			$order_summary_rendered = true;
 		}
+	}
 
 		public function get_divi_localize_data() {
-			$localData = [];
+			$localData = array();
 
 			if ( isset( $this->form_data['wfacp_make_button_sticky_on_mobile'] ) && $this->form_data['wfacp_make_button_sticky_on_mobile'] == 'on' ) {
-				$localData['wfacp_make_button_sticky_on_mobile'] = "yes";
+				$localData['wfacp_make_button_sticky_on_mobile'] = 'yes';
 			}
 			wp_localize_script( 'wfacp_checkout_js', 'wfacp_elementor_data', $localData );
 		}
 
 
 		public function remove_theme_styling( $bool, $path, $url, $currentEle ) {
-
 
 			if ( false !== strpos( $url, '/themes/' ) ) {
 				return false;
@@ -523,7 +723,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			return parent::get_mobile_mini_cart_collapsible_title();
-
 		}
 
 
@@ -531,22 +730,78 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			return ( isset( $this->form_data['collapse_enable_coupon'] ) && $this->form_data['collapse_enable_coupon'] == 'on' );
 		}
 
-		public function collapse_enable_coupon_collapsible() {
-			return ( isset( $this->form_data['collapse_enable_coupon_collapsible'] ) && $this->form_data['collapse_enable_coupon_collapsible'] == 'on' );
+	public function collapse_enable_coupon_collapsible() {
+		// CRITICAL: If form_data is empty, try to load from session
+		// This handles the case where the hook didn't fire or fired on a different instance
+		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+			$keys = WFACP_Common::$exchange_keys;
+			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+				$session_data = WFACP_Common::get_session( $form_id );
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					$this->form_data = $session_data;
+				}
+			}
 		}
 
+		$value = isset( $this->form_data['collapse_enable_coupon_collapsible'] ) ? $this->form_data['collapse_enable_coupon_collapsible'] : 'off';
+		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
 
-		public function collapse_order_quantity_switcher() {
+		return $result;
+	}
 
-			return ( isset( $this->form_data['collapse_order_quantity_switcher'] ) && $this->form_data['collapse_order_quantity_switcher'] == 'on' );
 
+	public function collapse_order_quantity_switcher() {
+		// CRITICAL: If form_data is empty, try to load from session
+		// This handles the case where the hook didn't fire or fired on a different instance
+		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+			$keys = WFACP_Common::$exchange_keys;
+			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+				$session_data = WFACP_Common::get_session( $form_id );
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					$this->form_data = $session_data;
+				}
+			}
 		}
 
-		public function collapse_order_delete_item() {
-
-			return ( isset( $this->form_data['collapse_order_delete_item'] ) && $this->form_data['collapse_order_delete_item'] == 'on' );
-
+		// CRITICAL: Check if form_data exists and has the setting
+		// Return true only if explicitly set to 'on', false otherwise
+		if ( ! isset( $this->form_data['collapse_order_quantity_switcher'] ) ) {
+			return false;
 		}
+		$value = $this->form_data['collapse_order_quantity_switcher'];
+		// Handle both string 'on'/'off' and boolean true/false
+		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
+
+		return $result;
+	}
+
+	public function collapse_order_delete_item() {
+		// CRITICAL: If form_data is empty, try to load from session
+		// This handles the case where the hook didn't fire or fired on a different instance
+		if ( empty( $this->form_data ) || ( is_array( $this->form_data ) && count( $this->form_data ) === 0 ) ) {
+			$keys = WFACP_Common::$exchange_keys;
+			if ( ! empty( is_array( $keys ) ) && isset( $keys['divi']['wfacp_form'] ) ) {
+				$form_id = $keys['divi']['wfacp_form'];
+				$session_data = WFACP_Common::get_session( $form_id );
+				if ( is_array( $session_data ) && ! empty( $session_data ) ) {
+					$this->form_data = $session_data;
+				}
+			}
+		}
+
+		// CRITICAL: Check if form_data exists and has the setting
+		// Return true only if explicitly set to 'on', false otherwise
+		if ( ! isset( $this->form_data['collapse_order_delete_item'] ) ) {
+			return false;
+		}
+		$value = $this->form_data['collapse_order_delete_item'];
+		// Handle both string 'on'/'off' and boolean true/false
+		$result = ( $value === 'on' || $value === true || $value === 'yes' || $value === '1' || $value === 1 );
+
+		return $result;
+	}
 
 		public function get_mobile_mini_cart_expand_title() {
 			if ( isset( $this->form_data['cart_expanded_title'] ) && '' !== $this->form_data['cart_expanded_title'] ) {
@@ -554,7 +809,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			return parent::get_mobile_mini_cart_expand_title();
-
 		}
 
 
@@ -566,14 +820,13 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		public function breadcrumb_start() {
 
 			$number_of_steps    = $this->get_step_count();
-			$step_form_data     = [];
-			$progress_form_data = [];
+			$step_form_data     = array();
+			$progress_form_data = array();
 
-			//_tablet append for tablet _phone append for Mobile Devices
-			if ( $this->form_data['enable_progress_bar'] == '' || $this->form_data['enable_progress_bar'] == 'off' ) {
+			// _tablet append for tablet _phone append for Mobile Devices
+			if ( ! isset( $this->form_data['enable_progress_bar'] ) || $this->form_data['enable_progress_bar'] == '' || $this->form_data['enable_progress_bar'] == 'off' ) {
 				return;
 			}
-
 
 			$cls = 'wfacp_one_step';
 			if ( $number_of_steps == 2 ) {
@@ -583,13 +836,11 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			$progress_bar_type = isset( $this->form_data['select_type'] ) ? $this->form_data['select_type'] : '';
-			$devices           = [ $progress_bar_type ];
-
+			$devices           = array( $progress_bar_type );
 
 			if ( isset( $this->form_data['enable_progress_bar'] ) ) {
 				$devices[] = 'wfacp_desktop';
 			}
-
 
 			if ( isset( $this->form_data['enable_progress_bar_tablet'] ) && 'on' == $this->form_data['enable_progress_bar_tablet'] ) {
 
@@ -599,15 +850,12 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$devices[] = 'wfacp_mobile';
 			}
 
-
 			$deviceClass = implode( ' ', $devices );
-			$wrapClass   = [];
-
+			$wrapClass   = array();
 
 			if ( ! empty( $cls ) ) {
 				$wrapClass[] = $cls;
 			}
-
 
 			if ( empty( $deviceClass ) ) {
 				$deviceClass = 'wfacp_not_active';
@@ -620,12 +868,10 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$stepWrapClass = implode( ' ', $wrapClass );
 			}
 
-
 			ob_start();
 			echo "<div class='$stepWrapClass'>";
 
-			for ( $i = 0; $i < $number_of_steps; $i ++ ) {
-
+			for ( $i = 0; $i < $number_of_steps; $i++ ) {
 
 				$tab_heading_key    = '';
 				$tab_subheading_key = '';
@@ -633,10 +879,9 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$progress_bar_text = '';
 
 				if ( 'tab' == $progress_bar_type ) {
-					$tab_heading_key    = "step_" . $i . "_heading";
-					$tab_subheading_key = "step_" . $i . "_subheading";
+					$tab_heading_key    = 'step_' . $i . '_heading';
+					$tab_subheading_key = 'step_' . $i . '_subheading';
 				}
-
 
 				if ( $tab_heading_key != '' && is_array( $this->form_data ) && isset( $this->form_data[ $tab_heading_key ] ) ) {
 					$step_form_data[ $i ]['heading'] = $this->form_data[ $tab_heading_key ];
@@ -646,40 +891,36 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					$this->set_bredcrumb_data['tab_data'] = $step_form_data;
 				}
 				if ( 'tab' !== $progress_bar_type ) {
-					$progress_bar_text = "step_" . $i . "_progress_bar";
+					$progress_bar_text = 'step_' . $i . '_progress_bar';
 				}
 
 				if ( isset( $this->form_data['select_type'] ) && $this->form_data['select_type'] == 'bredcrumb' ) {
-					$progress_bar_text = "step_" . $i . "_bredcrumb";
+					$progress_bar_text = 'step_' . $i . '_bredcrumb';
 				}
 
 				if ( $progress_bar_text != '' && is_array( $this->form_data ) && isset( $this->form_data[ $progress_bar_text ] ) ) {
 					$progress_form_data[]                      = $this->form_data[ $progress_bar_text ];
 					$this->set_bredcrumb_data['progress_data'] = $progress_form_data;
 				}
-
-
 			}
-
 
 			if ( ( is_array( $step_form_data ) && count( $step_form_data ) > 0 ) ) {
 				?>
 
-                <div class="wfacp_form_steps">
-                    <div class="wfacp-payment-title wfacp-hg-by-box">
-                        <div class="wfacp-payment-tab-wrapper">
+				<div class="wfacp_form_steps">
+					<div class="wfacp-payment-title wfacp-hg-by-box">
+						<div class="wfacp-payment-tab-wrapper">
 							<?php
 							$count          = 1;
 							$count_of_steps = sizeof( $step_form_data );
-							$steps          = [ 'single_step', 'two_step', 'third_step' ];
+							$steps          = array( 'single_step', 'two_step', 'third_step' );
 
-
-							$addfull_width = "full_width_cls";
+							$addfull_width = 'full_width_cls';
 							if ( $count_of_steps == 2 ) {
-								$addfull_width = "wfacpef_two_step";
+								$addfull_width = 'wfacpef_two_step';
 							}
 							if ( $count_of_steps == 3 ) {
-								$addfull_width = "wfacpef_third_step";
+								$addfull_width = 'wfacpef_third_step';
 							}
 							$active_breadcrumb = apply_filters( 'wfacp_el_bread_crumb_active_class_key', 0, $this );
 							foreach ( $step_form_data as $key => $value ) {
@@ -692,7 +933,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 								$bread_visited = '';
 								if ( $count == 2 ) {
 									$page_class = 'two_step';
-								} else if ( $count == 3 ) {
+								} elseif ( $count == 3 ) {
 									$page_class = 'third_step';
 								} else {
 									$page_class = 'single_step';
@@ -705,31 +946,29 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 									$active = 'wfacp-active visited_cls';
 								}
 
-
 								$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $active, $count, $number_of_steps );
 
-
 								?>
-                                <div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . " " . $addfull_width . ' ' . $bread_visited; ?>  wfacp-tab<?php echo $count; ?>"
-                                     step="<?php echo $steps_count_here; ?>">
-                                    <div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
-                                    <div class="wfacp-order2StepHeaderText">
-                                        <div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value['heading']; ?></div>
-                                        <div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo $value['subheading']; ?></div>
-                                    </div>
-                                </div>
+								<div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited; ?>  wfacp-tab<?php echo $count; ?>"
+									step="<?php echo $steps_count_here; ?>">
+									<div class="wfacp-order2StepNumber"><?php echo $count; ?></div>
+									<div class="wfacp-order2StepHeaderText">
+										<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo $value['heading']; ?></div>
+										<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo $value['subheading']; ?></div>
+									</div>
+								</div>
 								<?php
-								$count ++;
+								++$count;
 							}
 							?>
-                        </div>
-                    </div>
-                </div>
+						</div>
+					</div>
+				</div>
 				<?php
 
 			}
 
-			$steps_arr = [ 'single_step', 'two_step', 'third_step' ];
+			$steps_arr = array( 'single_step', 'two_step', 'third_step' );
 
 			if ( 'progress_bar' == $progress_bar_type ) {
 				if ( ( is_array( $progress_form_data ) && count( $progress_form_data ) > 0 ) ) {
@@ -759,34 +998,30 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					echo '</ul></div></div></div>';
 				}
 			}
-			echo "</div>";
+			echo '</div>';
 			$result = ob_get_clean();
 
 			$this->stepsData[ $progress_bar_type ] = $result;
 
-
-			if ( "progress_bar" !== $progress_bar_type ) {
+			if ( 'progress_bar' !== $progress_bar_type ) {
 				echo $result;
 			}
-
-
 		}
 
 		public function add_form_steps() {
 
 			$number_of_steps = $this->get_step_count();
-			$steps_arr       = [ 'single_step', 'two_step', 'third_step' ];
+			$steps_arr       = array( 'single_step', 'two_step', 'third_step' );
 
-			$devices = [];
+			$devices = array();
 
 			if ( $number_of_steps <= 1 || ! isset( $this->form_data['enable_progress_bar'] ) || $this->form_data['enable_progress_bar'] == '' || $this->form_data['enable_progress_bar'] == 'no' ) {
 				return;
 			}
 
-			if ( isset( $this->form_data['enable_progress_bar'] ) && "on" === $this->form_data['enable_progress_bar'] ) {
+			if ( isset( $this->form_data['enable_progress_bar'] ) && 'on' === $this->form_data['enable_progress_bar'] ) {
 				$devices[] = 'wfacp_desktop';
 			}
-
 
 			if ( isset( $this->form_data['enable_progress_bar_tablet'] ) && 'on' == $this->form_data['enable_progress_bar_tablet'] ) {
 
@@ -799,24 +1034,20 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 
 			$deviceClass = implode( ' ', $devices );
 
-
 			if ( empty( $deviceClass ) ) {
 				$deviceClass = 'wfacp_not_active';
 			}
 
-
-			$select_type = $this->form_data['select_type'];
-
+			$select_type = $this->form_data['select_type'] ?? '';
 
 			echo "<div class='$deviceClass $select_type' >";
 
 			if ( isset( $this->form_data['select_type'] ) && 'bredcrumb' == $this->form_data['select_type'] ) {
 
-
 				if ( isset( $this->set_bredcrumb_data['progress_data'] ) && is_array( $this->set_bredcrumb_data['progress_data'] ) ) {
 					$progress_form_data = $this->set_bredcrumb_data['progress_data'];
 
-					printf( '<div class="%s">', "wfacp_steps_wrap wfacp_breadcrumb_wrap_here" );
+					printf( '<div class="%s">', 'wfacp_steps_wrap wfacp_breadcrumb_wrap_here' );
 					echo '<div class=wfacp_steps_sec>';
 
 					echo '<ul>';
@@ -836,8 +1067,8 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 						$text_class = ( ! empty( $value ) ) ? 'wfacp_step_text_have' : 'wfacp_step_text_nohave';
 						echo "<li class='wfacp_step_$key wfacp_bred $bread_visited $active $step' step='$step'>";
 						?>
-                        <a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link"
-                           data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a>
+						<a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link"
+							data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a>
 						<?php
 
 						echo '</li>';
@@ -846,8 +1077,7 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					echo '</ul></div></div>';
 				}
 			}
-			echo "</div>";
-
+			echo '</div>';
 		}
 
 		public function get_product_switcher_mobile_style() {
@@ -868,7 +1098,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$classes[] = 'wfacp_global_checkout';
 			}
 
-
 			if ( WFACP_Common::is_theme_builder() ) {
 
 				$classes[] = 'wfacp_editor_active';
@@ -880,7 +1109,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		/**
 		 * Wrap Order preview form in Embed form div start style
 		 */
-
 		public function add_checkout_preview_div_start() {
 			echo '<div id="wfacp-e-form"><div id="wfacp-sec-wrapper">';
 		}
@@ -888,7 +1116,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		/**
 		 * Wrap Order preview form in Embed form div start style
 		 */
-
 		public function add_checkout_preview_div_end() {
 			echo '</div></div>';
 		}
@@ -912,10 +1139,8 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				return;
 			}
 
-
-			$select_type = $this->form_data['select_type'];
-			$key         = "step_cart_" . $select_type . "_link";
-
+			$select_type = $this->form_data['select_type'] ?? '';
+			$key         = 'step_cart_' . $select_type . '_link';
 
 			if ( ! isset( $this->form_data[ $key ] ) ) {
 				return;
@@ -923,11 +1148,11 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 
 			$cartName = $this->form_data[ $key ];
 
-
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
+			$cartURL      = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
 
-			echo "<li class='df_cart_link wfacp_bred_visited'><a class='wfacp_breadcrumb_link' href='$cartURL'>$cartName</a></li>";
+			echo "<li class='df_cart_link wfacp_bred_visited'><a class='wfacp_breadcrumb_link' href='" . esc_url( $cartURL ) . "'>" . wp_kses_post( $cartName ) . '</a></li>';
 		}
 
 		public function before_return_to_cart_link( $current_action ) {
@@ -945,24 +1170,20 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				return;
 			}
 
-
 			if ( $current_action != 'single_step' ) {
 				return;
 			}
-
 
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
 			?>
 
-            <div class="btm_btn_sec wfacp_back_cart_link">
-                <div class="wfacp-back-btn-wrap">
-                    <a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a>
-                </div>
-            </div>
+			<div class="btm_btn_sec wfacp_back_cart_link">
+				<div class="wfacp-back-btn-wrap">
+					<a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a>
+				</div>
+			</div>
 			<?php
-
-
 		}
 
 		public function display_progress_bar() {
@@ -972,24 +1193,19 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					echo $this->stepsData['progress_bar'];
 				}
 			}
-
-
 		}
 
 		public function add_class_change_place_order( $btn_html ) {
 
-
 			$stepCount = $this->get_step_count();
-
 
 			if ( ! empty( $_GET['woo-paypal-return'] ) && ! empty( $_GET['token'] ) && ! empty( $_GET['PayerID'] ) ) {
 				return $btn_html;
 			}
 
-
 			$output = '';
 
-			$key = "payment_button_back_" . $stepCount . "_text";
+			$key = 'payment_button_back_' . $stepCount . '_text';
 
 			$black_backbtn_cls = '';
 			if ( isset( $this->form_data[ $key ] ) && $this->form_data[ $key ] == '' ) {
@@ -1016,16 +1232,15 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				if ( $back_btn_text != '' ) {
 					$output .= "<div class='place_order_back_btn wfacp_none_class '><a class='wfacp_back_page_button' data-next-step='" . $last_step . "' data-current-step='" . $this->current_step . "' href='javascript:void(0)'>" . __( $back_btn_text, 'woofunnels-aero-checkout' ) . '</a> </div>';
 				}
-
 			}
 			$output .= '</div>';
 
 			return $output;
 		}
 
-		//Mini Cart Settings
+		// Mini Cart Settings
 		public function mini_cart_heading() {
-			return $this->mini_cart_data['mini_cart_heading'];
+			return isset( $this->mini_cart_data['mini_cart_heading'] ) ? $this->mini_cart_data['mini_cart_heading'] : __( 'Order summary', 'woocommerce' );
 		}
 
 		public function mini_cart_allow_product_image() {
@@ -1050,14 +1265,32 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		}
 
 
-		public function wfacp_collapsible_order_summary_content() {
+	public function wfacp_collapsible_order_summary_content() {
+		// Prevent duplicate rendering - use static flag to ensure this only renders once per request
+		// CRITICAL: In Divi 5 REST API context, use global variable to prevent duplicates across all instances
+		// The hook can fire multiple times in Divi 5 REST API, so we need a single global flag
+		$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-			include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/order-summary.php';
-
+		if ( $is_divi5 ) {
+			// Divi 5: Use a single global flag (not keyed by instance) to prevent ANY duplicate rendering
+			global $wfacp_rendered_collapsible_summary_once;
+			if ( isset( $wfacp_rendered_collapsible_summary_once ) && $wfacp_rendered_collapsible_summary_once === true ) {
+				return; // Already rendered in this request (Divi 5)
+			}
+			$wfacp_rendered_collapsible_summary_once = true;
+		} else {
+			// Divi 4: Use static flag (original behavior)
+			static $rendered = false;
+			if ( $rendered ) {
+				return;
+			}
+			$rendered = true;
 		}
 
-		public function display_image_in_collapsible_order_summary() {
+		include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/order-summary.php';
+	}
 
+		public function display_image_in_collapsible_order_summary() {
 
 			return isset( $this->form_data['order_summary_enable_product_image_collapsed'] ) && 'on' === trim( $this->form_data['order_summary_enable_product_image_collapsed'] );
 		}
@@ -1068,12 +1301,11 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		}
 
 		public function page_container_div() {
-			echo "<div id=page-container>";
-
+			echo '<div id=page-container>';
 		}
 
 		public function page_container_close() {
-			echo "</div>";
+			echo '</div>';
 		}
 
 		/* Coupon Button Text */
@@ -1083,7 +1315,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			return parent::get_coupon_button_text();
-
 		}
 
 		public function get_form_coupon_button_text() {
@@ -1092,7 +1323,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			return parent::get_coupon_button_text();
-
 		}
 
 		public function get_mini_cart_coupon_button_text() {
@@ -1101,7 +1331,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			}
 
 			return parent::get_coupon_button_text();
-
 		}
 		/* End Coupon Button Text */
 
@@ -1124,7 +1353,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			$button_subheading          = '';
 			$button_subheading_position = '';
 
-
 			if ( isset( $class['icon'] ) ) {
 				$icon = str_replace( 'aero-', '', $class['icon'] );
 			}
@@ -1145,72 +1373,64 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 
 			}
 
-
 			if ( ! empty( $icon ) && ! empty( $current ) && ! empty( $margin ) ) {
 
 				if ( $form_step == 'place_order' ) {
-					echo "<style>";
+					echo '<style>';
 					echo 'body #wfacp-e-form .' . $current . ' #place_order:' . $content . "{content:'$icon';font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}";
-					echo "</style>";
+					echo '</style>';
 				} else {
-					echo "<style>";
+					echo '<style>';
 					echo 'body #wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{content:'$icon'; font-family: 'bwf-icons' !important; display: inline-block !important;margin-$margin:10px;position: relative;text-transform: none;}";
-					echo "</style>";
+					echo '</style>';
 				}
-
 			}
-
 
 			if ( ! empty( $button_subheading ) && ! empty( $button_subheading_position ) ) {
 
 				$content = $button_subheading_position;
 
-
 				$button_subheading = do_shortcode( $button_subheading );
 				$content1          = 'before';
 
 				if ( $form_step == 'place_order' ) {
-					echo "<style>";
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content1 . "{top:3px;}";
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . "{content:" . '"' . $button_subheading . '"' . " !important; display: inline-block !important;position: relative;}";
-					echo '#wfacp-e-form .' . $current . ' button#place_order' . "{display:inline-block;}";
-					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . "{display: block !important;}";
-					echo "</style>";
+					echo '<style>';
+					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content1 . '{top:3px;}';
+					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . '{content:' . '"' . $button_subheading . '"' . ' !important; display: inline-block !important;position: relative;}';
+					echo '#wfacp-e-form .' . $current . ' button#place_order' . '{display:inline-block;}';
+					echo '#wfacp-e-form .' . $current . ' #place_order:' . $content . '{display: block !important;}';
+					echo '</style>';
 
 				} else {
-					echo "<style>";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content1 . "{top:3px;}";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{content:" . '"' . $button_subheading . '"' . " !important;  display: inline-block !important;position: relative;}";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . "{display:inline-block;}";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . "{display: block !important;}";
-					echo "</style>";
+					echo '<style>';
+					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content1 . '{top:3px;}';
+					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . '{content:' . '"' . $button_subheading . '"' . ' !important;  display: inline-block !important;position: relative;}';
+					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{display:inline-block;}';
+					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button:' . $content . '{display: block !important;}';
+					echo '</style>';
 				}
+			} elseif ( $form_step == 'place_order' ) {
 
+					echo '<style>';
+					echo '#wfacp-e-form .' . $current . ' #place_order' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
+
+					echo '</style>';
 			} else {
 
-				if ( $form_step == 'place_order' ) {
-
-					echo "<style>";
-					echo '#wfacp-e-form .' . $current . ' #place_order' . "{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}";
-
-					echo "</style>";
-				} else {
-
-					echo "<style>";
-					echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . "{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}";
-					echo "</style>";
-				}
-
+				echo '<style>';
+				echo '#wfacp-e-form .' . $current . ' .wfacp-next-btn-wrap button' . '{-js-display: inline-flex;display: inline-flex;align-items: center;justify-content: center;}';
+				echo '</style>';
 			}
 		}
 
 		public function add_button_icon( $i = 1 ) {
-			$black_backbtn_cls = [ 'class' => 'bwf_button_sec', 'step' => $i ];
+			$black_backbtn_cls = array(
+				'class' => 'bwf_button_sec',
+				'step'  => $i,
+			);
 			$icon_position     = 'wfacp-pre-icon';
 
-
-			if ( isset( $this->form_data[ 'enable_icon_with_place_order_' . $i ] ) && "on" === $this->form_data[ 'enable_icon_with_place_order_' . $i ] ) {
-
+			if ( isset( $this->form_data[ 'enable_icon_with_place_order_' . $i ] ) && 'on' === $this->form_data[ 'enable_icon_with_place_order_' . $i ] ) {
 
 				$content = 'before';
 				$margin  = 'right';
@@ -1219,11 +1439,9 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					$margin  = 'left';
 				}
 
-
 				$black_backbtn_cls['position'] = $icon_position;
 				$black_backbtn_cls['content']  = $content;
 				$black_backbtn_cls['margin']   = $margin;
-
 
 			}
 
@@ -1235,7 +1453,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					$black_backbtn_cls['icon'] = str_replace( '"', '', $black_backbtn_cls['icon'] );
 				}
 			}
-
 
 			/* button subheading */
 
@@ -1249,7 +1466,6 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 					} else {
 						$black_backbtn_cls['button_subheading_position'] = 'before';
 					}
-
 				}
 			}
 
@@ -1279,23 +1495,33 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		 *
 		 * @return mixed
 		 */
-		public function order_summary_field_enable_strike_through_price() {
-
-			if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'on' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
-				return true;
-			}
-
-			return false;
+	public function order_summary_field_enable_strike_through_price() {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Order Summary fields are available when the filter is called
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) ) {
+			$this->get_ajax_exchange_keys();
 		}
 
-		public function collapsible_mini_cart_enable_strike_through_price() {
-
-			if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
-				return true;
-			}
-
-			return false;
+		if ( isset( $this->form_data['order_summary_field_enable_strike_through_price'] ) && 'on' == $this->form_data['order_summary_field_enable_strike_through_price'] ) {
+			return true;
 		}
+
+		return false;
+	}
+
+	public function collapsible_mini_cart_enable_strike_through_price() {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Collapsible Order Summary fields are available when the filter is called
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) ) {
+			$this->get_ajax_exchange_keys();
+		}
+
+		if ( isset( $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_strike_through_price'] ) {
+			return true;
+		}
+
+		return false;
+	}
 
 		public function mini_cart_enable_strike_through_price() {
 			if ( isset( $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) && 'on' == $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) {
@@ -1306,45 +1532,158 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 		}
 
 		public function mini_cart_low_stock_trigger( $_product ) {
-
-			if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
-
-				$stock_quantity = $_product->get_stock_quantity();
-
-
-				if ( $stock_quantity !== null ) {
-
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . "</div>";
+			try {
+				// Validate product parameter
+				if ( ! is_object( $_product ) || ! method_exists( $_product, 'get_stock_quantity' ) ) {
+					return;
 				}
+				if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
+					$stock_quantity = $_product->get_stock_quantity();
+					$status         = $this->get_low_stock_status( $_product, $stock_quantity );
+
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . '</div>';
+					}
+				}
+			} catch ( Exception $e ) {
+
 			}
 		}
 
-		public function order_summary_field_after_product_title( $_product ) {
+	public function order_summary_field_after_product_title( $_product ) {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Order Summary fields are available when the hook fires
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) ) {
+			$this->get_ajax_exchange_keys();
+		}
 
-			if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'on' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
+		if ( isset( $this->form_data['order_summary_field_enable_low_stock_trigger'] ) && 'on' == $this->form_data['order_summary_field_enable_low_stock_trigger'] && isset( $this->form_data['order_summary_field_low_stock_message'] ) ) {
+			$stock_quantity = $_product->get_stock_quantity();
 
-				$stock_quantity = $_product->get_stock_quantity();
+			if ( $stock_quantity !== null ) {
+				// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+				// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+				// Divi 4 behavior remains unchanged (no deduplication needed)
+				$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-				if ( $stock_quantity !== null ) {
+				if ( $is_divi5 ) {
+					// Divi 5: Use global variable to prevent duplicates across instances
+					global $wfacp_rendered_stock_messages;
+					if ( ! isset( $wfacp_rendered_stock_messages ) ) {
+						$wfacp_rendered_stock_messages = [];
+					}
 
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . "</div>";
+					// Use product ID + cart item key as cache key for better deduplication
+					// This ensures each product in cart gets its own message, but prevents duplicates
+					$product_id = $_product->get_id();
+					$cart_item_key = '';
+					if ( function_exists( 'WC' ) && WC()->cart ) {
+						foreach ( WC()->cart->get_cart() as $key => $item ) {
+							if ( isset( $item['product_id'] ) && $item['product_id'] == $product_id ) {
+								$cart_item_key = $key;
+								break;
+							}
+						}
+					}
+					$cache_key = 'order_summary_stock_' . $product_id . '_' . $cart_item_key;
+
+					if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
+						return; // Already rendered for this product in Divi 5
+					}
+
+					$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
+				}
+
+				$status = $this->get_low_stock_status( $_product, $stock_quantity );
+
+				// Only show low stock message if current stock is less than or equal to low stock threshold
+				if ( true === $status ) {
+					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . '</div>';
 				}
 			}
 		}
+	}
 
-		public function collapsible_mini_cart_field_after_product_title( $_product ) {
+	public function collapsible_mini_cart_field_after_product_title( $_product ) {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Collapsible Order Summary fields are available when the hook fires
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) ) {
+			$this->get_ajax_exchange_keys();
+		}
 
+		// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+		// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+		// Divi 4 behavior remains unchanged (no deduplication needed)
+		$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
 
-			if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
+		if ( $is_divi5 ) {
+			// Divi 5: Use global variable to prevent duplicates across instances
+			global $wfacp_rendered_stock_messages;
+			if ( ! isset( $wfacp_rendered_stock_messages ) ) {
+				$wfacp_rendered_stock_messages = [];
+			}
 
+			// Use product object hash as cache key for Divi 5
+			$product_hash = spl_object_hash( $_product );
+			$cache_key = 'stock_' . $product_hash;
 
-				$stock_quantity = $_product->get_stock_quantity();
+			if ( isset( $wfacp_rendered_stock_messages[ $cache_key ] ) ) {
+				return; // Already rendered for this product object in Divi 5
+			}
+		}
 
-				if ( $stock_quantity !== null ) {
+		if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
 
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . "</div>";
+			$stock_quantity = $_product->get_stock_quantity();
+
+			if ( $stock_quantity !== null ) {
+				if ( $is_divi5 ) {
+					$wfacp_rendered_stock_messages[ $cache_key ] = true; // Mark as rendered for Divi 5
+				}
+
+				$status = $this->get_low_stock_status( $_product, $stock_quantity );
+
+				// Only show low stock message if current stock is less than or equal to low stock threshold
+				if ( true === $status ) {
+					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . '</div>';
 				}
 			}
+		}
+	}
+
+		public function get_low_stock_status( $_product, $stock_quantity ) {
+
+			// Initialize low stock amount variable
+			$low_stock_amount = null;
+
+			// Priority 1: Check if product has local low stock amount set
+			if ( method_exists( $_product, 'get_low_stock_amount' ) && '' !== $_product->get_low_stock_amount() ) {
+				$low_stock_amount = absint( $_product->get_low_stock_amount() );
+			}
+			// Priority 2: If no local setting, use global WooCommerce setting
+			else {
+				$global_low_stock = get_option( 'woocommerce_notify_low_stock_amount' );
+
+				if ( ! empty( $global_low_stock ) ) {
+					$low_stock_amount = absint( $global_low_stock );
+				}
+			}
+
+			// If no low stock amount is set (neither local nor global), return
+			if ( $low_stock_amount === null ) {
+				return false;
+			}
+
+			// If stock quantity is null or not set, return
+			if ( $stock_quantity === null ) {
+				return false;
+			}
+
+			if ( $stock_quantity <= $low_stock_amount ) {
+				return true;
+			}
+			return false;
 		}
 
 		public function mini_cart_saving_price() {
@@ -1353,30 +1692,59 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 				$price_message = $this->mini_cart_data['mini_cart_saving_price_message'];
 				WFACP_Common::display_save_price( $price_message );
 			}
-
 		}
 
-		public function order_summary_field_saving_price() {
+	public function order_summary_field_saving_price() {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Order Summary fields are available when the hook fires
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) ) {
+			$this->get_ajax_exchange_keys();
+		}
 
-			if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'on' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
-				$price_message = $this->form_data['order_summary_field_saving_price_message'];
-				WFACP_Common::display_save_price( $price_message );
+		if ( isset( $this->form_data['order_summary_field_enable_saving_price_message'] ) && 'on' == $this->form_data['order_summary_field_enable_saving_price_message'] && isset( $this->form_data['order_summary_field_saving_price_message'] ) ) {
+			// CRITICAL: Prevent duplicate output ONLY in Divi 5 REST API context
+			// Check if Divi 5 is enabled - only apply deduplication for Divi 5
+			$is_divi5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
+
+			if ( $is_divi5 ) {
+				// Divi 5: Use global variable to prevent duplicates across instances
+				global $wfacp_rendered_saving_prices;
+				if ( ! isset( $wfacp_rendered_saving_prices ) ) {
+					$wfacp_rendered_saving_prices = [];
+				}
+
+				// Use a more specific cache key that includes context
+				// This allows the message to render once per Order Summary instance per request
+				$cache_key = 'order_summary_saving_' . md5( 'order_summary_' . ( function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_hash() : '' ) );
+
+				if ( isset( $wfacp_rendered_saving_prices[ $cache_key ] ) ) {
+					return; // Already rendered for this context in Divi 5
+				}
+				
+				$wfacp_rendered_saving_prices[ $cache_key ] = true; // Mark as rendered for Divi 5
 			}
+			
+			$price_message = $this->form_data['order_summary_field_saving_price_message'];
+			WFACP_Common::display_save_price( $price_message );
+		}
+	}
 
+	public function collapsible_mini_cart_saving_price() {
+		// CRITICAL: Ensure form_data is loaded from session before checking settings
+		// This ensures Collapsible Order Summary fields are available when the hook fires
+		if ( empty( $this->form_data ) || ! isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) ) {
+			$this->get_ajax_exchange_keys();
 		}
 
-		public function collapsible_mini_cart_saving_price() {
-
-			if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
-				$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
-				WFACP_Common::display_save_price( $price_message );
-			}
-
+		if ( isset( $this->form_data['collapsible_mini_cart_enable_saving_price_message'] ) && 'on' == $this->form_data['collapsible_mini_cart_enable_saving_price_message'] && isset( $this->form_data['collapsible_mini_cart_saving_price_message'] ) ) {
+			$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
+			WFACP_Common::display_save_price( $price_message );
 		}
+	}
 
 		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
 			$field_key = 'enable_order_field_collapsed';
-			
+
 			if ( $device === 'tablet' ) {
 				$field_key .= '_tablet';
 			} elseif ( $device === 'mobile' ) {
@@ -1386,16 +1754,15 @@ if ( ! class_exists( 'WFACP_Divi_Template' ) ) {
 			if ( isset( $this->form_data[ $field_key ] ) && 'on' == $this->form_data[ $field_key ] ) {
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		public function should_hide_order_summary_by_default() {
 			// Check if any device has collapsed enabled
 			return $this->enable_order_field_collapsed_by_default( 'desktop' ) ||
-				   $this->enable_order_field_collapsed_by_default( 'tablet' ) ||
-				   $this->enable_order_field_collapsed_by_default( 'mobile' );
+					$this->enable_order_field_collapsed_by_default( 'tablet' ) ||
+					$this->enable_order_field_collapsed_by_default( 'mobile' );
 		}
-
 	}
 }

@@ -27,7 +27,7 @@ return [
             'type' => 'select-position',
             'label' => 'Widget Area',
             'description' =>
-                'Select a WordPress widget area that will render all published widgets. It\'s recommended to use the builder-1 to -6 widget areas, which are not rendered elsewhere by the theme.',
+                "Select a WordPress widget area that will render all published widgets. It's recommended to use the builder-1 to -6 widget areas, which are not rendered elsewhere by the theme.",
         ],
         'layout' => [
             'type' => 'select',
@@ -69,7 +69,7 @@ return [
             'description' => 'Show a divider between grid columns.',
             'type' => 'checkbox',
             'text' => 'Show dividers',
-            'enable' => 'column_gap != \'collapse\' && row_gap != \'collapse\'',
+            'enable' => "column_gap != 'collapse' && row_gap != 'collapse'",
         ],
         'breakpoint' => [
             'type' => 'select',

@@ -20,7 +20,6 @@ class Helper
      */
     protected static array $arguments = [
         'public' => true,
-        'show_ui' => true,
         'show_in_nav_menus' => true,
     ];
 
@@ -53,7 +52,13 @@ class Helper
      */
     public static function getTaxonomies(array $arguments = []): array
     {
-        return get_taxonomies($arguments + static::$arguments, 'objects');
+        $taxonomies = get_taxonomies($arguments + static::$arguments, 'objects');
+
+        // Ignore built-in post_format taxonomy
+        // https://developer.wordpress.org/advanced-administration/wordpress/post-formats/
+        unset($taxonomies['post_format']);
+
+        return $taxonomies;
     }
 
     /**
@@ -232,7 +237,9 @@ class Helper
                         $compare = '<=';
                     }
 
-                    $query['meta_query'] = [compact('key', 'value', 'compare', 'type')];
+                    $query['meta_query'] = [
+                        ['key' => $key, 'value' => $value, 'compare' => $compare, 'type' => $type],
+                    ];
                 } else {
                     $query['date_query'] = [
                         [

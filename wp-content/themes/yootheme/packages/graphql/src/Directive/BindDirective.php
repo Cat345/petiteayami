@@ -12,8 +12,6 @@ class BindDirective extends Directive
 
     /**
      * Constructor.
-     *
-     * @param Container $container
      */
     public function __construct(Container $container)
     {

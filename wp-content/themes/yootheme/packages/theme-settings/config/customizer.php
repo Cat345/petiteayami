@@ -31,7 +31,7 @@ return [
                 'favicon' => [
                     'label' => 'Favicon PNG',
                     'description' =>
-                        'Select your <code>favicon.png</code>. It appears in the browser\'s address bar, tab and bookmarks. The recommended size is 96x96 pixels.',
+                        "Select your <code>favicon.png</code>. It appears in the browser's address bar, tab and bookmarks. The recommended size is 96x96 pixels.",
                     'type' => 'image',
                     'mediapicker' => [
                         'photos' => false,
@@ -63,7 +63,7 @@ return [
             'fields' => [
                 'custom_less' => [
                     'description' =>
-                        'Add custom CSS or Less to your site. All Less theme variables and mixins are available. Don\'t use any <code>&lt;style&gt;</code> tag.',
+                        "Add custom CSS or Less to your site. All Less theme variables and mixins are available. Don't use any <code>&lt;style&gt;</code> tag.",
                     'type' => 'editor',
                     'editor' => 'code',
                     'mode' => 'text/x-less',
@@ -176,7 +176,7 @@ return [
                 '_config' => [
                     'label' => 'Theme Settings',
                     'description' =>
-                        'Export all theme settings and import them into another installation. This doesn\'t include content from the layout, style and element libraries or the template builder.',
+                        "Export all theme settings and import them into another installation. This doesn't include content from the layout, style and element libraries or the template builder.",
                     'type' => 'config',
                 ],
             ],

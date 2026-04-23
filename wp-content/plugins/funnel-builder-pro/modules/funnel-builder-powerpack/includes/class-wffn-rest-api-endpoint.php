@@ -489,7 +489,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			 */
 			public function delete_funnel_category( $data ) {
 				try {
-					$category_slug = sanitize_text_field( $data->get_param( 'slug' ) );
+					$category_slug = sanitize_title( $data->get_param( 'slug' ) );
 
 					if ( ! WFFN_Category_DB::category_exists( $category_slug ) ) {
 						return rest_ensure_response(
@@ -555,7 +555,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 			 */
 			public function rename_category( $data ) {
 				try {
-					$old_slug = sanitize_text_field( $data->get_param( 'old_slug' ) );
+					$old_slug = sanitize_title( $data->get_param( 'old_slug' ) );
 					$new_name = sanitize_text_field( $data->get_param( 'new_name' ) );
 
 					$result = WFFN_Category_DB::rename_category_in_funnels( $old_slug, $new_name );
@@ -611,7 +611,7 @@ if ( class_exists( 'WFFN_REST_Controller' ) ) {
 						function ( $category ) {
 							if ( is_array( $category ) && isset( $category['slug'], $category['name'] ) ) {
 									return array(
-										'slug' => sanitize_text_field( $category['slug'] ),
+										'slug' => sanitize_title( $category['slug'] ),
 										'name' => sanitize_text_field( $category['name'] ),
 									);
 							}

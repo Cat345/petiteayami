@@ -1092,6 +1092,9 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 			return $id;
 		}
 
+		protected function end_tab() {
+		}
+
 		protected function add_sub_tab( $name, $tab_id, $id = '' ) {
 			if ( empty( $id ) ) {
 				$id = $this->get_unique_id();
@@ -1178,7 +1181,7 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		public function init() {
 			if ( isset( $_REQUEST['et_post_id'] ) ) {
 				$this->post_id = absint( $_REQUEST['et_post_id'] );
-				if ( WFACP_Common::get_post_type_slug() == trim( $_REQUEST['et_post_type'] ) ) {
+				if ( isset( $_REQUEST['et_post_type'] ) && WFACP_Common::get_post_type_slug() == trim( $_REQUEST['et_post_type'] ) ) {
 					$_REQUEST['wfacp_id'] = $this->post_id;
 					WFACP_Common::set_id( $this->post_id );
 					WFACP_Core()->template_loader->load_template( $this->post_id );
@@ -1297,3 +1300,4 @@ if ( ! class_exists( 'WFACP_Divi_Field' ) ) {
 		}
 	}
 }
+	

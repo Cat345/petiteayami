@@ -6,7 +6,7 @@ return [
     '5.0.0-beta.0.14' => function ($config) {
         // Menu Positions
         if (Arr::has($config, 'menu.positions')) {
-            $positions = Arr::get($config, 'menu.positions', []);
+            $positions = Arr::get($config, 'menu.positions') ?? [];
             foreach ($positions as &$position) {
                 // Workaround for invalid configs (it seems update '3.0.0-beta.1.3' has not run properly everywhere)
                 if (is_string($position)) {
@@ -161,11 +161,13 @@ return [
 
         return $config;
     },
+
     '4.1.0-beta.0.1' => function ($config) {
         Arr::del($config, 'mobile.header.transparent');
 
         return $config;
     },
+
     '4.0.0-beta.11.1' => function ($config) {
         if (empty(Arr::get($config, 'footer.content.children'))) {
             Arr::del($config, 'footer.content');
@@ -173,6 +175,7 @@ return [
 
         return $config;
     },
+
     '3.1.0-beta.0.4' => function ($config) {
         Arr::updateKeys($config, [
             'header.social_links' => 'header.social_items',
@@ -181,6 +184,7 @@ return [
 
         return $config;
     },
+
     '3.1.0-beta.0.2' => function ($config) {
         foreach (['mobile.header', 'header'] as $header) {
             $links = array_map(
@@ -197,6 +201,7 @@ return [
 
         return $config;
     },
+
     '3.0.1.1' => function ($config) {
         if (Arr::get($config, 'image_metadata')) {
             Arr::set($config, 'webp', false);
@@ -204,11 +209,13 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.3.2' => function ($config) {
         Arr::del($config, 'webp');
 
         return $config;
     },
+
     '3.0.0-beta.3.1' => function ($config) {
         if (
             Arr::get($config, 'site.image_effect') == 'parallax' &&
@@ -219,6 +226,7 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.8' => function ($config) {
         if (Arr::get($config, 'mobile.dialog.dropbar.animation') == 'slide') {
             Arr::set($config, 'mobile.dialog.dropbar.animation', 'reveal-top');
@@ -226,6 +234,7 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.7' => function ($config) {
         Arr::updateKeys($config, [
             'navbar.boundary_align' => 'navbar.dropdown_target',
@@ -256,10 +265,11 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.6' => function ($config) {
         // Menu Positions
         if (Arr::has($config, 'menu.positions')) {
-            $positions = Arr::get($config, 'menu.positions', []);
+            $positions = Arr::get($config, 'menu.positions') ?? [];
             foreach ($positions as &$position) {
                 if (empty($position['style'])) {
                     $position['style'] = 'default';
@@ -270,6 +280,7 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.5' => function ($config) {
         Arr::updateKeys($config, [
             'dialog.menu_style' => 'menu.positions.dialog.style',
@@ -280,6 +291,7 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.4' => function ($config) {
         // Menu Items
         if (Arr::has($config, 'menu.items')) {
@@ -296,12 +308,13 @@ return [
 
         return $config;
     },
+
     '3.0.0-beta.1.3' => function ($config) {
         Arr::update($config, 'menu.positions', function ($positions) {
             foreach ($positions ?: [] as $position => $menu) {
                 $positions[$position] = isset($menu) ? ['menu' => $menu] : null;
             }
-            return $positions;
+            return $positions ?? [];
         });
 
         return $config;

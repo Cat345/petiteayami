@@ -36,6 +36,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Electro' ) ) {
 			echo "body #wfacp-e-form .woocommerce-checkout-review-order-table tfoot > tr{display: table-row;width: 100%;justify-content: initial;}";
 			echo "body #wfacp-e-form .woocommerce-checkout-review-order-table thead > tr{display: table-row;width: 100%;justify-content: initial;}";
 			echo "body #wfacp-e-form .wfacp_shipping_options .border:last-child table {margin-bottom: 0;}";
+			echo "body #wfacp-e-form .wfacp_shipping_options .wfacp_border:last-child table {margin-bottom: 0;}";
 			echo "body #wfacp-e-form .wfacp_main_form .wfacp_shipping_table.wfacp_shipping_recurring tr.shipping:last-child td {padding-bottom: 0;margin-bottom: 0;}";
 			echo '</style>';
 

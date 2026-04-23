@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 	/**
 	 * Class contains all the aero checkout related ab testing functionality
@@ -9,7 +9,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 	class BWFABT_Controller_Aero_Checkout extends BWFABT_Controller {
 		private static $ins = null;
 		private $control_query;
-		public $view_support = true;
+		public $view_support      = true;
 		private $is_cart_restored = false;
 
 		/**
@@ -20,11 +20,11 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			add_filter( 'bwfabt_get_supported_controllers', array( $this, 'bwfabt_add_aero_controller' ) );
 			add_filter( 'wfacp_listing_handle_query_args', array( $this, 'wfacp_add_control_meta_query' ), 10, 1 );
 			add_action( 'wp', array( $this, 'maybe_redirect_to_ab_aero' ), 4, 1 );
-			add_action( 'wfacp_changed_default_woocommerce_page', [ $this, 'set_global_page_id' ], 99 );
-			add_action( 'wfab_pre_abandoned_cart_restored', [ $this, 'check_if_autobot_cart_restored' ] );
-			add_action( 'wfacp_view_recorded', [ $this, 'record_ab_test_views' ] );
-			add_action( 'woocommerce_thankyou', [ $this, 'wfacp_clear_ab_view_session' ], 10, 1 );
-			add_filter( "shortcode_atts_wfacp_forms", [ $this, 'change_wfacp_in_embed_form' ] );
+			add_action( 'wfacp_changed_default_woocommerce_page', array( $this, 'set_global_page_id' ), 99 );
+			add_action( 'wfab_pre_abandoned_cart_restored', array( $this, 'check_if_autobot_cart_restored' ) );
+			add_action( 'wfacp_view_recorded', array( $this, 'record_ab_test_views' ) );
+			add_action( 'woocommerce_thankyou', array( $this, 'wfacp_clear_ab_view_session' ), 10, 1 );
+			add_filter( 'shortcode_atts_wfacp_forms', array( $this, 'change_wfacp_in_embed_form' ) );
 
 			$this->control_query = false;
 		}
@@ -34,7 +34,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -68,7 +68,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		 */
 		public function get_controls( $term ) {
 			global $wpdb;
-			$pages = [];
+			$pages = array();
 			if ( '' === $term ) {
 				return $pages;
 			}
@@ -108,12 +108,12 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		public function add_variant( $variant_data ) {
 			$variant_id = isset( $variant_data['variant_id'] ) ? $variant_data['variant_id'] : 0;
 			if ( $variant_id < 1 ) {
-				$args       = [
+				$args       = array(
 					'post_title'  => $variant_data['variant_title'],
 					'post_name'   => sanitize_title( $variant_data['variant_title'] ),
 					'post_type'   => WFACP_Common::get_post_type_slug(),
 					'post_status' => 'publish',
-				];
+				);
 				$variant_id = wp_insert_post( $args );
 				if ( ! is_wp_error( $variant_id ) ) {
 					update_post_meta( $variant_id, '_wfacp_version', WFACP_VERSION );
@@ -182,12 +182,12 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			if ( ! is_null( $checkout_page ) && ( $checkout_page->post_type === WFACP_Common::get_post_type_slug() || in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) ) {
 
 				$suffix_text  = ' - ' . __( 'Copy', 'A/B Experiments for FunnelKit' );
-				$args         = [
+				$args         = array(
 					'post_title'   => $checkout_page->post_title . $suffix_text,
 					'post_content' => $checkout_page->post_content,
 					'post_name'    => sanitize_title( $checkout_page->post_title . $suffix_text ),
 					'post_type'    => WFACP_Common::get_post_type_slug(),
-				];
+				);
 				$duplicate_id = wp_insert_post( $args );
 				if ( is_wp_error( $duplicate_id ) ) {
 					return 0;
@@ -196,7 +196,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				global $wpdb;
 				$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", $checkout_page_id ) );
 				if ( ! empty( $post_meta_all ) ) {
-					$sql_query_selects = [];
+					$sql_query_selects = array();
 
 					if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 
@@ -209,17 +209,17 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 								if ( strpos( $meta_key, 'wcf-' ) === false ) {
 
 									if ( $meta_key === '_wp_page_template' ) {
-										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wfacp", $meta_value ) : $meta_value;
+										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wfacp', $meta_value ) : $meta_value;
 									}
 									$meta_key   = esc_sql( $meta_key );
 									$meta_value = esc_sql( $meta_value );
 
-									$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')";//db call ok; no-cache ok; WPCS: unprepared SQL ok.
+									$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')";// db call ok; no-cache ok; WPCS: unprepared SQL ok.
 								}
 							}
 						}
 					} else {
-						update_option( WFACP_SLUG . '_c_' . $duplicate_id, get_option( WFACP_SLUG . '_c_' . $checkout_page_id, [] ), 'no' );
+						update_option( WFACP_SLUG . '_c_' . $duplicate_id, get_option( WFACP_SLUG . '_c_' . $checkout_page_id, array() ), 'no' );
 						foreach ( $post_meta_all as $meta_info ) {
 
 							$meta_key = $meta_info->meta_key;
@@ -231,8 +231,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 							$meta_key   = esc_sql( $meta_key );
 							$meta_value = esc_sql( $meta_info->meta_value );
 
-
-							$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+							$sql_query_selects[] = "($duplicate_id, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 						}
 					}
 
@@ -242,10 +241,10 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 					if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 						$template = WFFN_Core()->admin->get_selected_template( $checkout_page_id, $post_meta_all );
 						if ( isset( $template['selected_type'] ) && $template['selected_type'] === 'wp_editor' ) {
-							$template = [
+							$template = array(
 								'selected'      => 'embed_forms_4',
 								'selected_type' => 'embed_forms',
-							];
+							);
 						}
 						update_post_meta( $duplicate_id, '_wfacp_selected_design', $template );
 					}
@@ -258,10 +257,10 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				if ( in_array( $checkout_page->post_type, $this->get_inherit_supported_post_type(), true ) ) {
 					$template = WFFN_Core()->admin->get_selected_template( $checkout_page_id, $post_meta_all );
 					if ( isset( $template['selected_type'] ) && $template['selected_type'] === 'wp_editor' ) {
-						$template = [
+						$template = array(
 							'selected'      => 'embed_forms_4',
 							'selected_type' => 'embed_forms',
-						];
+						);
 					}
 					update_post_meta( $duplicate_id, '_wfacp_selected_design', $template );
 				}
@@ -269,7 +268,6 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 
 				return $duplicate_id;
 			}
-
 
 			return 0;
 		}
@@ -286,10 +284,12 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			if ( $variant_id > 0 ) {
 				$funnel_post = get_post( $variant_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$draft = wp_update_post( array(
-						'ID'          => $variant_id,
-						'post_status' => 'draft',
-					) );
+					$draft = wp_update_post(
+						array(
+							'ID'          => $variant_id,
+							'post_status' => 'draft',
+						)
+					);
 				}
 			}
 
@@ -312,7 +312,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			$meta_query = array(
 				'key'     => '_bwf_ab_variation_of',
 				'compare' => 'NOT EXISTS',
-				'value'   => ''
+				'value'   => '',
 			);
 
 			if ( isset( $args['meta_query'] ) ) {
@@ -351,12 +351,19 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				'_bwf_in_funnel',
 				'_bwf_ab_variation_of',
 				'_wp_old_slug',
-				'_wfacp_version'
+				'_wfacp_version',
 			);
 
 			$post_meta_all = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", $winner_variant_id ) );
 			$post_content  = get_post_field( 'post_content', $winner_variant_id );
-			wp_update_post( wp_slash( [ 'ID' => $control_id, 'post_content' => $post_content ] ) );
+			wp_update_post(
+				wp_slash(
+					array(
+						'ID'           => $control_id,
+						'post_content' => $post_content,
+					)
+				)
+			);
 			$control_metas = get_post_meta( $control_id );
 
 			if ( ! empty( $post_meta_all ) ) {
@@ -393,7 +400,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 					$wpdb->query( $sql_query_meta ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 				update_post_meta( $winner_variant_id, '_bwf_ab_variation_of', $control_id );
-				update_option( 'wfacp_c_' . $control_id, get_option( 'wfacp_c_' . $winner_variant_id, [] ) );
+				update_option( 'wfacp_c_' . $control_id, get_option( 'wfacp_c_' . $winner_variant_id, array() ) );
 
 				if ( $content !== '' && class_exists( 'WFFN_Common' ) ) {
 					WFFN_Common::maybe_elementor_template( $winner_variant_id, $control_id );
@@ -408,7 +415,6 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				$wfacp_transient_obj->delete_transient( $meta_key, WFACP_SLUG );
 
 			}
-
 		}
 
 		/**
@@ -418,15 +424,20 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		 * @return string|URL
 		 */
 		public function get_variant_heading_url( $variant, $experiment ) {
-			return BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-				'page'     => 'wfacp',
-				'wfacp_id' => $variant->get_id(),
-			), admin_url( 'admin.php' ) ) );
+			return BWF_Admin_Breadcrumbs::maybe_add_refs(
+				add_query_arg(
+					array(
+						'page'     => 'wfacp',
+						'wfacp_id' => $variant->get_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 		}
 
 
 		/**
-		 * @param BWFABT_Variant $variant
+		 * @param BWFABT_Variant    $variant
 		 * @param BWFABT_Experiment $experiment
 		 *
 		 * @return array|array[]
@@ -436,11 +447,16 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			$row_actions = array(
 				'edit' => array(
 					'text' => __( 'Edit', 'woofunnels-ab-tests' ),
-					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( array(
-						'page'     => 'wfacp',
-						'wfacp_id' => $variant->get_id(),
-					), admin_url( 'admin.php' ) ) ),
-				)
+					'link' => BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'     => 'wfacp',
+								'wfacp_id' => $variant->get_id(),
+							),
+							admin_url( 'admin.php' )
+						)
+					),
+				),
 			);
 
 			return array_merge( $row_actions, parent::get_variant_row_actions( $variant, $experiment ) );
@@ -478,10 +494,12 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			if ( $new_control_id > 0 ) {
 				$funnel_post = get_post( $new_control_id );
 				if ( ! is_null( $funnel_post ) ) {
-					$transferred = wp_update_post( array(
-						'ID'         => $new_control_id,
-						'post_title' => $original_title,
-					) );
+					$transferred = wp_update_post(
+						array(
+							'ID'         => $new_control_id,
+							'post_title' => $original_title,
+						)
+					);
 				}
 			}
 			if ( $new_control_id === $transferred ) {
@@ -585,8 +603,6 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 					WFACP_Core()->template_loader->set_override_checkout_page_id( $new_aero_id );
 				}
 			}
-
-
 		}
 
 		public function check_if_autobot_cart_restored() {
@@ -594,7 +610,6 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		}
 
 		public function record_ab_test_views( $wfacp_id ) {
-
 
 			if ( $wfacp_id < 1 || ! class_exists( 'WFCO_Model_Report_views' ) ) {
 				BWFABT_Core()->admin->log( "AB WFACP ID: $wfacp_id, Report views class exist: " . class_exists( 'WFCO_Model_Report_views' ) );
@@ -632,7 +647,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 
 		public function wfacp_clear_ab_view_session( $order_id ) {
 			$aero_id = ( $order_id > 0 ) ? get_post_meta( $order_id, '_wfacp_post_id', true ) : 0;
-			if ( $aero_id > 0 && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( $aero_id > 0 && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 				WC()->session->set( 'wfacp_view_session_ab_' . $aero_id, false );
 			}
 		}
@@ -645,7 +660,6 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 			$this->delete_ab_report_views( $experiment, $type );
 			$experiment->set_last_reset_date( BWFABT_Core()->get_dataStore()->now() );
 			$experiment->save( array() );
-
 		}
 
 		/**
@@ -684,8 +698,8 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				$type = get_post_type( $step_id );
 				if ( 'wfacp_checkout' === $type ) {
 					if ( empty( WFACP_Common::get_page_product( $step_id ) ) ) {
-						$link = add_query_arg( [ 'wfacp_preview' => true ], $link );
-						$link = str_replace( "#038;", "&", $link );
+						$link = add_query_arg( array( 'wfacp_preview' => true ), $link );
+						$link = str_replace( '#038;', '&', $link );
 					}
 				}
 			}
@@ -701,9 +715,9 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 		 */
 		public function get_analytics_data( $step_ids, $experiment_id, $is_interval = '', $int_request = '' ) {
 			global $wpdb;
-			$data           = [];
-			$ids            = [];
-			$date_col       = "date";
+			$data           = array();
+			$ids            = array();
+			$date_col       = 'date';
 			$interval_query = '';
 			$group_by       = ' GROUP BY object_id ';
 			$cov_group_by   = ' GROUP by aero.wfacp_id ';
@@ -738,8 +752,8 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				$get_interval   = $this->get_interval_format_query( $int_request, $date_col );
 				$interval_query = $get_interval['interval_query'];
 				$interval_group = $get_interval['interval_group'];
-				$group_by       = "GROUP BY " . $interval_group;
-				$cov_group_by   = "GROUP BY " . $interval_group;
+				$group_by       = 'GROUP BY ' . $interval_group;
+				$cov_group_by   = 'GROUP BY ' . $interval_group;
 				$params         = ", 0 as 'revenue', 0 as 'converted' ";
 			}
 
@@ -747,23 +761,23 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 
 			$get_all_dates = BWFABT_Core()->get_dataStore()->get_experiment_time_chunk( $experiment_id );
 
-			$date_query = "";
-			$conv_query = "";
+			$date_query = '';
+			$conv_query = '';
 
 			if ( is_array( $get_all_dates ) && count( $get_all_dates ) ) {
 				foreach ( $get_all_dates as $date ) {
 
-					$start_date = explode( " ", $date['start_date'] );
-					$end_date   = explode( " ", $date['end_date'] );
+					$start_date  = explode( ' ', $date['start_date'] );
+					$end_date    = explode( ' ', $date['end_date'] );
 					$date_query .= " ( `date` >= '" . esc_sql( $start_date[0] ) . "' AND `date` <= '" . esc_sql( $end_date[0] ) . "' ) OR ";
 					$conv_query .= " ( `date` >= '" . esc_sql( $date['start_date'] ) . "' AND `date` <= '" . esc_sql( $date['end_date'] ) . "' ) OR ";
 				}
 
-				$date_query = ' AND ( ' . rtrim( $date_query, " OR " ) . ') ';
-				$conv_query = ' AND ( ' . rtrim( $conv_query, " OR " ) . ') ';
+				$date_query = ' AND ( ' . rtrim( $date_query, ' OR ' ) . ') ';
+				$conv_query = ' AND ( ' . rtrim( $conv_query, ' OR ' ) . ') ';
 			}
 
-			$aero_sql = "SELECT aero.wfacp_id as 'object_id', p.post_title as 'object_name',SUM(aero.total_revenue) as 'total_revenue',COUNT(aero.ID) as cn, 'checkout' as 'type' " . $interval_query . " FROM " . $wpdb->prefix . 'wfacp_stats' . " AS aero LEFT JOIN " . $wpdb->prefix . 'posts' . " as p ON aero.wfacp_id  = p.id WHERE aero.wfacp_id IN (" . $step_ids . ") " . $conv_query . " " . $cov_group_by . " ORDER BY aero.wfacp_id ASC";
+			$aero_sql = "SELECT aero.wfacp_id as 'object_id', p.post_title as 'object_name',SUM(aero.total_revenue) as 'total_revenue',COUNT(aero.ID) as cn, 'checkout' as 'type' " . $interval_query . ' FROM ' . $wpdb->prefix . 'wfacp_stats' . ' AS aero LEFT JOIN ' . $wpdb->prefix . 'posts' . ' as p ON aero.wfacp_id  = p.id WHERE aero.wfacp_id IN (' . $step_ids . ') ' . $conv_query . ' ' . $cov_group_by . ' ORDER BY aero.wfacp_id ASC';
 
 			$get_all_checkout_records = $wpdb->get_results( $aero_sql, ARRAY_A );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -784,7 +798,7 @@ if ( ! class_exists( 'BWFABT_Controller_Aero_Checkout' ) ) {
 				}
 			}
 
-			$get_query = "SELECT object_id, SUM( CASE WHEN type = 12 THEN `no_of_sessions` END ) AS viewed " . $params . " " . $interval_query . " FROM " . $wpdb->prefix . 'wfco_report_views' . "  WHERE object_id IN (" . $step_ids . ") " . $date_query . " " . $group_by . " ORDER BY object_id ASC";
+			$get_query = 'SELECT object_id, SUM( CASE WHEN type = 12 THEN `no_of_sessions` END ) AS viewed ' . $params . ' ' . $interval_query . ' FROM ' . $wpdb->prefix . 'wfco_report_views' . '  WHERE object_id IN (' . $step_ids . ') ' . $date_query . ' ' . $group_by . ' ORDER BY object_id ASC';
 
 			$get_data = $wpdb->get_results( $get_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( method_exists( 'BWFABT_Core', 'maybe_wpdb_error' ) ) {

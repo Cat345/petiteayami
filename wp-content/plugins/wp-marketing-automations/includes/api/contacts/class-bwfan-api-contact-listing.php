@@ -72,7 +72,12 @@ class BWFAN_API_Contact_Listing extends BWFAN_API_Base {
 			$normalized_filters = BWFCRM_Filters::_normalize_input_filters( $filters_collection );
 		}
 
-		$contacts = BWFCRM_Model_Contact::get_contact_listing( $search, $this->pagination->limit, $this->pagination->offset, $normalized_filters, $additional_info, $filter_match );
+		if ( class_exists( 'BWFCRM_Load_Filters' ) ) {
+			$additional_info['preferences'] = true;
+			$contacts                       = BWFCRM_Model_Contact::get_contacts_from_filters( $search, $this->pagination->limit, $this->pagination->offset, $filters_collection, $additional_info );
+		} else {
+			$contacts = BWFCRM_Model_Contact::get_contact_listing( $search, $this->pagination->limit, $this->pagination->offset, $normalized_filters, $additional_info, $filter_match );
+		}
 
 		$this->count_data  = BWFAN_Common::get_contact_data_counts();
 		$this->total_count = $contacts['total'];

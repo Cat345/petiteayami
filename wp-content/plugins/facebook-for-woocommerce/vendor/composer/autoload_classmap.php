@@ -239,6 +239,7 @@ return array(
     'WooCommerce\\Facebook\\Events\\Normalizer' => $baseDir . '/includes/Events/Normalizer.php',
     'WooCommerce\\Facebook\\ExternalVersionUpdate\\Update' => $baseDir . '/includes/ExternalVersionUpdate/Update.php',
     'WooCommerce\\Facebook\\FBSignedData\\FBPublicKey' => $baseDir . '/includes/FBSignedData/FBPublicKey.php',
+    'WooCommerce\\Facebook\\FBSignedData\\JWTAlgorithmMismatchException' => $baseDir . '/includes/FBSignedData/JWTAlgorithmMismatchException.php',
     'WooCommerce\\Facebook\\FBSignedData\\JWTCodec' => $baseDir . '/includes/FBSignedData/JWTCodec.php',
     'WooCommerce\\Facebook\\FBSignedData\\JWTExpiredException' => $baseDir . '/includes/FBSignedData/JWTExpiredException.php',
     'WooCommerce\\Facebook\\FBSignedData\\JWTSignatureInvalidException' => $baseDir . '/includes/FBSignedData/JWTSignatureInvalidException.php',

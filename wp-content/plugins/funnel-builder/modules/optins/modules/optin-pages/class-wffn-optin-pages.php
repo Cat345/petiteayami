@@ -1,6 +1,6 @@
 <?php
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Funnel optin page module
@@ -18,20 +18,20 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		protected $options;
 		protected $custom_options;
 		protected $action_options;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		protected $wfop_is_optin = false;
-		public $edit_id = 0;
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		protected $wfop_is_optin        = false;
+		public $edit_id                 = 0;
 		public $form_builder;
 		public $optin_integration_option;
-		public $url = '';
-		public $ecom_tracking = null;
-		const WFOP_EMAIL_FIELD_SLUG = 'optin_email';
+		public $url                      = '';
+		public $ecom_tracking            = null;
+		const WFOP_EMAIL_FIELD_SLUG      = 'optin_email';
 		const WFOP_FIRST_NAME_FIELD_SLUG = 'optin_first_name';
-		const WFOP_LAST_NAME_FIELD_SLUG = 'optin_last_name';
-		const WFOP_PHONE_FIELD_SLUG = 'optin_phone';
-		const FIELD_PREFIX = 'wfop_';
+		const WFOP_LAST_NAME_FIELD_SLUG  = 'optin_last_name';
+		const WFOP_PHONE_FIELD_SLUG      = 'optin_phone';
+		const FIELD_PREFIX               = 'wfop_';
 
 		/**
 		 * WFFN_Optin_Pages constructor.
@@ -51,13 +51,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			$this->form_builder = WFFN_Form_Builder::get_instance();
 			add_action( 'init', array( $this, 'register_post_type' ), 5 );
 
-			add_filter( 'template_include', [ $this, 'may_be_change_template' ], 99 );
+			add_filter( 'template_include', array( $this, 'may_be_change_template' ), 99 );
 
 			$post_type = $this->get_post_type_slug();
-			add_filter( "theme_{$post_type}_templates", [ $this, 'registered_page_templates' ], 99, 4 );
+			add_filter( "theme_{$post_type}_templates", array( $this, 'registered_page_templates' ), 99, 4 );
 
 			add_action( 'wp', array( $this, 'parse_request_for_optin' ), - 1 );
-
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'optin_page_frontend_scripts' ), 21 );
 			add_action( 'wffn_import_completed', array( $this, 'set_page_template' ), 10, 2 );
@@ -65,10 +64,10 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			add_filter( 'post_type_link', array( $this, 'post_type_permalinks' ), 10, 2 );
 			add_action( 'pre_get_posts', array( $this, 'add_cpt_post_names_to_main_query' ), 20 );
 			add_filter( 'bwf_child_entities', array( $this, 'add_optin_as_contact_child' ), 10, 1 );
-			add_filter( 'wffn_assets_styles', [ $this, 'add_optin_fronted_style' ], 10, 1 );
+			add_filter( 'wffn_assets_styles', array( $this, 'add_optin_fronted_style' ), 10, 1 );
 			add_action( 'bwf_global_save_settings_op-settings', array( $this, 'update_global_settings_fields' ) );
 
-			add_action( 'plugins_loaded', [ $this, 'load_compatibility' ], 2 );
+			add_action( 'plugins_loaded', array( $this, 'load_compatibility' ), 2 );
 			add_filter( 'woofunnels_global_settings_fields', array( $this, 'add_global_settings_fields' ) );
 			// Manage Tabs position
 			add_action( 'wffn_optin_action_tabs', array( $this, 'optin_tabs' ), 20 );
@@ -81,11 +80,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		private function process_url() {
 
-			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor' === $_REQUEST['action'] && isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
+				$this->edit_id = absint( $_REQUEST['post'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
 			}
-			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
+				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor page builder detection
 			}
 		}
 
@@ -98,7 +97,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -111,12 +110,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				$title = esc_html( trim( $data['title'] ) );
 				if ( ! isset( $this->template_type[ $slug ] ) ) {
 					$this->template_type[ $slug ]        = trim( $title );
-					$this->design_template_data[ $slug ] = [
+					$this->design_template_data[ $slug ] = array(
 						'edit_url'    => $data['edit_url'],
 						'button_text' => $data['button_text'],
 						'title'       => $data['title'],
 						'description' => isset( $data['description'] ) ? $data['description'] : '',
-					];
+					);
 				}
 			}
 		}
@@ -133,40 +132,46 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			 */
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 
-			register_post_type( $this->get_post_type_slug(), apply_filters( 'wffn_optin_post_type_args', array(
-				'labels'              => array(
-					'name'          => $this->get_module_title( true ),
-					'singular_name' => $this->get_module_title(),
-					'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
-					'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
-					'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
-					'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
-					'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
-					'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
-					'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => true,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'show_in_admin_bar'   => true,
-				'rewrite'             => array(
-					'slug'       => ( empty( $bwb_admin_setting->get_option( 'optin_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'optin_page_base' ) ),
-					'with_front' => false,
-				),
-				'capabilities'        => array(
-					'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
-				),
-				'query_var'           => true,
-				'show_in_rest'        => true,
-				'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
-				'has_archive'         => false,
-			) ) );
+			register_post_type(
+				$this->get_post_type_slug(),
+				apply_filters(
+					'wffn_optin_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => $this->get_module_title( true ),
+							'singular_name' => $this->get_module_title(),
+							'add_new'       => sprintf( __( 'Add %s', 'funnel-builder' ), $this->get_module_title() ),
+							'add_new_item'  => sprintf( __( 'Add New %s', 'funnel-builder' ), $this->get_module_title() ),
+							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), $this->get_module_title( true ) ),
+							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), $this->get_module_title() ),
+							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), $this->get_module_title() ),
+							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), $this->get_module_title() ),
+							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), $this->get_module_title() ),
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => true,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'show_in_admin_bar'   => true,
+						'rewrite'             => array(
+							'slug'       => ( empty( $bwb_admin_setting->get_option( 'optin_page_base' ) ) ? $this->get_post_type_slug() : $bwb_admin_setting->get_option( 'optin_page_base' ) ),
+							'with_front' => false,
+						),
+						'capabilities'        => array(
+							'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
+						),
+						'query_var'           => true,
+						'show_in_rest'        => true,
+						'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
+						'has_archive'         => false,
+					)
+				)
+			);
 		}
 
 		public function optin_page_frontend_scripts() {
@@ -194,6 +199,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		/**
 		 * Checks whether its our page or not
+		 *
 		 * @return bool
 		 */
 		public function is_wfop_page() {
@@ -202,6 +208,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		/**
 		 * Set wfty_is_thankyou flag if it's our page
+		 *
 		 * @return void
 		 */
 		public function parse_request_for_optin() {
@@ -216,10 +223,18 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			if ( is_singular( $post->post_type ) && ( $this->get_post_type_slug() === $post->post_type ) ) {
 
 				if ( wffn_is_valid_funnel( $funnel ) ) {
-					WFFN_Core()->logger->log( "Funnel id: #" . $funnel->id . " parse request for optin" );
+					WFFN_Core()->logger->log( 'Funnel id: #' . $funnel->id . ' parse request for optin' );
 				}
 
 				$this->wfop_is_optin = true;
+
+				/**
+				 * Fires after optin page context is recognized on the front end (singular optin CPT).
+				 * Used e.g. to invalidate Elementor document cache so dynamic widgets render fresh.
+				 *
+				 * @param int $post_id Optin page post ID.
+				 */
+				do_action( 'wffn_optin_page_setup_completed', (int) $post->ID );
 			}
 		}
 
@@ -288,7 +303,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function setup_optin_form_integration_options( $optin_page_id ) {
 			$optin_id   = ( $optin_page_id > 0 ) ? $optin_page_id : ( isset( $this->edit_id ) ? $this->edit_id : 0 );
 			$db_options = get_post_meta( $optin_id, 'wffn_actions_custom_settings', true );
-			$db_options = isset( $db_options['optin_service_form'] ) ? $db_options['optin_service_form'] : [];
+			$db_options = isset( $db_options['optin_service_form'] ) ? $db_options['optin_service_form'] : array();
 
 			$db_options                     = ( ! empty( $db_options ) && is_array( $db_options ) ) ? $db_options : array();
 			$this->optin_integration_option = wp_parse_args( $db_options, $this->default_optin_integration_settings() );
@@ -297,13 +312,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		}
 
 		public function setup_options() {
-			$db_options    = get_option( 'wffn_op_settings', [] );
+			$db_options    = get_option( 'wffn_op_settings', array() );
 			$db_options    = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map( 'html_entity_decode', $db_options ) : array();
 			$this->options = wp_parse_args( $db_options, $this->default_global_settings() );
 
 			return $this->options;
 		}
-
 
 		public function default_global_settings() {
 
@@ -345,22 +359,28 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			$user = WFFN_Common::admin_user();
 
-			return apply_filters( 'wfopp_default_actions_settings', array(
-				'user_login'                => 'true',
-				'optin_service_form'        => [],
-				'test_email'                => '',
-				'op_webhook_enable'         => 'false',
-				'lead_enable_notify'        => 'false',
-				'lead_notification_subject' => __( 'Thank You [wfop_first_name], here is your freebie', 'funnel-builder' ),
-				'lead_notification_body'    => __( '<p>Hi [wfop_first_name],</p>
+			return apply_filters(
+				'wfopp_default_actions_settings',
+				array(
+					'user_login'                => 'true',
+					'optin_service_form'        => array(),
+					'test_email'                => '',
+					'op_webhook_enable'         => 'false',
+					'lead_enable_notify'        => 'false',
+					'lead_notification_subject' => __( 'Thank You [wfop_first_name], here is your freebie', 'funnel-builder' ),
+					'lead_notification_body'    => __(
+						'<p>Hi [wfop_first_name],</p>
 				<p>Thanks for signing up.</p>
 				<p>Click the link below to access your freebie.</p>
 				<p><a href="#">Download Now</a></p>
 				<p>It’s good to have you!</p>
-				<p>Thanks</p>', 'funnel-builder' ),
-				'admin_email_notify'        => 'false',
-				'op_admin_email'            => $user['admin_email'],
-			) );
+				<p>Thanks</p>',
+						'funnel-builder'
+					),
+					'admin_email_notify'        => 'false',
+					'op_admin_email'            => $user['admin_email'],
+				)
+			);
 		}
 
 		public function default_optin_integration_settings() {
@@ -368,11 +388,10 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			return array(
 				'optin_form_enable' => 'false',
 				'formBuilder'       => '',
-				'fields'            => [],
-				'formFields'        => [],
+				'fields'            => array(),
+				'formFields'        => array(),
 			);
 		}
-
 
 		/**
 		 * Copy data from old optin page to new optin page
@@ -398,7 +417,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			);
 
 			if ( $optin_page_id > 0 ) {
-				$sql_query_selects = [];
+				$sql_query_selects = array();
 				$optin_page        = get_post( $optin_page_id );
 				if ( ! is_null( $optin_page ) && ( $optin_page->post_type === $this->get_post_type_slug() || in_array( $optin_page->post_type, $this->get_inherit_supported_post_type(), true ) ) ) {
 
@@ -407,12 +426,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						$suffix_text = '';
 					}
 
-					$args         = [
+					$args         = array(
 						'post_title'   => $optin_page->post_title . $suffix_text,
 						'post_content' => $optin_page->post_content,
 						'post_name'    => sanitize_title( $optin_page->post_title . $suffix_text ),
 						'post_type'    => $this->get_post_type_slug(),
-					];
+					);
 					$duplicate_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $duplicate_id ) ) {
 
@@ -440,7 +459,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 									}
 
 									if ( $meta_key === '_wp_page_template' ) {
-										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', "wfop", $meta_value ) : $meta_value;
+										$meta_value = ( strpos( $meta_value, 'cartflows' ) !== false ) ? str_replace( 'cartflows', 'wfop', $meta_value ) : $meta_value;
 									}
 
 									$meta_key   = esc_sql( $meta_key );
@@ -516,15 +535,15 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		}
 
 		public function get_template_filter() {
-			return [
+			return array(
 				'inline' => __( 'Inline', 'funnel-builder' ),
 				'popup'  => __( 'Popup', 'funnel-builder' ),
-			];
+			);
 		}
 
 		public function localize_data() {
-			$data                                = [];
-			$design                              = [];
+			$data                                = array();
+			$design                              = array();
 			$data['nonce_save_design']           = wp_create_nonce( 'wffn_op_save_design' );
 			$data['nonce_remove_design']         = wp_create_nonce( 'wffn_op_remove_design' );
 			$data['nonce_import_design']         = wp_create_nonce( 'wffn_op_import_design' );
@@ -600,10 +619,9 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				),
 			);
 
-
-			$data['custom_options']['pages']     = [];
+			$data['custom_options']['pages']     = array();
 			$data['custom_options']['not_found'] = __( 'Oops! No elements found. Consider changing the search query.', 'funnel-builder' );
-			$data['prefix']                      = WFFN_Optin_Pages::FIELD_PREFIX;
+			$data['prefix']                      = self::FIELD_PREFIX;
 			$data['custom_setting_fields']       = array(
 				'legends_texts' => array(
 					'custom_css'           => __( 'Custom CSS', 'funnel-builder' ),
@@ -624,15 +642,15 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					),
 					'op_valid_text'        => array(
 						'label' => __( 'Required', 'funnel-builder' ),
-						'hint'  => __( '', 'funnel-builder' ),
+						'hint'  => '',
 					),
 					'op_valid_email'       => array(
 						'label' => __( 'Email', 'funnel-builder' ),
-						'hint'  => __( '', 'funnel-builder' ),
+						'hint'  => '',
 					),
 					'op_valid_phone'       => array(
 						'label' => __( 'Phone', 'funnel-builder' ),
-						'hint'  => __( '', 'funnel-builder' ),
+						'hint'  => '',
 					),
 					'custom_redirect'      => array(
 						'label' => __( 'Custom Redirection', 'funnel-builder' ),
@@ -651,7 +669,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			$form_fields = WFOPP_Core()->form_fields->get_supported_form_fields_controller();
 
-			$fields = [];
+			$fields = array();
 			foreach ( $form_fields as $form_field ) {
 				$fields[ $form_field->get_slug() ] = $form_field->get_editor_data();
 			}
@@ -672,45 +690,47 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				$design                       = $this->get_page_design( $this->edit_id );
 				$data['form_field_width']     = $this->get_form_field_width();
 
-
 				$data['update_popups']['values'] = array(
 					'title' => $post->post_title,
 					'slug'  => $post->post_name,
 				);
 
 				if ( isset( $_GET['section'] ) && $_GET['section'] === 'design' ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					$data['optin_form'] = "yes";
+					$data['optin_form'] = 'yes';
 				}
 			}
 
-			return array_merge( [
-				'designs'         => $this->templates,
-				'design_types'    => $this->template_type,
-				'template_active' => "yes"
-			], $design, $data );
-        }
-
+			return array_merge(
+				array(
+					'designs'         => $this->templates,
+					'design_types'    => $this->template_type,
+					'template_active' => 'yes',
+				),
+				$design,
+				$data
+			);
+		}
 
 		public function localize_action_data() {
-			$data                           = [];
+			$data                           = array();
 			$data['nonce_actions_settings'] = wp_create_nonce( 'wffn_op_actions_settings_update' );
 			$data['nonce_form_preview']     = wp_create_nonce( 'wffn_wfop_show_preview' );
 			$data['nonce_form_save']        = wp_create_nonce( 'wffn_wfop_form_save' );
 			$data['view_url']               = get_the_permalink( $this->edit_id );
 
 			$data['action_options']            = $this->get_action_option();
-			$data['action_options']['courses'] = [];
+			$data['action_options']['courses'] = array();
 
-			$data['action_fileld']['radio_fields'] = [
-				[
+			$data['action_fileld']['radio_fields'] = array(
+				array(
 					'value' => 'true',
 					'name'  => __( 'Yes', 'funnel-builder' ),
-				],
-				[
+				),
+				array(
 					'value' => 'false',
 					'name'  => __( 'No', 'funnel-builder' ),
-				],
-			];
+				),
+			);
 
 			$lms_hint = __( "Use shortcode [wfop_id] to show optin form id <br> Use shortcode [wfop_first_name] to show optin first name <br> Use shortcode [wfop_last_name] to show optin last name <br> Use shortcode [wfop_email] to show optin email <br> Use shortcode [wfop_phone] to show optin phone number <br> Use shortcode [wfop_custom key='Label'] to show optin custom filed value", 'funnel-builder' );
 
@@ -718,17 +738,16 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				$lms_obj = WFOPP_Core()->optin_actions->get_integration_object( WFFN_Optin_Action_Assign_LD_Course::get_slug() );
 				if ( $lms_obj instanceof WFFN_Optin_Action ) {
 					if ( $lms_obj->should_register() ) {
-						$lms_hint .= __( "<br>Use shortcode [wfop_ld_course_autologin_link] to make users login with a single click & direct them to the enrolled course page", 'funnel-builder' );
+						$lms_hint .= __( '<br>Use shortcode [wfop_ld_course_autologin_link] to make users login with a single click & direct them to the enrolled course page', 'funnel-builder' );
 					}
 				}
 			}
-
 
 			if ( class_exists( 'WFFN_Optin_Action_Assign_LIFTER_Course' ) ) {
 				$lifterlms_obj = WFOPP_Core()->optin_actions->get_integration_object( WFFN_Optin_Action_Assign_LIFTER_Course::get_slug() );
 				if ( $lifterlms_obj instanceof WFFN_Optin_Action ) {
 					if ( $lifterlms_obj->should_register() ) {
-						$lms_hint .= __( "<br>Use shortcode [wfop_lifter_course_autologin_link] to make users login with a single click & direct them to the enrolled LifterLms course page", 'funnel-builder' );
+						$lms_hint .= __( '<br>Use shortcode [wfop_lifter_course_autologin_link] to make users login with a single click & direct them to the enrolled LifterLms course page', 'funnel-builder' );
 					}
 				}
 			}
@@ -797,22 +816,21 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		}
 
 		public function default_design_data() {
-			return [
+			return array(
 				'selected'        => 'wp_editor_1',
 				'selected_type'   => 'wp_editor',
 				'template_active' => 'no',
-			];
+			);
 		}
-
 
 		public function registered_page_templates( $templates ) {
 
 			$all_templates = wp_get_theme()->get_post_templates();
-			$path          = [
+			$path          = array(
 
 				'wfop-boxed.php'  => __( 'FunnelKit Boxed', 'funnel-builder' ),
-				'wfop-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' )
-			];
+				'wfop-canvas.php' => __( 'FunnelKit Canvas for Page Builder', 'funnel-builder' ),
+			);
 			if ( isset( $all_templates['page'] ) && is_array( $all_templates['page'] ) ) {
 				$paths = array_merge( $all_templates['page'], $path );
 			} else {
@@ -823,12 +841,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			}
 
 			return $paths;
-
 		}
 
 		public function may_be_change_template( $template ) {
 			global $post;
-			if ( ! is_null( $post ) && $post->post_type === $this->get_post_type_slug() ) {
+			if ( ! is_null( $post ) && ( $post instanceof WP_Post ) && $post->post_type === $this->get_post_type_slug() ) {
 				$template = $this->get_template_url( $template );
 			}
 
@@ -841,7 +858,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			$page_template = apply_filters( 'bwf_page_template', get_post_meta( $wfop_id, '_wp_page_template', true ), $wfop_id );
 
 			$file         = '';
-			$body_classes = [];
+			$body_classes = array();
 
 			switch ( $page_template ) {
 				case 'wfop-boxed.php':
@@ -871,7 +888,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					break;
 			}
 			if ( ! empty( $body_classes ) ) {
-				add_filter( 'body_class', [ $this, 'wffn_add_unique_class' ], 9999, 1 );
+				add_filter( 'body_class', array( $this, 'wffn_add_unique_class' ), 9999, 1 );
 			}
 			if ( file_exists( $file ) ) {
 				return $file;
@@ -883,7 +900,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function get_module_path() {
 			return plugin_dir_path( WFOPP_PLUGIN_FILE ) . 'modules/optin-pages/';
 		}
-
 
 		public function load_compatibility() {
 			include_once $this->get_module_path() . 'compatibilities/page-builders/gutenberg/class-wfop-gutenberg-extension.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
@@ -899,11 +915,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		public function update_global_settings_fields( $options ) {
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
-			$resp    = [
+			$resp    = array(
 				'status' => false,
 				'msg'    => __( 'Settings Updated', 'funnel-builder' ),
 				'data'   => '',
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -917,7 +933,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			return $resp;
 		}
 
-
 		public function testing_email( $options, $email ) {
 			$posted_data               = wp_parse_args( $options, $this->default_custom_settings() );
 			$posted_data['test_email'] = $email;
@@ -927,7 +942,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				$result = $user_email_action->test_email( $posted_data );
 			}
 
-			$resp           = [];
+			$resp           = array();
 			$resp['status'] = false;
 			$resp['msg']    = __( 'Something wrong try again.', 'funnel-builder' );
 			if ( isset( $result['success'] ) && $result['success'] === true ) {
@@ -956,75 +971,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			return $data;
 		}
 
-		public static function send_resp( $data = array() ) {
-			if ( ! is_array( $data ) ) {
-				$data = [];
-			}
-			$data['nonce'] = wp_create_nonce( 'wfop_secure_key' );
-			wp_send_json( $data );
-		}
-
-
-		public function import_template() {
-			$resp = [
-				'status' => false,
-				'msg'    => __( 'Importing of template failed', 'funnel-builder' ),
-			];
-			check_ajax_referer( 'wffn_op_import_design', '_nonce' );
-			$builder  = isset( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
-			$template = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
-			$wfop_id  = isset( $_POST['wfop_id'] ) ? sanitize_text_field( $_POST['wfop_id'] ) : '';
-
-			$result = WFFN_Core()->importer->import_remote( $wfop_id, $builder, $template, $this->get_cloud_template_step_slug() );
-
-			if ( true === $result['success'] ) {
-				$resp['status'] = true;
-				$resp['msg']    = __( 'Importing of template finished', 'funnel-builder' );
-			} else {
-				$resp['error'] = $result['error'];
-			}
-
-			self::send_resp( $resp );
-		}
-
-		public function toggle_state() {
-			check_ajax_referer( 'wffn_op_toggle_state', '_nonce' );
-			$state   = isset( $_POST['toggle_state'] ) ? sanitize_text_field( $_POST['toggle_state'] ) : '';
-			$wfop_id = isset( $_POST['wfop_id'] ) ? sanitize_text_field( $_POST['wfop_id'] ) : '';
-
-			$status = ( 'true' === $state ) ? 'publish' : 'draft';
-
-			wp_update_post( [ 'ID' => $wfop_id, 'post_status' => $status ] );
-			$resp           = array();
-			$resp['status'] = true;
-			$resp['msg']    = __( 'Status changed successfully', 'funnel-builder' );
-
-
-			self::send_resp( $resp );
-		}
-
 		public function get_cloud_template_step_slug() {
 			return 'optin';
-		}
-
-		public function update_optin_page() {
-			check_ajax_referer( 'wfop_edit_optin', '_nonce' );
-			$resp = [
-				'status' => false,
-				'msg'    => __( 'Unable to change state', 'funnel-builder' ),
-				'title'  => '',
-			];
-
-			$data    = isset( $_POST['data'] ) ? wffn_clean( json_decode( wp_unslash( wffn_clean( $_POST['data'] ) ), true ) ) : '';
-			$wfop_id = isset( $_POST['optin_id'] ) ? sanitize_text_field( $_POST['optin_id'] ) : '';
-
-			$updated = wp_update_post( [ 'ID' => $wfop_id, 'post_title' => $data['title'], 'post_name' => $data['slug'] ] );
-			if ( absint( $updated ) === absint( $wfop_id ) ) {
-				$resp['status'] = true;
-				$resp['title']  = $data['title'];
-				$resp['msg']    = __( 'Title updated successfully', 'funnel-builder' );
-			}
-			self::send_resp( $resp );
 		}
 
 		public function get_status() {
@@ -1042,11 +990,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				return;
 			}
 			update_post_meta( $wfop_id, '_wp_page_template', 'wfop-boxed.php' );
-
 		}
 
 		/**
-         * Modify permalink
+		 * Modify permalink
+		 *
 		 * @param $post_link
 		 * @param $post
 		 *
@@ -1059,7 +1007,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			if ( isset( $post->post_type ) && $this->get_post_type_slug() === $post->post_type && empty( trim( $bwb_admin_setting->get_option( 'optin_page_base' ) ) ) ) {
 
 				// If elementor page preview, return post link as it is.
-				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Elementor preview parameter check
 					return $post_link;
 				}
 
@@ -1086,7 +1034,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				return;
 			}
 
-
 			// Bail if this query doesn't match our very specific rewrite rule.
 			if ( ! isset( $query->query['page'] ) ) {
 				return;
@@ -1098,7 +1045,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			}
 
 			// If query does not match (not exactly 2 parameters or 3 with 'lang'), return early.
-			if ( !( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
+			if ( ! ( count( $query->query ) === 2 || ( count( $query->query ) === 3 && isset( $query->query['lang'] ) ) ) ) {
 				return;
 			}
 			// Add optin page step post type to existing post type array.
@@ -1117,16 +1064,14 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			}
 		}
 
-
 		public function wffn_add_unique_class( $classes ) {
 			$classes[] = 'wffn-page-template';
 
 			return $classes;
 		}
 
-
 		public function add_optin_as_contact_child( $children ) {
-			$children          = is_array( $children ) ? $children : [];
+			$children          = is_array( $children ) ? $children : array();
 			$children['optin'] = 'WooFunnels_Optin';
 
 			return $children;
@@ -1157,7 +1102,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			$optin_id = ( $post instanceof WP_Post ) ? $post->ID : 0;
 
 			return apply_filters( 'wffn_optin_page_id', $optin_id );
-
 		}
 
 		public function maybe_add_js_localized() {
@@ -1175,14 +1119,12 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					$localized['op_valid_email'] = '';
 				}
 				$localized['op_flag_country'] = 'auto';
-				$localized['onlyCountries']   = apply_filters( 'wffn_optin_phone_param_only_countries', [],$post->ID );
+				$localized['onlyCountries']   = apply_filters( 'wffn_optin_phone_param_only_countries', array(), $post->ID );
 
 			}
 
 			return apply_filters( 'wffn_optin_page_localize_data', $localized );
 		}
-
-
 
 		public function get_embed_mode() {
 
@@ -1192,8 +1134,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			return 'inline';
 		}
-
-
 
 		/*
 		 * Send Response back to checkout page builder
@@ -1212,7 +1152,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 		/**
 		 * Remove Selected field from available checkout fields
-         *
+		 *
 		 * @return array|null
 		 */
 		private function manage_input_fields() {
@@ -1239,9 +1179,9 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						if ( ! isset( $field['id'] ) || ! isset( $field['field_type'] ) ) {
 							continue;
 						}
-						$id                                                              = $field['id'];
-						$type                                                            = $field['field_type'];
-						$temp_page_field                                                 = $page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ];
+						$id              = $field['id'];
+						$type            = $field['field_type'];
+						$temp_page_field = $page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ];
 						$page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ] = apply_filters( 'wfop_builder_merge_field_arguments', $temp_page_field, $id, $type, $available_fields );
 						if ( is_array( $input_fields[ $type ] ) && isset( $input_fields[ $type ][ $id ] ) ) {
 							unset( $input_fields[ $type ][ $id ] );
@@ -1255,16 +1195,16 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					$input_fields[ $key ] = array();
 				}
 			}
-			$input_fields = [
+			$input_fields = array(
 				'input_fields'     => $input_fields,
 				'available_fields' => $available_fields,
-			];
+			);
 			return array_merge( $page_data, $input_fields );
-        }
+		}
 
 		public function get_optin_fields() {
-			$output = [
-				'basic' => [
+			$output = array(
+				'basic' => array(
 					self::FIELD_PREFIX . self::WFOP_FIRST_NAME_FIELD_SLUG => array(
 						'label'       => 'First Name',
 						'required'    => 'true',
@@ -1311,14 +1251,15 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 						'width'       => 'wffn-sm-100',
 						'priority'    => 100,
 					),
-				]
-			];
+				),
+			);
 
 			return apply_filters( 'wffn_get_optin_default_fields', $output );
 		}
 
 		/**
 		 * Merge Custom created field with real fields;
+		 *
 		 * @param $input_fields
 		 *
 		 * @return array
@@ -1341,7 +1282,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			return $input_fields;
 		}
-
 
 		public function get_default_steps_fields( $active_steps = false ) {
 
@@ -1383,11 +1323,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			$data = array(
 				'steps'        => $this->get_default_steps_fields(),
-				'fieldsets'    => [
-					'single_step' => [],
-					'two_step'    => [],
-					'third_step'  => [],
-				],
+				'fieldsets'    => array(
+					'single_step' => array(),
+					'two_step'    => array(),
+					'third_step'  => array(),
+				),
 				'current_step' => 'single_step',
 			);
 
@@ -1438,13 +1378,13 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			$fields = get_post_meta( $page_id, '_wfop_page_custom_field', true );
 
 			if ( ! is_array( $fields ) || empty( $fields ) ) {
-				$fields = [ 'advanced' => [] ];
+				$fields = array( 'advanced' => array() );
 			}
 
 			return apply_filters( 'wfop_page_custom_field', $fields );
 		}
 
-		public function update_page_custom_fields( $wfop_id, $data = [] ) {
+		public function update_page_custom_fields( $wfop_id, $data = array() ) {
 
 			if ( $wfop_id < 1 ) {
 				return;
@@ -1452,115 +1392,8 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			update_post_meta( $wfop_id, '_wfop_page_custom_field', $data );
 		}
 
-
-		/**
-		 * Save form fields of checkout page
-		 */
-		public static function save_layout() {
-			$resp = array(
-				'msg'      => '',
-				'status'   => false,
-				'products' => [],
-			);
-			if ( ! isset( $_REQUEST['wfop_nonce'] ) || ! wp_verify_nonce( wffn_clean( $_REQUEST['wfop_nonce'] ), 'wfop_secure_key' ) ) {
-				$resp           = [];
-				$resp['status'] = false;
-				$resp['msg']    = __( 'Cheating? Huh', 'funnel-builder' );
-				self::send_resp( $resp );
-			}
-
-
-			if ( isset( $_POST['wfop_id'] ) ) {
-				$wfop_id = wffn_clean( $_POST['wfop_id'] );
-				self::update_page_layout( $wfop_id, $_POST );
-				$resp['status'] = true;
-				$resp['msg']    = __( 'Changes saved', 'funnel-builder' );
-			}
-
-		}
-
-		/**
-		 * Add custom field to current form
-		 */
-		public function add_field() {
-			if ( ! isset( $_REQUEST['wfop_nonce'] ) || ! wp_verify_nonce( wffn_clean( $_REQUEST['wfop_nonce'] ), 'wfop_secure_key' ) ) {
-				$resp           = [];
-				$resp['status'] = false;
-				$resp['msg']    = __( 'Cheating? Huh', 'funnel-builder' );
-				self::send_resp( $resp );
-			}
-			$resp = array(
-				'msg'      => '',
-				'status'   => false,
-				'products' => [],
-			);
-			if ( isset( $_POST['wfop_id'] ) && $_POST['wfop_id'] > 0 ) {
-				$wfop_id             = wffn_clean( $_POST['wfop_id'] );
-				$label               = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['label'] ) ) ? stripslashes( wffn_clean( $_POST['fields']['label'] ) ) : '';
-				$placeholder         = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['placeholder'] ) ) ? stripslashes( wffn_clean( $_POST['fields']['placeholder'] ) ) : '';
-				$width               = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['width'] ) ) ? wffn_clean( $_POST['fields']['width'] ) : '';
-				$field_type          = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['field_type'] ) ) ? wffn_clean( $_POST['fields']['field_type'] ) : '';
-				$section_type        = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['section_type'] ) ) ? wffn_clean( $_POST['fields']['section_type'] ) : '';
-				$default             = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['default'] ) ) ? stripslashes( wffn_clean( $_POST['fields']['default'] ) ) : '';
-				$options             = ( isset( $_POST['fields'] ) && ! empty( $_POST['fields']['options'] ) ) ? ( explode( '|', trim( wffn_clean( $_POST['fields']['options'] ) ) ) ) : [];
-				$name                = apply_filters( 'wffn_optin_advanced_field_name', $section_type . '_' . WFFN_Common::generate_hash_key(), wffn_clean( $_POST['fields'] ) );
-				$new_sanitize_option = [];
-				if ( is_array( $options ) && count( $options ) > 0 ) {
-					foreach ( $options as $key => $option ) {
-						$key                         = sanitize_title( trim( $option ) );
-						$new_sanitize_option[ $key ] = trim( $option );
-					}
-				}
-
-				$required = ( isset( $_POST['fields'] ) && isset( $_POST['fields']['required'] ) ) ? wffn_clean( $_POST['fields']['required'] ) : '';
-				$data     = [
-					'label'       => $label,
-					'placeholder' => $placeholder,
-					'type'        => $field_type,
-					'required'    => $required,
-					'options'     => $new_sanitize_option,
-					'default'     => $default,
-					'width'       => $width
-				];
-				if ( 'email' === $field_type ) {
-					$data['validate'][] = 'email';
-				}
-				if ( isset( $_POST['fields'] ) && isset( $_POST['fields']['phone_validation'] ) ) {
-					$data['phone_validation'] = wffn_clean( $_POST['fields']['phone_validation'] );
-				}
-
-				$custom_fields                           = $this->get_page_custom_fields( $wfop_id );
-				$custom_fields[ $section_type ][ $name ] = $data;
-				$this->update_page_custom_fields( $wfop_id, $custom_fields );
-				$data['unique_id']  = $name;
-				$data['field_type'] = $section_type;
-				$resp['status']     = true;
-				$resp['data']       = $data;
-				$resp['msg']        = __( 'Field Added Saved', 'funnel-builder' );
-			}
-			self::send_resp( $resp );
-		}
-
-		/**
-		 * @param $page_id
-		 * @param $data
-		 *
-		 * @return void
-		 */
-		public static function update_page_layout( $page_id, $data ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
-			if ( $page_id < 1 ) {
-				return $data;
-			}
-
-			unset( $data['wfop_id'], $data['action'], $data['wfop_nonce'] );
-			//this meta use form generate form at form builder
-			update_post_meta( $page_id, '_wfop_page_layout', $data );
-
-		}
-
-
 		public function get_form_field_width() {
-			$output          = [];
+			$output          = array();
 			$page_data       = $this->get_page_layout( $this->edit_id );
 			$selected_fields = $page_data['fieldsets'];
 
@@ -1600,7 +1433,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		public function get_id() {
 			return $this->edit_id;
 		}
-
 
 		public function all_global_settings_fields() {
 
@@ -1649,7 +1481,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				),
 				'email'           => array(
 					'title'    => __( 'Email', 'funnel-builder' ),
-					'heading'  => __( '', 'funnel-builder' ),
+					'heading'  => '',
 					'slug'     => 'email',
 					'fields'   => array(
 						array(
@@ -1664,14 +1496,14 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 							'type'        => 'input',
 							'label'       => __( '"From" Address', 'funnel-builder' ),
 							'placeholder' => __( 'Email Address', 'funnel-builder' ),
-							'hint'        => __( "Valid email address that will be used to send emails", 'funnel-builder' ),
+							'hint'        => __( 'Valid email address that will be used to send emails', 'funnel-builder' ),
 						),
 						array(
 							'key'         => 'op_user_email_reply',
 							'type'        => 'input',
 							'label'       => __( '"Reply To" Address', 'funnel-builder' ),
 							'placeholder' => __( 'Email', 'funnel-builder' ),
-							'hint'        => __( "Valid email address that will be used to receive replies", 'funnel-builder' ),
+							'hint'        => __( 'Valid email address that will be used to receive replies', 'funnel-builder' ),
 						),
 
 					),
@@ -1684,7 +1516,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 					'fields'   => array(
 
 						array(
-							'type'   => "radios",
+							'type'   => 'radios',
 							'key'    => 'op_recaptcha',
 							'label'  => __( 'Invisible reCAPTCHA v2', 'funnel-builder' ),
 							'hint'   => __( 'Generating Google v2 Invisible reCAPTCHA Site and Secret Key <a href="https://www.google.com/recaptcha/intro/v3.html" target="_blank">here</a>', 'funnel-builder' ),
@@ -1697,7 +1529,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
 								),
-							)
+							),
 						),
 						array(
 							'type'    => 'input',
@@ -1734,7 +1566,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			);
 			foreach ( $array as &$arr ) {
-				$values = [];
+				$values = array();
 				foreach ( $arr['fields'] as &$field ) {
 					$values[ $field['key'] ] = $this->get_option( $field['key'] );
 				}
@@ -1745,7 +1577,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 		}
 
 		public function add_global_settings_fields( $fields ) {
-			$fields["op-settings"] = $this->all_global_settings_fields();
+			$fields['op-settings'] = $this->all_global_settings_fields();
 
 			return $fields;
 		}
@@ -1777,153 +1609,163 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 
 			?>
 
-            <div class="wffn-tab-title wffn-tab-desktop-title " data-tab="<?php echo $tab_order;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			?>" role="tab">
+			<div class="wffn-tab-title wffn-tab-desktop-title " data-tab="
+			<?php
+			echo $tab_order;//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			?>
+			" role="tab">
 				<?php esc_html_e( 'Webhook', 'funnel-builder' ); ?>
-            </div>
+			</div>
 
-            <div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_lifterlms ); ?>" data-tab="<?php echo( $tab_order + 1 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			?>" role="tab"><?php esc_html_e( 'LifterLMS', 'funnel-builder' ); ?>
-            </div>
+			<div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_lifterlms ); ?>" data-tab="
+			<?php
+			echo( $tab_order + 1 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			?>
+			" role="tab"><?php esc_html_e( 'LifterLMS', 'funnel-builder' ); ?>
+			</div>
 
-            <div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_affiliatewp ); ?>" data-tab="<?php echo( $tab_order + 2 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			?>" role="tab"><?php esc_html_e( 'AffiliateWP', 'funnel-builder' ); ?>
-            </div>
+			<div class="wffn-tab-title wffn-tab-desktop-title <?php echo esc_attr( $hide_class_affiliatewp ); ?>" data-tab="
+			<?php
+			echo( $tab_order + 2 );//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			?>
+			" role="tab"><?php esc_html_e( 'AffiliateWP', 'funnel-builder' ); ?>
+			</div>
 
-		<?php }
+			<?php
+		}
 
 		public function get_settings_tab_data( $values = null ) {
 
-			$tabs = [
-				'validation'      => [
+			$tabs = array(
+				'validation'      => array(
 					'title'    => __( 'Validation', 'funnel-builder' ),
 					'heading'  => __( 'Validation', 'funnel-builder' ),
 					'slug'     => 'validation',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'op_valid_enable',
 							'label'  => __( 'Show Validation Message', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'    => 'input',
 							'key'     => 'op_valid_text',
 							'label'   => __( 'Required', 'funnel-builder' ),
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'op_valid_enable',
 								'value' => 'true',
-							],
-						],
-						2 => [
+							),
+						),
+						2 => array(
 							'type'    => 'input',
 							'key'     => 'op_valid_email',
 							'label'   => __( 'Email', 'funnel-builder' ),
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'op_valid_enable',
 								'value' => 'true',
-							],
-						],
-						3 => [
+							),
+						),
+						3 => array(
 							'type'    => 'input',
 							'key'     => 'op_valid_phone',
 							'label'   => __( 'Phone', 'funnel-builder' ),
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'op_valid_enable',
 								'value' => 'true',
-							],
-						],
-					],
+							),
+						),
+					),
 					'priority' => 5,
 					'values'   => '',
-				],
-				'custom_redirect' => [
+				),
+				'custom_redirect' => array(
 					'title'    => __( 'Custom Redirection', 'funnel-builder' ),
 					'heading'  => __( 'Custom Redirection', 'funnel-builder' ),
 					'slug'     => 'custom_redirect',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'custom_redirect',
 							'label'  => __( 'Custom Redirection', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'custom-select',
 							'key'         => 'select_redirect_page',
 							'placeholder' => __( 'Select Option', 'funnel-builder' ),
 							'apiEndPoint' => '/funnels/pages/search?page=optin',
 							'label'       => __( 'Select Page', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'custom_redirect',
 								'value' => 'true',
-							],
+							),
 							'hintLabel'   => __( 'Enter minimum 3 letters.', 'funnel-builder' ),
 							'hint'        => '',
 							'values'      => ! empty( $values['custom_redirect_page'] ) ? wffn_clean( $values['custom_redirect_page'] ) : '',
 							'required'    => true,
-						],
-					],
+						),
+					),
 					'priority' => 10,
 					'values'   => '',
-				],
-				'custom_css'      => [
+				),
+				'custom_css'      => array(
 					'title'    => __( 'Custom CSS', 'funnel-builder' ),
 					'heading'  => __( 'Custom CSS', 'funnel-builder' ),
 					'slug'     => 'custom_css',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_css',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom CSS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your CSS Code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 15,
-					'values'   => [
+					'values'   => array(
 						'custom_css' => '',
-					],
-				],
-				'custom_js'       => [
+					),
+				),
+				'custom_js'       => array(
 					'title'    => __( 'External Scripts', 'funnel-builder' ),
 					'heading'  => __( 'External Scripts', 'funnel-builder' ),
 					'slug'     => 'custom_js',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'key'         => 'custom_js',
 							'type'        => 'textArea',
 							'label'       => __( 'Custom JS Tweaks', 'funnel-builder' ),
 							'placeholder' => __( 'Paste your code here', 'funnel-builder' ),
 							'className'   => 'bwf-textarea-lg-resizable',
-						],
-					],
+						),
+					),
 					'priority' => 20,
-					'values'   => [
-						'custom_js' => ''
-					],
-				],
-			];
+					'values'   => array(
+						'custom_js' => '',
+					),
+				),
+			);
 
 			if ( ! empty( $values ) ) {
 
@@ -1936,32 +1778,30 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 				}
 
 				if ( ! empty( $values['custom_redirect'] ) ) {
-					$custom_redirect = [
+					$custom_redirect = array(
 						'custom_redirect'      => ! empty( $values['custom_redirect'] ) ? wffn_clean( $values['custom_redirect'] ) : '',
 						'pages'                => ! empty( $values['pages'] ) ? wffn_clean( $values['pages'] ) : '',
 						'select_redirect_page' => ! empty( $values['custom_redirect_page'] ) ? wffn_clean( $values['custom_redirect_page'] ) : '',
 						'not_found'            => ! empty( $values['not_found'] ) ? wffn_clean( $values['not_found'] ) : __( 'Oops! No elements found. Consider changing the search query.', 'funnel-builder' ),
-					];
+					);
 
 					$tabs['custom_redirect']['values'] = wffn_clean( $custom_redirect );
 				}
 
 				if ( ! empty( $values['op_valid_enable'] ) ) {
-					$op_fields = [
+					$op_fields = array(
 						'op_valid_enable' => $values['op_valid_enable'],
 						'op_valid_text'   => $values['op_valid_text'],
 						'op_valid_email'  => $values['op_valid_email'],
 						'op_valid_phone'  => $values['op_valid_phone'],
-					];
+					);
 
 					$tabs['validation']['values'] = wffn_clean( $op_fields );
 				}
-
 			}
 
 			return $tabs;
 		}
-
 
 		public function send_optin_data_in_advanced_matching( $params ) {
 			$optin_tags = BWF_Optin_Tags::get_instance();
@@ -1987,7 +1827,6 @@ if ( ! class_exists( 'WFFN_Optin_Pages' ) ) {
 			}
 
 			return $params;
-
 		}
 	}
 

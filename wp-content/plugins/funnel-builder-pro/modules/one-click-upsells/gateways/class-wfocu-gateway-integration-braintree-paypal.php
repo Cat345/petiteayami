@@ -13,12 +13,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 	class WFOCU_Gateway_Integration_Braintree_PayPal extends WFOCU_Gateway {
 
 
-		protected static $ins = null;
-		public $token = false;
-		public $cc_call_response = false;
+		protected static $ins          = null;
+		public $token                  = false;
+		public $cc_call_response       = false;
 		public $maybe_collect_response = false;
-		public $unset_opaque_value = false;
-		protected $key = 'braintree_paypal';
+		public $unset_opaque_value     = false;
+		protected $key                 = 'braintree_paypal';
 
 		/**
 		 * Constructor
@@ -48,13 +48,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			add_action( 'wfocu_offer_new_order_created_' . $this->get_key(), array( $this, 'save_transaction_id' ), 10, 2 );
 
 			$this->refund_supported = true;
-
 		}
 
 		public static function get_instance() {
 
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -71,14 +70,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 		 * @param $message
 		 * @param $order
 		 * @param $response
-		 *
 		 */
 		public function maybe_collect_response_paypal( $order, $response ) {
 
-				if ( ! is_null( $response ) ) {
-					$this->cc_call_response = $response;
-				}
-
+			if ( ! is_null( $response ) ) {
+				$this->cc_call_response = $response;
+			}
 		}
 
 		public function maybe_create_token( $order ) {
@@ -86,10 +83,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			$order_base = wc_get_order( $order );
 			if ( $order_base instanceof WC_Order && $this->key === $order_base->get_payment_method() && $this->is_enabled( $order_base ) && $this->should_tokenize() ) {
 
-				$order = $this->get_wc_gateway()->get_order( $order );
+				$order   = $this->get_wc_gateway()->get_order( $order );
+				$payment = $this->get_payment_object( $order );
+
 				if ( $this->should_tokenize() && 0 === $order->get_user_id() ) {
 
-					if ( isset( $order->payment->token ) && $order->payment->token ) {
+					if ( isset( $payment->token ) && $payment->token ) {
 
 						// save the tokenized card info for completing the pre-order in the future
 						$this->get_wc_gateway()->add_transaction_data( $order );
@@ -182,7 +181,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 		 *
 		 * @return bool
 		 * @since 2.0.0
-		 *
 		 */
 		protected function is_braintree_auth() {
 
@@ -191,12 +189,14 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 
 		protected function set_charge_params( $order ) {
 
+			$payment = $this->get_payment_object( $order );
+
 			$get_package = WFOCU_Core()->data->get( '_upsell_package' );
 
 			$this->request_data = array(
-				'amount'            => $get_package['total'],
+				'amount'            => number_format( (float) $get_package['total'], 2, '.', '' ),
 				'orderId'           => $this->get_order_number( $order ),
-				'merchantAccountId' => empty( $order->payment->merchant_account_id ) ? null : $order->payment->merchant_account_id,
+				'merchantAccountId' => empty( $payment->merchant_account_id ) ? null : $payment->merchant_account_id,
 				'shipping'          => $this->get_shipping_address( $order ),
 				'options'           => array(
 					'submitForSettlement'              => 1,
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 					'addBillingAddressToPaymentMethod' => 1,
 				),
 				'channel'           => 'woocommerce_bt',
-				'deviceData'        => empty( $order->payment->device_data ) ? null : $order->payment->device_data,
+				'deviceData'        => empty( $payment->device_data ) ? null : $payment->device_data,
 				'taxAmount'         => $order->get_total_tax(),
 				'taxExempt'         => $order->get_user_id() > 0 && is_callable( array( WC()->customer, 'is_vat_exempt' ) ) ? WC()->customer->is_vat_exempt() : false,
 				'customer'          => array(
@@ -220,7 +220,77 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			$this->set_billing( $order );
 			$this->set_payment_method( $order );
 			WFOCU_Core()->log->log( 'Order #' . WFOCU_Core()->data->get_current_order()->get_id() . ': ' . 'Data for the request to Braintree PayPal' . print_r( $this->request_data, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		}
 
+		/**
+		 * Checks if SkyVerge Framework 6 OrderHelper is available.
+		 *
+		 * @return bool
+		 */
+		protected function has_order_helper() {
+			return class_exists( 'SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper' );
+		}
+
+		/**
+		 * Gets the payment object from the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return stdClass
+		 */
+		protected function get_payment_object( $order ) {
+			if ( $this->has_order_helper() ) {
+				return \SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::get_payment( $order );
+			}
+
+			if ( ! isset( $order->payment ) || ! is_object( $order->payment ) ) {
+				$order->payment = new stdClass();
+			}
+
+			return $order->payment;
+		}
+
+		/**
+		 * Sets the payment object on the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 * @param stdClass $payment
+		 */
+		protected function set_payment_object( $order, $payment ) {
+			if ( $this->has_order_helper() ) {
+				\SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::set_payment( $order, $payment );
+			} else {
+				$order->payment = $payment;
+			}
+		}
+
+		/**
+		 * Gets the customer ID from the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return string
+		 */
+		protected function get_order_customer_id( $order ) {
+			if ( $this->has_order_helper() ) {
+				return \SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::get_customer_id( $order );
+			}
+
+			return isset( $order->customer_id ) ? $order->customer_id : '';
+		}
+
+		/**
+		 * Sets the customer ID on the order, using OrderHelper when available.
+		 *
+		 * @param WC_Order $order
+		 * @param string   $customer_id
+		 */
+		protected function set_order_customer_id( $order, $customer_id ) {
+			if ( $this->has_order_helper() ) {
+				\SkyVerge\WooCommerce\PluginFramework\v6_0_1\Helpers\OrderHelper::set_customer_id( $order, $customer_id );
+			} else {
+				$order->customer_id = $customer_id;
+			}
 		}
 
 		/**
@@ -231,53 +301,91 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 		 * @return WC_Order the orders
 		 * @since 4.1.0
 		 * @see SV_WC_Payment_Gateway::get_order()
-		 *
 		 */
 		public function get_order( $order ) {
+
+			$payment = $this->get_payment_object( $order );
 
 			if ( $this->has_token( $order ) && ! is_checkout_pay_page() ) {
 
 				// if this is a pre-order release payment with a tokenized payment method, get the payment token to complete the order
 
 				// retrieve the payment token
-				$order->payment->token = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
+				$payment->token = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
+
+				// clear 3DS nonce flag so set_payment_method() uses the vault token path,
+				// not the one-time 3DS nonce from the original checkout which is already consumed
+				unset( $payment->use_3ds_nonce );
 
 				// retrieve the optional customer id
-				$order->customer_id = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' );
+				$this->set_order_customer_id( $order, $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' ) );
 
 				// set token data on order
-				if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $order->payment->token ) ) {
+				if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $payment->token ) ) {
 
 					// an existing registered user with a saved payment token
-					$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $order->payment->token );
+					$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $payment->token );
 
-					// PayPal account email (PayPal doesn't have last four like credit cards)
+					// account last four
+					$payment->account_number = $token->get_last_four();
+
 					if ( $this->get_wc_gateway()->is_paypal_gateway() && method_exists( $token, 'get_payer_email' ) ) {
-						$order->payment->account_number = $token->get_payer_email();
-					} else {
-						// account last four for other payment types
-						$order->payment->account_number = $token->get_last_four();
+
+						// PayPal account email (PayPal doesn't have last four like credit cards)
+						$payment->account_number = $token->get_payer_email();
+
+					} elseif ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
+
+						// card type
+						$payment->card_type = $token->get_card_type();
+
+						// exp month/year
+						$payment->exp_month = $token->get_exp_month();
+						$payment->exp_year  = $token->get_exp_year();
+
+					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
+
+						// account type (checking/savings)
+						$payment->account_type = $token->get_account_type();
 					}
 				} else {
 
 					// a guest user means that token data must be set from the original order
 
-					// PayPal payer email (PayPal doesn't have last four like credit cards)
+					// account number
+					$payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
+
 					if ( $this->get_wc_gateway()->is_paypal_gateway() ) {
+
+						// PayPal payer email (PayPal doesn't have last four like credit cards)
 						$payer_email = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payer_email' );
 						if ( ! empty( $payer_email ) ) {
-							$order->payment->account_number = $payer_email;
+							$payment->account_number = $payer_email;
 						}
-					} else {
-						// account number for other payment types
-						$order->payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
+					} elseif ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
+
+						// card type
+						$payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
+						$expiry_date        = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_expiry_date' );
+						// expiry date
+						if ( ! empty( $expiry_date ) ) {
+							list( $exp_year, $exp_month ) = explode( '-', $expiry_date );
+							$payment->exp_month           = $exp_month;
+							$payment->exp_year            = $exp_year;
+						}
+					} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
+
+						// account type
+						$payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
 					}
 				}
 			}
 
-			if ( true === $this->unset_opaque_value && isset( $order->payment->opaque_value ) ) {
-				unset( $order->payment->opaque_value );
+			if ( true === $this->unset_opaque_value && isset( $payment->opaque_value ) ) {
+				unset( $payment->opaque_value );
 			}
+
+			$this->set_payment_object( $order, $payment );
 
 			return $order;
 		}
@@ -297,7 +405,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			}
 
 			return false;
-
 		}
 
 		protected function get_shipping_address( $order ) {
@@ -316,10 +423,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 
 		protected function set_billing( $order ) {
 
-			if ( ! empty( $order->payment->billing_address_id ) ) {
+			$payment = $this->get_payment_object( $order );
+
+			if ( ! empty( $payment->billing_address_id ) ) {
 
 				// use the existing billing address when using a saved payment method
-				$this->request_data['billingAddressId'] = $order->payment->billing_address_id;
+				$this->request_data['billingAddressId'] = $payment->billing_address_id;
 
 			} else {
 
@@ -340,21 +449,22 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 
 		protected function set_payment_method( $order ) {
 
-			if ( ! empty( $order->payment->token ) && empty( $order->payment->use_3ds_nonce ) ) {
+			$payment = $this->get_payment_object( $order );
+
+			if ( ! empty( $payment->token ) && empty( $payment->use_3ds_nonce ) ) {
 
 				// use saved payment method (token)
-				$this->request_data['paymentMethodToken'] = $order->payment->token;
+				$this->request_data['paymentMethodToken'] = $payment->token;
 
 			} else {
 
 				/**  use new payment method (nonce) */
-				$this->request_data['paymentMethodNonce'] = $order->payment->nonce;
+				$this->request_data['paymentMethodNonce'] = $payment->nonce;
 
-				
 			}
 
 			// add recurring flag to transactions that are subscription renewals
-			if ( ! empty( $order->payment->recurring ) ) {
+			if ( ! empty( $payment->recurring ) ) {
 				$this->request_data['recurring'] = true;
 			}
 		}
@@ -423,7 +533,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			}
 
 			return $message;
-
 		}
 
 		public function get_transaction_id( $response ) {
@@ -444,7 +553,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 		 * @return bool
 		 */
 		public function process_refund_offer( $order ) {
-			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin refund action, capability checked by admin context
+			$refund_data = $_POST;
 
 			$txn_id        = isset( $refund_data['txn_id'] ) ? $refund_data['txn_id'] : '';
 			$amnt          = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
@@ -474,7 +584,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 			}
 
 			return $trasaction_id ? $trasaction_id : false;
-
 		}
 
 		/**
@@ -530,8 +639,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Braintree_PayPal' ) ) {
 
 			return $config;
 		}
-
-
 	}
 
 

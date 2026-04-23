@@ -2,6 +2,7 @@
 
 use WP_CLI\ExitException;
 use function WP_CLI\Utils\get_flag_value;
+
 if ( ! class_exists( 'BWF_AS_CLI' ) ) {
 	/**
 	 * Commands for the Custom Action Scheduler

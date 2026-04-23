@@ -11,6 +11,8 @@ namespace Stripe\StripeTaxForWooCommerce\Stripe;
 defined( 'ABSPATH' ) || exit;
 
 use Exception;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\ApiErrorException;
+use Stripe\StripeTaxForWooCommerce\SDK\lib\Exception\InvalidRequestException;
 
 /**
  * Stripe Tax Plugin Helper service
@@ -1815,5 +1817,58 @@ class StripeTaxPluginHelper {
 	 */
 	public static function do_exit() {
 		exit;
+	}
+
+	/**
+	 * Normalize Stripe API error into user-friendly message
+	 *
+	 * @param mixed $err Error.
+	 *
+	 * @return string
+	 */
+	public static function format_api_error_message( $err ): string {
+		list( $message, $code, $param ) = static::get_stripe_error_details( $err );
+
+		if ( 'parameter_missing' === $code && 'line_items' === $param ) {
+			return __( 'Please add at least one line item before calculating taxes.', 'stripe-tax-for-woocommerce' );
+		}
+
+		if ( 'parameter_invalid_integer' === $code || false !== stripos( $message, 'Invalid non-negative integer' ) ) {
+			return __( 'Please enter a valid non-negative amount before calculating taxes.', 'stripe-tax-for-woocommerce' );
+		}
+
+		if ( $err instanceof ApiErrorException ) {
+			return __( 'A problem occurred: invalid request.', 'stripe-tax-for-woocommerce' );
+		}
+
+		return $message;
+	}
+
+	/**
+	 * Extracts message, code, and param from a Stripe API error
+	 *
+	 * @param mixed $err Error.
+	 *
+	 * @return array Array with message, code and parameter.
+	 */
+	protected static function get_stripe_error_details( $err ): array {
+		$message = $err instanceof \Throwable ? $err->getMessage() : (string) $err;
+
+		if ( ! ( $err instanceof ApiErrorException ) ) {
+			return array( $message, null, null );
+		}
+
+		$error = $err->getError();
+		$code  = ( $error && isset( $error->code ) && is_string( $error->code ) ) ? $error->code : null;
+		$param = ( $error && isset( $error->param ) && is_string( $error->param ) ) ? $error->param : null;
+
+		if ( $error && isset( $error->message ) && is_string( $error->message ) ) {
+			$message = $error->message;
+		}
+
+		$code  = $code ?? ( method_exists( $err, 'getStripeCode' ) ? $err->getStripeCode() : null );
+		$param = $param ?? ( $err instanceof InvalidRequestException ? $err->getStripeParam() : null );
+
+		return array( $message, $code, $param );
 	}
 }

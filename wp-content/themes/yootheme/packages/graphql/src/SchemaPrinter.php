@@ -21,7 +21,7 @@ class SchemaPrinter extends BasePrinter
      */
     public static function doPrint(Schema $schema, array $options = []): string
     {
-        return parent::doPrint($schema, $options + compact('schema'));
+        return parent::doPrint($schema, $options + ['schema' => $schema]);
     }
 
     /**
@@ -29,7 +29,7 @@ class SchemaPrinter extends BasePrinter
      */
     public static function printIntrospectionSchema(Schema $schema, array $options = []): string
     {
-        return parent::printIntrospectionSchema($schema, $options + compact('schema'));
+        return parent::printIntrospectionSchema($schema, $options + ['schema' => $schema]);
     }
 
     /**

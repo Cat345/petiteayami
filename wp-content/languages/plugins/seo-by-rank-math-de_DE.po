@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-03-03 19:17:58+0000\n"
+"PO-Revision-Date: 2026-04-21 01:02:59+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,68 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Rank Math SEO – AI SEO Tools to Dominate SEO Rankings - Stable (latest release)\n"
+
+#: includes/modules/links/Api/class-controller.php:724
+msgid "Filter by link type (1 = internal, 0 = external)."
+msgstr "Nach Linktyp filtern (1 = intern, 0 = extern)."
+
+#: includes/modules/links/Api/class-controller.php:719
+msgid "Filter by target post ID."
+msgstr "Nach Ziel-Beitrags-ID filtern"
+
+#: includes/modules/links/Api/class-controller.php:714
+msgid "Filter by source post ID."
+msgstr "Nach Quell-Beitrags-ID filtern."
+
+#: includes/modules/links/Api/class-controller.php:708
+msgid "Search in URL."
+msgstr "In der URL suchen."
+
+#: includes/modules/links/Api/class-controller.php:681
+#: includes/modules/links/Api/class-controller.php:736
+msgid "Order direction (ASC, DESC)."
+msgstr "Sortierrichtung (aufsteigend, absteigend)."
+
+#: includes/modules/links/Api/class-controller.php:675
+#: includes/modules/links/Api/class-controller.php:730
+msgid "Order by field."
+msgstr "Nach Feld sortieren."
+
+#: includes/modules/links/Api/class-controller.php:669
+msgid "Filter by SEO score range (great, good, bad, no-score)."
+msgstr "Nach SEO-Score-Bereich filtern (sehr gut, gut, schlecht, kein Score)."
+
+#: includes/modules/links/Api/class-controller.php:663
+msgid "Filter by orphan status (orphan, linked)."
+msgstr "Nach Verwaistheitsstatus filtern (verwaist, verlinkt)"
+
+#: includes/modules/links/Api/class-controller.php:654
+msgid "Filter by post type. Supports multiple values."
+msgstr "Nach Beitragstyp filtern. Mehrere Werte werden unterstützt."
+
+#: includes/modules/links/Api/class-controller.php:648
+msgid "Search in post title."
+msgstr "Im Beitragstitel suchen."
+
+#: includes/modules/links/Api/class-controller.php:642
+#: includes/modules/links/Api/class-controller.php:702
+msgid "Items per page."
+msgstr "Elemente pro Seite."
+
+#: includes/modules/links/Api/class-controller.php:113
+msgid "You do not have permission to access this resource."
+msgstr "Du hast keine Berechtigung, auf diese Ressource zuzugreifen."
+
+#: includes/module/class-manager.php:159
+msgid "An advanced internal linking tool that analyzes your posts, tracks link data, highlights opportunities, and offers detailed report."
+msgstr "Ein fortschrittliches Tool zur internen Verlinkung, das deine Beiträge analysiert, Linkdaten verfolgt, Optimierungspotenziale aufzeigt und detaillierte Berichte erstellt."
+
+#: includes/module/class-manager.php:158
+#: includes/modules/links/Admin/class-admin.php:52
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:86
+msgid "Link Genius"
+msgstr "Link Genius"
 
 #: includes/admin/watcher/class-watcher.php:157
 msgid "Please keep only one Redirection plugin active to avoid redirect conflicts or unexpected behavior."
@@ -33,7 +95,7 @@ msgid "The format of the tables array has changed. Please update your code accor
 msgstr "Das Format des Tabellen-Arrays hat sich geändert. Bitte aktualisiere deinen Code entsprechend."
 
 #. Translators: 1: opening anchor tag, 2: closing anchor tag.
-#: includes/admin/class-notices.php:70
+#: includes/admin/class-notices.php:73
 msgid "The React Settings UI is currently disabled, and the classic settings interface is active. Note: The PHP-based settings interface will be removed in an upcoming release. %1$sEnable the React Settings UI%2$s to switch back."
 msgstr "Die React-Einstellungsoberfläche ist derzeit deaktiviert, die klassische Einstellungsoberfläche ist aktiv. Hinweis: Die PHP-basierte Einstellungsoberfläche wird in einer zukünftigen Version entfernt. %1$sAktiviere die React-Einstellungsoberfläche%2$s, um zurück zu wechseln."
 
@@ -389,6 +451,8 @@ msgstr "Ergebnisse pro Seite."
 
 #: includes/modules/analytics/rest/class-rest.php:78
 #: includes/modules/analytics/rest/class-rest.php:119
+#: includes/modules/links/Api/class-controller.php:637
+#: includes/modules/links/Api/class-controller.php:697
 msgid "Page number."
 msgstr "Seitenzahl."
 
@@ -400,10 +464,11 @@ msgstr "Beitragstyp."
 msgid "Post ID."
 msgstr "Beitrags-ID."
 
-#: includes/admin/class-bulk-actions.php:139 assets/admin/js/post-list.js:1
-#: assets/admin/js/rank-math-app.js:1
+#: includes/admin/class-bulk-actions.php:139 assets/admin/js/components.js:1
+#: assets/admin/js/post-list.js:1 assets/admin/js/rank-math-app.js:1
 #: includes/modules/content-ai/assets/js/content-ai-media.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
 msgid "Your current plugin version does not support this feature. Please update Rank Math PRO to version 3.0.83 or later to unlock full functionality."
 msgstr "Deine aktuelle Plugin-Version unterstützt diese Funktion nicht. Bitte aktualisiere Rank Math PRO auf Version 3.0.83 oder höher, um die volle Funktionalität freizuschalten."
 
@@ -1504,12 +1569,12 @@ msgstr "Benutzerdefinierte Webmaster-Tags"
 msgid "Selected roles will be excluded from the XML &amp; HTML sitemaps."
 msgstr "Ausgewählte Rollen werden von den XML &amp; HTML-Sitemaps ausgeschlossen."
 
-#: includes/modules/content-ai/class-rest.php:668
+#: includes/modules/content-ai/class-rest.php:669
 msgid "Please update"
 msgstr "Bitte aktualisieren"
 
 #. Translators: link to the update page.
-#: includes/modules/content-ai/class-rest.php:667
+#: includes/modules/content-ai/class-rest.php:668
 msgid "There is a new version of Content AI available! %s the Rank Math SEO plugin to use this feature."
 msgstr "Es ist eine neue Version der Inhalt-KI verfügbar! %s das Rank Math SEO Plugin, um diese Funktion zu nutzen."
 
@@ -2195,11 +2260,8 @@ msgid "24x7 Premium Support"
 msgstr "24x7 Premium Support"
 
 #: includes/admin/class-pro-notice.php:219
-#: includes/admin/class-pro-notice.php:238 assets/admin/js/post-list.js:1
-#: assets/admin/js/rank-math-app.js:1
-#: includes/modules/content-ai/assets/js/content-ai-media.js:1
+#: includes/admin/class-pro-notice.php:238
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
-#: includes/modules/content-ai/assets/js/content-ai.js:1
 msgid "Keyword Rank Tracker"
 msgstr "Schlüsselwort-Rank-Tracker"
 
@@ -2541,6 +2603,11 @@ msgstr "URL zum Abrufen von HTML-Tags."
 msgid "Click to refresh the available credits."
 msgstr "Klicke auf aktualisieren, um das verfügbare Guthaben zu aktualisieren."
 
+#: includes/modules/links/Admin/class-admin.php:49
+#: includes/modules/content-ai/assets/js/content-ai.js:1
+msgid "New!"
+msgstr "Neu!"
+
 #: includes/modules/content-ai/views/options.php:203
 #: assets/admin/js/generalSettings.js:1
 msgid "Select Post Type"
@@ -2551,15 +2618,15 @@ msgstr "Beitragstyp auswählen"
 msgid "Default Country"
 msgstr "Standard Land"
 
-#: includes/modules/content-ai/class-rest.php:702
+#: includes/modules/content-ai/class-rest.php:703
 msgid "You have used all the free credits which are allowed to this domain."
 msgstr "Du hast für diese Domäne das kostenlose Guthaben aufgebraucht."
 
-#: includes/modules/content-ai/class-rest.php:696
+#: includes/modules/content-ai/class-rest.php:697
 msgid "This feature is not available on the localhost."
 msgstr "Diese Funktion ist auf dem localhost nicht verfügbar."
 
-#: includes/modules/content-ai/class-rest.php:647
+#: includes/modules/content-ai/class-rest.php:648
 msgid "No data found for the researched keyword."
 msgstr "Für das recherchierte Schlüsselwort wurden keine Daten gefunden."
 
@@ -2967,17 +3034,17 @@ msgstr "E-Mail-Berichte"
 msgid "This option cannot be changed since your theme has added the support for Rank Math Breadcrumbs using: %s"
 msgstr "Diese Option kann nicht geändert werden, da dein Theme die Unterstützung für Rank Math Breadcrumbs hinzugefügt hat mit: %s"
 
-#: includes/admin/class-notices.php:296
+#: includes/admin/class-notices.php:312
 msgid "<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one."
 msgstr "<b>Rank Math Warnung:</b> Das Ändern der Permalinks auf einer lebenden, indizierten Website kann zu ernsthaften Traffic-Verlusten führen, wenn es falsch gemacht wird. Ziehe in Erwägung, eine neue Umleitung vom alten URL-Format zum neuen hinzuzufügen."
 
 #. Translators: placeholder is the post type names separated with commas.
-#: includes/admin/class-notices.php:155
+#: includes/admin/class-notices.php:158
 msgid "Rank Math has detected new post types: %1$s. You may want to check the settings of the <a href=\"%2$s\">Titles &amp; Meta page</a>."
 msgstr "Rank Math hat neue Beitragstypen erkannt: %1$s. Du solltest die Einstellungen der <a href=\"%2$s\">Titel &amp; Meta-Seite</a> überprüfen."
 
 #. Translators: placeholder is the post type name.
-#: includes/admin/class-notices.php:151
+#: includes/admin/class-notices.php:154
 msgid "Rank Math has detected a new post type: %1$s. You may want to check the settings of the <a href=\"%2$s\">Titles &amp; Meta page</a>."
 msgstr "Rank Math hat einen neuen Beitragstyp erkannt: %1$s. Du solltest die Einstellungen der <a href=\"%2$s\">Titel &amp; Meta-Seite</a> überprüfen."
 
@@ -3009,7 +3076,7 @@ msgstr "Du bist dabei alle bisher importierten Daten zu löschen."
 
 #: includes/modules/analytics/class-analytics.php:356
 msgid "Are you sure you want to do this?"
-msgstr "Bist du sicher, dass du das machen willst?"
+msgstr "Möchtest du das wirklich tun?"
 
 #: includes/modules/database-tools/class-database-tools.php:164
 msgid "No Redirections found."
@@ -3453,6 +3520,8 @@ msgstr "Gibt an, wie oft deine Website in den Suchergbnissen angezeigt wurde."
 
 #: includes/opengraph/class-slack.php:371
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:41
 msgid "Posts"
 msgstr "Beiträge"
 
@@ -4068,7 +4137,7 @@ msgstr "Konto trennen"
 msgid "Account"
 msgstr "Konto"
 
-#: includes/admin/class-notices.php:180
+#: includes/admin/class-notices.php:222
 msgid "Please activate the WPML String Translation plugin to convert Rank Math Setting values in different languages."
 msgstr "Aktiviere bitte das Modul WPML String Translation, um Einstellungen von Rank Math in verschiedene Sprachen zu konvertieren."
 
@@ -5082,7 +5151,7 @@ msgstr "bbPress"
 #: includes/3rdparty/divi/class-divi.php:159
 #: includes/admin/class-assets.php:136
 msgid "Please enter a valid URL."
-msgstr "Bitte gebe eine gültige URL ein."
+msgstr "Bitte gib eine gültige URL ein."
 
 #: includes/3rdparty/divi/class-divi.php:158
 #: includes/admin/class-assets.php:135
@@ -5394,6 +5463,9 @@ msgid "Performer"
 msgstr "Darsteller"
 
 #: includes/admin/class-post-columns.php:297
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:55
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:245
 msgid "Not Set"
 msgstr "Nicht festgelegt"
 
@@ -6628,7 +6700,7 @@ msgstr "Dein Theme kann den Seiten Untertitel anzeigen und es kann auch in SEO-T
 
 #: includes/modules/seo-analysis/seo-analysis-tests.php:31
 msgid "Site Tagline"
-msgstr "Seiten Untertitel"
+msgstr "Website-Untertitel"
 
 #: includes/modules/instant-indexing/views/history.php:32
 #: assets/admin/js/instantIndexingSettings.js:1
@@ -6639,6 +6711,8 @@ msgstr "OK"
 #: includes/class-frontend-seo-score.php:174 assets/admin/js/components.js:1
 #: includes/modules/analytics/assets/js/admin-bar.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:220
 msgid "SEO Score"
 msgstr "SEO Punktzahl"
 
@@ -7177,6 +7251,9 @@ msgstr "Papierkorb leeren"
 #: assets/admin/js/rank-math-app.js:1
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:160
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:167
 msgid "All"
 msgstr "Alle"
 
@@ -7191,6 +7268,8 @@ msgstr "Letzter Zugriff"
 #: includes/modules/redirections/class-table.php:275
 #: includes/modules/schema/shortcode/music.php:27
 #: includes/modules/schema/shortcode/recipe.php:20
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:226
 #: includes/modules/schema/assets/js/schema-gutenberg.js:1
 #: includes/modules/schema/assets/js/schema-template.js:1
 msgid "Type"
@@ -7629,22 +7708,30 @@ msgstr "Organisation"
 msgid "Person or Company"
 msgstr "Person oder Firma"
 
-#: includes/modules/links/class-links.php:215
+#: includes/modules/links/class-links.php:206
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:194
 msgid "Incoming Links"
 msgstr "Eingehende Links"
 
-#: includes/modules/links/class-links.php:214
+#: includes/modules/links/class-links.php:205
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:203
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:173
 msgid "External Links"
 msgstr "Externe Links"
 
-#: includes/modules/links/class-links.php:213
+#: includes/modules/links/class-links.php:204
 #: includes/modules/analytics/assets/js/stats.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:199
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:152
 msgid "Internal Links"
 msgstr "Interne Links"
 
-#: includes/modules/links/class-links.php:144
+#: includes/modules/links/class-links.php:159
 msgid "Links: "
 msgstr "Links: "
 
@@ -7662,7 +7749,8 @@ msgstr "Alle Parameter ignorieren"
 #: includes/modules/local-seo/views/titles-options.php:167
 #: includes/modules/local-seo/views/titles-options.php:209
 #: includes/modules/local-seo/views/titles-options.php:253
-#: assets/admin/js/generalSettings.js:1 assets/admin/js/titleSettings.js:1
+#: assets/admin/js/components.js:1 assets/admin/js/generalSettings.js:1
+#: assets/admin/js/titleSettings.js:1
 #: includes/modules/redirections/assets/js/redirections.js:1
 msgid "Remove"
 msgstr "Entfernen"
@@ -7817,6 +7905,7 @@ msgstr "Bist du sicher, dass du alle 404-Fehlerprotokolle löschen möchtest?"
 
 #: includes/modules/404-monitor/class-admin.php:163
 #: includes/modules/redirections/class-admin.php:175
+#: assets/admin/js/components.js:1
 msgid "Bulk Actions"
 msgstr "Mehrfachaktionen"
 
@@ -8136,6 +8225,8 @@ msgstr "Bilder"
 #: assets/admin/js/generalSettings.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/LinksPage.js:48
 msgid "Links"
 msgstr "Links"
 
@@ -8337,7 +8428,7 @@ msgstr "Seitennummer mit Kontext (z.B. Seite 2 von 4). Wird nur auf Seite 2 und 
 #: includes/modules/sitemap/settings/html-sitemap.php:31
 #: includes/modules/sitemap/settings/html-sitemap.php:76
 #: includes/replace-variables/class-advanced-variables.php:86
-#: assets/admin/js/sitemapSettings.js:1
+#: assets/admin/js/components.js:1 assets/admin/js/sitemapSettings.js:1
 msgid "Page"
 msgstr "Seite"
 
@@ -8557,11 +8648,14 @@ msgstr "Titel des aktuellen Beitrags/Seite"
 #: includes/replace-variables/class-post-variables.php:34
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:132
 msgid "Post Title"
 msgstr "Beitragstitel"
 
 #. translators: %1$d: current page number, %2$d: max pages.
-#: includes/replace-variables/class-advanced-variables.php:210
+#: includes/replace-variables/class-advanced-variables.php:214
+#: includes/modules/analytics/assets/js/stats.js:1
 msgid "Page %1$d of %2$d"
 msgstr "Seite %1$d von %2$d"
 
@@ -8756,7 +8850,8 @@ msgid "Please keep only one SEO plugin active, otherwise, you might lose your ra
 msgstr "Bitte lasse nur ein XML-Sitemap-Plugin aktiv, da du sonst möglicherweise deine Platzierungen und Zugriffe verlierst."
 
 #: includes/modules/404-monitor/views/main.php:27
-#: includes/modules/redirections/views/main.php:45 assets/admin/js/wizard.js:1
+#: includes/modules/redirections/views/main.php:45
+#: assets/admin/js/components.js:1 assets/admin/js/wizard.js:1
 msgid "Search"
 msgstr "Suche"
 
@@ -8832,13 +8927,15 @@ msgstr "Mehr erfahren"
 #: includes/admin/class-option-center.php:168
 #: includes/modules/404-monitor/class-admin.php:227
 #: includes/modules/redirections/class-admin.php:314
-#: assets/admin/js/post-list.js:1 assets/admin/js/rank-math-app.js:1
+#: assets/admin/js/components.js:1 assets/admin/js/post-list.js:1
+#: assets/admin/js/rank-math-app.js:1
 #: includes/modules/analytics/assets/js/admin-bar.js:1
 #: includes/modules/content-ai/assets/js/content-ai-media.js:1
 #: includes/modules/content-ai/assets/js/content-ai-page.js:1
 #: includes/modules/content-ai/assets/js/content-ai.js:1
+#: includes/modules/links/assets/js/links-page.js:1
 msgid "Learn More"
-msgstr "Weitere Informationen"
+msgstr "Mehr erfahren"
 
 #: rank-math.php:498 assets/admin/js/wizard.js:1
 msgid "Getting Started"
@@ -9191,7 +9288,7 @@ msgstr "Säulen-Inhalt"
 
 #: includes/admin/class-post-columns.php:160
 msgid "Alternative Text"
-msgstr "Alternativer Text"
+msgstr "Alternativtext"
 
 #: includes/admin/class-post-columns.php:159 assets/admin/js/rank-math-app.js:1
 #: includes/modules/analytics/assets/js/stats.js:1
@@ -9518,6 +9615,11 @@ msgid "No matches found."
 msgstr "Keine Treffer gefunden."
 
 #: includes/admin/class-assets.php:229
+#: includes/modules/links/assets/js/links-page.js:1
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:123
+#: includes/modules/links/assets/src/features/links-page/tabs/Links.js:126
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:139
+#: includes/modules/links/assets/src/features/links-page/tabs/Posts.js:142
 msgid "(no title)"
 msgstr "(Kein Titel)"
 

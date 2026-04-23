@@ -31,9 +31,7 @@ class EventDispatcher
     /**
      * Dispatches an event with arguments.
      *
-     * @param string $event
      * @param mixed ...$arguments
-     *
      * @return mixed
      */
     public function dispatch(string $event, ...$arguments)

@@ -186,10 +186,32 @@ remove_filter( 'woocommerce_get_checkout_url', [ WFACP_Core()->public, 'woocomme
                         </div>
                         <div class="wfacp-section wfacp_payment form_section_your_order_0_<?php echo $selected_template_slug; ?> wfacp-section-titlex wfacp-hg-by-box">
                             <div style="clear: both;"></div>
+							<?php
+							// Divi 5: Only display heading section if at least one of heading or subheading has content
+							// Check if we're using Divi 5 template
+							$is_divi5 = class_exists( 'WFACP_Template_Divi5' ) && ( $instance instanceof WFACP_Template_Divi5 );
+							if ( $is_divi5 ) {
+								// Divi 5: Conditional rendering
+								if ( ! empty( $payment_methods_heading ) || ! empty( $payment_methods_sub_heading ) ) {
+									?>
+                            <div class="wfacp-comm-title <?php echo $border_cls; ?>">
+								<?php if ( ! empty( $payment_methods_heading ) ) { ?>
+                                <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
+								<?php } ?>
+								<?php if ( ! empty( $payment_methods_sub_heading ) ) { ?>
+                                <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
+								<?php } ?>
+                            </div>
+							<?php
+								}
+							} else {
+								// Divi 4 and other builders: Always show heading section
+								?>
                             <div class="wfacp-comm-title <?php echo $border_cls; ?>">
                                 <h2 class="wfacp_section_heading wfacp_section_title <?php echo $instance->get_heading_class() ?> "><?php echo $payment_methods_heading; ?></h2>
                                 <h4 class="<?php echo $instance->get_sub_heading_class(); ?>"><?php echo $payment_methods_sub_heading; ?></h4>
                             </div>
+							<?php } ?>
                             <div class="woocommerce-checkout-review-order wfacp-oder-detail clearfix">
                                 <div id="payment">
 									<?php if ( $order->needs_payment() ) : ?>

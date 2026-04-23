@@ -19,7 +19,7 @@ class VisibilityTransform
         $type = $params['type'];
         $parent = $params['parent'];
 
-        if (empty($parent) || !($type->element || $type->container)) {
+        if (empty($parent) || (!$type->element && !$type->container)) {
             return;
         }
 

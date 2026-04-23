@@ -160,7 +160,6 @@ if ( ! class_exists( 'WFACP_Divi_Summary' ) ) {
 			];
 			$this->add_color( $coupon_css_tab_id, 'wfacp_form_mini_cart_coupon_input_color', $inputColorOption, '', __( 'Coupon Color', 'woofunnels-aero-checkout' ), [] );
 
-			$this->add_border_color( $coupon_css_tab_id, 'wfacp_form_mini_cart_coupon_focus_color', [ '%%order_class%% .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ], '', __( 'Focus Color', 'woofunnel-aero-checkout' ), true, [] );
 			$fields_options = [
 				'%%order_class%% .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
 			];
@@ -179,6 +178,9 @@ if ( ! class_exists( 'WFACP_Divi_Summary' ) ) {
 			];
 			$this->add_border( $coupon_css_tab_id, 'wfacp_form_mini_cart_coupon_border', implode( ',', $fields_options ), [], $default );
 
+			/* Coupon focus Input Color tab */
+			$coupon_focus_tab_id = $this->add_tab( __( 'Coupon focus Input Color', 'woofunnels-aero-checkout' ), 2 );
+			$this->add_border_color( $coupon_focus_tab_id, 'wfacp_form_mini_cart_coupon_focus_color', [ '%%order_class%% .wfacp_mini_cart_start_h form.checkout_coupon.woocommerce-form-coupon .wfacp-form-control:focus' ], '', __( 'Focus border color', 'woofunnel-aero-checkout' ), true, [] );
 
 			/* Field Label */
 
@@ -203,15 +205,15 @@ if ( ! class_exists( 'WFACP_Divi_Summary' ) ) {
 			$this->add_heading( $cart_id, __( 'Subtotal', 'woocommerce' ) );
 
 			$mini_cart_product_meta_typo = [
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount)',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) th',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) th span',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td span',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td span bdi',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td small',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td span.amount',
-				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount) td a',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount)',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th span',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span bdi',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td small',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span.amount',
+				'%%order_class%% .wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a',
 			];
 
 
@@ -399,17 +401,33 @@ if ( ! class_exists( 'WFACP_Divi_Summary' ) ) {
 			if ( is_null( $template ) ) {
 				return '';
 			}
+			$widget_id = $this->get_id();
+			// Ensure mini cart settings (e.g. enable_delete_item for wfacp_delete_item_wrap) are in session
+			// so mini-cart.php and mini_cart_allow_deletion() get the correct values.
+			$session_data = WFACP_Common::get_session( $widget_id );
+			$session_data = is_array( $session_data ) ? $session_data : array();
+			$props        = is_array( $this->props ) ? $this->props : array();
+			$settings     = array_merge( $session_data, $props );
+			// Default enable_delete_item to 'on' if not set so delete item wrap shows when expected.
+			if ( ! isset( $settings['enable_delete_item'] ) || '' === trim( (string) $settings['enable_delete_item'] ) ) {
+				$settings['enable_delete_item'] = 'on';
+			}
+			WFACP_Common::set_session( $widget_id, $settings );
+
 			$key     = 'wfacp_mini_cart_widgets_' . $template->get_template_type();
 			$widgets = WFACP_Common::get_session( $key );
-			if ( ! in_array( $key, $widgets ) ) {
-				$widgets[] = $this->get_id();
+			if ( ! is_array( $widgets ) ) {
+				$widgets = array();
+			}
+			if ( ! in_array( $widget_id, $widgets ) ) {
+				$widgets[] = $widget_id;
 			}
 			WFACP_Common::set_session( $key, $widgets );
 			ob_start();
 			?>
             <div class='wfacp_form_divi_container'>
                 <div class='wfacp_divi_forms'>
-					<?php $template->get_mini_cart_widget( $this->get_id() ); ?>
+					<?php $template->get_mini_cart_widget( $widget_id ); ?>
                 </div>
             </div>
 			<?php

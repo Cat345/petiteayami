@@ -4,39 +4,38 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 	#[AllowDynamicProperties]
 	final class WFACP_admin {
 
-		private static $ins = null;
-		public $wfacp_id = 0;
+		private static $ins  = null;
+		public $wfacp_id     = 0;
 		public $current_page = 'design';
 		public $current_section;
 		public $default_checkout_status = false;
-		protected $localize_data = [];
-		protected $checkout_post_list = [];
-		protected $have_variable = false;
-		private $address_fields = [
-			'billing'  => [],
-			'shipping' => [],
-		];
-		private $wfacp_custom_fields = [];
+		protected $localize_data        = array();
+		protected $checkout_post_list   = array();
+		protected $have_variable        = false;
+		private $address_fields         = array(
+			'billing'  => array(),
+			'shipping' => array(),
+		);
+		private $wfacp_custom_fields    = array();
 
 		protected function __construct() {
 			$this->current_section = __DIR__ . '/views/sections/design.php';
 			$this->wfacp_id        = WFACP_Common::get_id();
-			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) {
+			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 
-				add_action( 'admin_init', [ $this, 'show_post_not_exist' ], 1 );
+				add_action( 'admin_init', array( $this, 'show_post_not_exist' ), 1 );
 			}
 			add_action( 'admin_head', array( $this, 'hide_from_menu' ) );
-			add_action( 'admin_menu', [ $this, 'register_admin_menu' ], 90 );
-			add_action( 'admin_menu', [ $this, 'remove_page_attributes' ], 90 );
+			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 90 );
+			add_action( 'admin_menu', array( $this, 'remove_page_attributes' ), 90 );
 
 			add_filter( 'plugin_action_links_' . WFACP_PLUGIN_BASENAME, array( $this, 'plugin_actions' ) );
-			add_action( 'admin_head', [ $this, 'open_admin_bar' ], 90 );
-
+			add_action( 'admin_head', array( $this, 'open_admin_bar' ), 90 );
 
 			/**
 			 * Admin enqueue scripts
 			 */
-			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_assets' ], 99 );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_assets' ), 99 );
 			if ( WFACP_Common::is_load_admin_assets( 'builder' ) ) {
 
 				add_action( 'admin_enqueue_scripts', array( $this, 'maybe_register_breadcrumbs' ), 10 );
@@ -44,75 +43,77 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			/**
 			 * Admin customizer enqueue scripts
 			 */
-			add_action( 'customize_controls_print_styles', [ $this, 'admin_customizer_enqueue_assets' ], 10 );
+			add_action( 'customize_controls_print_styles', array( $this, 'admin_customizer_enqueue_assets' ), 10 );
 
-			add_filter( 'woocommerce_billing_fields', [ $this, 'add_css_ready_classes' ] );
-			add_filter( 'woocommerce_shipping_fields', [ $this, 'add_css_ready_classes' ] );
+			add_filter( 'woocommerce_billing_fields', array( $this, 'add_css_ready_classes' ) );
+			add_filter( 'woocommerce_shipping_fields', array( $this, 'add_css_ready_classes' ) );
 			if ( WFACP_Common::get_id() > 0 && isset( $_GET['section'] ) ) {
 
-				add_action( 'admin_menu', [ $this, 'set_section' ] );
+				add_action( 'admin_menu', array( $this, 'set_section' ) );
 			}
-			add_action( 'woocommerce_admin_order_data_after_order_details', [ $this, 'show_advanced_field_order' ] );
+			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'show_advanced_field_order' ), 99 );
 
 			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) {
-				add_action( 'in_admin_header', [ $this, 'maybe_remove_all_notices_on_page' ] );
+				add_action( 'in_admin_header', array( $this, 'maybe_remove_all_notices_on_page' ) );
 			}
-			add_action( 'in_admin_header', [ $this, 'restrict_notices_display' ] );
+			add_action( 'in_admin_header', array( $this, 'restrict_notices_display' ) );
 
-			add_filter( 'wfacp_builder_merge_field_arguments', [ $this, 'wfacp_builder_merge_field_arguments' ], 10, 4 );
-			if ( WFACP_Common::is_builder()) {
-				add_action( 'admin_print_styles', [ $this, 'remove_theme_css_and_scripts' ], 100 );
+			add_filter( 'wfacp_builder_merge_field_arguments', array( $this, 'wfacp_builder_merge_field_arguments' ), 10, 4 );
+			if ( WFACP_Common::is_builder() ) {
+				add_action( 'admin_print_styles', array( $this, 'remove_theme_css_and_scripts' ), 100 );
 			}
 			$post_type = WFACP_Common::get_post_type_slug();
-			add_action( 'add_meta_boxes_' . $post_type, [ $this, 'add_meta_boxes_for_shortcodes' ], 10, 2 );
-			add_filter( 'wfacp_checkout_post_list', [ $this, 'append_checkout_post_list' ] );
+			add_action( 'add_meta_boxes_' . $post_type, array( $this, 'add_meta_boxes_for_shortcodes' ), 10, 2 );
+			add_filter( 'wfacp_checkout_post_list', array( $this, 'append_checkout_post_list' ) );
 
+			add_filter( 'wfacp_address_fields_billing', array( $this, 'arrange_billing_fields' ), 9 );
+			add_filter( 'wfacp_address_fields_shipping', array( $this, 'arrange_shipping_fields' ), 9 );
+			add_action( 'edit_form_after_title', array( $this, 'add_back_button' ) );
+			add_filter( 'set-screen-option', array( $this, 'save_screen_option' ), 100, 3 );
 
-			add_filter( 'wfacp_address_fields_billing', [ $this, 'arrange_billing_fields' ], 9 );
-			add_filter( 'wfacp_address_fields_shipping', [ $this, 'arrange_shipping_fields' ], 9 );
-			add_action( 'edit_form_after_title', [ $this, 'add_back_button' ] );
-			add_filter( 'set-screen-option', [ $this, 'save_screen_option' ], 100, 3 );
-
-			add_action( 'admin_menu', [ $this, 'get_advanced_field' ], 95 );
-			add_filter( 'is_protected_meta', [ $this, 'wfacp_protected_meta' ], 10, 3 );
-			add_filter( "get_pages", [ $this, 'add_pages_to_front_page_options' ], 15, 2 );
+			add_action( 'admin_menu', array( $this, 'get_advanced_field' ), 95 );
+			add_filter( 'is_protected_meta', array( $this, 'wfacp_protected_meta' ), 10, 3 );
+			add_filter( 'get_pages', array( $this, 'add_pages_to_front_page_options' ), 15, 2 );
 			add_filter( 'bwf_enable_ecommerce_integration_fb_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ecommerce_integration_ga_checkout', '__return_true' );
 			add_filter( 'bwf_enable_ga4', '__return_true' );
 
-			/*** bwf general setting ***/
-			add_filter( 'bwf_general_settings_link', function () {
-				return admin_url( 'admin.php?page=wfacp&section=bwf_settings' );
-			} );
+			/*** bwf general setting */
+			add_filter(
+				'bwf_general_settings_link',
+				function () {
+					return admin_url( 'admin.php?page=wfacp&section=bwf_settings' );
+				}
+			);
 
+			add_action(
+				'admin_footer',
+				function () {
+					?>
+				<script>
+					if (typeof window.bwfBuilderCommons !== "undefined") {
+						window.bwfBuilderCommons.addFilter('bwf_common_permalinks_fields', function (e) {
+							e.push(
+								{
+									type: "input",
+									inputType: "text",
+									label: "",
+									model: "checkout_page_base",
+									inputName: 'checkout_page_base',
+								});
+							return e;
+						});
+					}
 
-			add_action( 'admin_footer', function () {
-				?>
-                <script>
-                    if (typeof window.bwfBuilderCommons !== "undefined") {
-                        window.bwfBuilderCommons.addFilter('bwf_common_permalinks_fields', function (e) {
-                            e.push(
-                                {
-                                    type: "input",
-                                    inputType: "text",
-                                    label: "",
-                                    model: "checkout_page_base",
-                                    inputName: 'checkout_page_base',
-                                });
-                            return e;
-                        });
-                    }
-
-                </script>
-				<?php
-			} );
-
-
+				</script>
+					<?php
+				}
+			);
 		}
 
 		public static function get_instance() {
 			if ( is_null( self::$ins ) ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -122,43 +123,50 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		 * Check if its our builder page and registered required nodes to prepare a breadcrumb
 		 */
 		public function maybe_register_breadcrumbs() {
-			
+
 				/**
 				 * Only register primary node if not added yet
 				 */
-				if ( empty( BWF_Admin_Breadcrumbs::$nodes ) ) {
-					BWF_Admin_Breadcrumbs::register_node( array(
+			if ( empty( BWF_Admin_Breadcrumbs::$nodes ) ) {
+				BWF_Admin_Breadcrumbs::register_node(
+					array(
 						'text' => __( 'Checkouts', 'woofunnels-aero-checkout' ),
-						'link' => admin_url( 'admin.php?page=wfacp' )
-					) );
-				}
-				BWF_Admin_Breadcrumbs::register_node( array(
-					'text'  => ! empty( WFACP_Common::get_page_name() ) ? WFACP_Common::get_page_name() : __( '(no title)', 'woofunnels-aero-checkout' ),
-					'link'  => '',
-					'class' => 'wfacp_page_title'
-				) );
-		
+						'link' => admin_url( 'admin.php?page=wfacp' ),
+					)
+				);
+			}
+				BWF_Admin_Breadcrumbs::register_node(
+					array(
+						'text'  => ! empty( WFACP_Common::get_page_name() ) ? WFACP_Common::get_page_name() : __( '(no title)', 'woofunnels-aero-checkout' ),
+						'link'  => '',
+						'class' => 'wfacp_page_title',
+					)
+				);
 		}
 
 		public function set_section() {
 
 				$this->current_page = filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW );
-				if ( file_exists( __DIR__ . '/views/sections/' . $this->current_page . '.php' ) ) {
-					$this->current_section = __DIR__ . '/views/sections/' . $this->current_page . '.php';
-				}
+			if ( file_exists( __DIR__ . '/views/sections/' . $this->current_page . '.php' ) ) {
+				$this->current_section = __DIR__ . '/views/sections/' . $this->current_page . '.php';
+			}
 				$this->current_section = apply_filters( 'wfacp_builder_pages_path', $this->current_section, $this->current_page, $this );
-
-
-
 		}
 
 		public function register_admin_menu() {
 			$user = WFACP_Core()->role->user_access( 'menu', 'read' );
 			if ( $user ) {
-				add_submenu_page( 'woofunnels', 'Checkouts', 'Checkouts', $user, 'wfacp', [
-					$this,
-					'admin_page',
-				] );
+				add_submenu_page(
+					'woofunnels',
+					'Checkouts',
+					'Checkouts',
+					$user,
+					'wfacp',
+					array(
+						$this,
+						'admin_page',
+					)
+				);
 			}
 		}
 
@@ -175,14 +183,12 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					}
 				}
 			}
-
-
 		}
 
 
 		public function admin_enqueue_assets() {
 			wp_enqueue_style( 'wfacp-admin-font', $this->get_admin_url() . '/assets/css/wfacp-admin-font.css', array(), WFACP_VERSION_DEV );
-			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) {
+			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 
 				wp_enqueue_style( 'wp-color-picker' );
 				wp_enqueue_script( 'wp-color-picker' );
@@ -197,11 +203,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				wp_enqueue_style( 'wfacp-sweetalert2', $this->get_admin_url() . '/assets/css/sweetalert2.css', array(), WFACP_VERSION_DEV );
 				wp_enqueue_style( 'wfacp-admin-main', $this->get_admin_url() . '/assets/css/wfacp-admin.css', array(), WFACP_VERSION_DEV );
 
-				wp_enqueue_script( 'wfacp-izimodal', $this->get_admin_url() . '/includes/iziModal/iziModal.js', array(), WFACP_VERSION_DEV );
-				wp_enqueue_script( 'wfacp-vuejs', $this->get_admin_url() . '/includes/vuejs/vue.min.js', array(), '2.6.10' );
-				wp_enqueue_script( 'wfacp-vue-vfg', $this->get_admin_url() . '/includes/vuejs/vfg.min.js', array(), '2.3.4' );
-				wp_enqueue_script( 'wfacp-vue-multiselected', $this->get_admin_url() . '/includes/vuejs/vue-multiselect.min.js', array(), '2.1.0' );
-				wp_enqueue_script( 'wfacp-sweetalert2', $this->get_admin_url() . '/assets/js/wfacp-sweetalert.min.js', array(), WFACP_VERSION_DEV );
+				wp_enqueue_script( 'wfacp-izimodal', $this->get_admin_url() . '/includes/iziModal/iziModal.js', array(), WFACP_VERSION_DEV );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+				wp_enqueue_script( 'wfacp-vuejs', $this->get_admin_url() . '/includes/vuejs/vue.min.js', array(), '2.6.10' );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+				wp_enqueue_script( 'wfacp-vue-vfg', $this->get_admin_url() . '/includes/vuejs/vfg.min.js', array(), '2.3.4' );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+				wp_enqueue_script( 'wfacp-vue-multiselected', $this->get_admin_url() . '/includes/vuejs/vue-multiselect.min.js', array(), '2.1.0' );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+				wp_enqueue_script( 'wfacp-sweetalert2', $this->get_admin_url() . '/assets/js/wfacp-sweetalert.min.js', array(), WFACP_VERSION_DEV );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 
 				if ( function_exists( 'blocksy_get_jed_locale_data' ) ) {
 					wp_dequeue_style( 'ct-options-styles' );
@@ -216,17 +222,22 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				wp_dequeue_script( 'jquery-ui-accordion' );
 
-				/***Add general setting scripts***/
+				/***Add general setting scripts*/
 				if ( filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW ) === 'bwf_settings' ) {
 					BWF_Admin_General_Settings::get_instance()->maybe_add_js();
 				}
 
-				wp_enqueue_script( 'wfacp', $this->get_admin_url() . '/assets/js/wfacp_combined.min.js', array(
-					'jquery',
-					'underscore',
-					'backbone',
-					'updates'
-				), WFACP_VERSION_DEV );
+				wp_enqueue_script(
+					'wfacp',
+					$this->get_admin_url() . '/assets/js/wfacp_combined.min.js',
+					array(
+						'jquery',
+						'underscore',
+						'backbone',
+						'updates',
+					),
+					WFACP_VERSION_DEV
+				);
 				do_action( 'wfacp_admin_js_enqueued' );
 				$this->localize_data();
 			}
@@ -240,740 +251,855 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			wp_localize_script( 'wfacp', 'wfacp_data', $this->get_localize_data() );
 			wp_localize_script( 'wfacp', 'wfacp_localization', WFACP_Common::get_builder_localization() );
 			wp_localize_script( 'wfacp', 'wfacp_design_settings', $this->design_settings() );
-			wp_localize_script( 'wfacp', 'wfacp_secure', [
-				'nonce' => wp_create_nonce( 'wfacp_admin_secure_key' ),
-			] );
-
+			wp_localize_script(
+				'wfacp',
+				'wfacp_secure',
+				array(
+					'nonce' => wp_create_nonce( 'wfacp_admin_secure_key' ),
+				)
+			);
 		}
 
 		public function design_settings() {
 			$models = WFACP_Common::get_option( '', true );
 
-
 			$typography_fonts     = bwf_get_fonts_list();
 			$default_models       = array(
-				'wfacp_form_section_embed_forms_2_step_form_max_width'                          => '450',
-				'wfacp_form_section_embed_forms_2_form_border_width'                            => '1',
-				'wfacp_form_section_embed_forms_2_disable_steps_bar'                            => 'true',
-				'wfacp_form_section_embed_forms_2_form_border_type'                             => 'solid',
-				'wfacp_form_section_embed_forms_2_form_border_color'                            => '#bbbbbb',
-				'wfacp_form_section_embed_forms_2_form_inner_padding'                           => '15',
-				'wfacp_form_section_embed_forms_2_name_0'                                       => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
-				'wfacp_form_section_embed_forms_2_headline_0'                                   => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
-				'wfacp_form_section_embed_forms_2_step_heading_font_size'                       => 19,
-				'wfacp_form_section_embed_forms_2_heading_fs'                                   => 18,
-				'wfacp_form_section_embed_forms_2_heading_font_weight'                          => 'wfacp-bold',
-				'wfacp_form_section_embed_forms_2_heading_talign'                               => 'wfacp-text-left',
-				'wfacp_form_section_embed_forms_2_sec_heading_color'                            => '#424141',
-				'wfacp_form_section_embed_forms_2_sec_bg_color'                                 => 'transparent',
-				'wfacp_form_section_embed_forms_2_rbox_border_type'                             => 'none',
-				'wfacp_form_section_embed_forms_2_rbox_border_width'                            => '1',
-				'wfacp_form_section_embed_forms_2_rbox_padding'                                 => '0',
-				'wfacp_form_section_embed_forms_2_rbox_margin'                                  => '10',
-				'wfacp_form_section_embed_forms_2_sub_heading_fs'                               => 13,
-				'wfacp_form_section_embed_forms_2_sub_heading_font_weight'                      => 'wfacp-normal',
-				'wfacp_form_section_embed_forms_2_sub_heading_talign'                           => 'wfacp-text-left',
-				'wfacp_form_section_embed_forms_2_sec_sub_heading_color'                        => '#666666',
-				'wfacp_form_section_embed_forms_2_field_style_fs'                               => 13,
-				'wfacp_form_section_embed_forms_2_step_sub_heading_font_size'                   => 15,
-				'wfacp_form_section_embed_forms_2_step_alignment'                               => 'center',
-				'wfacp_form_section_ct_active_inactive_tab'                                     => 'active',
-				'wfacp_form_section_embed_forms_2_active_step_bg_color'                         => '#4c4c4c',
-				'wfacp_form_section_embed_forms_2_active_step_text_color'                       => '#ffffff',
-				'wfacp_form_section_embed_forms_2_active_step_tab_border_color'                 => '#f58e2d',
-				'wfacp_form_section_embed_forms_2_field_border_layout'                          => 'solid',
-				'wfacp_form_section_embed_forms_2_field_border_width'                           => '1',
-				'wfacp_form_section_embed_forms_2_field_style_color'                            => '#888888',
-				'wfacp_form_section_embed_forms_2_field_border_color'                           => '#c3c0c0',
-				'wfacp_form_section_embed_forms_2_field_focus_color'                            => '#61bdf7',
-				'wfacp_form_section_embed_forms_2_field_input_color'                            => '#404040',
-				'wfacp_form_section_payment_methods_heading'                                    => __( 'Payment Methods', 'woofunnels-aero-checkout' ),
-				'wfacp_form_section_payment_methods_sub_heading'                                => '',
-				'wfacp_form_section_embed_forms_2_btn_order-place_btn_text'                     => __( 'PLACE ORDER NOW', 'woofunnels-aero-checkout' ),
-				'wfacp_form_section_embed_forms_2_btn_order-place_fs'                           => 25,
-				'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding'           => '14',
-				'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding'           => '22',
-				'wfacp_form_section_embed_forms_2_btn_order-place_border_radius'                => '10',
-				'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight'              => 'bold',
-				'wfacp_form_section_embed_forms_2_btn_order-place_width'                        => '100%',
+				'wfacp_form_section_embed_forms_2_step_form_max_width' => '450',
+				'wfacp_form_section_embed_forms_2_form_border_width' => '1',
+				'wfacp_form_section_embed_forms_2_disable_steps_bar' => 'true',
+				'wfacp_form_section_embed_forms_2_form_border_type' => 'solid',
+				'wfacp_form_section_embed_forms_2_form_border_color' => '#bbbbbb',
+				'wfacp_form_section_embed_forms_2_form_inner_padding' => '15',
+				'wfacp_form_section_embed_forms_2_name_0' => __( 'GET YOUR FREE COPY OF AMAZING BOOK', 'woofunnels-aero-checkout' ),
+				'wfacp_form_section_embed_forms_2_headline_0' => __( 'Shipped in less than 3 days!', 'woofunnels-aero-checkout' ),
+				'wfacp_form_section_embed_forms_2_step_heading_font_size' => 19,
+				'wfacp_form_section_embed_forms_2_heading_fs' => 18,
+				'wfacp_form_section_embed_forms_2_heading_font_weight' => 'wfacp-bold',
+				'wfacp_form_section_embed_forms_2_heading_talign' => 'wfacp-text-left',
+				'wfacp_form_section_embed_forms_2_sec_heading_color' => '#424141',
+				'wfacp_form_section_embed_forms_2_sec_bg_color' => 'transparent',
+				'wfacp_form_section_embed_forms_2_rbox_border_type' => 'none',
+				'wfacp_form_section_embed_forms_2_rbox_border_width' => '1',
+				'wfacp_form_section_embed_forms_2_rbox_padding' => '0',
+				'wfacp_form_section_embed_forms_2_rbox_margin' => '10',
+				'wfacp_form_section_embed_forms_2_sub_heading_fs' => 13,
+				'wfacp_form_section_embed_forms_2_sub_heading_font_weight' => 'wfacp-normal',
+				'wfacp_form_section_embed_forms_2_sub_heading_talign' => 'wfacp-text-left',
+				'wfacp_form_section_embed_forms_2_sec_sub_heading_color' => '#666666',
+				'wfacp_form_section_embed_forms_2_field_style_fs' => 13,
+				'wfacp_form_section_embed_forms_2_step_sub_heading_font_size' => 15,
+				'wfacp_form_section_embed_forms_2_step_alignment' => 'center',
+				'wfacp_form_section_ct_active_inactive_tab' => 'active',
+				'wfacp_form_section_embed_forms_2_active_step_bg_color' => '#4c4c4c',
+				'wfacp_form_section_embed_forms_2_active_step_text_color' => '#ffffff',
+				'wfacp_form_section_embed_forms_2_active_step_tab_border_color' => '#f58e2d',
+				'wfacp_form_section_embed_forms_2_field_border_layout' => 'solid',
+				'wfacp_form_section_embed_forms_2_field_border_width' => '1',
+				'wfacp_form_section_embed_forms_2_field_style_color' => '#888888',
+				'wfacp_form_section_embed_forms_2_field_border_color' => '#c3c0c0',
+				'wfacp_form_section_embed_forms_2_field_focus_color' => '#61bdf7',
+				'wfacp_form_section_embed_forms_2_field_input_color' => '#404040',
+				'wfacp_form_section_payment_methods_heading' => __( 'Payment Methods', 'woofunnels-aero-checkout' ),
+				'wfacp_form_section_payment_methods_sub_heading' => '',
+				'wfacp_form_section_embed_forms_2_btn_order-place_btn_text' => __( 'PLACE ORDER NOW', 'woofunnels-aero-checkout' ),
+				'wfacp_form_section_embed_forms_2_btn_order-place_fs' => 25,
+				'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding' => '14',
+				'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding' => '22',
+				'wfacp_form_section_embed_forms_2_btn_order-place_border_radius' => '10',
+				'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight' => 'bold',
+				'wfacp_form_section_embed_forms_2_btn_order-place_width' => '100%',
 				'wfacp_form_section_embed_forms_2_btn_order-place_make_button_sticky_on_mobile' => 'no_sticky',
-				'wfacp_form_section_embed_forms_2_color_type'                                   => 'hover',
-				'wfacp_form_section_embed_forms_2_btn_order-place_bg_color'                     => '#f58e2d',
-				'wfacp_form_section_embed_forms_2_btn_order-place_text_color'                   => '#ffffff',
-				'wfacp_form_section_embed_forms_2_additional_text_color'                        => '#000000',
-				'wfacp_form_section_embed_forms_2_additional_bg_color'                          => '#f8f8f8',
-				'wfacp_form_section_embed_forms_2_validation_color'                             => '#ff0000',
-				'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color'               => '#d46a06',
-				'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color'             => '#ffffff',
-				'wfacp_form_section_text_below_placeorder_btn'                                  => __( '100% Secure & Safe Payments', 'woofunnels-aero-checkout' ),
-				'wfacp_form_section_embed_forms_2_form_content_color'                           => '#737373',
-				'wfacp_form_section_embed_forms_2_form_content_link_color'                      => '#dd7575',
-				'wfacp_form_section_embed_forms_2_section_bg_color'                             => '#ffffff',
-				'wfacp_form_section_embed_forms_2_form_content_link_color_type'                 => 'normal',
-				'wfacp_form_section_embed_forms_2_form_content_link_hover_color'                => '#965d5d',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_email'                          => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_email_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name'                     => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name_other_classes'       => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name'                      => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_phone'                          => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_phone_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing'               => '',
+				'wfacp_form_section_embed_forms_2_color_type' => 'hover',
+				'wfacp_form_section_embed_forms_2_btn_order-place_bg_color' => '#f58e2d',
+				'wfacp_form_section_embed_forms_2_btn_order-place_text_color' => '#ffffff',
+				'wfacp_form_section_embed_forms_2_additional_text_color' => '#000000',
+				'wfacp_form_section_embed_forms_2_additional_bg_color' => '#f8f8f8',
+				'wfacp_form_section_embed_forms_2_validation_color' => '#ff0000',
+				'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color' => '#d46a06',
+				'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color' => '#ffffff',
+				'wfacp_form_section_text_below_placeorder_btn' => __( '100% Secure & Safe Payments', 'woofunnels-aero-checkout' ),
+				'wfacp_form_section_embed_forms_2_form_content_color' => '#737373',
+				'wfacp_form_section_embed_forms_2_form_content_link_color' => '#dd7575',
+				'wfacp_form_section_embed_forms_2_section_bg_color' => '#ffffff',
+				'wfacp_form_section_embed_forms_2_form_content_link_color_type' => 'normal',
+				'wfacp_form_section_embed_forms_2_form_content_link_hover_color' => '#965d5d',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_email' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_email_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_first_name_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_last_name_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_phone' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_phone_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing' => '',
 				'wfacp_form_form_fields_1_embed_forms_2_shipping_same_as_billing_other_classes' => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1'                     => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1_other_classes'       => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_city'                          => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_city_other_classes'            => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode'                      => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_country'                       => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_country_other_classes'         => '',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_state'                         => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_shipping_state_other_classes'           => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1'                      => 'wfacp-col-full',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1_other_classes'        => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_city'                           => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_city_other_classes'             => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode'                       => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_country'                        => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_state'                          => 'wfacp-col-left-half',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode_other_classes'         => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_country_other_classes'          => '',
-				'wfacp_form_form_fields_1_embed_forms_2_billing_state_other_classes'            => '',
-				'wfacp_style_typography_embed_forms_2_content_ff'                               => 'default',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_city' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_city_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_country' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_country_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_state' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_shipping_state_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1' => 'wfacp-col-full',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_address_1_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_city' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_city_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_country' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_state' => 'wfacp-col-left-half',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_postcode_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_country_other_classes' => '',
+				'wfacp_form_form_fields_1_embed_forms_2_billing_state_other_classes' => '',
+				'wfacp_style_typography_embed_forms_2_content_ff' => 'default',
 			);
 			$models               = wp_parse_args( $models, $default_models );
-			$checkout_form_fields = [
+			$checkout_form_fields = array(
 				/* Form Style  */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
-						[
-							'type'         => "label",
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Form Style', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading ',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Width', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '640',
-							'model'        => 'wfacp_form_section_embed_forms_2_step_form_max_width'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_step_form_max_width',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Form Padding', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_last_half',
 							'default'      => '16',
-							'model'        => 'wfacp_form_section_embed_forms_2_form_inner_padding'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_form_inner_padding',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Border Type', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_third_half',
 							'default'       => 'solid',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'none', 'name' => 'None' ],
-								[ 'id' => 'solid', 'name' => 'Solid' ],
-								[ 'id' => 'double', 'name' => 'Double' ],
-								[ 'id' => 'dotted', 'name' => 'Dotted' ],
-								[ 'id' => 'dashed', 'name' => 'Dashed' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_form_border_type'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'none',
+									'name' => 'None',
+								),
+								array(
+									'id'   => 'solid',
+									'name' => 'Solid',
+								),
+								array(
+									'id'   => 'double',
+									'name' => 'Double',
+								),
+								array(
+									'id'   => 'dotted',
+									'name' => 'Dotted',
+								),
+								array(
+									'id'   => 'dashed',
+									'name' => 'Dashed',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_form_border_type',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Width', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half',
 							'default'      => '640',
-							'model'        => 'wfacp_form_section_embed_forms_2_form_border_width'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_embed_forms_2_form_border_width',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Border Color', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_last_half wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_form_border_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_form_border_color' ]
-						],
-						[
-							'type'          => "select",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_form_border_color' ),
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Typography', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
 							'default'       => 'abeezee',
-							'selectOptions' => [
+							'selectOptions' => array(
 								'hideNoneSelectedText' => true,
-							],
+							),
 							'values'        => $typography_fonts,
-							'model'         => 'wfacp_style_typography_embed_forms_2_content_ff'
-						],
-					]
-				],
+							'model'         => 'wfacp_style_typography_embed_forms_2_content_ff',
+						),
+					),
+				),
 				/* Top Bar */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Top Bar', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading wfacp_section_start',
-						],
-						[
-							'type'         => "switch",
+						),
+						array(
+							'type'         => 'switch',
 							'label'        => __( 'Disable Top Bar', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_full',
 							'default'      => 'Off',
 							'textOn'       => 'on',
 							'textOff'      => 'Off',
-							'model'        => 'wfacp_form_section_embed_forms_2_disable_steps_bar'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_embed_forms_2_disable_steps_bar',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_name_0'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_embed_forms_2_name_0',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Sub Heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 ',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_headline_0'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_headline_0',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Step Heading (in px)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_step_heading_font_size'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_step_heading_font_size',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Step Sub Heading (in px)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_step_sub_heading_font_size'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_step_sub_heading_font_size',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Text Alignment', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50 wfacp_clear',
 							'default'       => 'left',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'left', 'name' => 'left' ],
-								[ 'id' => 'center', 'name' => 'center' ],
-								[ 'id' => 'right', 'name' => 'Right' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_step_alignment'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'left',
+									'name' => 'left',
+								),
+								array(
+									'id'   => 'center',
+									'name' => 'center',
+								),
+								array(
+									'id'   => 'right',
+									'name' => 'Right',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_step_alignment',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Background', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field',
 							'default'      => '#e61e1e',
 							'model'        => 'wfacp_form_section_embed_forms_2_active_step_bg_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_active_step_bg_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_active_step_bg_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Text', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field',
 							'default'      => '#e61e1e',
 							'model'        => 'wfacp_form_section_embed_forms_2_active_step_text_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_active_step_text_color' ]
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_active_step_text_color' ),
 
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Tab Color', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half    wfacp_color_field',
 							'default'      => '#e61e1e',
 							'model'        => 'wfacp_form_section_embed_forms_2_active_step_tab_border_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_active_step_tab_border_color' ]
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_active_step_tab_border_color' ),
 
-						],
-					]
-				],
+						),
+					),
+				),
 				/* Section  */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Section', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Font Size (in px)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_heading_fs'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_heading_fs',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Font Weight', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50 wfacp_last_half',
 							'default'       => 'wfacp-normal',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'wfacp-normal', 'name' => 'Normal' ],
-								[ 'id' => 'wfacp-bold', 'name' => 'Bold' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_heading_font_weight'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'wfacp-normal',
+									'name' => 'Normal',
+								),
+								array(
+									'id'   => 'wfacp-bold',
+									'name' => 'Bold',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_heading_font_weight',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Margin Bottom', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_rbox_margin'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_rbox_margin',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Padding (Left and Right)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_rbox_padding'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_rbox_padding',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Text Alignment', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50 wfacp_clear',
 							'default'       => 'wfacp-text-left',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'wfacp-text-left', 'name' => 'left' ],
-								[ 'id' => 'wfacp-text-center', 'name' => 'center' ],
-								[ 'id' => 'wfacp-text-right', 'name' => 'Right' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_heading_talign'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'wfacp-text-left',
+									'name' => 'left',
+								),
+								array(
+									'id'   => 'wfacp-text-center',
+									'name' => 'center',
+								),
+								array(
+									'id'   => 'wfacp-text-right',
+									'name' => 'Right',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_heading_talign',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Section Heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50  wfacp_color_field',
 							'default'      => '#e61e1e',
 							'model'        => 'wfacp_form_section_embed_forms_2_sec_heading_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_sec_heading_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_sec_heading_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Section Background', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_last_half wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_sec_bg_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_sec_bg_color' ]
-						],
-						[
-							'type'          => "select",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_sec_bg_color' ),
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Border Type', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_third_half',
 							'default'       => 'solid',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'none', 'name' => 'None' ],
-								[ 'id' => 'solid', 'name' => 'Solid' ],
-								[ 'id' => 'double', 'name' => 'Double' ],
-								[ 'id' => 'dotted', 'name' => 'Dotted' ],
-								[ 'id' => 'dashed', 'name' => 'Dashed' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_rbox_border_type'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'none',
+									'name' => 'None',
+								),
+								array(
+									'id'   => 'solid',
+									'name' => 'Solid',
+								),
+								array(
+									'id'   => 'double',
+									'name' => 'Double',
+								),
+								array(
+									'id'   => 'dotted',
+									'name' => 'Dotted',
+								),
+								array(
+									'id'   => 'dashed',
+									'name' => 'Dashed',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_rbox_border_type',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Width', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half',
 							'default'      => '1',
-							'model'        => 'wfacp_form_section_embed_forms_2_rbox_border_width'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_embed_forms_2_rbox_border_width',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Color', 'woofunnels-aero-checkout ' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field wfacp_last_half',
 							'default'      => '#e61e1e',
 							'model'        => 'wfacp_form_section_embed_forms_2_rbox_border_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_rbox_border_color' ]
-						],
-					]
-				],
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_rbox_border_color' ),
+						),
+					),
+				),
 				/* Sub Section  */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Section Sub heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Font Size (in px)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_sub_heading_fs'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_sub_heading_fs',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Font Weight', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
 							'default'       => 'normal',
-							'values'        => [
-								[ 'id' => 'wfacp-normal', 'name' => 'Normal' ],
-								[ 'id' => 'wfacp-bold', 'name' => 'Bold' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_sub_heading_font_weight'
+							'values'        => array(
+								array(
+									'id'   => 'wfacp-normal',
+									'name' => 'Normal',
+								),
+								array(
+									'id'   => 'wfacp-bold',
+									'name' => 'Bold',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_sub_heading_font_weight',
 
-						],
-						[
-							'type'          => "select",
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Text Alignment', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50 ',
 							'default'       => 'wfacp-text-left',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'wfacp-text-left', 'name' => 'left' ],
-								[ 'id' => 'wfacp-text-center', 'name' => 'center' ],
-								[ 'id' => 'wfacp-text-right', 'name' => 'Right' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_sub_heading_talign'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'wfacp-text-left',
+									'name' => 'left',
+								),
+								array(
+									'id'   => 'wfacp-text-center',
+									'name' => 'center',
+								),
+								array(
+									'id'   => 'wfacp-text-right',
+									'name' => 'Right',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_sub_heading_talign',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Section Subheading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_sec_sub_heading_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_sec_sub_heading_color' ]
-						],
-					]
-				],
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_sec_sub_heading_color' ),
+						),
+					),
+				),
 				/* Field Style */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Field Style', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Font Size (in px)', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => '',
-							'model'        => 'wfacp_form_section_embed_forms_2_field_style_fs'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_field_style_fs',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Field Border Layout', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
 							'default'       => 'solid',
-							'selectOptions' => [ 'hideNoneSelectedText' => true ],
-							'values'        => [
-								[ 'id' => 'none', 'name' => 'None' ],
-								[ 'id' => 'solid', 'name' => 'Solid' ],
-								[ 'id' => 'double', 'name' => 'Double' ],
-								[ 'id' => 'dotted', 'name' => 'Dotted' ],
-								[ 'id' => 'dashed', 'name' => 'Dashed' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_field_border_layout'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'selectOptions' => array( 'hideNoneSelectedText' => true ),
+							'values'        => array(
+								array(
+									'id'   => 'none',
+									'name' => 'None',
+								),
+								array(
+									'id'   => 'solid',
+									'name' => 'Solid',
+								),
+								array(
+									'id'   => 'double',
+									'name' => 'Double',
+								),
+								array(
+									'id'   => 'dotted',
+									'name' => 'Dotted',
+								),
+								array(
+									'id'   => 'dashed',
+									'name' => 'Dashed',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_field_border_layout',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Field Border Width', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_field_border_width'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_embed_forms_2_field_border_width',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Field Label', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_field_style_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_field_style_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_field_style_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Field Border', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_field_border_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_field_border_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_field_border_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Field Focus', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_field_focus_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_field_focus_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_field_focus_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Field Value', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_third_half wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_field_input_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_field_input_color' ]
-						],
-					]
-				],
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_field_input_color' ),
+						),
+					),
+				),
 				/* Buttons */
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Buttons', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Button Label', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_full',
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_btn_text'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_btn_text',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Font Size', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_fs'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_fs',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Padding Top Bottom', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_top_bottom_padding',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Padding Left Right', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "number",
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_left_right_padding',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'number',
 							'label'        => __( 'Border Radius', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_border_radius'
-						],
-						[
-							'type'          => "select",
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_border_radius',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Font Weight', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
-							'selectOptions' => [ 'hideNoneSelectedText' => false ],
+							'selectOptions' => array( 'hideNoneSelectedText' => false ),
 							'default'       => 'wfacp-normal',
-							'values'        => [
-								[ 'id' => 'normal', 'name' => 'Normal' ],
-								[ 'id' => 'bold', 'name' => 'Bold' ],
-							],
+							'values'        => array(
+								array(
+									'id'   => 'normal',
+									'name' => 'Normal',
+								),
+								array(
+									'id'   => 'bold',
+									'name' => 'Bold',
+								),
+							),
 
-							'model' => 'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight'
-						],
-						[
-							'type'         => "select",
+							'model'         => 'wfacp_form_section_embed_forms_2_btn_order-place_btn_font_weight',
+						),
+						array(
+							'type'         => 'select',
 							'label'        => __( 'Width', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50',
 							'default'      => 'normal',
-							'values'       => [
-								[ 'id' => '100', 'name' => 'Full Width' ],
-								[ 'id' => 'initial', 'name' => 'Normal' ],
-							],
-							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_width'
-						],
-						[
-							'type'          => "select",
+							'values'       => array(
+								array(
+									'id'   => '100',
+									'name' => 'Full Width',
+								),
+								array(
+									'id'   => 'initial',
+									'name' => 'Normal',
+								),
+							),
+							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_width',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Alignment', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
 							'default'       => 'left',
-							'selectOptions' => [ 'hideNoneSelectedText' => false ],
-							'values'        => [
-								[ 'id' => 'left', 'name' => 'left' ],
-								[ 'id' => 'center', 'name' => 'center' ],
-								[ 'id' => 'right', 'name' => 'Right' ],
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_btn_order-place_talign'
-						],
-						[
-							'type'          => "select",
+							'selectOptions' => array( 'hideNoneSelectedText' => false ),
+							'values'        => array(
+								array(
+									'id'   => 'left',
+									'name' => 'left',
+								),
+								array(
+									'id'   => 'center',
+									'name' => 'center',
+								),
+								array(
+									'id'   => 'right',
+									'name' => 'Right',
+								),
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_btn_order-place_talign',
+						),
+						array(
+							'type'          => 'select',
 							'label'         => __( 'Sticky on Mobile', 'woofunnels-aero-checkout' ),
 							'styleClasses'  => 'wfacp_design_setting_50',
-							'selectOptions' => [ 'hideNoneSelectedText' => false ],
+							'selectOptions' => array( 'hideNoneSelectedText' => false ),
 							'default'       => 'no_sticky',
-							'values'        => [
-								[ 'id' => 'yes_sticky', 'name' => __( 'Yes', 'funnel-builder' ) ],
-								[ 'id' => 'no_sticky', 'name' => __( 'No', 'funnel-builder' ) ],
+							'values'        => array(
+								array(
+									'id'   => 'yes_sticky',
+									'name' => __( 'Yes', 'funnel-builder' ),
+								),
+								array(
+									'id'   => 'no_sticky',
+									'name' => __( 'No', 'funnel-builder' ),
+								),
 
-							],
-							'model'         => 'wfacp_form_section_embed_forms_2_btn_order-place_make_button_sticky_on_mobile'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							),
+							'model'         => 'wfacp_form_section_embed_forms_2_btn_order-place_make_button_sticky_on_mobile',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Background', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Label', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_text_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_text_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_text_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Background Hover', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_bg_hover_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Label Hover', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color' ]
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_btn_order-place_text_hover_color' ),
 
-						],
-						[
-							'type'         => "textArea",
+						),
+						array(
+							'type'         => 'textArea',
 							'label'        => __( 'Text Below Place Order Buttons', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_full',
-							'model'        => 'wfacp_form_section_text_below_placeorder_btn'
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'model'        => 'wfacp_form_section_text_below_placeorder_btn',
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Color', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_additional_text_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_additional_text_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_additional_text_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Background', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_additional_bg_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_additional_bg_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_additional_bg_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Validation Text', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_validation_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_validation_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_validation_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Form Content', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_form_content_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_form_content_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_form_content_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Background', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_section_bg_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_section_bg_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_section_bg_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Form Links Color', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_form_content_link_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_form_content_link_color' ]
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_form_content_link_color' ),
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Form Links Hover Color', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_50 wfacp_color_field',
 							'model'        => 'wfacp_form_section_embed_forms_2_form_content_link_hover_color',
-							'attributes'   => [ 'id' => 'wfacp_form_section_embed_forms_2_form_content_link_hover_color' ]
-						],
+							'attributes'   => array( 'id' => 'wfacp_form_section_embed_forms_2_form_content_link_hover_color' ),
+						),
 
-					]
-				],
-				//Payment Gateways
-				[
-					"styleClasses" => "wfacp_design_accordion",
-					'attributes'   => [ 'status' => 'close' ],
-					"fields"       => [
+					),
+				),
+				// Payment Gateways
+				array(
+					'styleClasses' => 'wfacp_design_accordion',
+					'attributes'   => array( 'status' => 'close' ),
+					'fields'       => array(
 
-						[
-							'type'         => "label",
+						array(
+							'type'         => 'label',
 							'label'        => __( 'Payment Methods', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_main_design_heading',
-						],
-						[
-							'type'         => "input",
-							'inputType'    => "text",
+						),
+						array(
+							'type'         => 'input',
+							'inputType'    => 'text',
 							'label'        => __( 'Heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_full',
-							'model'        => 'wfacp_form_section_payment_methods_heading'
-						],
-						[
-							'type'         => "textArea",
+							'model'        => 'wfacp_form_section_payment_methods_heading',
+						),
+						array(
+							'type'         => 'textArea',
 							'label'        => __( 'Sub heading', 'woofunnels-aero-checkout' ),
 							'styleClasses' => 'wfacp_design_setting_full',
-							'model'        => 'wfacp_form_section_payment_methods_sub_heading'
-						]
-					]
-				],
-			];
+							'model'        => 'wfacp_form_section_payment_methods_sub_heading',
+						),
+					),
+				),
+			);
 
-
-			return [ 'schema' => $checkout_form_fields, 'model' => $models ];
+			return array(
+				'schema' => $checkout_form_fields,
+				'model'  => $models,
+			);
 		}
 
 		public function get_localize_data() {
@@ -1003,12 +1129,12 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$this->localize_data['template_edit_url'] = $this->template_edit_url();
 			$this->localize_data['currency']          = get_woocommerce_currency_symbol();
 			$this->localize_data['global_settings']   = WFACP_Common::global_settings( $this->wfacp_id );
-			$this->localize_data['parameters']        = [
+			$this->localize_data['parameters']        = array(
 				'add_to_checkout' => WFACP_Core()->public->aero_add_to_checkout_parameter(),
 				'qty'             => WFACP_Core()->public->aero_add_to_checkout_product_quantity_parameter(),
 				'default'         => WFACP_Core()->public->aero_default_value_parameter(),
 				'best_value'      => WFACP_Core()->public->aero_best_value_parameter(),
-			];
+			);
 
 			if ( ! empty( $this->wfacp_id ) ) {
 				$post                                = get_post( $this->wfacp_id );
@@ -1018,11 +1144,14 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				$this->localize_data['post_content'] = WFACP_Common::get_post_meta_data( $this->wfacp_id, '_post_description' );
 				$this->localize_data['post_url']     = get_the_permalink( $this->wfacp_id );
 
-				$this->localize_data['product_page_url']         = add_query_arg( [
-					'page'     => 'wfacp',
-					'wfacp_id' => $this->wfacp_id,
-					'section'  => 'product',
-				], admin_url( 'admin.php' ) );
+				$this->localize_data['product_page_url']         = add_query_arg(
+					array(
+						'page'     => 'wfacp',
+						'wfacp_id' => $this->wfacp_id,
+						'section'  => 'product',
+					),
+					admin_url( 'admin.php' )
+				);
 				$this->localize_data['products']                 = $this->get_page_product();
 				$this->localize_data['products_settings']        = WFACP_Common::get_page_product_settings( $this->wfacp_id );
 				$this->localize_data['design']                   = $this->get_page_design();
@@ -1040,62 +1169,70 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$this->localize_data['available_countries']        = $this->get_available_countries();
 			$this->localize_data['pageBuildersOptions']        = WFACP_Core()->template_loader->get_plugins_groupby_page_builders();
 			$this->localize_data['pageBuildersTexts']          = WFACP_Core()->template_loader->localize_page_builder_texts();
-			$this->localize_data['wfacp_i18n']                 = [
+			$this->localize_data['wfacp_i18n']                 = array(
 				'plugin_activate' => __( 'Activating plugin...', 'woofunnels-aero-checkout' ),
 				'plugin_install'  => __( 'Installing plugin...', 'woofunnels-aero-checkout' ),
 				'importing'       => __( 'Importing template...', 'woofunnels-aero-checkout' ),
-			];
+			);
 
 			return apply_filters( 'wfacp_admin_localize_data', $this->localize_data );
-
 		}
 
 		public function template_edit_url() {
-			$url        = add_query_arg( [
-				'wfacp_customize' => 'loaded',
-				'wfacp_id'        => $this->wfacp_id,
-			], get_the_permalink( $this->wfacp_id ) );
-			$return_url = add_query_arg( [
-				'page'     => 'wfacp',
-				'section'  => 'design',
-				'wfacp_id' => $this->wfacp_id,
-			], admin_url( 'admin.php' ) );
+			$url        = add_query_arg(
+				array(
+					'wfacp_customize' => 'loaded',
+					'wfacp_id'        => $this->wfacp_id,
+				),
+				get_the_permalink( $this->wfacp_id )
+			);
+			$return_url = add_query_arg(
+				array(
+					'page'     => 'wfacp',
+					'section'  => 'design',
+					'wfacp_id' => $this->wfacp_id,
+				),
+				admin_url( 'admin.php' )
+			);
 
+			$customize_url = add_query_arg(
+				array(
+					'url'             => apply_filters( 'wfacp_customize_url', urlencode_deep( $url ), $this ),
+					'wfacp_customize' => 'loaded',
+					'wfacp_id'        => $this->wfacp_id,
+					'return'          => urlencode( $return_url ),
+				),
+				admin_url( 'customize.php' )
+			);
 
-			$customize_url = add_query_arg( [
-				'url'             => apply_filters( 'wfacp_customize_url', urlencode_deep( $url ), $this ),
-				'wfacp_customize' => 'loaded',
-				'wfacp_id'        => $this->wfacp_id,
-				'return'          => urlencode( $return_url ),
-			], admin_url( 'customize.php' ) );
-
-			$urls['pre_built']   = [
+			$urls['pre_built']   = array(
 				'url'         => $customize_url,
-				'button_text' => __( 'Customize', 'woofunnels-aero-checkout' )
-			];
-			$urls['embed_forms'] = [
+				'button_text' => __( 'Customize', 'woofunnels-aero-checkout' ),
+			);
+			$urls['embed_forms'] = array(
 				'url'         => $customize_url,
-				'button_text' => __( 'Customize Form', 'woofunnels-aero-checkout' )
-			];
+				'button_text' => __( 'Customize Form', 'woofunnels-aero-checkout' ),
+			);
 
+			$customize_url = add_query_arg(
+				array(
+					'page_id'  => $this->wfacp_id,
+					'et_fb'    => '1',
+					'wfacp_id' => $this->wfacp_id,
+				),
+				get_the_permalink( $this->wfacp_id )
+			);
 
-			$customize_url = add_query_arg( [
-				'page_id'  => $this->wfacp_id,
-				'et_fb'    => '1',
-				'wfacp_id' => $this->wfacp_id,
-			], get_the_permalink( $this->wfacp_id ) );
-
-			$urls['divi'] = [
+			$urls['divi'] = array(
 				'url'         => $customize_url,
-				'button_text' => __( 'Edit', 'woofunnels-aero-checkout' )
-			];
-
+				'button_text' => __( 'Edit', 'woofunnels-aero-checkout' ),
+			);
 
 			return apply_filters( 'wfacp_template_edit_link', $urls, $this );
 		}
 
 		private function get_page_product() {
-			$output   = [];
+			$output   = array();
 			$products = WFACP_Common::get_page_product( $this->wfacp_id );
 
 			if ( is_array( $products ) && count( $products ) > 0 ) {
@@ -1145,7 +1282,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						$default['is_sold_individually'] = $product->is_sold_individually();
 						$resp['product'][ $unique_id ]   = $default;
 						$output[ $unique_id ]            = $default;
-					};
+					}
 				}
 				if ( count( $output ) > 0 ) {
 					return $output;
@@ -1161,12 +1298,15 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$settings         = WFACP_Common::get_page_design( $this->wfacp_id, true );
 			$design_type      = WFACP_Core()->template_loader->get_template_type();
 			$design_type_data = WFACP_Core()->template_loader->get_template_type_data();
-			$out              = array_merge( [
-				'designs'          => $templates,
-				'design_types'     => $design_type,
-				'design_type_data' => $design_type_data,
-				'template_active'  => 'yes'
-			], $settings );
+			$out              = array_merge(
+				array(
+					'designs'          => $templates,
+					'design_types'     => $design_type,
+					'design_type_data' => $design_type_data,
+					'template_active'  => 'yes',
+				),
+				$settings
+			);
 
 			return $out;
 		}
@@ -1219,7 +1359,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						$id   = $field['id'];
 						$type = $field['field_type'];
 						if ( ! isset( $field['cssready'] ) ) {
-							$input_fields[ $type ][ $id ]['cssready'] = [];
+							$input_fields[ $type ][ $id ]['cssready'] = array();
 						}
 						if ( $id == 'address' || $id == 'shipping-address' ) {
 							if ( isset( $this->address_fields[ $type ] ) ) {
@@ -1230,7 +1370,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						$temp_page_field = $page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ];
 
 						$page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ] = apply_filters( 'wfacp_builder_merge_field_arguments', $temp_page_field, $id, $type, $available_fields );
-
 
 						if ( isset( $input_fields[ $type ][ $id ] ) ) {
 							unset( $input_fields[ $type ][ $id ] );
@@ -1254,23 +1393,21 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						$input_fields[ $type ][ $field_id ]['data_label'] = $field['label'];
 					}
 				}
-
 			}
-			$input_fields = [
+			$input_fields = array(
 				'input_fields'     => $input_fields,
 				'available_fields' => $available_fields,
-			];
+			);
 			$data         = array_merge( $page_data, $input_fields );
-
 
 			return $data;
 		}
 
 		private function get_checkout_field() {
 			$billing = WFACP_Common::get_address_fields( 'billing_' );
-			$output  = [
+			$output  = array(
 				'billing' => $billing,
-			];
+			);
 
 			$products_fields = WFACP_Common::get_product_field();
 			if ( count( $products_fields ) > 0 ) {
@@ -1311,7 +1448,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		private function add_address_field( $input_fields, $force = false ) {
 
-			foreach ( [ 'billing' ] as $type ) {
+			foreach ( array( 'billing' ) as $type ) {
 				if ( isset( $input_fields[ $type ] ) && ! isset( $this->address_fields[ $type ]['address'] ) || true == $force ) {
 
 					$input_fields[ $type ]['address'] = WFACP_Common::get_single_address_fields( $type );
@@ -1330,31 +1467,31 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		 * @return array
 		 */
 		public function global_dependency_messages() {
-			$aero_messages = [];
+			$aero_messages = array();
 			if ( wc_shipping_enabled() ) {
 
 				$shipping_location = admin_url( 'admin.php?page=wc-settings' );
 				$shipping_methods  = admin_url( 'admin.php?page=wc-settings&tab=shipping' );
 				$msg               = __( sprintf( 'Your store has <a href="%s">shipping location</a> enabled. Depending upon shipping method configuration, checkout may need  "Order Summary" field. Please drag "Order Summary" field to place in form. ', $shipping_location, $shipping_methods ), 'funnel-builder' );
-				$aero_messages[]   = [
+				$aero_messages[]   = array(
 					'message'     => $msg,
-					'ids'         => [
+					'ids'         => array(
 						'shipping_calculator',
-						'order_summary'
-					],
+						'order_summary',
+					),
 					'show'        => 'yes',
 					'dismissible' => true,
 					'is_global'   => false,
 					'type'        => 'wfacp_warning',
 					'call_back'   => '',
-					'key'         => 'wfacp_shipping_location_enabled_warning'
-				];
+					'key'         => 'wfacp_shipping_location_enabled_warning',
+				);
 
 				if ( wc_ship_to_billing_address_only() ) {
 
 					$msg = sprintf( __( "<a href='%s'>Shipping destination</a> is set to 'Force shipping to customer billing address'. Please remove Shipping Address field from the checkout form.", 'woofunnels-aero-checkout' ), $shipping_methods );
 
-					$aero_messages[] = [
+					$aero_messages[] = array(
 						'message'       => $msg,
 						'id'            => 'shipping_address',
 						'show'          => 'yes',
@@ -1362,14 +1499,13 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						'reverse_check' => true,
 						'is_global'     => false,
 						'type'          => 'wfacp_error',
-					];
+					);
 				}
-
 			}
 
 			if ( get_option( 'woocommerce_ship_to_countries' ) == 'disabled' ) {
-				$msg = sprintf( __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'woofunnels-aero-checkout' ), admin_url( 'admin.php?page=wc-settings' ) );
-				$aero_messages[] = [
+				$msg             = sprintf( __( "<a href='%s' target='_blank'>Shipping Location</a> is disabled. Please replace Shipping Address with Billing Address field or enable Shipping Location.", 'woofunnels-aero-checkout' ), admin_url( 'admin.php?page=wc-settings' ) );
+				$aero_messages[] = array(
 					'message'       => $msg,
 					'id'            => 'shipping_address',
 					'show'          => 'yes',
@@ -1378,28 +1514,26 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					'is_global'     => false,
 					'type'          => 'wfacp_error',
 					'call_back'     => '',
-					'key'           => 'wfacp_wc_ship_to_countries_notice_error'
-				];
+					'key'           => 'wfacp_wc_ship_to_countries_notice_error',
+				);
 			}
 
-			$aero_messages[] = [
+			$aero_messages[] = array(
 				'message'     => __( 'Billing First Name & Last Name are available in the form. Please disable First Name and Last Name from Billing Address field.', 'woofunnels-aero-checkout' ),
 				'show'        => 'yes',
 				'dismissible' => false,
 				'is_global'   => false,
 				'type'        => 'wfacp_error',
 				'call_back'   => 'wfacp_duplicate_billing_first_and_last_name',
-			];
+			);
 
-
-			$messages = apply_filters( 'wfacp_global_dependency_messages', [] );
-
+			$messages = apply_filters( 'wfacp_global_dependency_messages', array() );
 
 			if ( ! empty( $messages ) && is_array( $messages ) ) {
 				$aero_messages = array_merge( $aero_messages, $messages );
 			}
 
-			$final_messages = [];
+			$final_messages = array();
 			if ( empty( $aero_messages ) ) {
 				$final_messages = new stdClass();
 			} else {
@@ -1410,7 +1544,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 						$pageID = WFACP_Common::get_id();
 						$mid    = md5( $msg['message'] . $pageID );
 					}
-
 
 					if ( isset( $msg['dismissible'] ) ) {
 						$msg['dismissible'] = wc_string_to_bool( $msg['dismissible'] );
@@ -1428,7 +1561,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			if ( empty( $messages ) ) {
 				return $messages;
 			}
-			$hide_messages = get_option( 'wfacp_global_notifications', [] );
+			$hide_messages = get_option( 'wfacp_global_notifications', array() );
 
 			$post_message = get_post_meta( WFACP_Common::get_id(), 'notifications', true );
 			if ( is_array( $post_message ) ) {
@@ -1438,7 +1571,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				return $messages;
 			}
 
-
 			foreach ( $messages as $mid => $message ) {
 				if ( array_key_exists( $mid, $hide_messages ) ) {
 					unset( $messages[ $mid ] );
@@ -1446,15 +1578,17 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			return $messages;
-
 		}
 
 		public function get_available_countries() {
-			$output    = [];
+			$output    = array();
 			$countries = WC()->countries->get_allowed_countries();
 			foreach ( $countries as $code => $country ) {
 				$country  = html_entity_decode( $country );
-				$output[] = [ 'id' => $code, 'name' => $country ];
+				$output[] = array(
+					'id'   => $code,
+					'name' => $country,
+				);
 			}
 
 			return $output;
@@ -1464,29 +1598,27 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			if ( WFACP_Common::is_customizer() ) {
 				$id = WFACP_Common::get_id();
 
-
 				?>
-                <style>
-                    li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_ct_step_form_steps {
-                        border-top: none;
-                    }
+				<style>
+					li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_ct_step_form_steps {
+						border-top: none;
+					}
 
-                    li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_1,
-                    li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_2,
-                    li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_3 {
-                        border-top: none;
-                    }
-                </style>
+					li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_1,
+					li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_2,
+					li#customize-control-wfacp_c_<?php echo $id; ?>-wfacp_form_section_step_3 {
+						border-top: none;
+					}
+				</style>
 				<?php
 
 				wp_enqueue_style( 'wfacp-customizer', $this->get_admin_url() . '/assets/css/wfacp-customizer.css', array(), WFACP_VERSION_DEV );
 				wp_enqueue_style( 'wfacp-modal-css', $this->get_admin_url() . '/assets/css/wfacp-modal.css', array(), WFACP_VERSION_DEV );
-				wp_enqueue_script( 'wfacp-modal-js', $this->get_admin_url() . '/assets/js/wfacp-modal.js', array(), WFACP_VERSION_DEV );
+				wp_enqueue_script( 'wfacp-modal-js', $this->get_admin_url() . '/assets/js/wfacp-modal.js', array(), WFACP_VERSION_DEV );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 			}
 		}
 
 		public function open_admin_bar() {
-
 
 			echo "<style>
 #order_data #wfacp_admin_advanced_field input[type='radio']{width: auto;float: left;margin: 0 5px 5px 0;}
@@ -1497,7 +1629,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		public function admin_page() {
 
-			if ( isset( $_GET['page'] ) && $_GET['page'] === 'wfacp' ) {
+			if ( isset( $_GET['page'] ) && $_GET['page'] === 'wfacp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 
 				if ( filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW ) === 'bwf_settings' ) {
 					BWF_Admin_General_Settings::get_instance()->__callback();
@@ -1510,7 +1642,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
 						include __DIR__ . '/views/view.php';
 					}
-
 				}
 			}
 		}
@@ -1519,7 +1650,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 			if ( is_array( $address ) && count( $address ) > 0 ) {
 				foreach ( $address as $key => $field ) {
-					$address[ $key ]['cssready'] = [];
+					$address[ $key ]['cssready'] = array();
 				}
 			}
 
@@ -1538,17 +1669,21 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				return;
 			}
 			try {
-				$wfacp_id = apply_filters( 'wfacp_show_advanced_field_order', wfacp_get_order_meta( $order, '_wfacp_post_id' ) );;
+				$wfacp_id = apply_filters( 'wfacp_show_advanced_field_order', wfacp_get_order_meta( $order, '_wfacp_post_id' ) );
+
 				if ( empty( $wfacp_id ) ) {
 					return;
 				}
 				$title      = get_the_title( $wfacp_id );
-				$title_link = add_query_arg( [
-					'page'     => 'wfacp',
-					'wfacp_id' => $wfacp_id,
-					'section'  => 'product',
-					'new_ui'   => 'wffn',
-				], admin_url( 'admin.php' ) );
+				$title_link = add_query_arg(
+					array(
+						'page'     => 'wfacp',
+						'wfacp_id' => $wfacp_id,
+						'section'  => 'product',
+						'new_ui'   => 'wffn',
+					),
+					admin_url( 'admin.php' )
+				);
 
 				$permalink = wfacp_get_order_meta( $order, '_wfacp_source' );
 				if ( empty( $permalink ) ) {
@@ -1556,18 +1691,18 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				}
 				$display_text = str_replace( home_url(), '', $permalink );
 				?>
-                <div style="clear: both;">
-                    <style>
-                        #wfacp_admin_advanced_field .optional {
-                            display: none;
-                        }
-                    </style>
-                </div>
-                <div style="margin-top:15px" class="wfacp_order_backend_field_container">
-                    <h3 style="display: inline">Checkout</h3>
-                    <p><b><?php _e( 'Template', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $title_link; ?>" target="_blank"><?php echo $title; ?></a></p>
-                    <p><b><?php _e( 'Source', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $permalink; ?>" target="_blank"><?php echo $display_text; ?></a></p>
-                </div>
+				<div style="clear: both;">
+					<style>
+						#wfacp_admin_advanced_field .optional {
+							display: none;
+						}
+					</style>
+				</div>
+				<div style="margin-top:15px" class="wfacp_order_backend_field_container">
+					<h3 style="display: inline">Checkout</h3>
+					<p><b><?php _e( 'Template', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $title_link; ?>" target="_blank"><?php echo $title; ?></a></p>
+					<p><b><?php _e( 'Source', 'woofunnel-aero-checkout' ); ?>:</b> <a href="<?php echo $permalink; ?>" target="_blank"><?php echo $display_text; ?></a></p>
+				</div>
 				<?php
 				$wfacp_id = absint( $wfacp_id );
 				$cfields  = WFACP_Common::get_page_custom_fields( $wfacp_id );
@@ -1576,7 +1711,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				}
 				$advancedFields = $cfields['advanced'];
 
-
 				if ( ! is_array( $advancedFields ) || count( $advancedFields ) == 0 ) {
 					return;
 				}
@@ -1584,9 +1718,12 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				$heading_print   = false;
 				$checkout_fields = get_post_meta( $wfacp_id, '_wfacp_checkout_fields', true );
 
-
 				foreach ( $advancedFields as $field_key => $field ) {
 					if ( empty( $field ) || ! isset( $field['is_wfacp_field'] ) || false === wc_string_to_bool( $field['is_wfacp_field'] ) ) {
+						continue;
+					}
+					// Only show fields that are actually on the checkout form
+					if ( ! isset( $checkout_fields['advanced'][ $field_key ] ) ) {
 						continue;
 					}
 					if ( ! empty( $field['options'] ) && isset( $checkout_fields['advanced'][ $field_key ] ) ) {
@@ -1605,7 +1742,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					$tmp_key   = $field_key;
 					$field_key = 'wfacp_' . $field_key;
 					if ( false == $heading_print ) {
-						printf( '<div style="clear: both;"></div><div style="margin-top:15px" class="wfacp_order_backend_field_container"><h3 style="display: inline">%s</h3> <span class="dashicons dashicons-edit" onclick="wfacp_show_admin_advanced_field(this)" style="cursor: pointer"></span><fieldset id="wfacp_admin_advanced_field" disabled>', __( 'Custom Fields', 'woofunnels-aero-checkout' ) );
+						printf( '<div style="clear: both;"></div><div style="margin-top:15px" class="wfacp_order_backend_field_container"><h3 style="display: inline">%s</h3> <span class="dashicons dashicons-edit" onclick="wfacp_show_admin_advanced_field(this)" style="cursor: pointer"></span><fieldset id="wfacp_admin_advanced_field" disabled>', esc_html__( 'Custom Fields', 'woofunnels-aero-checkout' ) );
 						$heading_print = true;
 					}
 					if ( isset( $field['required'] ) ) {
@@ -1619,11 +1756,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					}
 
 					if ( isset( $field['class'] ) ) {
-						$field['class'] = [ 'form-field', ' form-field-wide' ];
+						$field['class'] = array( 'form-field', ' form-field-wide' );
 					}
 
 					if ( $field['type'] == 'multiselect' ) {
-						//$field['class'][]                       = 'wfacp_custom_field_multiselect';
+						// $field['class'][]                       = 'wfacp_custom_field_multiselect';
 						$field['type']                          = 'select';
 						$field['id']                            = $field_key;
 						$field_key                              = $field_key . '[]';
@@ -1646,8 +1783,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					}
 
 					if ( 'select' === $field['type'] ) {
-// use array addition instead of array merge because array merge remove index if associative + numeric array combined
-						$field['options'] = [ '' => __( 'Select options', 'woocommerce' ) ] + $field['options'];
+						// use array addition instead of array merge because array merge remove index if associative + numeric array combined
+						$field['options'] = array( '' => __( 'Select options', 'woocommerce' ) ) + $field['options'];
 						if ( empty( $has_data ) && isset( $advancedFields[ $tmp_key ]['placeholder'] ) ) {
 							$field['placeholder'] = $advancedFields[ $tmp_key ]['placeholder'];
 						}
@@ -1659,7 +1796,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				if ( true == $heading_print ) {
 					echo '</fieldset></div>';
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 		}
@@ -1667,7 +1804,7 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		public function maybe_remove_all_notices_on_page() {
 
-			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) {
+			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 				global $wp_filter;
 				if ( isset( $wp_filter['admin_notices'] ) ) {
 					foreach ( $wp_filter['admin_notices']->callbacks as $f_key => $f ) {
@@ -1683,18 +1820,23 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				}
 			}
 
-			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) {
+			if ( isset( $_GET['page'] ) && 'wfacp' == $_GET['page'] && isset( $_GET['wfacp_id'] ) && $_GET['wfacp_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 
 				remove_all_actions( 'admin_notices' );
+				remove_all_actions( 'all_admin_notices' );
+				remove_all_actions( 'user_admin_notices' );
+				remove_all_actions( 'network_admin_notices' );
 			}
 		}
 
 
 		public function restrict_notices_display() {
 			/** Inside AeroCheckout page */
-			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) {
+			if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page detection
 				remove_all_actions( 'admin_notices' );
 				remove_all_actions( 'all_admin_notices' );
+				remove_all_actions( 'user_admin_notices' );
+				remove_all_actions( 'network_admin_notices' );
 			}
 		}
 
@@ -1714,8 +1856,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				if ( isset( $default['depend_dency_message'] ) ) {
 					$field['depend_dency_message'] = $default['depend_dency_message'];
 				}
-
-
 			} elseif ( $id == 'address' || $id == 'shipping-address' ) {
 				$field['fields_options'] = apply_filters( 'wfacp_' . $type . '_address_options', $field['fields_options'] );
 			}
@@ -1749,7 +1889,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					}
 				}
 			}
-
 		}
 
 		/**
@@ -1770,14 +1909,13 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function get_theme_css_path() {
-			$paths   = [ '/themes/', '/cache/' ];
-			$plugins = [
+			$paths   = array( '/themes/', '/cache/' );
+			$plugins = array(
 				'revslider',
-			];
+			);
 			if ( isset( $_GET['page'] ) && $_GET['page'] == 'wfacp' ) {
 				$plugins[] = '/elementor/';
 				$plugins[] = '/divi-builder/core/admin/js/support-center';
@@ -1794,7 +1932,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				$links['deactivate'] .= $link;
 			}
 
-
 			return $links;
 		}
 
@@ -1807,54 +1944,61 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 				return;
 			}
 			$post_type = WFACP_Common::get_post_type_slug();
-			add_meta_box( 'woofunnels-aero-checkout-shortcode', __( 'FunnelKit Checkout', 'woofunnels-aero-checkout' ), [
-				$this,
-				'render_shortcode_meta_box'
-			], $post_type, 'side', 'default' );
+			add_meta_box(
+				'woofunnels-aero-checkout-shortcode',
+				__( 'FunnelKit Checkout', 'woofunnels-aero-checkout' ),
+				array(
+					$this,
+					'render_shortcode_meta_box',
+				),
+				$post_type,
+				'side',
+				'default'
+			);
 		}
 
 		public function render_shortcode_meta_box() {
 			$id     = WFACP_Common::get_id();
-			$normal = "[wfacp_forms]";
+			$normal = '[wfacp_forms]';
 
 			if ( $id > 0 ) {
 				?>
-                <style>
-                    .wfacp_shortcode .wfacp_shortcode_inner {
-                        margin: 0 0 20px;
-                    }
+				<style>
+					.wfacp_shortcode .wfacp_shortcode_inner {
+						margin: 0 0 20px;
+					}
 
-                    a.wfacp_copy_text {
-                        float: right;
-                    }
-                </style>
-                <div class="wfacp_shortcode">
-                    <div class="wfacp_shortcode_inner">
-                        <div class="wfacp_description">
-                            <label for='wfacp_shortcode_normal'><?php _e( 'Form Shortcode', 'woofunnels-aero-checkout' ) ?></label>
-                            <input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo $normal ?>">
-                        </div>
-                        <a href="javascript:void(0)" class="wfacp_copy_text">
-                            <svg fill="#0073aa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
-                                <path d="M 18.5 5 C 15.480226 5 13 7.4802259 13 10.5 L 13 32.5 C 13 35.519774 15.480226 38 18.5 38 L 34.5 38 C 37.519774 38 40 35.519774 40 32.5 L 40 10.5 C 40 7.4802259 37.519774 5 34.5 5 L 18.5 5 z M 18.5 8 L 34.5 8 C 35.898226 8 37 9.1017741 37 10.5 L 37 32.5 C 37 33.898226 35.898226 35 34.5 35 L 18.5 35 C 17.101774 35 16 33.898226 16 32.5 L 16 10.5 C 16 9.1017741 17.101774 8 18.5 8 z M 11 10 L 9.78125 10.8125 C 8.66825 11.5545 8 12.803625 8 14.140625 L 8 33.5 C 8 38.747 12.253 43 17.5 43 L 30.859375 43 C 32.197375 43 33.4465 42.33175 34.1875 41.21875 L 35 40 L 17.5 40 C 13.91 40 11 37.09 11 33.5 L 11 10 z"></path>
-                            </svg><?php _e( 'Copy' ); ?></a>
-                    </div>
-                </div>
-                <script>
-                    window.addEventListener('load', function () {
-                        (function ($) {
-                            $(document).on('click', '.wfacp_copy_text', function () {
-                                var sibling = $(this).siblings('.wfacp_description');
-                                if (sibling.length > 0) {
-                                    sibling.find('input').select();
-                                    document.execCommand("copy");
-                                    wfacp.show_data_save_model(wfacp_localization.global.shortcode_copy_message);
-                                }
-                            });
-                        })(jQuery);
-                    });
+					a.wfacp_copy_text {
+						float: right;
+					}
+				</style>
+				<div class="wfacp_shortcode">
+					<div class="wfacp_shortcode_inner">
+						<div class="wfacp_description">
+							<label for='wfacp_shortcode_normal'><?php _e( 'Form Shortcode', 'woofunnels-aero-checkout' ); ?></label>
+							<input type="text" readonly="readonly" id='wfacp_shorcode_normal' style="width: 100%;" value="<?php echo $normal; ?>">
+						</div>
+						<a href="javascript:void(0)" class="wfacp_copy_text">
+							<svg fill="#0073aa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
+								<path d="M 18.5 5 C 15.480226 5 13 7.4802259 13 10.5 L 13 32.5 C 13 35.519774 15.480226 38 18.5 38 L 34.5 38 C 37.519774 38 40 35.519774 40 32.5 L 40 10.5 C 40 7.4802259 37.519774 5 34.5 5 L 18.5 5 z M 18.5 8 L 34.5 8 C 35.898226 8 37 9.1017741 37 10.5 L 37 32.5 C 37 33.898226 35.898226 35 34.5 35 L 18.5 35 C 17.101774 35 16 33.898226 16 32.5 L 16 10.5 C 16 9.1017741 17.101774 8 18.5 8 z M 11 10 L 9.78125 10.8125 C 8.66825 11.5545 8 12.803625 8 14.140625 L 8 33.5 C 8 38.747 12.253 43 17.5 43 L 30.859375 43 C 32.197375 43 33.4465 42.33175 34.1875 41.21875 L 35 40 L 17.5 40 C 13.91 40 11 37.09 11 33.5 L 11 10 z"></path>
+							</svg><?php _e( 'Copy' ); ?></a>
+					</div>
+				</div>
+				<script>
+					window.addEventListener('load', function () {
+						(function ($) {
+							$(document).on('click', '.wfacp_copy_text', function () {
+								var sibling = $(this).siblings('.wfacp_description');
+								if (sibling.length > 0) {
+									sibling.find('input').select();
+									document.execCommand("copy");
+									wfacp.show_data_save_model(wfacp_localization.global.shortcode_copy_message);
+								}
+							});
+						})(jQuery);
+					});
 
-                </script>
+				</script>
 				<?php
 			}
 		}
@@ -1869,11 +2013,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			if ( is_array( $this->checkout_post_list ) && count( $this->checkout_post_list ) > 0 ) {
 				foreach ( $this->checkout_post_list as $v ) {
 					$post     = get_post( $v['post_id'] );
-					$output[] = [
+					$output[] = array(
 						'id'   => $post->ID,
 						'name' => $post->post_title . ' - ' . __( 'Page', 'woofunnels-aero-checkout' ),
 						'type' => 'page',
-					];
+					);
 				}
 			}
 
@@ -1887,10 +2031,10 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 		public function arrange_billing_fields( $options ) {
 
-			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['address'] ) ) {
+			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX handler
 				return $options;
 			}
-			$addressOrder = $_POST['address_order'];
+			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
 
 			$options = $this->arrange_order_of_address_fields( $options, $addressOrder );
 
@@ -1898,11 +2042,11 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 		}
 
 		public function arrange_shipping_fields( $options ) {
-			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['shipping-address'] ) ) {
+			if ( ! isset( $_POST['address_order'] ) || empty( $_POST['address_order']['shipping-address'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX handler
 				return $options;
 			}
 
-			$addressOrder = $_POST['address_order'];
+			$addressOrder = isset( $_POST['address_order'] ) ? map_deep( wp_unslash( $_POST['address_order'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Filter callback for address field arrangement, nonce verification handled by WooCommerce checkout process
 			$options      = $this->arrange_order_of_address_fields( $options, $addressOrder, 'shipping' );
 
 			return $options;
@@ -1914,9 +2058,9 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$temp_order_key = ( 'shipping' == $id ) ? 'shipping-address' : 'address';
 
 			if ( count( $addressOrder ) > 0 && isset( $addressOrder[ $temp_order_key ] ) && count( $addressOrder[ $temp_order_key ] ) ) {
-				$temp_options = [];
+				$temp_options = array();
 				$items        = $addressOrder[ $temp_order_key ];
-				$same_data    = [];
+				$same_data    = array();
 				$same_key     = '';
 				foreach ( $items as $item ) {
 					$i_key = $item['key'];
@@ -1959,16 +2103,15 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 					}
 				}
 				if ( '' !== $i_key ) {
-					$temp_options = array_merge( [ $same_key => $same_data ], $temp_options );
+					$temp_options = array_merge( array( $same_key => $same_data ), $temp_options );
 
 				}
 
 				$options = $temp_options;
 
-			};
+			}
 
 			return apply_filters( 'arrange_order_of_address_fields', $options );
-
 		}
 
 		public function add_back_button() {
@@ -1981,39 +2124,50 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			$funnel_id = get_post_meta( $wfacp_id, '_bwf_in_funnel', true );
 			if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 				BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'      => 'bwf',
-					'path'      => "/funnel-checkout/" . $wfacp_id . "/design",
-					'funnel_id' => $funnel_id,
-				], admin_url( 'admin.php' ) ) );
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'      => 'bwf',
+							'path'      => '/funnel-checkout/' . $wfacp_id . '/design',
+							'funnel_id' => $funnel_id,
+						),
+						admin_url( 'admin.php' )
+					)
+				);
 			} else {
-				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-					'page'     => 'wfacp',
-					'wfacp_id' => $wfacp_id,
-					'section'  => 'design',
-				], admin_url( 'admin.php' ) ) );
+				$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page'     => 'wfacp',
+							'wfacp_id' => $wfacp_id,
+							'section'  => 'design',
+						),
+						admin_url( 'admin.php' )
+					)
+				);
 			}
 
 			if ( use_block_editor_for_post_type( WFACP_Common::get_post_type_slug() ) ) {
 				add_action( 'admin_footer', array( $this, 'render_back_to_aero_script_for_block_editor' ) );
-			} else { ?>
-                <div id="wfacp-switch-mode">
-                    <a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
+			} else {
+				?>
+				<div id="wfacp-switch-mode">
+					<a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
 						<?php esc_html_e( '&#8592; Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>
-                    </a>
-                </div>
-                <script>
-                    window.addEventListener('load', function () {
-                        (function (window, wp) {
-                            var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
-                            if (link) {
+					</a>
+				</div>
+				<script>
+					window.addEventListener('load', function () {
+						(function (window, wp) {
+							var link = document.querySelector('a.components-button.edit-post-fullscreen-mode-close');
+							if (link) {
                                 link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
-                            }
+							}
 
-                        })(window, wp)
-                    });
+						})(window, wp)
+					});
 
-                </script>
+				</script>
 				<?php
 			}
 		}
@@ -2031,83 +2185,94 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				if ( ! empty( $funnel_id ) && abs( $funnel_id ) > 0 ) {
 					BWF_Admin_Breadcrumbs::register_ref( 'funnel_id', $funnel_id );
-					$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-						'page'      => 'bwf',
-						'path'      => "/funnel-checkout/" . $wfacp_id . "/design",
-						'funnel_id' => $funnel_id,
-					], admin_url( 'admin.php' ) ) );
+					$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'      => 'bwf',
+								'path'      => '/funnel-checkout/' . $wfacp_id . '/design',
+								'funnel_id' => $funnel_id,
+							),
+							admin_url( 'admin.php' )
+						)
+					);
 				} else {
-					$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-						'page'     => 'wfacp',
-						'wfacp_id' => $wfacp_id,
-						'section'  => 'design',
-					], admin_url( 'admin.php' ) ) );
+					$edit_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+						add_query_arg(
+							array(
+								'page'     => 'wfacp',
+								'wfacp_id' => $wfacp_id,
+								'section'  => 'design',
+							),
+							admin_url( 'admin.php' )
+						)
+					);
 				}
 
 				?>
 
-                <script id="wfacp-back-button-template" type="text/html">
-                    <div id="wfacp-switch-mode">
-                        <a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
+				<script id="wfacp-back-button-template" type="text/html">
+					<div id="wfacp-switch-mode">
+						<a id="wfacp-back-button" class="button button-default button-large" href="<?php echo esc_url( $edit_link ); ?>">
 							<?php echo __( '&#8592; Back to Checkout Page', 'elementor' ); ?>
-                        </a>
-                    </div>
+						</a>
+					</div>
 
-                </script>
+				</script>
 
-                <script>
-                    window.addEventListener('load', function () {
-                        (function (window, wp) {
+				<script>
+					window.addEventListener('load', function () {
+						(function (window, wp) {
 
-                            const {Toolbar, ToolbarButton} = wp.components;
+							const {Toolbar, ToolbarButton} = wp.components;
 
-                            var link_button = wp.element.createElement(
-                                ToolbarButton,
-                                {
-                                    variant: 'secondary',
+							var link_button = wp.element.createElement(
+								ToolbarButton,
+								{
+									variant: 'secondary',
                                     href: "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>",
-                                    id: 'wfacp-back-button',
-                                    className: 'button is-secondary',
-                                    style: {
-                                        display: 'flex',
-                                        height: '33px'
-                                    },
-                                    text: "<?php esc_html_e( '← Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>",
-                                    label: "<?php esc_html_e( 'Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>"
-                                }
-                            );
-                            var linkWrapper = '<div id="wfacp-switch-mode"></div>';
+									id: 'wfacp-back-button',
+									className: 'button is-secondary',
+									style: {
+										display: 'flex',
+										height: '33px'
+									},
+									text: "<?php esc_html_e( '← Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>",
+									label: "<?php esc_html_e( 'Back to Checkout Page', 'woofunnels-aero-checkout' ); ?>"
+								}
+							);
+							var linkWrapper = '<div id="wfacp-switch-mode"></div>';
 
-                            // check if gutenberg's editor root element is present.
-                            var editorEl = document.getElementById('editor');
-                            if (!editorEl) { // do nothing if there's no gutenberg root element on page.
-                                return;
-                            }
-                            wp.domReady(function () {
-                                var link = document.querySelector('body a.components-button.edit-post-fullscreen-mode-close');
-                                if (link) {
+							// check if gutenberg's editor root element is present.
+							var editorEl = document.getElementById('editor');
+							if (!editorEl) { // do nothing if there's no gutenberg root element on page.
+								return;
+							}
+							wp.domReady(function () {
+								var link = document.querySelector('body a.components-button.edit-post-fullscreen-mode-close');
+								if (link) {
                                     link.setAttribute('href', "<?php echo htmlspecialchars_decode( esc_url( $edit_link ) );//phpcs:ignore ?>")
-                                }
-                            })
+								}
+							})
 
-                            wp.data.subscribe(function () {
-                                setTimeout(function () {
-                                    if (!document.getElementById('wfacp-switch-mode')) {
-                                        var toolbalEl = editorEl.querySelector('.editor-header__toolbar .edit-post-header-toolbar') ?? editorEl.querySelector('.edit-post-header__toolbar .edit-post-header-toolbar');
-                                        if (toolbalEl instanceof HTMLElement) {
-                                            toolbalEl.insertAdjacentHTML('beforeend', linkWrapper);
-                                            setTimeout(() => {
-                                                wp.element.render(link_button, document.getElementById('wfacp-switch-mode'));
-                                            }, 1);
-                                        }
-                                    }
-                                }, 1)
-                            });
-                        })(window, wp)
-                    });
+							wp.data.subscribe(function () {
+								setTimeout(function () {
+									if (!document.getElementById('wfacp-switch-mode')) {
+										var toolbalEl = editorEl.querySelector('.editor-header__toolbar .edit-post-header-toolbar') ?? editorEl.querySelector('.edit-post-header__toolbar .edit-post-header-toolbar');
+										if (toolbalEl instanceof HTMLElement) {
+											toolbalEl.insertAdjacentHTML('beforeend', linkWrapper);
+											setTimeout(() => {
+												wp.element.render(link_button, document.getElementById('wfacp-switch-mode'));
+											}, 1);
+										}
+									}
+								}, 1)
+							});
+						})(window, wp)
+					});
 
-                </script>
-			<?php }
+				</script>
+				<?php
+			}
 		}
 
 		public function remove_page_attributes() {
@@ -2121,8 +2286,8 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			remove_post_type_support( WFACP_Common::get_post_type_slug(), 'editor' );
-			add_filter( 'use_block_editor_for_post', [ $this, 'remove_block_editor' ], 10, 2 );
-			$meta_box = [ 'pageparentdiv' ];
+			add_filter( 'use_block_editor_for_post', array( $this, 'remove_block_editor' ), 10, 2 );
+			$meta_box = array( 'pageparentdiv' );
 
 			$meta_box = apply_filters( 'wfacp_remove_post_meta_boxes', $meta_box );
 			if ( is_array( $meta_box ) && count( $meta_box ) > 0 ) {
@@ -2138,7 +2303,6 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 			}
 
 			return $status;
-
 		}
 
 
@@ -2154,15 +2318,14 @@ if ( ! class_exists( 'WFACP_admin' ) ) {
 
 				$wfacp_id = filter_input( INPUT_GET, 'wfacp_id', FILTER_UNSAFE_RAW );
 				$post     = get_post( $wfacp_id );
-				if ( is_null( $post ) || $post->post_type != WFACP_Common::get_post_type_slug() ) {
-					wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
-				}
-
+			if ( is_null( $post ) || $post->post_type != WFACP_Common::get_post_type_slug() ) {
+				wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
+			}
 		}
 
 		function get_advanced_field() {
-			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {
-				$wfacp_id = wfacp_get_order_meta( wc_get_order( $_REQUEST['post'] ), '_wfacp_post_id' );
+			if ( isset( $_REQUEST['post'] ) && absint( wp_unslash( $_REQUEST['post'] ) ) > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				$wfacp_id = wfacp_get_order_meta( wc_get_order( absint( wp_unslash( $_REQUEST['post'] ) ) ), '_wfacp_post_id' );
 				if ( absint( $wfacp_id ) == 0 ) {
 					return;
 				}

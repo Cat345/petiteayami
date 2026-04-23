@@ -3008,17 +3008,20 @@ body .wfacp_main_form .wfacp-payment-dec {
     margin: 25px 0 0;
 }
 
-body .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr td {
+body .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr td,
+body .wfacp_main_form .wfacp_shipping_calculator .wfacp_border .wfacp_shipping_table.wfacp_shipping_recurring tr td {
     padding-top: 25px;
 }
 
 
-body .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td {
+body .wfacp_main_form .wfacp_shipping_calculator .border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td,
+body .wfacp_main_form .wfacp_shipping_calculator .wfacp_border .wfacp_shipping_table.wfacp_shipping_recurring tr:first-child td {
     padding-top: 0;
 }
 
 body .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_remove_msg,
 body .wfacp_main_form .wfacp_shipping_calculator .border,
+body .wfacp_main_form .wfacp_shipping_calculator .wfacp_border,
 body .wfacp_main_form .woocommerce-terms-and-conditions-wrapper,
 body .wfacp_main_form .wfacp_whats_included {
     margin-top: 25px;
@@ -3026,6 +3029,7 @@ body .wfacp_main_form .wfacp_whats_included {
 
 body .wfacp_main_form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coupon_remove_msg:empty,
 body .wfacp_main_form .wfacp_shipping_calculator .border:first-child,
+body .wfacp_main_form .wfacp_shipping_calculator .wfacp_border:first-child,
 body .wfacp_main_form #product_switching_field.wfacp-product-switch-panel .cart_item:first-child {
     margin-top: 0;
 }

@@ -6,24 +6,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WooCommerce Coupon Messages by itthinx
  * http://xootix.com/side-cart-woocommerce
- * #[AllowDynamicProperties] 
+ * #[AllowDynamicProperties]
 
-  class WFACP_Compatibility_WC_Coupon_Messages
+	class WFACP_Compatibility_WC_Coupon_Messages
  */
 if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Coupon_Messages {
 
 		public function __construct() {
-			add_action( 'wfacp_template_load', [ $this, 'action' ] );
-			add_filter( 'wfacp_remove_coupon_message', [ $this, 'change_coupon_text' ], 9999 );
+			add_action( 'wfacp_template_load', array( $this, 'action' ) );
+			add_filter( 'wfacp_remove_coupon_message', array( $this, 'change_coupon_text' ), 9999 );
 		}
 
 
 		public function action() {
 
-			add_action( 'woocommerce_update_order_review_fragments', [ $this, 'add_fragment' ], 100 );
-
+			add_action( 'woocommerce_update_order_review_fragments', array( $this, 'add_fragment' ), 100 );
 		}
 
 		public function add_fragment( $fragments ) {
@@ -45,26 +44,31 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 			foreach ( WFACP_Common::get_coupons() as $code => $coupon ) {
 
 				$remove_link = sprintf( "<a href='javascript:void(0)' class='wfacp_remove_coupon' data-coupon='%s'>%s</a>", $code, __( 'Remove', 'woocommerce' ) );
-				$messages    .= sprintf( '<div class="wfacp_single_coupon_msg">%s %s</div>', $success_message, $remove_link );
+				$messages   .= sprintf( '<div class="wfacp_single_coupon_msg">%s %s</div>', $success_message, $remove_link );
 
-
-				$remove_link      = sprintf( "<a href='%s' class='woocommerce-remove-coupon' data-coupon='%s'>%s</a>", add_query_arg( [
-					'remove_coupon' => $code,
-				], wc_get_checkout_url() ), $code, __( 'Remove', 'funnel-builder' ) );
+				$remove_link       = sprintf(
+					"<a href='%s' class='woocommerce-remove-coupon' data-coupon='%s'>%s</a>",
+					add_query_arg(
+						array(
+							'remove_coupon' => $code,
+						),
+						wc_get_checkout_url()
+					),
+					$code,
+					__( 'Remove', 'funnel-builder' )
+				);
 				$sidebar_messages .= sprintf( '<div class="woocommerce-message1 wfacp_coupon_success">%s %s</div>', $success_message, $remove_link );
 
 			}
-			$fragments['.wfacp_coupon_msg .woocommerce-message'] = '<div class="woocommerce-message wfacp_sucuss">' . $sidebar_messages . '</div>';
+			$fragments['.wfacp_coupon_msg .woocommerce-message'] = '<div class="woocommerce-message wfacp_success">' . $sidebar_messages . '</div>';
 
 			$fragments['.wfacp_coupon_field_msg'] = '<div class="wfacp_coupon_field_msg"><div class="wfacp_single_coupon_msg">' . $messages . '</div></div>';
-
 
 			return $fragments;
 		}
 
 		public function change_coupon_text( $coupon_message ) {
 			$options = get_option( 'woocommerce-coupon-messages', null );
-
 
 			if ( ! is_array( $options ) || count( $options ) == 0 ) {
 				return $coupon_message;
@@ -75,10 +79,7 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Coupon_Messages' ) ) {
 				$coupon_message = $options['_cmsg201'];
 			}
 
-
 			return $coupon_message;
-
-
 		}
 	}
 

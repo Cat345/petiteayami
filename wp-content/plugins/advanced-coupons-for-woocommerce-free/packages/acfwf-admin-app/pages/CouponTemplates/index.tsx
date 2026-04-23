@@ -1,9 +1,10 @@
 // #region [Imports] ===================================================================================================
 
 // Libraries
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Row, Col, Tabs, Modal, Button } from 'antd';
+import { Row, Col, Tabs, Modal, Button, Space } from 'antd';
+import AIIcon from '../../components/AIIcon';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -12,9 +13,12 @@ import AdminHeader from '../../components/AdminHeader';
 import RecentTemplates from './RecentTemplates';
 import QueriedTemplates from './QueriedTemplates';
 import ReviewTemplates from './ReviewTemplates';
+import AITemplates from './AITemplates';
 import Sidebar from './Sidebar';
 import TemplateForm from './TemplateForm';
 import Logo from '../../components/Logo';
+import AIGeneratorModal from '../../components/AIGeneratorModal';
+import StoreAgentUpsellModal from '../../components/StoreAgentUpsellModal';
 
 // Actions
 import { CouponTemplatesActions } from '../../store/actions/couponTemplates';
@@ -24,6 +28,7 @@ import { IStore } from '../../types/store';
 
 // Helpers
 import { getPathPrefix } from '../../helpers/utils';
+import axiosInstance, { axiosCancel, getCancelToken } from '../../helpers/axios';
 
 // SCSS
 import './index.scss';
@@ -34,7 +39,7 @@ import './index.scss';
 
 declare var acfwAdminApp: any;
 
-const { togglePremiumModal } = CouponTemplatesActions;
+const { togglePremiumModal, toggleAIGeneratorModal, toggleStoreAgentUpsellModal } = CouponTemplatesActions;
 
 // #endregion [Variables]
 
@@ -42,6 +47,8 @@ const { togglePremiumModal } = CouponTemplatesActions;
 
 interface IActions {
   togglePremiumModal: typeof togglePremiumModal;
+  toggleAIGeneratorModal: typeof toggleAIGeneratorModal;
+  toggleStoreAgentUpsellModal: typeof toggleStoreAgentUpsellModal;
 }
 
 interface IProps {
@@ -62,14 +69,96 @@ const CouponTemplates = (props: IProps) => {
   const editId = urlParams.get('id') ?? null;
   const pathPrefix = getPathPrefix();
   const currentTab = urlParams.get('cttab') ?? 'main';
+  const [aiTemplateExists, setAITemplateExists] = useState(false);
 
   const handleTabClick = (key: string) => {
     history.push(`${pathPrefix}admin.php?page=acfw-coupon-templates&cttab=${key}`);
   };
 
+  const aiGeneratorLabels = acfwAdminApp.ai_generator;
+  const isStoreAgentConnected = acfwAdminApp.is_storeagent_connected;
+  const isStoreAgentInstalled = acfwAdminApp.is_storeagent_installed;
+  const isStoreAgentActive = acfwAdminApp.is_storeagent_active;
+  const showAIModal = urlParams.get('show_ai_modal') === 'true';
+
+  // Handler for Generate with AI button - checks plugin state
+  const handleGenerateWithAI = useCallback(() => {
+    if (!isStoreAgentInstalled) {
+      actions.toggleStoreAgentUpsellModal({ show: true, mode: 'install' });
+    } else if (!isStoreAgentActive) {
+      actions.toggleStoreAgentUpsellModal({ show: true, mode: 'activate' });
+    } else if (!isStoreAgentConnected) {
+      actions.toggleStoreAgentUpsellModal({ show: true, mode: 'connect' });
+    } else {
+      actions.toggleAIGeneratorModal({ show: true });
+    }
+  }, [isStoreAgentInstalled, isStoreAgentActive, isStoreAgentConnected, actions]);
+
+  // Check if AI template exists in transient
+  useEffect(() => {
+    if (isStoreAgentConnected && !editId) {
+      checkAITemplateExists();
+    }
+
+    return () => {
+      axiosCancel('check_ai_template');
+    };
+  }, [isStoreAgentConnected, editId]);
+
+  const checkAITemplateExists = async () => {
+    try {
+      const response = await axiosInstance.get(`storeagent-ai/v1/coupon-generator-ai/template/exists`, {
+        cancelToken: getCancelToken('check_ai_template'),
+      });
+      setAITemplateExists(response.data?.exists ?? false);
+    } catch (error) {
+      // Silent fail - just assume no template exists
+      setAITemplateExists(false);
+    }
+  };
+
+  // Auto-open AI modal or upsell modal if redirected from coupon popup with show_ai_modal=true.
+  useEffect(() => {
+    if (!showAIModal) return;
+
+    // Remove the show_ai_modal parameter from URL regardless of state.
+    urlParams.delete('show_ai_modal');
+    history.replace(
+      `${pathPrefix}admin.php?page=acfw-coupon-templates${urlParams.toString() ? '&' + urlParams.toString() : ''}`,
+    );
+
+    // Show the appropriate modal based on the current StoreAgent plugin state.
+    if (isStoreAgentConnected) {
+      actions.toggleAIGeneratorModal({ show: true });
+    } else {
+      handleGenerateWithAI();
+    }
+  }, [showAIModal, handleGenerateWithAI]);
+
   return (
     <div className="coupon-templates-page">
-      <AdminHeader title={title} className="coupon-templates-header" />
+      <AdminHeader
+        title={title}
+        className="coupon-templates-header"
+        actions={
+          !editId ? (
+            <Space>
+              {isStoreAgentConnected && aiTemplateExists && (
+                <Button
+                  type="default"
+                  onClick={() => history.push(`${pathPrefix}admin.php?page=acfw-coupon-templates&id=ai-temp`)}
+                  className="ai-continue-btn"
+                >
+                  {aiGeneratorLabels.continue_btn}
+                </Button>
+              )}
+              <Button icon={<AIIcon />} onClick={handleGenerateWithAI} className="ai-generate-btn">
+                {aiGeneratorLabels.generate_btn}
+              </Button>
+            </Space>
+          ) : undefined
+        }
+      />
       {editId ? (
         <TemplateForm />
       ) : (
@@ -100,6 +189,13 @@ const CouponTemplates = (props: IProps) => {
               </Row>
             </Tabs.TabPane>
           )}
+          <Tabs.TabPane tab={labels.ai_templates} key="ai">
+            <Row gutter={16}>
+              <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <AITemplates />
+              </Col>
+            </Row>
+          </Tabs.TabPane>
         </Tabs>
       )}
       <Modal
@@ -115,6 +211,8 @@ const CouponTemplates = (props: IProps) => {
           {labels.premium_modal_btn}
         </Button>
       </Modal>
+      <AIGeneratorModal />
+      <StoreAgentUpsellModal />
     </div>
   );
 };
@@ -124,7 +222,7 @@ const mapStateToProps = (state: IStore) => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-  actions: bindActionCreators({ togglePremiumModal }, dispatch),
+  actions: bindActionCreators({ togglePremiumModal, toggleAIGeneratorModal, toggleStoreAgentUpsellModal }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CouponTemplates);

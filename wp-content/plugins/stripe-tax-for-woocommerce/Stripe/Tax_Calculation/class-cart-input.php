@@ -33,21 +33,20 @@ class Cart_Input extends Input {
 	public static function from_cart( WC_Cart $cart, $tax_behavior ) {
 		$customer = $cart->get_customer();
 
-		$is_customer_vat_exempt = $customer->get_is_vat_exempt();
-
-		if ( $is_customer_vat_exempt ) {
-			return;
-		}
-
-		$tax_location        = self::get_tax_location( $cart );
 		$taxability_override = self::get_customer_taxability_override( $customer );
+
+		$tax_location = self::get_tax_location( $cart );
 
 		self::prevalidate_cart( $cart );
 
-		$currency             = get_woocommerce_currency();
-		$shipping_cost_amount = Amount_Utility::to_cents( self::get_taxable_shipping_cost_amount( $cart ), $currency );
-		$shipping_tax_code    = Product_Tax_Code_Repo::get_tax_code_by_type_and_id( 'shipping' );
-		$shipping_cost        = new Input_Line_Item(
+		$currency = get_woocommerce_currency();
+
+		$shipping_cost_details = static::get_shipping_cost_details( $cart, $currency );
+
+		$shipping_cost_amount = $shipping_cost_details['shipping_cost_amount'];
+		$shipping_tax_code    = $shipping_cost_details['shipping_tax_code'];
+
+		$shipping_cost = new Input_Line_Item(
 			static::SHIPPING_COST_REFERENCE,
 			$shipping_cost_amount,
 			1,
@@ -201,11 +200,12 @@ class Cart_Input extends Input {
 	}
 
 	/**
-	 * Calculates and returns cart taxable shipping cost
+	 * Calculates and returns cart shipping cost amount by taxability.
 	 *
 	 * @param object $cart The cart.
+	 * @param bool   $is_taxable Whether to sum taxable or non-taxable shipping methods.
 	 */
-	protected static function get_taxable_shipping_cost_amount( $cart ) {
+	protected static function get_shipping_cost_amount_by_taxability( $cart, $is_taxable ) {
 		$shipping_cost_amount = 0;
 
 		$shipping_methods = $cart->calculate_shipping();
@@ -227,8 +227,9 @@ class Cart_Input extends Input {
 			}
 
 			$chosen_rate_settings = get_option( 'woocommerce_' . str_replace( ':', '_', $chosen_rate_id ) . '_settings' );
+			$rate_is_taxable      = isset( $chosen_rate_settings['tax_status'] ) && 'taxable' === $chosen_rate_settings['tax_status'];
 
-			if ( ! isset( $chosen_rate_settings['tax_status'] ) || 'taxable' !== $chosen_rate_settings['tax_status'] ) {
+			if ( $is_taxable !== $rate_is_taxable ) {
 				continue;
 			}
 

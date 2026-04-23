@@ -123,28 +123,29 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 	}
 
 	/**
-	 * Add email or phone in the unsubscribe table
-	 * May or may not be contact
+	 * Add email or phone in the unsubscribe table. May or may not be contact.
 	 *
-	 * @param array $emails_or_phones
-	 * @param int $object_id
-	 * @param int $object_type
-	 * @param false $stop_hooks
-	 *
+	 * @param array $emails_or_phones Recipients (email or phone).
+	 * @param int   $object_id       Automation/Broadcast/Form ID (0 for manual/CSV).
+	 * @param int   $object_type     Source type: 1=Automation, 2=Broadcast, 3=Manual, 4=Form, 5=CSV.
+	 * @param bool  $stop_hooks      Whether to skip bwfcrm_after_contact_unsubscribed hook.
+	 * @param int   $step_id         Step ID (sid) when unsubscribed from automation action.
 	 * @return bool
 	 */
-	public static function add_unsubscribers( $emails_or_phones = [], $object_id = 0, $object_type = 3, $stop_hooks = false ) {
-		$unsubscribers = array_map( function ( $recipient ) use ( $object_id, $object_type ) {
+	public static function add_unsubscribers( $emails_or_phones = [], $object_id = 0, $object_type = 3, $stop_hooks = false, $step_id = 0 ) {
+		$step_id       = absint( $step_id );
+		$unsubscribers = array_map( function ( $recipient ) use ( $object_id, $object_type, $step_id ) {
 			return array(
 				'recipient'     => $recipient,
 				'mode'          => is_email( $recipient ) ? 1 : 2,
 				'c_date'        => current_time( 'mysql', 1 ),
 				'automation_id' => ! empty( $object_id ) ? absint( $object_id ) : 0,
-				'c_type'        => ! empty( $object_type ) ? absint( $object_type ) : 3
+				'c_type'        => ! empty( $object_type ) ? absint( $object_type ) : 3,
+				'sid'           => $step_id,
 			);
 		}, $emails_or_phones );
 
-		BWFAN_Model_Message_Unsubscribe::insert_multiple( $unsubscribers, array( 'recipient', 'mode', 'c_date', 'automation_id', 'c_type' ), [ '%s', '%d', '%s', '%d', '%d' ] );
+		BWFAN_Model_Message_Unsubscribe::insert_multiple( $unsubscribers, array( 'recipient', 'mode', 'c_date', 'automation_id', 'c_type', 'sid' ), [ '%s', '%d', '%s', '%d', '%d', '%d' ] );
 		/** hook when any contact unsubscribed  */
 		if ( false === $stop_hooks ) {
 			do_action( 'bwfcrm_after_contact_unsubscribed', $unsubscribers );
@@ -152,4 +153,29 @@ class BWFAN_Model_Message_Unsubscribe extends BWFAN_Model {
 
 		return true;
 	}
+
+	/**
+	 * Get the most recent unsubscribe row for given recipients (email/phone).
+	 *
+	 * @param array $recipients List of recipient (email or phone).
+	 * @return array|null Row with c_type, automation_id, sid; null if none.
+	 */
+	public static function get_latest_unsubscribe_row( $recipients ) {
+		global $wpdb;
+
+		if ( empty( $recipients ) || ! is_array( $recipients ) ) {
+			return null;
+		}
+
+		$recipients   = array_values( array_filter( array_map( 'trim', $recipients ) ) );
+		if ( empty( $recipients ) ) {
+			return null;
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $recipients ), '%s' ) );
+		$table        = self::_table();
+		$sql          = $wpdb->prepare( "SELECT * FROM {$table} WHERE `recipient` IN ({$placeholders}) ORDER BY `ID` DESC LIMIT 1", $recipients ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $wpdb->get_row( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
 }

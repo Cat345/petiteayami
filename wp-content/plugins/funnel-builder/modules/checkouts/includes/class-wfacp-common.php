@@ -4,19 +4,18 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WFACP_Common' ) ) {
 	/**
 	 * Aero checkout Common Class
-	 *
 	 */
 	#[AllowDynamicProperties]
 	abstract class WFACP_Common extends WFACP_Common_Helper {
 
-		public static $customizer_key_prefix = '';
-		public static $customizer_key_data = [];
-		public static $post_data = [];
+		public static $customizer_key_prefix     = '';
+		public static $customizer_key_data       = array();
+		public static $post_data                 = array();
 		public static $customizer_fields_default = array();
-		public static $exchange_keys = [];
-		private static $wfacp_id = 0;
-		private static $wfacp_section = '';
-		private static $product_data = [];
+		public static $exchange_keys             = array();
+		private static $wfacp_id                 = 0;
+		private static $wfacp_section            = '';
+		private static $product_data             = array();
 
 		public static function init() {
 			/**
@@ -25,91 +24,120 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( apply_filters( 'wfacp_skip_common_loading', false ) ) {
 				return;
 			}
-			add_action( 'plugins_loaded', [ __CLASS__, 'plugins_loaded' ], - 1 );
-			add_action( 'init', [ __CLASS__, 'register_post_type' ], 5 );
-			add_action( 'wc_ajax_get_refreshed_fragments', [ __CLASS__, 'wc_ajax_get_refreshed_fragments' ], - 1 );
-			add_action( 'woocommerce_checkout_update_order_review', [ __CLASS__, 'woocommerce_checkout_update_order_review' ], - 1 );
-			add_action( 'woocommerce_before_checkout_process', [ __CLASS__, 'woocommerce_before_checkout_process' ] );
-			add_filter( 'woocommerce_form_field_hidden', [ __CLASS__, 'woocommerce_form_field_hidden' ], 10, 4 );
-			add_filter( 'woocommerce_form_field_wfacp_radio', [ __CLASS__, 'woocommerce_form_field_wfacp_radio' ], 10, 4 );
-			add_filter( 'woocommerce_form_field_wfacp_start_divider', [ __CLASS__, 'woocommerce_form_field_wfacp_start_divider' ], 10, 4 );
-			add_filter( 'woocommerce_form_field_wfacp_end_divider', [ __CLASS__, 'woocommerce_form_field_wfacp_end_start_divider' ], 10, 4 );
-			add_action( 'woocommerce_form_field_wfacp_html', [ __CLASS__, 'process_wfacp_html' ], 10, 4 );
-			add_filter( 'wcct_get_restricted_action', [ __CLASS__, 'wcct_get_restricted_action' ] );
-			add_shortcode( 'wfacp_order_custom_field', [ __CLASS__, 'wfacp_order_custom_field' ] );
-			add_action( 'wfacp_get_fragments', [ __CLASS__, 'initializeTemplate' ] );
-			add_action( 'wfob_before_remove_bump_from_cart', [ __CLASS__, 'wfob_order_bump_fragments' ] );
-			add_action( 'wfob_before_add_to_cart', [ __CLASS__, 'wfob_order_bump_fragments' ] );
-			add_action( 'woofunnels_loaded', [ __CLASS__, 'include_notification_class' ] );
+			add_action( 'plugins_loaded', array( __CLASS__, 'plugins_loaded' ), - 1 );
+			add_action( 'init', array( __CLASS__, 'register_post_type' ), 5 );
+			add_action( 'wc_ajax_get_refreshed_fragments', array( __CLASS__, 'wc_ajax_get_refreshed_fragments' ), - 1 );
+			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'woocommerce_checkout_update_order_review' ), - 1 );
+			add_action( 'woocommerce_before_checkout_process', array( __CLASS__, 'woocommerce_before_checkout_process' ) );
+			add_filter( 'woocommerce_form_field_hidden', array( __CLASS__, 'woocommerce_form_field_hidden' ), 10, 4 );
+			add_filter( 'woocommerce_form_field_wfacp_radio', array( __CLASS__, 'woocommerce_form_field_wfacp_radio' ), 10, 4 );
+			add_filter( 'woocommerce_form_field_wfacp_start_divider', array( __CLASS__, 'woocommerce_form_field_wfacp_start_divider' ), 10, 4 );
+			add_filter( 'woocommerce_form_field_wfacp_end_divider', array( __CLASS__, 'woocommerce_form_field_wfacp_end_start_divider' ), 10, 4 );
+			add_action( 'woocommerce_form_field_wfacp_html', array( __CLASS__, 'process_wfacp_html' ), 10, 4 );
+			add_filter( 'wcct_get_restricted_action', array( __CLASS__, 'wcct_get_restricted_action' ) );
+			add_shortcode( 'wfacp_order_custom_field', array( __CLASS__, 'wfacp_order_custom_field' ) );
+			add_action( 'wfacp_get_fragments', array( __CLASS__, 'initializeTemplate' ) );
+			add_action( 'wfob_before_remove_bump_from_cart', array( __CLASS__, 'wfob_order_bump_fragments' ) );
+			add_action( 'wfob_before_add_to_cart', array( __CLASS__, 'wfob_order_bump_fragments' ) );
+			add_action( 'woofunnels_loaded', array( __CLASS__, 'include_notification_class' ) );
 
+			add_action( 'woocommerce_locate_template', array( __CLASS__, 'woocommerce_locate_template' ) );
+			add_filter( 'wfacp_billing_field', array( __CLASS__, 'check_wc_validations_billing' ), 10, 2 );
+			add_filter( 'wfacp_shipping_field', array( __CLASS__, 'check_wc_validations_shipping' ), 10, 2 );
 
-			add_action( 'woocommerce_locate_template', [ __CLASS__, 'woocommerce_locate_template' ] );
-			add_filter( 'wfacp_billing_field', [ __CLASS__, 'check_wc_validations_billing' ], 10, 2 );
-			add_filter( 'wfacp_shipping_field', [ __CLASS__, 'check_wc_validations_shipping' ], 10, 2 );
+			// try to resolve cache
 
+			add_filter( 'woocommerce_checkout_update_order_review_expired', array( __CLASS__, 'do_not_show_session_expired_message' ) );
 
-			//try to resolve cache
-
-			add_filter( 'woocommerce_checkout_update_order_review_expired', [ __CLASS__, 'do_not_show_session_expired_message' ] );
-
-			add_action( 'wp_loaded', [ __CLASS__, 'initiate_track_and_analytics' ], 99 );
+			add_action( 'wp_loaded', array( __CLASS__, 'initiate_track_and_analytics' ), 99 );
 
 			add_filter( 'post_type_link', array( __CLASS__, 'post_type_permalinks' ), 10, 3 );
 			add_action( 'pre_get_posts', array( __CLASS__, 'add_cpt_post_names_to_main_query' ), 20 );
 
-			add_filter( 'bwf_general_settings_default_config', function ( $fields ) {
-				$fields['checkout_page_base'] = 'checkouts';
+			add_filter(
+				'bwf_general_settings_default_config',
+				function ( $fields ) {
+					$fields['checkout_page_base'] = 'checkouts';
 
-				return $fields;
-			} );
+					return $fields;
+				}
+			);
 
-			add_action( 'wfacp_after_checkout_page_found', function () {
-				add_filter( 'woocommerce_payment_gateways', [ __CLASS__, 'unset_gateways' ], 1000 );
-			} );
-			add_filter( 'woofunnels_global_settings', function ( $menu ) {
-				array_push( $menu, array(
-					'title'    => __( 'Checkout', 'funnel-builder' ),
-					'slug'     => 'wfacp',
-					'link'     => admin_url( 'admin.php?page=wfacp&tab=settings' ),
-					'priority' => 30,
-				) );
+			add_action(
+				'wfacp_after_checkout_page_found',
+				function () {
+					add_filter( 'woocommerce_payment_gateways', array( __CLASS__, 'unset_gateways' ), 1000 );
+				}
+			);
+			add_filter(
+				'woofunnels_global_settings',
+				function ( $menu ) {
+					array_push(
+						$menu,
+						array(
+							'title'    => __( 'Checkout', 'funnel-builder' ),
+							'slug'     => 'wfacp',
+							'link'     => admin_url( 'admin.php?page=wfacp&tab=settings' ),
+							'priority' => 30,
+						)
+					);
 
-				return $menu;
-			} );
+					return $menu;
+				}
+			);
 
 			add_filter( 'woofunnels_global_settings_fields', array( __CLASS__, 'add_global_settings_fields' ) );
-			add_filter( 'bwf_general_settings_fields', function ( $fields ) {
-				$fields['checkout_page_base'] = array(
-					'type'      => 'input',
-					'inputType' => 'text',
-					'label'     => __( 'Checkout Page', 'funnel-builder' ),
-					'hint'      => '',
-				);
+			add_filter(
+				'bwf_general_settings_fields',
+				function ( $fields ) {
+					$fields['checkout_page_base'] = array(
+						'type'      => 'input',
+						'inputType' => 'text',
+						'label'     => __( 'Checkout Page', 'funnel-builder' ),
+						'hint'      => '',
+					);
 
-				return $fields;
-			} );
-			add_action( 'woocommerce_checkout_order_processed', [ __CLASS__, 'update_aero_field' ], 15, 3 );
-
+					return $fields;
+				}
+			);
+			add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'update_aero_field' ), 15, 3 );
 
 			/*------------------------------Enable Order Total---------------------------------*/
 
-			add_shortcode( 'wfacp_order_total', [ __CLASS__, 'wfacp_order_total' ] );
+			add_shortcode( 'wfacp_order_total', array( __CLASS__, 'wfacp_order_total' ) );
 
-			add_action( 'template_redirect', [ __CLASS__, 'do_wc_ajax' ], - 1 );
+			add_action( 'template_redirect', array( __CLASS__, 'do_wc_ajax' ), - 1 );
 
-			add_action( 'init', [ __CLASS__, 'setup_fields_billing' ], 20 );
-			add_action( 'wfacp_template_load', [ __CLASS__, 'include_third_party_field' ] );
-			add_filter( 'wfacp_import_checkout_settings', [ __CLASS__, 'add_third_party_fields_to_checkout_form' ], 10, 3 );
+			add_action( 'init', array( __CLASS__, 'setup_fields_billing' ), 20 );
+			add_action( 'wfacp_template_load', array( __CLASS__, 'include_third_party_field' ) );
+			add_filter( 'wfacp_import_checkout_settings', array( __CLASS__, 'add_third_party_fields_to_checkout_form' ), 10, 3 );
 
-            /**
-             * Add Company Field under the billing and shipping address when it's hidden
-             */
-            add_filter( 'wfacp_default_billing_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
-            add_filter( 'wfacp_default_shipping_address_fields', [ __CLASS__, 're_add_hidden_address_fields' ] );
+			/**
+			 * Add Company Field under the billing and shipping address when it's hidden
+			 */
+			add_filter( 'wfacp_default_billing_address_fields', array( __CLASS__, 're_add_hidden_address_fields' ) );
+			add_filter( 'wfacp_default_shipping_address_fields', array( __CLASS__, 're_add_hidden_address_fields' ) );
+			add_filter( 'wffn_rest_get_step_post', array( __CLASS__, 'append_checkout_form_instances' ), 10, 2 );
+		}
+
+		public static function append_checkout_form_instances( $step_data, $step_id ) {
+			$post = get_post( $step_id );
+			if ( ! $post instanceof WP_Post ) {
+				return $step_data;
+			}
+			if ( 'wfacp_checkout' !== $post->post_type ) {
+				return $step_data;
+			}
+
+			$count                                    = self::count_checkout_form_instances( $step_id );
+			$step_data['checkout_form_instances']     = $count;
+			$step_data['has_multiple_checkout_forms'] = ( $count > 1 );
+
+			return $step_data;
 		}
 
 		public static function add_global_settings_fields( $fields ) {
-			$fields["wfacp"] = WFACP_Common::all_global_settings_fields();
+			$fields['wfacp'] = self::all_global_settings_fields();
 
 			return $fields;
 		}
@@ -127,7 +155,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 			}
 
-
 			if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'wfacp' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for admin page detection
 				$section             = filter_input( INPUT_GET, 'section', FILTER_UNSAFE_RAW );
 				self::$wfacp_section = is_null( $section ) ? 'design' : $section;
@@ -139,19 +166,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$wfacp_id = filter_input( INPUT_POST, 'wfacp_id', FILTER_UNSAFE_RAW );
 				}
 				self::set_id( absint( $wfacp_id ) );
-			} else if ( isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor action detection
+			} elseif ( isset( $_REQUEST['action'] ) && 'elementor' == $_REQUEST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor action detection
 				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
-			} else if ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor preview detection
+			} elseif ( isset( $_REQUEST['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for Elementor preview detection
 				$post_id = filter_input( INPUT_GET, 'elementor-preview', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
 					self::set_id( absint( $post_id ) );
 				}
-			} else if ( isset( $_REQUEST['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for post parameter detection
+			} elseif ( isset( $_REQUEST['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification and capability check not required for post parameter detection
 				$post_id = filter_input( INPUT_GET, 'post', FILTER_UNSAFE_RAW );
 				$post    = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type == self::get_post_type_slug() ) {
@@ -164,6 +191,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		/**
 		 * Get current Page id
+		 *
 		 * @return int
 		 */
 		public static function set_id( $wfacp_id = 0 ) {
@@ -174,6 +202,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		/** Get current Page id
+		 *
 		 * @return int
 		 */
 		public static function get_id() {
@@ -214,9 +243,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				do_action( 'wfacp_before_process_checkout_template_loader', $wfacp_id, $instances );
 				self::disable_wcct_pricing();
 			} else {
-				WFACP_Common::pc( '(initTemplateLoader) May be setup page Layout class is not found ' );
+				self::pc( '(initTemplateLoader) May be setup page Layout class is not found ' );
 			}
-
 		}
 
 
@@ -225,7 +253,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function woocommerce_checkout_update_order_review( $posted_data ) {
 
-			$post_data = [];
+			$post_data = array();
 			parse_str( $posted_data, $post_data );
 
 			if ( isset( $post_data['_wfacp_post_id'] ) ) {
@@ -256,18 +284,22 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function set_data() {
 
-			self::$customizer_key_prefix = WFACP_SLUG . '_c_' . WFACP_Common::get_id();
+			self::$customizer_key_prefix = WFACP_SLUG . '_c_' . self::get_id();
 			/** wfacpkirki */
 			if ( class_exists( 'wfacpkirki' ) ) {
-				wfacpkirki::add_config( WFACP_SLUG, array(
-					'option_type' => 'option',
-					'option_name' => WFACP_Common::$customizer_key_prefix,
-				) );
+				wfacpkirki::add_config(
+					WFACP_SLUG,
+					array(
+						'option_type' => 'option',
+						'option_name' => self::$customizer_key_prefix,
+					)
+				);
 			}
 		}
 
 		/**
 		 * GEt Current open step
+		 *
 		 * @return string
 		 */
 		public static function get_current_step() {
@@ -276,9 +308,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		/**
 		 * Get title of checkout page
+		 *
 		 * @return string
 		 */
-
 		public static function get_page_name() {
 			return get_the_title( self::$wfacp_id );
 		}
@@ -288,48 +320,54 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			 * Funnel Post Type
 			 */
 
-			register_post_type( self::get_post_type_slug(), apply_filters( 'wfacp_post_type_args', array(
-				'labels'              => array(
-					'name'          => __( 'Checkout', 'funnel-builder' ),
-					'singular_name' => __( 'Checkout', 'funnel-builder' ),
-					'add_new'       => __( 'Add Checkout page', 'funnel-builder' ),
-					'add_new_item'  => __( 'Add New Checkout page', 'funnel-builder' ),
-					'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), 'Checkout Pages' ),
-					'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), 'Checkout Pages' ),
-					'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), 'Checkout' ),
-					'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), 'Checkout' ),
-					'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), 'Checkout' ),
-					'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), 'Checkout' ),
+			register_post_type(
+				self::get_post_type_slug(),
+				apply_filters(
+					'wfacp_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => __( 'Checkout', 'funnel-builder' ),
+							'singular_name' => __( 'Checkout', 'funnel-builder' ),
+							'add_new'       => __( 'Add Checkout page', 'funnel-builder' ),
+							'add_new_item'  => __( 'Add New Checkout page', 'funnel-builder' ),
+							'search_items'  => sprintf( esc_html__( 'Search %s', 'funnel-builder' ), 'Checkout Pages' ),
+							'all_items'     => sprintf( esc_html__( 'All %s', 'funnel-builder' ), 'Checkout Pages' ),
+							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'funnel-builder' ), 'Checkout' ),
+							'view_item'     => sprintf( esc_html__( 'View %s', 'funnel-builder' ), 'Checkout' ),
+							'update_item'   => sprintf( esc_html__( 'Update %s', 'funnel-builder' ), 'Checkout' ),
+							'new_item_name' => sprintf( esc_html__( 'New %s', 'funnel-builder' ), 'Checkout' ),
 
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => true,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'show_in_admin_bar'   => true,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'rewrite'             => apply_filters( 'wfacp_rewrite_slug', [ 'slug' => self::get_url_rewrite_slug() ] ),
-				'query_var'           => true,
-				'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
-				'has_archive'         => false,
-				'show_in_rest'        => true,
-				'capabilities'        => array(
-					'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
-				),
-			) ) );
-			add_filter( 'theme_wfacp_checkout_templates', [ __CLASS__, 'registered_page_templates' ], 9999, 4 );
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => true,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'show_in_admin_bar'   => true,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'rewrite'             => apply_filters( 'wfacp_rewrite_slug', array( 'slug' => self::get_url_rewrite_slug() ) ),
+						'query_var'           => true,
+						'supports'            => array( 'title', 'elementor', 'editor', 'custom-fields', 'revisions', 'thumbnail', 'author' ),
+						'has_archive'         => false,
+						'show_in_rest'        => true,
+						'capabilities'        => array(
+							'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
+						),
+					)
+				)
+			);
+			add_filter( 'theme_wfacp_checkout_templates', array( __CLASS__, 'registered_page_templates' ), 9999, 4 );
 		}
 
 		public static function registered_page_templates( $templates ) {
 			$all_templates = wp_get_theme()->get_post_templates();
-			$path          = [
+			$path          = array(
 
 				'wfacp-full-width.php' => __( 'FunnelKit Boxed', 'funnel-builder' ),
-				'wfacp-canvas.php'     => __( 'FunnelKit Canvas For Page Builder', 'funnel-builder' )
-			];
+				'wfacp-canvas.php'     => __( 'FunnelKit Canvas For Page Builder', 'funnel-builder' ),
+			);
 			if ( isset( $all_templates['page'] ) && count( $all_templates['page'] ) > 0 ) {
 				$paths = array_merge( $all_templates['page'], $path );
 			} else {
@@ -340,12 +378,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return $paths;
-
 		}
 
 
 		/**
 		 * Get Post_type slug
+		 *
 		 * @return string
 		 */
 		public static function get_post_type_slug() {
@@ -401,7 +439,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$post_statuses = current_user_can( 'edit_private_products' ) ? array( 'private', 'publish' ) : array( 'publish' );
 			$type_join     = '';
 			$type_where    = '';
-			$Sql_Query     = $wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
+			$Sql_Query     = $wpdb->prepare(
+				"SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
 				LEFT JOIN {$wpdb->postmeta} postmeta ON posts.ID = postmeta.post_id
 				$type_join
 				WHERE (
@@ -413,7 +452,10 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				AND posts.post_type IN ('" . implode( "','", $post_types ) . "')
 				AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "')
 				$type_where
-				ORDER BY posts.post_parent ASC, posts.post_title ASC", $like_term, $like_term );
+				ORDER BY posts.post_parent ASC, posts.post_title ASC",
+				$like_term,
+				$like_term
+			);
 
 			$product_ids = $wpdb->get_col( $Sql_Query );
 
@@ -435,14 +477,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function get_default_product_config() {
-			return [
+			return array(
 				'title'           => '',
 				'discount_type'   => 'percent_discount_sale',
 				'discount_amount' => 0,
 				'discount_price'  => 0,
 				'quantity'        => 1,
-			];
-
+			);
 		}
 
 		public static function is_load_admin_assets( $screen_type = 'single' ) {
@@ -455,37 +496,37 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function get_admin_menu() {
-			$sections = [
-				[
+			$sections = array(
+				array(
 					'slug' => 'design',
 					'name' => __( 'Design', 'funnel-builder' ),
 					'icon' => '<i class="dashicons dashicons-art"></i>',
 
-				],
-				[
+				),
+				array(
 
 					'slug' => 'product',
 					'name' => __( 'Products', 'funnel-builder' ),
 					'icon' => '<i class="dashicons dashicons-cart"></i>',
 
-				],
-				[
+				),
+				array(
 					'slug' => 'fields',
 					'name' => __( 'Fields', 'funnel-builder' ),
 					'icon' => '<i class="dashicons dashicons-menu-alt"></i>',
-				],
-				[
+				),
+				array(
 					'slug' => 'optimization',
 					'name' => __( 'Optimizations', 'funnel-builder' ),
 					'icon' => '<i class="dashicons dashicons-chart-area"></i>',
-				],
-				[
+				),
+				array(
 					'slug' => 'settings',
 					'name' => __( 'Settings', 'funnel-builder' ),
 					'icon' => '<i class="dashicons dashicons-admin-generic"></i>',
-				],
+				),
 
-			];
+			);
 
 			$pages = apply_filters( 'wfacp_builder_section_pages', $sections );
 			if ( empty( $pages ) ) {
@@ -497,15 +538,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function get_discount_type_keys() {
 
-			$discounted = [
+			$discounted = array(
 				'fixed_discount_reg'    => sprintf( __( '%s Fixed Amount on Regular Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
 				'fixed_discount_sale'   => sprintf( __( '%s Fixed Amount on Sale Price', 'funnel-builder' ), get_woocommerce_currency_symbol() ),
 				'percent_discount_reg'  => __( '% on Regular Price', 'funnel-builder' ),
 				'percent_discount_sale' => __( '% on Sale Price', 'funnel-builder' ),
-			];
+			);
 
 			return $discounted;
-
 		}
 
 		/**
@@ -520,7 +560,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( empty( $product ) ) {
-				$product = [];
+				$product = array();
 			}
 			update_post_meta( $wfacp_id, '_wfacp_selected_products', $product );
 		}
@@ -535,7 +575,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				return;
 			}
 			if ( empty( $settings ) ) {
-				$settings = [];
+				$settings = array();
 			}
 
 			update_post_meta( $wfacp_id, '_wfacp_selected_products_settings', $settings );
@@ -559,7 +599,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_fieldset_data( $page_id ) {
 			$data = self::get_post_meta_data( $page_id, '_wfacp_fieldsets_data' );
 			if ( empty( $data ) ) {
-				$data                                = [];
+				$data                                = array();
 				$layout_data                         = self::get_page_layout( $page_id );
 				$prepare_data                        = self::prepare_fieldset( $layout_data );
 				$data['current_step']                = $layout_data['current_step'];
@@ -584,7 +624,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$prepare_data = self::prepare_fieldset( $data );
 			unset( $data['wfacp_id'], $data['action'], $data['wfacp_nonce'] );
 
-			$fieldset_data = [
+			$fieldset_data = array(
 				'have_billing_address'        => $data['have_billing_address'],
 				'have_shipping_address'       => $data['have_shipping_address'],
 				'have_billing_address_index'  => $data['have_billing_address_index'],
@@ -593,16 +633,15 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'have_coupon_field'           => $data['have_coupon_field'],
 				'current_step'                => $data['current_step'],
 				'fieldsets'                   => $prepare_data['fieldsets'],
-			];
+			);
 
-
-			//this meta use for printing the Form
+			// this meta use for printing the Form
 			update_post_meta( $page_id, '_wfacp_fieldsets_data', $fieldset_data );
-			//this meta use for woocommerce_checkout_field filter hooks
+			// this meta use for woocommerce_checkout_field filter hooks
 			update_post_meta( $page_id, '_wfacp_checkout_fields', $prepare_data['checkout_fields'] );
 			update_post_meta( $page_id, '_wfacp_version', WFACP_VERSION );
 
-			//this meta use form generate form at form builder
+			// this meta use form generate form at form builder
 			update_post_meta( $page_id, '_wfacp_page_layout', $data );
 
 			do_action( 'wfacp_update_page_layout', $page_id, $data );
@@ -610,7 +649,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 
-		public static function update_page_custom_fields( $wfacp_id, $data = [] ) {
+		public static function update_page_custom_fields( $wfacp_id, $data = array() ) {
 			if ( $wfacp_id == 0 ) {
 				return;
 			}
@@ -662,7 +701,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 			}
 			self::$customizer_fields_default = $default_values;
-
 		}
 
 		public static function get_page_custom_fields( $wfacp_id ) {
@@ -670,7 +708,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$fields = self::get_post_meta_data( $wfacp_id, '_wfacp_page_custom_field' );
 
 			if ( ! is_array( $fields ) || empty( $fields ) ) {
-				$fields = [ 'advanced' => [] ];
+				$fields = array( 'advanced' => array() );
 			}
 
 			$advanced_fields = self::get_advanced_fields();
@@ -696,9 +734,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			$output      = self::get_default_global_settings();
-			$save_models = get_option( '_wfacp_global_settings', [] );
-			$models      = [];
-			$tabs        = [];
+			$save_models = get_option( '_wfacp_global_settings', array() );
+			$models      = array();
+			$tabs        = array();
 			foreach ( $output as $key => $value ) {
 				if ( ! is_array( $value ) ) {
 					continue;
@@ -721,24 +759,23 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$tabs[] = $group_data['wfacp_data'];
 					unset( $group_data['wfacp_data'] );
 				}
-
 			}
 
-
-			return [
+			return array(
 				'schema' => $output,
 				'tabs'   => $tabs,
 				'model'  => apply_filters( 'wfacp_global_setting_fields_model', $models ),
-			];
+			);
 		}
 
 		/**
 		 * Optimization
+		 *
 		 * @return array
 		 */
 		public static function get_frontend_global_settings() {
-			$save_models                            = get_option( '_wfacp_global_settings', [] );
-			$models                                 = [];
+			$save_models                            = get_option( '_wfacp_global_settings', array() );
+			$models                                 = array();
 			$models['invalid_email_field']          = __( '%s is not a valid email address.', 'woocommerce' );
 			$models['inline_email_field']           = apply_filters( 'wfacp_inline_email_field_message', __( 'Please enter a valid email address', 'woocommerce' ) );
 			$models['error_required_msg']           = __( '%s is a required field.', 'woocommerce' );
@@ -752,14 +789,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$models['phone_inline_number_number']   = apply_filters( 'wfacp_phone_inline_number_message', __( 'The provided phone number is not valid', 'woocommerce' ) );
 
 			if ( is_array( $save_models ) && 0 < count( $save_models ) ) {
-				$keys_to_remove = [
+				$keys_to_remove = array(
 					'invalid_email_field',
 					'inline_email_field',
 					'error_required_msg',
 					'field_required_msg',
 					'phone_number_invalid',
-					'phone_inline_number_number'
-				];
+					'phone_inline_number_number',
+				);
 
 				foreach ( $keys_to_remove as $key ) {
 					if ( isset( $save_models[ $key ] ) ) {
@@ -809,6 +846,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function woocommerce_form_field_wfacp_radio( $field, $key, $args, $value ) {
 
 			$label_id        = $args['id'];
+			$args['class']   = (array) ( $args['class'] ?? array() );
 			$args['class'][] = 'wfacp_custom_field_radio_wrap';
 			if ( $args['required'] ) {
 				$args['class'][] = 'validate-required';
@@ -819,7 +857,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$sort              = $args['priority'] ? $args['priority'] : '';
 			$field_container   = '<p class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '">%3$s</p>';
 			$field             = '';
-			$custom_attributes = [];
+			$custom_attributes = array();
 
 			unset( $args['input_class'][0] );
 			unset( $args['label_class'][0] );
@@ -875,7 +913,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$address_id = '';
 			if ( 'shipping' == $index ) {
 				$address_id = 'shipping-address';
-			} else if ( 'billing' == $index ) {
+			} elseif ( 'billing' == $index ) {
 				$address_id = 'address';
 			}
 
@@ -895,7 +933,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return ob_get_clean();
-
 		}
 
 		/**
@@ -933,21 +970,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 *
 		 * @return array|mixed
 		 */
-
 		public static function get_page_product_settings( $wfacp_id ) {
 			$wfacp_id = absint( $wfacp_id );
 			$settings = self::get_post_meta_data( $wfacp_id, '_wfacp_selected_products_settings' );
 
 			if ( ! is_array( $settings ) ) {
-				return [
+				return array(
 					'add_to_cart_setting' => '1',
-				];
+				);
 			}
 
 			$settings = apply_filters( 'wfacp_page_product_settings', $settings );
 
 			return $settings;
-
 		}
 
 		public static function get_post_meta_data( $item_id, $meta_key = '', $force = false ) {
@@ -1004,18 +1039,16 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 *
 		 * @return array|mixed
 		 */
-
 		public static function get_page_product( $wfacp_id ) {
 
 			$wfacp_id = absint( $wfacp_id );
 			$product  = self::get_post_meta_data( $wfacp_id, '_wfacp_selected_products' );
 
 			if ( ! is_array( $product ) ) {
-				return [];
+				return array();
 			}
 
 			return apply_filters( 'wfacp_save_products', $product );
-
 		}
 
 		/**
@@ -1028,68 +1061,67 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function get_page_settings( $page_id ) {
 
 			$data              = self::get_post_meta_data( $page_id, '_wfacp_page_settings' );
-			$current_version   = WFACP_Common::get_checkout_page_version();
+			$current_version   = self::get_checkout_page_version();
 			$buttons_positions = self::smart_buttons_positions();
-			$default_data      = [
-				'coupons'                             => '',
-				'enable_coupon'                       => 'false',
-				'disable_coupon'                      => 'false',
-				'hide_quantity_switcher'              => 'false',
-				'enable_delete_item'                  => false,
-				'hide_product_image'                  => true,
-				'is_hide_additional_information'      => 'true',
-				'hide_quick_view'                     => 'false',
-				'hide_you_save'                       => 'true',
-				'close_after_x_purchase'              => 'false',
-				'total_purchased_allowed'             => '',
-				'close_checkout_after_date'           => 'false',
-				'close_checkout_on'                   => '',
-				'close_checkout_redirect_url'         => '',
-				'total_purchased_redirect_url'        => '',
-				'hide_best_value'                     => false,
-				'best_value_product'                  => '',
-				'best_value_text'                     => __( 'Best Value', 'woofunnels-aero-checkout' ),
-				'best_value_position'                 => 'below',
-				'enable_custom_name_in_order_summary' => 'false',
-				'autocomplete_enable'                 => 'false',
-				'autocomplete_google_key'             => '',
-				'preferred_countries_enable'          => 'false',
-				'enable_autopopulate_fields'          => 'true',
-				'enable_autopopulate_state'           => 'true',
-				'autopopulate_state_service'          => 'zippopotamus',
-				'override_tracking_events'            => 'false',
+			$default_data      = array(
+				'coupons'                                 => '',
+				'enable_coupon'                           => 'false',
+				'disable_coupon'                          => 'false',
+				'hide_quantity_switcher'                  => 'false',
+				'enable_delete_item'                      => false,
+				'hide_product_image'                      => true,
+				'is_hide_additional_information'          => 'true',
+				'hide_quick_view'                         => 'false',
+				'hide_you_save'                           => 'true',
+				'close_after_x_purchase'                  => 'false',
+				'total_purchased_allowed'                 => '',
+				'close_checkout_after_date'               => 'false',
+				'close_checkout_on'                       => '',
+				'close_checkout_redirect_url'             => '',
+				'total_purchased_redirect_url'            => '',
+				'hide_best_value'                         => false,
+				'best_value_product'                      => '',
+				'best_value_text'                         => __( 'Best Value', 'woofunnels-aero-checkout' ),
+				'best_value_position'                     => 'below',
+				'enable_custom_name_in_order_summary'     => 'false',
+				'autocomplete_enable'                     => 'false',
+				'autocomplete_google_key'                 => '',
+				'preferred_countries_enable'              => 'false',
+				'enable_autopopulate_fields'              => 'true',
+				'enable_autopopulate_state'               => 'true',
+				'autopopulate_state_service'              => 'zippopotamus',
+				'override_tracking_events'                => 'false',
 
-				'preferred_countries'                        => '',
-				'enable_smart_buttons'                       => 'false',
-				'override_global_track_event'                => 'false',
-				'pixel_is_page_view'                         => 'false',
-				'google_ua_is_page_view'                     => 'false',
-				'pixel_add_to_cart_event'                    => 'false',
-				'pixel_add_to_cart_event_position'           => 'load',
-				'pixel_initiate_checkout_event'              => 'false',
-				'pixel_initiate_checkout_event_position'     => 'load',
-				'pixel_add_payment_info_event'               => 'false',
-				'google_ua_add_to_cart_event'                => 'false',
-				'google_ua_add_to_cart_event_position'       => 'load',
-				'google_ua_initiate_checkout_event'          => 'false',
+				'preferred_countries'                     => '',
+				'enable_smart_buttons'                    => 'false',
+				'override_global_track_event'             => 'false',
+				'pixel_is_page_view'                      => 'false',
+				'google_ua_is_page_view'                  => 'false',
+				'pixel_add_to_cart_event'                 => 'false',
+				'pixel_add_to_cart_event_position'        => 'load',
+				'pixel_initiate_checkout_event'           => 'false',
+				'pixel_initiate_checkout_event_position'  => 'load',
+				'pixel_add_payment_info_event'            => 'false',
+				'google_ua_add_to_cart_event'             => 'false',
+				'google_ua_add_to_cart_event_position'    => 'load',
+				'google_ua_initiate_checkout_event'       => 'false',
 				'google_ua_initiate_checkout_event_position' => 'load',
-				'google_ua_add_payment_info_event'           => 'false',
-				'google_ads_is_page_view'                     => 'false',
-				'google_ads_add_to_cart_event'                => 'false',
-				'google_ads_add_to_cart_event_position'       => 'load',
-				'google_ads_initiate_checkout_event'          => 'false',
+				'google_ua_add_payment_info_event'        => 'false',
+				'google_ads_is_page_view'                 => 'false',
+				'google_ads_add_to_cart_event'            => 'false',
+				'google_ads_add_to_cart_event_position'   => 'load',
+				'google_ads_initiate_checkout_event'      => 'false',
 				'google_ads_initiate_checkout_event_position' => 'load',
-				'auto_fill_url_autoresponder'                => 'select_email_provider',
-				'smart_button_position'                      => $buttons_positions[0],
-				'enable_google_autocomplete'                 => 'false',
-				'enable_phone_flag'                          => 'true',
-				'enable_phone_validation'                    => 'false',
-				'save_phone_number_type'                     => 'false',
-				'enable_live_validation'                     => 'false',
-				'enable_address_field_number_validation'     => 'false',
-				'address_field_number_validation_message'    => __( 'House/Building number is required in {{address_field}}', 'woofunnel-aero-checkout' ),
-			];
-
+				'auto_fill_url_autoresponder'             => 'select_email_provider',
+				'smart_button_position'                   => $buttons_positions[0],
+				'enable_google_autocomplete'              => 'false',
+				'enable_phone_flag'                       => 'true',
+				'enable_phone_validation'                 => 'false',
+				'save_phone_number_type'                  => 'false',
+				'enable_live_validation'                  => 'false',
+				'enable_address_field_number_validation'  => 'false',
+				'address_field_number_validation_message' => __( 'House/Building number is required in {{address_field}}', 'woofunnel-aero-checkout' ),
+			);
 
 			if ( is_array( $data ) && count( $data ) > 0 ) {
 				foreach ( $default_data as $key => $val ) {
@@ -1127,7 +1159,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function prepare_fieldset( $data ) {
 
 			$fieldsets             = $data['fieldsets'];
-			$checkout_fields       = [];
+			$checkout_fields       = array();
 			$have_billing_address  = wc_string_to_bool( $data['have_billing_address'] );
 			$have_shipping_address = wc_string_to_bool( $data['have_shipping_address'] );
 
@@ -1144,12 +1176,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ! is_array( $fieldsets ) ) {
-				return [
-					'fieldset' => [],
-					'fields'   => [],
-				];
+				return array(
+					'fieldset' => array(),
+					'fields'   => array(),
+				);
 			}
-			$address_field_order = WFACP_Common::get_address_field_order( WFACP_Common::get_id() );
+			$address_field_order = self::get_address_field_order( self::get_id() );
 
 			foreach ( $fieldsets as $step => $sections ) {
 				if ( is_array( $sections ) && count( $sections ) > 0 ) {
@@ -1158,7 +1190,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 							continue;
 						}
 						$fields       = $section['fields'];
-						$newFields    = [];
+						$newFields    = array();
 						$custom_index = 0;
 						foreach ( $fields as $field_index => $field ) {
 							$field_id   = isset( $field['id'] ) ? $field['id'] : '';
@@ -1167,7 +1199,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 								$field_type          = 'advanced';
 								$field['field_type'] = $field_type;
 							}
-							if ( ( $field_id == 'address' || $field_id == 'shipping-address' ) && in_array( $field_type, [ 'billing', 'shipping' ] ) ) {
+							if ( ( $field_id == 'address' || $field_id == 'shipping-address' ) && in_array( $field_type, array( 'billing', 'shipping' ) ) ) {
 								$field_type = 'billing';
 								if ( $field_id == 'shipping-address' ) {
 									$field_type = 'shipping';
@@ -1219,6 +1251,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 											$val['id'] = $temp_key;
 											if ( 'shipping' == $hide_apply_cls_type && 'shipping' == $field_type && 'shipping_same_as_billing' != $temp_key ) {
 												if ( wc_string_to_bool( $fields_options['same_as_billing']['same_as_billing'] ) === true ) {
+													$val['class']   = (array) ( $val['class'] ?? array() );
 													$val['class'][] = 'wfacp_' . $field_type . '_fields';
 													$val['class'][] = 'wfacp_' . $field_type . '_field_hide';
 
@@ -1226,6 +1259,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 											}
 											if ( 'billing' == $hide_apply_cls_type && 'billing' == $field_type && 'billing_same_as_shipping' != $temp_key ) {
 												if ( wc_string_to_bool( $fields_options['same_as_shipping']['same_as_shipping'] ) === true ) {
+													$val['class']   = (array) ( $val['class'] ?? array() );
 													$val['class'][] = 'wfacp_' . $field_type . '_fields';
 													$val['class'][] = 'wfacp_' . $field_type . '_field_hide';
 												}
@@ -1251,44 +1285,42 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 											 * Address Same as billing or use different section end here
 											 */
 
-
 											$val['address_group']                        = true;
 											$checkout_fields[ $field_type ][ $temp_key ] = $val;
 											$newFields[ $custom_index ]                  = $val;
-											$custom_index ++;
-										} else {
+											++$custom_index;
+										} elseif ( $val['type'] == 'country' ) {
 
-											if ( $val['type'] == 'country' ) {
 												$val['id']            = $temp_key;
+												$val['class']         = (array) ( $val['class'] ?? array() );
 												$val['class'][]       = 'wfacp_country_field_hide';
 												$default_customer_add = get_option( 'woocommerce_default_customer_address', '' );
 
-												if ( '' == $default_customer_add ) {
-													$wc_default = wc_get_base_location();
-													if ( isset( $wc_default['country'] ) && '' !== $wc_default['country'] ) {
-														$default_country = trim( $wc_default['country'] );
-													} elseif ( class_exists( 'WC_Geolocation' ) ) {
-														$ip_data = self::get_geo_ip();
+											if ( '' == $default_customer_add ) {
+												$wc_default = wc_get_base_location();
+												if ( isset( $wc_default['country'] ) && '' !== $wc_default['country'] ) {
+													$default_country = trim( $wc_default['country'] );
+												} elseif ( class_exists( 'WC_Geolocation' ) ) {
+													$ip_data = self::get_geo_ip();
 
-														if ( is_array( $ip_data ) && isset( $ip_data['country'] ) ) {
-															$default_country = $ip_data['country'];
-														}
-													}
-												} else {
-													$wc_default = wc_get_base_location();
-													if ( isset( $wc_default['country'] ) && '' !== $wc_default['country'] ) {
-														$default_country = trim( $wc_default['country'] );
+													if ( is_array( $ip_data ) && isset( $ip_data['country'] ) ) {
+														$default_country = $ip_data['country'];
 													}
 												}
+											} else {
+												$wc_default = wc_get_base_location();
+												if ( isset( $wc_default['country'] ) && '' !== $wc_default['country'] ) {
+													$default_country = trim( $wc_default['country'] );
+												}
+											}
 
 												$val['default'] = $default_country;
-												if ( isset( $val['required'] ) ) {
-													unset( $val['required'] );
-												}
+											if ( isset( $val['required'] ) ) {
+												unset( $val['required'] );
+											}
 												$checkout_fields[ $field_type ][ $temp_key ] = $val;
 												$newFields[ $custom_index ]                  = $val;
-												$custom_index ++;
-											}
+												++$custom_index;
 										}
 										unset( $temp_key, $temp_value, $field_value );
 									}
@@ -1302,7 +1334,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 								$checkout_fields[ $field_type ][ $field_id ] = $field;
 								$newFields[ $custom_index ]                  = $field;
-								$custom_index ++;
+								++$custom_index;
 							}
 						}
 						$fieldsets[ $step ][ $section_index ]['fields'] = $newFields;
@@ -1312,17 +1344,17 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			unset( $data, $newFields, $custom_index );
 
-			return [
+			return array(
 				'fieldsets'       => $fieldsets,
 				'checkout_fields' => $checkout_fields,
-			];
+			);
 		}
 
 		public static function get_address_fields( $type = 'billing_', $unset = false ) {
 
-			$unset_address_fields = [
-				'billing_'  => [ 'billing_company', 'billing_country', 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_same_as_shipping' ],
-				'shipping_' => [
+			$unset_address_fields = array(
+				'billing_'  => array( 'billing_company', 'billing_country', 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_same_as_shipping' ),
+				'shipping_' => array(
 					'shipping_company',
 					'shipping_country',
 					'shipping_address_1',
@@ -1330,9 +1362,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					'shipping_city',
 					'shipping_state',
 					'shipping_postcode',
-					'shipping_same_as_billing'
-				],
-			];
+					'shipping_same_as_billing',
+				),
+			);
 
 			$unset_address_fields = apply_filters( 'wfacp_unset_address_fields', $unset_address_fields );
 			$countries            = new WC_Countries();
@@ -1354,6 +1386,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$address_fields = array();
 
 			foreach ( $fields as $key => $value ) {
+				if ( ! is_array( $value ) ) {
+					continue;
+				}
 				if ( 'state' === $key ) {
 					$value['country_field'] = $type . 'country';
 				}
@@ -1362,9 +1397,15 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$value['type'] = 'text';
 				}
 				if ( ! isset( $value['cssready'] ) || '' == $value['cssready'] ) {
-					$value['cssready'] = [];
+					$value['cssready'] = array();
 				}
-				$field_key                                   = $type . $key;
+				$field_key = $type . $key;
+				// Normalize class field to always be an array (can be string from filters)
+				if ( ! isset( $value['class'] ) ) {
+					$value['class'] = array();
+				} elseif ( ! is_array( $value['class'] ) ) {
+					$value['class'] = is_string( $value['class'] ) ? array( $value['class'] ) : array();
+				}
 				$address_fields[ $field_key ]                = $value;
 				$address_fields[ $field_key ]['field_type']  = str_replace( '_', '', $type );
 				$address_fields[ $field_key ]['placeholder'] = isset( $value['label'] ) ? $value['label'] : '';
@@ -1380,65 +1421,62 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( false != $unset ) {
 				if ( 'shipping_' === $type ) {
 
-					$address_fields['shipping_same_as_billing'] = [
-						'label'          => WFACP_Common::translation_string_to_check( __( 'Use a different shipping address', 'funnel-builder' ) ),
+					$address_fields['shipping_same_as_billing'] = array(
+						'label'          => self::translation_string_to_check( __( 'Use a different shipping address', 'funnel-builder' ) ),
 						'label_2'        => '',
 						'type'           => 'checkbox',
 						'value'          => 'off',
 						'is_wfacp_field' => true,
-						'class'          => [],
+						'class'          => array(),
 						'priority'       => 100,
-					];
+					);
 				} else {
-					$address_fields['billing_same_as_shipping'] = [
-						'label'          => WFACP_Common::translation_string_to_check( __( 'Use a different billing address', 'funnel-builder' ) ),
+					$address_fields['billing_same_as_shipping'] = array(
+						'label'          => self::translation_string_to_check( __( 'Use a different billing address', 'funnel-builder' ) ),
 						'label_2'        => '',
 						'type'           => 'checkbox',
 						'value'          => 'off',
 						'is_wfacp_field' => true,
-						'class'          => [],
+						'class'          => array(),
 						'priority'       => 100,
-					];
+					);
 				}
 			}
-
-
 
 				// Always include billing phone field in FunnelKit Checkout, bypassing WooCommerce hidden setting
 				$address_fields['billing_phone'] = array(
 					'label'        => __( 'Phone', 'woocommerce' ),
-						'type'         => 'tel',
-						'class'        => array( 'form-row-wide' ),
-						'validate'     => array( 'phone' ),
-						'placeholder'  => '',
-						'autocomplete' => 'tel',
-						'priority'     => 100,
-				);
-				//added 3.4.1
-				$address_fields['shipping_phone'] = array(
-					'label'        => WFACP_Common::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ),
-						'type'         => 'tel',
-						'class'        => array( 'form-row-wide' ),
-						'validate'     => array( 'phone' ),
-						'placeholder'  => '',
-						'autocomplete' => 'tel',
-						'priority'     => 100,
-				);
-
-			if ( 'billing_' === $type ) {
-				$address_fields['billing_email'] = array(
-					'label'        => __( 'Email', 'woocommerce' ),
-					'required'     => true,
-					'type'         => 'email',
+					'type'         => 'tel',
 					'class'        => array( 'form-row-wide' ),
-					'validate'     => array( 'email' ),
-					'autocomplete' => 'no' === get_option( 'woocommerce_registration_generate_username' ) ? 'email' : 'email username',
-					'priority'     => 110,
+					'validate'     => array( 'phone' ),
+					'placeholder'  => '',
+					'autocomplete' => 'tel',
+					'priority'     => 100,
 				);
-			}
+				// added 3.4.1
+				$address_fields['shipping_phone'] = array(
+					'label'        => self::translation_string_to_check( __( 'Shipping Phone', 'woofunnels-aero-checkout' ) ),
+					'type'         => 'tel',
+					'class'        => array( 'form-row-wide' ),
+					'validate'     => array( 'phone' ),
+					'placeholder'  => '',
+					'autocomplete' => 'tel',
+					'priority'     => 100,
+				);
 
+				if ( 'billing_' === $type ) {
+					$address_fields['billing_email'] = array(
+						'label'        => __( 'Email', 'woocommerce' ),
+						'required'     => true,
+						'type'         => 'email',
+						'class'        => array( 'form-row-wide' ),
+						'validate'     => array( 'email' ),
+						'autocomplete' => 'no' === get_option( 'woocommerce_registration_generate_username' ) ? 'email' : 'email username',
+						'priority'     => 110,
+					);
+				}
 
-			return apply_filters( 'wfacp_' . $type . 'field', $address_fields, $type );
+				return apply_filters( 'wfacp_' . $type . 'field', $address_fields, $type );
 		}
 
 
@@ -1448,11 +1486,11 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$unique_key = uniqid( 'wfacp_field_' );
 			}
 
-			return [
+			return array(
 				'type'        => 'wfacp_start_divider',
-				'label_class' => [ 'wfacp_divider_field', 'wfacp_divider_' . $unique_key ],
+				'label_class' => array( 'wfacp_divider_field', 'wfacp_divider_' . $unique_key ),
 				'id'          => 'wfacp_divider_' . $unique_key,
-			];
+			);
 		}
 
 		public static function get_end_divider_field( $unique_key = '' ) {
@@ -1460,10 +1498,10 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$unique_key = uniqid( 'wfacp_field_' );
 			}
 
-			return [
+			return array(
 				'type' => 'wfacp_end_divider',
 				'id'   => 'wfacp_divider_' . $unique_key . '_end',
-			];
+			);
 		}
 
 		public static function calculate_discount( $options ) {
@@ -1581,14 +1619,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 			}
 
-			return [];
+			return array();
 		}
 
 		/**
 		 * Find matching product variation
 		 *
 		 * @param WC_Product $product
-		 * @param array $attributes
+		 * @param array      $attributes
 		 *
 		 * @return int Matching variation ID or 0.
 		 */
@@ -1620,12 +1658,16 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		/**
 		 * CHeck is blank attribute present in Variation Attribute
+		 *
 		 * @return boolean
 		 */
 		public static function is_invalid_variation_attribute( $variation_attributes ) {
-			$blank_attribute = array_filter( $variation_attributes, function ( $v ) {
-				return is_null( $v ) || empty( $v );
-			} );
+			$blank_attribute = array_filter(
+				$variation_attributes,
+				function ( $v ) {
+					return is_null( $v ) || empty( $v );
+				}
+			);
 
 			return is_array( $blank_attribute ) && ! empty( $blank_attribute );
 		}
@@ -1640,9 +1682,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$vars               = $product->get_available_variations();
 				$product_attributes = $product->get_variation_attributes();
 				if ( count( $vars ) == 0 ) {
-					return [];
+					return array();
 				}
-				$available_variable = [];
+				$available_variable = array();
 				foreach ( $vars as $v ) {
 					$vid = $v['variation_id'];
 					// If variation id pass in function then return matched vars
@@ -1654,14 +1696,14 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					}
 				}
 				if ( empty( $available_variable ) ) {
-					return [];
+					return array();
 				}
 
 				if ( isset( $available_variable[ $vars_id ] ) ) {
 					return $available_variable[ $vars_id ];
 				}
 				$first_key = key( $available_variable );
-				//check any any case
+				// check any any case
 				$variation_attributes = $available_variable[ $first_key ]['attributes'];
 				if ( self::is_invalid_variation_attribute( $variation_attributes ) ) {
 					$available_variable[ $first_key ]['attributes'] = self::map_variation_attributes( wc_get_product( $first_key )->get_attributes(), $product_attributes );
@@ -1671,20 +1713,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			}
 
-			return [];
+			return array();
 		}
 
 
 		public static function map_variation_attributes( $variation_attr, $product_attr ) {
 
-
-			$new_product_attr = [];
+			$new_product_attr = array();
 			foreach ( $product_attr as $k => $item ) {
-				$k                      = strtolower( $k );//Lowering the Attribute keys
+				$k                      = strtolower( $k );// Lowering the Attribute keys
 				$k                      = str_replace( ' ', '-', $k );
 				$new_product_attr[ $k ] = $item;
 			}
-			$output = [];
+			$output = array();
 			foreach ( $variation_attr as $key => $attr ) {
 				if ( empty( $attr ) ) {
 					$key  = str_replace( ' ', '-', $key );
@@ -1720,7 +1761,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$available_qty = $product_obj->get_stock_quantity();
 				if ( $available_qty < $new_qty ) {
 
-					if ( ! in_array( $product_obj->get_backorders(), [ 'yes', 'notify' ] ) ) {
+					if ( ! in_array( $product_obj->get_backorders(), array( 'yes', 'notify' ) ) ) {
 						return false;
 					}
 				}
@@ -1734,13 +1775,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		/**
 		 * get pixel initiated pixel checkout data
+		 *
 		 * @return array
 		 */
-
 		public static function analytics_checkout_data() {
 
-
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -1754,7 +1794,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function analytics_add_to_cart_data() {
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -1772,8 +1812,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function analytics_item( $product_obj, $cart_item ) {
 
-
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -1787,20 +1826,20 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 
 		public static function get_variable_product_type() {
-			return [ 'variable', 'variable-subscription' ];
+			return array( 'variable', 'variable-subscription' );
 		}
 
 		public static function get_variation_product_type() {
-			return [ 'variation', 'subscription_variation' ];
+			return array( 'variation', 'subscription_variation' );
 		}
 
 		public static function get_subscription_product_type() {
 
 			if ( ! class_exists( 'WC_Subscriptions_Product' ) ) {
-				return [];
+				return array();
 			}
 
-			return [ 'variable-subscription', 'subscription', 'subscription_variation' ];
+			return array( 'variable-subscription', 'subscription', 'subscription_variation' );
 		}
 
 		/**
@@ -1815,13 +1854,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$post = get_post( $post_id );
 				if ( ! is_null( $post ) && $post->post_type === self::get_post_type_slug() ) {
 
-					$args        = [
+					$args        = array(
 						'post_title'   => $post->post_title . ' - ' . __( 'Copy', 'funnel-builder' ),
 						'post_content' => $post->post_content,
 						'post_name'    => sanitize_title( $post->post_title . ' - ' . __( 'Copy', 'funnel-builder' ) ),
 						'post_type'    => self::get_post_type_slug(),
 						'post_status'  => 'draft',
-					];
+					);
 					$new_post_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $new_post_id ) ) {
 						self::get_duplicate_data( $new_post_id, $post_id );
@@ -1837,7 +1876,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function get_duplicate_data( $new_post_id, $post_id ) {
 
-			$data = [
+			$data = array(
 				'_wfacp_selected_products'          => get_post_meta( $post_id, '_wfacp_selected_products', true ),
 				'_wfacp_selected_products_settings' => get_post_meta( $post_id, '_wfacp_selected_products_settings', true ),
 				'_wfacp_selected_design'            => get_post_meta( $post_id, '_wfacp_selected_design', true ),
@@ -1850,35 +1889,41 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'_wfacp_save_address_order'         => get_post_meta( $post_id, '_wfacp_save_address_order', true ),
 				'_post_description'                 => get_post_meta( $post_id, '_post_description', true ),
 				'_wp_page_template'                 => get_post_meta( $post_id, '_wp_page_template', true ),
-			];
+			);
 
 			foreach ( $data as $meta_key => $meta_value ) {
 				update_post_meta( $new_post_id, $meta_key, $meta_value );
 			}
-			//copy customizer setting
-			update_option( WFACP_SLUG . '_c_' . $new_post_id, get_option( WFACP_SLUG . '_c_' . $post_id, [] ), 'no' );
+			// copy customizer setting
+			update_option( WFACP_SLUG . '_c_' . $new_post_id, get_option( WFACP_SLUG . '_c_' . $post_id, array() ), 'no' );
 			do_action( 'wfacp_duplicate_pages', $new_post_id, $post_id, $data );
 		}
 
 		public static function wc_dropdown_variation_attribute_options( $args = array() ) {
-			$args = wp_parse_args( apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_args', $args ), array(
-				'options'          => false,
-				'attribute'        => false,
-				'product'          => false,
-				'selected'         => false,
-				'name'             => '',
-				'id'               => '',
-				'class'            => '',
-				'show_option_none' => __( 'Choose an option', 'woocommerce' ),
-			) );
+			$args = wp_parse_args(
+				apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_args', $args ),
+				array(
+					'options'          => false,
+					'attribute'        => false,
+					'product'          => false,
+					'selected'         => false,
+					'name'             => '',
+					'id'               => '',
+					'class'            => '',
+					'show_option_none' => __( 'Choose an option', 'woocommerce' ),
+				)
+			);
 
 			// Get selected value.
 			if ( false === $args['selected'] && $args['attribute'] && $args['product'] instanceof WC_Product ) {
 				$selected_key = 'attribute_' . sanitize_title( $args['attribute'] );
 
-		$selected_data = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
-		
-		$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
+				$selected_data = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
+
+				$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
+				$selected_data    = filter_input( INPUT_POST, $selected_key, FILTER_UNSAFE_RAW );
+
+				$args['selected'] = ! is_null( $selected_data ) ? bwf_clean( urldecode( wp_unslash( $selected_data ) ) ) : $args['product']->get_variation_default_attribute( $args['attribute'] );
 			}
 
 			$options               = $args['options'];
@@ -1895,15 +1940,19 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				$options    = $attributes[ $attribute ];
 			}
 
-			$html = '<select id="' . esc_attr( $id ) . '" class="' . esc_attr( $class ) . '" name="' . esc_attr( $name ) . '" data-attribute_name="attribute_' . esc_attr( sanitize_title( $attribute ) ) . '" data-show_option_none="' . ( $show_option_none ? 'yes' : 'no' ) . '">';
+			$html  = '<select id="' . esc_attr( $id ) . '" class="' . esc_attr( $class ) . '" name="' . esc_attr( $name ) . '" data-attribute_name="attribute_' . esc_attr( sanitize_title( $attribute ) ) . '" data-show_option_none="' . ( $show_option_none ? 'yes' : 'no' ) . '">';
 			$html .= '<option value="">' . esc_html( $show_option_none_text ) . '</option>';
 
 			if ( ! empty( $options ) ) {
 				if ( $product && taxonomy_exists( $attribute ) ) {
 					// Get terms if this is a taxonomy - ordered. We need the names too.
-					$terms = wc_get_product_terms( $product->get_id(), $attribute, array(
-						'fields' => 'all',
-					) );
+					$terms = wc_get_product_terms(
+						$product->get_id(),
+						$attribute,
+						array(
+							'fields' => 'all',
+						)
+					);
 
 					foreach ( $terms as $term ) {
 						if ( in_array( $term->slug, $options, true ) ) {
@@ -1914,24 +1963,27 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					foreach ( $options as $option ) {
 						// This handles < 2.4.0 bw compatibility where text attributes were not sanitized.
 						$selected = sanitize_title( $args['selected'] ) === $args['selected'] ? selected( $args['selected'], sanitize_title( $option ), false ) : selected( $args['selected'], $option, false );
-						$html     .= '<option value="' . esc_attr( $option ) . '" ' . $selected . '>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</option>';
+						$html    .= '<option value="' . esc_attr( $option ) . '" ' . $selected . '>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</option>';
 					}
 				}
 			}
 
 			$html .= '</select>';
-			
+
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Filtered HTML output for variation dropdown
 			echo apply_filters( 'woocommerce_wfacp_dropdown_variation_attribute_options_html', $html, $args );
 		}
 
 		public static function wfacp_order_custom_field( $atts ) {
 
-			$atts = shortcode_atts( array(
-				'order_id' => 0,
-				'field_id' => '',
-				'type'     => 'value',
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'order_id' => 0,
+					'field_id' => '',
+					'type'     => 'value',
+				),
+				$atts
+			);
 
 			$field = $atts['field_id'];
 			if ( '' == $field ) {
@@ -1948,7 +2000,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				return '';
 			}
 
-			$meta_keys = [
+			$meta_keys = array(
 				'billing_email',
 				'billing_first_name',
 				'billing_last_name',
@@ -1970,8 +2022,8 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'shipping_postcode',
 				'shipping_state',
 
-			];
-			$order     = wc_get_order( $order_id );
+			);
+			$order = wc_get_order( $order_id );
 			if ( $atts['type'] == 'value' ) {
 				if ( in_array( $field, $meta_keys ) ) {
 					$field = '_' . $field;
@@ -1979,7 +2031,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				$metadata = wfacp_get_order_meta( $order, $field );
 				if ( is_string( $metadata ) ) {
-					return $metadata;
+					return esc_html( $metadata );
 				}
 			} else {
 				$fpos = strpos( $field, '_' );
@@ -2015,10 +2067,10 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 
-	public static function get_fragments( $wfacp_id ) {
+		public static function get_fragments( $wfacp_id ) {
 
 			if ( isset( $_REQUEST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX fragment request parameter detection
-				$post_data = [];
+				$post_data = array();
 				$temp_data = filter_input( INPUT_POST, 'post_data', FILTER_UNSAFE_RAW );
 				parse_str( $temp_data, $post_data );
 				self::$post_data = $post_data;
@@ -2026,7 +2078,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$exchange_keys       = urldecode( $post_data['wfacp_exchange_keys'] );
 					self::$exchange_keys = json_decode( $exchange_keys, true );
 				}
-		}
+			}
 
 			do_action( 'wfacp_get_fragments', $wfacp_id, $_REQUEST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX fragment request parameter passing
 
@@ -2035,12 +2087,15 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			woocommerce_order_review();
 			$woocommerce_order_review = ob_get_clean();
 
-			return apply_filters( 'woocommerce_update_order_review_fragments', array(
-				'.woocommerce-checkout-review-order-table' => $woocommerce_order_review,
-			) );
+			return apply_filters(
+				'woocommerce_update_order_review_fragments',
+				array(
+					'.woocommerce-checkout-review-order-table' => $woocommerce_order_review,
+				)
+			);
 		}
 
-	public static function wfob_order_bump_fragments() {
+		public static function wfob_order_bump_fragments() {
 
 			if ( isset( $_REQUEST['wfacp_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX order bump fragment parameter detection
 				$wfacp_id = absint( $_REQUEST['wfacp_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- AJAX order bump fragment parameter detection
@@ -2061,66 +2116,64 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * When on the checkout (review order), this will get the subtotal based on the customer's tax rate rather than the base rate.
 		 *
 		 * @param WC_Product $product Product object.
-		 * @param int $quantity Quantity being purchased.
+		 * @param int        $quantity Quantity being purchased.
 		 *
 		 * @return string formatted price
 		 */
-        public static function get_product_subtotal( $product, $cart_item, $row = false, $strike_through = false ) {
-            if ( $product->is_taxable() ) {
+		public static function get_product_subtotal( $product, $cart_item, $row = false, $strike_through = false ) {
+			if ( $product->is_taxable() ) {
 
-                if ( WC()->cart->display_prices_including_tax() ) {
-                    $row_price        = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
-                    $product_subtotal = wc_price( $row_price );
-                    if ( ! wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
-                        $product_subtotal .= ' <small class="tax_label">' . WC()->countries->inc_tax_or_vat() . '</small>';
-                    }
-                } else {
-                    $row_price        = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
-                    $product_subtotal = wc_price( $row_price );
-                    if ( wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
-                        $product_subtotal .= ' <small class="tax_label">' . WC()->countries->ex_tax_or_vat() . '</small>';
-                    }
-                }
-            } else {
-                $row_price        = $cart_item['line_subtotal'];
-                $product_subtotal = wc_price( $row_price );
-            }
+				if ( WC()->cart->display_prices_including_tax() ) {
+					$row_price        = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
+					$product_subtotal = wc_price( $row_price );
+					if ( ! wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
+						$product_subtotal .= ' <small class="tax_label">' . WC()->countries->inc_tax_or_vat() . '</small>';
+					}
+				} else {
+					$row_price        = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
+					$product_subtotal = wc_price( $row_price );
+					if ( wc_prices_include_tax() && WC()->cart->get_subtotal_tax() > 0 ) {
+						$product_subtotal .= ' <small class="tax_label">' . WC()->countries->ex_tax_or_vat() . '</small>';
+					}
+				}
+			} else {
+				$row_price        = $cart_item['line_subtotal'];
+				$product_subtotal = wc_price( $row_price );
+			}
 
-            if ( $strike_through == true ) {
-                $quantity = isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
-                $product_regular_price = $product->get_regular_price();
+			if ( $strike_through == true ) {
+				$quantity              = isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
+				$product_regular_price = $product->get_regular_price();
 
-                if ( empty( $product_regular_price ) ) {
-                    $product_regular_price = 0;
-                }
+				if ( empty( $product_regular_price ) ) {
+					$product_regular_price = 0;
+				}
 
+				$product_regular_price *= $quantity;
+				$subtotal               = $row_price;
 
-                $product_regular_price *= $quantity;
-                $subtotal              = $row_price;
+				if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
+					if ( $subtotal > $product_regular_price ) {
 
-                if ( $product_regular_price > 0 && ( round( $subtotal, 2 ) !== round( $product_regular_price, 2 ) ) ) {
-                    if ( $subtotal > $product_regular_price ) {
+						$product_subtotal = wc_price( $subtotal );
+					} else {
 
-                        $product_subtotal = wc_price( $subtotal );
-                    } else {
+						$product_subtotal = wc_format_sale_price( $product_regular_price, $subtotal );
+					}
+				} else {
 
-                        $product_subtotal = wc_format_sale_price( $product_regular_price, $subtotal );
-                    }
-                } else {
+					$product_subtotal = wc_price( $subtotal );
+				}
 
-                    $product_subtotal = wc_price( $subtotal );
-                }
+				return $product_subtotal;
 
-                return $product_subtotal;
+			}
+			if ( true == $row ) {
+				return $row_price;
+			}
 
-            }
-            if ( true == $row ) {
-                return $row_price;
-            }
-
-            return apply_filters( 'woocommerce_cart_product_subtotal', $product_subtotal, $product, $cart_item['quantity'], WC()->cart );
-
-        }
+			return apply_filters( 'woocommerce_cart_product_subtotal', $product_subtotal, $product, $cart_item['quantity'], WC()->cart );
+		}
 
 		public static function remove_menu_support( $component ) {
 
@@ -2152,7 +2205,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$wc_default      = wc_get_base_location();
 			$default_country = ( isset( $wc_default['country'] ) && '' !== $wc_default['country'] ) ? trim( $wc_default['country'] ) : '';
 
-			if ( in_array( $base, [ 'geolocation', 'geolocation_ajax' ], true ) ) {
+			if ( in_array( $base, array( 'geolocation', 'geolocation_ajax' ), true ) ) {
 				$found_country = $default_country;
 				if ( class_exists( 'WC_Geolocation' ) ) {
 					$ip_data = self::get_geo_ip();
@@ -2161,7 +2214,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 						$found_country = isset( $allowed_countries[ $country ] ) ? $country : $found_country;
 					}
 				}
-			} else if ( $base == 'base' ) {
+			} elseif ( $base == 'base' ) {
 				// Shop Base Address
 				$found_country = $default_country;
 			}
@@ -2180,12 +2233,10 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$signup_fee   = WC_Subscriptions_Product::get_sign_up_fee( $pro );
 			// Product now in free trial and with signup fee
 
-
 			$display_type = get_option( 'woocommerce_tax_display_cart' );
 			if ( 'incl' == $display_type && $signup_fee > 0 ) {
 				$signup_fee = self::get_price_sign_up_fee( $pro, 'inc_tax' );
 			}
-
 
 			if ( $trial_length > 0 && $signup_fee > 0 ) {
 				return $signup_fee * $price_data['quantity'];
@@ -2209,7 +2260,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 *
 		 * @return string
 		 */
-
 		public static function display_subscription_price( $_product, $cart_item, $cart_item_key ) {
 			if ( ! wp_doing_ajax() && $cart_item['quantity'] > 1 ) {
 				$price = $_product->get_price();
@@ -2246,31 +2296,26 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 *
 		 * @return string
 		 */
-
 		public static function subscription_product_string( $pro, $product_data, $cart_item, $cart_item_key ) {
 			$temp_price = floatval( $pro->get_price() );
 
-			if(isset($product_data['quantity'] )){
-				$qty=$product_data['quantity'];
-			}else{
-				$qty=$cart_item['quantity'];
+			if ( isset( $product_data['quantity'] ) ) {
+				$qty = $product_data['quantity'];
+			} else {
+				$qty = $cart_item['quantity'];
 			}
 
-
 			$temp_price *= ( isset( $qty ) && $qty > 0 ) ? absint( $qty ) : 1;
-			$temp_data  = [
+			$temp_data   = array(
 				'price' => wc_price( $temp_price ),
-			];
+			);
 			global $wfacp_product_switcher_quantity;
 			if ( '' !== $cart_item_key && ! isset( WC()->cart->removed_cart_contents[ $cart_item_key ] ) ) {
 				$wfacp_product_switcher_quantity = $cart_item['quantity'];
-			} else {
-		    	if(isset($product_data['org_quantity'])){
+			} elseif ( isset( $product_data['org_quantity'] ) ) {
 					$wfacp_product_switcher_quantity = $qty * $product_data['org_quantity'];
-				}else{
-					$wfacp_product_switcher_quantity = $qty;
-				}
-
+			} else {
+				$wfacp_product_switcher_quantity = $qty;
 			}
 			add_filter( 'woocommerce_subscriptions_product_sign_up_fee', 'WFACP_Common::get_signup_fee' );
 			$final_price = WC_Subscriptions_Product::get_price_string( $pro, $temp_data );
@@ -2303,7 +2348,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * Get a coupon label.
 		 *
 		 * @param string|WC_Coupon $coupon Coupon data or code.
-		 * @param bool $echo Echo or return.
+		 * @param bool             $echo Echo or return.
 		 *
 		 * @return string
 		 */
@@ -2311,12 +2356,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( is_string( $coupon ) ) {
 				$coupon = new WC_Coupon( $coupon );
 			}
-		$label = $coupon->get_code();
-		if ( $echo ) {
-			echo esc_html( $label );
-		} else {
-			return $label;
-		}
+			$label = $coupon->get_code();
+			if ( $echo ) {
+				echo esc_html( $label );
+			} else {
+				return $label;
+			}
 		}
 
 		public static function get_default_global_page_builder() {
@@ -2358,7 +2403,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$design_data = array(
 						'selected_type'   => $default_builder,
 						'selected'        => self::get_default_template_based_on_builder( $default_builder ),
-						'template_active' => 'no'
+						'template_active' => 'no',
 					);
 				} else {
 					$design_data = self::default_design_data();
@@ -2380,12 +2425,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			if ( true == $all ) {
 				$defaults   = self::$customizer_fields_default;
-				$saved_data = get_option( self::$customizer_key_prefix, [] );
+				$saved_data = get_option( self::$customizer_key_prefix, array() );
 				if ( null == $defaults ) {
-					$defaults = [];
+					$defaults = array();
 				}
 				if ( is_bool( $saved_data ) ) {
-					$saved_data = [];
+					$saved_data = array();
 				}
 
 				return array_merge( $saved_data, $defaults );
@@ -2430,7 +2475,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			if ( ! is_array( $data ) ) {
-				$data = [];
+				$data = array();
 			}
 
 			$data['update_time'] = time();
@@ -2452,7 +2497,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * Modify permalink
 		 *
 		 * @param string $post_link post link.
-		 * @param array $post post data.
+		 * @param array  $post post data.
 		 * @param string $leavename leave name.
 		 *
 		 * @return string
@@ -2462,7 +2507,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 
 			if ( isset( $post->post_type ) && self::get_post_type_slug() === $post->post_type && empty( trim( $bwb_admin_setting->get_option( 'checkout_page_base' ) ) ) ) {
-
 
 				// If elementor page preview, return post link as it is.
 				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -2477,7 +2521,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					$post_link = str_replace( '/' . self::get_url_rewrite_slug() . '/', '/', $post_link );
 
 				}
-
 			}
 
 			return $post_link;
@@ -2500,7 +2543,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			if ( ! $query->is_main_query() ) {
 				return;
 			}
-
 
 			// Bail if this query doesn't match our very specific rewrite rule.
 			if ( ! isset( $query->query['page'] ) ) {
@@ -2545,7 +2587,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				foreach ( $cart as $item_key => $item_data ) {
 					if ( isset( $item_data['_wfacp_product_key'] ) && $product_key == $item_data['_wfacp_product_key'] ) {
 
-						return [ $item_key, $item_data ];
+						return array( $item_key, $item_data );
 					}
 				}
 			}
@@ -2554,7 +2596,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				foreach ( $cart as $item_key => $item_data ) {
 					if ( isset( $item_data['_wfacp_product_key'] ) && $product_key == $item_data['_wfacp_product_key'] ) {
 
-						return [ $item_key, $item_data ];
+						return array( $item_key, $item_data );
 					}
 				}
 			}
@@ -2563,7 +2605,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		final public static function unset_gateways( $gateways ) {
-			if ( WFACP_Common::is_theme_builder() ) {
+			if ( self::is_theme_builder() ) {
 				foreach ( $gateways as $key => $gateway ) {
 					if ( 'WC_Gateway_COD' != $gateway ) {
 						unset( $gateways[ $key ] );
@@ -2579,12 +2621,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		final public static function ajax_extra_frontend_data() {
 			if ( is_null( WC()->cart ) ) {
-				return [];
+				return array();
 			}
-			$data                    = [];
+			$data                    = array();
 			$data['cart_is_empty']   = WC()->cart->is_empty();
 			$data['cart_total']      = WC()->cart->get_total( 'edit' );
-			$data['cart_is_virtual'] = WFACP_Common::is_cart_is_virtual();
+			$data['cart_is_virtual'] = self::is_cart_is_virtual();
+			$data['is_logged_in']    = is_user_logged_in();
 			if ( class_exists( 'WC_Subscriptions_Cart' ) && method_exists( 'WC_Subscriptions_Cart', 'cart_contains_subscription' ) ) {
 				$data['cart_contains_subscription'] = WC_Subscriptions_Cart::cart_contains_subscription();
 			}
@@ -2594,8 +2637,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		final public static function copy_meta( $old_post_id, $new_post_id ) {
 
-
-			$exclude_data = [
+			$exclude_data = array(
 				'_wfacp_selected_products',
 				'_wfacp_selected_products_settings',
 				'_wfacp_selected_design',
@@ -2608,8 +2650,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'_wfacp_save_address_order',
 				'_post_description',
 				'_wp_page_template',
-			];
-
+			);
 
 			$exclude_meta_keys_to_copy = apply_filters( 'wfacp_do_not_duplicate_meta', $exclude_data );
 
@@ -2617,7 +2658,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$old_post_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			if ( ! empty( $post_meta_all ) ) {
-				$sql_query_selects = [];
+				$sql_query_selects = array();
 
 				foreach ( $post_meta_all as $meta_info ) {
 
@@ -2629,7 +2670,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 					$meta_key            = esc_sql( $meta_key );
 					$meta_value          = esc_sql( $meta_info->meta_value );
-					$sql_query_selects[] = "( '$new_post_id', '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+					$sql_query_selects[] = "( '$new_post_id', '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 
 				}
 
@@ -2685,30 +2726,43 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function wfacp_order_total( $atts ) {
 
-			$atts = shortcode_atts( array(
-				'with_html' => 'no',
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'with_html' => 'no',
+				),
+				$atts
+			);
 
 			if ( is_null( WC()->cart ) ) {
 				return '';
 			}
 
-
-			if ( 'yes' == $atts['with_html'] ) {
-				$cart_total = WC()->cart->get_total();
+			if ( is_rtl() ) {
+				$cart_total = wc_price(
+					WC()->cart->get_total( 'edit' ),
+					array(
+						'price_format' => '%1$s%2$s',
+						'in_span'      => ( 'yes' === $atts['with_html'] ),
+					)
+				);
+				$cart_total = "\u{2066}" . $cart_total . "\u{2069}";
 			} else {
-				$cart_total = wp_strip_all_tags( WC()->cart->get_total() );
+				$cart_total = WC()->cart->get_total();
 			}
 
+			if ( 'yes' !== $atts['with_html'] ) {
+				$cart_total = wp_strip_all_tags( $cart_total );
+			}
 
 			return $cart_total;
 		}
 
 		/**
 		 * Create facebook advanced matching data
+		 *
 		 * @return mixed|null
 		 */
-		public static function pixel_advanced_matching_data() {
+		public static function pixel_advanced_matching_data( $fetch_contact = false ) {
 			$args = array();
 
 			if ( ! class_exists( 'BWF_Admin_General_Settings' ) ) {
@@ -2721,7 +2775,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				return $args;
 			}
 
-			$params = self::advanced_matching_data();
+			$params = self::advanced_matching_data( $fetch_contact );
 
 			if ( ! is_array( $params ) || 0 === count( $params ) ) {
 				return $args;
@@ -2729,7 +2783,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			foreach ( $params as $key => &$value ) {
 				if ( ! empty( $value ) ) {
-					$params[ $key ] = WFACP_Common::sanitize_advanced_matching_param( $value, $key );
+					$params[ $key ] = self::sanitize_advanced_matching_param( $value, $key );
 				}
 			}
 
@@ -2738,6 +2792,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		/**
 		 * Create tiktok advanced matching data
+		 *
 		 * @return mixed|null
 		 */
 		public static function tiktok_advanced_matching_data() {
@@ -2749,67 +2804,141 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				return $args;
 			}
 
-			if ( isset( $params["em"] ) && $params["em"] != "" ) {
-				$args['sha256_email'] = hash( 'sha256', $params["em"] );
+			// Normalize and hash email
+			if ( isset( $params['em'] ) && $params['em'] != '' ) {
+				$normalized_email = WFFN_Common::normalize_tiktok_email( $params['em'] );
+				if ( false !== $normalized_email ) {
+					$args['sha256_email'] = hash( 'sha256', $normalized_email );
+				}
 			}
-			if ( isset( $params["ph"] ) && $params["ph"] != "" ) {
-				$args['sha256_phone_number'] = hash( 'sha256', $params['ph'] );
+
+			// Normalize and hash phone
+			if ( isset( $params['ph'] ) && $params['ph'] != '' ) {
+				$country_code = '';
+				if ( class_exists( 'WooCommerce' ) && isset( $params['country'] ) ) {
+					$country_code = $params['country'];
+				}
+				$normalized_phone = WFFN_Common::normalize_tiktok_phone( $params['ph'], $country_code );
+				if ( false !== $normalized_phone ) {
+					$args['sha256_phone_number'] = hash( 'sha256', $normalized_phone );
+				}
 			}
 
 			return $args;
 		}
 
-		public static function advanced_matching_data() {
-			$params = array();
+		public static function advanced_matching_data( $fetch_contact = false ) {
+			try {
+				$params = array();
 
-			$user = wp_get_current_user();
-
-			if ( ! empty( $user ) && $user->ID !== 0 ) {
-				// get user regular data
-				$params['fn']          = $user->get( 'user_firstname' );
-				$params['ln']          = $user->get( 'user_lastname' );
-				$params['em']          = $user->get( 'user_email' );
-				$params['ph']          = get_user_meta( $user->ID, 'user_phone', true );
-				$params['external_id'] = $user->ID;
-			}
-
-			/**
-			 * Add common WooCommerce Advanced Matching params
-			 */
-
-			if ( class_exists( 'woocommerce' ) ) {
+				$user = wp_get_current_user();
 
 				if ( ! empty( $user ) && $user->ID !== 0 ) {
-					// if first name is not set in regular wp user meta
-					if ( empty( $params['fn'] ) ) {
-						$params['fn'] = $user->get( 'billing_first_name' );
-					}
-
-					// if last name is not set in regular wp user meta
-					if ( empty( $params['ln'] ) ) {
-						$params['ln'] = $user->get( 'billing_last_name' );
-					}
-
-					$params['ph'] = $user->get( 'billing_phone' );
-					$params['ct'] = $user->get( 'billing_city' );
-					$params['st'] = $user->get( 'billing_state' );
-
-					$params['country'] = $user->get( 'billing_country' );
+					// get user regular data
+					$params['fn']          = $user->get( 'user_firstname' );
+					$params['ln']          = $user->get( 'user_lastname' );
+					$params['em']          = $user->get( 'user_email' );
+					$params['ph']          = get_user_meta( $user->ID, 'user_phone', true );
+					$params['external_id'] = $user->ID;
 				}
 
-			}
+				/**
+				 * Add common WooCommerce Advanced Matching params
+				 */
+				if ( class_exists( 'woocommerce' ) ) {
+					if ( ! empty( $user ) && $user->ID !== 0 ) {
+						if ( empty( $params['fn'] ) ) {
+							$params['fn'] = $user->get( 'billing_first_name' );
+						}
+						if ( empty( $params['ln'] ) ) {
+							$params['ln'] = $user->get( 'billing_last_name' );
+						}
+						$params['ph']      = $user->get( 'billing_phone' );
+						$params['ct']      = $user->get( 'billing_city' );
+						$params['st']      = $user->get( 'billing_state' );
+						$params['country'] = $user->get( 'billing_country' );
+					}
+				}
 
-			if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-				$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) );
-			}
-			$params = apply_filters( 'wfacp_advanced_matching_data', $params );
+				if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
+					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) );
+				}
+				if ( $fetch_contact ) {
+					// Custom: Fill missing fields from contact table using UID from _fk_contact_uid cookie
+					global $wpdb;
+					$fields_map   = array(
+						'em'      => 'email',
+						'fn'      => 'f_name',
+						'ln'      => 'l_name',
+						'ph'      => 'contact_no',
+						'st'      => 'state',
+						'country' => 'country',
+					);
+					$need_contact = false;
+					foreach ( $fields_map as $param_key => $db_col ) {
+						if ( empty( $params[ $param_key ] ) ) {
+							$need_contact = true;
+							break;
+						}
+					}
+					if ( $need_contact && ! empty( $_COOKIE['_fk_contact_uid'] ) && $fetch_contact ) {
+						$uid     = sanitize_text_field( wp_unslash( $_COOKIE['_fk_contact_uid'] ) );
+						$table   = $wpdb->prefix . 'bwf_contact';
+						$contact = $wpdb->get_row( $wpdb->prepare( "SELECT email, f_name, l_name, contact_no, state, country FROM {$table} WHERE uid = %s LIMIT 1", $uid ) );
+						if ( $contact ) {
+							foreach ( $fields_map as $param_key => $db_col ) {
+								if ( empty( $params[ $param_key ] ) && ! empty( $contact->$db_col ) ) {
+									switch ( $param_key ) {
+										case 'em': // Email
+											$params[ $param_key ] = sanitize_email( $contact->$db_col );
+											break;
+										case 'fn': // First name
+										case 'ln': // Last name
+										case 'st': // State
+										case 'country': // Country
+											$params[ $param_key ] = sanitize_text_field( $contact->$db_col );
+											break;
+										case 'ph': // Phone number
+											$params[ $param_key ] = sanitize_text_field( $contact->$db_col );
+											break;
+									}
+								}
+							}
+						}
+					}
+				}
 
-			if ( ! is_array( $params ) || count( $params ) === 0 ) {
+				// Get country from WooCommerce geo location if setting is enabled
+				if ( class_exists( 'BWF_Admin_General_Settings' ) ) {
+					$use_geo_location = BWF_Admin_General_Settings::get_instance()->get_option( 'is_fb_use_geo_location_country' );
+					if ( is_array( $use_geo_location ) && count( $use_geo_location ) > 0 && 'yes' === $use_geo_location[0] ) {
+						// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+						$geo_hash_cookie = isset( $_COOKIE['woocommerce_geo_hash'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['woocommerce_geo_hash'] ) ) : '';
+						if ( ! empty( $geo_hash_cookie ) ) {
+							$billing_country = WC()->customer->get_billing_country();
+
+							if ( ! empty( $billing_country ) ) {
+								$params['country'] = $billing_country;
+							}
+						}
+					}
+				}
+				$params = apply_filters( 'wfacp_advanced_matching_data', $params );
+
+				if ( ! is_array( $params ) || count( $params ) === 0 ) {
+					return array();
+				}
+
+				return $params;
+			} catch ( \Throwable $e ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error logging for debugging
+					error_log( $e->getMessage() );
+				}
 				return array();
 			}
-
-			return $params;
 		}
+
 
 		public static function sanitize_advanced_matching_param( $value, $key ) {
 			$value = strtolower( $value );
@@ -2823,7 +2952,6 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return $value;
-
 		}
 
 		public static function generate_transient_key() {
@@ -2857,7 +2985,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		}
 
 		public static function get_aero_registered_checkout_fields() {
-			$fields = [
+			$fields = array(
 				'billing_email',
 				'billing_first_name',
 				'billing_last_name',
@@ -2894,10 +3022,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				'account_password',
 				'wc_advanced_order_field',
 				'shipping_method',
-			];
+			);
 
 			return apply_filters( 'wfacp_aero_registered_checkout_fields', $fields );
-
 		}
 
 		/**
@@ -2906,38 +3033,40 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function setup_fields_billing() {
 
-
-			new WFACP_Add_Address_Field( 'wc_custom_field', array(
-				'type'        => 'wfacp_html',
-				'label'       => 'Extra Billing Fields',
-				'placeholder' => 'Extra Billing Fields',
-				'cssready'    => [ 'wfacp-col-left-third' ],
-				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
-				'required'    => false,
-				'priority'    => 60,
-			) );
-			new WFACP_Add_Address_Field( 'wc_custom_field', array(
-				'type'        => 'wfacp_html',
-				'label'       => 'Extra Shipping Fields',
-				'placeholder' => 'Extra Shipping Fields',
-				'cssready'    => [ 'wfacp-col-left-third' ],
-				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
-				'required'    => false,
-				'priority'    => 60,
-			), 'shipping' );
-
-
+			new WFACP_Add_Address_Field(
+				'wc_custom_field',
+				array(
+					'type'        => 'wfacp_html',
+					'label'       => 'Extra Billing Fields',
+					'placeholder' => 'Extra Billing Fields',
+					'cssready'    => array( 'wfacp-col-left-third' ),
+					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
+					'required'    => false,
+					'priority'    => 60,
+				)
+			);
+			new WFACP_Add_Address_Field(
+				'wc_custom_field',
+				array(
+					'type'        => 'wfacp_html',
+					'label'       => 'Extra Shipping Fields',
+					'placeholder' => 'Extra Shipping Fields',
+					'cssready'    => array( 'wfacp-col-left-third' ),
+					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
+					'required'    => false,
+					'priority'    => 60,
+				),
+				'shipping'
+			);
 		}
 
 		public static function include_third_party_field( $wfacp_id ) {
 
-			$fields = WFACP_Common::get_checkout_fields( $wfacp_id );
+			$fields = self::get_checkout_fields( $wfacp_id );
 			if ( isset( $fields['advanced']['wc_advanced_order_field'] ) || isset( $fields['billing']['billing_wc_custom_field'] ) || isset( $fields['shipping']['shipping_wc_custom_field'] ) ) {
 				include_once WFACP_PLUGIN_DIR . '/includes/class-register-third-party-fields.php';
 				WFACP_Class_Register_Third_Party_Fields::get_instance( $fields );
 			}
-
-
 		}
 
 		/**
@@ -2948,7 +3077,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 * @return array
 		 */
 		public static function add_third_party_fields_to_checkout_form( $data ) {
-			$steps = [ 'third_step', 'two_step', 'single_step' ];
+			$steps = array( 'third_step', 'two_step', 'single_step' );
 			foreach ( $steps as $step ) {
 				if ( isset( $data['page_layout']['fieldsets'][ $step ] ) ) {
 					$data['page_layout']['fieldsets'][ $step ] = self::map_third_party_field_into_last_section_form( $data['page_layout']['fieldsets'][ $step ] );
@@ -2980,6 +3109,56 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 			}
 
 			return $key;
+		}
+
+		private static function count_checkout_form_instances( $step_id ) {
+			$post = get_post( $step_id );
+			if ( ! $post instanceof WP_Post ) {
+				return 0;
+			}
+
+			$content = (string) $post->post_content;
+
+			$shortcode_matches = array();
+			preg_match_all( '/\\[wfacp_forms[^\\]]*\\]/i', $content, $shortcode_matches );
+			$shortcode_count = isset( $shortcode_matches[0] ) ? count( $shortcode_matches[0] ) : 0;
+
+			$block_count = substr_count( $content, '<!-- wp:bwfblocks/checkout-form' );
+
+			$elementor_count = 0;
+			if ( function_exists( 'get_post_meta' ) && defined( 'ELEMENTOR_VERSION' ) ) {
+				$elementor_data = get_post_meta( $step_id, '_elementor_data', true );
+				if ( ! empty( $elementor_data ) ) {
+					$elementor_json  = is_string( $elementor_data ) ? $elementor_data : wp_json_encode( $elementor_data );
+					$elementor_count = substr_count( $elementor_json, '"widgetType":"wfacp_form"' );
+				}
+			}
+
+			$divi_count = 0;
+			$divi_keys  = array( '_et_pb_use_builder', '_et_pb_layout', '_et_builder_version' );
+			foreach ( $divi_keys as $divi_key ) {
+				$divi_value = get_post_meta( $step_id, $divi_key, true );
+				if ( is_string( $divi_value ) && false !== strpos( $divi_value, 'wfacp_form' ) ) {
+					$divi_count += substr_count( $divi_value, 'wfacp_form' );
+				}
+			}
+
+			$oxy_count = 0;
+			$oxy_json  = get_post_meta( $step_id, self::oxy_get_meta_prefix( 'ct_builder_json' ), true );
+			if ( is_string( $oxy_json ) && '' !== $oxy_json ) {
+				$oxy_count = substr_count( $oxy_json, '"oxy-wfacp_checkout_form"' );
+			}
+
+			$bricks_count = 0;
+			$bricks_data  = get_post_meta( $step_id, '_bricks_data', true );
+			if ( ! empty( $bricks_data ) ) {
+				$bricks_json  = is_string( $bricks_data ) ? $bricks_data : wp_json_encode( $bricks_data );
+				$bricks_count = substr_count( $bricks_json, 'wfacp-form' );
+			}
+
+			$total = $shortcode_count + $block_count + $elementor_count + $divi_count + $oxy_count + $bricks_count;
+
+			return max( 0, (int) $total );
 		}
 
 		public static function display_save_price( $price_message ) {
@@ -3029,9 +3208,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 					return;
 				}
 
-				$total = WC()->cart->get_cart_contents_total();
+				$total         = WC()->cart->get_cart_contents_total();
 				$regular_price = round( $regular_price, 2 );
-				$total = round( $total, 2 );
+				$total         = round( $total, 2 );
 
 				// Only proceed if there's actually a saving
 				if ( $regular_price <= $total ) {
@@ -3057,27 +3236,26 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 				// Output the message
 				?>
-                <tr class="wfacp-saving-amount">
-                    <td colspan="2">
-                <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M7.77778 8.2669C8.08461 8.2669 8.33334 8.01817 8.33334 7.71135C8.33334 7.40452 8.08461 7.15579 7.77778 7.15579C7.47096 7.15579 7.22223 7.40452 7.22223 7.71135C7.22223 8.01817 7.47096 8.2669 7.77778 8.2669Z" fill="currentColor"/>
-                        <path d="M12.2222 12.7113C12.5291 12.7113 12.7778 12.4626 12.7778 12.1558C12.7778 11.849 12.5291 11.6002 12.2222 11.6002C11.9154 11.6002 11.6667 11.849 11.6667 12.1558C11.6667 12.4626 11.9154 12.7113 12.2222 12.7113Z" fill="currentColor"/>
-                        <path d="M17.3889 11.6175C17.8889 11.2257 18.2222 10.6101 18.3333 9.99451C18.2778 9.32293 17.8889 8.76328 17.3889 8.37152C17.1667 8.20363 17 7.9238 16.8333 7.69994C16.7778 7.36415 16.8333 7.02836 16.8889 6.74853C17.0556 6.13291 17 5.46133 16.7222 4.90168C16.2778 4.45396 15.6667 4.17413 15.0556 4.17413C14.7778 4.17413 14.5 4.0622 14.2222 3.95027C14 3.72641 13.8889 3.44659 13.7778 3.16676C13.5 2.60711 13.2222 1.93553 12.6111 1.71167C12 1.59974 11.3333 1.76763 10.8889 2.15939C10.6111 2.32728 10.3333 2.43921 10.0556 2.49518C9.77778 2.43921 9.5 2.32728 9.22223 2.15939C8.72223 1.87956 8.11111 1.54377 7.5 1.71167C6.88889 1.87956 6.5 2.55114 6.22223 3.1108C6.11112 3.39062 5.94445 3.67045 5.77778 3.89431C5.5 4.00624 5.22223 4.11817 4.94445 4.11817C4.33334 4.11817 3.72223 4.39799 3.27778 4.84572C3 5.40537 2.94445 6.07695 3.11112 6.69257C3.16667 7.02836 3.22223 7.30818 3.16667 7.64397C3 7.9238 2.83334 8.14766 2.61112 8.31556C2.11112 8.76328 1.72223 9.32293 1.66667 9.99451C1.72223 10.6661 2.11112 11.2257 2.61112 11.6175C2.83334 11.7854 3 12.0652 3.16667 12.2891C3.22223 12.6249 3.16667 12.9607 3.11112 13.2405C2.94445 13.8561 3 14.5277 3.27778 15.0873C3.72223 15.5351 4.33334 15.8149 4.94445 15.8149C5.22223 15.8149 5.5 15.9268 5.77778 16.0387C6 16.2626 6.11112 16.5424 6.22223 16.8223C6.5 17.3819 6.77778 18.0535 7.38889 18.2774C7.5 18.3333 7.66667 18.3333 7.77778 18.3333C8.27778 18.2774 8.72223 18.1095 9.11111 17.8296C9.38889 17.6617 9.66667 17.5498 9.94445 17.4938C10.2222 17.5498 10.5 17.6617 10.7778 17.8296C11.2778 18.2214 11.8889 18.3893 12.5 18.2774C13.1111 18.0535 13.4444 17.4379 13.6667 16.8223C13.7778 16.5424 13.9444 16.2626 14.1111 16.0387C14.3889 15.9268 14.6667 15.8149 14.9444 15.8149C15.5556 15.8149 16.1667 15.5351 16.6111 15.0873C16.8889 14.5277 16.9444 13.8561 16.7778 13.2405C16.7222 12.9047 16.6667 12.6249 16.7222 12.2891C17 12.0652 17.1667 11.8414 17.3889 11.6175ZM10.5556 12.2331C10.5556 11.2817 11.2778 10.5542 12.2222 10.5542C13.1667 10.5542 13.8889 11.2817 13.8889 12.2331C13.8889 13.1845 13.1667 13.9121 12.2222 13.9121C11.2778 13.9121 10.5556 13.1845 10.5556 12.2331ZM13.7222 7.02836L7.05556 13.7442C6.94445 13.8561 6.83334 13.9121 6.66667 13.9121C6.5 13.9121 6.38889 13.8561 6.27778 13.7442C6.05556 13.5203 6.05556 13.1845 6.27778 12.9607L12.9444 6.24484C13.1667 6.02098 13.5556 6.07695 13.7222 6.30081C13.8889 6.52467 13.8889 6.8045 13.7222 7.02836ZM9.44445 7.7559C9.44445 8.70731 8.72223 9.43486 7.77778 9.43486C6.83334 9.43486 6.11112 8.70731 6.11112 7.7559C6.11112 6.8045 6.83334 6.07695 7.77778 6.07695C8.72223 6.07695 9.44445 6.8045 9.44445 7.7559Z" fill="currentColor"/>
-                    </svg>
-                    <?php echo wp_kses_post( $total_message ); ?>
-                </span>
-                    </td>
-                </tr>
+				<tr class="wfacp-saving-amount">
+					<td colspan="2">
+				<span>
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+						<path d="M7.77778 8.2669C8.08461 8.2669 8.33334 8.01817 8.33334 7.71135C8.33334 7.40452 8.08461 7.15579 7.77778 7.15579C7.47096 7.15579 7.22223 7.40452 7.22223 7.71135C7.22223 8.01817 7.47096 8.2669 7.77778 8.2669Z" fill="currentColor"/>
+						<path d="M12.2222 12.7113C12.5291 12.7113 12.7778 12.4626 12.7778 12.1558C12.7778 11.849 12.5291 11.6002 12.2222 11.6002C11.9154 11.6002 11.6667 11.849 11.6667 12.1558C11.6667 12.4626 11.9154 12.7113 12.2222 12.7113Z" fill="currentColor"/>
+						<path d="M17.3889 11.6175C17.8889 11.2257 18.2222 10.6101 18.3333 9.99451C18.2778 9.32293 17.8889 8.76328 17.3889 8.37152C17.1667 8.20363 17 7.9238 16.8333 7.69994C16.7778 7.36415 16.8333 7.02836 16.8889 6.74853C17.0556 6.13291 17 5.46133 16.7222 4.90168C16.2778 4.45396 15.6667 4.17413 15.0556 4.17413C14.7778 4.17413 14.5 4.0622 14.2222 3.95027C14 3.72641 13.8889 3.44659 13.7778 3.16676C13.5 2.60711 13.2222 1.93553 12.6111 1.71167C12 1.59974 11.3333 1.76763 10.8889 2.15939C10.6111 2.32728 10.3333 2.43921 10.0556 2.49518C9.77778 2.43921 9.5 2.32728 9.22223 2.15939C8.72223 1.87956 8.11111 1.54377 7.5 1.71167C6.88889 1.87956 6.5 2.55114 6.22223 3.1108C6.11112 3.39062 5.94445 3.67045 5.77778 3.89431C5.5 4.00624 5.22223 4.11817 4.94445 4.11817C4.33334 4.11817 3.72223 4.39799 3.27778 4.84572C3 5.40537 2.94445 6.07695 3.11112 6.69257C3.16667 7.02836 3.22223 7.30818 3.16667 7.64397C3 7.9238 2.83334 8.14766 2.61112 8.31556C2.11112 8.76328 1.72223 9.32293 1.66667 9.99451C1.72223 10.6661 2.11112 11.2257 2.61112 11.6175C2.83334 11.7854 3 12.0652 3.16667 12.2891C3.22223 12.6249 3.16667 12.9607 3.11112 13.2405C2.94445 13.8561 3 14.5277 3.27778 15.0873C3.72223 15.5351 4.33334 15.8149 4.94445 15.8149C5.22223 15.8149 5.5 15.9268 5.77778 16.0387C6 16.2626 6.11112 16.5424 6.22223 16.8223C6.5 17.3819 6.77778 18.0535 7.38889 18.2774C7.5 18.3333 7.66667 18.3333 7.77778 18.3333C8.27778 18.2774 8.72223 18.1095 9.11111 17.8296C9.38889 17.6617 9.66667 17.5498 9.94445 17.4938C10.2222 17.5498 10.5 17.6617 10.7778 17.8296C11.2778 18.2214 11.8889 18.3893 12.5 18.2774C13.1111 18.0535 13.4444 17.4379 13.6667 16.8223C13.7778 16.5424 13.9444 16.2626 14.1111 16.0387C14.3889 15.9268 14.6667 15.8149 14.9444 15.8149C15.5556 15.8149 16.1667 15.5351 16.6111 15.0873C16.8889 14.5277 16.9444 13.8561 16.7778 13.2405C16.7222 12.9047 16.6667 12.6249 16.7222 12.2891C17 12.0652 17.1667 11.8414 17.3889 11.6175ZM10.5556 12.2331C10.5556 11.2817 11.2778 10.5542 12.2222 10.5542C13.1667 10.5542 13.8889 11.2817 13.8889 12.2331C13.8889 13.1845 13.1667 13.9121 12.2222 13.9121C11.2778 13.9121 10.5556 13.1845 10.5556 12.2331ZM13.7222 7.02836L7.05556 13.7442C6.94445 13.8561 6.83334 13.9121 6.66667 13.9121C6.5 13.9121 6.38889 13.8561 6.27778 13.7442C6.05556 13.5203 6.05556 13.1845 6.27778 12.9607L12.9444 6.24484C13.1667 6.02098 13.5556 6.07695 13.7222 6.30081C13.8889 6.52467 13.8889 6.8045 13.7222 7.02836ZM9.44445 7.7559C9.44445 8.70731 8.72223 9.43486 7.77778 9.43486C6.83334 9.43486 6.11112 8.70731 6.11112 7.7559C6.11112 6.8045 6.83334 6.07695 7.77778 6.07695C8.72223 6.07695 9.44445 6.8045 9.44445 7.7559Z" fill="currentColor"/>
+					</svg>
+					<?php echo wp_kses_post( $total_message ); ?>
+				</span>
+					</td>
+				</tr>
 				<?php
 			} catch ( Exception $e ) {
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'Error in display_save_price: ' . $e->getMessage() );
+					error_log( 'Error in display_save_price: ' . $e->getMessage() );//phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				}
 
 				return;
 			}
-
 		}
 
 		/*
@@ -3087,13 +3265,13 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		 */
 		public static function clear_pending_events_data_from_session() {
 			try {
-				if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+				if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 					$events = WC()->session->get( 'wffn_pending_data' );
 					if ( ! is_null( $events ) && is_array( $events ) && count( $events ) > 0 ) {
 						WC()->session->set( 'wffn_pending_data', '' );
 					}
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 		}
@@ -3110,7 +3288,7 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 		public static function translation_string_to_check( $content ) {
 			try {
 				// Static cache to avoid processing the same string multiple times
-				static $cache = [];
+				static $cache = array();
 				if ( isset( $cache[ $content ] ) ) {
 					return $cache[ $content ];
 				}
@@ -3135,9 +3313,9 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 				}
 
 				// Get translations for current locale - use static to only retrieve once
-				static $translations = null;
+				static $translations   = null;
 				static $current_locale = null;
-				static $sorted_keys = null;
+				static $sorted_keys    = null;
 
 				if ( $translations === null ) {
 					$translations   = wfacp_get_translation();
@@ -3145,9 +3323,12 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 					if ( ! empty( $translations[ $current_locale ] ) && is_array( $translations[ $current_locale ] ) ) {
 						$sorted_keys = array_keys( $translations[ $current_locale ] );
-						usort( $sorted_keys, function ( $a, $b ) {
-							return strlen( $b ) - strlen( $a ); // Longer strings first
-						} );
+						usort(
+							$sorted_keys,
+							function ( $a, $b ) {
+								return strlen( $b ) - strlen( $a ); // Longer strings first
+							}
+						);
 					}
 				}
 
@@ -3203,27 +3384,31 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 		public static function get_notice_html_in_editor( $builder = 'elementor' ) {
 
-			$temp_style = [
+			$temp_style = array(
 				'background-color: #F9F9FF',
 				'padding: 16px 12px 16px 12px',
 				'border-left: 4px solid #82838E',
 				'line-height: 1.5',
 				'margin-left: 0',
-				'margin-right:0'
+				'margin-right:0',
 
-			];
-
+			);
 
 			$style = implode( ';', $temp_style );
 
 			$slug      = 'funnel-checkout';
-			$id        = WFACP_Common::get_id();
+			$id        = self::get_id();
 			$funnel_id = get_post_meta( $id, '_bwf_in_funnel', true );
-			$step_link = BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-				'page'      => 'bwf',
-				'path'      => "/" . $slug . "/" . $id . "/design",
-				'funnel_id' => $funnel_id,
-			], admin_url( 'admin.php' ) ) );
+			$step_link = BWF_Admin_Breadcrumbs::maybe_add_refs(
+				add_query_arg(
+					array(
+						'page'      => 'bwf',
+						'path'      => '/' . $slug . '/' . $id . '/design',
+						'funnel_id' => $funnel_id,
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 
 			$notice_html = '<div style="' . $style . '">
         <strong style="font-weight: 500;font-size: 13px;line-height: 20px;display: inline-block;margin-bottom: 8px;color:#353030;">
@@ -3251,81 +3436,78 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
     </div>';
 
 			return $notice_html;
-
 		}
 
-        public static function re_add_hidden_address_fields($fields) {
+		public static function re_add_hidden_address_fields( $fields ) {
 
-            // Validate input parameter
-            if ( !is_array($fields) ) {
-                return $fields;
-            }
+			// Validate input parameter
+			if ( ! is_array( $fields ) ) {
+				return $fields;
+			}
 
-            if(!isset($fields['company'])){
+			if ( ! isset( $fields['company'] ) ) {
 
-                $keys = array_keys($fields);
+				$keys = array_keys( $fields );
 
-                $fields['company'] = array(
-                    'label'        => __( 'Company name', 'woocommerce' ),
-                    'type'         => 'text',
-                    'class'        => array( 'form-row-wide' ),
-                    'autocomplete' => 'organization',
-                    'priority'     => 30,
-                    'required'     => false,
-                );
+				$fields['company'] = array(
+					'label'        => __( 'Company name', 'woocommerce' ),
+					'type'         => 'text',
+					'class'        => array( 'form-row-wide' ),
+					'autocomplete' => 'organization',
+					'priority'     => 30,
+					'required'     => false,
+				);
 
-                $position = array_search('last_name', $keys);
-                 $fields = self::re_add_hidden_fields('company', $fields, $position);
-            }
+				$position = array_search( 'last_name', $keys );
+				$fields   = self::re_add_hidden_fields( 'company', $fields, $position );
+			}
 
-            if(!isset($fields['address_2'])){
-                $keys = array_keys($fields);
-                $address_2_label = __( 'Apartment, suite, unit, etc.', 'woocommerce' );
-                $address_2_placeholder = $address_2_label;
+			if ( ! isset( $fields['address_2'] ) ) {
+				$keys                  = array_keys( $fields );
+				$address_2_label       = __( 'Apartment, suite, unit, etc.', 'woocommerce' );
+				$address_2_placeholder = $address_2_label;
 
-                if (  class_exists( 'Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && 'optional' === Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::get_address_2_field_visibility() ) {
-                    $address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' );
-                }
+				if ( class_exists( 'Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && 'optional' === Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::get_address_2_field_visibility() ) {
+					$address_2_placeholder = __( 'Apartment, suite, unit, etc. (optional)', 'woocommerce' );
+				}
 
+				$fields['address_2'] = array(
+					'label'        => $address_2_label,
+					'label_class'  => array( 'screen-reader-text' ),
+					'placeholder'  => esc_attr( $address_2_placeholder ),
+					'class'        => array( 'form-row-wide', 'address-field' ),
+					'autocomplete' => 'address-line2',
+					'priority'     => 60,
+					'required'     => false,
+				);
 
-                $fields['address_2'] = array(
-                    'label'        => $address_2_label,
-                    'label_class'  => array( 'screen-reader-text' ),
-                    'placeholder'  => esc_attr( $address_2_placeholder ),
-                    'class'        => array( 'form-row-wide', 'address-field' ),
-                    'autocomplete' => 'address-line2',
-                    'priority'     => 60,
-                    'required'     => false,
-                );
+				$position = array_search( 'address_1', $keys );
+				$fields   = self::re_add_hidden_fields( 'address_2', $fields, $position );
+			}
 
-                $position = array_search('address_1', $keys);
-                $fields = self::re_add_hidden_fields('address_2', $fields, $position);
-            }
+			return $fields;
+		}
 
-
-            return $fields;
-        }
-
-		public static function re_add_hidden_fields($key, $fields, $position) {
+		public static function re_add_hidden_fields( $key, $fields, $position ) {
 
 			// Validate input parameters
-			if ( !is_array($fields) || !is_string($key) || !isset($fields[$key]) ) {
+			if ( ! is_array( $fields ) || ! is_string( $key ) || ! isset( $fields[ $key ] ) ) {
 				return $fields;
 			}
 
 			// If position key exists, insert field after it
-			if ( $position !== false && is_numeric($position) ) {
+			if ( $position !== false && is_numeric( $position ) ) {
 				try {
-					$position = (int) $position + 1;
-					$field_value = $fields[$key];
-					unset($fields[$key]); // Remove the field from its current position
+					$position    = (int) $position + 1;
+					$field_value = $fields[ $key ];
+					unset( $fields[ $key ] ); // Remove the field from its current position
 
 					// Ensure position is within valid range
-					$position = max(0, min($position, count($fields)));
+					$position = max( 0, min( $position, count( $fields ) ) );
 
-					$fields = array_slice($fields, 0, $position, true) +
-							  array($key => $field_value) +
-							  array_slice($fields, $position, null, true);
+					$fields = array_slice( $fields, 0, $position, true ) +
+								array( $key => $field_value ) +
+								array_slice( $fields, $position, null, true );
 				} catch ( Exception $e ) {
 					// Log error if logging is available
 					if ( class_exists( 'BWF_logger' ) ) {
@@ -3337,6 +3519,5 @@ if ( ! class_exists( 'WFACP_Common' ) ) {
 
 			return $fields;
 		}
-
 	}
 }

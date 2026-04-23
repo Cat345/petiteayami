@@ -48,7 +48,6 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function add_if_needed() {
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			$this->missing_tables = $this->find_missing_tables();
 
 			if ( empty( $this->missing_tables ) ) {
@@ -119,6 +118,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function session() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 
 			$collate = '';
@@ -151,6 +151,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function event() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 
 			$collate = '';
@@ -184,6 +185,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function events() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 
 			$collate = '';
@@ -218,6 +220,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function events_meta() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 
 			$collate = '';
@@ -248,6 +251,7 @@ if ( ! class_exists( 'WFOCU_DB_Tables' ) ) {
 		 * @since 1.5.1
 		 */
 		public function event_meta() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 
 			$collate = '';

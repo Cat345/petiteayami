@@ -49,7 +49,7 @@ class MenuElement
             ]);
         }
 
-        return !empty($node->content);
+        return $node->content != '';
     }
 
     /**
@@ -117,8 +117,8 @@ class MenuElement
         $terms = get_terms([
             'taxonomy' => $props['taxonomy'],
 
-            // This will work for the 3rd party plugin `Category Order and Taxonomy Terms Order` only, falls back to term_id otherwise
-            'orderby' => 'term_order',
+            // `term_order` will work for the 3rd party plugin `Category Order and Taxonomy Terms Order` only, falls back to term_id otherwise
+            'orderby' => $props['taxonomy'] === 'product_cat' ? 'menu_order' : 'term_order',
         ]);
 
         $walker = new MenuWalker([

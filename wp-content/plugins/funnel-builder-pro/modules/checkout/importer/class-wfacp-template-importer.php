@@ -4,18 +4,18 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 	class WFACP_Template_Importer {
 
 		private static $instance = null;
-		private static $importer = [];
+		private static $importer = array();
 
 		private function __construct() {
 		}
 
 		public static function get_error_message( $code ) {
-			$messages = [
+			$messages = array(
 				'license-or-domain-invalid' => __( 'This site does not have access to template library.  To get access activate the license. For any further help contact support.', 'woofunnels-aero-checkout' ),
 				'license-not-provided'      => __( 'This site does not have access to template library.  To get access activate the license. For any further help contact support.', 'woofunnels-aero-checkout' ),
 				'unauthorized-access'       => sprintf( __( 'Please check if you have valid license key. <a href=%s target="_blank">Go to Licenses</a>', 'woofunnels-aero' ), esc_url( admin_url( 'admin.php?page=woofunnels' ) ) ),
-				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'woofunnels-aero-checkout' )
-			];
+				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'woofunnels-aero-checkout' ),
+			);
 			if ( isset( $messages[ $code ] ) ) {
 				return $messages[ $code ];
 			}
@@ -46,9 +46,15 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 		 */
 		public function import( $aero_id, $builder, $slug, $is_multi = 'no' ) {
 
-			if ( isset( self::$importer[ $builder ] ) && self::$importer[ $builder ] ) {
+			// divi5 falls back to divi importer if no dedicated divi5 importer is registered
+			$importer_key = $builder;
+			if ( 'divi5' === $builder && ! isset( self::$importer['divi5'] ) && isset( self::$importer['divi'] ) ) {
+				$importer_key = 'divi';
+			}
 
-				$importer = self::$importer[ $builder ];
+			if ( isset( self::$importer[ $importer_key ] ) && self::$importer[ $importer_key ] ) {
+
+				$importer = self::$importer[ $importer_key ];
 
 				do_action( 'wfacp_template_import', $aero_id, $builder, $slug, $is_multi );
 				if ( method_exists( $importer, 'import_child' ) ) {
@@ -59,27 +65,25 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 					$status = $importer->import( $aero_id, $slug, $is_multi );
 				}
 
-
 				return $status;
 			}
 
 			if ( $builder == 'elementor' ) {
 				if ( ( ! version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ( version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) ) ) {
-					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the wordpress version to import the template.', 'woofunnels-aero-checkout' ), '5.0' );
+					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the WordPress version to import the template.', 'woofunnels-aero-checkout' ), '5.0' );
 
-					return [ 'error' => $message ];
+					return array( 'error' => $message );
 				}
 			}
-			if ( $builder == 'divi' ) {
+			if ( $builder == 'divi' || $builder == 'divi5' ) {
 				$response = WFACP_Common::check_builder_status( 'divi' );
 				if ( ! empty( $response['error'] ) ) {
 					$message = $response['error'];
 				}
 
-				return [ 'error' => $message ];
+				return array( 'error' => $message );
 
 			}
-
 
 			return false;
 		}
@@ -137,17 +141,14 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				 */
 				$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
-
 				if ( is_array( $active_plugins ) && defined( 'WFFN_PRO_PLUGIN_BASENAME' ) && ( in_array( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PRO_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) ) {
 					$domain = get_site_url( get_network()->site_id );
 				} elseif ( is_array( $active_plugins ) && in_array( WFACP_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFACP_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) {
 					$domain = get_site_url( get_network()->site_id );
 				}
-
 			}
 
-
-			$domain = str_replace( [ 'https://', 'http://' ], '', $domain );
+			$domain = str_replace( array( 'https://', 'http://' ), '', $domain );
 			$domain = trim( $domain, '/' );
 
 			return $domain;
@@ -155,6 +156,7 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 		/**
 		 * Import template remotely.
+		 *
 		 * @return mixed
 		 */
 		public function get_remote_template( $template_id, $builder ) {
@@ -162,7 +164,6 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				return '';
 			}
 			$funnel_step = 'wc_checkout';
-
 
 			$template_file_path = $builder . '/' . $funnel_step . '/' . $template_id;
 			$defined_wffn       = defined( 'WFFN_TEMPLATE_UPLOAD_DIR' );
@@ -172,35 +173,45 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
 				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
 
-				return [ 'success' => true, 'data' => $content ];
+				return array(
+					'success' => true,
+					'data'    => $content,
+				);
 			}
-
 
 			$license = $this->get_license_key();
 			if ( empty( $license ) && class_exists( 'WFFN_Pro_Core' ) ) {
 				$license = WFFN_Pro_Core()->support->get_license_key();
 			}
 			$requestBody = array(
-				'step'     => $funnel_step,
-				"domain"   => $this->get_domain(),
-				"license"  => $license,
-				"template" => $template_id,
-				"builder"  => $builder,
-				"version"  => 4,
-				"locale" => get_locale()
+				'step'            => $funnel_step,
+				'domain'          => $this->get_domain(),
+				'license'         => $license,
+				'template'        => $template_id,
+				'builder'         => $builder,
+				'builder_version' => WFACP_Common::get_builder_version( $builder ),
+				'version'         => 4,
+				'locale'          => get_locale(),
 
 			);
+
+			if ( 'elementor' === $builder && class_exists( 'WFFN_Common' ) ) {
+				$requestBody['elementor_container'] = WFFN_Common::is_elementor_container_active() ? 'active' : 'inactive';
+			}
 
 			$requestBody = wp_json_encode( $requestBody );
 
 			$endpoint_url = $this->get_template_api_url();
-			$response     = wp_remote_post( $endpoint_url, array(
-				"body"    => $requestBody,
-				"timeout" => 30,
-				'headers' => [
-					'content-type' => 'application/json'
-				]
-			) );
+			$response     = wp_remote_post(
+				$endpoint_url,
+				array(
+					'body'    => $requestBody,
+					'timeout' => 30,
+					'headers' => array(
+						'content-type' => 'application/json',
+					),
+				)
+			);
 
 			if ( $response instanceof WP_Error ) {
 				return false;
@@ -208,23 +219,27 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			$response = json_decode( $response['body'], true );
 			if ( ! is_array( $response ) ) {
-				return [ 'error' => __( 'Server Down', 'woofunnels-aero-checkout' ) ];
+				return array( 'error' => __( 'Server Down', 'woofunnels-aero-checkout' ) );
 			}
 
 			if ( isset( $response['error'] ) ) {
-				return [ 'error' => self::get_error_message( $response['error'] ) ];
+				return array( 'error' => self::get_error_message( $response['error'] ) );
 			}
 			$checkout_data = $response[ $funnel_step ];
 
 			if ( empty( $checkout_data ) ) {
-				return [ 'error' => __( 'No Template found', 'woofunnels-aero-checkout' ) ];
+				return array( 'error' => __( 'No Template found', 'woofunnels-aero-checkout' ) );
 			}
 
-			return [ 'success' => true, 'data' => $checkout_data ];
+			return array(
+				'success' => true,
+				'data'    => $checkout_data,
+			);
 		}
 
 		/**
 		 * Get license key.
+		 *
 		 * @return mixed
 		 */
 		public function get_license_key() {
@@ -241,9 +256,9 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
 				if ( is_array( $active_plugins ) && in_array( WFACP_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFACP_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) {
-					$woofunnels_data = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', [] );
+					$woofunnels_data = get_blog_option( get_network()->site_id, 'woofunnels_plugins_info', array() );
 				} else {
-					$woofunnels_data = get_option( 'woofunnels_plugins_info', [] );
+					$woofunnels_data = get_option( 'woofunnels_plugins_info', array() );
 				}
 			} else {
 				$woofunnels_data = get_option( 'woofunnels_plugins_info' );
@@ -274,15 +289,12 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 			if ( ! empty( $import_page_settings ) ) {
 				$page_settings = WFACP_Common::get_page_settings( $aero_id );
 
-
-
 				foreach ( $import_page_settings as $key => $setting ) {
 					$page_settings[ $key ] = $import_page_settings[ $key ];
 				}
 				update_post_meta( $aero_id, '_wfacp_page_settings', $page_settings );
 			}
 		}
-
 	}
 
 	WFACP_Core::register( 'importer', WFACP_Template_Importer::get_instance() );

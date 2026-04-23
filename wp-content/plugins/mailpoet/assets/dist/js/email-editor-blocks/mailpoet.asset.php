@@ -2,4 +2,4 @@
 
 if (!defined('ABSPATH')) exit;
 
- return array('dependencies' => array('jquery', 'moment', 'react', 'react-dom', 'wp-polyfill'), 'version' => 'e42971826632247f0d07');
+ return array('dependencies' => array('jquery', 'moment', 'react', 'react-dom', 'wp-polyfill'), 'version' => '49a96a7304646e3a1364');

@@ -13,13 +13,13 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 		public $optin_last_name;
 		public $optin_phone;
 		public $optin_custom;
-		public $shortcodes=array(
+		public $shortcodes = array(
 			'id',
 			'first_name',
 			'last_name',
 			'email',
 			'phone',
-			'custom'
+			'custom',
 
 		);
 
@@ -29,8 +29,7 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			foreach ( $this->shortcodes as $code ) {
 				add_shortcode( 'wfop_' . $code, array( $this, 'get_' . $code ) );
 			}
-            add_action( 'wp_head', array( $this, 'localize_optin_submitted_data' ) );
-
+			add_action( 'wp_head', array( $this, 'localize_optin_submitted_data' ) );
 		}
 
 		private static $ins = null;
@@ -40,7 +39,7 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -63,7 +62,6 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			}
 
 			return $this->get_default( $attr, 'id' );
-
 		}
 
 		public function get_first_name( $attr ) {
@@ -72,7 +70,6 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			}
 
 			return $this->get_default( $attr, 'first_name' );
-
 		}
 
 		public function get_last_name( $attr ) {
@@ -81,7 +78,6 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			}
 
 			return $this->get_default( $attr, 'last_name' );
-
 		}
 
 		public function get_email( $attr ) {
@@ -90,7 +86,6 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			}
 
 			return $this->get_default( $attr, 'email' );
-
 		}
 
 		public function get_phone( $attr ) {
@@ -99,7 +94,6 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			}
 
 			return $this->get_default( $attr, 'phone' );
-
 		}
 
 		public function get_custom( $attr ) {
@@ -111,19 +105,18 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			return $this->get_default( $attr, 'custom' );
 		}
 
-	public function get_default( $attr, $key ) {
-		if ( isset( $attr['default'] ) ) {
-			return esc_html( $attr['default'] );
+		public function get_default( $attr, $key ) {
+			if ( isset( $attr['default'] ) ) {
+				return esc_html( $attr['default'] );
+			}
+
+			return '';
 		}
-
-		return '';
-
-	}
 
 		public function maybe_set_optin( $opid = '' ) {
 
 			if ( $opid === '' ) {
-				$opid = filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
+				$opid = sanitize_text_field( filter_input( INPUT_GET, 'opid', FILTER_UNSAFE_RAW ) ); //phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.RestrictedFilter
 			}
 
 			if ( empty( $opid ) ) {
@@ -148,38 +141,41 @@ if ( ! class_exists( 'BWF_Optin_Tags' ) ) {
 			$data->email = $optin->email;
 
 			$this->set_optin( $data );
-
 		}
 
 		/**
 		 * localize optin form posted data for support js for compatible send data in js variable
+		 *
 		 * @return void
 		 */
 		public function localize_optin_submitted_data() {
 			if ( empty( $this->get_optin() ) ) {
-                return;
+				return;
 			}
 			/**
 			 * not set default value
 			 */
-			$is_default = [];
+			$is_default = array();
 
-			$wffnOptinData = apply_filters( 'wffn_localize_optin_submitted_data', array(
-				'id'         => $this->get_id( $is_default ),
-				'first_name' => $this->get_first_name( $is_default ),
-				'last_name'  => $this->get_last_name( $is_default ),
-				'email'      => $this->get_email( $is_default ),
-				'phone'      => $this->get_phone( $is_default ),
-			), $this->optin );
+			$wffnOptinData = apply_filters(
+				'wffn_localize_optin_submitted_data',
+				array(
+					'id'         => $this->get_id( $is_default ),
+					'first_name' => $this->get_first_name( $is_default ),
+					'last_name'  => $this->get_last_name( $is_default ),
+					'email'      => $this->get_email( $is_default ),
+					'phone'      => $this->get_phone( $is_default ),
+				),
+				$this->optin
+			);
 
 			if ( is_array( $wffnOptinData ) && count( $wffnOptinData ) > 0 ) { ?>
 				<script type="text/javascript">
-                    let wffnOptinData =<?php echo wp_json_encode( $wffnOptinData ); ?>;
+					let wffnOptinData =<?php echo wp_json_encode( $wffnOptinData ); ?>;
 				</script>
 				<?php
-			};
+			}
 		}
-
 	}
 
 	BWF_Optin_Tags::get_instance();

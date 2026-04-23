@@ -1,88 +1,88 @@
 <?php
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
-$settings       = [
-	'show_on_next_step'              => [
-		'single_step' => [
+$settings       = array(
+	'show_on_next_step'              => array(
+		'single_step' => array(
 			'billing_email'      => 'true',
 			'billing_first_name' => 'false',
 			'billing_last_name'  => 'false',
 			'shipping-address'   => 'true',
 			'billing'            => 'true',
-			'billing_phone'      => 'false'
-		],
-	],
-	'collapsible_optional_fields'    => [
-		'shipping_company'   => "false",
-		'shipping_address_2' => "true",
-		'shipping_phone'     => "false",
-		'billing_company'    => "false",
-		'billing_address_2'  => "true",
-		'billing_phone'      => "false",
+			'billing_phone'      => 'false',
+		),
+	),
+	'collapsible_optional_fields'    => array(
+		'shipping_company'   => 'false',
+		'shipping_address_2' => 'true',
+		'shipping_phone'     => 'false',
+		'billing_company'    => 'false',
+		'billing_address_2'  => 'true',
+		'billing_phone'      => 'false',
 
-	],
-	'collapsible_optional_link_text' => __( "Add", 'woocommerce' ),
-];
+	),
+	'collapsible_optional_link_text' => __( 'Add', 'woocommerce' ),
+);
 
 $shipping_fields = WFACP_Common::get_single_address_fields( 'shipping' );
 if ( isset( $shipping_fields['fields_options'] ) && isset( $shipping_fields['fields_options']['address_2']['street_address2'] ) ) {
-	$shipping_fields['fields_options']['address_2']['street_address2'] = "true";
+	$shipping_fields['fields_options']['address_2']['street_address2'] = 'true';
 }
 
 $billing_fields = WFACP_Common::get_single_address_fields();
 if ( isset( $billing_fields['fields_options'] ) && isset( $billing_fields['fields_options']['address_2']['street_address2'] ) ) {
-	$billing_fields['fields_options']['address_2']['street_address2'] = "true";
+	$billing_fields['fields_options']['address_2']['street_address2'] = 'true';
 }
 
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'yes',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
 
 if ( ! isset( $advanced_field['shipping_calculator']['data_label'] ) ) {
 	$advanced_field['shipping_calculator']['data_label'] = __( 'Shipping Method', 'woocommerce' );
 }
 
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
+	'fieldsets'                   => array(
 		'single_step' => array(
 			array(
-				'name'        =>__( 'Contact Information', 'woofunnels-aero-checkout' ),
+				'name'        => __( 'Contact Information', 'woofunnels-aero-checkout' ),
 				'class'       => '',
 				'is_default'  => 'yes',
 				'sub_heading' => '',
 				'fields'      => array(
-					[
+					array(
 						'label'        => __( 'Email', 'woocommerce' ),
 						'required'     => 'true',
 						'type'         => 'email',
-						'class'        => [ 'form-row-wide' ],
-						'validate'     => [ 'email' ],
-						'autocomplete' => 'email username',
+						'class'        => array( 'form-row-wide' ),
+						'validate'     => array( 'email' ),
+						'autocomplete' => 'email',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
+					),
 					array(
 						'label'        => __( 'First name', 'woocommerce' ),
 						'required'     => 'true',
@@ -126,19 +126,19 @@ $pageLayout = [
 
 
 		),
-		'two_step'    => [
+		'two_step'    => array(
 			array(
 				'name'        => __( 'Shipping Method', 'woocommerce' ),
 				'class'       => '',
 				'sub_heading' => '',
 				'fields'      => array(
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
 				),
 
 			),
-		]
-	],
-	'product_settings'            => [
+		),
+	),
+	'product_settings'            => array(
 		'coupons'                             => '',
 		'enable_coupon'                       => 'false',
 		'disable_coupon'                      => 'false',
@@ -159,7 +159,7 @@ $pageLayout = [
 		'preferred_countries_enable'          => 'false',
 		'preferred_countries'                 => '',
 		'product_switcher_template'           => 'default',
-	],
+	),
 	'have_coupon_field'           => 'false',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -168,6 +168,9 @@ $pageLayout = [
 	'enabled_product_switching'   => 'yes',
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'two_step',
-];
+);
 
-return [ 'page_layout' => $pageLayout, 'page_settings' => $settings ];
+return array(
+	'page_layout'   => $pageLayout,
+	'page_settings' => $settings,
+);

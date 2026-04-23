@@ -44,13 +44,14 @@ class Plugin_Constants {
     // Plugin configuration constants.
     const TOKEN               = 'acfwf';
     const INSTALLED_VERSION   = 'acfwf_installed_version';
-    const VERSION             = '4.7.1.1';
+    const VERSION             = '4.7.2';
     const TEXT_DOMAIN         = 'advanced-coupons-for-woocommerce-free';
     const THEME_TEMPLATE_PATH = 'advanced-coupons-for-woocommerce-free';
     const META_PREFIX         = '_acfw_';
     const PREMIUM_PLUGIN      = 'advanced-coupons-for-woocommerce/advanced-coupons-for-woocommerce.php';
     const LOYALTY_PLUGIN      = 'loyalty-program-for-woocommerce/loyalty-program-for-woocommerce.php';
     const GIFT_CARDS_PLUGIN   = 'advanced-gift-cards-for-woocommerce/advanced-gift-cards-for-woocommerce.php';
+    const PROMO_KIT_PLUGIN    = 'advanced-promo-kit/advanced-promo-kit.php';
     const AFFILIATE_WP_PLUGIN = 'affiliate-wp/affiliate-wp.php';
     const INSTALLATION_DATE   = 'acfwf_plugin_installation_date';
     const SITE_URL            = 'https://advancedcouponsplugin.com/';
@@ -68,6 +69,8 @@ class Plugin_Constants {
     const SHOW_REVIEW_REQUEST_NOTICE  = 'acfwf_show_review_request_notice';
     const NOTICES_CRON                = 'acfwf_notices_cron';
     const SHOW_ALLOW_USAGE_NOTICE     = 'acfwf_show_allow_usage_notice';
+    const SAVETO_NOTICE_SHOW_AFTER    = 'acfwf_saveto_notice_show_after';
+    const SAVETO_NOTICE_DISMISSED     = 'acfwf_saveto_notice_dismissed';
 
     // WC Admin.
     const REGISTER_WC_ADMIN_NOTE = 'acfwf_register_wc_admin_note';
@@ -124,6 +127,7 @@ class Plugin_Constants {
     // General Section.
     const ALWAYS_USE_REGULAR_PRICE         = 'acfw_always_use_regular_price';
     const REMOVE_COUPONS_FOR_FAILED_ORDERS = 'acfw_remove_coupons_for_failed_orders';
+    const HIDE_COUPON_CREATION_POPUP       = 'acfw_hide_coupon_creation_popup';
 
     // Modules section.
     const URL_COUPONS_MODULE        = 'acfw_url_coupons_module';
@@ -185,6 +189,9 @@ class Plugin_Constants {
     // Store Credits importer.
     const IMPORT_STORE_CREDITS_SCHEDULE_HOOK   = 'acfw_import_third_party_store_credits';
     const IMPORT_STORE_CREDITS_PROCESS_RUNNING = 'acfw_import_store_credits_process_data';
+
+    // Clear detached store credit entries (Advanced tool).
+    const CLEAR_DETACHED_STORE_CREDITS_SCHEDULE_HOOK = 'acfw_clear_detached_store_credit_entries';
 
     // Cache options.
     const AUTO_APPLY_COUPONS       = 'acfw_auto_apply_coupons';

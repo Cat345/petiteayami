@@ -23,7 +23,7 @@ if ( ! class_exists( 'WFACP_RY_WooCommerce_tools' ) ) {
 		 * Constructor - initializes the compatibility hooks
 		 */
 		public function __construct() {
-			add_action( 'wfacp_template_load', [ $this, 'action' ] );
+			add_action( 'wfacp_template_load', array( $this, 'action' ) );
 			add_filter( 'wfacp_show_shipping_options', '__return_true' );
 		}
 
@@ -40,7 +40,7 @@ if ( ! class_exists( 'WFACP_RY_WooCommerce_tools' ) ) {
 			// Only proceed if we have a valid instance and the method exists
 			if ( $instance && method_exists( $instance, 'checkout_choose_cvs_info' ) ) {
 				// Re-add the action with higher priority to ensure it runs after AeroCheckout
-				add_action( 'woocommerce_update_order_review_fragments', [ $instance, 'checkout_choose_cvs_info' ], 9999 );
+				add_action( 'woocommerce_update_order_review_fragments', array( $instance, 'checkout_choose_cvs_info' ), 9999 );
 			}
 		}
 	}

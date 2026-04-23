@@ -1,0 +1,87 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "text": "text.innerContent.*",
+    "subtitle": "subtitle.innerContent.*",
+    "icon": "icon",
+    "icon_align": "iconAlign",
+    "align": "buttonAlign.*",
+
+    "wfocu_accept_button_button_text_color": "text.decoration.font.font.*.color",
+    "wfocu_accept_button_button_subtitle_color": "subtitle.decoration.font.font.*.color",
+    "wfocu_accept_button_button_icon_color": "wfocu_accept_button_icon_color.decoration.font.font.*.color",
+    "wfocu_accept_button_button_hover_icon_color": "wfocu_accept_button_icon_hover_color.decoration.font.font.*.color",
+
+    "wfocu_accept_button_accept_button_hover_color": "text.decoration.colors.hover.*.color",
+    "wfocu_accept_button_hover_subtitle_color": "subtitle.decoration.colors.hover.*.color",
+
+    "wfocu_accept_button_background_color": "wfocu_accept_button_background_color.decoration.background.*.color",
+    "wfocu_accept_button_button_background_hover_color": "wfocu_accept_button_background_hover_color.decoration.background.*.color",
+
+    "text_margin": "text_margin.decoration.spacing.*.margin",
+    "wfocu_accept_button_margin": "module.decoration.spacing.*.margin",
+    "wfocu_accept_button_padding": "button.decoration.spacing.*.padding",
+
+    "wfocu_accept_buttontitle_typography_typograhy": "text.decoration.font.font.*",
+    "wfocu_accept_buttonsubtitle_typography_typograhy": "subtitle.decoration.font.font.*",
+
+    "wfocu_accept_button_border_border_radius_top": "button.decoration.border.border.*.radius.topLeft",
+    "wfocu_accept_button_border_border_radius_right": "button.decoration.border.border.*.radius.topRight",
+    "wfocu_accept_button_border_border_radius_bottom": "button.decoration.border.border.*.radius.bottomLeft",
+    "wfocu_accept_button_border_border_radius_left": "button.decoration.border.border.*.radius.bottomRight"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_accept_button_border": "button.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_accept_button_box_shadow": "button.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfocu_accept_buttontitle_typography": "text.decoration.font",
+      "wfocu_accept_buttonsubtitle_typography": "subtitle.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "text_margin": "convertSpacing",
+    "wfocu_accept_button_margin": "convertSpacing",
+    "wfocu_accept_button_padding": "convertSpacing",
+    "wfocu_accept_buttontitle_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfocu_accept_buttonsubtitle_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfocu_accept_button_border_border_width_all": "convertBorderWidth",
+    "wfocu_accept_button_border_border_width_top": "convertBorderWidth",
+    "wfocu_accept_button_border_border_width_bottom": "convertBorderWidth",
+    "wfocu_accept_button_border_border_width_left": "convertBorderWidth",
+    "wfocu_accept_button_border_border_width_right": "convertBorderWidth",
+    "wfocu_accept_button_border_border_radius_top": "convertBorderWidth",
+    "wfocu_accept_button_border_border_radius_bottom": "convertBorderWidth",
+    "wfocu_accept_button_border_border_radius_left": "convertBorderWidth",
+    "wfocu_accept_button_border_border_radius_right": "convertBorderWidth"
+  }
+}

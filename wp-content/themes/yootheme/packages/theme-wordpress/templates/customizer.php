@@ -5,7 +5,7 @@ if (!is_user_logged_in()) {
     exit();
 }
 
-if (!(current_user_can('edit_theme_options') || current_user_can('edit_posts'))) {
+if (!current_user_can('edit_theme_options') && !current_user_can('edit_posts')) {
     wp_die(
         '<h1>' .
             __('You need a higher level of permission.') .

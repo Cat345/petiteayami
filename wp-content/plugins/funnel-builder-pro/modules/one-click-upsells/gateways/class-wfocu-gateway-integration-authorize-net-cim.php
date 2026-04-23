@@ -13,14 +13,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 	class WFOCU_Gateway_Integration_Authorize_Net_CIM extends WFOCU_Gateway {
 
 
-		protected static $ins = null;
-		public $token = false;
-		public $customer_id = false;
-		public $unset_opaque_value = false;
-		public $order = false;
-		protected $key = 'authorize_net_cim_credit_card';
-		const MB_ENCODING = 'UTF-8';
-		public $is_error_token = false;
+		protected static $ins              = null;
+		public $token                      = false;
+		public $customer_id                = false;
+		public $unset_opaque_value         = false;
+		public $order                      = false;
+		protected $transaction_description = '';
+		protected $key                     = 'authorize_net_cim_credit_card';
+		const MB_ENCODING                  = 'UTF-8';
+		public $is_error_token             = false;
+		protected $current_refund          = null;
 
 		/**
 		 * Constructor
@@ -45,22 +47,24 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			 */
 			add_filter( 'wc_payment_gateway_' . $this->get_key() . '_process_payment', array( $this, 'process_payment' ), 10, 2 );
 
-			add_action( 'wfocu_front_create_new_order_on_success', function () {
-				remove_action( 'woocommerce_pre_payment_complete', array( $this, 'maybe_create_token' ), 10, 1 );  // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
-			}, - 1 );
+			add_action(
+				'wfocu_front_create_new_order_on_success',
+				function () {
+					remove_action( 'woocommerce_pre_payment_complete', array( $this, 'maybe_create_token' ), 10, 1 );  // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable
+				},
+				- 1
+			);
 
 			add_action( 'wc_payment_gateway_' . $this->get_key() . '_add_transaction_data', array( $this, 'maybe_add_shipping_address_id_order_for_guests' ) );
 
 			$this->refund_supported = true;
 
-			//Modifying refund request data in case of offer refund to add offer transaction id
-
-
+			// Modifying refund request data in case of offer refund to add offer transaction id
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -77,11 +81,217 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			}
 
 			return $this->get_wc_gateway()->is_accept_js_enabled();
+		}
 
+		/**
+		 * Get the SkyVerge OrderHelper class name if available.
+		 *
+		 * CIM v3.10.15+ uses Dynamic_Props/WeakMap to store payment data.
+		 * The framework version namespace may vary across CIM versions.
+		 *
+		 * @return string|false OrderHelper class name or false if unavailable
+		 */
+		private function get_order_helper_class() {
+			static $order_helper_class = null;
+			static $resolved           = false;
+
+			if ( $resolved ) {
+				return $order_helper_class;
+			}
+
+			$resolved = true;
+
+			// Known framework versions bundled with CIM (namespace matches vendor package).
+			$known_helpers = array(
+				'\SkyVerge\WooCommerce\PluginFramework\v6_1_4\Helpers\OrderHelper',
+				'\SkyVerge\WooCommerce\PluginFramework\v6_1_2\Helpers\OrderHelper',
+			);
+			foreach ( $known_helpers as $helper_class ) {
+				if ( class_exists( $helper_class ) ) {
+					$order_helper_class = $helper_class;
+
+					return $order_helper_class;
+				}
+			}
+
+			// Dynamic discovery for other framework versions
+			foreach ( get_declared_classes() as $declared_class ) {
+				if ( 0 === strpos( $declared_class, 'SkyVerge\\WooCommerce\\PluginFramework\\' ) && false !== strpos( $declared_class, '\\Helpers\\OrderHelper' ) ) {
+					$order_helper_class = '\\' . $declared_class;
+					break;
+				}
+			}
+
+			return $order_helper_class;
+		}
+
+		/**
+		 * SkyVerge Dynamic_Props class (WeakMap on PHP 8.2+). Used when OrderHelper is not discoverable yet.
+		 *
+		 * @return string|false Fully-qualified class name or false.
+		 */
+		private function get_dynamic_props_class() {
+			static $class_name = null;
+			static $done       = false;
+
+			if ( $done ) {
+				return $class_name;
+			}
+
+			$done = true;
+
+			$known = array(
+				'\SkyVerge\WooCommerce\PluginFramework\v6_1_4\Payment_Gateway\Dynamic_Props',
+				'\SkyVerge\WooCommerce\PluginFramework\v6_1_2\Payment_Gateway\Dynamic_Props',
+			);
+			foreach ( $known as $cn ) {
+				if ( class_exists( $cn ) ) {
+					$class_name = $cn;
+
+					return $class_name;
+				}
+			}
+
+			foreach ( get_declared_classes() as $declared_class ) {
+				if ( 0 === strpos( $declared_class, 'SkyVerge\\WooCommerce\\PluginFramework\\' ) && false !== strpos( $declared_class, '\\Payment_Gateway\\Dynamic_Props' ) ) {
+					$class_name = '\\' . $declared_class;
+
+					return $class_name;
+				}
+			}
+
+			return $class_name;
+		}
+
+		/**
+		 * Get the payment object from an order, bridging old and new CIM storage.
+		 *
+		 * CIM v3.10.15+ stores payment data in a WeakMap via OrderHelper.
+		 * Older versions use direct $order->payment property access.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return stdClass
+		 */
+		private function get_payment_object( $order ) {
+			$helper = $this->get_order_helper_class();
+
+			if ( $helper ) {
+				return $helper::get_payment( $order );
+			}
+
+			if ( ! isset( $order->payment ) || ! is_object( $order->payment ) ) {
+				$order->payment = new stdClass();
+			}
+
+			return $order->payment;
+		}
+
+		/**
+		 * Set the payment object on an order, bridging old and new CIM storage.
+		 *
+		 * @param WC_Order $order
+		 * @param stdClass $payment
+		 */
+		private function set_payment_object( $order, $payment ) {
+			$helper = $this->get_order_helper_class();
+
+			if ( $helper ) {
+				$helper::set_payment( $order, $payment );
+
+				return;
+			}
+
+			$order->payment = $payment;
+		}
+
+		/**
+		 * Set the CIM customer profile ID on the order the same way SkyVerge does:
+		 * payment object + gateway order meta + OrderHelper::set_customer_id (Dynamic_Props / WeakMap on PHP 8.2+).
+		 * Never assigns $order->customer_id directly on WC_Order — that is deprecated in PHP 8.2+.
+		 * See WC_Payment_Gateway::add_customer_data() in the plugin framework.
+		 *
+		 * @param WC_Order $order
+		 * @param string   $customer_id
+		 */
+		private function set_customer_id_on_order( $order, $customer_id ) {
+			$payment              = $this->get_payment_object( $order );
+			$payment->customer_id = $customer_id;
+			$this->set_payment_object( $order, $payment );
+
+			$gateway = $this->get_wc_gateway();
+			if ( $gateway && is_object( $gateway ) && method_exists( $gateway, 'update_order_meta' ) ) {
+				$gateway->update_order_meta( $order, 'customer_id', $customer_id );
+			} else {
+				$order->update_meta_data( '_wc_' . $this->get_key() . '_customer_id', $customer_id );
+				$order->save_meta_data();
+			}
+
+			$helper = $this->get_order_helper_class();
+			if ( $helper && method_exists( $helper, 'set_customer_id' ) ) {
+				$helper::set_customer_id( $order, $customer_id );
+			} else {
+				$dynamic_props = $this->get_dynamic_props_class();
+				if ( $dynamic_props && method_exists( $dynamic_props, 'set' ) ) {
+					$dynamic_props::set( $order, 'customer_id', $customer_id );
+				}
+			}
+		}
+
+		/**
+		 * Get the CIM customer profile ID: OrderHelper first (what the gateway reads), then payment, then meta.
+		 *
+		 * @param WC_Order $order
+		 *
+		 * @return string
+		 */
+		private function get_customer_id_from_order( $order ) {
+			$helper = $this->get_order_helper_class();
+			if ( $helper && method_exists( $helper, 'get_customer_id' ) ) {
+				$cid = $helper::get_customer_id( $order );
+				if ( ! empty( $cid ) ) {
+					return (string) $cid;
+				}
+			}
+
+			$dynamic_props = $this->get_dynamic_props_class();
+			if ( $dynamic_props && method_exists( $dynamic_props, 'get' ) ) {
+				$cid = $dynamic_props::get( $order, 'customer_id' );
+				if ( ! empty( $cid ) ) {
+					return (string) $cid;
+				}
+			}
+
+			$payment = $this->get_payment_object( $order );
+			if ( isset( $payment->customer_id ) && ! empty( $payment->customer_id ) ) {
+				return (string) $payment->customer_id;
+			}
+
+			$gateway = $this->get_wc_gateway();
+			if ( $gateway && is_object( $gateway ) && method_exists( $gateway, 'get_order_meta' ) ) {
+				$cid = $gateway->get_order_meta( $order, 'customer_id' );
+				if ( ! empty( $cid ) ) {
+					return (string) $cid;
+				}
+			}
+
+			$from_meta = WFOCU_Common::get_order_meta( $order, '_wc_' . $this->get_key() . '_customer_id' );
+			if ( ! empty( $from_meta ) ) {
+				return (string) $from_meta;
+			}
+
+			// Fallback: Try legacy meta key format used by older CIM versions.
+			$legacy_meta = $order->get_meta( '_wc_authorize_net_cim_credit_card_customer_id' );
+			if ( ! empty( $legacy_meta ) ) {
+				return (string) $legacy_meta;
+			}
+
+			// All proper retrieval methods exhausted - return empty.
+			// Note: Direct $order->customer_id access removed to avoid WC 3.0+ deprecation warnings.
+			return '';
 		}
 
 		public function process_payment( $result, $order_id ) {
-
 
 			$order = $this->get_wc_gateway()->get_order( $order_id );
 
@@ -91,37 +301,41 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				try {
 
 					// using an existing tokenized payment method
-					if ( isset( $order->payment->token ) && $order->payment->token ) {
+					$payment = $this->get_payment_object( $order );
+					if ( isset( $payment->token ) && $payment->token ) {
 
 						$this->get_wc_gateway()->add_transaction_data( $order );
 
 					} else {
-						$customer_id_from_session = WFOCU_Core()->data->get( 'authorize_net_cim_customer_id', '', 'gateway' );
+						$customer_id_from_session           = WFOCU_Core()->data->get( 'authorize_net_cim_customer_id', '', 'gateway' );
+						$get_orders_by_meta_for_customer_id = null;
 						if ( ! empty( $customer_id_from_session ) ) {
-							WFOCU_Core()->log->log( "valid process customer ID on session" . $customer_id_from_session );
+							WFOCU_Core()->log->log( 'valid process customer ID on session' . $customer_id_from_session );
 							$order = $this->validate_and_process_customer_id( $customer_id_from_session, $order, true );
 						} else {
 							$get_billing_email                  = $order->get_billing_email();
-							$get_orders_by_meta_for_customer_id = new WP_Query( array(
-								'post_type'    => 'shop_order',
-								'post_status'  => 'any',
-								'meta_query'   => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+							$get_orders_by_meta_for_customer_id = new WP_Query(
+								array(
+									'post_type'    => 'shop_order',
+									'post_status'  => 'any',
+									'meta_query'   => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 									'relation' => 'AND',
 									array(
 										'key'     => '_wc_authorize_net_cim_credit_card_customer_id',
 										'compare' => '!=',
-										'value'   => ''
+										'value'   => '',
 									),
 									array(
 										'key'     => '_billing_email',
 										'compare' => '=',
 										'value'   => $get_billing_email,
 									),
-								),
-								'fields'       => 'ids',
-								'order'        => 'DESC',
-								'post__not_in' => [ $order->get_id() ], //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn
-							) );
+									),
+									'fields'       => 'ids',
+									'order'        => 'DESC',
+									'post__not_in' => array( $order->get_id() ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn
+								)
+							);
 							WFOCU_Core()->log->log( ' Orders found for previous customer IDs ' . print_r( $get_orders_by_meta_for_customer_id->posts, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 							/**
@@ -133,35 +347,30 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 								 * Try to get the customer ID
 								 */
 								$customer_id = WFOCU_Common::get_order_meta( wc_get_order( $get_orders_by_meta_for_customer_id->posts[0] ), '_wc_authorize_net_cim_credit_card_customer_id' );
-								WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' Customer ID found from order is ' . $customer_id ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+								WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' Customer ID found from order is ' . $customer_id ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 								$get_customer_profile = $customer_id;
 
 								$order = $this->validate_and_process_customer_id( $get_customer_profile, $order, true );
 							} else {
-								WFOCU_Core()->log->log( "Order: #" . $order->get_id() . 'attempt to create token for fresh customer' );
+								WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'attempt to create token for fresh customer' );
 
 								$order = $this->_create_token( $order );
 
+								if ( ! empty( $this->get_customer_id_from_order( $order ) ) && true === $this->is_error_token ) {
 
-								if ( ! empty( $order->customer_id ) && true === $this->is_error_token ) {
+									WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' We have found the customer ID from the exception' );
 
-									WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' We have found the customer ID from the exception' );
-
-
-									$get_customer_profile = $order->customer_id;
+									$get_customer_profile = $this->get_customer_id_from_order( $order );
 
 									$order = $this->validate_and_process_customer_id( $get_customer_profile, $order );
 								}
-
 							}
 						}
-
 
 						/**
 						 * We need to create shipping ID for the current user on Authorize.Net CIM API
 						 * As ShippingAddressID is important for the cases when business owner has shipping-filters enabled in their merchant account.
-						 *
 						 */
 						try {
 
@@ -172,20 +381,25 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 							$response = $this->get_wc_gateway()->get_api()->create_shipping_address( $order );
 
 						} catch ( Exception $e ) {
-							if ( is_array( $get_orders_by_meta_for_customer_id->posts ) && count( $get_orders_by_meta_for_customer_id->posts ) > 0 ) {
+							if ( $get_orders_by_meta_for_customer_id instanceof WP_Query && is_array( $get_orders_by_meta_for_customer_id->posts ) && count( $get_orders_by_meta_for_customer_id->posts ) > 0 ) {
 
 								$response = intval( WFOCU_Common::get_order_meta( wc_get_order( $get_orders_by_meta_for_customer_id->posts[0] ), '_authorize_cim_shipping_address_id' ) );
 							}
 						}
-						if ( is_integer( $response ) ) {
-							$shipping_address_id = $response;
-						} elseif ( is_callable( [ $response, 'get_shipping_address_id' ] ) ) {
+						if ( ! isset( $response ) ) {
+							$response = 0;
+						}
+						if ( is_numeric( $response ) ) {
+							$shipping_address_id = (int) $response;
+						} elseif ( is_callable( array( $response, 'get_shipping_address_id' ) ) ) {
 							$shipping_address_id = $response->get_shipping_address_id();
 						} else {
 							$shipping_address_id = 0;
 						}
-						$order->payment->shipping_address_id = $shipping_address_id;
-						WFOCU_Core()->data->set( 'authorize_net_cim_shipping_id', $order->payment->shipping_address_id, 'gateway' );
+						$payment                      = $this->get_payment_object( $order );
+						$payment->shipping_address_id = $shipping_address_id;
+						$this->set_payment_object( $order, $payment );
+						WFOCU_Core()->data->set( 'authorize_net_cim_shipping_id', $payment->shipping_address_id, 'gateway' );
 						WFOCU_Core()->data->save( 'gateway' );
 
 						$this->get_wc_gateway()->add_transaction_data( $order );
@@ -218,81 +432,85 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 			if ( $order instanceof WC_Order && $this->key === $order->get_payment_method() ) {
 
+				$payment = $this->get_payment_object( $order );
+
 				if ( ! is_checkout_pay_page() ) {
 
 					// retrieve the payment token
 
 					// retrieve the optional customer id
-					$order->customer_id = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' );
+					$this->set_customer_id_on_order( $order, $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'customer_id' ) );
 
 					$customer_id_from_session = WFOCU_Core()->data->get( 'authorize_net_cim_customer_id', '', 'gateway' );
-					if ( empty( $order->customer_id ) && ! empty( $customer_id_from_session ) ) {
-						$order->customer_id = $customer_id_from_session;
+					if ( empty( $this->get_customer_id_from_order( $order ) ) && ! empty( $customer_id_from_session ) ) {
+						$this->set_customer_id_on_order( $order, $customer_id_from_session );
 					}
 
-					$order->payment->token = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
-					$token_from_gateway    = $this->get_token( $order );
-					if ( empty( $order->payment->token ) && ! empty( $token_from_gateway ) ) {
-						$order->payment->token = $token_from_gateway;
+					$payment->token     = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'payment_token' );
+					$token_from_gateway = $this->get_token( $order );
+					if ( empty( $payment->token ) && ! empty( $token_from_gateway ) ) {
+						$payment->token = $token_from_gateway;
 					}
 					// set token data on order
-					if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $order->payment->token ) ) {
+					if ( $this->get_wc_gateway()->get_payment_tokens_handler()->user_has_token( $order->get_user_id(), $payment->token ) ) {
 
 						// an existing registered user with a saved payment token
-						$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $order->payment->token );
+						$token = $this->get_wc_gateway()->get_payment_tokens_handler()->get_token( $order->get_user_id(), $payment->token );
 
 						// account last four
-						$order->payment->account_number = $token->get_last_four();
+						$payment->account_number = $token->get_last_four();
 
 						if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
 
 							// card type
-							$order->payment->card_type = $token->get_card_type();
+							$payment->card_type = $token->get_card_type();
 
 							// exp month/year
-							$order->payment->exp_month = $token->get_exp_month();
-							$order->payment->exp_year  = $token->get_exp_year();
+							$payment->exp_month = $token->get_exp_month();
+							$payment->exp_year  = $token->get_exp_year();
 
 						} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
 
 							// account type (checking/savings)
-							$order->payment->account_type = $token->get_account_type();
+							$payment->account_type = $token->get_account_type();
 						}
 					} else {
 
 						// a guest user means that token data must be set from the original order
 
 						// account number
-						$order->payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
+						$payment->account_number = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_four' );
 
 						if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
 
 							// card type
-							$order->payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
+							$payment->card_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_type' );
 
 							// expiry date
 							$expiry_date = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'card_expiry_date' );
 							if ( ! empty( $expiry_date ) ) {
 								list( $exp_year, $exp_month ) = explode( '-', $expiry_date );
-								$order->payment->exp_month = $exp_month;
-								$order->payment->exp_year  = $exp_year;
+								$payment->exp_month           = $exp_month;
+								$payment->exp_year            = $exp_year;
 							}
 						} elseif ( $this->get_wc_gateway()->is_echeck_gateway() ) {
 
 							// account type
-							$order->payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
+							$payment->account_type = $this->get_wc_gateway()->get_order_meta( WFOCU_WC_Compatibility::get_order_data( $order, 'id' ), 'account_type' );
 						}
 					}
 				}
 
 				$response = intval( $order->get_meta( '_authorize_cim_shipping_address_id' ) );
 				if ( ! empty( $response ) ) {
-					$order->payment->shipping_address_id = $response;
+					$payment->shipping_address_id = $response;
 				}
 
-				if ( true === $this->unset_opaque_value && isset( $order->payment->opaque_value ) ) {
-					unset( $order->payment->opaque_value );
+				if ( true === $this->unset_opaque_value && isset( $payment->opaque_value ) ) {
+					unset( $payment->opaque_value );
 				}
+
+				$this->set_payment_object( $order, $payment );
 			}
 
 			return $order;
@@ -305,7 +523,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 *
 		 * @return true on success false otherwise
 		 */
-
 		public function has_token( $order ) {
 
 			if ( false === $this->get_wc_gateway()->is_cim_feature_enabled() ) {
@@ -313,8 +530,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			}
 			$get_id = WFOCU_WC_Compatibility::get_order_id( $order );
 
-
-			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_id ), '_wc_' . $this->get_key() . '_payment_token' );;
+			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_id ), '_wc_' . $this->get_key() . '_payment_token' );
 
 			if ( ! empty( $this->token ) ) {
 				return true;
@@ -328,15 +544,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			if ( empty( $get_secondary_order ) ) {
 				return false;
 			}
-			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );;
-
+			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );
 
 			if ( ! empty( $this->token ) ) {
 				return true;
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -346,11 +560,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 *
 		 * @return true on success false otherwise
 		 */
-
 		public function get_token( $order ) {
 			$get_id      = WFOCU_WC_Compatibility::get_order_id( $order );
-			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_id ), '_wc_' . $this->get_key() . '_payment_token' );;
-
+			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_id ), '_wc_' . $this->get_key() . '_payment_token' );
 
 			if ( ! empty( $this->token ) ) {
 				return $this->token;
@@ -365,14 +577,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				return '';
 			}
 
-			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );;
+			$this->token = WFOCU_Common::get_order_meta( wc_get_order( $get_secondary_order ), '_wc_' . $this->get_key() . '_payment_token' );
 
 			if ( ! empty( $this->token ) ) {
 				return $this->token;
 			}
 
 			return '';
-
 		}
 
 		/**
@@ -383,16 +594,19 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		private function do_main_transaction( $order ) {
 			try {
 
-				// order description
-				$order->description = sprintf( __( '%1$s - Release Payment for Order %2$s', 'woocommerce-plugin-framework' ), esc_html( $this->get_site_name() ), $order->get_order_number() );
+				$payment = $this->get_payment_object( $order );
+
+				// order description — use class property to avoid dynamic property on WC_Order (PHP 8.2+ deprecation)
+				$this->transaction_description = sprintf( __( '%1$s - Release Payment for Order %2$s', 'woocommerce-plugin-framework' ), esc_html( $this->get_site_name() ), $order->get_order_number() );
 
 				// token is required
-				if ( ! $order->payment->token ) {
+				if ( ! isset( $payment->token ) || ! $payment->token ) {
 					throw new Exception( __( 'Payment token missing/invalid.', 'woocommerce-plugin-framework' ) );
 				}
 
-				if ( isset( $order->payment ) && isset( $order->payment->csc ) ) {
-					unset( $order->payment->csc );
+				if ( isset( $payment->csc ) ) {
+					unset( $payment->csc );
+					$this->set_payment_object( $order, $payment );
 				}
 				// perform the transaction
 				if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
@@ -409,12 +623,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				// success! update order record
 				if ( $response->transaction_approved() ) {
 
-					$last_four = substr( $order->payment->account_number, - 4 );
+					$last_four = substr( $payment->account_number, - 4 );
 
 					// order note based on gateway type
 					if ( $this->get_wc_gateway()->is_credit_card_gateway() ) {
 
-						$message = sprintf( __( '%1$s %2$s Release Payment Approved: %3$s ending in %4$s (expires %5$s)', 'woocommerce-plugin-framework' ), $this->get_wc_gateway()->get_method_title(), $this->get_wc_gateway()->perform_credit_card_authorization( $order ) ? 'Authorization' : 'Charge', ! isset( $order->payment->card_type ) ? $order->payment->card_type : 'card', $last_four, ( isset( $order->payment->exp_month ) && isset( $order->payment->exp_year ) ? $order->payment->exp_month . '/' . substr( $order->payment->exp_year, - 2 ) : 'n/a' ) );
+						$message = sprintf( __( '%1$s %2$s Release Payment Approved: %3$s ending in %4$s (expires %5$s)', 'woocommerce-plugin-framework' ), $this->get_wc_gateway()->get_method_title(), $this->get_wc_gateway()->perform_credit_card_authorization( $order ) ? 'Authorization' : 'Charge', isset( $payment->card_type ) ? $payment->card_type : 'card', $last_four, ( isset( $payment->exp_month ) && isset( $payment->exp_year ) ? $payment->exp_month . '/' . substr( $payment->exp_year, - 2 ) : 'n/a' ) );
 
 					}
 
@@ -460,7 +674,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 				}
 
-
 				return $e;
 			}
 		}
@@ -472,9 +685,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			if ( $order_base instanceof WC_Order && $this->key === $order_base->get_payment_method() && false === $this->is_accept_js_on() && true === $this->get_wc_gateway()->is_cim_feature_enabled() ) {
 
 				$order = $this->get_wc_gateway()->get_order( $order );
+
 				if ( $this->should_tokenize() && 0 === $order->get_user_id() ) {
 
-					if ( isset( $order->payment->token ) && $order->payment->token ) {
+					$payment = $this->get_payment_object( $order );
+					if ( isset( $payment->token ) && $payment->token ) {
 
 						$this->get_wc_gateway()->add_transaction_data( $order );
 
@@ -498,19 +713,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 							if ( $matches && is_array( $matches ) && isset( $matches[0][0] ) && '00039' === $matches[0][0] ) {
 
-								$get_order_by_meta = new WP_Query( array(
-									'post_type'   => 'shop_order',
-									'post_status' => 'any',
-									'meta_query'  => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+								$get_order_by_meta = new WP_Query(
+									array(
+										'post_type'   => 'shop_order',
+										'post_status' => 'any',
+										'meta_query'  => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 										array(
 											'key'     => '_wc_authorize_net_cim_credit_card_customer_id',
 											'value'   => $matches[1][0],
 											'compare' => '=',
 										),
-									),
-									'fields'      => 'ids',
-									'order'       => 'ASC',
-								) );
+										),
+										'fields'      => 'ids',
+										'order'       => 'ASC',
+									)
+								);
 
 								if ( is_array( $get_order_by_meta->posts ) && count( $get_order_by_meta->posts ) > 0 ) {
 
@@ -525,7 +742,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 						/**
 						 * We need to create shipping ID for the current user on Authorize.Net CIM API
 						 * As ShippingAddressID is important for the cases when business owner has shipping-filters enabled in their merchant account.
-						 *
 						 */
 						try {
 
@@ -541,9 +757,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 						}
 
-						$shipping_address_id                 = is_numeric( $response ) ? $response : $response->get_shipping_address_id();
-						$order->payment->shipping_address_id = $shipping_address_id;
-						WFOCU_Core()->data->set( 'authorize_net_cim_shipping_id', $order->payment->shipping_address_id, 'gateway' );
+						$shipping_address_id = is_numeric( $response ) ? $response : $response->get_shipping_address_id();
+
+						$payment                      = $this->get_payment_object( $order );
+						$payment->shipping_address_id = $shipping_address_id;
+						$this->set_payment_object( $order, $payment );
+						WFOCU_Core()->data->set( 'authorize_net_cim_shipping_id', $payment->shipping_address_id, 'gateway' );
 						WFOCU_Core()->data->save( 'gateway' );
 
 					}
@@ -566,7 +785,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				add_filter( 'wc_payment_gateway_' . $this->get_key() . '_get_order', array( $this, 'get_order' ), 999 );
 
 				$this->order = $gateway->get_order( $order );
-				$request     = $this->create_transaction_request( 'capture', $order );
+				// Build description locally to avoid triggering WC_Abstract_Legacy_Order::__get on $order->description,
+				// which logs a "properties should not be accessed directly" notice in CIM v3.10.15+ (Dynamic_Props/WeakMap).
+				$this->transaction_description = sprintf(
+				/* translators: 1: site name 2: order number */
+					__( '%1$s - Order %2$s', 'woocommerce-plugin-framework' ),
+					esc_html( $this->get_site_name() ),
+					$this->order->get_order_number()
+				);
+				$request = $this->create_transaction_request( 'capture', $order );
 				WFOCU_Core()->log->log( 'AUTHORIZE CIM REQUEST :' . print_r( $request, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				$response = wp_safe_remote_request( $url, $this->get_request_attributes( $request ) );
@@ -577,18 +804,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 				if ( is_wp_error( $response ) ) {
 					$is_successful = false;
-				} else {
-					if ( isset( $result['messages'] ) && isset( $result['messages']['resultCode'] ) && 'Ok' === $result['messages']['resultCode'] && ! empty( $result['directResponse'] ) ) {
+				} elseif ( isset( $result['messages'] ) && isset( $result['messages']['resultCode'] ) && 'Ok' === $result['messages']['resultCode'] && ! empty( $result['directResponse'] ) ) {
 						$trans_id = $this->get_transaction_id( $result['directResponse'] );
 						WFOCU_Core()->data->set( '_transaction_id', $trans_id );
 						$is_successful = true;
 
-					} else {
-						WFOCU_Core()->log->log( 'AUTHORIZE CIM ERROR :' . print_r( $result, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-						$order_note = sprintf( __( 'Authorize.net CIM Transaction Failed (%s)', 'woofunnels-upstroke-one-click-upsell' ), isset( $result['messages']['message']['text'] ) ? $result['messages']['message']['text'] : __( 'Unable to parse error, Check logs for more info', 'woofunnels-upstroke-one-click-upsell' ) );
-						$order->add_order_note( $order_note );
-						$is_successful = false;
-					}
+				} else {
+					WFOCU_Core()->log->log( 'AUTHORIZE CIM ERROR :' . print_r( $result, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					$order_note = sprintf( __( 'Authorize.net CIM Transaction Failed (%s)', 'woofunnels-upstroke-one-click-upsell' ), isset( $result['messages']['message']['text'] ) ? $result['messages']['message']['text'] : __( 'Unable to parse error, Check logs for more info', 'woofunnels-upstroke-one-click-upsell' ) );
+					$order->add_order_note( $order_note );
+					$is_successful = false;
 				}
 			} catch ( Exception $e ) {
 				WFOCU_Core()->log->log( 'AUTHORIZE CIM ERROR :' . print_r( $e, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -604,16 +829,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			$order            = $this->order;
 			$transaction_type = ( 'auth_only' === $type ) ? 'profileTransAuthOnly' : 'profileTransAuthCapture';
 			$get_package      = WFOCU_Core()->data->get( '_upsell_package' );
+			$payment          = $this->get_payment_object( $order );
 
 			/**
 			 * We need to create shipping ID for the current user on Authorize.Net CIM API
 			 * As ShippingAddressID is important for the cases when business owner has shipping-filters enabled in their merchant account.
-			 *
 			 */
 			$maybe_get_shipping_id_from_session = WFOCU_Core()->data->get( 'authorize_net_cim_shipping_id', '', 'gateway' );
 
-			if ( isset( $order->payment ) && isset( $order->payment->shipping_address_id ) && ! empty( $order->payment->shipping_address_id ) ) {
-				$shipping_address_id = $order->payment->shipping_address_id;
+			if ( isset( $payment->shipping_address_id ) && ! empty( $payment->shipping_address_id ) ) {
+				$shipping_address_id = $payment->shipping_address_id;
 			} elseif ( ! empty( $maybe_get_shipping_id_from_session ) ) {
 				$shipping_address_id = $maybe_get_shipping_id_from_session;
 			} else {
@@ -625,35 +850,39 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 
 			}
 
-			return apply_filters( 'wfocu_payment_authorize_transaction_args', array(
-				'createCustomerProfileTransactionRequest' => array(
-					'merchantAuthentication' => array(
-						'name'           => wc_clean( $this->get_wc_gateway()->get_api_login_id() ),
-						'transactionKey' => wc_clean( $this->get_wc_gateway()->get_api_transaction_key() ),
-					),
-					'refId'                  => $this->get_order_number( $order ),
-					'transaction'            => array(
-						$transaction_type => array(
-							'amount'                    => $this->number_format( $get_package['total'] ),
-							'tax'                       => $this->get_taxes(),
-							'shipping'                  => $this->get_shipping(),
-							'lineItems'                 => $this->get_line_items(),
-							'customerProfileId'         => $this->get_customer_id( $order ),
-							'customerPaymentProfileId'  => $this->get_token( $order ),
-							'customerShippingAddressId' => $shipping_address_id,
-							'order'                     => array(
-								'invoiceNumber'       => ltrim( $this->get_order_number( $order ), _x( '#', 'hash before the order number', 'woocommerce-gateway-authorize-net-cim' ) ),
-								'description'         => $this->str_truncate( $this->order->description . '::' . $this->get_order_number( $order ), 255 ),
-								'purchaseOrderNumber' => $this->str_truncate( preg_replace( '/\W/', '', $this->order->payment->po_number ), 25 ),
-							),
-
+			return apply_filters(
+				'wfocu_payment_authorize_transaction_args',
+				array(
+					'createCustomerProfileTransactionRequest' => array(
+						'merchantAuthentication' => array(
+							'name'           => bwf_clean( $this->get_wc_gateway()->get_api_login_id() ),
+							'transactionKey' => bwf_clean( $this->get_wc_gateway()->get_api_transaction_key() ),
 						),
+						'refId'                  => $this->get_order_number( $order ),
+						'transaction'            => array(
+							$transaction_type => array(
+								'amount'                   => $this->number_format( $get_package['total'] ),
+								'tax'                      => $this->get_taxes(),
+								'shipping'                 => $this->get_shipping(),
+								'lineItems'                => $this->get_line_items(),
+								'customerProfileId'        => $this->get_customer_id( $order ),
+								'customerPaymentProfileId' => $this->get_token( $order ),
+								'customerShippingAddressId' => $shipping_address_id,
+								'order'                    => array(
+									'invoiceNumber'       => ltrim( $this->get_order_number( $order ), _x( '#', 'hash before the order number', 'woocommerce-gateway-authorize-net-cim' ) ),
+									'description'         => $this->str_truncate( $this->transaction_description . '::' . $this->get_order_number( $order ), 255 ),
+									'purchaseOrderNumber' => $this->str_truncate( preg_replace( '/\W/', '', isset( $payment->po_number ) ? $payment->po_number : '' ), 25 ),
+								),
+
+							),
+						),
+
+						'extraOptions'           => $this->get_extra_options(),
+
 					),
-
-					'extraOptions' => $this->get_extra_options(),
-
 				),
-			), $this );
+				$this
+			);
 		}
 
 		/**
@@ -747,7 +976,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 *
 		 * @return true on success false otherwise
 		 */
-
 		public function get_customer_id( $order ) {
 
 			$this->customer_id = WFOCU_Common::get_order_meta( $order, '_wc_' . $this->get_key() . '_customer_id' );
@@ -772,7 +1000,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			}
 
 			return '';
-
 		}
 
 		/**
@@ -913,15 +1140,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			);
 
 			return $fields;
-
 		}
 
 		/**
 		 * @param WC_Order $order
 		 */
 		public function maybe_add_shipping_address_id_order_for_guests( $order ) {
-			if ( isset( $order->payment ) && isset( $order->payment->shipping_address_id ) && ! empty( $order->payment->shipping_address_id ) ) {
-				$order->update_meta_data( '_authorize_cim_shipping_address_id', $order->payment->shipping_address_id );
+			$payment = $this->get_payment_object( $order );
+			if ( isset( $payment->shipping_address_id ) && ! empty( $payment->shipping_address_id ) ) {
+				$order->update_meta_data( '_authorize_cim_shipping_address_id', $payment->shipping_address_id );
 				$order->save_meta_data();
 				$order->save();
 			}
@@ -935,55 +1162,54 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * @return bool
 		 */
 		public function process_refund_offer( $order ) {
-			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
-			$txn_id        = isset( $refund_data['txn_id'] ) ? $refund_data['txn_id'] : '';
-			$amnt          = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
+			$txn_id        = isset( $refund_data['txn_id'] ) ? sanitize_text_field( $refund_data['txn_id'] ) : '';
+			$amnt          = isset( $refund_data['amt'] ) ? floatval( $refund_data['amt'] ) : 0.0;
 			$api           = $this->get_wc_gateway()->get_api();
 			$gateway       = $this->get_wc_gateway();
-			$refund_reason = isset( $refund_data['refund_reason'] ) ? $refund_data['refund_reason'] : '';
+			$refund_reason = isset( $refund_data['refund_reason'] ) ? sanitize_textarea_field( $refund_data['refund_reason'] ) : '';
 
-			// add refund info
-			$order->refund           = new stdClass();
-			$order->refund->amount   = number_format( $amnt, 2, '.', '' );
-			$order->refund->reason   = $refund_reason;
-			$order->refund->trans_id = $txn_id;
-
+			// add refund info — stored on the instance to avoid dynamic property writes on WC_Order (PHP 8.2+)
+			$this->current_refund           = new stdClass();
+			$this->current_refund->amount   = number_format( $amnt, 2, '.', '' );
+			$this->current_refund->reason   = $refund_reason;
+			$this->current_refund->trans_id = $txn_id;
 
 			if ( version_compare( WC_Authorize_Net_CIM::VERSION, '3.7.2', '>=' ) ) {
 				// set token data on the order
-				$transaction              = $api->get_transaction_details( $order->refund->trans_id, $order->get_id() );
-				$order->refund->last_four = $transaction->get_last_four();
+				$transaction                     = $api->get_transaction_details( $this->current_refund->trans_id, $order->get_id() );
+				$this->current_refund->last_four = $transaction->get_last_four();
 
-				if ( empty( $order->refund->last_four ) ) {
-					$order->refund->last_four = $this->get_wc_gateway()->get_order_meta( $order, 'account_four' );
+				if ( empty( $this->current_refund->last_four ) ) {
+					$this->current_refund->last_four = $this->get_wc_gateway()->get_order_meta( $order, 'account_four' );
 				}
 
 				$expiry_date = $this->get_wc_gateway()->get_order_meta( $order, 'card_expiry_date' );
 
 				if ( $expiry_date ) {
-					$order->refund->expiry_date = gmdate( 'm-Y', strtotime( '20' . $expiry_date ) );
+					$this->current_refund->expiry_date = gmdate( 'm-Y', strtotime( '20' . $expiry_date ) );
 				}
 
-				if ( empty( $order->refund->expiry_date ) ) {
-					$order->refund->expiry_date = 'XXXX';
+				if ( empty( $this->current_refund->expiry_date ) ) {
+					$this->current_refund->expiry_date = 'XXXX';
 				}
 				$response = $api->refund( $order );
 
-				WFOCU_Core()->log->log( "WFOCU Authorize Offer refund transaction ID" . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'WFOCU Authorize Offer refund transaction ID' . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				$transaction_id = $response->get_transaction_id();
 
 				if ( ! $transaction_id ) {
-					$response                    = $api->void( $order );
-					$transaction_id              = $response->get_transaction_id();
-					$order->refund->wfocu_voided = true;
+					$response                           = $api->void( $order );
+					$transaction_id                     = $response->get_transaction_id();
+					$this->current_refund->wfocu_voided = true;
 					WFOCU_Core()->log->log( "WFOCU Authorize Offer void transaction id: $transaction_id response: " . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				}
 			} else {
-				$order->refund->customer_profile_id         = $gateway->get_order_meta( $order, 'customer_id' );
-				$order->refund->customer_payment_profile_id = $gateway->get_order_meta( $order, 'payment_token' );
+				$this->current_refund->customer_profile_id         = $gateway->get_order_meta( $order, 'customer_id' );
+				$this->current_refund->customer_payment_profile_id = $gateway->get_order_meta( $order, 'payment_token' );
 
 				add_filter( 'wc_authorize_net_cim_api_request_data', array( $this, 'wfocu_modify_refund_request_data' ), 10, 2 );
 
@@ -994,15 +1220,14 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				WFOCU_Core()->log->log( "WFOCU Authorize Offer refund transaction ID: $transaction_id response: " . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				if ( ! $transaction_id ) {
-					$response                    = $api->void( $order );
-					$transaction_id              = $response->get_transaction_id();
-					$order->refund->wfocu_voided = true;
+					$response                           = $api->void( $order );
+					$transaction_id                     = $response->get_transaction_id();
+					$this->current_refund->wfocu_voided = true;
 					WFOCU_Core()->log->log( "WFOCU Authorize Offer void transaction id: $transaction_id response: " . print_r( $response, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				}
 			}
 
 			return $transaction_id ? $transaction_id : false;
-
 		}
 
 		/**
@@ -1014,7 +1239,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * @param $refund_reason
 		 */
 		public function wfocu_add_order_note( $order, $amnt, $refund_id, $offer_id, $refund_reason ) {
-			if ( isset( $order->refund->wfocu_voided ) && true === $order->refund->wfocu_voided ) {
+			if ( isset( $this->current_refund->wfocu_voided ) && true === $this->current_refund->wfocu_voided ) {
 				/* translators: 1) dollar amount 2) transaction id 3) refund message */
 				$refund_note = sprintf( __( 'Voided %1$s - Void Txn ID: %2$s <br/>Offer: %3$s(#%4$s) %5$s', 'woofunnels-upstroke-one-click-upsell' ), $amnt, $refund_id, get_the_title( $offer_id ), $offer_id, $refund_reason );
 				$order->add_order_note( $refund_note );
@@ -1032,12 +1257,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 */
 		public function wfocu_modify_refund_request_data( $request_data, $order ) {
 
-			if ( isset( $_POST['action'] ) && 'wfocu_admin_refund_offer' === $_POST['action'] ) {  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( isset( $_POST['action'] ) && 'wfocu_admin_refund_offer' === $_POST['action'] ) {  // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 				WFOCU_Core()->log->log( 'Auth request data: ' . print_r( $request_data, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
-				$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
-				$offer_id = isset( $refund_data['offer_id'] ) ? $refund_data['offer_id'] : '';
+				$offer_id = isset( $refund_data['offer_id'] ) ? absint( $refund_data['offer_id'] ) : 0;
 				$order_id = WFOCU_WC_Compatibility::get_order_id( $order );
 
 				if ( isset( $request_data['createCustomerProfileTransactionRequest'] ) && isset( $request_data['createCustomerProfileTransactionRequest']['refId'] ) ) {
@@ -1059,7 +1284,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * This is helpful for retrieving the actual site name instead of the
 		 * network name on multisite installations.
 		 *
-		 *
 		 * @return string
 		 */
 		public function get_site_name() {
@@ -1072,7 +1296,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * separator and no thousands separator.
 		 *
 		 * Commonly used for payment gateways which require amounts in this format.
-		 *
 		 *
 		 * @param float $number
 		 *
@@ -1105,7 +1328,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 *
 		 * @return string
 		 * @since 4.0.0
-		 *
 		 */
 		public function str_to_sane_utf8( $string ) {
 
@@ -1121,12 +1343,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * for a total length not exceeding $length
 		 *
 		 * @param string $string text to truncate
-		 * @param int $length total desired length of string, including omission
+		 * @param int    $length total desired length of string, including omission
 		 * @param string $omission omission text, defaults to '...'
 		 *
 		 * @return string
 		 * @since 2.2.0
-		 *
 		 */
 		public function str_truncate( $string, $length, $omission = '...' ) {
 
@@ -1178,7 +1399,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 *
 		 * @return string
 		 * @since 2.2.0
-		 *
 		 */
 		public function str_to_ascii( $string ) {
 
@@ -1205,7 +1425,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			}
 
 			return $order_number;
-
 		}
 
 		public function check_if_we_have_tokenized( $current_last_four, $get_saved_payment_methods ) {
@@ -1247,10 +1466,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			try {
 				$order = $this->get_wc_gateway()->get_payment_tokens_handler()->create_token( $order );
 
-
 			} catch ( Exception $e ) {
 				$this->is_error_token = true;
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' Unable to create a token during primary order ' . $e->getCode() . "::" . $e->getMessage() );
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' Unable to create a token during primary order ' . $e->getCode() . '::' . $e->getMessage() );
 
 			}
 
@@ -1261,20 +1479,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			/**
 			 * Check if we have token against the extered card, if not the try creating one
 			 */
+			$maybe_get_token = false;
 			try {
+				$payment                  = $this->get_payment_object( $order );
 				$existing_payment_methods = $this->get_wc_gateway()->get_api()->get_tokenized_payment_methods( $customer_profile_id )->get_payment_tokens();
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' existing tokens found are  ' . print_r( $existing_payment_methods, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				$maybe_get_token = $this->check_if_we_have_tokenized( $order->payment->last_four, $existing_payment_methods );
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' existing tokens found are  ' . print_r( $existing_payment_methods, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				$maybe_get_token = $this->check_if_we_have_tokenized( $payment->last_four, $existing_payment_methods );
 
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' last 4 is ' . print_r( $order->payment->last_four, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . ' get the token after matching last 4  ' . print_r( $maybe_get_token, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' last 4 is ' . print_r( $payment->last_four, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . ' get the token after matching last 4  ' . print_r( $maybe_get_token, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				WFOCU_Core()->data->set( 'authorize_net_cim_customer_id', $customer_profile_id, 'gateway' );
 				WFOCU_Core()->data->save( 'gateway' );
 			} catch ( Exception $e ) {
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . 'Error showed up while getting exiting tokens' . print_r( $e->getMessage(), true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'Error showed up while getting exiting tokens' . print_r( $e->getMessage(), true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
-
 
 			if ( ! empty( $maybe_get_token ) ) {
 				/**
@@ -1283,13 +1502,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 				$order->update_meta_data( '_wc_authorize_net_cim_credit_card_payment_token', $maybe_get_token );
 				$order->save_meta_data();
 			} else {
-				WFOCU_Core()->log->log( "Order: #" . $order->get_id() . 'attempt to create token for returning customer' );
+				WFOCU_Core()->log->log( 'Order: #' . $order->get_id() . 'attempt to create token for returning customer' );
 
 				$order = $this->get_order( $order );
 				if ( $create_token ) {
 					$this->_create_token( $order );
 				}
-
 			}
 
 			$order = $this->get_order( $order );
@@ -1305,11 +1523,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 		 * Modify the upsell skip reason and order note for Stripe gateway.
 		 *
 		 * @param WC_Order $order
-		 * @param int $skip_key
-		 * @param array $reason_messages
-		 * @param string $edit_link
-		 * @param string $contact_support
-		 * @param string $upsell_s_link
+		 * @param int      $skip_key
+		 * @param array    $reason_messages
+		 * @param string   $edit_link
+		 * @param string   $contact_support
+		 * @param string   $upsell_s_link
 		 *
 		 * @return array
 		 */
@@ -1319,19 +1537,27 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Authorize_Net_CIM' ) ) {
 			// Check if the skip reason corresponds to Stripe UPE mode being incompatible
 			if ( $skip_key === 6 ) {
 
-				$custom_note = sprintf( '<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(%s) no-repeat left !important;">
+				$custom_note = sprintf(
+					'<div style="display:flex;align-items:center;margin-bottom:4px;gap:4px;padding-left:20px !important;background: url(%s) no-repeat left !important;">
                     <strong style="font-size:13px;">%s</strong>
                 </div>
                 <strong>%s</strong>: %s
-                <div style="margin:8px 0px;">%s <a href="%s" target="_blank">%s</a></div>', esc_url( WFOCU_PLUGIN_URL . '/admin/assets/img/icon_error.svg' ), __( 'Upsell Skipped', 'woofunnels-upstroke-one-click-upsell' ), __( 'Authorize.CIM gateway ', 'woofunnels-upstroke-one-click-upsell' ), __( 'The current Stripe UPE payment mode does not support one-click upsells.', 'woofunnels-upstroke-one-click-upsell' ), __( 'Recommendation: For best compatibility, switch to', 'woofunnels-upstroke-one-click-upsell' ), esc_url( $upsell_s_link ), __( 'FunnelKit Stripe Gateway', 'woofunnels-upstroke-one-click-upsell' ) );
+                <div style="margin:8px 0px;">%s <a href="%s" target="_blank">%s</a></div>',
+					esc_url( WFOCU_PLUGIN_URL . '/admin/assets/img/icon_error.svg' ),
+					__( 'Upsell Skipped', 'woofunnels-upstroke-one-click-upsell' ),
+					__( 'Authorize.CIM gateway ', 'woofunnels-upstroke-one-click-upsell' ),
+					__( 'The current Stripe UPE payment mode does not support one-click upsells.', 'woofunnels-upstroke-one-click-upsell' ),
+					__( 'Recommendation: For best compatibility, switch to', 'woofunnels-upstroke-one-click-upsell' ),
+					esc_url( $upsell_s_link ),
+					__( 'FunnelKit Stripe Gateway', 'woofunnels-upstroke-one-click-upsell' )
+				);
 			}
 
-			return [
+			return array(
 				'skip_id' => $skip_key,
-				'note'    => ! empty( $custom_note ) ? $custom_note : ( $reason_messages[ $skip_key ] ?? '' )
-			];
+				'note'    => ! empty( $custom_note ) ? $custom_note : ( $reason_messages[ $skip_key ] ?? '' ),
+			);
 		}
-
 	}
 
 

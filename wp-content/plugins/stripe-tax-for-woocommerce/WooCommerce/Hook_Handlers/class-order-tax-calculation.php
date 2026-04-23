@@ -9,6 +9,7 @@ namespace Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers;
 
 defined( 'ABSPATH' ) || exit;
 
+use Stripe\StripeTaxForWooCommerce\Stripe\StripeCalculationTracker;
 use Stripe\StripeTaxForWooCommerce\WordPress\Hook_Handlers;
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Order_Controller;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeOrderItemTax;
@@ -199,9 +200,11 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 		}
 
 		try {
-			$tax_location = null;
+			$tax_location     = null;
+			$customer_user_id = null;
+
 			if ( is_admin() ) {
-				if ( ! $args && isset( $_REQUEST['security'] ) ) {
+				if ( ( ! $args || isset( $_REQUEST['stripe_tax_for_woocommerce_customer_user'] ) ) && isset( $_REQUEST['security'] ) ) {
 					$nonce_ok        = false;
 					$nonce           = sanitize_text_field( wp_unslash( $_REQUEST['security'] ) );
 					$allowed_actions = array( 'order-item', 'calc-totals' );
@@ -223,16 +226,26 @@ abstract class Order_Tax_Calculation extends Hook_Handlers {
 							'city'     => sanitize_text_field( wp_unslash( $_POST['city'] ) ),
 						);
 					}
+
+					if ( isset( $_REQUEST['stripe_tax_for_woocommerce_customer_user'] ) ) {
+						$customer_user_id = sanitize_text_field( wp_unslash( $_REQUEST['stripe_tax_for_woocommerce_customer_user'] ) );
+
+						if ( 'guest' === $customer_user_id ) {
+							$customer_user_id = null;
+						}
+					}
 				} elseif ( $args ) {
 					$tax_location = $args;
 				}
 			}
 
-			Order_Controller::calculate_taxes( $order, $tax_location );
+			Order_Controller::calculate_taxes( $order, $tax_location, $customer_user_id );
 		} catch ( InvalidRequestException $err ) {
 			static::on_error( $err );
+			self::set_current_request_failed( true );
 		} catch ( Throwable $err ) {
 			static::on_generic_error( $err );
+			self::set_current_request_failed( true );
 		}
 	}
 

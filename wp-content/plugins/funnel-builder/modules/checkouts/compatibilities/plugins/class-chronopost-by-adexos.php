@@ -13,13 +13,19 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Chronopost_by_Adexos' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_Chronopost_by_Adexos {
 		public function __construct() {
-			add_action( 'wfacp_before_shipping_calculator_field', function () {
-				echo "<div id='order_review'>";
-			} );
-			add_action( 'wfacp_after_shipping_calculator_field', function () {
-				echo "</div>";
-			} );
-			add_action( 'wfacp_internal_css', [ $this, 'js' ] );
+			add_action(
+				'wfacp_before_shipping_calculator_field',
+				function () {
+					echo "<div id='order_review'>";
+				}
+			);
+			add_action(
+				'wfacp_after_shipping_calculator_field',
+				function () {
+					echo '</div>';
+				}
+			);
+			add_action( 'wfacp_internal_css', array( $this, 'js' ) );
 		}
 
 		public function js() {

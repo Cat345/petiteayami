@@ -41,6 +41,7 @@ class BWFAN_unsubscribe {
 			add_shortcode( 'bwfan_unsubscribe_button', array( $this, 'bwfan_unsubscribe_button' ) );
 			add_shortcode( 'wfan_unsubscribe_button', array( $this, 'bwfan_unsubscribe_button' ) );
 			add_shortcode( 'fka_contact_subscribe_form', array( $this, 'bwfan_unsubscribe_button' ) );
+			add_shortcode( 'fka_unsubscribe_button', array( $this, 'bwfan_unsubscribe_button' ) );
 
 		}
 
@@ -166,7 +167,7 @@ class BWFAN_unsubscribe {
 			return;
 		}
 
-		$content  = sprintf( __( "Hi %s \n\nHelp us to improve your experience with us through better communication. Please adjust your preferences for email %s. \n\n%s.", 'wp-marketing-automations' ), '[fka_subscriber_name]', '[fka_subscriber_recipient]', '[fka_unsubscribe_button label="Update my preference"]' ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.UnorderedPlaceholdersText
+		$content  = sprintf( __( "Hi %s \n\nHelp us to improve your experience with us through better communication. Please adjust your preferences for email %s. \n\n%s.", 'wp-marketing-automations' ), '[fka_contact_name]', '[fka_contact_email]', '[fka_contact_subscribe_form label="Update my preference"]' ); // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment, WordPress.WP.I18n.UnorderedPlaceholdersText
 		$new_page = array(
 			'post_title'   => __( "Let's Keep In Touch", 'wp-marketing-automations' ),
 			'post_content' => $content,
@@ -367,6 +368,11 @@ class BWFAN_unsubscribe {
 		$sid = filter_input( INPUT_GET, 'sid', FILTER_SANITIZE_NUMBER_INT );
 		if ( ! empty( $sid ) ) {
 			echo '<input type="hidden" id="bwfan_sid" value="' . esc_attr( $sid ) . '">';
+		}
+
+		$tid = filter_input( INPUT_GET, 'tid', FILTER_SANITIZE_NUMBER_INT );
+		if ( ! empty( $tid ) ) {
+			echo '<input type="hidden" id="bwfan_tid" value="' . esc_attr( $tid ) . '">';
 		}
 
 		echo '<input type="hidden" id="bwfan_unsubscribe_nonce" value="' . esc_attr( wp_create_nonce( 'bwfan-unsubscribe-nonce' ) ) . '" name="bwfan_unsubscribe_nonce">';
@@ -759,7 +765,7 @@ class BWFAN_unsubscribe {
 			$lists = stripslashes_deep( $lists );
 			$lists = json_decode( $lists, true );
 			$lists = is_array( $lists ) ? array_map( 'sanitize_text_field', $lists ) : [];
-			$this->unsubscribe_all = in_array( 'all', $lists, false );		
+			$this->unsubscribe_all = in_array( 'all', $lists, false );
 		}
 
 		if ( true === $this->unsubscribe_all ) {
@@ -909,12 +915,15 @@ class BWFAN_unsubscribe {
 		$broadcast_id  = filter_input( INPUT_POST, 'broadcast_id', FILTER_SANITIZE_NUMBER_INT );
 		$form_feed_id  = filter_input( INPUT_POST, 'form_feed_id', FILTER_SANITIZE_NUMBER_INT );
 		$sid           = filter_input( INPUT_POST, 'sid', FILTER_SANITIZE_NUMBER_INT );
+		$tid           = filter_input( INPUT_POST, 'tid', FILTER_SANITIZE_NUMBER_INT );
 
 		$automation_id = empty( $automation_id ) ? filter_input( INPUT_GET, 'automation_id', FILTER_SANITIZE_NUMBER_INT ) : $automation_id;
 		$broadcast_id  = empty( $broadcast_id ) ? filter_input( INPUT_GET, 'broadcast_id', FILTER_SANITIZE_NUMBER_INT ) : $broadcast_id;
 		$form_feed_id  = empty( $form_feed_id ) ? filter_input( INPUT_GET, 'form_feed_id', FILTER_SANITIZE_NUMBER_INT ) : $form_feed_id;
+		$tid           = empty( $tid ) ? filter_input( INPUT_GET, 'tid', FILTER_SANITIZE_NUMBER_INT ) : $tid;
 		$sid           = empty( $sid ) ? filter_input( INPUT_GET, 'sid', FILTER_SANITIZE_NUMBER_INT ) : $sid;
 		$sid           = empty( $sid ) ? 0 : $sid;
+		$tid           = empty( $tid ) ? 0 : $tid;
 		$mode          = 0;
 		if ( false !== filter_var( $this->recipient, FILTER_VALIDATE_EMAIL ) ) {
 			$mode = 1;
@@ -954,6 +963,9 @@ class BWFAN_unsubscribe {
 			$oid = absint( $broadcast_id );
 		} elseif ( ! empty( $form_feed_id ) ) {
 			$oid = absint( $form_feed_id );
+		} elseif ( ! empty( $tid ) ) {
+			$oid = absint( $tid );
+			$c_type = BWFCRM_Contact::UNSUBSCRIBE_SOURCE_TRANSACTIONAL_MAIL;
 		}
 
 		$insert_data = array(

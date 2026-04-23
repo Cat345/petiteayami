@@ -12,8 +12,8 @@ use WFACP_Common;
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 	class Order_Summary extends Element {
 		public $category = 'funnelkit';
-		public $name = 'wfacp-order-summary';
-		public $icon = 'wfacp-icon-icon_minicart';
+		public $name     = 'wfacp-order-summary';
+		public $icon     = 'wfacp-icon-icon_minicart';
 
 		/**
 		 * Retrieves the label for the Mini Cart element.
@@ -183,7 +183,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'group'    => 'contentCoupon',
 				'label'    => esc_html__( 'Coupon Button Text' ),
 				'type'     => 'text',
-				'default'  => esc_html__( __( 'Apply', 'woocommerce' )  ),
+				'default'  => esc_html__( 'Apply', 'woocommerce' ),
 				'required' => array( 'enable_coupon', '=', true ),
 			);
 
@@ -204,7 +204,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			/* ------------------------------------ Products Start------------------------------------ */
 
-			$mini_cart_product_typo = [
+			$mini_cart_product_typo = array(
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_items',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td:not(.product-total)',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_items .product-total > span bdi',
@@ -223,10 +223,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name span:not(.subscription-details)',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container tr.cart_item td .product-name bdi',
-			];
-
-
-
+			);
 
 			$css = array();
 			foreach ( $mini_cart_product_typo as $selector ) {
@@ -236,14 +233,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				);
 			}
 			$this->controls['mini_cart_product_typo'] = array(
-				'group' => 'styleProducts',
-				'label' => esc_html__( 'Typography' ),
-				'type'  => 'typography',
-				'inline'  => true,
-				'popup'   => false,
-				'css'   => $css,
+				'group'  => 'styleProducts',
+				'label'  => esc_html__( 'Typography' ),
+				'type'   => 'typography',
+				'inline' => true,
+				'popup'  => false,
+				'css'    => $css,
 			);
-
 
 			$this->controls['mini_cart_product_image_border'] = array(
 				'group' => 'styleProducts',
@@ -264,11 +260,11 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			 */
 
 			$selector            = '.wfacp_mini_cart_start_h .wfacp_order_summary_container.wfacp_min_cart_widget';
-			$strike_through_typo = [
+			$strike_through_typo = array(
 				$selector . ' .product-total del',
 				$selector . ' .product-total del *',
 				$selector . ' .product-total del span.woocommerce-Price-currencySymbol',
-			];
+			);
 
 			$this->controls['mini_cart_strike_through_typo'] = array(
 				'group' => 'styleProducts',
@@ -285,9 +281,9 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			/**
 			 * Low Stock Message Style Setting
 			 */
-			$mini_cart_low_stock_message                        = [
+			$mini_cart_low_stock_message                        = array(
 				$selector . ' .wfacp_stocks',
-			];
+			);
 			$this->controls['mini_cart_low_stock_message_typo'] = array(
 				'group' => 'styleProducts',
 				'label' => esc_html__( 'Low Stock Typography' ),
@@ -302,15 +298,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 
 			/**
 			 * Saved Price Setting
-			 *
 			 */
-			$mini_saving_price_message = [
+			$mini_saving_price_message = array(
 				$selector . ' table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td',
 				$selector . ' table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td svg path',
 				$selector . ' table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td *',
 				$selector . ' table.shop_table tr:not(.order-total):not(.cart-discount).wfacp-saving-amount td span *',
-			];
-
+			);
 
 			$this->controls['mini_cart_enable_saving_price_message_typo'] = array(
 				'group' => 'styleProducts',
@@ -468,8 +462,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'type'  => 'separator',
 			);
 
-
-			$mini_cart_product_meta_typo = [
+			$mini_cart_product_meta_typo = array(
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount)',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) th',
@@ -477,9 +470,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td span',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td small',
 				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td bdi',
-				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a',
-			];
-
+				'.wfacp_mini_cart_start_h .wfacp_order_summary_container table.wfacp_mini_cart_reviews tr:not(.order-total):not(.cart-discount):not(.wfacp-saving-amount) td a:not(.sublium-view-recurring-details)',
+			);
 
 			$css = array();
 			foreach ( $mini_cart_product_meta_typo as $selector ) {
@@ -489,13 +481,12 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				);
 			}
 
-
 			$this->controls['mini_cart_product_meta_typo'] = array(
-				'group' => 'styleCartTotal',
-				'label' => esc_html__( 'Typography' ),
-				'type'  => 'typography',
-				'css'   => $css,
-				'inline'  => true,
+				'group'  => 'styleCartTotal',
+				'label'  => esc_html__( 'Typography' ),
+				'type'   => 'typography',
+				'css'    => $css,
+				'inline' => true,
 			);
 
 			/* ------------------------------------ End ------------------------------------ */
@@ -626,7 +617,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'label'   => esc_html__( 'Label Typography' ),
 				'type'    => 'typography',
 				'css'     => $css,
-				'exclude' => array( 'text-align','color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+				'exclude' => array( 'text-align', 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 			);
 
 			$css = array();
@@ -641,8 +632,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'group'   => 'styleCartTotal',
 				'label'   => esc_html__( 'Price Typography' ),
 				'type'    => 'typography',
-				'css'     =>$css,
-				'exclude' => array( 'text-align' ,'color'), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+				'css'     => $css,
+				'exclude' => array( 'text-align', 'color' ), //phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 			);
 
 			$this->set_current_group( 'styleCartTotal' );
@@ -658,7 +649,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'type'  => 'separator',
 			);
 
-			$wfacp_mini_cart_font_family = [
+			$wfacp_mini_cart_font_family = array(
 				'.wfacp_mini_cart_start_h *',
 				'.wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount',
 				'.wfacp_mini_cart_start_h tr.order-total td span.woocommerce-Price-amount.amount bdi',
@@ -697,7 +688,7 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'.wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control-label',
 				'.wfacp_mini_cart_start_h .checkout_coupon.woocommerce-form-coupon .wfacp-form-control',
 				'.wfacp_mini_cart_start_h .wfacp-coupon-btn',
-			];
+			);
 
 			$this->set_current_group( 'styleSettings' );
 			$this->add_font_family( 'wfacp_mini_cart_font_family', $wfacp_mini_cart_font_family );
@@ -715,14 +706,17 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 				'css'   => array(
 					array(
 						'property' => 'border-color',
-						'selector' => implode( ',', array(
-							'.wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item',
-							'.wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal',
-							'.wfacp_mini_cart_start_h table.shop_table tr.order-total',
-							'.wfacp_mini_cart_start_h table.shop_table tr.wfacp_ps_error_state td',
-							'.wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page',
-							'.wfacp_mini_cart_start_h .wfob_bump_wrapper.wfacp_below_mini_cart_items:empty',
-						) ),
+						'selector' => implode(
+							',',
+							array(
+								'.wfacp_mini_cart_start_h .wfacp_mini_cart_elementor .cart_item',
+								'.wfacp_mini_cart_start_h table.shop_table tr.cart-subtotal',
+								'.wfacp_mini_cart_start_h table.shop_table tr.order-total',
+								'.wfacp_mini_cart_start_h table.shop_table tr.wfacp_ps_error_state td',
+								'.wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page',
+								'.wfacp_mini_cart_start_h .wfob_bump_wrapper.wfacp_below_mini_cart_items:empty',
+							)
+						),
 					),
 				),
 			);
@@ -757,10 +751,10 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\Checkout\Order_Summary' ) ) {
 			WFACP_Common::set_session( $key, $widgets );
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div style="height: 1px"></div>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div style="height: 1px"></div>
 				<?php $template->get_mini_cart_widget( $this->id ); ?>
-            </div>
+			</div>
 			<?php
 		}
 	}

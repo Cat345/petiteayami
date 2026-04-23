@@ -345,27 +345,27 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 				return "OR " . "( $include_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
 			}
 
+			$is_broadcast = isset( $additional_info['is_broadcast'] ) && ! empty( $additional_info['is_broadcast'] );
+
 			/** Has to be valid filter */
-			if ( ! is_array( $filter ) || ! isset( $filter['rule'] ) ) {
+
+			if ( ( ! is_array( $filter ) || ( ! isset( $filter['rule'] ) && empty( $is_broadcast ) ) ) ) {
 				return '';
 			}
 
 			$filter_value = isset( $filter['value'] ) ? absint( $filter['value'] ) : '';
 			/** when "status is not unsubscribed" */
-			if ( 'is_not' === $filter['rule'] && 3 === $filter_value ) {
+			if ( isset( $filter['rule'] ) && 'is_not' === $filter['rule'] && 3 === $filter_value ) {
 				return "AND " . "( $exclude_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
 			}
 
 			/** Include Un-subscribers when "status is unsubscribed" */
-			if ( 'is' === $filter['rule'] && 3 === $filter_value ) {
+			if ( isset( $filter['rule'] ) && 'is' === $filter['rule'] && 3 === $filter_value ) {
 				return "AND " . "( $include_unsub_query  $email_query OR $include_unsub_query $contact_no_query )";
 			}
 
-			/**
-			 * Exclude Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is'
-			 * Status values: 0 = unverified, 1 = subscribed, 2 = bounced, 3 = unsubscribed, 4 = soft bounced
-			 */
-			if ( 'is' === $filter['rule'] && in_array( $filter_value, array( 0, 1, 2, 4 ), true ) ) {
+			/** Exclude Un-subscribers if any status other than 3 (unsubscribed) and rule = 'is' */
+			if ( ( $is_broadcast || ( 'is' === $filter['rule'] && in_array( $filter_value, array( 0, 1, 2 ) ) ) ) ) {
 				return "AND " . "( $exclude_unsub_query  $email_query AND $exclude_unsub_query $contact_no_query )";
 			}
 
@@ -662,9 +662,17 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			}
 
 			if ( is_array( $filter['value'] ) ) {
-				/** For 'between' rule */
-				$filter_before_date = bwfcrm_maybe_get_datetime( $filter['value'][0], $format );
-				$filter_after_date  = bwfcrm_maybe_get_datetime( $filter['value'][1], $format );
+				// Check for 'to' and 'from' format
+				if ( isset( $filter['value']['to'] ) && isset( $filter['value']['from'] ) ) {
+					$from_date = $filter['value']['from'];
+					$to_date   = $filter['value']['to'];
+				} else {
+					$from_date = $filter['value'][0];
+					$to_date   = $filter['value'][1];
+				}
+
+				$filter_before_date = bwfcrm_maybe_get_datetime( $from_date, $format );
+				$filter_after_date  = bwfcrm_maybe_get_datetime( $to_date, $format );
 
 				$filter_before_date = gmdate( $format, $filter_before_date->getTimestamp() );
 				$filter_after_date  = gmdate( $format, $filter_after_date->getTimestamp() );
@@ -1392,6 +1400,65 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		}
 
 		/**
+		 * Get contacts from new filters
+		 *
+		 * @param $search
+		 * @param $limit
+		 * @param $offset
+		 * @param $filters
+		 * @param $additional_info
+		 * @param $return_type
+		 *
+		 * @return array
+		 */
+		public static function get_contacts_from_filters( $search = '', $limit = 25, $offset = 0, $filters = array(), $additional_info = array(), $return_type = 'ARRAY_A' ) {
+			$order_by    = is_array( $additional_info ) && isset( $additional_info['order_by'] ) && ! empty( $additional_info['order_by'] ) ? $additional_info['order_by'] : 'last_modified';
+			$order       = is_array( $additional_info ) && isset( $additional_info['order'] ) && ! empty( $additional_info['order'] ) ? $additional_info['order'] : 'DESC';
+			$preferences = isset( $additional_info['preferences'] ) && ! empty( $additional_info['preferences'] ) ? true : false;
+
+			/** Order, Order By, Limit, Offset */
+			$order_column_alias = in_array( $order_by, BWFCRM_Filters::$wc_filters ) ? 'wc' : 'c';
+			$order_by_query     = " ORDER BY {$order_column_alias}.{$order_by} {$order}";
+			$pagination_query   = empty( $limit ) ? '' : " LIMIT $offset, $limit";
+			$filter_ins  = BWFCRM_Load_Filters::get_instance();
+			$query       = $filter_ins->get_prepared_query( $filters, $preferences, $additional_info, trim( $search ) );
+
+			$base        = $query['base'] . $order_by_query . $pagination_query;
+			$count_query = $query['total'];
+
+			global $wpdb;
+			if ( isset( $additional_info['only_count'] ) && true === $additional_info['only_count'] ) {
+				$total_count = $wpdb->get_row( $count_query, ARRAY_A );
+				$data = [
+					'contacts' => array(),
+					'total'    => $total_count['contact_count'] ?? 0,
+				];
+				if ( !empty($additional_info['customer_count']) ) {
+					$data['customer_count'] = $total_count['customer_count'] ?? 0;
+					$data['total_revenue']  = $total_count['total_revenue'] ?? 0;
+				}
+				return $data;
+			}
+
+			self::set_log( $base );
+			$time = microtime( true );
+
+			$contacts = $wpdb->get_results( $base, $return_type );
+
+			$time = microtime( true ) - $time;
+			self::set_log( 'Time to execute the query: ' . $time . ' secs' );
+			self::log();
+			if ( true === $preferences ) {
+				$contacts = self::prepared_data( $contacts, $query['needs_to_added'] );
+			}
+
+			return array(
+				'contacts' => $contacts,
+				'total'    => $wpdb->get_var( $count_query )
+			);
+		}
+
+		/**
 		 * Preparing the data for get contacts with column preference
 		 *
 		 * @param $contacts
@@ -1457,9 +1524,12 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					$contact['status'] = ! empty( $is_unsubscribed ) ? 3 : $contact['status'];
 				}
 
-				/** Get Purchased Products titles */
-				if ( isset( $contact['purchased_products'] ) ) {
-					$purchased_products            = ! empty( $contact['purchased_products'] ) ? json_decode( $contact['purchased_products'], true ) : [];
+				/** Get Purchased / subscribedProducts titles */
+				if ( isset( $contact['purchased_products'] ) || isset( $contact['active_subs_product'] ) ) {
+					$purchased_products   = ! empty( $contact['purchased_products'] ) ? json_decode( $contact['purchased_products'], true ) : [];
+					$active_subs_products = ! empty( $contact['active_subs_product'] ) ? json_decode( $contact['active_subs_product'], true ) : [];
+
+					// Process purchased products
 					$contact['purchased_products'] = bwfan_is_woocommerce_active() ? array_filter( array_map( function ( $product_id ) {
 						$product = wc_get_product( $product_id );
 						if ( ! $product instanceof WC_Product ) {
@@ -1472,8 +1542,25 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 							'name' => wp_strip_all_tags( $product->get_name( 'edit' ) ),
 							'link' => get_edit_post_link( $pid ),
 						) : false;
-					}, array_unique( $purchased_products ) ) ) : [];
+					}, $purchased_products ) ) : [];
+
+					// Process active subscription products
+					$contact['active_subs_product'] = bwfan_is_woocommerce_subscriptions_active() ? array_filter( array_map( function ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						if ( ! $product instanceof WC_Product ) {
+							return false;
+						}
+						$pid = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+
+						return ! $product->is_type( 'variable' ) ? array(
+							'id'   => $pid,
+							'name' => wp_strip_all_tags( $product->get_name( 'edit' ) ),
+							'link' => get_edit_post_link( $pid ),
+						) : false;
+					}, $active_subs_products ) ) : [];
+
 					sort( $contact['purchased_products'] );
+					sort( $contact['active_subs_product'] );
 				}
 
 				/** Get Purchased Products Cats */
@@ -1517,6 +1604,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 						];
 					}, $contact['used_coupons'] );
 				}
+
 				/** Get list and tags */
 				if ( isset( $contact['tags'] ) ) {
 					$tags            = json_decode( $contact['tags'], true );
@@ -1560,6 +1648,9 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 								break;
 							case 'has_used_any_coupons' === $column :
 								$value = ! empty( $contact['used_coupons'] );
+								break;
+							case 'has_active_subscription' === $column :
+								$value = ! empty( $contact['active_subs_count'] ) && $contact['active_subs_count'] > 0;
 								break;
 						}
 
@@ -1609,8 +1700,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$customer_table       = $wpdb->prefix . 'bwf_wc_customers';
 			$contact_fields_table = $wpdb->prefix . 'bwf_contact_fields';
 
-			$columns = self::get_columns_for_query();
-
+			$columns         = self::get_columns_for_query();
 			$contact_details = isset( $columns['contact_details'] ) && is_array( $columns['contact_details'] ) ? $columns['contact_details'] : [];
 			$segments        = isset( $columns['segments'] ) && is_array( $columns['segments'] ) ? $columns['segments'] : [];
 			$custom_fields   = isset( $columns['contact_custom_fields'] ) && is_array( $columns['contact_custom_fields'] ) ? $columns['contact_custom_fields'] : [];
@@ -1619,14 +1709,11 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$geography       = isset( $columns['geography'] ) && is_array( $columns['geography'] ) ? $columns['geography'] : [];
 			$engagement      = isset( $columns['engagement'] ) && is_array( $columns['engagement'] ) ? $columns['engagement'] : [];
 
-			$total_columns = array_merge( $contact_details, $custom_fields );
-			$total_columns = array_merge( $total_columns, $segments );
-			$total_columns = array_merge( $total_columns, $wc_columns );
-			$total_columns = array_merge( $total_columns, $geography );
-			$total_columns = array_merge( $total_columns, $engagement );
+			$total_columns = array_merge( $contact_details, $custom_fields, $segments, $wc_columns, $geography, $engagement );
 
 			$default_columns = "c.id,c.f_name,c.l_name,c.email,c.contact_no,c.creation_date";
 			$join_query      = '';
+			
 			/** If Join is already in custom filter query */
 			if ( false === strpos( $join_cf_query, 'bwf_contact_fields' ) ) {
 				$join_query = " LEFT JOIN $contact_fields_table as `cm` ON c.id = cm.cid ";
@@ -1654,7 +1741,7 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 		 * Get preferences columns for query
 		 *
 		 */
-		public static function get_columns_for_query() {
+		public static function get_columns_for_query( $new_filter = false ) {
 			$saved_format = BWFAN_Common::get_contact_columns();
 
 			if ( empty( $saved_format ) ) {
@@ -1664,13 +1751,13 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 			$columns = [];
 
 			$modified_columns    = [
-				'has_purchased'        => 'purchased_products',
-				'has_used_any_coupons' => 'used_coupons',
+				'has_purchased'           => 'purchased_products',
+				'has_used_any_coupons'    => 'used_coupons',
+				'has_active_subscription' => 'active_subs_count',
 			];
 			$system_fields       = [ 'address-1', 'address-2', 'city', 'postcode', 'company', 'gender', 'dob', 'link-trigger-click', 'last-login', 'last-open', 'last-click', 'last-sent' ];
 			$need_to_add_columns = [];
 			$added_columns       = [];
-
 			foreach ( $saved_format as $fields ) {
 				foreach ( $fields as $slug => $field ) {
 					if ( 'label' === $slug || 'groupKey' === $slug || 'groupLabel' === $slug ) {
@@ -1710,7 +1797,6 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 							} else {
 								$slug = "c." . $slug;
 							}
-
 							break;
 						case 'engagement' === $fields['groupKey'] :
 							if ( 'links' === $slug ) {
@@ -1733,11 +1819,16 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 							$slug = ! in_array( $slug, $added_columns, true ) ? "wc." . $slug : '';
 							break;
 						case 'contact_custom_fields' === $fields['groupKey'] :
+						case 'custom_fields' === $fields['groupKey'] :
 							$custom_field_slug = str_replace( 'bwf_cf', '', $slug );
+
 							/** if column is not exists in bwf_contact_fields table */
 							if ( empty( BWF_Model_Contact_Fields::column_already_exists( $custom_field_slug ) ) ) {
-								$slug = '';
-								break;
+								$custom_field_slug = BWFCRM_Fields::get_field_id_by_slug( $custom_field_slug );
+								if ( empty( $custom_field_slug ) ) {
+									$slug = '';
+									break;
+								}
 							}
 
 							$slug = "cm.f" . $custom_field_slug . " AS `$slug`";
@@ -1747,8 +1838,18 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					if ( empty( $slug ) ) {
 						continue;
 					}
+
+					/** If method calls from new filter then change contact field table alias */
+					if ( true === $new_filter ) {
+						$slug = str_replace( 'cm', 'cf', $slug );
+					}
+
 					$added_columns[]                  = $slug;
-					$columns[ $fields['groupKey'] ][] = apply_filters( 'bwfcrm_contact_columns_group', $slug, $fields );
+					$gkey = $fields['groupKey'];
+					if ( 'custom_fields' === $gkey ) {
+						$gkey = 'contact_custom_fields';
+					}
+					$columns[ $gkey ][] = apply_filters( 'bwfcrm_contact_columns_group', $slug, $fields );
 				}
 			}
 
@@ -1890,6 +1991,52 @@ if ( ! class_exists( 'BWFCRM_Model_Contact' ) && BWFAN_Common::is_pro_3_0() ) {
 					'time'  => $time
 				], 'slow-contact-query', true );
 			}
+		}
+
+		/**
+		 * Get preference columns and joins for new filter query
+		 *
+		 * @since 3.7.0
+		 *
+		 */
+		public static function get_preference_columns_and_joins( $join_query, $additional_info ) {
+			global $wpdb;
+			$customer_table       = $wpdb->prefix . 'bwf_wc_customers';
+			$contact_fields_table = $wpdb->prefix . 'bwf_contact_fields';
+
+			$columns         = self::get_columns_for_query( true );
+			$contact_details = isset( $columns['contact_details'] ) && is_array( $columns['contact_details'] ) ? $columns['contact_details'] : [];
+			$segments        = isset( $columns['segments'] ) && is_array( $columns['segments'] ) ? $columns['segments'] : [];
+			$custom_fields   = isset( $columns['contact_custom_fields'] ) && is_array( $columns['contact_custom_fields'] ) ? $columns['contact_custom_fields'] : [];
+			$wc_columns      = isset( $columns['woocommerce'] ) && is_array( $columns['woocommerce'] ) ? $columns['woocommerce'] : [];
+			$geography       = isset( $columns['geography'] ) && is_array( $columns['geography'] ) ? $columns['geography'] : [];
+			$engagement      = isset( $columns['engagement'] ) && is_array( $columns['engagement'] ) ? $columns['engagement'] : [];
+
+			$total_columns = array_merge( $contact_details, $custom_fields, $segments, $wc_columns, $geography, $engagement );
+
+			$default_columns = "c.id,c.wpid,c.last_modified,c.f_name,c.l_name,c.email,c.contact_no,c.creation_date";
+			/** If Join is already in custom filter query */
+			$field_columns = implode( ',', array_filter( $total_columns ) );
+			if ( false === strpos( $join_query, 'bwf_contact_fields' ) && false !== strpos( $field_columns, 'cf.' ) ) {
+				$join_query .= " LEFT JOIN $contact_fields_table as `cf` ON c.id = cf.cid ";
+			}
+
+			if ( false === strpos( $join_query, 'bwf_wc_customers' ) ) {
+				$join_query .= ! empty( $wc_columns ) ? " LEFT JOIN $customer_table as wc ON c.id = wc.cid" : '';
+			}
+
+			$query_columns = apply_filters( 'bwfcrm_contact_columns_preferences', array( 'total_columns' => $total_columns, 'join_query' => $join_query ), $columns, $join_query );
+			$join_query    = isset( $query_columns['join_query'] ) ? $query_columns['join_query'] : $join_query;
+			$total_columns = isset( $query_columns['total_columns'] ) ? $query_columns['total_columns'] : $total_columns;
+
+			$total_columns = isset( $total_columns ) ? implode( ',', array_filter( $total_columns ) ) : '';
+			$total_columns = ! empty( $total_columns ) ? $default_columns . ',' . $total_columns : $default_columns;
+
+			return [
+				'needs_to_added' => $columns['need_to_add'],
+				'columns'        => $total_columns,
+				'join_query'     => $join_query
+			];
 		}
 	}
 }

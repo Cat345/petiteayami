@@ -193,7 +193,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'filter == \'dropnav\'',
+            'enable' => "filter == 'dropnav'",
         ],
         'filter_dropnav_fallback' => [
             'label' => 'Fallback',
@@ -204,7 +204,7 @@ return [
                 'Dropdown' => 'dropdown',
                 'Offcanvas' => 'offcanvas',
             ],
-            'enable' => 'filter == \'dropnav\' && filter_dropnav_breakpoint',
+            'enable' => "filter == 'dropnav' && filter_dropnav_breakpoint",
         ],
         'filter_dropdown_size' => [
             'label' => 'Dropdown',
@@ -212,17 +212,17 @@ return [
                 'Set a larger dropdown padding, show dropdowns in a full-width section called dropbar and display an icon to indicate dropdowns.',
             'type' => 'checkbox',
             'text' => 'Large padding',
-            'enable' => 'filter != \'offcanvas\'',
+            'enable' => "filter != 'offcanvas'",
         ],
         'filter_dropdown_dropbar' => [
             'type' => 'checkbox',
             'text' => 'Enable dropbar',
-            'enable' => 'filter != \'offcanvas\'',
+            'enable' => "filter != 'offcanvas'",
         ],
         'filter_dropdown_parent_icon' => [
             'type' => 'checkbox',
             'text' => 'Show parent icon',
-            'enable' => 'filter != \'offcanvas\'',
+            'enable' => "filter != 'offcanvas'",
         ],
         'filter_active_all' => [
             'label' => 'Active Filters',
@@ -238,7 +238,7 @@ return [
         'filter_active_display' => [
             'type' => 'checkbox',
             'text' => 'Display together with filters',
-            'enable' => 'filter != \'dropnav\'',
+            'enable' => "filter != 'dropnav'",
         ],
         'filter_active_count' => [
             'label' => 'Active Filters Count',
@@ -266,7 +266,7 @@ return [
                 'Tab' => 'tab',
                 'Button' => 'button',
             ],
-            'enable' => 'filter == \'dropnav\'',
+            'enable' => "filter == 'dropnav'",
         ],
         'filter_dropnav_dropdown_align' => [
             'label' => 'Dropdown',
@@ -278,17 +278,17 @@ return [
                 'Right' => 'right',
                 'Center' => 'center',
             ],
-            'enable' => 'filter == \'dropnav\'',
+            'enable' => "filter == 'dropnav'",
         ],
         'filter_dropnav_dropdown_click' => [
             'type' => 'checkbox',
             'text' => 'Enable click mode',
-            'enable' => 'filter == \'dropnav\'',
+            'enable' => "filter == 'dropnav'",
         ],
         'filter_dropnav_dropdown_target' => [
             'type' => 'checkbox',
             'text' => 'Align to filter bar',
-            'enable' => 'filter == \'dropnav\'',
+            'enable' => "filter == 'dropnav'",
         ],
         'filter_dropdown_grid' => [
             'label' => 'Grid',
@@ -305,7 +305,7 @@ return [
                 '6 Columns' => '6',
             ],
             'enable' =>
-                'filter == \'dropdown\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'dropdown\')',
+                "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')",
         ],
         'filter_dropdown_grid_column_gap' => [
             'label' => 'Column Gap',
@@ -317,7 +317,7 @@ return [
                 'Default' => '',
             ],
             'enable' =>
-                'filter == \'dropdown\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'dropdown\')',
+                "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')",
         ],
         'filter_dropdown_grid_row_gap' => [
             'label' => 'Row Gap',
@@ -329,7 +329,7 @@ return [
                 'Default' => '',
             ],
             'enable' =>
-                'filter == \'dropdown\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'dropdown\')',
+                "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')",
         ],
         'filter_dropdown_grid_breakpoint' => [
             'label' => 'Grid Breakpoint',
@@ -343,7 +343,7 @@ return [
                 'X-Large (Large Screens)' => 'xl',
             ],
             'enable' =>
-                'filter == \'dropdown\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'dropdown\') && filter_dropdown_grid != 1',
+                "filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown') && filter_dropdown_grid != 1",
         ],
         'filter_dropdown_dropbar_content_width' => [
             'label' => 'Dropbar Content Width',
@@ -357,20 +357,20 @@ return [
                 'Expand' => '',
             ],
             'enable' =>
-                '(filter == \'dropdown\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'dropdown\')) && filter_dropdown_dropbar',
+                "(filter == 'dropdown' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'dropdown')) && filter_dropdown_dropbar",
         ],
         'filter_offcanvas_flip' => [
             'label' => 'Offcanvas',
             'type' => 'checkbox',
             'text' => 'Display on the right',
             'enable' =>
-                'filter == \'offcanvas\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'offcanvas\')',
+                "filter == 'offcanvas' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'offcanvas')",
         ],
         'filter_offcanvas_overlay' => [
             'type' => 'checkbox',
             'text' => 'Overlay the site',
             'enable' =>
-                'filter == \'offcanvas\' || (filter == \'dropnav\' && filter_dropnav_breakpoint && filter_dropnav_fallback == \'offcanvas\')',
+                "filter == 'offcanvas' || (filter == 'dropnav' && filter_dropnav_breakpoint && filter_dropnav_fallback == 'offcanvas')",
         ],
         'filter_toggle_style' => [
             'label' => 'Style',
@@ -387,14 +387,14 @@ return [
                 'Link Text' => 'link-text',
             ],
             'enable' =>
-                'filter != \'dropnav\' || (filter == \'dropnav\' && filter_dropnav_breakpoint)',
+                "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)",
         ],
         'filter_toggle_icon' => [
             'label' => 'Icon',
             'description' => 'Pick an optional icon from the icon library.',
             'type' => 'icon',
             'enable' =>
-                'filter != \'dropnav\' || (filter == \'dropnav\' && filter_dropnav_breakpoint)',
+                "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)",
         ],
         'filter_toggle_icon_align' => [
             'label' => 'Icon Alignment',
@@ -405,7 +405,7 @@ return [
                 'Right' => 'right',
             ],
             'enable' =>
-                'filter_toggle_icon && (filter != \'dropnav\' || (filter == \'dropnav\' && filter_dropnav_breakpoint))',
+                "filter_toggle_icon && (filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint))",
         ],
         'filter_title_style' => [
             'label' => 'Style',
@@ -420,7 +420,7 @@ return [
                 'Heading H6' => 'h6',
             ],
             'enable' =>
-                'filter != \'dropnav\' || (filter == \'dropnav\' && filter_dropnav_breakpoint)',
+                "filter != 'dropnav' || (filter == 'dropnav' && filter_dropnav_breakpoint)",
         ],
         'product_ordering_style' => [
             'label' => 'Style',

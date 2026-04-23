@@ -4,11 +4,14 @@ $order_show_images     = isset( $this->data['order_details_img'] ) ? $this->data
 $order_show_images     = wffn_string_to_bool( $order_show_images ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $order_details_heading = isset( $this->data['order_details_heading'] ) ? $this->data['order_details_heading'] : __( 'Order Details', 'woocommerce' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
-$section_order = apply_filters( 'wffn_thank_you_order_details_section_order', array(
-	'order_details',
-	'downloads',
-	'subscriptions',
-) );
+$section_order = apply_filters(
+	'wffn_thank_you_order_details_section_order',
+	array(
+		'order_details',
+		'downloads',
+		'subscriptions',
+	)
+);
 
 foreach ( $section_order as $item_section ) {
 
@@ -41,7 +44,7 @@ foreach ( $section_order as $item_section ) {
 				<?php
 				$order_ids   = array();
 				$order_ids[] = $this->order->get_id(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-				$get_meta = BWF_WC_Compatibility::get_order_meta($this->order,'_wfty_sibling_order');
+				$get_meta    = BWF_WC_Compatibility::get_order_meta( $this->order, '_wfty_sibling_order' );
 				if ( ( is_array( $get_meta ) && ! empty( $get_meta ) ) ) {
 					foreach ( $get_meta as $meta_id ) {
 						$order_ids[] = $meta_id;
@@ -55,7 +58,7 @@ foreach ( $section_order as $item_section ) {
 						$show_purchase_note = $order_obj->has_status( apply_filters( 'woocommerce_purchase_note_order_statuses', array( 'completed', 'processing' ) ) );
 						$show_images_class  = ( true === $order_show_images ) ? 'wfty_show_images' : 'wfty_hide_images';
 
-						do_action('woocommerce_order_details_before_order_table', $order_obj);
+						do_action( 'woocommerce_order_details_before_order_table', $order_obj );
 
 						?>
 						<div class="wfty_pro_list_cont <?php echo esc_attr( $show_images_class ); ?>">
@@ -87,8 +90,8 @@ foreach ( $section_order as $item_section ) {
 											<?php
 											$product_permalink = apply_filters( 'woocommerce_order_item_permalink', $is_visible ? $product->get_permalink( $item ) : '', $item, $order_obj );
 											$quantity          = '<span class="wfty_quantity_value_box"><span class="multiply">x</span>';
-											$quantity          .= ( $order_show_images ) ? $item->get_quantity() : '<span class="qty">' . esc_html( $item->get_quantity() ) . '</span>';
-											$quantity          .= '</span>';
+											$quantity         .= ( $order_show_images ) ? $item->get_quantity() : '<span class="qty">' . esc_html( $item->get_quantity() ) . '</span>';
+											$quantity         .= '</span>';
 											echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $product_permalink ? sprintf( '<a href="%s"><span class="wfty_t">%s</span></a>', esc_url( $product_permalink ), $item->get_name() ) : $item->get_name(), $item, $is_visible ) );
 											echo wp_kses_post( $quantity );
 											echo '<div class="wfty_info">';
@@ -112,7 +115,7 @@ foreach ( $section_order as $item_section ) {
 									<div class="wfty_leftDiv wfty_clearfix">
 										<div class="wfty_p_name"><?php echo wp_kses_post( wpautop( do_shortcode( wp_kses_post( $purchase_note ) ) ) ); ?></div>
 									</div>
-								<?php
+									<?php
 								endif;
 
 							}
@@ -133,9 +136,14 @@ foreach ( $section_order as $item_section ) {
 									$item_total['order_total'] = $total;
 								}
 								foreach ( $item_total as $total ) {
+									$total_label = isset( $total['label'] ) ? (string) $total['label'] : '';
+									$total_label = rtrim( $total_label );
+									if ( ':' === substr( $total_label, -1 ) ) {
+										$total_label = substr( $total_label, 0, -1 );
+									}
 									?>
 									<tr>
-										<th scope="row"><?php echo esc_html( str_replace( ':', '', $total['label'] ) ); ?></th>
+										<th scope="row"><?php echo wp_kses_post( $total_label ); ?></th>
 										<td><?php echo wp_kses_post( $total['value'] ); ?></td>
 									</tr>
 									<?php
@@ -144,7 +152,8 @@ foreach ( $section_order as $item_section ) {
 								</tfoot>
 							</table>
 						</div>
-					<?php }
+						<?php
+					}
 				}
 				$payment_method = $this->order->get_payment_method(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 				do_action( "woocommerce_thankyou_{$payment_method}", $this->order->get_id() ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
@@ -174,35 +183,44 @@ foreach ( $section_order as $item_section ) {
 
 				echo '<div class="wfty_box wfty_order_download" >';
 				echo '<div class="wfty_title">' . esc_html( $order_download_heading ) . '</div>';
-				$order_downloads_show_file_downloads  = $this->data['order_downloads_show_file_downloads'];
-				$order_downloads_show_file_expiry  = $this->data['order_downloads_show_file_expiry'];
-				add_filter( 'woocommerce_account_downloads_columns', function ( $array ) use ( $order_downloads_show_file_downloads, $order_downloads_show_file_expiry ) {
-					if ( isset( $array['download-remaining'] ) && 'false' === $order_downloads_show_file_downloads ) {
-						unset( $array['download-remaining'] );
-					}
-					if ( isset( $array['download-expires'] ) && 'false' === $order_downloads_show_file_expiry ) {
-						unset( $array['download-expires'] );
-					}
+				$order_downloads_show_file_downloads = $this->data['order_downloads_show_file_downloads'];
+				$order_downloads_show_file_expiry    = $this->data['order_downloads_show_file_expiry'];
+				add_filter(
+					'woocommerce_account_downloads_columns',
+					function ( $array ) use ( $order_downloads_show_file_downloads, $order_downloads_show_file_expiry ) {
+						if ( isset( $array['download-remaining'] ) && 'false' === $order_downloads_show_file_downloads ) {
+							unset( $array['download-remaining'] );
+						}
+						if ( isset( $array['download-expires'] ) && 'false' === $order_downloads_show_file_expiry ) {
+							unset( $array['download-expires'] );
+						}
 
-					return $array;
-				}, 999 );
+						return $array;
+					},
+					999
+				);
 
-				add_filter( 'woocommerce_account_downloads_columns', function ( $array ) {
-					if ( isset( $array['download-product'] ) ) {
-						$array['download-product'] = __( 'File', 'woocommerce' );
-					}
-					if ( isset( $array['download-file'] ) ) {
-						$array['download-file'] = '';
-					}
+				add_filter(
+					'woocommerce_account_downloads_columns',
+					function ( $array ) {
+						if ( isset( $array['download-product'] ) ) {
+							$array['download-product'] = __( 'File', 'woocommerce' );
+						}
+						if ( isset( $array['download-file'] ) ) {
+							$array['download-file'] = '';
+						}
 
-					return $array;
-				}, 999 );
+						return $array;
+					},
+					999
+				);
 
 				?>
 				<table class="shop_table shop_table_responsive wfty_order_downloads">
 					<thead>
 					<tr>
-						<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
+						<?php
+						foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) :
 							?>
 							<th class="<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
 						<?php endforeach; ?>
@@ -212,7 +230,7 @@ foreach ( $section_order as $item_section ) {
 					<?php
 					$order_ids   = array();
 					$order_ids[] = $this->order->get_id(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
-					$get_meta = BWF_WC_Compatibility::get_order_meta($this->order,'_wfty_sibling_order'); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+					$get_meta    = BWF_WC_Compatibility::get_order_meta( $this->order, '_wfty_sibling_order' ); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 					if ( ( is_array( $get_meta ) && ! empty( $get_meta ) ) ) {
 						foreach ( $get_meta as $meta_id ) {
@@ -223,15 +241,19 @@ foreach ( $section_order as $item_section ) {
 					foreach ( $order_ids as $orderId ) {
 						$order_obj = apply_filters( 'wfty_maybe_update_order', wc_get_order( $orderId ) );
 						$downloads = $order_obj->get_downloadable_items();
-						$downloads = array_map( function ( $d_item ) use ( $order_downloads_btn_text ) {
-							$d_item['btn_text'] = $order_downloads_btn_text;
+						$downloads = array_map(
+							function ( $d_item ) use ( $order_downloads_btn_text ) {
+								$d_item['btn_text'] = $order_downloads_btn_text;
 
-							return $d_item;
-						}, $downloads );
+								return $d_item;
+							},
+							$downloads
+						);
 
 						$downloads = apply_filters( 'wfty_maybe_update_download_data', $downloads, $order_obj );
 
-						foreach ( $downloads as $download ) : ?>
+						foreach ( $downloads as $download ) :
+							?>
 							<tr>
 								<?php foreach ( wc_get_account_downloads_columns() as $column_id => $column_name ) : ?>
 									<td class="<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
@@ -276,10 +298,10 @@ foreach ( $section_order as $item_section ) {
 
 }
 
-$args = isset( $this->data ) ? $this->data : []; //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+$args                           = isset( $this->data ) ? $this->data : array(); //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 $default_printing_hook_thankyou = apply_filters( 'wfacp_default_custom_field_print_hook_for_thankyou', 'woocommerce_order_details_after_order_table' );
 if ( '' !== $default_printing_hook_thankyou ) {
-			remove_action( $default_printing_hook_thankyou, [ 'WFACP_Common', 'print_custom_field_at_thankyou' ], 999 );
+			remove_action( $default_printing_hook_thankyou, array( 'WFACP_Common', 'print_custom_field_at_thankyou' ), 999 );
 }
 
 do_action( 'woocommerce_order_details_after_order_table', $order_obj, $args );

@@ -1,0 +1,301 @@
+{
+  "_comment": "Default render attributes for Optin Form module",
+  "module": {},
+  "wfop_optin_form_submit_button_text": {
+    "advanced": {
+      "text": {
+        "text": {
+          "desktop": {
+            "value": {
+              "align": "left",
+              "orientation": "left"
+            }
+          }
+        }
+      }
+    }
+  },
+  "button_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Send Me My Free Guide"
+      }
+    }
+  },
+  "subtitle": {
+    "innerContent": {
+      "desktop": {
+        "value": ""
+      }
+    }
+  },
+  "button_submitting_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Submitting..."
+      }
+    }
+  },
+  "show_labels": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "input_size": "12px",
+  "wfop_optin_form_label_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "14px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_field_typography": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "color": "#3f3f3f"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_text_typo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "textAlign": "center",
+              "color": "#ffffff",
+              "size": "16px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_subheading_text_typo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "15px",
+              "font": "|400|||||||"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_mark_required_color": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "color": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_field_background_color": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": "#ffffff"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_field_border": {
+    "decoration": {
+      "border": {
+        "desktop": {
+          "value": {
+            "radius": {
+              "topLeft": "0px",
+              "topRight": "0px",
+              "bottomLeft": "0px",
+              "bottomRight": "0px",
+              "sync": "on"
+            },
+            "styles": {
+              "all": {
+                "width": "2px",
+                "color": "#d8d8d8"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_column_gap_padding": {
+    "decoration": {
+      "spacing": {
+        "padding": {
+          "desktop": {
+            "value": {
+              "top": "0px",
+              "right": "5px",
+              "bottom": "0px",
+              "left": "5px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_row_gap_margin": {
+    "decoration": {
+      "spacing": {
+        "margin": {
+          "desktop": {
+            "value": {
+              "top": "",
+              "right": "",
+              "bottom": "10px",
+              "left": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_width": {
+    "decoration": {
+      "sizing": {
+        "maxWidth": {
+          "desktop": {
+            "value": {
+              "value": "100",
+              "unit": "%"
+            }
+          }
+        },
+        "desktop": {
+          "value": {
+            "maxWidth": "100%"
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_bg_color": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": "#E69500"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_hover_color": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "color": "#ffffff"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_hover_bg_color": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": "#E69500"
+            }
+          }
+        }
+      }
+    }
+  },
+  "bwf_button_border": {
+    "decoration": {
+      "border": {
+        "desktop": {
+          "value": {
+            "radius": {
+              "topLeft": "0px",
+              "topRight": "0px",
+              "bottomLeft": "0px",
+              "bottomRight": "0px",
+              "sync": "on"
+            },
+            "styles": {
+              "all": {
+                "width": "2px",
+                "color": "#e69500"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_button_text_padding": {
+    "decoration": {
+      "spacing": {
+        "desktop": {
+          "value": {
+            "margin": {
+              "top": "15px",
+              "syncVertical": "off",
+              "syncHorizontal": "off",
+              "bottom": "15px",
+              "left": "0px",
+              "right": "0px"
+            },
+            "padding": {
+              "top": "15px",
+              "syncVertical": "off",
+              "syncHorizontal": "off",
+              "bottom": "15px",
+              "left": "0px",
+              "right": "0px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "button_text_alignment_box_shadow": {
+    "decoration": {
+      "boxShadow": {
+        "boxShadow": {
+          "desktop": {
+            "value": {
+              "enable": "off"
+            }
+          }
+        }
+      }
+    }
+  }
+}

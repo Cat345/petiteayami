@@ -31,7 +31,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -41,68 +41,83 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 		 * Register the routes for taxes.
 		 */
 		public function register_routes() {
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<tab>[\w-]+)', array(
-				'args' => array(
-					'tab' => array(
-						'description' => __( 'Unique tab for the resource.', 'funnel-builder' ),
-						'type'        => 'string',
-						'required'    => true,
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/(?P<tab>[\w-]+)',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'woofunnels_global_settings' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'settings' => array(
-							'description'       => __( 'settings', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'sanitize_callback' => array( $this, 'sanitize_custom' ),
+					'args' => array(
+						'tab' => array(
+							'description' => __( 'Unique tab for the resource.', 'funnel-builder' ),
+							'type'        => 'string',
+							'required'    => true,
 						),
 					),
-				),
-			) );
-			register_rest_route( $this->namespace, '/funnels/global-settings', array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_funnel_global_settings' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => [],
-				),
-			) );
-			register_rest_route( $this->namespace, '/funnels/general-settings/update-default-builder', array(
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_default_builder' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'settings' => array(
-							'description'       => __( 'settings', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'sanitize_callback' => array( $this, 'sanitize_custom' ),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'woofunnels_global_settings' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'settings' => array(
+								'description'       => __( 'settings', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/funnels/global-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_funnel_global_settings' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
+			register_rest_route(
+				$this->namespace,
+				'/funnels/general-settings/update-default-builder',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_default_builder' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'settings' => array(
+								'description'       => __( 'settings', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							),
+						),
+					),
+				)
+			);
 
-			register_rest_route( $this->namespace, '/funnels/general-settings/update-default-builder', array(
+			register_rest_route(
+				$this->namespace,
+				'/funnels/general-settings/update-default-builder',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_default_builder' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'settings' => array(
-							'description'       => __( 'settings', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'sanitize_callback' => array( $this, 'sanitize_custom' ),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_default_builder' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'settings' => array(
+								'description'       => __( 'settings', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'sanitize_callback' => array( $this, 'sanitize_custom' ),
+							),
 						),
 					),
-				),
-			) );
-
+				)
+			);
 
 		}
 
@@ -117,27 +132,30 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 		public function get_funnel_global_settings() {
 			$License = WooFunnels_licenses::get_instance();
 			$License->get_data();
-			$data = [];
+			$data = array();
 
 			if ( ! function_exists( 'get_current_screen' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/screen.php';
 			}
-			$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', [] );
+			$get_all_registered_settings = apply_filters( 'woofunnels_global_settings', array() );
 
 			if ( is_array( $get_all_registered_settings ) && count( $get_all_registered_settings ) > 0 ) {
 
 				$get_all_registered_settings = $this->maybe_add_pro_tabs( $get_all_registered_settings );
 
-				usort( $get_all_registered_settings, function ( $a, $b ) {
-					if ( $a['priority'] === $b['priority'] ) {
-						return 0;
-					}
+				usort(
+					$get_all_registered_settings,
+					function ( $a, $b ) {
+						if ( $a['priority'] === $b['priority'] ) {
+							return 0;
+						}
 
-					return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
-				} );
+						return ( $a['priority'] < $b['priority'] ) ? - 1 : 1;
+					}
+				);
 				$data['global_settings_tabs'] = $get_all_registered_settings;
 			}
-			$data['global_settings'] = apply_filters( 'woofunnels_global_settings_fields', [] );
+			$data['global_settings'] = apply_filters( 'woofunnels_global_settings_fields', array() );
 
 			/***
 			 * Restricted upsell and bump type in number
@@ -149,9 +167,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 							$data['global_settings']['wfob']['misc']['fields'][ $b_key ]['type'] = 'number';
 							break;
 						}
-
 					}
-
 				}
 			}
 
@@ -162,11 +178,9 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 							$data['global_settings']['upstroke']['order_statuses']['fields'][ $u_key ]['type'] = 'number';
 							break;
 						}
-
 					}
 				}
 			}
-
 
 			return rest_ensure_response( $data );
 		}
@@ -195,7 +209,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 		public function woofunnels_global_settings( WP_REST_Request $request ) {
 			$resp = array(
 				'success' => false,
-				'msg'     => __( 'Failed', 'funnel-builder' )
+				'msg'     => __( 'Failed', 'funnel-builder' ),
 			);
 
 			$settings = $request->get_param( 'settings' );
@@ -211,7 +225,7 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 			$resp = array(
 				'success' => true,
 				'msg'     => __( 'Settings Updated', 'funnel-builder' ),
-				'setup'   => WFFN_REST_Setup::get_instance()->get_status_responses( false )
+				'setup'   => WFFN_REST_Setup::get_instance()->get_status_responses( false ),
 			);
 
 			return rest_ensure_response( $resp );
@@ -224,22 +238,28 @@ if ( ! class_exists( 'WFFN_REST_Global_Settings' ) ) {
 		public function maybe_add_pro_tabs( $tabs ) {
 
 			if ( ! class_exists( 'WFOCU_Admin' ) ) {
-				array_push( $tabs, array(
-					'title'    => __( 'One Click Upsell Offers', 'funnel-builder' ),
-					'slug'     => 'upstroke',
-					'link'     => '',
-					'priority' => 50,
-					'pro_tab'  => true,
-				) );
+				array_push(
+					$tabs,
+					array(
+						'title'    => __( 'One Click Upsell Offers', 'funnel-builder' ),
+						'slug'     => 'upstroke',
+						'link'     => '',
+						'priority' => 50,
+						'pro_tab'  => true,
+					)
+				);
 			}
 			if ( ! class_exists( 'WFOB_Admin' ) ) {
-				array_push( $tabs, array(
-					'title'    => __( 'Order Bumps', 'funnel-builder' ),
-					'slug'     => 'wfob',
-					'link'     => '',
-					'priority' => 40,
-					'pro_tab'  => true,
-				) );
+				array_push(
+					$tabs,
+					array(
+						'title'    => __( 'Order Bumps', 'funnel-builder' ),
+						'slug'     => 'wfob',
+						'link'     => '',
+						'priority' => 40,
+						'pro_tab'  => true,
+					)
+				);
 			}
 
 			return $tabs;

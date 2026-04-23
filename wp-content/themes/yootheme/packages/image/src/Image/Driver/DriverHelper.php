@@ -42,11 +42,11 @@ trait DriverHelper
         if (preg_match('/^(#|0x|)([0-9a-f]{3,6})/i', $color, $matches)) {
             $col = $matches[2];
 
-            if (strlen($col) == 6) {
+            if (strlen($col) === 6) {
                 return hexdec($col);
             }
 
-            if (strlen($col) == 3) {
+            if (strlen($col) === 3) {
                 $r = '';
 
                 for ($i = 0; $i < 3; ++$i) {

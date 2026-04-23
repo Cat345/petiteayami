@@ -157,9 +157,7 @@ foreach ($items as $item) {
         } elseif ($item->type === 'heading') {
             echo "{$indention}<li{$this->attrs($attrs)}>{$title}</li>";
 
-            if ($children) {
-                echo $this->self(['items' => $item->children, 'level' => $level]);
-            }
+            echo $this->self(['items' => $item->children, 'level' => $level]);
 
             continue;
         } else {

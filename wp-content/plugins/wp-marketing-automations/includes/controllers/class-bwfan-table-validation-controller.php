@@ -30,6 +30,8 @@ class BWFAN_Table_Validation_Controller {
 		'bwf_wc_customers',
 		'bwfan_automation_contact_claim',
 		'bwfan_import_export',
+		'bwfan_links',
+		'bwfan_link_metrics',
 	];
 
 	public static $pro_tables = [
@@ -56,6 +58,20 @@ class BWFAN_Table_Validation_Controller {
 		'bwf_contact_meta',
 		'bwf_wc_customers',
 	];
+
+	/**
+	 * Get the pro tables to validate
+	 *
+	 * @return array
+	 */
+	public static function get_pro_tables() {
+		$pro_tables = apply_filters( 'bwfan_pro_tables_to_validate', [] );
+		if ( ! is_array( $pro_tables ) || empty( $pro_tables ) ) {
+			return self::$pro_tables;
+		}
+
+		return $pro_tables;
+	}
 
 	/**
 	 * Validate database tables and return missing ones
@@ -86,8 +102,13 @@ class BWFAN_Table_Validation_Controller {
 	public static function get_existing_tables( $table_names = [] ) {
 		global $wpdb;
 
+		$pro_tables = [];
+		if ( bwfan_is_autonami_pro_active() ) {
+			$pro_tables = self::get_pro_tables();
+		}
+		
 		if ( empty( $table_names ) ) {
-			$tables      = array_merge( self::$tables, self::$pro_tables, self::$v1_tables, self::$core_tables );
+			$tables      = array_merge( self::$tables, $pro_tables, self::$v1_tables, self::$core_tables );
 			$table_names = array_map( function ( $table ) use ( $wpdb ) {
 				return $wpdb->prefix . $table;
 			}, $tables );
@@ -97,6 +118,7 @@ class BWFAN_Table_Validation_Controller {
 		if ( empty( $db_name ) ) {
 			return array( 'error' => __( "Unable to find the Database name", "wp-marketing-automations" ) );
 		}
+		$table_names = array_values( array_filter( array_unique( $table_names ) ) );
 
 		$placeholders = implode( ',', array_fill( 0, count( $table_names ), '%s' ) );
 		$query        = $wpdb->prepare( "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ($placeholders)", array_merge( [ $db_name ], $table_names ) );
@@ -130,8 +152,12 @@ class BWFAN_Table_Validation_Controller {
 				continue;
 			}
 
-			$class_name = str_replace( [ 'bwf_', 'bwfan_' ], '', $table );
-			$class_name = 'BWFAN_DB_Table_' . $class_name;
+			$table_name = str_replace( [ 'bwf_', 'bwfan_' ], '', $table );
+			$class_name = 'BWFAN_DB_Table_' . $table_name;
+			if ( ! class_exists( $class_name ) && ! bwfan_is_autonami_pro_active() ) {
+				$class_name = 'BWFAN_DB_Table_Lite_' . $table_name;
+			}
+
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
@@ -251,7 +277,7 @@ class BWFAN_Table_Validation_Controller {
 		}
 
 		if ( bwfan_is_autonami_pro_active() ) {
-			$pro_tables     = self::bwfan_validate_db_tables( self::$pro_tables );
+			$pro_tables     = self::bwfan_validate_db_tables( self::get_pro_tables() );
 			$missing_tables = array_merge( $missing_tables, $pro_tables );
 		}
 

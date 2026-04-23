@@ -11,9 +11,9 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		/**
 		 * @var WFOCU_Gateways[]
 		 */
-		public $integrations = array();
+		public $integrations     = array();
 		public $gateway_dir_path = '/gateways/';
-		public $class_prefix = 'WFOCU_Gateway_Integration_';
+		public $class_prefix     = 'WFOCU_Gateway_Integration_';
 
 
 		public function __construct() {
@@ -53,15 +53,13 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			add_filter( 'wfocu_front_order_status_after_funnel', array( $this, 'replace_recorded_status_with_ipn_response' ), 10, 2 );
 			add_action( 'wfocu_after_normalize_order_status', array( $this, 'modify_paypal_ipn_hold_status' ), 10, 1 );
 
-
 			add_action( 'wc_ajax_wfocu_front_handle_paypal_payments', array( $this, 'handle_paypal_payments' ) );
 			add_action( 'wc_ajax_wfocu_front_handle_paypal_payments', array( $this, 'handle_paypal_payments' ) );
-
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -92,7 +90,6 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		}
 
 		public function get_supported_gateways() {
-
 
 			$supported_gateways = array(
 				'wfocu_test',
@@ -169,32 +166,36 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				'fkwcs_stripe_multibanco',
 				'fkwcs_stripe_pix',
 				'fkwcs_stripe_cashapp',
+				'fkwcs_stripe_twint',
 				'fkwcppcp_paypal',
-				'fkwcs_stripe_mbway',
 				'fkwcs_stripe_eps',
-				'fkwcs_stripe_blik'
+				'fkwcs_stripe_blik',
+				'fkwcs_stripe_mbway',
+				'airwallex_card',
 			);
 
-			$gateways = apply_filters( 'wfocu_wc_get_supported_gateways', array(
-				'wfocu_test'                    => 'WFOCU_Gateway_Integration_WFOCU_Test',
-				'cod'                           => 'WFOCU_Gateway_Integration_COD',
-				'bacs'                          => 'WFOCU_Gateway_Integration_Bacs',
-				'cheque'                        => 'WFOCU_Gateway_Integration_Cheque',
-				'stripe'                        => 'WFOCU_Gateway_Integration_Stripe',
-				'mollie_wc_gateway_sofort'      => 'WFOCU_Gateway_Integration_Mollie_Gateway_Sofort',
-				'mollie_wc_gateway_bancontact'  => 'WFOCU_Gateway_Integration_Mollie_Gateway_Bancontact',
-				'mollie_wc_gateway_creditcard'  => 'WFOCU_Gateway_Integration_Mollie_Gateway_Credit_Cards',
-				'mollie_wc_gateway_ideal'       => 'WFOCU_Gateway_Integration_Mollie_Gateway_Ideal',
-				'authorize_net_cim_credit_card' => 'WFOCU_Gateway_Integration_Authorize_Net_CIM',
-				'ppec_paypal'                   => 'WFOCU_Gateway_Integration_Paypal_Express_Checkout',
-				'paypal'                        => 'WFOCU_Gateway_Integration_PayPal_Standard',
-				'braintree_credit_card'         => 'WFOCU_Gateway_Integration_Braintree_CC',
-				'braintree_paypal'              => 'WFOCU_Gateway_Integration_Braintree_PayPal',
-				'square_credit_card'            => 'WFOCU_Gateway_Integration_Square_Credit_Card',
-				'ppcp-gateway'                  => 'WFOCU_Gateway_Integration_PayPal_Payments',
-				'woocommerce_payments'          => 'WFOCU_Gateway_Integration_WooCommerce_Payments',
-			) );
-
+			$gateways = apply_filters(
+				'wfocu_wc_get_supported_gateways',
+				array(
+					'wfocu_test'                    => 'WFOCU_Gateway_Integration_WFOCU_Test',
+					'cod'                           => 'WFOCU_Gateway_Integration_COD',
+					'bacs'                          => 'WFOCU_Gateway_Integration_Bacs',
+					'cheque'                        => 'WFOCU_Gateway_Integration_Cheque',
+					'stripe'                        => 'WFOCU_Gateway_Integration_Stripe',
+					'mollie_wc_gateway_sofort'      => 'WFOCU_Gateway_Integration_Mollie_Gateway_Sofort',
+					'mollie_wc_gateway_bancontact'  => 'WFOCU_Gateway_Integration_Mollie_Gateway_Bancontact',
+					'mollie_wc_gateway_creditcard'  => 'WFOCU_Gateway_Integration_Mollie_Gateway_Credit_Cards',
+					'mollie_wc_gateway_ideal'       => 'WFOCU_Gateway_Integration_Mollie_Gateway_Ideal',
+					'authorize_net_cim_credit_card' => 'WFOCU_Gateway_Integration_Authorize_Net_CIM',
+					'ppec_paypal'                   => 'WFOCU_Gateway_Integration_Paypal_Express_Checkout',
+					'paypal'                        => 'WFOCU_Gateway_Integration_PayPal_Standard',
+					'braintree_credit_card'         => 'WFOCU_Gateway_Integration_Braintree_CC',
+					'braintree_paypal'              => 'WFOCU_Gateway_Integration_Braintree_PayPal',
+					'square_credit_card'            => 'WFOCU_Gateway_Integration_Square_Credit_Card',
+					'ppcp-gateway'                  => 'WFOCU_Gateway_Integration_PayPal_Payments',
+					'woocommerce_payments'          => 'WFOCU_Gateway_Integration_WooCommerce_Payments',
+				)
+			);
 
 			/**
 			 * restrict support for all the known gateway integrations
@@ -206,7 +207,6 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			foreach ( $intersected_gateways as $key ) {
 				$filtered_gateways[ $key ] = $gateways[ $key ];
 			}
-
 
 			return $filtered_gateways;
 		}
@@ -257,17 +257,20 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		 */
 		public function load_gateway_integrations() {
 
-			$available_gateways = $this->get_supported_gateways();
-			if ( false === is_array( $available_gateways ) ) {
+			try {
+				$available_gateways = $this->get_supported_gateways();
+				if ( false === is_array( $available_gateways ) ) {
+					return $available_gateways;
+				}
+				$supported = array_keys( $available_gateways );
+				foreach ( $supported as $key ) {
+					$this->get_integration( $key );
+				}
 				return $available_gateways;
+			} catch ( \Throwable $e ) {
+				WFOCU_Core()->log->log( 'Error loading gateway integrations: ' . $e->getMessage(), 'error' );
+				return array();
 			}
-			$supported = array_keys( $available_gateways );
-			foreach ( $supported as $key ) {
-
-				$this->get_integration( $key );
-			}
-
-			return $available_gateways;
 		}
 
 		public function maybe_add_test_payment_gateway( $gateways ) {
@@ -276,15 +279,12 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 
 			$is_gateway_on = WFOCU_Core()->data->get_option( 'gateway_test' );
 
-
 			if ( is_array( $is_gateway_on ) && count( $is_gateway_on ) > 0 && 'yes' === $is_gateway_on[0] ) {
 
 				include_once plugin_dir_path( WFOCU_PLUGIN_FILE ) . 'includes/class-wfocu-test-gateway.php';
 				$gateways[] = 'WC_Gateway_WFOCU_Test';
 
 			}
-
-
 
 			return $gateways;
 		}
@@ -306,7 +306,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				 * This is never occurring scenario as database set cannot be unavailable, it will always have some gateways or a blank array
 				 * Still handle this scenario by returning blank array so that blank array will get carry forward
 				 */
-				$options['gateways'] = [];
+				$options['gateways'] = array();
 			}
 
 			return $options;
@@ -315,7 +315,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		public function add_default_gateways_enable( $defaults ) {
 			$get_supported_available = $this->get_gateways_list();
 
-		if ( isset( $defaults['gateways'] ) && is_array( $get_supported_available ) && count( $get_supported_available ) > 0 ) {
+			if ( isset( $defaults['gateways'] ) && is_array( $get_supported_available ) && count( $get_supported_available ) > 0 ) {
 
 				$get_keys_list = wp_list_pluck( $get_supported_available, 'value' );
 
@@ -325,11 +325,11 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			}
 
 			return $defaults;
-
 		}
 
 		/**
 		 * Get the Gateway list with nice names
+		 *
 		 * @return array
 		 */
 		public function get_gateways_list() {
@@ -340,15 +340,17 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			$available_gateways               = WC()->payment_gateways->payment_gateways();
 			$get_supported_available_gateways = array_keys( array_intersect_key( $get_supported, $available_gateways ) );
 
-			$result = array_map( function ( $short ) use ( $available_gateways ) {
-				if ( 'yes' === $available_gateways[ $short ]->enabled ) {
-					return array(
-						'name'  => $available_gateways[ $short ]->get_method_title(),
-						'value' => $short,
-					);
-				}
-
-			}, $get_supported_available_gateways );
+			$result = array_map(
+				function ( $short ) use ( $available_gateways ) {
+					if ( 'yes' === $available_gateways[ $short ]->enabled ) {
+							return array(
+								'name'  => $available_gateways[ $short ]->get_method_title(),
+								'value' => $short,
+							);
+					}
+				},
+				$get_supported_available_gateways
+			);
 
 			$result = array_filter( $result );
 			$result = array_values( $result );
@@ -394,7 +396,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		/**
 		 * Save important data from the IPN to the order.
 		 *
-		 * @param array $posted Posted data.
+		 * @param array    $posted Posted data.
 		 * @param WC_Order $order Order object.
 		 */
 		public function save_paypal_meta_data( $posted, $order ) {
@@ -418,7 +420,7 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 		public function handle_paypal_ipn_and_record_response( $posted ) {
 
 			WFOCU_Core()->log->log( 'Data collected from IPN' . print_r( $posted, true ) );   // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			remove_action( 'woocommerce_pre_payment_complete', [ WFOCU_Core()->public, 'maybe_setup_upsell' ], 99 );
+			remove_action( 'woocommerce_pre_payment_complete', array( WFOCU_Core()->public, 'maybe_setup_upsell' ), 99 );
 			if ( ! isset( $posted['custom'] ) ) {
 				WFOCU_Core()->log->log( 'IPN Doesn\'t have the correct data to proceed.' . print_r( $posted, true ) );   // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
@@ -429,14 +431,13 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				$order_id = $custom->order_id;
 			}
 			$order = wc_get_order( $order_id );
-			if ( $order && $order instanceof WC_Order && isset( $posted['payment_status'] ) && in_array( $order->get_payment_method(), [ 'paypal', 'ppec_paypal', 'paypal_express' ], true ) ) {
-
+			if ( $order && $order instanceof WC_Order && isset( $posted['payment_status'] ) && in_array( $order->get_payment_method(), array( 'paypal', 'ppec_paypal', 'paypal_express' ), true ) ) {
 
 				$order->update_meta_data( '_wfocu_paypal_ipn_status', $posted['payment_status'] );
 				$order->save_meta_data();
 
 				if ( 'paypal' === $order->get_payment_method() ) {
-					add_action( 'woocommerce_payment_complete', [ $this->get_integration( 'paypal' ), 'maybe_refund_after_ipn' ], 999 );
+					add_action( 'woocommerce_payment_complete', array( $this->get_integration( 'paypal' ), 'maybe_refund_after_ipn' ), 999 );
 
 				}
 			}
@@ -446,11 +447,14 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 			 * So we need to prevent this.
 			 */
 			if ( $order && $order instanceof WC_Order && 'paypal_pro_payflow' === $order->get_payment_method() ) {
-				add_filter( 'woocommerce_order_is_paid_statuses', function ( $stasuses ) {
-					array_push( $stasuses, 'wfocu-pri-order' );
+				add_filter(
+					'woocommerce_order_is_paid_statuses',
+					function ( $stasuses ) {
+						array_push( $stasuses, 'wfocu-pri-order' );
 
-					return $stasuses;
-				} );
+						return $stasuses;
+					}
+				);
 			}
 
 			if ( $order instanceof WC_Order ) {
@@ -508,8 +512,6 @@ if ( ! class_exists( 'WFOCU_Gateways' ) ) {
 				$order->save_meta_data();
 			}
 		}
-
-
 	}
 
 

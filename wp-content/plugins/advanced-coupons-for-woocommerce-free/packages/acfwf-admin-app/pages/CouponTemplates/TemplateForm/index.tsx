@@ -3,7 +3,8 @@
 // Libraries
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Row, Col, Skeleton, Spin, Steps, Button } from 'antd';
+import { Row, Col, Skeleton, Spin, Steps, Button, Input } from 'antd';
+import { CrownOutlined } from '@ant-design/icons';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -12,6 +13,7 @@ import Field from './Field';
 import GoBackButton from './GoBackButton';
 import CartConditions from './CartConditions';
 import CreateCouponButton from './CreateCouponButton';
+import SaveTemplateCheckbox from './SaveTemplateCheckbox';
 import SuccessPage from './SuccessPage';
 
 // Types
@@ -31,8 +33,15 @@ import './index.scss';
 
 declare var acfwAdminApp: any;
 
-const { readCouponTemplate, setEditCouponTemplate, validateEditCouponTemplateData, setCreatedCouponResponseData } =
-  CouponTemplatesActions;
+const {
+  readCouponTemplate,
+  readAICouponTemplate,
+  setEditCouponTemplate,
+  validateEditCouponTemplateData,
+  setCreatedCouponResponseData,
+  clearAICouponTemplate,
+  togglePremiumModal,
+} = CouponTemplatesActions;
 
 // #endregion [Variables]
 
@@ -40,9 +49,12 @@ const { readCouponTemplate, setEditCouponTemplate, validateEditCouponTemplateDat
 
 interface IActions {
   readCouponTemplate: typeof readCouponTemplate;
+  readAICouponTemplate: typeof readAICouponTemplate;
   setEditCouponTemplate: typeof setEditCouponTemplate;
   validateEditCouponTemplateData: typeof validateEditCouponTemplateData;
   setCreatedCouponResponseData: typeof setCreatedCouponResponseData;
+  clearAICouponTemplate: typeof clearAICouponTemplate;
+  togglePremiumModal: typeof togglePremiumModal;
 }
 
 interface IProps {
@@ -59,16 +71,32 @@ const TemplateForm = (props: IProps) => {
   const { template, formResponse, actions } = props;
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
+  const [shouldSaveTemplate, setShouldSaveTemplate] = useState(false);
+  const [templateTitle, setTemplateTitle] = useState('');
+  const [templateDescription, setTemplateDescription] = useState('');
   const { labels } = acfwAdminApp.coupon_templates_page;
   const urlParams = new URLSearchParams(useLocation().search);
   const editId = urlParams.get('id') ?? '0';
   const isReview = urlParams.get('is_review') ?? false;
+  const aiPrompt = urlParams.get('ai_prompt') ?? '';
+  const isAITemplate = editId === 'ai-temp';
+  const isPremiumActive = acfwAdminApp?.is_acfwp_active ?? false;
   const paragraphProps = { rows: 2, width: 100 } as SkeletonParagraphProps;
   const stepItems = [{ title: labels.coupon_details }];
 
   if (!!template?.cart_conditions && template.cart_conditions.length > 0) {
     stepItems.push({ title: labels.cart_conditions });
   }
+
+  /**
+   * Initialize title and description state when template loads.
+   */
+  useEffect(() => {
+    if (template) {
+      setTemplateTitle(template.title ?? '');
+      setTemplateDescription(template.description ?? '');
+    }
+  }, [template?.title, template?.description]);
 
   /**
    * Handle updating the current step.
@@ -106,6 +134,22 @@ const TemplateForm = (props: IProps) => {
       return;
     }
 
+    // Check if this is an AI-generated template (id=ai-temp)
+    if (isAITemplate) {
+      // Fetch AI template from transient
+      actions.readAICouponTemplate({
+        successCB: (response: any) => {
+          setLoading(false);
+          actions.setEditCouponTemplate({ data: response.data.data as ICouponTemplate });
+        },
+        failCB: () => {
+          setLoading(false);
+        },
+      });
+      return;
+    }
+
+    // Otherwise, fetch regular template from API
     actions.readCouponTemplate({
       id: parseInt(editId),
       isReview: !!isReview,
@@ -116,6 +160,19 @@ const TemplateForm = (props: IProps) => {
       failCB: () => setLoading(false),
     });
   }, []);
+
+  /**
+   * Render the template heading section.
+   * Simple static display for all templates (AI and non-AI).
+   */
+  const renderTemplateHeading = () => {
+    return (
+      <div className="template-heading">
+        <h2>{template?.title}</h2>
+        <p>{template?.description}</p>
+      </div>
+    );
+  };
 
   /**
    * Fallback render when the template is not found.
@@ -157,10 +214,7 @@ const TemplateForm = (props: IProps) => {
           <div className="template-form-main">
             {!!template ? (
               <>
-                <div className="template-heading">
-                  <h2>{template.title}</h2>
-                  <p>{template.description}</p>
-                </div>
+                {renderTemplateHeading()}
                 <div className="form-instruction">
                   <em>{labels.form_instruction}</em>
                 </div>
@@ -175,7 +229,7 @@ const TemplateForm = (props: IProps) => {
               </div>
             ) : null}
 
-            {currentStep === 0 ? (
+            {currentStep === 0 && template?.fields ? (
               <div className="template-fields">
                 {template.fields.map((field, index) => (
                   <Field key={`${field.field}-${field?.error ?? ''}`} templateField={field} />
@@ -207,6 +261,9 @@ const TemplateForm = (props: IProps) => {
               text={labels.create_coupon}
               size="large"
               disabled={currentStep !== stepItems.length - 1}
+              shouldSaveTemplate={shouldSaveTemplate}
+              templateTitle={templateTitle}
+              aiPrompt={aiPrompt}
             />
             <GoBackButton
               text={labels.cancel}
@@ -214,6 +271,51 @@ const TemplateForm = (props: IProps) => {
               size="large"
             />
           </div>
+
+          {isAITemplate && (
+            <div
+              className={`template-settings-box ${!isPremiumActive ? 'premium-locked' : ''}`}
+              onClick={!isPremiumActive ? () => actions.togglePremiumModal({ show: true }) : undefined}
+              style={!isPremiumActive ? { cursor: 'pointer' } : undefined}
+            >
+              <div className="template-settings-header">
+                <span>
+                  {labels.template_settings}{' '}
+                  {!isPremiumActive && <span className="premium-label">{labels.premium_label}</span>}
+                </span>
+                {!isPremiumActive && <CrownOutlined style={{ color: '#6bb738' }} />}
+              </div>
+              <div className="template-settings-content" onClick={(e) => e.stopPropagation()}>
+                <SaveTemplateCheckbox
+                  disabled={false}
+                  onSaveStateChange={(shouldSave) => setShouldSaveTemplate(shouldSave)}
+                  insidePremiumBox={!isPremiumActive}
+                />
+
+                <div className="template-settings-field">
+                  <label>{labels.title_label}</label>
+                  <Input
+                    value={templateTitle}
+                    onChange={(e) => setTemplateTitle(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder={labels.template_title_placeholder}
+                    size="small"
+                  />
+                </div>
+
+                <div className="template-settings-field">
+                  <label>{labels.description_label}</label>
+                  <Input.TextArea
+                    value={templateDescription}
+                    onChange={(e) => setTemplateDescription(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder={labels.template_description_placeholder}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
     </div>
@@ -227,8 +329,16 @@ const mapStateToProps = (state: IStore) => ({
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: bindActionCreators(
-    { readCouponTemplate, setEditCouponTemplate, validateEditCouponTemplateData, setCreatedCouponResponseData },
-    dispatch
+    {
+      readCouponTemplate,
+      readAICouponTemplate,
+      setEditCouponTemplate,
+      validateEditCouponTemplateData,
+      setCreatedCouponResponseData,
+      clearAICouponTemplate,
+      togglePremiumModal,
+    },
+    dispatch,
   ),
 });
 

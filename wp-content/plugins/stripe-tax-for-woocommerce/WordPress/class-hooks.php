@@ -501,6 +501,16 @@ class Hooks {
 				}
 			}
 		);
+
+		add_action(
+			'woocommerce_store_api_checkout_order_processed',
+			array(
+				static::class,
+				'handle_checkout_order_notice',
+			),
+			10,
+			2
+		);
 	}
 
 	/**
@@ -547,15 +557,17 @@ class Hooks {
 		);
 
 		// Using this to ignore Woocommerce rates to be displayed in shop.
-		add_filter(
-			'woocommerce_find_rates',
-			array(
-				static::class,
-				'filter_woocommerce_find_rates',
-			),
-			10,
-			0
-		);
+		if ( Options::is_live_mode_enabled() ) {
+			add_filter(
+				'woocommerce_find_rates',
+				array(
+					static::class,
+					'filter_woocommerce_find_rates',
+				),
+				10,
+				0
+			);
+		}
 		add_filter( 'pre_option_wc_connect_taxes_enabled', fn () => Options::is_live_mode_enabled() );
 		add_filter(
 			'woocommerce_rest_prepare_shop_order_object',
@@ -683,7 +695,8 @@ class Hooks {
 		}
 
 		if ( ! ErrorRenderer::get_error_object( $message_id )->message ) {
-			ErrorRenderer::set_error_object( $message_id, 'Stripe Tax: ' . $e->getMessage(), 'error' );
+			$formatted_message = StripeTaxPluginHelper::format_api_error_message( $e );
+			ErrorRenderer::set_error_object( $message_id, 'Stripe Tax: ' . $formatted_message, 'error' );
 		} else {
 			// Error already reported.
 			return;
@@ -836,9 +849,9 @@ class Hooks {
 
 			static::check_migrations();
 			static::check_string_tax_rate_id_fixer();
-		}
 
-		StripeTax_Plugin::load();
+			StripeTax_Plugin::load();
+		}
 	}
 
 	/**
@@ -1204,10 +1217,41 @@ class Hooks {
 		if ( $msg ) {
 			delete_post_meta( $order_id, '_stripe_tax_last_error' );
 
-			echo '<span class="stripe_tax_for_woocommerce_message_span_id_" id="stripe_tax_for_woocommerce_message_id_"> </span>'
-				. '<div class="stripe_tax_for_woocommerce_message stripe_tax_for_woocommerce_message_" id="stripe_tax_for_woocommerce_message_id_">'
-				. '<p>Error: <strong>' . esc_html( $msg ) . '</strong></p>'
-				. '</div>';
+			echo '<div class="notice notice-error"><p><strong>'
+				. esc_html__( 'Stripe Tax:', 'stripe-tax-for-woocommerce' )
+				. '</strong> ' . esc_html( $msg ) . '</p></div>';
+		}
+	}
+
+
+	/**
+	 * Stop placing the order if tax calculation has failed.
+	 *
+	 * @param \WC_Order $order The order being updated during checkout.
+	 *
+	 * @throws \Automattic\WooCommerce\StoreApi\Exceptions\RouteException If taxes have not been calculated.
+	 */
+	public static function handle_checkout_order_notice( $order ) {
+		$handlers_class = null;
+
+		if ( class_exists( __NAMESPACE__ . '\\Hook_Handlers' ) ) {
+			$handlers_class = __NAMESPACE__ . '\\Hook_Handlers';
+		}
+		if ( $handlers_class && ! $handlers_class::is_enabled() ) {
+			$exception_class = '\Automattic\WooCommerce\StoreApi\Exceptions\RouteException';
+
+			if ( class_exists( $exception_class ) ) {
+				$message = $handlers_class::get_current_request_error_message();
+				if ( '' === $message ) {
+					$message = esc_html__( 'Taxes have not been calculated at the moment.', 'stripe-tax-for-woocommerce' );
+				}
+
+				throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException(
+					'stripe_tax_calculation_warning',
+					esc_html( $message ),
+					400
+				);
+			}
 		}
 	}
 }

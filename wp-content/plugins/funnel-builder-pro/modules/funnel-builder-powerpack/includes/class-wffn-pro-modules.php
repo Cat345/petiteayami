@@ -34,13 +34,16 @@ if ( ! class_exists( 'WFFN_Pro_Modules' ) ) {
 					'checkout' => 'no',
 					'upsells'  => 'no',
 				);
-				if ( self::is_bump_posts_exists() ) {
+
+				$existing_types = self::get_standalone_post_types();
+
+				if ( ! empty( $existing_types['wfob_bump'] ) ) {
 					$modules['bump'] = 'yes';
 				}
-				if ( self::is_checkout_posts_exists() ) {
+				if ( ! empty( $existing_types['wfacp_checkout'] ) ) {
 					$modules['checkout'] = 'yes';
 				}
-				if ( self::is_upsell_posts_exists() ) {
+				if ( ! empty( $existing_types['wfocu_funnel'] ) ) {
 					$modules['upsells'] = 'yes';
 				}
 
@@ -59,59 +62,65 @@ if ( ! class_exists( 'WFFN_Pro_Modules' ) ) {
 
 		}
 
-		public static function is_bump_posts_exists() {
+		/**
+		 * Single consolidated query to check for standalone posts across all 3 post types.
+		 * Replaces 3 separate WP_Query calls with one, reducing DB queries on admin_init.
+		 *
+		 * @return array Associative array keyed by post_type with boolean values.
+		 */
+		public static function get_standalone_post_types() {
+			$post_types = array( 'wfob_bump', 'wfacp_checkout', 'wfocu_funnel' );
 
-			$get_posts               = array( 'post_type' => 'wfob_bump', 'posts_per_page' => 1 );
-			$get_posts['meta_query'] = array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'     => '_bwf_in_funnel',
-					'compare' => 'NOT EXISTS',
-					'value'   => '',
+			$result = array(
+				'wfob_bump'      => false,
+				'wfacp_checkout' => false,
+				'wfocu_funnel'   => false,
+			);
+
+			$query_args = array(
+				'post_type'      => $post_types,
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					array(
+						'key'     => '_bwf_in_funnel',
+						'compare' => 'NOT EXISTS',
+						'value'   => '',
+					),
 				),
 			);
-			$query_res               = new WP_Query( $get_posts );
 
-			if ( is_object( $query_res ) && 0 < $query_res->found_posts ) {
-				return true;
+			$query = new WP_Query( $query_args );
+
+			if ( ! empty( $query->posts ) ) {
+				foreach ( $query->posts as $post_id ) {
+					$post_type = get_post_type( $post_id );
+					if ( isset( $result[ $post_type ] ) ) {
+						$result[ $post_type ] = true;
+					}
+				}
 			}
 
-			return false;
+			return $result;
+		}
+
+		public static function is_bump_posts_exists() {
+			$types = self::get_standalone_post_types();
+
+			return ! empty( $types['wfob_bump'] );
 		}
 
 		public static function is_checkout_posts_exists() {
+			$types = self::get_standalone_post_types();
 
-			$get_posts               = array( 'post_type' => 'wfacp_checkout', 'posts_per_page' => 1 );
-			$get_posts['meta_query'] = array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'     => '_bwf_in_funnel',
-					'compare' => 'NOT EXISTS',
-					'value'   => '',
-				),
-			);
-			$query_res               = new WP_Query( $get_posts );
-			if ( is_object( $query_res ) && 0 < $query_res->found_posts ) {
-				return true;
-			}
-
-			return false;
+			return ! empty( $types['wfacp_checkout'] );
 		}
 
 		public static function is_upsell_posts_exists() {
+			$types = self::get_standalone_post_types();
 
-			$get_posts               = array( 'post_type' => 'wfocu_funnel', 'posts_per_page' => 1 );
-			$get_posts['meta_query'] = array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'     => '_bwf_in_funnel',
-					'compare' => 'NOT EXISTS',
-					'value'   => '',
-				),
-			);
-			$query_res               = new WP_Query( $get_posts );
-			if ( is_object( $query_res ) && 0 < $query_res->found_posts ) {
-				return true;
-			}
-
-			return false;
+			return ! empty( $types['wfocu_funnel'] );
 		}
 
 		public static function is_ab_experiment_exists_for_non_funnel() {

@@ -2,8 +2,8 @@
 
 // Libraries
 import { useState } from 'react';
-import { Button } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { Button, message } from 'antd';
+import { useHistory, useLocation } from 'react-router-dom';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -20,11 +20,15 @@ import { ICouponTemplate } from '../../../types/couponTemplates';
 
 // #region [Variables] =================================================================================================
 
+declare var acfwAdminApp: any;
+
 const {
   validateEditCouponTemplateData,
   validateCartConditionsData,
   createCouponFromTemplate,
   setCreatedCouponResponseData,
+  clearAICouponTemplate,
+  saveAITemplate,
 } = CouponTemplatesActions;
 
 // #endregion [Variables]
@@ -36,6 +40,8 @@ interface IActions {
   validateCartConditionsData: typeof validateCartConditionsData;
   createCouponFromTemplate: typeof createCouponFromTemplate;
   setCreatedCouponResponseData: typeof setCreatedCouponResponseData;
+  clearAICouponTemplate: typeof clearAICouponTemplate;
+  saveAITemplate: typeof saveAITemplate;
 }
 
 interface IProps {
@@ -43,6 +49,9 @@ interface IProps {
   text: string;
   size: SizeType;
   disabled: boolean;
+  shouldSaveTemplate?: boolean;
+  templateTitle?: string;
+  aiPrompt?: string;
   actions: IActions;
 }
 
@@ -51,8 +60,13 @@ interface IProps {
 // #region [Component] =================================================================================================
 
 const CreateCouponButton = (props: IProps) => {
-  const { template, text, size, disabled, actions } = props;
+  const { template, text, size, disabled, shouldSaveTemplate, templateTitle, aiPrompt, actions } = props;
   const [isLoading, setIsLoading] = useState(false);
+  const urlParams = new URLSearchParams(useLocation().search);
+  const editId = urlParams.get('id') ?? '0';
+  const isAITemplate = editId === 'ai-temp';
+
+  const { labels } = acfwAdminApp.coupon_templates_page;
 
   const handleCreateCoupon = () => {
     actions.validateEditCouponTemplateData();
@@ -78,8 +92,42 @@ const CreateCouponButton = (props: IProps) => {
     actions.createCouponFromTemplate({
       data: data,
       successCB: (response: any) => {
+        // Save template if checkbox was checked.
+        if (shouldSaveTemplate && templateTitle && aiPrompt && isAITemplate) {
+          actions.saveAITemplate({
+            name: templateTitle,
+            prompt: aiPrompt,
+            processingCB: undefined,
+            successCB: () => {
+              message.success(labels.template_saved);
+
+              // Clear AI template transient AFTER successful save
+              actions.clearAICouponTemplate();
+            },
+            failCB: ({ error }: { error: { response?: { status: number } } }) => {
+              // Check if it's a 403 permission error.
+              if (error?.response?.status === 403) {
+                message.error(labels.save_permission_error);
+              } else {
+                message.error(labels.save_template_failed);
+              }
+
+              // Clear transient even on failure
+              actions.clearAICouponTemplate();
+            },
+          });
+        } else {
+          // Clear AI template transient if this was an AI-generated template (and we're not saving).
+          if (isAITemplate) {
+            actions.clearAICouponTemplate();
+          }
+        }
+
         setIsLoading(false);
         actions.setCreatedCouponResponseData({ data: response.data as ICreateCouponFromTemplateResponse });
+      },
+      failCB: () => {
+        setIsLoading(false);
       },
     });
   };
@@ -103,8 +151,10 @@ const mapDispatchToProps = (dispatch: any) => ({
       validateCartConditionsData,
       createCouponFromTemplate,
       setCreatedCouponResponseData,
+      clearAICouponTemplate,
+      saveAITemplate,
     },
-    dispatch
+    dispatch,
   ),
 });
 

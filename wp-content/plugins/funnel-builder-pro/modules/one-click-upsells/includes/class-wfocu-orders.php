@@ -6,12 +6,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 	 */
 	class WFOCU_Orders {
 
-		private static $ins = null;
-		public $initial_order_status = 'pending';
+		private static $ins                             = null;
+		public $initial_order_status                    = 'pending';
 		public $gatways_do_not_support_payment_complete = array( 'bacs', 'cheque', 'cod' );
-		public $order_table_rendered = false;
-		public $is_shortcode_output = false;
-		public $item_shipping_batch = 0;
+		public $order_table_rendered                    = false;
+		public $is_shortcode_output                     = false;
+		public $item_shipping_batch                     = 0;
 		public $temp;
 
 		public function __construct() {
@@ -28,6 +28,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 			/**
 			 * Cron Handler for `fk_fb_every_4_minute`
+			 *
 			 * @see WFOCU_Schedules::maybe_schedule_recurring_events()
 			 */
 			add_action( 'fk_fb_every_4_minute', array( $this, 'maybe_handle_cron_normalize_stasuses' ) );
@@ -69,14 +70,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			add_action( 'fk_fb_every_4_minute', array( $this, 'maybe_execute_thankyou_hook' ), 20 );
 
 			add_action( 'wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array( $this, 'maybe_add_shipping_item_id_as_meta' ) );
-			add_filter( 'woocommerce_order_query_args', [ $this, 'handle_hpos_meta_query' ], 10 );
-
-
+			add_filter( 'woocommerce_order_query_args', array( $this, 'handle_hpos_meta_query' ), 10 );
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -150,13 +149,21 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			} else {
 				$get_title = _x( 'Primary Order Accepted', 'Order status', 'woofunnels-upstroke-one-click-upsell' );
 			}
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle -- $get_title is already translated, constructing label_count array
+			$label_count_singular = $get_title . ' <span class="count">(%s)</span>';
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle -- $get_title is already translated, constructing label_count array
+			$label_count_plural = $get_title . ' <span class="count">(%s)</span>';
+			// Construct label_count array manually since _n_noop requires string literals, but $get_title is already translated
 			$status['wc-wfocu-pri-order'] = array(
 				'label'                     => $get_title,
 				'public'                    => false,
 				'exclude_from_search'       => true,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( $get_title . ' <span class="count">(%s)</span>', $get_title . ' <span class="count">(%s)</span>' ),
+				'label_count'               => array(
+					'singular' => $label_count_singular,
+					'plural'   => $label_count_plural,
+				),
 			);
 
 			return $status;
@@ -199,14 +206,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			}
 
 			add_filter( 'woocommerce_payment_complete_order_status', array( $this, 'maybe_set_completed_order_status' ), 999, 3 );
-
 		}
 
 		/**
 		 * @hooked into `woocommerce_payment_complete_order_status`
 		 *
-		 * @param string $status
-		 * @param string $id
+		 * @param string   $status
+		 * @param string   $id
 		 * @param WC_Order $order
 		 *
 		 * @return string
@@ -220,6 +226,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 			/**
 			 * Removing our filter, as Sometimes there may be chances that as we modify order status, 3rd party plugin try to manage order statsues on the change of the subscription status
+			 *
 			 * @see WC_Subscriptions_Renewal_Order::maybe_record_subscription_payment()
 			 * This function tries to run `woocommerce_payment_complete_order_status` again and this could be the reason for the wrong order status save in our cookies.
 			 */
@@ -228,7 +235,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			do_action( 'wfocu_front_primary_order_status_change', 'wc-wfocu-pri-order', $status, $order );
 
 			return 'wfocu-pri-order';
-
 		}
 
 		/**
@@ -239,7 +245,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 		 * @param int $order_id
 		 *
 		 * @see WFOCU_Orders::normalize_order_statuses()
-		 *
 		 */
 		public function maybe_normalize_order_statuses( $funnel_id, $order_id ) {
 
@@ -254,12 +259,11 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 		 * Checks for the order status and if the order status is `wc-wfocu-pri-order`
 		 * Switch the status to the valid one
 		 *
-		 * @param int $order_id order id in the process
+		 * @param int    $order_id order id in the process
 		 * @param string $order_status order status to move order to
 		 * @param string $initial_status order status as bridge status to move order to initial_status and then successful one
 		 *
 		 * @see WFOCU_Orders::maybe_normalize_order_statuses()
-		 *
 		 */
 		public function normalize_order_statuses( $order_id, $order_status, $initial_status = 'pending' ) {
 
@@ -295,6 +299,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 				$order_status = apply_filters( 'woocommerce_payment_complete_order_status', $order->needs_processing() ? 'processing' : 'completed', $order_id, $order );
 
 			}
+
 			$order_status = apply_filters( 'wfocu_front_order_status_after_funnel', $order_status, $order );
 
 			/**
@@ -313,66 +318,77 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			WFOCU_Core()->log->log( 'Order # ' . $order_id . ': ' . $get_status . ' -> ' . $midway_status . '->' . $order_status );
 		}
 
-			public function maybe_handle_cron_normalize_stasuses() {
-		try {
-			WFOCU_Common::$start_time = time();
+		public function maybe_handle_cron_normalize_stasuses() {
+			try {
+				WFOCU_Common::$start_time = time();
 
-			$get_orders = WFOCU_Common::wc_get_orders( array(
-				'status'    => 'wfocu-pri-order',
-				'limit'     => 100,
-				'post_type' => 'shop_order',
-			), [ 'key' => '_wfocu_schedule_status', 'value' => true ] );
+				$get_orders = WFOCU_Common::wc_get_orders(
+					array(
+						'status'    => 'wfocu-pri-order',
+						'limit'     => 100,
+						'post_type' => 'shop_order',
+					),
+					array(
+						'key'   => '_wfocu_schedule_status',
+						'value' => true,
+					)
+				);
 
-			$i       = 0;
-			$get_ttl = WFOCU_Core()->data->get_option( 'ttl_funnel' );
+				$i       = 0;
+				$get_ttl = WFOCU_Core()->data->get_option( 'ttl_funnel' );
 
-			if ( ! empty( $get_orders ) ) {
+				if ( ! empty( $get_orders ) ) {
 
-				do {
+					do {
 
-					if ( ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) ) {
-						// Batch limits reached.
-						break;
-					}
-					$order             = $get_orders[ $i ];
-					$get_schedule_meta = $order->get_meta( '_wfocu_schedule_status', true );
+						if ( ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) ) {
+							// Batch limits reached.
+							break;
+						}
+						$order             = $get_orders[ $i ];
+						$get_schedule_meta = $order->get_meta( '_wfocu_schedule_status', true );
 
-					// Check if $get_schedule_meta is an array before using array_values
-					if ( ! is_array( $get_schedule_meta ) ) {
-						WFOCU_Core()->log->log( 'Skipping order processing for order #' . $order->get_id() . ' due to invalid schedule meta format. Expected array, got: ' . gettype( $get_schedule_meta ) . '. Please check order meta for expected array format.' );
+						// Check if $get_schedule_meta is an array before using array_values
+						if ( ! is_array( $get_schedule_meta ) ) {
+							WFOCU_Core()->log->log( 'Skipping order processing for order #' . $order->get_id() . ' due to invalid schedule meta format. Expected array, got: ' . gettype( $get_schedule_meta ) . '. Please check order meta for expected array format.' );
+							unset( $get_orders[ $i ] );
+							++$i;
+							continue;
+						}
+
+						list( $status, $source_status, $time ) = array_values( $get_schedule_meta );
+
+						/**
+						 * check if the funnel end time reached or not
+						 */
+						if ( $time + ( MINUTE_IN_SECONDS * $get_ttl ) <= time() ) {
+							$this->normalize_order_statuses( $order->get_id(), $status, $source_status );
+						}
+
 						unset( $get_orders[ $i ] );
-						$i ++;
-						continue;
-					}
-
-					list( $status, $source_status, $time ) = array_values( $get_schedule_meta );
-
-					/**
-					 * check if the funnel end time reached or not
-					 */
-					if ( $time + ( MINUTE_IN_SECONDS * $get_ttl ) <= time() ) {
-						$this->normalize_order_statuses( $order->get_id(), $status, $source_status );
-					}
-
-					unset( $get_orders[ $i ] );
-					$i ++;
-				} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
+						++$i;
+					} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
+				}
+			} catch ( \Throwable $e ) {
+				WFOCU_Core()->log->log( 'Error in maybe_handle_cron_normalize_stasuses: ' . $e->getMessage() );
 			}
-		} catch ( \Throwable $e ) {
-			WFOCU_Core()->log->log( 'Error in maybe_handle_cron_normalize_stasuses: ' . $e->getMessage() );
 		}
-	}
 
 		public function maybe_execute_thankyou_hook() {
 			WFOCU_Common::$start_time = time();
 
-
 			add_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfocu_execute_thankyou_order_status' ) );
 			global $wpdb;
 			$statuses_to_query = wc_get_is_paid_statuses();
-			$stasuses_in       = implode( ',', array_map( function ( $a ) {
-				return "'wc-{$a}'";
-			}, $statuses_to_query ) );
+			$stasuses_in       = implode(
+				',',
+				array_map(
+					function ( $a ) {
+						return "'wc-{$a}'";
+					},
+					$statuses_to_query
+				)
+			);
 			remove_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfocu_execute_thankyou_order_status' ) );
 			// @codingStandardsIgnoreStart
 
@@ -382,14 +398,14 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 				$query            = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfocu_upsell_abandoned')
                                 WHERE ord.type = %s
-                                AND ord.status IN ({$stasuses_in}) 
+                                AND ord.status IN ({$stasuses_in})
                                 ORDER BY ord.date_created_gmt DESC LIMIT 0, 100", 'shop_order' );
 
 			} else {
 				$query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfocu_upsell_abandoned')
                                 WHERE p.post_type = %s
-                                AND p.post_status IN ({$stasuses_in}) 
+                                AND p.post_status IN ({$stasuses_in})
                                 ORDER BY p.post_date DESC LIMIT 0, 100", 'shop_order' );
 			}
 
@@ -398,9 +414,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			// @codingStandardsIgnoreEnd
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
-				$get_orders = array_map( function ( $query_instance ) {
-					return wc_get_order( $query_instance->ID );
-				}, $query_results );
+				$get_orders = array_map(
+					function ( $query_instance ) {
+						return wc_get_order( $query_instance->ID );
+					},
+					$query_results
+				);
 
 				$i       = 0;
 				$get_ttl = WFOCU_Core()->data->get_option( 'ttl_funnel' );
@@ -429,15 +448,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 								 * We only placed this code here to silently capture the PHP errors during thankyou hook running
 								 */
 							}
-
 						}
 
 						unset( $get_orders[ $i ] );
-						$i ++;
+						++$i;
 					} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
 				}
 			}
-
 
 			/**
 			 * We are handling cases of stripe gateway here,
@@ -468,9 +485,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 				// @codingStandardsIgnoreEnd
 				if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
-					$get_orders = array_map( function ( $query_instance ) {
-						return wc_get_order( $query_instance->ID );
-					}, $query_results );
+					$get_orders = array_map(
+						function ( $query_instance ) {
+							return wc_get_order( $query_instance->ID );
+						},
+						$query_results
+					);
 
 					$i = 0;
 					if ( ! empty( $get_orders ) ) {
@@ -484,13 +504,11 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 							try {
 
-
 								/**
 								 * Delete the metadata straight way to avoid any scenario of processing the order more than once
 								 */
 								$order->delete_meta_data( '_fkwcs_webhook_paid' );
 								$order->save_meta_data();
-
 
 								/**
 								 * If the order is already paid, we should not process it again
@@ -509,33 +527,30 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 								}
 								$intent = $gateway->get_intent_from_order( $order );
 								if ( false === $intent ) {
-									FKWCS\Gateway\Stripe\Helper::log( " Intent Not Found  - " . $order->get_id() );
+									FKWCS\Gateway\Stripe\Helper::log( ' Intent Not Found  - ' . $order->get_id() );
 
 									continue;
 								}
 								if ( method_exists( $gateway, 'handle_intent_success' ) ) {
-									FKWCS\Gateway\Stripe\Helper::log( " Upsell schedule Processing order  - " . $order->get_id() );
+									FKWCS\Gateway\Stripe\Helper::log( ' Upsell schedule Processing order  - ' . $order->get_id() );
 
 									$gateway->handle_intent_success( $intent, $order );
 								}
-
-							} catch ( Error|Exception $e ) {
+							} catch ( Error | Exception $e ) {
 								if ( isset( $order ) && $order instanceof WC_Order ) {
 									$order->delete_meta_data( '_fkwcs_webhook_paid' );
 									$order->save_meta_data();
 								}
-								FKWCS\Gateway\Stripe\Helper::log( " Upsell schedule Error occurred - " . $e->getMessage() );
+								FKWCS\Gateway\Stripe\Helper::log( ' Upsell schedule Error occurred - ' . $e->getMessage() );
 
 							}
 
 							unset( $get_orders[ $i ] );
-							$i ++;
+							++$i;
 						} while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) );
 					}
 				}
 			}
-
-
 		}
 
 		public function wfocu_execute_thankyou_order_status( $all_status ) {
@@ -559,7 +574,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 				$ids[] = $item_id = $order->add_product( wc_get_product( $product['id'] ), $product['qty'], $product['args'] );
 
-				$item_meta = apply_filters( 'wfocu_add_product_to_order_item_meta', [ '_upstroke_purchase' => 'yes' ], $item_id, $product );
+				$item_meta = apply_filters( 'wfocu_add_product_to_order_item_meta', array( '_upstroke_purchase' => 'yes' ), $item_id, $product );
 				foreach ( $item_meta as $key => $value ) {
 					wc_add_order_item_meta( $item_id, $key, $value );
 				}
@@ -580,7 +595,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			$order->calculate_totals( apply_filters( 'wfocu_do_calculate_taxes_after_batch', true, $order, $package ) );
 
 			return apply_filters( 'wfocu_added_products_to_the_order', $ids, $order );
-
 		}
 
 		/**
@@ -614,11 +628,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 						if ( isset( $get_package['shipping']['override'] ) && 'true' === $get_package['shipping']['override'] ) {
 							$item = new WC_Order_Item_Shipping();
-							$item->set_props( array(
-								'method_title' => $get_package['shipping']['label'],
-								'method_id'    => $get_package['shipping']['value'],
-								'total'        => $get_package['shipping']['diff']['cost'],
-							) );
+							$item->set_props(
+								array(
+									'method_title' => $get_package['shipping']['label'],
+									'method_id'    => $get_package['shipping']['value'],
+									'total'        => $get_package['shipping']['diff']['cost'],
+								)
+							);
 							$item->save();
 							$order->add_item( $item );
 
@@ -647,7 +663,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 							 * get the taxes and iterate over them to create a new set of taxes to apply to the item
 							 */
 							if ( is_array( $get_taxes ) && count( $get_taxes ) > 0 ) {
-								$taxes = [ 'total' => [] ];
+								$taxes = array( 'total' => array() );
 								foreach ( $get_taxes['total'] as $key => $val ) {
 									$taxes['total'][ $key ] = $val + $get_package['shipping']['diff']['tax'];
 								}
@@ -689,11 +705,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 						 */
 						$order->remove_item( $item_shipping_key );
 						$item = new WC_Order_Item_Shipping();
-						$item->set_props( array(
-							'method_title' => $get_package['shipping']['label'],
-							'method_id'    => $get_package['shipping']['value'],
-							'total'        => 0,
-						) );
+						$item->set_props(
+							array(
+								'method_title' => $get_package['shipping']['label'],
+								'method_id'    => $get_package['shipping']['value'],
+								'total'        => 0,
+							)
+						);
 						$item->save();
 						$this->item_shipping_batch = $item->get_id();
 						$order->add_item( $item );
@@ -711,11 +729,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					$order->save();
 				} else {
 					$item = new WC_Order_Item_Shipping();
-					$item->set_props( array(
-						'method_title' => $get_package['shipping']['label'],
-						'method_id'    => $get_package['shipping']['value'],
-						'total'        => $get_package['shipping']['diff']['cost'],
-					) );
+					$item->set_props(
+						array(
+							'method_title' => $get_package['shipping']['label'],
+							'method_id'    => $get_package['shipping']['value'],
+							'total'        => $get_package['shipping']['diff']['cost'],
+						)
+					);
 					$item->save();
 					$order->add_item( $item );
 					$this->item_shipping_batch = $item->get_id();
@@ -731,16 +751,14 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					 */
 
 				}
-
 			}
 
 			$this->maybe_add_shipping_address( $order );
-
 		}
 
 		/**
 		 *
-		 * @param array $package
+		 * @param array    $package
 		 * @param WC_Order $parent
 		 * @param WC_Order $new
 		 */
@@ -754,11 +772,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					if ( 'free_shipping' !== $package['shipping']['value'] || 'fixed' === $package['shipping']['value'] ) {
 
 						$item = new WC_Order_Item_Shipping();
-						$item->set_props( array(
-							'method_title' => $package['shipping']['label'],
-							'method_id'    => $package['shipping']['value'],
-							'total'        => $package['shipping']['diff']['cost'],
-						) );
+						$item->set_props(
+							array(
+								'method_title' => $package['shipping']['label'],
+								'method_id'    => $package['shipping']['value'],
+								'total'        => $package['shipping']['diff']['cost'],
+							)
+						);
 						$item->save();
 						$new->add_item( $item );
 					} else {
@@ -768,11 +788,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 						 */
 
 						$item = new WC_Order_Item_Shipping();
-						$item->set_props( array(
-							'method_title' => $package['shipping']['label'],
-							'method_id'    => $package['shipping']['value'],
-							'total'        => 0,
-						) );
+						$item->set_props(
+							array(
+								'method_title' => $package['shipping']['label'],
+								'method_id'    => $package['shipping']['value'],
+								'total'        => 0,
+							)
+						);
 						$item->save();
 						$new->add_item( $item );
 
@@ -795,11 +817,13 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					 * @todo handle this case as we have to allow customer to chosen between the offered shipping methods
 					 */
 					$item = new WC_Order_Item_Shipping();
-					$item->set_props( array(
-						'method_title' => $package['shipping']['label'],
-						'method_id'    => $package['shipping']['value'],
-						'total'        => $package['shipping']['diff']['cost'],
-					) );
+					$item->set_props(
+						array(
+							'method_title' => $package['shipping']['label'],
+							'method_id'    => $package['shipping']['value'],
+							'total'        => $package['shipping']['diff']['cost'],
+						)
+					);
 					$item->save();
 					$new->add_item( $item );
 					$new->calculate_totals();
@@ -807,7 +831,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					$new->save();
 
 				}
-
 			}
 			$this->maybe_add_shipping_address( $new );
 		}
@@ -875,7 +898,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 		}
 
 		/**
-		 * @param array $args
+		 * @param array    $args
 		 * @param WC_Order $order_to_inherit
 		 *
 		 * @return WC_Order
@@ -887,7 +910,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			$args = wp_parse_args( $args, $this->get_default_order_args() );
 
 			return $this->create_order( $args, $order_to_inherit );
-
 		}
 
 		public function get_default_order_args() {
@@ -925,32 +947,33 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 						$product                    = $values['data'];
 						$item->legacy_values        = $values; // @deprecated 4.4.0 For legacy actions.
 						$item->legacy_cart_item_key = $key; // @deprecated 4.4.0 For legacy actions.
-						$item->set_props( array(
-							'quantity'  => isset( $values['qty'] ) ? $values['qty'] : 0,
-							'variation' => isset( $values['args']['variation'] ) ? $values['args']['variation'] : array(),
-							'subtotal'  => isset( $values['args']['subtotal'] ) ? $values['args']['subtotal'] : 0,
-							'total'     => isset( $values['args']['total'] ) ? $values['args']['total'] : 0
-						) );
+						$item->set_props(
+							array(
+								'quantity'  => isset( $values['qty'] ) ? $values['qty'] : 0,
+								'variation' => isset( $values['args']['variation'] ) ? $values['args']['variation'] : array(),
+								'subtotal'  => isset( $values['args']['subtotal'] ) ? $values['args']['subtotal'] : 0,
+								'total'     => isset( $values['args']['total'] ) ? $values['args']['total'] : 0,
+							)
+						);
 
 						if ( $product ) {
-							$item->set_props( array(
-								'name'         => $product->get_name(),
-								'tax_class'    => $product->get_tax_class(),
-								'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
-								'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
-							) );
+							$item->set_props(
+								array(
+									'name'         => $product->get_name(),
+									'tax_class'    => $product->get_tax_class(),
+									'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
+									'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
+								)
+							);
 						}
 
 						$item->set_backorder_meta();
 						$order->add_item( $item );
 
-
-						$item_meta = apply_filters( 'wfocu_add_product_to_order_item_meta', [ '_upstroke_purchase' => 'yes' ], $item->get_id(), $values );
+						$item_meta = apply_filters( 'wfocu_add_product_to_order_item_meta', array( '_upstroke_purchase' => 'yes' ), $item->get_id(), $values );
 						foreach ( $item_meta as $m_key => $m_value ) {
 							$item->add_meta_data( $m_key, $m_value, true );
 						}
-
-
 					}
 					$order = apply_filters( 'wfocu_new_order_before_calculate', $order, $args, $order_to_inherit );
 
@@ -985,7 +1008,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 					$explode_meta_keys = apply_filters( 'wfocu_order_copy_meta_keys', $meta_keys_to_copy, $order );
 
-
 					/**
 					 * We are copying the order attribution meta from the primary order to the new order
 					 * This is required for the order attribution feature of the WooCommerce
@@ -993,13 +1015,12 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 					if ( function_exists( 'wc_get_container' ) && class_exists( '\Automattic\WooCommerce\Internal\Orders\OrderAttributionController' ) && class_exists( 'Automattic\WooCommerce\Internal\Features\FeaturesController' ) && $container = wc_get_container() ) { //phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found, WordPress.CodeAnalysis.AssignmentInCondition.Found
 
-
 						$order_attribute_instance = $container->get( \Automattic\WooCommerce\Internal\Orders\OrderAttributionController::class );
 						if ( $order_attribute_instance instanceof \Automattic\WooCommerce\Internal\Orders\OrderAttributionController ) {
 							$feature_enabled = $container->get( Automattic\WooCommerce\Internal\Features\FeaturesController::class );
 							if ( $feature_enabled->feature_is_enabled( 'order_attribution' ) ) {
 
-								$fields = [];
+								$fields = array();
 								if ( method_exists( $order_attribute_instance, 'get_fields' ) ) {
 									$fields = $order_attribute_instance->get_fields();
 								} elseif ( method_exists( $order_attribute_instance, 'get_field_names' ) ) {
@@ -1025,7 +1046,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 							}
 						}
 					}
-
 
 					if ( is_array( $explode_meta_keys ) ) {
 						foreach ( $explode_meta_keys as $key ) {
@@ -1075,7 +1095,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 			$args                    = wp_parse_args( $args, $this->get_default_order_args() );
 
 			return $this->create_order( $args, $order_to_inherit );
-
 		}
 
 		/**
@@ -1130,14 +1149,16 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 				if ( ! $gateway->supports( 'refunds' ) || ( 0 === $get_parent_order->get_total() ) ) {
 					$get_parent_order->update_status( 'wc-cancelled' );
 				} else {
-					wc_create_refund( array(
-						'order_id'       => WFOCU_WC_Compatibility::get_order_id( $get_parent_order ),
-						'amount'         => $get_parent_order->get_total(),
-						'reason'         => __( 'Refund Processed', 'woofunnels-upstroke-one-click-upsell' ),
-						'refund_payment' => true,
-						'restock_items'  => true,
-						'line_items'     => $get_parent_order->get_items()
-					) );
+					wc_create_refund(
+						array(
+							'order_id'       => WFOCU_WC_Compatibility::get_order_id( $get_parent_order ),
+							'amount'         => $get_parent_order->get_total(),
+							'reason'         => __( 'Refund Processed', 'woofunnels-upstroke-one-click-upsell' ),
+							'refund_payment' => true,
+							'restock_items'  => true,
+							'line_items'     => $get_parent_order->get_items(),
+						)
+					);
 				}
 			} else {
 
@@ -1191,19 +1212,21 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 							}
 
 							if ( $new_stock < 0 ) {
-								do_action( 'woocommerce_product_on_backorder', array(
-									'product'  => $product,
-									'order_id' => WFOCU_WC_Compatibility::get_order_id( $order ),
-									'quantity' => $qty,
-								) );
+								do_action(
+									'woocommerce_product_on_backorder',
+									array(
+										'product'  => $product,
+										'order_id' => WFOCU_WC_Compatibility::get_order_id( $order ),
+										'quantity' => $qty,
+									)
+								);
 							}
 						}
 					}
-					$index ++;
+					++$index;
 				}
 				do_action( 'wfocu_after_reduce_stock_on_batching', $package['products'], $order, $items );
 			}
-
 		}
 
 
@@ -1256,32 +1279,34 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					return;
 				}
 
-				$results = WFOCU_Core()->track->query_results( array(
-					'data'         => array(),
-					'where'        => array(
-						array(
-							'key'      => 'session.order_id',
-							'value'    => WFOCU_WC_Compatibility::get_order_id( $order ),
-							'operator' => '=',
+				$results = WFOCU_Core()->track->query_results(
+					array(
+						'data'         => array(),
+						'where'        => array(
+							array(
+								'key'      => 'session.order_id',
+								'value'    => WFOCU_WC_Compatibility::get_order_id( $order ),
+								'operator' => '=',
+							),
+							array(
+								'key'      => 'events.action_type_id',
+								'value'    => 4,
+								'operator' => '=',
+							),
 						),
-						array(
-							'key'      => 'events.action_type_id',
-							'value'    => 4,
-							'operator' => '=',
+						'where_meta'   => array(
+							array(
+								'type'       => 'meta',
+								'meta_key'   => '_new_order', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+								'meta_value' => '', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+								'operator'   => '!=',
+							),
 						),
-					),
-					'where_meta'   => array(
-						array(
-							'type'       => 'meta',
-							'meta_key'   => '_new_order', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-							'meta_value' => '', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-							'operator'   => '!=',
-						),
-					),
-					'session_join' => true,
-					'order_by'     => 'events.id DESC',
-					'query_type'   => 'get_results',
-				) );
+						'session_join' => true,
+						'order_by'     => 'events.id DESC',
+						'query_type'   => 'get_results',
+					)
+				);
 
 				if ( is_wp_error( $results ) || ( is_array( $results ) && empty( $results ) ) ) {
 
@@ -1291,7 +1316,7 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					$get_meta = $order->get_meta( '_wfocu_sibling_order', false );
 
 					if ( ( is_array( $get_meta ) && ! empty( $get_meta ) ) ) {
-						$results = [];
+						$results = array();
 						foreach ( $get_meta as $meta ) {
 							$single = new stdClass();
 							if ( $meta->get_data()['value'] instanceof WC_Order ) {
@@ -1310,15 +1335,15 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 				?>
 
-                <style>
-                    .wfocu-additional-order-wrapper .woocommerce-order-details__title {
-                        display: none !important;
-                    }
+				<style>
+					.wfocu-additional-order-wrapper .woocommerce-order-details__title {
+						display: none !important;
+					}
 
-                    .wfocu-additional-order-wrapper .woocommerce-customer-details {
-                        display: none !important;
-                    }
-                </style>
+					.wfocu-additional-order-wrapper .woocommerce-customer-details {
+						display: none !important;
+					}
+				</style>
 
 				<?php
 
@@ -1330,8 +1355,8 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 					echo '</div>';
 				}
 				?>
-                </tbody>
-                </table>
+				</tbody>
+				</table>
 				<?php
 				if ( 'woocommerce_before_template_part' === current_action() ) {
 					remove_action( 'woocommerce_after_template_part', array( $this, 'maybe_show_related_orders' ), 10, 4 );
@@ -1374,34 +1399,39 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 				$have_pending_payment_complete_action = $get_order->get_meta( '_wfocu_payment_complete_on_hold', true );
 				if ( 'yes' === $have_pending_payment_complete_action ) {
-					$order_id = WFOCU_WC_Compatibility::get_order_id( $get_order );
+					$order_id       = WFOCU_WC_Compatibility::get_order_id( $get_order );
 					$transaction_id = $get_order->get_transaction_id();
 					do_action( 'woocommerce_payment_complete', $order_id, $transaction_id );
 				}
 			}
-
 		}
 
 		public function maybe_show_order_details( $atts ) {
 			$result = false;
 
-			$atts = shortcode_atts( array(
-				'order_id' => '',
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'order_id' => '',
+				),
+				$atts
+			);
 
-			if ( ! empty( $_GET['key'] ) || ! empty( $_GET['ctp_order_key'] ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order key parameter for frontend order lookup
+			if ( ! empty( $_GET['key'] ) || ! empty( $_GET['ctp_order_key'] ) ) {
 				$order_key = '';
 
-				if ( ! empty( $_GET['key'] ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					$order_key = wc_clean( $_GET['key'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order key parameter for frontend order lookup
+				if ( ! empty( $_GET['key'] ) ) {
+					$order_key = bwf_clean( wp_unslash( $_GET['key'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				}
 
 				/**
 				 * Compatibility with "Custom Thank You Pages Per Product for WooCommerce"
 				 * In case of custom thank you page setup by external plugin.
 				 */
-				if ( ! empty( $_GET['ctp_order_key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					$order_key = wc_clean( $_GET['ctp_order_key'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order key parameter for frontend order lookup
+				if ( ! empty( $_GET['ctp_order_key'] ) ) {
+					$order_key = bwf_clean( wp_unslash( $_GET['ctp_order_key'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Order key parameter for frontend order lookup
 				}
 
 				$order = wc_get_order_id_by_order_key( $order_key );
@@ -1422,10 +1452,16 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 					echo '<div class="woocommerce">';
 
-					echo '<link rel="stylesheet" href="' . esc_url( str_replace( array( //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+					echo '<link rel="stylesheet" href="' . esc_url(
+						str_replace(
+							array( //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 								'http:',
 								'https:',
-							), '', WC()->plugin_url() ) . '/assets/css/woocommerce.css' ) . '" type="text/css" media="all" />';
+							),
+							'',
+							WC()->plugin_url()
+						) . '/assets/css/woocommerce.css'
+					) . '" type="text/css" media="all" />';
 
 					wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
 
@@ -1456,7 +1492,6 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 
 			$get_order->delete_meta_data( '_wfocu_upsell_abandoned' );
 			$get_order->save_meta_data();
-
 		}
 
 		public function maybe_set_funnel_running_status( $order ) {
@@ -1488,12 +1523,9 @@ if ( ! class_exists( 'WFOCU_Orders' ) ) {
 				$item->set_taxes( $this->temp['shipping'][ $item->get_id() ] );
 			}
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {
 		WFOCU_Core::register( 'orders', 'WFOCU_Orders' );
 	}
-
 }

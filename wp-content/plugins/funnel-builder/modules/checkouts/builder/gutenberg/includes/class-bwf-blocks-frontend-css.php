@@ -50,7 +50,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 		public function __construct() {
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_inline_css' ) );
 			add_filter( 'render_block', array( $this, 'gather_google_fonts' ), 9, 2 );
-
 		}
 
 		/**
@@ -81,7 +80,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 		 */
 		public function frontend_inline_css() {
 
-
 			if ( ! function_exists( 'has_blocks' ) || ! has_blocks( WFACP_Common::get_id() ) ) {
 				return;
 			}
@@ -100,15 +98,14 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$post_to_pass = $wp_query->posts[0];
 			}
 			$this->frontend_build_css( $post_to_pass );
-
 		}
 
 		/**
 		 * Render Inline CSS helper function
 		 *
-		 * @param array $css the css for each rendered block.
+		 * @param array  $css the css for each rendered block.
 		 * @param string $style_id the unique id for the rendered style.
-		 * @param bool $in_content the bool for whether or not it should run in content.
+		 * @param bool   $in_content the bool for whether or not it should run in content.
 		 */
 		public function render_inline_css( $css, $style_id, $in_content = false ) {
 			if ( ! is_admin() ) {
@@ -122,7 +119,7 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * Gets the parsed blocks, need to use this becuase wordpress 5 doesn't seem to include gutenberg_parse_blocks
+		 * Gets the parsed blocks, need to use this becuase WordPress 5 doesn't seem to include gutenberg_parse_blocks
 		 *
 		 * @param string $content string of page/post content.
 		 */
@@ -162,11 +159,14 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				}
 				$this->compute_bwf_blocks( $blocks );
 
-
 			}
 		}
 
 		public function compute_bwf_blocks( $blocks ) {
+			$template = wfacp_template();
+			if ( null !== $template ) {
+				$this->total_steps = $template->get_step_count();
+			}
 			foreach ( $blocks as $indexkey => $block ) {
 				$block = apply_filters( 'bwf_blocks_frontend_build_css', $block );
 				if ( ! is_object( $block ) && is_array( $block ) && isset( $block['blockName'] ) ) {
@@ -186,7 +186,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 							}
 						}
 					}
-
 
 					if ( 'core/block' === $block['blockName'] ) {
 						if ( isset( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
@@ -210,9 +209,9 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 		}
 
 		/**
-		 * @param mixed $attr
+		 * @param mixed  $attr
 		 * @param string $indexkey - check whether indexkey is set in $attr[] array or not
-		 * @param mixed $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
+		 * @param mixed  $default - function return default value which you passed as a 3rd parameter eg. you need 'inherit' value when $indexkey value is true
 		 *
 		 * @return void
 		 */
@@ -222,10 +221,8 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				if ( isset( $attr[ $indexkey ] ) ) {
 					$value = $attr[ $indexkey ];
 				}
-			} else {
-				if ( isset( $attr[ $indexkey ] ) && isset( $attr[ $indexkey ][ $screen ] ) ) {
+			} elseif ( isset( $attr[ $indexkey ] ) && isset( $attr[ $indexkey ][ $screen ] ) ) {
 					$value = $attr[ $indexkey ][ $screen ];
-				}
 			}
 
 			return ! is_null( $default_val ) && ! empty( $value ) ? $default_val : $value;
@@ -241,7 +238,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			}
 
 			return $attr;
-
 		}
 
 		public function render_checkout_form_css_head( $attr, $unique_id ) {
@@ -251,99 +247,99 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			$media_query['mobile'] = apply_filters( 'bwf_blocks_mobile_media_query', '(max-width: 767px)' );
 			$media_query['tablet'] = apply_filters( 'bwf_blocks_tablet_media_query', '(max-width: 1024px)' );
 
-			$defaults = [
-				'formFont'               => [
-					'desktop' => [
-						'family' => 'Open Sans'
-					]
-				],
-				'buttonSubTextColor'     => [
-					'desktop' => '#ffffff'
-				],
-				'buttonIconColor'        => [
-					'desktop' => '#ffffff'
-				],
-				'inpFieldFont'           => [
-					'desktop' => [
+			$defaults = array(
+				'formFont'               => array(
+					'desktop' => array(
+						'family' => 'Open Sans',
+					),
+				),
+				'buttonSubTextColor'     => array(
+					'desktop' => '#ffffff',
+				),
+				'buttonIconColor'        => array(
+					'desktop' => '#ffffff',
+				),
+				'inpFieldFont'           => array(
+					'desktop' => array(
 						'size'     => 14,
-						'sizeUnit' => 'px'
-					],
-					'mobile'  => [
+						'sizeUnit' => 'px',
+					),
+					'mobile'  => array(
 						'size'     => 16,
-						'sizeUnit' => 'px'
-					]
-				],
-				'inpFieldFocusColor'     => [
-					'desktop' => '#61BDF7'
-				],
-				'inpFieldErrorColor'     => [
-					'desktop' => '#D50000'
-				],
-				'inpFieldBorder'         => [
-					'desktop' => [
-						"radius"       => "4",
-						"top-right"    => "4",
-						"bottom-left"  => "4",
-						"bottom-right" => "4",
-						"radius_unit"  => "px",
-						"unit"         => "px",
-					]
-				],
-				'wfacpCouponFieldBorder' => [
-					'desktop' => [
-						"radius"       => "4",
-						"top-right"    => "4",
-						"bottom-left"  => "4",
-						"bottom-right" => "4",
-						"radius_unit"  => "px",
-						"unit"         => "px",
-					]
-				],
-				'collapseMargin'         => [
-					'desktop' => [
+						'sizeUnit' => 'px',
+					),
+				),
+				'inpFieldFocusColor'     => array(
+					'desktop' => '#61BDF7',
+				),
+				'inpFieldErrorColor'     => array(
+					'desktop' => '#D50000',
+				),
+				'inpFieldBorder'         => array(
+					'desktop' => array(
+						'radius'       => '4',
+						'top-right'    => '4',
+						'bottom-left'  => '4',
+						'bottom-right' => '4',
+						'radius_unit'  => 'px',
+						'unit'         => 'px',
+					),
+				),
+				'wfacpCouponFieldBorder' => array(
+					'desktop' => array(
+						'radius'       => '4',
+						'top-right'    => '4',
+						'bottom-left'  => '4',
+						'bottom-right' => '4',
+						'radius_unit'  => 'px',
+						'unit'         => 'px',
+					),
+				),
+				'collapseMargin'         => array(
+					'desktop' => array(
 						'top'    => 0,
 						'right'  => 0,
 						'bottom' => 15,
 						'left'   => 0,
 						'unit'   => 'px',
-					]
-				],
-				'buttonWidth'            => [
-					'desktop' => [
+					),
+				),
+				'buttonWidth'            => array(
+					'desktop' => array(
 						'value' => 100,
-						'unit'  => '%'
-					]
-				],
-				'buttonPadding'          => [
-					'desktop' => [
+						'unit'  => '%',
+					),
+				),
+				'buttonPadding'          => array(
+					'desktop' => array(
 						'top'    => 15,
 						'right'  => 25,
 						'bottom' => 15,
 						'left'   => 25,
 						'unit'   => 'px',
-					],
-					'mobile'  => [
+					),
+					'mobile'  => array(
 						'top'    => 10,
 						'right'  => 20,
 						'bottom' => 10,
 						'left'   => 20,
 						'unit'   => 'px',
-					]
-				],
+					),
+				),
 
-			];
-			$attr     = wp_parse_args( $attr, $defaults );
+			);
+			$attr = wp_parse_args( $attr, $defaults );
 
 			$unique_class = '.wfacp-checkout-form-block.wfacp-' . $unique_id;
 			$screens      = array( 'desktop', 'tablet', 'mobile' );
 
-			$btnSelector = [
+			$btnSelector = array(
 				1 => 1 === $this->total_steps ? '{{WRAPPER}} #wfacp-e-form .single_step #place_order' : '{{WRAPPER}} #wfacp-e-form .single_step .wfacp-next-btn-wrap button',
 				2 => 2 === $this->total_steps ? '{{WRAPPER}} #wfacp-e-form .two_step #place_order' : '{{WRAPPER}} #wfacp-e-form .two_step .wfacp-next-btn-wrap button',
 				3 => '{{WRAPPER}} #wfacp-e-form .third_step #place_order',
-			];
+			);
 
-			for ( $i = 1; $i <= $this->total_steps; $i ++ ) {
+			for ( $i = 1; $i <= $this->total_steps; $i++ ) {
 				if ( $this->has_attr( $attr, 'enable_icon_with_place_order_' . $i ) ) {
 					$css->set_selector( $this->add_wrapper( $btnSelector[ $i ] . ':before', $unique_class ) );
 					$css->add_property( 'content', "'" . ( $this->has_attr( $attr, 'icons_with_place_order_list_' . $i ) ? $this->has_attr( $attr, 'icons_with_place_order_list_' . $i ) : '\e901' ) . "'" );
@@ -352,7 +348,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 					$css->set_selector( $this->add_wrapper( $btnSelector[ $i ] . ':after', $unique_class ) );
 					$css->add_property( 'content', "'" . $this->has_attr( $attr, 'step_' . $i . '_text_after_place_order' ) . "'" );
 				}
-
 			}
 
 			foreach ( $screens as $screen ) {
@@ -371,8 +366,9 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( 'body:not(.wfacpef_page) {{WRAPPER}} #wfacp-e-form .wfacp-form', $unique_class ) );
 				$css->add_property( 'padding', $this->has_attr( $attr, 'formPadding', $screen ) );
 
-
-				$css->set_selector( $this->add_wrapper( 'body #wfacp-e-form *:not(i),
+				$css->set_selector(
+					$this->add_wrapper(
+						'body #wfacp-e-form *:not(i),
 			body .wfacp_qv-main *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_section_heading.wfacp_section_title,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .wfacp_whats_included h3,
@@ -577,11 +573,15 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th small,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'formFont', $screen ) );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-form-login-toggle .woocommerce-info,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-form-login-toggle .woocommerce-info,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-form-login.login p,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-privacy-policy-text p,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-info .message-container,
@@ -598,20 +598,30 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p,
 			{{WRAPPER}} #wfacp-e-form .wfacp-form label.woocommerce-form__label .woocommerce-terms-and-conditions-checkbox-text,
 			{{WRAPPER}} #wfacp-e-form fieldset,
-			{{WRAPPER}} #wfacp-e-form fieldset legend ', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form fieldset legend ',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'formContentColor', $screen ) ? $this->has_attr( $attr, 'formContentColor', $screen ) : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  #payment li.wc_payment_method input.input-radio:checked::before,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  #payment li.wc_payment_method input.input-radio:checked::before,
 			{{WRAPPER}} #wfacp-e-form  #payment.wc_payment_method input[type=radio]:checked:before,
 			{{WRAPPER}} #wfacp-e-form  input[type=radio]:checked:before,
 			{{WRAPPER}} #wfacp-e-form  button[type=submit],
-			{{WRAPPER}} #wfacp-e-form  button[type=button],
+			{{WRAPPER}} #wfacp-e-form  button[type=button]:not(.gpay-button),
 			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button,
-			.wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn', $unique_class ) );
+			.wfacp_mini_cart_start_h .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn',
+						$unique_class
+					)
+				);
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'formPrimaryColor', $screen ) ? $this->has_attr( $attr, 'formPrimaryColor', $screen ) : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered,
 			{{WRAPPER}} .wfacp_main_form.woocommerce #payment li.wc_payment_method input.input-radio:checked,
@@ -627,7 +637,10 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp-form input[type=checkbox]:checked,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment input[type=checkbox]:checked,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper .wfacp-form-control:checked,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked',
+						$unique_class
+					)
+				);
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'formPrimaryColor', $screen ) ? $this->has_attr( $attr, 'formPrimaryColor', $screen ) : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  p.form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus, {{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered', $unique_class ) );
@@ -636,8 +649,9 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked:before', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'formPrimaryColor', $screen ) ? $this->has_attr( $attr, 'formPrimaryColor', $screen ) . ' !important' : '' );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a,
 			{{WRAPPER}} #wfacp-e-form a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have ):not(.wfacp_cart_link):not(.wfacp_summary_link),
 			{{WRAPPER}} #wfacp-e-form label a,
 			{{WRAPPER}} #wfacp-e-form ul li a:not(.wfacp_breadcrumb_link),
@@ -646,10 +660,15 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form a.wfacp_remove_coupon,
 			{{WRAPPER}} #wfacp-e-form a:not(.button-social-login):not(.wfob_read_more_link),
 			{{WRAPPER}} #wfacp-e-form .wfacp-login-wrapper input#rememberme + span,
-			{{WRAPPER}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'formLinkColor', $screen ) ? $this->has_attr( $attr, 'formLinkColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a:hover,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .woocommerce-form-login-toggle .woocommerce-info a:hover,
 			{{WRAPPER}} #wfacp-e-form a:not(.wfacp_close_icon):not(.button-social-login):hover:not(.wfob_btn_add):hover:not(.ywcmas_shipping_address_button_new):hover:not(.wfacp_cart_link):hover:not(.wfacp_back_page_button):hover:not(.wfacp_summary_link),
 			{{WRAPPER}} #wfacp-e-form label a:hover,
 			{{WRAPPER}} #wfacp-e-form ul li a:not(.wfacp_breadcrumb_link):hover,
@@ -657,13 +676,14 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form a.wfacp_remove_coupon:hover,
 			{{WRAPPER}} #wfacp-e-form a:not(.button-social-login):not(.wfob_read_more_link):hover,
 			{{WRAPPER}} #wfacp-e-form .wfacp-login-wrapper input#rememberme + span:hover,
-			{{WRAPPER}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button:hover', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_switcher_description a.wfacp_qv-button:hover',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'formLinkColorHover', $screen ) ? $this->has_attr( $attr, 'formLinkColorHover', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-payment-tab-list .wfacp-order2StepHeaderText', $unique_class ) );
 				$css->add_property( 'text-align', $this->has_attr( $attr, 'stepAlignment', $screen ) );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-order2StepTitle.wfacp-order2StepTitleS1', $unique_class ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'stepHeadingLineHeight', $screen ), true );
@@ -671,13 +691,11 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'stepHeadingFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'stepHeadingTextStyle', $screen ) );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-order2StepSubTitle.wfacp-order2StepSubTitleS1', $unique_class ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'stepSubHeadingLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'stepSubHeadingLetterSpacing', $screen ), true );
 				$css->add_property( 'font', $this->has_attr( $attr, 'stepSubHeadingFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'stepSubHeadingTextStyle', $screen ) );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a ', $unique_class ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'brdHeadingLineHeight', $screen ), true );
@@ -685,59 +703,46 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'font', $this->has_attr( $attr, 'brdHeadingFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'brdHeadingTextStyle', $screen ) );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'brdColor', $screen ) ? $this->has_attr( $attr, 'brdColor', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce .wfacp_steps_sec ul li a:hover', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'brdColorHover', $screen ) ? $this->has_attr( $attr, 'brdColorHover', $screen ) . ' !important' : '' );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active', $unique_class ) );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'stepBackground', $screen ) ? $this->has_attr( $attr, 'stepBackground', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp_tcolor', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'stepColor', $screen ) ? $this->has_attr( $attr, 'stepColor', $screen ) . ' !important' : '' );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-payment-tab-list.wfacp-active', $unique_class ) );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'stepBorderColor', $screen ) ? $this->has_attr( $attr, 'stepBorderColor', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list.wfacp-active .wfacp-order2StepNumber', $unique_class ) );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'stepCountBackground', $screen ) ? $this->has_attr( $attr, 'stepCountBackground', $screen ) . ' !important' : '' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'stepCountColor', $screen ) ? $this->has_attr( $attr, 'stepCountColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'stepCountBorderColor', $screen ) ? $this->has_attr( $attr, 'stepCountBorderColor', $screen ) . ' !important' : '' );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list', $unique_class ) );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'stepBackgroundInactive', $screen ) ? $this->has_attr( $attr, 'stepBackgroundInactive', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp_tcolor', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'stepColorInactive', $screen ) ? $this->has_attr( $attr, 'stepColorInactive', $screen ) . ' !important' : '' );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-payment-tab-list', $unique_class ) );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'stepBorderColorInactive', $screen ) ? $this->has_attr( $attr, 'stepBorderColorInactive', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list .wfacp-order2StepNumber', $unique_class ) );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'stepCountBackgroundInactive', $screen ) ? $this->has_attr( $attr, 'stepCountBackgroundInactive', $screen ) . ' !important' : '' );
 				$css->add_property( 'color', $this->has_attr( $attr, 'stepCountColorInactive', $screen ) ? $this->has_attr( $attr, 'stepCountColorInactive', $screen ) . ' !important' : '' );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'stepCountBorderColorInactive', $screen ) ? $this->has_attr( $attr, 'stepCountBorderColorInactive', $screen ) . ' !important' : '' );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_form_steps .wfacp-payment-tab-list ', $unique_class ) );
 				$css->add_property( 'border', $this->has_attr( $attr, 'stepBorder', $screen ) );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .tab', $unique_class ) );
-//			$css->add_property( 'margin-bottom', '15px' );
+				// $css->add_property( 'margin-bottom', '15px' );
 				$css->add_property( 'margin', $this->has_attr( $attr, 'stepMargin', $screen ) );
-
 
 				/**Form Heading Styling */
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_section_title', $unique_class ) );
@@ -761,23 +766,35 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'background', $this->has_attr( $attr, 'headingBackground', $screen ) );
 
 				/* Form Field Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper label.wfacp-form-control-label,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper label.wfacp-form-control-label,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .create-account label,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .create-account label span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp-form-control-wrapper:not(.wfacp-anim-wrap) label.wfacp-form-control-label abbr,
 			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-top .form-row:not(.wfacp_checkbox_field) label.wfacp-form-control-label,
 			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-top .form-row:not(.wfacp_checkbox_field) label.wfacp-form-control-label abbr.required,
-			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-top .form-row:not(.wfacp_checkbox_field) label.wfacp-form-control-label .optional ', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-top .form-row:not(.wfacp_checkbox_field) label.wfacp-form-control-label .optional ',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'inpLabelFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'inpLabelTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'inpLabelLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'inpLabelLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label abbr', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control-label abbr',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'inpLabelColor', $screen ) ? $this->has_attr( $attr, 'inpLabelColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="text"],
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="text"],
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="email"],
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="tel"],
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="password"],
@@ -790,15 +807,19 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			body:not(.wfacp_pre_built) .select2-results__option,
 			body:not(.wfacp_pre_built) .select2-container--default .select2-search--dropdown .select2-search__field,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row label.checkbox,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row label.checkbox * ', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row label.checkbox * ',
+						$unique_class
+					)
+				);
 
 				$css->add_property( 'font', $this->has_attr( $attr, 'inpFieldFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'inpFieldTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'inpFieldLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'inpFieldLetterSpacing', $screen ), true );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce select,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row label.checkbox,
@@ -812,10 +833,15 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_options ul li .wfacp_shipping_price,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_subscription_count_wrap p,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_table ul#shipping_method label,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_table ul#shipping_method span', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_shipping_table ul#shipping_method span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'inpFieldColor', $screen ) ? $this->has_attr( $attr, 'inpFieldColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:not(.input-checkbox):not(.hidden),
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:not(.input-checkbox):not(.hidden),
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-form-control:not(.input-checkbox):not(.hidden),
 			{{WRAPPER}} #wfacp-e-form .wfacp_allowed_countries strong,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered,
@@ -826,10 +852,15 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=tel],
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper select,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-login-wrapper input[type=text],
-			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-inside .form-row .wfacp-form-control-label:not(.checkbox)', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp-form.wfacp-inside .form-row .wfacp-form-control-label:not(.checkbox)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'background', $this->has_attr( $attr, 'wfacpInputBackgroundColor', $screen ) ? $this->has_attr( $attr, 'wfacpInputBackgroundColor', $screen ) : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="text"],
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type="text"],
 			{{WRAPPER}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce input[type="email"],
 			{{WRAPPER}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce input[type="tel"],
 			{{WRAPPER}} #wfacp-e-form .wfacp-form .wfacp_main_form.woocommerce input[type="password"],
@@ -840,21 +871,34 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper input[type="emal"].wfacp-form-control,
 			{{WRAPPER}} #wfacp-e-form .wfacp_allowed_countries strong,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .select2-container .select2-selection--single .select2-selection__rendered,
-			{{WRAPPER}} #wfacp-e-form .iti__selected-flag', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .iti__selected-flag',
+						$unique_class
+					)
+				);
 				$css->add_property( 'border', $this->has_attr( $attr, 'inpFieldBorder', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field .wfacp-form-control,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field .wfacp-form-control,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-email .wfacp-form-control,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_coupon_failed .wfacp_coupon_code,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field:not(.wfacp_select2_country_state):not(.wfacp_state_wrap) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.woocommerce-invalid-required-field:not(.wfacp_select2_country_state):not(.wfacp_state_wrap) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered',
+						$unique_class
+					)
+				);
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'inpFieldErrorColor', $screen ) ? $this->has_attr( $attr, 'inpFieldErrorColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'inpFieldErrorColor', $screen ) ? ( '0 0 0 1px ' . $this->has_attr( $attr, 'inpFieldErrorColor', $screen ) . ' !important' ) : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.wfacp_coupon_code):focus,
 			{{WRAPPER}} #wfacp-e-form p.form-row:not(.woocommerce-invalid-email) .wfacp-form-control:not(.input-checkbox):focus,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce p.wfacp_coupon_failed .wfacp_coupon_code,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered',
+						$unique_class
+					)
+				);
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'inpFieldFocusColor', $screen ) ? $this->has_attr( $attr, 'inpFieldFocusColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'inpFieldFocusColor', $screen ) ? ( '0 0 0 1px ' . $this->has_attr( $attr, 'inpFieldFocusColor', $screen ) . ' !important' ) : '' );
 
@@ -866,9 +910,10 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'sectionBorder', $screen ) );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'sectionBoxShadow', $screen ) );
 
-
 				/* Order Summary Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .product-name .product-quantity,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody td.product-total,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .cart_item .product-total span,
@@ -885,7 +930,10 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody dd,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody dt,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody p,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody tr td span:not(.wfacp-pro-count)', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tbody tr td span:not(.wfacp-pro-count)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOrderSummaryProductColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderSummaryProductColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOrderSummaryProductFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOrderSummaryProductTextStyle', $screen ) );
@@ -895,21 +943,28 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form table.shop_table.woocommerce-checkout-review-order-table tr.cart_item .product-image img, {{WRAPPER}} #wfacp-e-form table.shop_table tr.cart_item .product-image img', $unique_class ) );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'wfacpOrderSummaryProductImageColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderSummaryProductImageColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount),
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount),
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) th span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td small,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td bdi,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr:not(.order-total):not(.cart-discount) td a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpOrderSummaryProductMetaLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount bdi,
@@ -924,10 +979,15 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th small,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOrderSummaryTotalColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderSummaryTotalColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td span.woocommerce-Price-amount.amount bdi,
@@ -936,38 +996,55 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td small,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td a,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td p', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total td p',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOrderSummaryTotalFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOrderSummaryTotalTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th small,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.order-total th a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLabelFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLabelTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLabelLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpOrderSummaryTotalLabelLetterSpacing', $screen ), true );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tbody .wfacp_order_summary_item_name,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tr.cart_item,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tr.cart-subtotal,
-			{{WRAPPER}} #wfacp-e-form table.shop_table tr.order-total', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form table.shop_table tr.order-total',
+						$unique_class
+					)
+				);
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'wfacpOrderSummaryDividerColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderSummaryDividerColor', $screen ) . ' !important' : '' );
 
 				/* Order Total Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table tr td,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table tr td,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table tr th,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table tr th *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table tr td *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table.wfacp_order_total_wrap tr td span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table.wfacp_order_total_wrap tr td,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table.wfacp_order_total_wrap tr td strong > span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table.wfacp_order_total_wrap tr td strong > span span.woocommerce-Price-currencySymbol', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_order_total_field table.wfacp_order_total_wrap tr td strong > span span.woocommerce-Price-currencySymbol',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOrderTotalColor', $screen ) ? $this->has_attr( $attr, 'wfacpOrderTotalColor', $screen ) : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOrderTotalFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOrderTotalTextStyle', $screen ) );
@@ -979,37 +1056,61 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'wfacpOrderTotalBorder', $screen ) );
 
 				/** Coupon Code Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount th,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount th,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount th span,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount td,
 			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount td span,
-			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount td a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form  table.shop_table tfoot tr.cart-discount td a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpCouponCodeFont', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th,
-			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th span:not(.wfacp_coupon_code)', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th,
+			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th span:not(.wfacp_coupon_code)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpCouponCodeLabelColor', $screen ) ? $this->has_attr( $attr, 'wfacpCouponCodeLabelColor', $screen ) : '' );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td span,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td a,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td span,
 			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount td span bdi,
-			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th .wfacp_coupon_code', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form table.shop_table tfoot tr.cart-discount th .wfacp_coupon_code',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpCouponCodeColor', $screen ) ? $this->has_attr( $attr, 'wfacpCouponCodeColor', $screen ) : '' );
 
 				/* Coupon Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a,
-			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have ):not(.wfacp_cart_link)', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a,
+			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .woocommerce-info > a:not(.wfacp_close_icon):not(.button-social-login):not(.wfob_btn_add):not(.ywcmas_shipping_address_button_new):not(.wfob_qv-button):not(.wfob_read_more_link):not(.wfacp_step_text_have ):not(.wfacp_cart_link)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpCouponLinkColor', $screen ) ? $this->has_attr( $attr, 'wfacpCouponLinkColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpCouponLinkFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpCouponLinkTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpCouponLinkLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpCouponLinkLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}}  #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper label.wfacp-form-control-label,
-			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper.wfacp-anim-wrap label.wfacp-form-control-label', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}}  #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper label.wfacp-form-control-label,
+			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form .wfacp_coupon_field_box p.wfacp-form-control-wrapper.wfacp-anim-wrap label.wfacp-form-control-label',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpCouponLabelFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpCouponLabelTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpCouponLabelLineHeight', $screen ), true );
@@ -1030,8 +1131,13 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'wfacpCouponFieldColorFocus', $screen ) ? $this->has_attr( $attr, 'wfacpCouponFieldColorFocus', $screen ) . ' !important' : '' );
 				$css->add_property( 'box-shadow', $this->has_attr( $attr, 'wfacpCouponFieldColorFocus', $screen ) ? ( '0 0 0 1px ' . $this->has_attr( $attr, 'wfacpCouponFieldColorFocus', $screen ) . ' !important' ) : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn,
-			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn,
+			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpCouponBtnColor', $screen ) ? $this->has_attr( $attr, 'wfacpCouponBtnColor', $screen ) : '' );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'wfacpCouponBtnBackground', $screen ) ? $this->has_attr( $attr, 'wfacpCouponBtnBackground', $screen ) : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpCouponBtnFont', $screen ) );
@@ -1039,14 +1145,20 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpCouponBtnLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpCouponBtnLetterSpacing', $screen ), true );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:hover,
-			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:hover', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn:hover,
+			{{WRAPPER}} #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-btn:hover',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpCouponBtnColorHover', $screen ) ? $this->has_attr( $attr, 'wfacpCouponBtnColorHover', $screen ) : '' );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'wfacpCouponBtnBackgroundHover', $screen ) ? $this->has_attr( $attr, 'wfacpCouponBtnBackgroundHover', $screen ) : '' );
 
 				/* Product Switching Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_name_inner *,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_name_inner *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes  *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_quantity_selector input,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_price_sec span,
@@ -1054,31 +1166,51 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_subs_details span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_subs_details *,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset.wfacp-selected-product .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpSelectedItemFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpSelectedItemTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpSelectedItemLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpSelectedItemLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpSelectedItemLabelColor', $screen ) ? $this->has_attr( $attr, 'wfacpSelectedItemLabelColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp-selected-product .product-price,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp-selected-product .product-price span', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp-selected-product .product-price,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp-selected-product .product-price span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpSelectedItemPriceColor', $screen ) ? $this->has_attr( $attr, 'wfacpSelectedItemPriceColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form .wfacp_selected_attributes .wfacp_pro_attr_single span:last-child,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details,
-			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span', $unique_class ) );
+			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpSelectedItemVariantColor', $screen ) ? $this->has_attr( $attr, 'wfacpSelectedItemVariantColor', $screen ) . ' !important' : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item.wfacp-selected-product', $unique_class ) );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'wfacpSelectedItemBackground', $screen ) ? $this->has_attr( $attr, 'wfacpSelectedItemBackground', $screen ) . ' !important' : '' );
 				$css->add_property( 'border', $this->has_attr( $attr, 'wfacpSelectedItemBorder', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_name_inner *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_attributes .wfacp_selected_attributes  *,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_quantity_selector input,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec span,
@@ -1086,18 +1218,31 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details *,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpOptionalItemFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpOptionalItemTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpOptionalItemLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpOptionalItemLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_switcher_item,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item .wfacp_row_wrap .wfacp_product_choosen_label .wfacp_product_row_quantity',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOptionalItemLabelColor', $screen ) ? $this->has_attr( $attr, 'wfacpOptionalItemLabelColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .product-price,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp_product_price_sec span', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .product-price,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .shop_table.wfacp-product-switch-panel .wfacp_product_price_sec span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpOptionalItemPriceColor', $screen ) ? $this->has_attr( $attr, 'wfacpOptionalItemPriceColor', $screen ) . ' !important' : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product)', $unique_class ) );
@@ -1109,29 +1254,43 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart-form__cart-item.cart_item:not(.wfacp-selected-product)', $unique_class ) );
 				$css->add_property( 'border', $this->has_attr( $attr, 'wfacpOptionalItemBorder', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_you_save_text,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_you_save_text,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp-e-form .wfacp_main_form .wfacp_row_wrap .wfacp_you_save_text span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_row_wrap .wfacp_you_save_text span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details > span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol),
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details lebel,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol)', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form #product_switching_field .wfacp_product_switcher_col_2 .wfacp_product_subs_details span:not(.subscription-details):not(.woocommerce-Price-amount):not(.woocommerce-Price-currencySymbol)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpSaveColor', $screen ) ? $this->has_attr( $attr, 'wfacpSaveColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_you_save_text,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_row_wrap .wfacp_you_save_text span', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset .wfacp_you_save_text,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_row_wrap .wfacp_you_save_text span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpSaveFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'wfacpSaveTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'wfacpSaveLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'wfacpSaveLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value_container .wfacp_best_value,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value_container .wfacp_best_value,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_left_corner,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_right_corner', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_best_value.wfacp_top_right_corner',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpBestValueColor', $screen ) ? $this->has_attr( $attr, 'wfacpBestValueColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'wfacpBestValueBackground', $screen ) ? $this->has_attr( $attr, 'wfacpBestValueBackground', $screen ) . ' !important' : '' );
 				$css->add_property( 'border-color', $this->has_attr( $attr, 'wfacpBestValueBorderColor', $screen ) ? $this->has_attr( $attr, 'wfacpBestValueBorderColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'border', $this->has_attr( $attr, 'wfacpBestValueBorder', $screen ) );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #product_switching_field fieldset .wfacp_best_value', $unique_class ) );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpBestValueFont', $screen ) );
@@ -1152,13 +1311,17 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'whatIncludeTitleLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'whatIncludeTitleLetterSpacing', $screen ), true );
 
-
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_whats_included .wfacp_product_switcher_description h4', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'whatIncludeTitle', $screen ) ? $this->has_attr( $attr, 'whatIncludeTitle', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description p,
 			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description a,
-			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description', $unique_class ) );
+			{{WRAPPER}}  #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_whats_included .wfacp_product_switcher_description .wfacp_description',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'whatIncludeDescColor', $screen ) ? $this->has_attr( $attr, 'whatIncludeDescColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'whatIncludeDescFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'whatIncludeDescTextStyle', $screen ) );
@@ -1170,9 +1333,14 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'border', $this->has_attr( $attr, 'whatIncludeBorder', $screen ) );
 
 				/* Button Styling */
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button#place_order,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button',
+						$unique_class
+					)
+				);
 				$css->add_property( 'width', $this->has_attr( $attr, 'buttonWidth', $screen ), true );
 				$css->add_property( 'border', $this->has_attr( $attr, 'buttonBorder', $screen ) );
 				$css->add_property( 'margin', $this->has_attr( $attr, 'buttonMargin', $screen ) );
@@ -1181,14 +1349,18 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout .wfacp-order-place-btn-wrap, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout .wfacp-next-btn-wrap, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button', $unique_class ) );
 				$css->add_property( 'text-align', isset( $this->has_attr( $attr, 'buttonTextStyle', $screen )['align'] ) ? $this->has_attr( $attr, 'buttonTextStyle', $screen )['align'] : '' );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment button#place_order,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce  button#place_order,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout button.button.button-primary.wfacp_next_page_button, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button ', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout button.button.button-primary.wfacp_next_page_button, {{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #ppcp-hosted-fields .button ',
+						$unique_class
+					)
+				);
 
 				$css->add_property( 'color', $this->has_attr( $attr, 'buttonColor', $screen ) ? $this->has_attr( $attr, 'buttonColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'buttonFont', $screen ) );
-				$css->add_typograpghy_property( 'text', $this->has_attr( $attr, 'buttonTextStyle', $screen ), [ 'align' ] );
+				$css->add_typograpghy_property( 'text', $this->has_attr( $attr, 'buttonTextStyle', $screen ), array( 'align' ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'buttonLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'buttonLetterSpacing', $screen ), true );
 
@@ -1200,25 +1372,36 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'color', $this->has_attr( $attr, 'buttonColorHover', $screen ) ? $this->has_attr( $attr, 'buttonColorHover', $screen ) . ' !important' : '' );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'buttonBackgroundHover', $screen ) ? $this->has_attr( $attr, 'buttonBackgroundHover', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .btm_btn_sec.wfacp_back_cart_link .wfacp-back-btn-wrap a,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a.wfacp_back_page_button,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce form.woocommerce-checkout .place_order_back_btn a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce form.woocommerce-checkout .place_order_back_btn a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'returnLinkColor', $screen ) ? $this->has_attr( $attr, 'returnLinkColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a:hover,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a:hover,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .btm_btn_sec.wfacp_back_cart_link .wfacp-back-btn-wrap a:hover,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-back-btn-wrap a.wfacp_back_page_button:hover,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout .place_order_back_btn a:hover', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout .place_order_back_btn a:hover',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'returnLinkColorHover', $screen ) ? $this->has_attr( $attr, 'returnLinkColorHover', $screen ) . ' !important' : '' );
-
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-payment-dec', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'addtionalTextColor', $screen ) ? $this->has_attr( $attr, 'addtionalTextColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'background-color', $this->has_attr( $attr, 'addtionalTextBackground', $screen ) ? $this->has_attr( $attr, 'addtionalTextBackground', $screen ) . ' !important' : '' );
 
 				/* Payment Gateways Styling*/
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods p,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods p span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods p a,
@@ -1228,20 +1411,33 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods ul li input,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods #add_payment_method #payment div.payment_box,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .payment_methods #add_payment_method #payment .payment_box p,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment .payment_methods .payment_box p', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment .payment_methods .payment_box p',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'paymentMethodFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'paymentMethodTextStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'paymentMethodLineHeight', $screen ), true );
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'paymentMethodLetterSpacing', $screen ), true );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li label a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'paymentMethodLabelColor', $screen ) ? $this->has_attr( $attr, 'paymentMethodLabelColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p,
 			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box p span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box  p strong', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box  p strong',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'paymentMethodDescColor', $screen ) ? $this->has_attr( $attr, 'paymentMethodDescColor', $screen ) . ' !important' : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp_payment #payment .payment_methods li .payment_box', $unique_class ) );
@@ -1257,12 +1453,17 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_cart_accordian, {{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_wrap .wfacp_mb_mini_cart_sec_accordion_content', $unique_class ) );
 				$css->add_property( 'border', $this->has_attr( $attr, 'collapseBorder', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_show_icon_wrap a span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_show_price_wrap span', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_show_icon_wrap a span,
+			{{WRAPPER}} #wfacp-e-form .wfacp_show_price_wrap span',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'collapseColor', $screen ) ? $this->has_attr( $attr, 'collapseColor', $screen ) . ' !important' : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_collapsible_order_summary_wrap', $unique_class ) );
-//			$css->add_property( 'margin-bottom', '15px' );
+				// $css->add_property( 'margin-bottom', '15px' );
 				$css->add_property( 'margin', $this->has_attr( $attr, 'collapseMargin', $screen ) );
 
 				/** Privacy Policy Styling */
@@ -1272,7 +1473,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form #payment .woocommerce-privacy-policy-text p', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpPrivacyColor', $screen ) ? $this->has_attr( $attr, 'wfacpPrivacyColor', $screen ) : '#777;' );
 
-
 				/** Terms & Condition Styling */
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label, {{WRAPPER}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label span, {{WRAPPER}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row label a, {{WRAPPER}} #wfacp-e-form .wc-gzd-checkbox-placeholder *:not(a)', $unique_class ) );
 				$css->add_property( 'font', $this->has_attr( $attr, 'wfacpTermsFont', $screen ) );
@@ -1280,21 +1480,29 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-wrapper .form-row, {{WRAPPER}} #wfacp-e-form #payment .woocommerce-terms-and-conditions-checkbox-text', $unique_class ) );
 				$css->add_property( 'color', $this->has_attr( $attr, 'wfacpTermsColor', $screen ) ? $this->has_attr( $attr, 'wfacpTermsColor', $screen ) . ' !important' : '' );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:before,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:before,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:before',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'buttonIconColor', $screen ) ? $this->has_attr( $attr, 'buttonIconColor', $screen ) . ' !important' : '' );
 				$css->add_property( 'font', $this->has_attr( $attr, 'buttonIconFont', $screen ) );
 				$css->add_property( 'text', $this->has_attr( $attr, 'buttonIconStyle', $screen ) );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'buttonIconLineHeight', $screen ), true );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:after,
-			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-next-btn-wrap button:after,
+			{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-order-place-btn-wrap button:after',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'buttonSubTextColor', $screen ) ? $this->has_attr( $attr, 'buttonSubTextColor', $screen ) . ' !important' : '' );
-				$css->add_typograpghy_property( 'font', $this->has_attr( $attr, 'buttonSubTextFont', $screen ), [ 'family' ] );
+				$css->add_typograpghy_property( 'font', $this->has_attr( $attr, 'buttonSubTextFont', $screen ), array( 'family' ) );
 
-				//override checkout common css loaded by form
+				// override checkout common css loaded by form
 				if ( $this->has_attr( $attr, 'buttonSubTextFont', $screen ) && isset( $this->has_attr( $attr, 'buttonSubTextFont', $screen )['family'] ) ) {
 					$css->add_property( 'font-family', $this->has_attr( $attr, 'buttonSubTextFont', $screen )['family'] . ' !important;' );
 				}
@@ -1303,23 +1511,37 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 				$css->add_property( 'letter-spacing', $this->has_attr( $attr, 'buttonSubTextLetterSpacing', $screen ), true );
 				$css->add_property( 'line-height', $this->has_attr( $attr, 'buttonSubTextLineHeight', $screen ), true );
 
-
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount th,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount th,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount th span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td a', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td a',
+						$unique_class
+					)
+				);
 				$css->add_property( 'font', $this->has_attr( $attr, 'collapseCouponFont', $screen ) );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content .shop_table tr.cart-discount th,
-			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content .shop_table tr.cart-discount th span:not(.wfacp_coupon_code)', $unique_class ) );
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content .shop_table tr.cart-discount th,
+			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content .shop_table tr.cart-discount th span:not(.wfacp_coupon_code)',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'collapseCouponLabelColor', $screen ) ? $this->has_attr( $attr, 'collapseCouponLabelColor', $screen ) . ' !important' : '' );
 
-				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td,
+				$css->set_selector(
+					$this->add_wrapper(
+						'{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td span,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table tfoot tr.cart-discount td a,
 			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table .cart-discount td span,
-			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table .cart-discount th .wfacp_coupon_code', $unique_class ) );
+			{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content  .shop_table .cart-discount th .wfacp_coupon_code',
+						$unique_class
+					)
+				);
 				$css->add_property( 'color', $this->has_attr( $attr, 'collapseCouponCodeColor', $screen ) ? $this->has_attr( $attr, 'collapseCouponCodeColor', $screen ) . ' !important' : '' );
 
 				$css->set_selector( $this->add_wrapper( '{{WRAPPER}} #wfacp-e-form .wfacp_mb_mini_cart_sec_accordion_content button.button.wfacp-coupon-btn', $unique_class ) );
@@ -1341,8 +1563,6 @@ if ( ! class_exists( 'WFACP_Blocks_Frontend_CSS' ) ) {
 		public function add_wrapper( $string, $replace_selector ) {
 			return preg_replace( '/{{WRAPPER}}/i', $replace_selector, $string );
 		}
-
-
 	}
 }
 WFACP_Blocks_Frontend_CSS::get_instance();

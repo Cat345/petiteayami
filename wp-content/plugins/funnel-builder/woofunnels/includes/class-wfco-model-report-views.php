@@ -37,64 +37,73 @@ if ( ! class_exists( 'WFCO_Model_Report_views' ) ) {
 
 		public static function update_data( $date = '', $object_id = '', $type = 1 ) {
 			global $wpdb;
-			$where  = [];
-			$insert = [];
+			$has_object_id = ( '' !== $object_id );
+			$object_id     = absint( $object_id );
+			$type          = absint( $type );
+			$insert        = [];
+
 			if ( $date !== '' ) {
-				$where['date']  = "`date`='$date'";
-				$insert['date'] = $date;
+				$date = sanitize_text_field( $date );
 			} else {
-				$date           = date( 'Y-m-d' );
-				$where['date']  = "`date`='$date'";
-				$insert['date'] = $date;
+				$date = date( 'Y-m-d' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			}
-			if ( $object_id !== '' ) {
-				$where['object_id']  = "`object_id`='$object_id'";
+			$insert['date'] = $date;
+
+			if ( $has_object_id ) {
 				$insert['object_id'] = $object_id;
 			}
-			$where['type']  = "`type`='$type'";
 			$insert['type'] = $type;
 
-			$where_string = implode( ' and ', $where );
-			$table        = self::_table();
-			$get_sql      = "SELECT * FROM $table WHERE {$where_string};";
-			$result       = $wpdb->get_results( $get_sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$table = self::_table();
+
+			if ( $has_object_id ) {
+				$get_sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			} else {
+				$get_sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			}
+			$result = $wpdb->get_results( $get_sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
 			if ( ! empty( $result ) ) {
-				$primary_id = $result[0]['id'];
-				$sql        = "UPDATE $table set no_of_sessions=no_of_sessions+1 where id ='{$primary_id}';";
-				$wpdb->query( $sql ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+				$primary_id = absint( $result[0]['id'] );
+				$wpdb->query( $wpdb->prepare( "UPDATE `$table` SET no_of_sessions = no_of_sessions + 1 WHERE id = %d", $primary_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 			} else {
-				$wpdb->insert( $table, $insert ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$wpdb->insert( $table, $insert ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- $wpdb->insert() parameterizes internally; safe.
 			}
 		}
 
 		public static function get_data( $date = '', $object_id = '', $type = 1, $interval = false ) {
-			$where = [];
+			global $wpdb;
+			$has_object_id = ( '' !== $object_id );
+			$object_id     = absint( $object_id );
+			$type          = absint( $type );
+			$table         = self::_table();
 
 			if ( $date !== '' ) {
 				if ( true === $interval ) {
-					$where['date'] = $date;
-
+					// $date is an internally-generated SQL date-range fragment, not user input.
+					if ( $has_object_id ) {
+						$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `object_id` = %d AND `type` = %d", $object_id, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					} else {
+						$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE {$date} AND `type` = %d", $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					}
 				} else {
-					$where['date'] = "`date`='$date'";
+					$date = sanitize_text_field( $date );
+					if ( $has_object_id ) {
+						$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					} else {
+						$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					}
 				}
 			} else {
-				$date          = date( 'Y-m-d' );
-				$where['date'] = "`date`='$date'";
+				$date = date( 'Y-m-d' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				if ( $has_object_id ) {
+					$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `object_id` = %d AND `type` = %d", $date, $object_id, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				} else {
+					$sql = $wpdb->prepare( "SELECT * FROM `$table` WHERE `date` = %s AND `type` = %d", $date, $type ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				}
 			}
 
-			if ( $object_id !== '' ) {
-				$where['object_id'] = "`object_id`='$object_id'";
-			}
-
-			$where['type'] = "`type`='$type'";
-			$where_string  = implode( ' and ', $where );
-			global $wpdb;
-			$table = self::_table();
-			$sql   = "select * from `{$table}` WHERE {$where_string};";
-			$data  = $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
-
-			return $data;
+			return $wpdb->get_results( $sql, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 		}
 
 

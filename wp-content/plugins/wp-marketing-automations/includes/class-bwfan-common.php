@@ -42,6 +42,7 @@ class BWFAN_Common {
 	public static $dynamic_str = '';
 
 	public static $unsubscribe_page_link = '';
+
 	public static $block_editor_settings = [];
 
 	public static $order_status_change = [];
@@ -176,6 +177,12 @@ class BWFAN_Common {
 
 		/** update order meta marketing_status details */
 		add_action( 'woocommerce_checkout_order_created', array( __CLASS__, 'bwfan_update_order_user_consent' ) );
+
+		/** Gutenberg/Block checkout: register consent field when block enqueues; then hide it for logged-in subscribed users (priority 5 runs before WooCommerce adds field data at 10). */
+		add_action( 'woocommerce_blocks_checkout_enqueue_data', array( __CLASS__, 'register_blocks_checkout_consent_field' ), 1 );
+		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( __CLASS__, 'bwfan_blocks_checkout_consent_from_request' ), 10, 2 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'bwfan_sync_blocks_checkout_consent' ), 5 );
+
 		add_action( 'bwf_normalize_contact_meta_before_save', array( __CLASS__, 'save_marketing_status_for_user' ), 20, 2 );
 		/** save marketing status if order is failed  */
 		add_action( 'woocommerce_order_status_failed', array( __CLASS__, 'woocommerce_order_status_failed' ), 999, 2 );
@@ -457,6 +464,7 @@ class BWFAN_Common {
 			'bwfan_delete_autonami_generated_coupons_time' => 1,
 			'bwfan_delete_engagement_tracking_meta'        => 0,
 			'bwfan_user_consent_position'                  => 'below_term',
+			'bwfan_user_consent_position_blocks'           => 'order',
 			'bwfan_email_footer_setting'                   => '<p><span style="font-size: 14px; font-family: arial, helvetica, sans-serif;">{{business_name}}, {{business_address}}</span><br /><span style="font-size: 14px; font-family: arial, helvetica, sans-serif;">' . __( 'Don\'t want to stay in the loop? We\'ll be sad to see you go, but you can click here to', 'wp-marketing-automations' ) . ' <a href="{{unsubscribe_link}}">' . __( 'unsubscribe', 'wp-marketing-automations' ) . '</a></span></p>',
 			'bwfan_sms_unsubscribe_text'                   => __( 'Reply STOP to unsubscribe', 'wp-marketing-automations' ),
 			'bwfan_bounce_select'                          => '',
@@ -674,17 +682,8 @@ class BWFAN_Common {
 			$marketing_status = 1;
 		}
 
-		if ( empty( $marketing_status ) && is_user_logged_in() ) {
-			$user        = wp_get_current_user();
-			$ins         = WooFunnels_DB_Operations::get_instance();
-			$contact_row = $ins->get_contact_by_wpid( $user->ID );
-			if ( ! is_null( $contact_row ) && property_exists( $contact_row, 'status' ) ) {
-				$status = self::get_contact_status( $contact_row->status, $contact_row->email, $contact_row->contact_no );
-				/** Check contact's marketing status, email and sms status */
-				if ( 1 === absint( $status['status'] ) && 1 === absint( $status['email_status'] ) && 1 === absint( $status['sms_status'] ) ) {
-					$marketing_status = 1;
-				}
-			}
+		if ( empty( $marketing_status ) && self::is_logged_in_contact_subscribed() ) {
+			$marketing_status = 1;
 		}
 
 		if ( 1 === $marketing_status ) {
@@ -1072,7 +1071,7 @@ class BWFAN_Common {
 	 * This allows background processing after the client receives the response
 	 *
 	 * @param array|mixed $response_data Response data to send as JSON
-	 * @param int         $status_code   HTTP status code (default: 200)
+	 * @param int $status_code HTTP status code (default: 200)
 	 *
 	 * @return void
 	 */
@@ -1154,13 +1153,14 @@ class BWFAN_Common {
 
 		// Prevent WordPress REST API core from trying to send headers after we've already sent them
 		// Add filter to tell WordPress we've already served the request
-		add_filter( 'rest_pre_serve_request', function( $served, $result, $request, $server ) {
+		add_filter( 'rest_pre_serve_request', function ( $served, $result, $request, $server ) {
 			return true; // Return true means "already served, don't send again"
 		}, 10, 4 );
 
 		// Clear headers in case WordPress still tries to send them
-		add_filter( 'rest_post_dispatch', function( $response ) {
+		add_filter( 'rest_post_dispatch', function ( $response ) {
 			$response->set_headers( [] );
+
 			return $response;
 		} );
 	}
@@ -1169,9 +1169,9 @@ class BWFAN_Common {
 	 * Close HTTP connection to client while keeping PHP process running
 	 * This allows background processing after the client receives the response
 	 *
+	 * @return void
 	 * @deprecated Use send_response_and_close_connection() instead
 	 *
-	 * @return void
 	 */
 	public static function close_http_connection() {
 		// Prevent script termination if client disconnects
@@ -1965,12 +1965,12 @@ class BWFAN_Common {
 	 *
 	 * @return array
 	 */
-	public static function get_coupon( $searched_term ) {
+	public static function get_coupon( $searched_term, $limit = - 1 ) {
 		$membership_plans = array();
 		$results          = array();
 		$query_params     = array(
 			'post_type'      => 'shop_coupon',
-			'posts_per_page' => - 1,
+			'posts_per_page' => $limit,
 			'post_status'    => 'publish',
 			'meta_query'     => array(
 				array(
@@ -2132,28 +2132,26 @@ class BWFAN_Common {
 	 * Check nonce.
 	 */
 	public static function check_nonce() {
-		$nonce     = ( isset( $_REQUEST['_wpnonce'] ) ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
-		$bwf_nonce = ( isset( $_REQUEST['bwf_nonce'] ) ) ? sanitize_text_field( $_REQUEST['bwf_nonce'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification
-
-		if ( wp_verify_nonce( $bwf_nonce, 'bwf_secure_key' ) || wp_verify_nonce( $nonce, 'bwfan-action-admin' ) ) {
-			return;
-		}
-
-		/** check if current user has the permission or not */
-		$default_permissions = array( 'manage_options' );
-		$permissions         = method_exists( 'BWFAN_Common', 'access_capabilities' ) ? BWFAN_Common::access_capabilities() : $default_permissions;
-		foreach ( $permissions as $permission ) {
-			if ( current_user_can( $permission ) ) {
-				return;
-			}
-		}
-		// This nonce is not valid.
-		$resp = array(
-			'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
-			'status' => false,
-		);
-		wp_send_json( $resp );
-	}
+        $nonce     = ( isset( $_REQUEST['_wpnonce'] ) ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification
+        $bwf_nonce = ( isset( $_REQUEST['bwf_nonce'] ) ) ? sanitize_text_field( $_REQUEST['bwf_nonce'] ) : '';//phpcs:ignore WordPress.Security.NonceVerification
+        if ( wp_verify_nonce( $bwf_nonce, 'bwf_secure_key' ) || wp_verify_nonce( $nonce, 'bwfan-action-admin' ) ) {
+            return;
+        }
+        /** check if current user has the permission or not */
+        $default_permissions = array( 'manage_options' );
+        $permissions         = method_exists( 'BWFAN_Common', 'access_capabilities' ) ? BWFAN_Common::access_capabilities() : $default_permissions;
+        foreach ( $permissions as $permission ) {
+            if ( current_user_can( $permission ) ) {
+                return;
+            }
+        }
+        // This nonce is not valid.
+        $resp = array(
+            'msg'    => __( 'Invalid request, security validation failed.', 'wp-marketing-automations' ),
+            'status' => false,
+        );
+        wp_send_json( $resp );
+    }
 
 	/**
 	 * Get wc products by searched term.
@@ -2177,9 +2175,9 @@ class BWFAN_Common {
 		 *
 		 * @return int The modified limit
 		 */
-		$limit = apply_filters( 'bwfan_product_search_limit', $limit, $term, $include_variations, $offset );
-		$limit = ( absint( $limit ) > 0 ) ? absint( $limit ) : 10;
-		$offset = absint( $offset );
+		$limit         = apply_filters( 'bwfan_product_search_limit', $limit, $term, $include_variations, $offset );
+		$limit         = ( absint( $limit ) > 0 ) ? absint( $limit ) : 10;
+		$offset        = absint( $offset );
 		$like_term     = '%' . $wpdb->esc_like( $term ) . '%';
 		$post_statuses = current_user_can( 'edit_private_products' ) ? array(
 			'private',
@@ -2904,8 +2902,8 @@ class BWFAN_Common {
 		}
 
 		// Prepare and send response immediately to prevent timeout
-		$resp        = array();
-		$resp['msg'] = 'success';
+		$resp         = array();
+		$resp['msg']  = 'success';
 		$resp['time'] = date_i18n( 'Y-m-d H:i:s' );
 		self::send_response_and_close_connection( $resp );
 
@@ -3172,8 +3170,8 @@ class BWFAN_Common {
 			return;
 		}
 
-		$url       = rest_url( '/autonami/v1/worker' ) . '?' . time();
-		$body_data = array(
+		$url             = rest_url( '/autonami/v1/worker' ) . '?' . time();
+		$body_data       = array(
 			'worker'     => true,
 			'unique_key' => get_option( 'bwfan_u_key', false ),
 		);
@@ -3211,8 +3209,8 @@ class BWFAN_Common {
 			return;
 		}
 
-		$url       = rest_url( '/autonami/v2/worker' ) . '?' . time();
-		$body_data = array(
+		$url             = rest_url( '/autonami/v2/worker' ) . '?' . time();
+		$body_data       = array(
 			'worker'     => true,
 			'unique_key' => get_option( 'bwfan_u_key', false ),
 		);
@@ -3500,6 +3498,10 @@ class BWFAN_Common {
 		if ( false === $unique_key || ! isset( $post_parameters['unique_key'] ) || ! hash_equals( $unique_key, $post_parameters['unique_key'] ) ) {
 			return;
 		}
+
+		/** Before abandoned cart when wc add to cart */
+		do_action( 'bwfan_before_abandoned_wc_add_to_cart', $post_parameters );
+
 		$user_id       = $post_parameters['id'];
 		$email         = '';
 		$abandoned_obj = BWFAN_Abandoned_Cart::get_instance();
@@ -3507,7 +3509,13 @@ class BWFAN_Common {
 			$uid     = $post_parameters['fk_uid'];
 			$contact = new WooFunnels_Contact( '', '', '', '', $uid );
 			$email   = $contact->get_email();
-			$user_id = $contact->get_wpid();
+			$user_id = ! empty( $contact->get_wpid() ) ? $contact->get_wpid() : $user_id;
+		}
+		if ( empty( $email ) && ! empty( $user_id ) ) {
+			$wp_user = get_user_by( 'id', $user_id );
+			if ( $wp_user instanceof WP_User ) {
+				$email = $wp_user->user_email;
+			}
 		}
 		$coupon_data  = $post_parameters['coupon_data'];
 		$items        = $post_parameters['items'];
@@ -3524,6 +3532,9 @@ class BWFAN_Common {
 				'fees'       => $fees,
 				'cookie_key' => $post_parameters['bwfan_visitor'] ?? '',
 			) );
+
+			/** After insert abandoned cart when wc add to cart */
+			do_action( 'bwfan_after_insert_abandoned_wc_add_to_cart', $post_parameters );
 
 			return;
 		}
@@ -3559,6 +3570,7 @@ class BWFAN_Common {
 		);
 
 		BWFAN_Model_Abandonedcarts::update( $data, $where );
+		do_action( 'bwfan_after_update_abandoned_wc_add_to_cart', $post_parameters, $data );
 	}
 
 	private static function create_abandoned_cart( $data ) {
@@ -3608,14 +3620,14 @@ class BWFAN_Common {
 	}
 
 	private static function get_abandoned_totals( $data ) {
-		$coupon_data      = maybe_unserialize( $data['coupons'] ?? [] );
-		$coupon_data      = is_array( $coupon_data ) ? $coupon_data : [];
+		$coupon_data = maybe_unserialize( $data['coupons'] ?? [] );
+		$coupon_data = is_array( $coupon_data ) ? $coupon_data : [];
 
-		$items            = maybe_unserialize( $data['items'] ?? [] );
-		$items            = is_array( $items ) ? $items : [];
+		$items = maybe_unserialize( $data['items'] ?? [] );
+		$items = is_array( $items ) ? $items : [];
 
-		$fees             = maybe_unserialize( $data['fees'] ?? [] );
-		$fees             = is_array( $fees ) ? $fees : [];
+		$fees = maybe_unserialize( $data['fees'] ?? [] );
+		$fees = is_array( $fees ) ? $fees : [];
 
 		$calculated_total = 0;
 		foreach ( $items as $item ) {
@@ -4587,14 +4599,14 @@ class BWFAN_Common {
 	public static function add_schedules( $schedules ) {
 		$schedules['fka_eight_hours'] = array(
 			'interval' => 28800,
-			'display'  => __( 'Every Eight hours', 'wp-marketing-automations' ),
+			'display'  => 'Every Eight hours',
 		);
 
 		/** Register bwf_every_minute schedule if not already registered */
 		if ( ! isset( $schedules['bwf_every_minute'] ) ) {
 			$schedules['bwf_every_minute'] = apply_filters( 'bwf_every_minute_cron', array(
 				'interval' => MINUTE_IN_SECONDS,
-				'display'  => __( 'Every minute', 'wp-marketing-automations' ),
+				'display'  => 'Every minute',
 			) );
 		}
 
@@ -4603,7 +4615,7 @@ class BWFAN_Common {
 		if ( ! isset( $schedules['every_minute'] ) ) {
 			$schedules['every_minute'] = array(
 				'interval' => 60,
-				'display'  => __( 'Every minute', 'wp-marketing-automations' ),
+				'display'  => 'Every minute',
 			);
 		}
 
@@ -4720,6 +4732,165 @@ class BWFAN_Common {
 		$marketing_status = isset( $_POST['bwfan_user_consent'] ) ? absint( $_POST['bwfan_user_consent'] ) : 0; //phpcs:ignore WordPress.Security.NonceVerification
 		$order->update_meta_data( 'marketing_status', $marketing_status );
 		$order->save_meta_data();
+	}
+
+	/**
+	 * Whether the current user is logged in and their contact is subscribed (so we should not show the marketing consent option).
+	 * Used to hide "Keep me up to date on news and exclusive offers" on both block and shortcode checkout.
+	 *
+	 * @return bool True if user is logged in and contact is subscribed.
+	 */
+	public static function is_logged_in_contact_subscribed() {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		if ( ! class_exists( 'WooFunnels_DB_Operations' ) ) {
+			return false;
+		}
+		$user        = wp_get_current_user();
+		$ins         = WooFunnels_DB_Operations::get_instance();
+		$contact_row = $ins->get_contact_by_wpid( $user->ID );
+		if ( is_null( $contact_row ) || ! property_exists( $contact_row, 'status' ) ) {
+			return false;
+		}
+		$status = self::get_contact_status( $contact_row->status, isset( $contact_row->email ) ? $contact_row->email : '', isset( $contact_row->contact_no ) ? $contact_row->contact_no : '' );
+
+		return ( 1 === absint( $status['status'] ) && 1 === absint( $status['email_status'] ) && 1 === absint( $status['sms_status'] ) );
+	}
+
+	/**
+	 * Register marketing consent as an additional checkout field for Gutenberg/Block checkout.
+	 * Uses WooCommerce Additional Checkout Fields API so the checkbox appears on block-based checkout.
+	 * For logged-in subscribed users the field is removed by deregister_blocks_checkout_consent_field_if_subscribed at priority 5.
+	 *
+	 * @return void
+	 */
+	public static function register_blocks_checkout_consent_field() {
+		if ( self::is_logged_in_contact_subscribed() ) {
+			return;
+		}
+		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
+			return;
+		}
+		$settings = self::get_global_settings();
+		if ( empty( $settings['bwfan_user_consent'] ) ) {
+			return;
+		}
+		$location = isset( $settings['bwfan_user_consent_position_blocks'] ) ? $settings['bwfan_user_consent_position_blocks'] : 'order';
+		if ( ! in_array( $location, array( 'contact', 'order' ), true ) ) {
+			$location = 'order';
+		}
+		$label = self::get_user_consent_message_in_site_language( $settings );
+		$label = wp_strip_all_tags( $label );
+		if ( '' === $label ) {
+			$label = __( 'Keep me up to date on news and exclusive offers.', 'wp-marketing-automations' );
+		}
+		woocommerce_register_additional_checkout_field( array(
+			'id'                => 'bwfan/marketing-consent',
+			'label'             => $label,
+			'location'          => $location,
+			'type'              => 'checkbox',
+			'required'          => false,
+			'sanitize_callback' => array( __CLASS__, 'sanitize_marketing_consent_checkbox' ),
+		) );
+	}
+
+	/**
+	 * Sanitize marketing consent checkbox so boolean true from Store API JSON is stored as '1'.
+	 *
+	 * @param mixed $value Raw value from request.
+	 * @param array $field Field definition (unused).
+	 *
+	 * @return string '1' or '0'.
+	 */
+	public static function sanitize_marketing_consent_checkbox( $value, $field = array() ) {
+		$checked = ( true === $value || '1' === $value || 1 === $value || 'true' === $value );
+
+		return $checked ? '1' : '0';
+	}
+
+	/**
+	 * Ensures marketing consent from the Store API request is stored on the order.
+	 * Reads from request params and raw JSON so consent is set before sync runs.
+	 *
+	 * @param WC_Order $order Order from block checkout.
+	 * @param WP_REST_Request $request Store API request.
+	 */
+	public static function bwfan_blocks_checkout_consent_from_request( $order, $request ) {
+		if ( ! $order instanceof WC_Order || ! $request instanceof WP_REST_Request ) {
+			return;
+		}
+		$key        = 'bwfan/marketing-consent';
+		$additional = (array) ( $request->get_param( 'additional_fields' ) ?? [] );
+
+		if ( ! array_key_exists( $key, $additional ) && $request->get_body() ) {
+			$body = json_decode( $request->get_body(), true );
+			if ( is_array( $body ) && ! empty( $body['additional_fields'] ) ) {
+				$additional = array_merge( $additional, (array) $body['additional_fields'] );
+			}
+		}
+		$value = isset( $additional[ $key ] ) ? $additional[ $key ] : null;
+
+		if ( empty( $value ) ) {
+			return;
+		}
+		$order->update_meta_data( '_wc_other/bwfan/marketing-consent', '1' );
+	}
+
+	/**
+	 * Sync marketing consent from Block checkout additional field to order meta (marketing_status).
+	 * Runs when order is placed via Store API so contact subscription logic sees the same meta.
+	 *
+	 * @param WC_Order $order Order created from block checkout.
+	 */
+	public static function bwfan_sync_blocks_checkout_consent( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		$marketing_status = 0;
+		if ( class_exists( 'Automattic\WooCommerce\Blocks\Package' ) && class_exists( 'Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields' ) ) {
+			$checkout_fields  = \Automattic\WooCommerce\Blocks\Package::container()->get( \Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields::class );
+			$value            = $checkout_fields->get_field_from_object( 'bwfan/marketing-consent', $order, 'other' );
+			$marketing_status = ( '1' === $value || true === $value || 1 === $value ) ? 1 : 0;
+		}
+		if ( 0 === $marketing_status && function_exists( 'bwf_get_contact' ) ) {
+			$user_id = $order->get_user_id();
+			if ( $user_id > 0 ) {
+				$contact = bwf_get_contact( $user_id, $order->get_billing_email() );
+				if ( $contact && 1 === intval( $contact->get_status() ) ) {
+					$marketing_status = 1;
+				}
+			}
+		}
+		/** Remove the additional field from the order meta data */
+		$order->delete_meta_data( '_wc_other/bwfan/marketing-consent' );
+
+		$order->update_meta_data( 'marketing_status', $marketing_status );
+		$order->save_meta_data();
+	}
+
+	/**
+	 * After shortcode checkout order is processed: ensure contact is marked subscribed when consent was checked.
+	 *
+	 * @param int $order_id Order ID.
+	 * @param array $posted_data Posted checkout data.
+	 * @param WC_Order $order Order object.
+	 */
+	public static function bwfan_apply_checkout_consent_to_contact_by_order_id( $order_id, $posted_data, $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			$order = wc_get_order( absint( $order_id ) );
+		}
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		if ( ! function_exists( 'bwf_get_contact' ) ) {
+			return;
+		}
+		$contact = bwf_get_contact( $order->get_user_id(), $order->get_billing_email() );
+		if ( empty( $contact ) || ! $contact->get_id() ) {
+			return;
+		}
+		self::save_marketing_status_for_user( $contact, $order_id );
 	}
 
 	/** updating contact marketing status
@@ -4852,8 +5023,7 @@ class BWFAN_Common {
 		}
 
 		if ( ! empty( $limit ) ) {
-			$query .= " LIMIT %d, %d";
-			$query = $wpdb->prepare( $query, $offset, $limit );// phpcs:ignore WordPress.DB.PreparedSQL
+			$query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
 
 		return ! empty( $query ) ? $wpdb->get_results( $query, ARRAY_A ) : []; //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
@@ -4877,8 +5047,7 @@ class BWFAN_Common {
 		}
 		$query = "SELECT ID as id, title FROM {$wpdb->prefix}bwfan_automations $where ORDER BY title ASC";
 		if ( ! empty( $limit ) ) {
-			$query .= " LIMIT %d, %d";
-			$query = $wpdb->prepare( $query, $offset, $limit );// phpcs:ignore WordPress.DB.PreparedSQL
+			$query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
 		$automations = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 
@@ -4888,8 +5057,7 @@ class BWFAN_Common {
 		}
 		$meta_query = "SELECT am.bwfan_automation_id AS id,am.meta_value AS title FROM {$wpdb->prefix}bwfan_automationmeta AS am $where GROUP BY am.bwfan_automation_id ORDER BY am.meta_value ASC";
 		if ( ! empty( $limit ) ) {
-			$meta_query .= " LIMIT %d, %d";
-			$meta_query = $wpdb->prepare( $meta_query, $offset, $limit );// phpcs:ignore WordPress.DB.PreparedSQL
+			$meta_query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 		}
 
 		$automation_meta = $wpdb->get_results( $meta_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
@@ -4927,19 +5095,15 @@ class BWFAN_Common {
 		foreach ( $unsubscribers as $unsubscriber ) {
 			$c_type = absint( $unsubscriber->c_type );
 			$oid    = empty( $unsubscriber->automation_id ) ? 0 : absint( $unsubscriber->automation_id );
-			$otype  = '';
+			$otype  = class_exists( 'BWFCRM_Contact' ) ? BWFCRM_Contact::get_unsubscribe_source_label( $c_type ) : __( 'Manual', 'wp-marketing-automations' );
 			$oname  = '';
 
 			if ( 1 === $c_type ) {
 				$automation_meta = BWFAN_Core()->automations->get_automation_data_meta( $oid );
 				$oname           = isset( $automation_meta['title'] ) && ! empty( $automation_meta['title'] ) ? $automation_meta['title'] : __( 'No Title', 'wp-marketing-automations' );
-				$otype           = __( 'Automation', 'wp-marketing-automations' );
 			} elseif ( 2 === $c_type ) {
 				$broadcast = bwfan_is_autonami_pro_active() ? BWFAN_Model_Broadcast::get( $oid ) : array();
 				$oname     = isset( $broadcast['title'] ) ? $broadcast['title'] : __( 'No Title', 'wp-marketing-automations' );
-				$otype     = __( 'Broadcast', 'wp-marketing-automations' );
-			} elseif ( $c_type > 2 ) {
-				$otype = __( 'Manual', 'wp-marketing-automations' );
 			}
 
 			$items[] = array(
@@ -6077,6 +6241,34 @@ class BWFAN_Common {
 								),
 							),
 							array(
+								'id'       => 'bwfan_user_consent_position_blocks',
+								'label'    => __( 'Gutenberg / Block Checkout Position', 'wp-marketing-automations' ),
+								'type'     => 'select',
+								'multiple' => false,
+								'class'    => 'bwfan_user_consent_position_blocks',
+								'options'  => array(
+									array(
+										'value' => 'contact',
+										'label' => __( 'Contact information', 'wp-marketing-automations' ),
+									),
+									array(
+										'value' => 'order',
+										'label' => __( 'Order information', 'wp-marketing-automations' ),
+									),
+								),
+								'required' => false,
+								'hint'     => __( 'Where to show the marketing consent on the block-based (Gutenberg) checkout. Shortcode checkout uses the position above.', 'wp-marketing-automations' ),
+								'toggler'  => array(
+									'fields'   => array(
+										array(
+											'id'    => 'bwfan_user_consent',
+											'value' => true,
+										),
+									),
+									'relation' => 'OR',
+								),
+							),
+							array(
 								'id'          => 'bwfan_user_consent_eu',
 								'label'       => __( 'EU Contacts', 'wp-marketing-automations' ),
 								'type'        => 'select',
@@ -6847,6 +7039,7 @@ class BWFAN_Common {
 
 		$arr['s'] = 2;
 		$arr['e'] = $l_data[ BWFAN_PRO_ENCODE ]['data_extra']['expires'];
+		$arr['h'] = isset( $l_data[ BWFAN_PRO_ENCODE ]['data_extra']['h'] ) ? $l_data[ BWFAN_PRO_ENCODE ]['data_extra']['h'] : '';
 
 		self::$c_lk_d = $arr;
 
@@ -7136,7 +7329,7 @@ class BWFAN_Common {
 		if ( ! $post instanceof WP_Post ) {
 			return [
 				'status'  => 3,
-				'message' => __( 'Unsubscribe Page Not Found.', 'wp-marketing-automations' ),
+				'message' => __( 'The selected Subscribe Page no longer exists. Please choose a valid page.', 'wp-marketing-automations' ),
 			];
 		}
 
@@ -7144,7 +7337,7 @@ class BWFAN_Common {
 		if ( 'publish' !== $post->post_status ) {
 			return [
 				'status'  => 3,
-				'message' => __( 'The unsubscribe page must be published and accessible to all users.', 'wp-marketing-automations' ),
+				'message' => __( 'The subscribe page must be published and accessible to all users.', 'wp-marketing-automations' ),
 			];
 		}
 
@@ -7153,13 +7346,13 @@ class BWFAN_Common {
 			return [ 'status' => 1, 'message' => '' ]; // success
 		}
 
-		$content = self::get_page_content( $post );
-		$has_shortcode = ( has_shortcode( $content, 'wfan_unsubscribe_button' ) || has_shortcode( $content, 'bwfan_unsubscribe_button' ) || has_shortcode( $content, 'fka_contact_subscribe_form' ) || strpos( $content, 'id="bwfan_unsubscribe"' ) !== false || false !== strpos( $content, '[fka_contact_subscribe_form' ) || false !== strpos( $content, '[bwfan_unsubscribe_button' ) || false !== strpos( $content, '[wfan_unsubscribe_button' ) );
+		$content       = self::get_page_content( $post );
+		$has_shortcode = ( has_shortcode( $content, 'wfan_unsubscribe_button' ) || has_shortcode( $content, 'bwfan_unsubscribe_button' ) || has_shortcode( $content, 'fka_contact_subscribe_form' ) || has_shortcode( $content, 'fka_unsubscribe_button' ) || strpos( $content, 'id="bwfan_unsubscribe"' ) !== false || false !== strpos( $content, '[fka_contact_subscribe_form' ) || false !== strpos( $content, '[bwfan_unsubscribe_button' ) || false !== strpos( $content, '[wfan_unsubscribe_button' ) || false !== strpos( $content, '[fka_unsubscribe_button' ) );
 
 		if ( empty( $content ) || ! $has_shortcode ) {
 			return [
 				'status'  => 2,
-				'message' => __( 'The selected page for your Unsubscribe Page is missing the necessary shortcode. Please add the required shortcode to the page for it to function correctly.', 'wp-marketing-automations' ),
+				'message' => __( 'The selected page for your Subscribe Page is missing the necessary shortcode. Please add the required shortcode to the page for it to function correctly.', 'wp-marketing-automations' ),
 			];
 		}
 
@@ -7185,7 +7378,85 @@ class BWFAN_Common {
 			}
 		}
 
+		/** If Oxygen Builder (layout in post meta, not post_content) */
+		if ( bwfan_is_oxygen_builder_active() ) {
+			$oxygen_content = self::get_oxygen_builder_content( $post->ID );
+			if ( ! empty( $oxygen_content ) ) {
+				return trim( $content . ' ' . $oxygen_content );
+			}
+		}
+
 		return $content;
+	}
+
+	/**
+	 * Collect shortcode strings from Oxygen's ct_builder_json / ct_builder_shortcodes for page validation.
+	 *
+	 * @param int $post_id Post ID.
+	 *
+	 * @return string Space-concatenated shortcodes and legacy builder string (may be empty).
+	 */
+	public static function get_oxygen_builder_content( $post_id ) {
+		if ( empty( $post_id ) ) {
+			return '';
+		}
+
+		$out = '';
+
+		// Oxygen saves as _ct_builder_json / _ct_builder_shortcodes (see oxy_get_meta_prefix in Oxygen).
+		$json = get_post_meta( $post_id, '_ct_builder_json', true );
+		if ( empty( $json ) ) {
+			$json = get_post_meta( $post_id, 'ct_builder_json', true );
+		}
+		if ( ! empty( $json ) && is_string( $json ) ) {
+			$tree = json_decode( wp_unslash( $json ), true );
+			if ( is_array( $tree ) && ! empty( $tree['children'] ) && is_array( $tree['children'] ) ) {
+				foreach ( $tree['children'] as $child ) {
+					$out .= self::extract_shortcodes_from_oxygen_tree( $child );
+				}
+			}
+		}
+
+		$shortcodes_meta = get_post_meta( $post_id, '_ct_builder_shortcodes', true );
+		if ( empty( $shortcodes_meta ) ) {
+			$shortcodes_meta = get_post_meta( $post_id, 'ct_builder_shortcodes', true );
+		}
+		if ( ! empty( $shortcodes_meta ) && is_string( $shortcodes_meta ) ) {
+			$out .= ' ' . wp_unslash( $shortcodes_meta );
+		}
+
+		return trim( $out );
+	}
+
+	/**
+	 * Recursively read Oxygen component tree for Shortcode elements (ct_shortcode) and optional ct_content.
+	 *
+	 * @param array $node Single component node.
+	 *
+	 * @return string
+	 */
+	private static function extract_shortcodes_from_oxygen_tree( $node ) {
+		if ( ! is_array( $node ) ) {
+			return '';
+		}
+
+		$shortcodes = '';
+
+		if ( ! empty( $node['name'] ) && 'ct_shortcode' === $node['name'] && ! empty( $node['options']['original']['full_shortcode'] ) && is_string( $node['options']['original']['full_shortcode'] ) ) {
+			$shortcodes .= $node['options']['original']['full_shortcode'] . ' ';
+		}
+
+		if ( ! empty( $node['options']['ct_content'] ) && is_string( $node['options']['ct_content'] ) && false !== strpos( $node['options']['ct_content'], '[' ) ) {
+			$shortcodes .= $node['options']['ct_content'] . ' ';
+		}
+
+		if ( ! empty( $node['children'] ) && is_array( $node['children'] ) ) {
+			foreach ( $node['children'] as $child ) {
+				$shortcodes .= self::extract_shortcodes_from_oxygen_tree( $child );
+			}
+		}
+
+		return $shortcodes;
 	}
 
 	public static function get_bricks_content( $post_id ) {
@@ -10999,7 +11270,8 @@ class BWFAN_Common {
 	 * IMPORTANT: Only deletes FILES, never directories
 	 *
 	 * @param string $dir Directory path to process
-	 * @param int    $expire_time Timestamp threshold for deletion
+	 * @param int $expire_time Timestamp threshold for deletion
+	 *
 	 * @return void
 	 */
 	private static function delete_old_log_files( $dir, $expire_time ) {
@@ -11177,6 +11449,14 @@ class BWFAN_Common {
 	 */
 	public static function insert_automations( $automation_data ) {
 		foreach ( $automation_data as $auto_data ) {
+			$data = ! empty( $auto_data['data'] ) ? json_decode( $auto_data['data'], true ) : [];
+
+			/** Unset end_reason from data */
+			if ( ! empty( $data['end_reason'] ) ) {
+				unset( $data['end_reason'] );
+				$auto_data['data'] = wp_json_encode( $data );
+			}
+
 			$data = [
 				'cid'       => $auto_data['cid'],
 				'aid'       => $auto_data['aid'],
@@ -11244,12 +11524,13 @@ class BWFAN_Common {
 		if ( ! bwfan_is_autonami_pro_active() || ! in_array( $type, [ 5, '5', 'block', 7, '7' ], true ) ) {
 			return $body;
 		}
+		
+		do_action( 'bwfan_block_editor_content_loaded', $body );
 
 		if ( strpos( $body, 'bwfan_email_block_visibility' ) === false ) {
 			return $body;
 		}
 
-		do_action( 'bwfan_block_editor_content_loaded', $body );
 
 		BWFAN_Core()->rules->load_rules_classes();
 		$body = str_replace( "<bwfan_email_block_visibility", "[bwfbe_email_block_visibility", $body );
@@ -11650,6 +11931,7 @@ class BWFAN_Common {
 			'migratefromv1' => apply_filters( 'bwfan_fka_migrate_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/docs/autonami-2/automations/migrate-from-older-version' ) ),
 			'whatsnew'      => apply_filters( 'bwfan_fka_whatsnew_link_append_utm_args', add_query_arg( $default_args, 'https://funnelkit.com/whats-new/' ) ),
 			'publicapi'     => apply_filters( 'bwfan_fka_public_api_link_append_utm_args', add_query_arg( $default_args, 'https://developers.funnelkit.com/#introduction' ) ),
+			'sublium'       => apply_filters( 'bwfan_fka_sublium_link_append_utm_args', add_query_arg( $default_args, 'https://sublium.com/' ) ),
 		];
 	}
 
@@ -12652,22 +12934,25 @@ class BWFAN_Common {
 			return '';
 		}
 
+		$lang = '';
 		if ( function_exists( 'pll_current_language' ) && function_exists( 'pll_get_post_language' ) ) {
 			$lang = pll_get_post_language( $order->get_id() );
-
-			return $lang && is_string( $lang ) ? $lang : '';
+			$lang = $lang && is_string( $lang ) ? $lang : '';
+		} else {
+			$meta_key = '';
+			if ( class_exists( 'woocommerce_wpml' ) ) {
+				$meta_key = 'wpml_language';
+			} elseif ( bwfan_is_translatepress_active() ) {
+				$meta_key = 'trp_language';
+			} elseif ( function_exists( 'bwfan_is_weglot_active' ) && bwfan_is_weglot_active() ) {
+				$meta_key = 'weglot_language';
+			} elseif ( function_exists( 'bwfan_is_linguise_active' ) && bwfan_is_linguise_active() ) {
+				$meta_key = 'linguise_language';
+			}
+			$lang = $meta_key ? $order->get_meta( $meta_key ) : '';
 		}
 
-		$meta_key = '';
-		if ( class_exists( 'woocommerce_wpml' ) ) {
-			$meta_key = 'wpml_language';
-		} elseif ( bwfan_is_translatepress_active() ) {
-			$meta_key = 'trp_language';
-		} elseif ( function_exists( 'bwfan_is_weglot_active' ) && bwfan_is_weglot_active() ) {
-			$meta_key = 'weglot_language';
-		}
-
-		return $meta_key ? $order->get_meta( $meta_key ) : '';
+		return apply_filters( 'bwfan_order_language', $lang, $order );
 	}
 
 	/**
@@ -12823,6 +13108,8 @@ class BWFAN_Common {
 		$s    = isset( $data['s'] ) ? $data['s'] : 0;
 		$e    = isset( $data['e'] ) ? $data['e'] : '';
 		$ad   = isset( $data['ad'] ) ? $data['ad'] : '';
+		$gp   = isset( $data['gp'] ) ? $data['gp'] : [ 1, 1 ];
+		$h    = isset( $data['h'] ) ? $data['h'] : '';
 
 		if ( 2 === intval( $s ) ) {
 			if ( $e === '' ) {
@@ -13528,7 +13815,7 @@ class BWFAN_Common {
 	 * @return bool
 	 */
 	public static function should_skip_language_support() {
-		if ( ! function_exists( 'icl_get_languages' ) && ! function_exists( 'pll_the_languages' ) && ( ! function_exists( 'bwfan_is_translatepress_active' ) || ! bwfan_is_translatepress_active() ) && ( ! function_exists( 'bwfan_is_weglot_active' ) || ! bwfan_is_weglot_active() ) && ( ! function_exists( 'bwfan_is_gtranslate_active' ) || ! bwfan_is_gtranslate_active() ) ) {
+		if ( ! function_exists( 'icl_get_languages' ) && ! function_exists( 'pll_the_languages' ) && ( ! function_exists( 'bwfan_is_translatepress_active' ) || ! bwfan_is_translatepress_active() ) && ( ! function_exists( 'bwfan_is_weglot_active' ) || ! bwfan_is_weglot_active() ) && ( ! function_exists( 'bwfan_is_gtranslate_active' ) || ! bwfan_is_gtranslate_active() ) && ( ! function_exists( 'bwfan_is_linguise_active' ) || ! bwfan_is_linguise_active() ) ) {
 			return true;
 		}
 

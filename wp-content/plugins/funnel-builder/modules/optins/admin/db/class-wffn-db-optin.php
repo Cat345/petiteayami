@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_DB_Optin
@@ -29,7 +29,7 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -76,7 +76,7 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 			global $wpdb;
 			$table = $wpdb->prefix . $this->optin_tbl;
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `opid` = %s", sanitize_text_field( $opid ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is hardcoded class property
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `opid` = %s", $opid ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 
 		/**
@@ -86,10 +86,8 @@ if ( ! class_exists( 'WFFN_DB_Optin' ) ) {
 			global $wpdb;
 			$table = $wpdb->prefix . $this->optin_tbl;
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `id` = %d", absint( $id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is hardcoded class property
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `$table` WHERE `id` = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
-
-
 	}
 
 	WFFN_DB_Optin::get_instance();

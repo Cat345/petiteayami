@@ -22,7 +22,7 @@ class SeoFrontend
         $queried_values = $wpManager->getQueryVar( 'queried_values', [] );
 
         foreach ( $queried_values as $key => $filter ) {
-            if( in_array( $filter['entity'], [ 'post_meta_num', 'tax_numeric', 'post_date' ] ) ){
+            if( in_array( $filter['entity'], [ 'post_meta_num', 'tax_numeric', 'post_date', 'post_meta_date' ] ) ){
                 unset( $queried_values[ $key ] );
             }
         }
@@ -78,6 +78,8 @@ class SeoFrontend
         \add_filter( 'wpml_hreflangs_html', '__return_empty_string' );
         // Fixing block themes bug with double title
         \add_action( 'wp_head', [ $this, 'removeBlockTemplateRenderTitleTag' ], 0 );
+
+        add_filter( 'wpc_queried_all_posts', [$this, 'countTerms'], 10, 5);
     }
 
     public function removeBlockTemplateRenderTitleTag()
@@ -350,19 +352,37 @@ class SeoFrontend
         $indexedEnames  = [];
 
         foreach ( $indexedFilters as $filter ) {
-            $indexedEnames[] = $filter['e_name'];
+            if(!empty($filter['values'])){
+                $indexedEnames[$filter['e_name']] = [];
+            }
         }
 
-        foreach( $allqueriedValues as $slug => $filter  ){
+        foreach( $allqueriedValues as $slug => $filter ){
+            if( ! isset( $indexedEnames[$filter['e_name']] ) ){
+                $indexedEnames[$filter['e_name']] = $filter['values'];
+            }
             if( count( $filter['values'] ) > 1 ){
                 return $noindex;
             }
         }
 
+        $relatedRules       = $this->getRelatedSeoRules();
+        $seoRulePostId = 0;
+        if($relatedRules !== false && is_array($relatedRules)){
+            $actualRule         = reset( $relatedRules );
+            if(!empty($actualRule['ID'])){
+                $seoRulePostId      = $actualRule['ID'];
+            }
+        }
+
+        $indexedEnames      = apply_filters( 'wpc_seo_indexed_filters_queried', $indexedEnames, $queriedFilters, $seoRulePostId);
+
         foreach ( $queriedFilters as $slug => $filter ) {
 
-            if( ! in_array( $filter['e_name'], $indexedEnames ) ){
-                return $noindex;
+            foreach ($filter['values'] as $filter_val){
+                if( ! in_array( $filter_val, $indexedEnames[$filter['e_name']] ) ){
+                    return $noindex;
+                }
             }
         }
 
@@ -709,7 +729,7 @@ class SeoFrontend
      */
     private function getIndexDepth( $postType )
     {
-        $indexDeep = 2;
+        $indexDeep = 0;
         $indexDeepOptions = get_option( 'wpc_indexing_deep_settings' );
 
         if( isset( $indexDeepOptions[$postType . '_index_deep'] ) && $indexDeepOptions[$postType . '_index_deep'] ){
@@ -733,5 +753,34 @@ class SeoFrontend
             $this->vars[$key] = $value;
         }
         return true;
+    }
+
+    public function countTerms($queriedAllPosts, $allSetPostsIds, $queriedFilters, $setId)
+    {
+        $em = Container::instance()->getEntityManager();
+        $filter_on_page = end($queriedFilters);
+        $entities = $em->getEntityByFilter($filter_on_page);
+
+        if (!$entities || !isset($entities->items) || !is_array($entities->items)) {
+            return $queriedAllPosts;
+        }
+
+        foreach ($entities->items as $entity) {
+            if (!isset($filter_on_page['values']) || !is_array($filter_on_page['values'])) {
+                continue;
+            }
+
+            foreach ($filter_on_page['values'] as $val) {
+                if ($val === $entity->slug) {
+                    unset($filter_on_page['values']);
+                    $count = $em->calcTermCount(array_flip($entity->posts), $queriedAllPosts, $allSetPostsIds, $filter_on_page);
+
+                    if ($count < 1) {
+                        $this->set('noIndex', true);
+                    }
+                }
+            }
+        }
+        return $queriedAllPosts;
     }
 }

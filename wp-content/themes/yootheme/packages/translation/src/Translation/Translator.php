@@ -6,9 +6,6 @@ use YOOtheme\Translator as TranslatorInterface;
 
 class Translator implements TranslatorInterface
 {
-    /**
-     * @var string
-     */
     protected string $locale;
 
     /**
@@ -63,11 +60,10 @@ class Translator implements TranslatorInterface
             $locale = $this->getLocale();
         }
 
-        if (is_string($resource) && is_file($resource)) {
-            $resource = json_decode(file_get_contents($resource), true);
-        } else {
-            $resource = [];
-        }
+        $resource =
+            is_string($resource) && is_file($resource)
+                ? json_decode(file_get_contents($resource), true)
+                : [];
 
         $this->resources[$locale] = isset($this->resources[$locale])
             ? array_replace($this->resources[$locale], $resource)

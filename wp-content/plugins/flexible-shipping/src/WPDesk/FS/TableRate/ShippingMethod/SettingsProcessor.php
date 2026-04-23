@@ -10,7 +10,7 @@ namespace WPDesk\FS\TableRate\ShippingMethod;
 use Exception;
 use WPDesk\FS\TableRate\Rule\Condition\ConditionsFactory;
 use WPDesk\FS\TableRate\Rule\Settings\Validator\Conditions;
-use \WPDesk\FS\TableRate\Rule;
+use WPDesk\FS\TableRate\Rule;
 use WPDesk\FS\TableRate\Rule\Cost\RuleAdditionalCostFactory;
 use WPDesk\FS\TableRate\Rule\Cost\RuleCostFieldsFactory;
 use WPDesk_Flexible_Shipping;
@@ -86,7 +86,7 @@ class SettingsProcessor {
 					$method_id = intval( $shipping_method['id'] );
 				}
 			}
-			$method_id ++;
+			++$method_id;
 
 			return $method_id;
 		}
@@ -101,8 +101,8 @@ class SettingsProcessor {
 	 * @return array
 	 */
 	private function save_settings( $action, $posted_data ) {
-		$shipping_method  = array();
-		$shipping_methods = get_option( $this->shipping_methods_option, array() );
+		$shipping_method  = [];
+		$shipping_methods = get_option( $this->shipping_methods_option, [] );
 
 		$method_id = $this->get_method_id( $action, $shipping_methods, $posted_data );
 
@@ -110,14 +110,14 @@ class SettingsProcessor {
 			$method_id_for_shipping = $this->id . '_' . $this->instance_id . '_' . $method_id;
 		} else {
 			$method_id_for_shipping = sanitize_text_field( wp_unslash( $posted_data['method_id_for_shipping'] ) );
-			$shipping_method        = isset( $shipping_methods[ $method_id ] ) ? $shipping_methods[ $method_id ] : array();
+			$shipping_method        = isset( $shipping_methods[ $method_id ] ) ? $shipping_methods[ $method_id ] : [];
 		}
 
 		$shipping_method = $this->update_shipping_methods( $method_id, $method_id_for_shipping, $shipping_method, $shipping_methods, $posted_data );
 		$this->update_rates( $shipping_methods );
 
 		if ( 'new' === $action ) {
-			$shipping_method_order = get_option( $this->shipping_method_order_option, array() );
+			$shipping_method_order = get_option( $this->shipping_method_order_option, [] );
 
 			$shipping_method_order[ $method_id ] = $method_id;
 
@@ -163,7 +163,7 @@ class SettingsProcessor {
 	 * @param array $shipping_methods .
 	 */
 	private function update_rates( $shipping_methods ) {
-		$rates = array();
+		$rates = [];
 
 		foreach ( $shipping_methods as $shipping_method ) {
 			$id = sprintf( '%s_%s_%s', $this->id, $this->instance_id, sanitize_title( $shipping_method['method_title'] ) );
@@ -171,10 +171,10 @@ class SettingsProcessor {
 			$id = apply_filters( 'flexible_shipping_method_rate_id', $id, $shipping_method );
 
 			if ( ! isset( $rates[ $id ] ) && 'yes' === $shipping_method['method_enabled'] ) {
-				$rates[ $id ] = array(
+				$rates[ $id ] = [
 					'identifier' => $id,
 					'title'      => $shipping_method['method_title'],
-				);
+				];
 			}
 		}
 		update_option( 'flexible_shipping_rates', $rates );
@@ -190,13 +190,14 @@ class SettingsProcessor {
 	 */
 	private function prepare_shipping_method_settings( $method_id, $method_id_for_shipping, $posted_data ) {
 
-		$shipping_method = array(
-			'woocommerce_method_instance_id' => $this->instance_id,
-			'id'                             => $method_id,
-			'id_for_shipping'                => $method_id_for_shipping,
-			'method_title'                   => sanitize_text_field( $this->get_field_value( 'method_title', $posted_data ) ),
-			'method_description'             => sanitize_text_field( $this->get_field_value( 'method_description', $posted_data ) ),
-		);
+		$shipping_method = [
+			'woocommerce_method_instance_id'     => $this->instance_id,
+			'id'                                 => $method_id,
+			'id_for_shipping'                    => $method_id_for_shipping,
+			'method_title'                       => sanitize_text_field( $this->get_field_value( 'method_title', $posted_data ) ),
+			'method_description'                 => sanitize_text_field( $this->get_field_value( 'method_description', $posted_data ) ),
+			CommonMethodSettings::METHOD_LOGO_ID => absint( $this->get_field_value( CommonMethodSettings::METHOD_LOGO_ID, $posted_data ) ),
+		];
 
 		$shipping_method[ WPDesk_Flexible_Shipping::FIELD_METHOD_FREE_SHIPPING ] = '';
 
@@ -205,7 +206,7 @@ class SettingsProcessor {
 			$shipping_method[ WPDesk_Flexible_Shipping::FIELD_METHOD_FREE_SHIPPING ] = wc_format_decimal( sanitize_text_field( $method_free_shipping ) );
 		}
 
-		$method_integration = $this->get_field_value( 'method_integration', $posted_data );
+		$method_integration                    = $this->get_field_value( 'method_integration', $posted_data );
 		$shipping_method['method_integration'] = sanitize_text_field( $method_integration );
 
 		$shipping_method['method_free_shipping_label']                                    = sanitize_text_field( $this->get_field_value( 'method_free_shipping_label', $posted_data ) );
@@ -218,7 +219,7 @@ class SettingsProcessor {
 		$shipping_method['method_enabled']    = $this->get_value_of_yes_no( 'method_enabled', $posted_data );
 
 		$shipping_method[ WPDesk_Flexible_Shipping::SETTING_METHOD_RULES ] = $this->get_normalized_rules(
-			isset( $posted_data[ WPDesk_Flexible_Shipping::SETTING_METHOD_RULES ] ) ? $posted_data[ WPDesk_Flexible_Shipping::SETTING_METHOD_RULES ] : array()
+			isset( $posted_data[ WPDesk_Flexible_Shipping::SETTING_METHOD_RULES ] ) ? $posted_data[ WPDesk_Flexible_Shipping::SETTING_METHOD_RULES ] : []
 		);
 
 		return apply_filters( 'flexible_shipping_process_admin_options', $shipping_method );
@@ -261,5 +262,4 @@ class SettingsProcessor {
 	private function get_value_of_yes_no( $name, $posted_data ) {
 		return filter_var( $this->get_field_value( $name, $posted_data ), FILTER_VALIDATE_BOOLEAN ) ? 'yes' : 'no';
 	}
-
 }

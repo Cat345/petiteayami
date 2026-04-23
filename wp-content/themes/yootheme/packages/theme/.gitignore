@@ -1,5 +1,0 @@
-/assets/js/*.min.js
-**/app/*.min.js
-**/app/**/*-icons.json
-_build/**/*.min.js
-.DS_Store

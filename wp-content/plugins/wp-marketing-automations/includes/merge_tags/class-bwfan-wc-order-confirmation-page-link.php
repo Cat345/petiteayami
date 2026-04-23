@@ -38,7 +38,31 @@ class BWFAN_WC_Order_Confirmation_Page_Link extends BWFAN_Merge_Tag {
 			return $this->parse_shortcode_output( '', $attr );
 		}
 
-		$order_received_url = $order->get_checkout_order_received_url();
+		/** Switch WPML language to order's language before generating URL */
+		$switched = false;
+		if ( defined( 'ICL_SITEPRESS_VERSION' ) && $order instanceof WC_Order ) {
+			global $sitepress;
+			$order_lang = $order->get_meta( 'wpml_language' );
+			if ( ! empty( $order_lang ) && isset( $sitepress ) && class_exists( 'SitePress' ) && $sitepress instanceof SitePress ) {
+				$current_lang = $sitepress->get_current_language();
+				if ( $current_lang !== $order_lang ) {
+					$sitepress->switch_lang( $order_lang );
+					$switched = $current_lang;
+				}
+			}
+		}
+
+		$order_received_url = '';
+
+		try {
+			$order_received_url = $order->get_checkout_order_received_url();
+		} finally {
+			/** Restore original language */
+			if ( false !== $switched ) {
+				global $sitepress;
+				$sitepress->switch_lang( $switched );
+			}
+		}
 
 		return $this->parse_shortcode_output( $order_received_url, $attr );
 	}

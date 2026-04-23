@@ -2,18 +2,17 @@
 if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Gutenberg {
-		private static $ins = null;
-		public $modules_instance = [];
-		private $post = null;
-		protected $widgets_json = [];
-		private $url = '';
+		private static $ins      = null;
+		public $modules_instance = array();
+		private $post            = null;
+		protected $widgets_json  = array();
+		private $url             = '';
 
 		private function __construct() {
 			$this->url = plugin_dir_url( __FILE__ );
 
 			$this->define_constant();
 			$this->register();
-
 		}
 
 		private function define_constant() {
@@ -27,7 +26,6 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 			}
 
 			return self::$ins;
-
 		}
 
 
@@ -39,29 +37,32 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				add_filter( 'block_categories_all', array( $this, 'add_block_categories' ), 11, 1 );
 			}
 
-			add_filter( 'admin_body_class', [ $this, 'bwf_blocks_admin_body_class' ] );
+			add_filter( 'admin_body_class', array( $this, 'bwf_blocks_admin_body_class' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_block_front_assets' ) );
 			add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ), 30 );
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_editor_styles' ) );
 
 			$this->load_require_files();
-
 		}
 
 		public function add_default_templates() {
-			$template = [
+			$template = array(
 				'slug'        => 'gutenberg',
 				'title'       => __( 'Block Editor', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
 				'description' => __( 'Use block editor modules to create your own designs. Or pick from professionally-designed templates.', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'action' => 'edit',
-					'post'   => $this->edit_id
-				], admin_url( 'post.php' ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'action' => 'edit',
+						'post'   => $this->edit_id,
+					),
+					admin_url( 'post.php' )
+				),
+			);
 
 			WFFN_Core()->thank_you_pages->register_template_type( $template );
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['wc_thankyou'] ) ? $templates['wc_thankyou'] : [];
+			$designs   = isset( $templates['wc_thankyou'] ) ? $templates['wc_thankyou'] : array();
 
 			if ( isset( $designs['gutenberg'] ) && is_array( $designs['gutenberg'] ) ) {
 				foreach ( $designs['gutenberg'] as $d_key => $templates ) {
@@ -74,42 +75,53 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				}
 			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "gutenberg_1",
-					"build_from_scratch" => true,
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'gutenberg_1',
+					'build_from_scratch' => true,
 
-				];
+				);
 				WFFN_Core()->thank_you_pages->register_template( 'gutenberg_1', $empty_template, 'gutenberg' );
 			}
 
-			return [];
+			return array();
 		}
 
 		public function init_loaded() {
 			// Register Gutenberg Block Meta for Editor Width
-			register_post_meta( '', 'bwfblock_default_font', array(
-				'show_in_rest' => true,
-				'single'       => true,
-				'type'         => 'string',
-			) );
+			register_post_meta(
+				'',
+				'bwfblock_default_font',
+				array(
+					'show_in_rest' => true,
+					'single'       => true,
+					'type'         => 'string',
+				)
+			);
 		}
 
-	/**
-	 * Add custom category
-	 *
-	 * @param array $categories category list.
-	 * @param WP_Post $post post object.
-	 */
-	public function add_block_categories( $categories ) { //phpcs:ignore WordPressVIPMinimum.Hooks.AlwaysReturnInFilter.MissingReturnStatement
-		if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ), true ) ) {
-			return $categories;
-		} else {
-			return array_merge( array(array('slug'  => 'woofunnels','title' => esc_html__( 'FunnelKit', 'funnel-builder' ),), ), $categories );
-		}
-
+		/**
+		 * Add custom category
+		 *
+		 * @param array   $categories category list.
+		 * @param WP_Post $post post object.
+		 */
+		public function add_block_categories( $categories ) { //phpcs:ignore WordPressVIPMinimum.Hooks.AlwaysReturnInFilter.MissingReturnStatement
+			if ( false !== array_search( 'woofunnels', array_column( $categories, 'slug' ), true ) ) {
+				return $categories;
+			} else {
+				return array_merge(
+					array(
+						array(
+							'slug'  => 'woofunnels',
+							'title' => esc_html__( 'FunnelKit', 'funnel-builder' ),
+						),
+					),
+					$categories
+				);
+			}
 		}
 
 		// Add class in editor body
@@ -124,16 +136,14 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				if ( 'wftp-boxed.php' === $template_file ) {
 					$classes .= ' bwf-editor-width-boxed';
 				}
-
 			}
 
 			return $classes;
-
 		}
 
 
 		public function load_require_files() {
-			//load necessary files
+			// load necessary files
 			require_once __DIR__ . '/includes/functions.php';
 			require_once __DIR__ . '/includes/class-bwf-blocks-css.php';
 			require_once __DIR__ . '/includes/class-bwf-blocks-frontend-css.php';
@@ -180,15 +190,23 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				$deps    = array_merge( $deps, array( 'bwf-font-awesome-kit' ) );
 				$version = time();
 
-				$script_deps = array_filter( $deps, function ( $dep ) {
-					return false === strpos( $dep, 'css' );
-				} );
+				$script_deps = array_filter(
+					$deps,
+					function ( $dep ) {
+						return false === strpos( $dep, 'css' );
+					}
+				);
 
-				wp_register_script( 'bwf-font-awesome-kit', 'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
-					null, null, true );
+				wp_register_script(
+					'bwf-font-awesome-kit',
+					'https://kit.fontawesome.com/f4306c3ab0.js', // Our free kit https://fontawesome.com/kits/f4306c3ab0/settings
+					array(),
+					'6.0',
+					true
+				);
 				wp_enqueue_script( 'wfty-block-editor', $frontend_dir . $js_path, $script_deps, $version, true );
 
-				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), true );
+				wp_enqueue_script( 'web-font', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js', array(), '1.6.26', true );
 
 				$exp_date = gmdate( 'Y-m-d H:i:s', strtotime( '+10 days' ) );
 				if ( ! empty( $exp_date ) ) {
@@ -197,9 +215,9 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					$exp_date = __( 'Never', 'funnel-builder' );
 				}
 
-				//Localized data for ThankYou Guten Blocks
+				// Localized data for ThankYou Guten Blocks
 				$customer_details = array(
-					'shipping' => false
+					'shipping' => false,
 				);
 				$order_details    = array(
 					'price'          => '12.00',
@@ -207,7 +225,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 					'shipping_price' => '3.00',
 					'shipping'       => 'false',
 					'currency'       => html_entity_decode( get_woocommerce_currency_symbol() ),
-					'img_url'        => wc_placeholder_img_src('thumbnail'),
+					'img_url'        => wc_placeholder_img_src( 'thumbnail' ),
 					'pro_name'       => __( 'Test Product', 'funnel-builder' ),
 					'sub_head'       => __( 'Subtotal', 'funnel-builder' ),
 					'ship_head'      => __( 'Shipping', 'funnel-builder' ),
@@ -234,35 +252,70 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 				$shipping_option = get_option( 'woocommerce_ship_to_countries' );
 				if ( 'disabled' !== $shipping_option ) {
 					$order_details['total_price'] += $order_details['shipping_price'];
-					$order_details['total_price'] = $order_details['total_price'] . '.00';
-					$order_details['shipping']    = 'true';
-					$customer_details['shipping'] = true;
+					$order_details['total_price']  = $order_details['total_price'] . '.00';
+					$order_details['shipping']     = 'true';
+					$customer_details['shipping']  = true;
 				}
 
-
-				wp_localize_script( 'wfty-block-editor', 'wfty_blocks', array(
-					'i18n'             => BWF_I18N,
-					'bwf_g_fonts'      => bwf_get_fonts_list( 'all' ),
-					'bwf_g_font_names' => bwf_get_fonts_list( 'name_only' ),
-					'order_details'    => $order_details,
-					'cust_details'     => $customer_details,
-					'wp_version'       => $GLOBALS['wp_version'],
-				) );
-				// Enqueue our plugin Css.
-				wp_enqueue_style( 'wfty-block-editor', $frontend_dir . $style_path, array(), $version );
-
+				wp_localize_script(
+					'wfty-block-editor',
+					'wfty_blocks',
+					array(
+						'i18n'             => BWF_I18N,
+						'bwf_g_fonts'      => bwf_get_fonts_list( 'all' ),
+						'bwf_g_font_names' => bwf_get_fonts_list( 'name_only' ),
+						'order_details'    => $order_details,
+						'cust_details'     => $customer_details,
+						'wp_version'       => $GLOBALS['wp_version'],
+					)
+				);
 				if ( function_exists( 'wp_set_script_translations' ) ) {
 					wp_set_script_translations( 'wfty-block-editor', BWF_I18N );
 				}
-
-
-				if ( defined( 'WFTY_PLUGIN_FILE' ) ) {
-					wp_enqueue_style( 'wffn_frontend_tp_css', plugin_dir_url( WFTY_PLUGIN_FILE ) . '/assets/css/style.css', [], time() );
-				}
-
 			}
 		}
 
+
+		/**
+		 * Enqueue block editor styles via enqueue_block_assets so they load inside the iframe editor.
+		 */
+		public function enqueue_block_editor_styles() {
+			if ( ! is_admin() ) {
+				return;
+			}
+
+			global $pagenow, $post;
+
+			if ( class_exists( 'WFFN_Thank_You_WC_Pages' ) && ! is_null( $post ) && WFFN_Thank_You_WC_Pages::get_post_type_slug() === $post->post_type && 'post.php' === $pagenow && isset( $_GET['post'] ) && intval( $_GET['post'] ) > 0 ) { //phpcs:ignore
+				$frontend_dir = defined( 'WFTY_REACT_ENVIRONMENT' ) ? WFTY_REACT_ENVIRONMENT : $this->url . 'dist';
+				$style_path   = '/wfty-block-editor.css';
+				wp_enqueue_style( 'wfty-block-editor', $frontend_dir . $style_path, array(), time() );
+
+				if ( defined( 'WFTY_PLUGIN_FILE' ) ) {
+					wp_enqueue_style( 'wffn_frontend_tp_css', plugin_dir_url( WFTY_PLUGIN_FILE ) . '/assets/css/style.css', array(), time() );
+				}
+
+				// Enqueue saved default font so it's baked into the iframe editor
+				$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
+				if ( ! empty( $default_font ) ) {
+					$is_system      = false;
+					$standard_fonts = file_exists( __DIR__ . '/font/standard-fonts.php' ) ? include __DIR__ . '/font/standard-fonts.php' : array();
+					if ( is_array( $standard_fonts ) ) {
+						foreach ( $standard_fonts as $sf ) {
+							if ( isset( $sf['value'] ) && strtolower( $default_font ) === strtolower( $sf['value'] ) ) {
+								$is_system = true;
+								break;
+							}
+						}
+					}
+					if ( ! $is_system ) {
+						$font_url = 'https://fonts.googleapis.com/css?family=' . rawurlencode( $default_font ) . ':100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic';
+						wp_enqueue_style( 'bwfblock-editor-default-google-font', $font_url, array(), null );
+					}
+					wp_add_inline_style( 'wfty-block-editor', '#editor .editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
+				}
+			}
+		}
 
 		/**
 		 * Enqueue Front Style.
@@ -270,7 +323,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 		public function enqueue_block_front_assets() {
 			global $post;
 
-			if ( is_null( $post ) || WFFN_Thank_You_WC_Pages::get_post_type_slug() !== $post->post_type ) {
+			if ( is_null( $post ) || ! ( $post instanceof WP_Post ) || WFFN_Thank_You_WC_Pages::get_post_type_slug() !== $post->post_type ) {
 				return false;
 			}
 			$design = WFFN_Core()->thank_you_pages->get_page_design( $post->ID );
@@ -285,8 +338,7 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 			wp_enqueue_style( 'wfty-block-front', $frontend_dir . $stylesheet_file, array(), time() );
 
 			// Load block font family
-			require_once( __DIR__ . '/font/fonts.php' );
-
+			require_once __DIR__ . '/font/fonts.php';
 		}
 
 		public function bwf_render_default_font() {
@@ -307,7 +359,6 @@ if ( ! class_exists( 'WFTY_Gutenberg' ) ) {
 
 			return $is;
 		}
-
 	}
 
 	WFTY_Gutenberg::get_instance();

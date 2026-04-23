@@ -124,8 +124,8 @@ class Advanced_Coupon extends \WC_Coupon {
                 continue;
             }
 
-            // fetch raw meta data if present.
-            $raw_data = maybe_unserialize( current( $meta_data[ Plugin_Constants::META_PREFIX . $prop ] ) );
+            // fetch raw meta data if present, latest value.
+            $raw_data = maybe_unserialize( end( $meta_data[ Plugin_Constants::META_PREFIX . $prop ] ) );
 
             // make sure fetched data has the correct type.
             switch ( $prop ) {

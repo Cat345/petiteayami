@@ -5,11 +5,11 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 		private static $ins = null;
 		public $orders;
-		public $offer_id = 0;
-		protected $offer_data = 0;
-		private $template_path = '';
-		private $template_url = '';
-		private $template = null;
+		public $offer_id         = 0;
+		protected $offer_data    = 0;
+		private $template_path   = '';
+		private $template_url    = '';
+		private $template        = null;
 		private $template_assets = null;
 		/**
 		 * @var WFOCU_Customizer_Common
@@ -17,26 +17,35 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		private $template_ins = null;
 
 		public function __construct() {
-			if ( isset( $_REQUEST['offer_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$this->offer_id = wc_clean( $_REQUEST['offer_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview parameter detection
+			if ( isset( $_REQUEST['offer_id'] ) ) {
+				$this->offer_id = absint( wp_unslash( $_REQUEST['offer_id'] ) );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			}
 			if ( WFOCU_Core()->template_loader->is_customizer_preview() ) {
 
 				/** Set host url in allowed redirect url for customizer in case wp defined site url is different then home url */
-				add_filter( 'allowed_redirect_hosts', function ( $wpp, $lp_host ) {
-					$wpp[] = $lp_host;
+				add_filter(
+					'allowed_redirect_hosts',
+					function ( $wpp, $lp_host ) {
+						$wpp[] = $lp_host;
 
-					return array_unique( $wpp );
-				}, 10, 2 );
+						return array_unique( $wpp );
+					},
+					10,
+					2
+				);
 
 				WFOCU_Core()->template_loader->set_offer_id( $this->offer_id );
 				/** Kirki */
 
-				add_action( 'init', function () {
-					require WFOCU_PLUGIN_DIR . '/admin/includes/wfocukirki/wfocukirki.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
-					/** wfocukirki custom controls */
-					require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-wfocukirki.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
-				} );
+				add_action(
+					'init',
+					function () {
+						require WFOCU_PLUGIN_DIR . '/admin/includes/wfocukirki/wfocukirki.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+						/** wfocukirki custom controls */
+						require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-wfocukirki.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+					}
+				);
 
 			}
 			$this->template_path   = WFOCU_PLUGIN_DIR . '/templates';
@@ -45,16 +54,20 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 			add_filter( 'wfocu_customizer_fieldset', array( $this, 'add_offer_confirmation_setting' ) );
 			add_action( 'wp_insert_post', array( $this, 'mark_changsets_as_dismissed' ), 10, 2 );
 			$this->maybe_load_customizer();
-			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview parameter detection
+			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_unnecessary_customizer_scripts' ), 999 );
 			}
 			add_action( 'init', array( $this, 'customizer_product_check' ), 25 );
 
 			add_action( 'init', array( $this, 'setup_offer_for_wfocukirki' ), 20 );
-			add_action( 'wfocu_loaded', function () {
-				require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-template-group-customizer.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
-				require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-template-group-custom.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
-			} );
+			add_action(
+				'wfocu_loaded',
+				function () {
+					require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-template-group-customizer.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+					require WFOCU_PLUGIN_DIR . '/includes/class-wfocu-template-group-custom.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+				}
+			);
 			/** Late priority in case themes also using wfocukirki */
 			add_filter( 'wfocukirki/config', array( $this, 'wfocu_wfocukirki_configuration' ), 9999 );
 			add_action( 'init', array( $this, 'wfocu_wfocukirki_fields' ), 30 );
@@ -62,30 +75,38 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		}
 
 		public function maybe_load_customizer() {
-			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview parameter detection
+			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) {
 				$this->customize_hooks();
 
 			}
 		}
 
 		public function customize_hooks() {
-			add_action( 'customize_register', function () {
-				if ( defined( 'WFOCU_MP_VERSION' ) && version_compare( WFOCU_MP_VERSION, '1.1.0', '<=' ) ) {
-					wp_die( "You are using outdated version of Upstroke: Multi Product Offers, which is not compatible with UpStroke 2.0. To make changes in your template first goto your <a href='" . esc_url( admin_url( 'plugins.php?s=upstroke' ) ) . "'>plugin dashboard </a>and update <strong>Upstroke: Multi Product Offers</strong>. " );
-				}
-			}, 0 );
+			add_action(
+				'customize_register',
+				function () {
+					if ( defined( 'WFOCU_MP_VERSION' ) && version_compare( WFOCU_MP_VERSION, '1.1.0', '<=' ) ) {
+						wp_die( "You are using outdated version of Upstroke: Multi Product Offers, which is not compatible with UpStroke 2.0. To make changes in your template first goto your <a href='" . esc_url( admin_url( 'plugins.php?s=upstroke' ) ) . "'>plugin dashboard </a>and update <strong>Upstroke: Multi Product Offers</strong>. " );
+					}
+				},
+				0
+			);
 
 			add_filter( 'customize_register', array( $this, 'remove_sections' ), 110 );
 			add_action( 'customize_save_after', array( $this, 'maybe_update_customize_save' ) );
 
 			add_filter( 'customize_changeset_branching', '__return_true' );
-			add_action( 'customize_controls_print_styles', function () {
-				echo '<style>#customize-theme-controls li#accordion-panel-nav_menus,
+			add_action(
+				'customize_controls_print_styles',
+				function () {
+					echo '<style>#customize-theme-controls li#accordion-panel-nav_menus,
 #customize-theme-controls li#accordion-panel-widgets,
 #customize-theme-controls li#accordion-section-astra-pro,
 #customize-controls .customize-info .customize-help-toggle,
 .ast-control-tooltip {display: none !important;}</style>';
-			} );
+				}
+			);
 			add_filter( 'customize_control_active', array( $this, 'control_filter' ), 10, 2 );
 
 			add_action( 'customize_controls_enqueue_scripts', array( $this, 'enqueue_scripts' ), 9999 );
@@ -100,7 +121,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 			add_action( 'customize_save_validation_before', array( $this, 'add_sections1' ), 101 );
 			add_action( 'wfocu_header_print_in_head', array( $this, 'offer_confirmation_html' ), 1 );
-
 		}
 
 		public static function get_type() {
@@ -122,7 +142,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		 *
 		 * @return mixed|null
 		 */
-
 		public function load_template( $offer_data ) {
 			if ( ! empty( $offer_data ) ) {
 
@@ -131,7 +150,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 					$this->template   = $offer_data->template;
 
 					$locate_template = WFOCU_Core()->template_loader->get_group( 'customizer' )->get_template_path( $this->template, $this->offer_data );
-
 
 					if ( ! empty( $locate_template ) && file_exists( $locate_template ) ) {
 
@@ -142,8 +160,9 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 							$this->template_ins->set_offer_id( $this->offer_id );
 							$this->template_ins->set_offer_data( $this->offer_data );
 							$this->template_ins->load_hooks();
-							if ( isset( $_REQUEST['customized'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-								$change_set = json_decode( wc_clean( $_REQUEST['customized'] ), true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+							// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer changeset parameter
+							if ( isset( $_REQUEST['customized'] ) ) {
+								$change_set = json_decode( bwf_clean( wp_unslash( $_REQUEST['customized'] ) ), true );//phpcs:ignore WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 								if ( ! is_null( $change_set ) ) {
 									$this->template_ins->set_changeset( $change_set );
 								}
@@ -152,12 +171,10 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 							return $this->template_ins;
 						}
 					}
-
 				}
 			}
 
 			return null;
-
 		}
 
 
@@ -254,7 +271,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 				21 => 'wfocukirki_panel_and_section_icons',
 				22 => 'wfocukirki-custom-sections',
 				23 => 'wfocu_customizer_common',
-				24 => 'acf-input'
+				24 => 'acf-input',
 			);
 
 			$accepted_styles = array(
@@ -278,7 +295,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 			$wp_scripts->queue = $accepted_scripts;
 			$wp_styles->queue  = $accepted_styles;
-
 		}
 
 		public function enqueue_scripts() {
@@ -339,18 +355,22 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 			include WFOCU_PLUGIN_DIR . '/admin/view/offer-save-template.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 			$save_preset_html = ob_get_clean();
 
-			wp_localize_script( 'wfocu_customizer_common', 'wfocu_customizer', array(
-				'is_loaded'                   => 'yes',
-				'save_preset_html'            => $save_preset_html,
-				'offer_id'                    => $this->offer_id,
-				'fields'                      => $template_fields,
-				'ajax_url'                    => admin_url( 'admin-ajax.php' ),
-				'preset_message'              => __( 'Make sure your customizer setting is published', 'woofunnels-upstroke-one-click-upsell' ),
-				'pd'                          => $pd,
-				'wfocu_nonce_save_template'   => wp_create_nonce( 'wfocu_save_template' ),
-				'wfocu_nonce_delete_template' => wp_create_nonce( 'wfocu_delete_template' ),
-				'wfocu_nonce_apply_template'  => wp_create_nonce( 'wfocu_apply_template' ),
-			) );
+			wp_localize_script(
+				'wfocu_customizer_common',
+				'wfocu_customizer',
+				array(
+					'is_loaded'                   => 'yes',
+					'save_preset_html'            => $save_preset_html,
+					'offer_id'                    => $this->offer_id,
+					'fields'                      => $template_fields,
+					'ajax_url'                    => admin_url( 'admin-ajax.php' ),
+					'preset_message'              => __( 'Make sure your customizer setting is published', 'woofunnels-upstroke-one-click-upsell' ),
+					'pd'                          => $pd,
+					'wfocu_nonce_save_template'   => wp_create_nonce( 'wfocu_save_template' ),
+					'wfocu_nonce_delete_template' => wp_create_nonce( 'wfocu_delete_template' ),
+					'wfocu_nonce_apply_template'  => wp_create_nonce( 'wfocu_apply_template' ),
+				)
+			);
 		}
 
 		public function customizer_js() {
@@ -395,12 +415,16 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 				}
 			}
 
-			WFOCU_Core()->assets->localize_script( 'wfocu_customizer_live', 'wfocu_customizer', array(
-				'is_loaded' => 'yes',
-				'offer_id'  => $this->offer_id,
-				'fields'    => $template_fields,
-				'pd'        => $pd,
-			) );
+			WFOCU_Core()->assets->localize_script(
+				'wfocu_customizer_live',
+				'wfocu_customizer',
+				array(
+					'is_loaded' => 'yes',
+					'offer_id'  => $this->offer_id,
+					'fields'    => $template_fields,
+					'pd'        => $pd,
+				)
+			);
 		}
 
 		public function add_sections( $wp_customize ) {
@@ -408,12 +432,10 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 				return;
 			}
 			$this->template_ins->get_section( $wp_customize );
-
 		}
 
 		public function add_sections1( $wp_customize ) {
 			$this->template_ins->get_section( $wp_customize );
-
 		}
 
 		public function save( $value, $WP_Customize_Setting ) {
@@ -456,11 +478,11 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 							'priority' => 110,
 						),
 						'fields' => array(
-							'header_text'  => array(
-								'type'      => 'text',
-								'label'     => __( 'Header Text', 'woofunnels-upstroke-one-click-upsell' ),
-								'default'   => $get_defaults['offer_header_text'],
-								'transport' => 'postMessage',
+							'header_text'                => array(
+								'type'            => 'text',
+								'label'           => __( 'Header Text', 'woofunnels-upstroke-one-click-upsell' ),
+								'default'         => $get_defaults['offer_header_text'],
+								'transport'       => 'postMessage',
 
 								'wfocu_transport' => array(
 									array(
@@ -470,12 +492,12 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 								'priority'        => 10,
 							),
-							'cta_yes_text' => array(
-								'type'      => 'text',
-								'label'     => __( 'Accept Button Text', 'woofunnels-upstroke-one-click-upsell' ),
-								'default'   => $get_defaults['offer_yes_btn_text'],
-								'priority'  => 20,
-								'transport' => 'postMessage',
+							'cta_yes_text'               => array(
+								'type'            => 'text',
+								'label'           => __( 'Accept Button Text', 'woofunnels-upstroke-one-click-upsell' ),
+								'default'         => $get_defaults['offer_yes_btn_text'],
+								'priority'        => 20,
+								'transport'       => 'postMessage',
 
 								'wfocu_transport' => array(
 									array(
@@ -484,7 +506,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 									),
 								),
 							),
-							'cta_no_text'  => array(
+							'cta_no_text'                => array(
 								'type'            => 'text',
 								'label'           => __( 'Decline Offer Link Text', 'woofunnels-upstroke-one-click-upsell' ),
 								'default'         => $get_defaults['offer_skip_link_text'],
@@ -498,14 +520,14 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 							),
 
-							/**** YES BUTTON COLOR SETTINGS START *******/
-							'ct_colors'    => array(
+							/**** YES BUTTON COLOR SETTINGS START */
+							'ct_colors'                  => array(
 								'type'     => 'custom',
 								'default'  => '<div class="options-title-divider">' . esc_html__( 'Accept Button Colors', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 								'priority' => 40,
 							),
 
-							'ct_accept_btn_state1' => array(
+							'ct_accept_btn_state1'       => array(
 								'type'      => 'radio-buttonset',
 								'label'     => '',
 								'default'   => 'normal',
@@ -516,7 +538,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								'transport' => 'postMessage',
 								'priority'  => 50,
 							),
-							'yes_btn_bg_color'     => array(
+							'yes_btn_bg_color'           => array(
 								'label'           => __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_yes_btn_bg_cl'],
@@ -540,7 +562,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 							),
 
-							'yes_btn_text_color'   => array(
+							'yes_btn_text_color'         => array(
 								'label'           => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_yes_btn_txt_cl'],
@@ -563,7 +585,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 								),
 							),
-							'yes_btn_shadow_color' => array(
+							'yes_btn_shadow_color'       => array(
 								'label'           => __( 'Shadow Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_yes_btn_sh_cl'],
@@ -587,7 +609,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 								),
 							),
-							'yes_btn_hover_color'  => array(
+							'yes_btn_hover_color'        => array(
 								'label'           => __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_yes_btn_bg_cl_h'],
@@ -612,7 +634,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 							),
 
-							'yes_btn_hover_color_text' => array(
+							'yes_btn_hover_color_text'   => array(
 								'label'           => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_yes_btn_txt_cl_h'],
@@ -662,16 +684,16 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 							),
 
-							/**** YES BUTTON COLOR SETTINGS ENDS *******/
+							/**** YES BUTTON COLOR SETTINGS ENDS */
 
-							/**** NO BUTTON COLOR SETTINGS STARTS *******/
+							/**** NO BUTTON COLOR SETTINGS STARTS */
 							'ct_colors3'                 => array(
 								'type'     => 'custom',
 								'default'  => '<div class="options-title-divider">' . esc_html__( 'Decline Offer Colors', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 								'priority' => 120,
 							),
 
-							'ct_accept_btn_state2' => array(
+							'ct_accept_btn_state2'       => array(
 								'type'      => 'radio-buttonset',
 								'label'     => '',
 								'default'   => 'normal',
@@ -682,7 +704,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								'transport' => 'postMessage',
 								'priority'  => 130,
 							),
-							'no_btn_color'         => array(
+							'no_btn_color'               => array(
 								'label'           => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_no_btn_txt_cl'],
@@ -706,7 +728,7 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 							),
 
-							'no_btn_color_hover' => array(
+							'no_btn_color_hover'         => array(
 								'label'           => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
 								'type'            => 'color',
 								'default'         => $get_defaults['offer_no_btn_txt_cl_h'],
@@ -730,25 +752,25 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								),
 							),
 
-							/**** NO BUTTON COLOR SETTINGS ENDS *******/
+							/**** NO BUTTON COLOR SETTINGS ENDS */
 
-							'ct_cart_opener'      => array(
-								'type'    => 'custom',
-								'default' => '<div class="options-title-divider">' . esc_html__( 'Offer Confirmation Opener', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
+							'ct_cart_opener'             => array(
+								'type'     => 'custom',
+								'default'  => '<div class="options-title-divider">' . esc_html__( 'Offer Confirmation Opener', 'woofunnels-upstroke-one-click-upsell' ) . '</div>',
 
 								'priority' => 160,
 							),
-							'ct_cart_opener_desc' => array(
+							'ct_cart_opener_desc'        => array(
 								'type'        => 'custom',
 								'default'     => '',
 								'description' => esc_attr__( 'This element will only display after user closes Offer Confirmation.', 'woofunnels-upstroke-one-click-upsell' ),
 								'priority'    => 170,
 							),
-							'cart_opener_text'    => array(
-								'type'      => 'text',
-								'label'     => __( 'Text', 'woofunnels-upstroke-one-click-upsell' ),
-								'default'   => $get_defaults['cart_opener_text'],
-								'transport' => 'postMessage',
+							'cart_opener_text'           => array(
+								'type'            => 'text',
+								'label'           => __( 'Text', 'woofunnels-upstroke-one-click-upsell' ),
+								'default'         => $get_defaults['cart_opener_text'],
+								'transport'       => 'postMessage',
 
 								'wfocu_transport' => array(
 									array(
@@ -759,11 +781,11 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								'priority'        => 180,
 							),
 
-							'cart_opener_color' => array(
-								'type'      => 'color',
-								'label'     => __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
-								'default'   => $get_defaults['cart_opener_background_color'],
-								'transport' => 'postMessage',
+							'cart_opener_color'          => array(
+								'type'            => 'color',
+								'label'           => __( 'Background Color', 'woofunnels-upstroke-one-click-upsell' ),
+								'default'         => $get_defaults['cart_opener_background_color'],
+								'transport'       => 'postMessage',
 
 								'wfocu_transport' => array(
 									array(
@@ -781,11 +803,11 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 								'priority'        => 190,
 							),
 
-							'cart_opener_text_color' => array(
-								'type'      => 'color',
-								'label'     => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
-								'default'   => $get_defaults['cart_opener_text_color'],
-								'transport' => 'postMessage',
+							'cart_opener_text_color'     => array(
+								'type'            => 'color',
+								'label'           => __( 'Text Color', 'woofunnels-upstroke-one-click-upsell' ),
+								'default'         => $get_defaults['cart_opener_text_color'],
+								'transport'       => 'postMessage',
 
 								'wfocu_transport' => array(
 									array(
@@ -832,8 +854,8 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		}
 
 		public function dequeue_unnecessary_customizer_scripts() {
-
-			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Customizer preview parameter detection
+			if ( isset( $_REQUEST['wfocu_customize'] ) && $_REQUEST['wfocu_customize'] === 'loaded' && isset( $_REQUEST['offer_id'] ) && $_REQUEST['offer_id'] > 0 ) {
 
 				/**
 				 * wp-titan framework add these color pickers, that breaks our customizer page
@@ -842,7 +864,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 				wp_dequeue_script( 'wp-color-picker-alpha' );
 
 			}
-
 		}
 
 		public function customizer_product_check() {
@@ -879,7 +900,6 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 					wp_die( esc_attr__( 'Your offer must have at least one product to show preview.', 'woofunnels-upstroke-one-click-upsell' ) );
 
-
 				}
 				if ( ! empty( WFOCU_Core()->template_loader->current_template ) ) {
 					WFOCU_Core()->template_loader->current_template->variation_field = $variation_field;
@@ -905,10 +925,13 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 
 			/** wfocukirki */
 			if ( class_exists( 'WFOCUKirki' ) ) {
-				WFOCUKirki::add_config( WFOCU_SLUG, array(
-					'option_type' => 'option',
-					'option_name' => WFOCU_Core()->template_loader->customizer_key_prefix,
-				) );
+				WFOCUKirki::add_config(
+					WFOCU_SLUG,
+					array(
+						'option_type' => 'option',
+						'option_name' => WFOCU_Core()->template_loader->customizer_key_prefix,
+					)
+				);
 			}
 		}
 
@@ -925,14 +948,12 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		public function wfocu_wfocukirki_fields() {
 			$temp_ins = WFOCU_Core()->template_loader->get_template_ins();
 
-
 			/** if ! customizer */
 			if ( ! WFOCU_Core()->template_loader->is_customizer_preview() ) {
 				return;
 			}
 
 			if ( $temp_ins instanceof WFOCU_Customizer_Common && is_array( $temp_ins->customizer_data ) && count( $temp_ins->customizer_data ) > 0 ) {
-
 
 				foreach ( $temp_ins->customizer_data as $panel_single ) {
 					/** Panel */
@@ -946,10 +967,13 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 									foreach ( $section_arr['fields'] as $field_key => $field_data ) {
 										$field_key_final = $section_key_final . '_' . $field_key;
 
-										$field_data = array_merge( $field_data, array(
-											'settings' => $field_key_final,
-											'section'  => $section_key_final,
-										) );
+										$field_data = array_merge(
+											$field_data,
+											array(
+												'settings' => $field_key_final,
+												'section'  => $section_key_final,
+											)
+										);
 
 										/** unset wfocu_partial key if present as not required for wfocukirki */
 										if ( isset( $field_data['wfocu_partial'] ) ) {
@@ -975,13 +999,11 @@ if ( ! class_exists( 'WFOCU_Customizer' ) ) {
 		public function maybe_add_customizer_multiple_templates( $customizer_templates ) {
 
 			if ( defined( 'WFOCU_MP_VERSION' ) && version_compare( WFOCU_MP_VERSION, '1.1.0', '<=' ) ) {
-				return array_merge( $customizer_templates, [ 'mp-grid', 'mp-list' ] );
+				return array_merge( $customizer_templates, array( 'mp-grid', 'mp-list' ) );
 			}
 
 			return $customizer_templates;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

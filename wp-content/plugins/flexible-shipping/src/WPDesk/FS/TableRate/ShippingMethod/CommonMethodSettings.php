@@ -20,6 +20,7 @@ class CommonMethodSettings implements MethodSettings {
 
 	const METHOD_TITLE       = 'method_title';
 	const METHOD_DESCRIPTION = 'method_description';
+	const METHOD_LOGO_ID     = 'method_logo_id';
 	const METHOD_RULES       = 'method_rules';
 	const CART_CALCULATION   = 'cart_calculation';
 
@@ -72,6 +73,16 @@ class CommonMethodSettings implements MethodSettings {
 			'description' => __( 'This controls method description which the user sees during checkout.', 'flexible-shipping' ),
 			'desc_tip'    => true,
 			'default'     => $this->get_value_from_settings( $method_settings, self::METHOD_DESCRIPTION, '' ),
+		];
+
+		$settings[ self::METHOD_LOGO_ID ] = [
+			'title'             => __( 'Method Logo', 'flexible-shipping' ),
+			'type'              => MethodLogoSettingsField::FIELD_TYPE,
+			'description'       => __( 'Choose an image from the media library to display after the shipping method description in checkout.', 'flexible-shipping' ),
+			'desc_tip'          => true,
+			'default'           => $this->get_value_from_settings( $method_settings, self::METHOD_LOGO_ID, 0 ),
+			'sanitize_callback' => 'absint',
+			self::METHOD_TITLE  => $this->get_value_from_settings( $method_settings, self::METHOD_TITLE, 'Flexible Shipping' ),
 		];
 
 		$settings['method_free_shipping'] = [

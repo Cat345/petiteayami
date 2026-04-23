@@ -94,7 +94,6 @@ if ( in_array( $product_data['type'], WFACP_Common::get_variable_product_type() 
 	if ( true != $hide_quick_view ) {
 		$quick_preview = sprintf( "<a class='wfacp_qv-button' qv-id='%d'  qv-var-id='%d'>$img_show_icon</a>", $product_data['id'], $cart_variation_id, $eye_icon_url );
 	}
-
 } else {
 	if ( true != $hide_quick_view ) {
 		$quick_preview = sprintf( "<a class='wfacp_qv-button' qv-id='%d'>$img_show_icon</a>", $pro->get_id(), $eye_icon_url );

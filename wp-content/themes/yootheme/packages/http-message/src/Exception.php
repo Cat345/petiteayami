@@ -9,7 +9,6 @@ class Exception extends \RuntimeException
      *
      * @param int             $code
      * @param string          $message
-     * @param \Exception|null $previous
      */
     public function __construct($code = 0, $message = '', ?\Exception $previous = null)
     {

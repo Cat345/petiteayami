@@ -22,7 +22,7 @@
  * WooFunnels: true
  */
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 
 	/**
@@ -84,7 +84,6 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			 * Load dependency classes like woo-functions.php
 			 */
 			$this->load_dependencies_support();
-
 		}
 
 		/**
@@ -92,13 +91,12 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		 */
 		public function define_plugin_properties() {
 
-
-			add_action( 'plugins_loaded', [ $this, 'do_dependency_check' ], - 999 );
+			add_action( 'plugins_loaded', array( $this, 'do_dependency_check' ), - 999 );
 		}
 
 		public function load_dependencies_support() {
 			/** Setting up flex funnels lite Dependency Classes */
-			require_once( __DIR__ . '/wffn-includes/wffn-pro-functions.php' );
+			require_once __DIR__ . '/wffn-includes/wffn-pro-functions.php';
 		}
 
 		public function do_dependency_check() {
@@ -132,7 +130,6 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 				 */
 				$this->load_hooks();
 			}
-
 		}
 
 		public function get_content_dir() {
@@ -157,7 +154,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 
 
 		public function localization() {
-			load_plugin_textdomain( 'funnel-builder-pro', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'funnel-builder-pro', false, plugin_basename( __DIR__ ) . '/languages' );
 		}
 
 		/**
@@ -187,6 +184,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 			/**Load Stripe Notice Class */
 			if ( is_admin() ) {
 				require __DIR__ . '/admin/class-wffn-stripe-admin-controller.php';
+				require __DIR__ . '/admin/class-wffn-square-admin-controller.php';
 			}
 		}
 
@@ -232,7 +230,6 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 				if ( file_exists( __DIR__ . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php' ) ) {
 					require_once __DIR__ . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 				}
-
 			}
 		}
 
@@ -260,7 +257,6 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		 * Includes common functions.
 		 */
 		public function load_commons() {
-
 		}
 
 		/**
@@ -268,7 +264,7 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -301,29 +297,30 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		public static function register( $short_name, $class, $overrides = null ) {
 
 			self::$_registered_entity['active'][ $short_name ] = $class;
-
 		}
 
 		public function wffn_lite_not_installed_notice() {
 			?>
-            <div class="error">
-                <p>
+			<div class="error">
+				<p>
 					<?php
 					echo __( '<strong> Attention: </strong>"FunnelKit Funnel Builder" is not installed or activated. "FunnelKit Funnel Builder Pro" would only work if Funnel Builder is activated. Please install the Funnel Builder Plugin first.', 'funnel-builder-pro' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
-		public function wffn_lite_min_version_notice() { ?>
-            <div class="error">
-                <p>
+		public function wffn_lite_min_version_notice() {
+
+			?>
+			<div class="error">
+				<p>
 					<?php
-					echo sprintf( __( '<strong> Attention: </strong>"FunnelKit Funnel Builder Pro" is not working because activated "FunnelKit Funnel Builder" version should be greater or equal to %s', 'funnel-builder-pro' ), WFFN_MIN_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( __( '<strong> Attention: </strong>"FunnelKit Funnel Builder Pro" is not working because activated "FunnelKit Funnel Builder" version should be greater or equal to %s', 'funnel-builder-pro' ), WFFN_MIN_VERSION ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
@@ -335,10 +332,15 @@ if ( ! class_exists( 'WFFN_Pro_Core' ) ) {
 		public function redirect_on_activation( $plugin ) {
 			if ( $plugin === plugin_basename( __FILE__ ) ) {
 
-				wp_redirect( add_query_arg( array(
-					'page'      => 'bwf_funnels',
-					'activated' => 'yes',
-				), admin_url( 'admin.php' ) ) );
+				wp_redirect(
+					add_query_arg(
+						array(
+							'page'      => 'bwf_funnels',
+							'activated' => 'yes',
+						),
+						admin_url( 'admin.php' )
+					)
+				);
 				exit;
 			}
 		}

@@ -161,7 +161,7 @@ class HtmlElement implements HtmlElementInterface
         }
 
         if (is_array($contents)) {
-            $contents = join($contents);
+            $contents = join('', $contents);
         }
 
         return $tag ? "<{$name}{$attrs}>" : "<{$name}{$attrs}>{$contents}</{$name}>";

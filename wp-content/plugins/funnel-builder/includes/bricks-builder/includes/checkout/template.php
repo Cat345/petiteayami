@@ -82,29 +82,27 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 			add_filter( 'wfacp_show_product_thumbnail_collapsible_show', '__return_true' );
 
-
 			/**
 			 * Mini Cart Strike Through Discounted Price
 			 */
 
-			add_filter( 'wfacp_order_summary_field_enable_strike_through_price', [ $this, 'order_summary_field_enable_strike_through_price' ] );
-			add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', [ $this, 'collapsible_mini_cart_enable_strike_through_price' ] );
-			add_filter( 'wfacp_mini_cart_enable_strike_through_price', [ $this, 'mini_cart_enable_strike_through_price' ] );
+			add_filter( 'wfacp_order_summary_field_enable_strike_through_price', array( $this, 'order_summary_field_enable_strike_through_price' ) );
+			add_filter( 'wfacp_collapsible_mini_cart_enable_strike_through_price', array( $this, 'collapsible_mini_cart_enable_strike_through_price' ) );
+			add_filter( 'wfacp_mini_cart_enable_strike_through_price', array( $this, 'mini_cart_enable_strike_through_price' ) );
 
 			/**
 			 * Display Low Stock Trigger Message
 			 */
-			add_action( 'wfacp_mini_cart_after_product_title', [ $this, 'mini_cart_low_stock_trigger' ] );
-			add_action( 'wfacp_order_summary_field_after_product_title', [ $this, 'order_summary_field_after_product_title' ] );
-			add_action( 'wfacp_collapsible_mini_cart_after_product_title', [ $this, 'collapsible_mini_cart_field_after_product_title' ] );
+			add_action( 'wfacp_mini_cart_after_product_title', array( $this, 'mini_cart_low_stock_trigger' ) );
+			add_action( 'wfacp_order_summary_field_after_product_title', array( $this, 'order_summary_field_after_product_title' ) );
+			add_action( 'wfacp_collapsible_mini_cart_after_product_title', array( $this, 'collapsible_mini_cart_field_after_product_title' ) );
 
 			/**
 			 * Display Saving Price Row After Order Total in mini cart
 			 */
-			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'mini_cart_saving_price' ], 9999 );
-			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', [ $this, 'order_summary_field_saving_price' ], 9999 );
-			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', [ $this, 'collapsible_mini_cart_saving_price' ], 9999 );
-
+			add_action( 'wfacp_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'mini_cart_saving_price' ), 9999 );
+			add_action( 'wfacp_order_summary_field_woocommerce_review_order_after_order_total', array( $this, 'order_summary_field_saving_price' ), 9999 );
+			add_action( 'wfacp_collapsible_mini_cart_woocommerce_review_order_after_order_total', array( $this, 'collapsible_mini_cart_saving_price' ), 9999 );
 		}
 
 		public static function get_instance() {
@@ -126,7 +124,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		public function get_ajax_exchange_keys() {
 			$keys = WFACP_Common::$exchange_keys;
 
-			if ( is_array( $keys ) && ! empty ( $keys ) && isset( $keys['bricks'] ) && is_array( $keys['bricks'] ) && ! empty( $keys['bricks'] ) ) {
+			if ( is_array( $keys ) && ! empty( $keys ) && isset( $keys['bricks'] ) && is_array( $keys['bricks'] ) && ! empty( $keys['bricks'] ) ) {
 				$form_id         = $keys['bricks']['wfacp_form'];
 				$this->form_data = WFACP_Common::get_session( $form_id );
 				if ( isset( $keys['bricks']['wfacp_form_summary'] ) ) {
@@ -158,46 +156,46 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		}
 
 		public function css_default_classes() {
-			$css_class         = array(
-				'billing_email'      => array(
+			$css_class = array(
+				'billing_email'       => array(
 					'class' => 'wfacp-col-full',
 				),
-				'product_switching'  => array(
+				'product_switching'   => array(
 					'class' => 'wfacp-col-full',
 				),
-				'billing_first_name' => array(
+				'billing_first_name'  => array(
 					'class' => 'wfacp-col-left-half',
 				),
-				'billing_last_name'  => array(
+				'billing_last_name'   => array(
 					'class' => 'wfacp-col-left-half',
 				),
-				'address'            => array(
+				'address'             => array(
 					'class' => 'wfacp-col-left-half',
 				),
-				'billing_company'    => array(
+				'billing_company'     => array(
 					'class' => 'wfacp-col-full',
 				),
-				'billing_address_1'  => array(
+				'billing_address_1'   => array(
 					'class' => 'wfacp-col-left-half',
 				),
-				'billing_address_2'  => array(
+				'billing_address_2'   => array(
 					'class' => 'wfacp-col-left-half',
 				),
 
-				'billing_country'  => array(
+				'billing_country'     => array(
 					'class' => 'wfacp-col-left-third',
 				),
-				'billing_city'     => array(
+				'billing_city'        => array(
 					'class' => 'wfacp-col-left-half',
 				),
-				'billing_postcode' => array(
+				'billing_postcode'    => array(
 					'class' => 'wfacp-col-left-third',
 				),
 
-				'billing_state' => array(
+				'billing_state'       => array(
 					'class' => 'wfacp-col-left-third',
 				),
-				'billing_phone' => array(
+				'billing_phone'       => array(
 					'class' => 'wfacp-col-full',
 				),
 
@@ -480,7 +478,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 			$cart_page_id = wc_get_page_id( 'cart' );
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
-
+			$cartURL      = apply_filters( 'wfacp_return_to_cart_link', $cartURL );
 			echo "<li class='df_cart_link wfacp_bred_visited'><a class='wfacp_cart_link wfacp_breadcrumb_link' href='$cartURL'>$cartName</a></li>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
@@ -517,11 +515,11 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			$cartURL      = $cart_page_id ? get_permalink( $cart_page_id ) : '';
 			?>
 
-            <div class="btm_btn_sec wfacp_back_cart_link">
-                <div class="wfacp-back-btn-wrap">
-                    <a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                </div>
-            </div>
+			<div class="btm_btn_sec wfacp_back_cart_link">
+				<div class="wfacp-back-btn-wrap">
+					<a href="<?php echo apply_filters( 'wfacp_return_to_cart_link', $cartURL ); ?>"><?php echo $this->form_data['return_to_cart_text']; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</div>
+			</div>
 			<?php
 		}
 
@@ -593,7 +591,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 						$text_class = ( ! empty( $value ) ) ? 'wfacp_step_text_have' : 'wfacp_step_text_nohave';
 						echo "<li class='wfacp_step_$key wfacp_bred $bread_visited $active $step' step='$step'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						?>
-                        <a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link" data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<a href='javascript:void(0)' class="<?php echo $text_class; ?> wfacp_breadcrumb_link" data-text="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></a> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php
 
 						echo '</li>';
@@ -742,7 +740,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		public function get_elementor_localize_data() {
 			$localData = array();
 			if ( isset( $this->form_data['wfacp_make_button_sticky_on_mobile'] ) && true === $this->form_data['wfacp_make_button_sticky_on_mobile'] ) {
-				$localData['wfacp_make_button_sticky_on_mobile'] = "yes";
+				$localData['wfacp_make_button_sticky_on_mobile'] = 'yes';
 			}
 
 			wp_localize_script( 'wfacp_checkout_js', 'wfacp_elementor_data', $localData );
@@ -887,7 +885,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			ob_start();
 			echo "<div class='$stepWrapClass'>"; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-			for ( $i = 0; $i < $number_of_steps; $i ++ ) {
+			for ( $i = 0; $i < $number_of_steps; $i++ ) {
 				$tab_heading_key    = '';
 				$tab_subheading_key = '';
 
@@ -922,9 +920,9 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			if ( ( is_array( $step_form_data ) && count( $step_form_data ) > 0 ) ) {
 				?>
 
-                <div class="wfacp_form_steps">
-                    <div class="wfacp-payment-title wfacp-hg-by-box">
-                        <div class="wfacp-payment-tab-wrapper">
+				<div class="wfacp_form_steps">
+					<div class="wfacp-payment-title wfacp-hg-by-box">
+						<div class="wfacp-payment-tab-wrapper">
 							<?php
 							$count          = 1;
 							$count_of_steps = sizeof( $step_form_data );
@@ -962,24 +960,24 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 								$activeClass = apply_filters( 'wfacp_embed_active_progress_bar', $active, $count, $number_of_steps );
 								?>
-                                <div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>"> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                    <div class="wfacp-order2StepNumber"><?php echo $count; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-                                    <div class="wfacp-order2StepHeaderText">
+								<div class="wfacp-payment-tab-list <?php echo $activeClass . ' ' . $page_class . ' ' . $addfull_width . ' ' . $bread_visited; ?>  wfacp-tab<?php echo $count; ?>" step="<?php echo $steps_count_here; ?>"> <?php //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<div class="wfacp-order2StepNumber"><?php echo $count; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+									<div class="wfacp-order2StepHeaderText">
 										<?php if ( ! empty( $value['heading'] ) ) : ?>
-                                            <div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
+											<div class="wfacp-order2StepTitle wfacp-order2StepTitleS1 wfacp_tcolor"><?php echo esc_html( $value['heading'] ); ?></div>
 										<?php endif; ?>
 										<?php if ( ! empty( $value['subheading'] ) ) : ?>
-                                            <div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
+											<div class="wfacp-order2StepSubTitle wfacp-order2StepSubTitleS1 wfacp_tcolor"><?php echo esc_html( $value['subheading'] ); ?></div>
 										<?php endif; ?>
-                                    </div>
-                                </div>
+									</div>
+								</div>
 								<?php
-								++ $count;
+								++$count;
 							}
 							?>
-                        </div>
-                    </div>
-                </div>
+						</div>
+					</div>
+				</div>
 				<?php
 			}
 
@@ -1083,7 +1081,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 			if ( wfacp_pro_dependency() ) {
 				include WFACP_BUILDER_DIR . '/customizer/templates/layout_9/views/template-parts/order-summary.php';
 			}
-
 		}
 
 		/**
@@ -1479,7 +1476,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				return $fragments;
 			}
 
-
 			if ( wfacp_pro_dependency() ) {
 				ob_start();
 				include $path . '/views/template-parts/order-review.php';
@@ -1516,13 +1512,10 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$fragments['.wfacp_cart_mb_fragment_price'] = ob_get_clean();
 
 				$order_summary_cart_price            = apply_filters( 'wfacp_collapsible_order_summary_cart_price', wc_price( WC()->cart->total ) );
-				$fragments['.wfacp_show_price_wrap'] = '<div class="wfacp_show_price_wrap">' . do_action( "wfacp_before_mini_price" ) . '<strong>' . $order_summary_cart_price . '</strong>' . do_action( 'wfacp_after_mini_price' ) . '</div>';
-
+				$fragments['.wfacp_show_price_wrap'] = '<div class="wfacp_show_price_wrap">' . do_action( 'wfacp_before_mini_price' ) . '<strong>' . $order_summary_cart_price . '</strong>' . do_action( 'wfacp_after_mini_price' ) . '</div>';
 
 				return $fragments;
 			}
-
-
 		}
 
 		/**
@@ -1533,8 +1526,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		 *
 		 * @param string $field The field name.
 		 * @param string $key The field key.
-		 * @param array $args The field arguments.
-		 * @param mixed $value The field value.
+		 * @param array  $args The field arguments.
+		 * @param mixed  $value The field value.
 		 */
 		public function layout_order_summary( $field, $key, $args, $value ) {
 			if ( 'order_summary' === $key ) {
@@ -1632,7 +1625,7 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		/**
 		 * This function is responsible for styling the button icon and subheading.
 		 *
-		 * @param array $class The class array containing the styling properties.
+		 * @param array  $class The class array containing the styling properties.
 		 * @param string $current The current class name.
 		 *
 		 * @return void
@@ -1740,38 +1733,38 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				'body #wfob_qr_model_wrap .wfob_option_btn'                                                                     => 'background-color:{{VALUE}};',
 			);
 
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus']                                                                                               = 'border-color:{{VALUE}} ;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form  p.form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus']                                                                                             = 'box-shadow:0 0 0 1px {{VALUE}} ;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus']                 = 'border-color:{{VALUE}} ;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus']     = 'box-shadow:0 0 0 1px {{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered']             = 'box-shadow:0 0 0 1px {{VALUE}} ;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment li.wc_payment_method input.input-radio:checked']                                                                                                            = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment.wc_payment_method input[type=radio]:checked']                                                                                                               = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked']                                                                                                                                          = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form input[type=radio]:checked']                                                                                                                                                                       = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #add_payment_method #payment ul.payment_methods li input[type=radio]:checked']                                                                                       = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment ul.payment_methods li input[type=radio]:checked']                                                                                                                                        = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked']                                                                                                                                          = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart #payment ul.payment_methods li input[type=radio]:checked']                                                                                         = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio]:checked']                                                                                     = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form input[type=radio]:checked']                                                                                                                     = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp-form input[type=checkbox]:checked']                                                                                                                                                        = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment input[type=checkbox]:checked']                                                                                                                                          = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper .wfacp-form-control:checked']                                                                                                                         = 'border-color:{{VALUE}};';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked']                                                                                                                                                   = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus']   = 'border-color:{{VALUE}} ;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form  p.form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus'] = 'box-shadow:0 0 0 1px {{VALUE}} ;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus']             = 'border-color:{{VALUE}} ;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus'] = 'box-shadow:0 0 0 1px {{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered']         = 'box-shadow:0 0 0 1px {{VALUE}} ;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment li.wc_payment_method input.input-radio:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #payment.wc_payment_method input[type=radio]:checked']    = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked']                               = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form input[type=radio]:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #add_payment_method #payment ul.payment_methods li input[type=radio]:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment ul.payment_methods li input[type=radio]:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked']   = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart #payment ul.payment_methods li input[type=radio]:checked']     = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio]:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form input[type=radio]:checked']                                 = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp-form input[type=checkbox]:checked']                                = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment input[type=checkbox]:checked']                  = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper .wfacp-form-control:checked'] = 'border-color:{{VALUE}};';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked']                           = 'border-color:{{VALUE}};';
 			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered'] = 'border-color:{{VALUE}};';
 
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment li.wc_payment_method input.input-radio:checked']                      = 'border-width:5px;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment.wc_payment_method input[type=radio]:checked']                         = 'border-width:5px;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=radio]:checked']                                                    = 'border-width:5px;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment li.wc_payment_method input.input-radio:checked'] = 'border-width:5px;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #payment.wc_payment_method input[type=radio]:checked']    = 'border-width:5px;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=radio]:checked']                               = 'border-width:5px;';
 			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form #add_payment_method #payment ul.payment_methods li input[type=radio]:checked'] = 'border-width:5px;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:after']                                                   = 'display: block;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:before']                                                  = 'display: none;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked']                                                 = 'border-width: 8px;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment li.wc_payment_method input.input-radio:checked::before']                               = 'display:none;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment.wc_payment_method input[type=radio]:checked:before']                                   = 'display:none;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form input[type=radio]:checked:before']                                                              = 'display:none;';
-			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked:before']                                 = 'display:none;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:after']                     = 'display: block;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:before']                    = 'display: none;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked']                   = 'border-width: 8px;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment li.wc_payment_method input.input-radio:checked::before'] = 'display:none;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form #payment.wc_payment_method input[type=radio]:checked:before']     = 'display:none;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form input[type=radio]:checked:before']                                = 'display:none;';
+			$color_selectors['{{WRAPPER}} #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked:before']   = 'display:none;';
 
 			$color_selectors['body #wfob_wrap .wfob_wrapper .wfob_bump_checkbox input[type=checkbox]:checked'] = 'border-color:{{VALUE}};';
 			$color_selectors['body #wfob_wrap .wfob_wrapper input[type=checkbox]:checked:after']               = 'display: block;';
@@ -1821,7 +1814,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 		public function mini_cart_enable_strike_through_price() {
 
-
 			if ( isset( $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_strike_through_price'] ) {
 				return true;
 			}
@@ -1831,14 +1823,25 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 		public function mini_cart_low_stock_trigger( $_product ) {
 
-			if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
+			try {
 
-				$stock_quantity = $_product->get_stock_quantity();
-
-				if ( $stock_quantity !== null ) {
-
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . "</div>";
+				// Validate product parameter
+				if ( ! is_object( $_product ) || ! method_exists( $_product, 'get_stock_quantity' ) ) {
+					return;
 				}
+				if ( isset( $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] ) && 'on' == $this->mini_cart_data['mini_cart_enable_low_stock_trigger'] && isset( $this->mini_cart_data['mini_cart_low_stock_message'] ) ) {
+
+					$stock_quantity = $_product->get_stock_quantity();
+
+					$status = $this->get_low_stock_status( $_product, $stock_quantity );
+
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->mini_cart_data['mini_cart_low_stock_message'] ) . '</div>';
+					}
+				}
+			} catch ( Exception $e ) {
+
 			}
 		}
 
@@ -1849,14 +1852,17 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$stock_quantity = $_product->get_stock_quantity();
 
 				if ( $stock_quantity !== null ) {
-
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . "</div>";
+					$stock_quantity = $_product->get_stock_quantity();
+					$status         = $this->get_low_stock_status( $_product, $stock_quantity );
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['order_summary_field_low_stock_message'] ) . '</div>';
+					}
 				}
 			}
 		}
 
 		public function collapsible_mini_cart_field_after_product_title( $_product ) {
-
 
 			if ( isset( $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] ) && 'yes' == $this->form_data['collapsible_mini_cart_enable_low_stock_trigger'] && isset( $this->form_data['collapsible_mini_cart_low_stock_message'] ) ) {
 
@@ -1864,9 +1870,49 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 
 				if ( $stock_quantity !== null ) {
 
-					echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . "</div>";
+					$stock_quantity = $_product->get_stock_quantity();
+					$status         = $this->get_low_stock_status( $_product, $stock_quantity );
+
+					// Only show low stock message if current stock is less than or equal to low stock threshold
+					if ( true === $status ) {
+						echo "<div class='wfacp_stocks'>" . str_replace( '{{quantity}}', $stock_quantity, $this->form_data['collapsible_mini_cart_low_stock_message'] ) . '</div>';
+					}
 				}
 			}
+		}
+
+		public function get_low_stock_status( $_product, $stock_quantity ) {
+
+			// Initialize low stock amount variable
+			$low_stock_amount = null;
+
+			// Priority 1: Check if product has local low stock amount set
+			if ( isset( $_product->low_stock_amount ) && ! empty( $_product->low_stock_amount ) ) {
+				$low_stock_amount = absint( $_product->low_stock_amount );
+			}
+			// Priority 2: If no local setting, use global WooCommerce setting
+			else {
+				$global_low_stock = get_option( 'woocommerce_notify_low_stock_amount' );
+
+				if ( ! empty( $global_low_stock ) ) {
+					$low_stock_amount = absint( $global_low_stock );
+				}
+			}
+
+			// If no low stock amount is set (neither local nor global), return
+			if ( $low_stock_amount === null ) {
+				return false;
+			}
+
+			// If stock quantity is null or not set, return
+			if ( $stock_quantity === null ) {
+				return false;
+			}
+
+			if ( $stock_quantity <= $low_stock_amount ) {
+				return true;
+			}
+			return false;
 		}
 
 		public function mini_cart_saving_price() {
@@ -1875,7 +1921,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$price_message = $this->mini_cart_data['mini_cart_saving_price_message'];
 				WFACP_Common::display_save_price( $price_message );
 			}
-
 		}
 
 		public function order_summary_field_saving_price() {
@@ -1884,7 +1929,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$price_message = $this->form_data['order_summary_field_saving_price_message'];
 				WFACP_Common::display_save_price( $price_message );
 			}
-
 		}
 
 		public function collapsible_mini_cart_saving_price() {
@@ -1893,7 +1937,6 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 				$price_message = $this->form_data['collapsible_mini_cart_saving_price_message'];
 				WFACP_Common::display_save_price( $price_message );
 			}
-
 		}
 
 		public function enable_order_field_collapsed_by_default( $device = 'desktop' ) {
@@ -1915,8 +1958,8 @@ if ( ! class_exists( 'WFACP_template_Bricks' ) ) {
 		public function should_hide_order_summary_by_default() {
 			// Check if any device has collapsed enabled
 			return $this->enable_order_field_collapsed_by_default( 'desktop' ) ||
-			       $this->enable_order_field_collapsed_by_default( 'tablet' ) ||
-			       $this->enable_order_field_collapsed_by_default( 'mobile' );
+					$this->enable_order_field_collapsed_by_default( 'tablet' ) ||
+					$this->enable_order_field_collapsed_by_default( 'mobile' );
 		}
 	}
 

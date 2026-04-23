@@ -6,40 +6,39 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 	 */
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_WC_Italian_Add_ON {
-		private $instance = null;
-		private $add_fields = [
+		private $instance   = null;
+		private $add_fields = array(
 			'billing_invoice_type',
 			'billing_customer_type',
 			'billing_cf',
 			'billing_cf2',
 			'billing_PEC',
-		];
-		private $new_fields = [];
+		);
+		private $new_fields = array();
 
 		public function __construct() {
 			/* Register Add field */
 
 			if ( WFACP_Common::is_funnel_builder_3() ) {
-				add_action( 'wffn_rest_checkout_form_actions', [ $this, 'setup_fields_billing' ] );
+				add_action( 'wffn_rest_checkout_form_actions', array( $this, 'setup_fields_billing' ) );
 			} else {
-				add_action( 'init', [ $this, 'setup_fields_billing' ], 20 );
+				add_action( 'init', array( $this, 'setup_fields_billing' ), 20 );
 			}
 
 			add_filter( 'wfacp_html_fields_billing_wfacp_wc_italian_add_on', '__return_false' );
-			add_action( 'process_wfacp_html', [ $this, 'call_fields_hook' ], 50, 2 );
-			add_action( 'woocommerce_billing_fields', [ $this, 'checkout_fields' ], 100 );
-			add_action( 'wfacp_checkout_page_found', [ $this, 'action' ] );
-			add_filter( 'woocommerce_form_field_args', [ $this, 'add_default_wfacp_styling' ], 10, 2 );
-			add_filter( 'wfacp_internal_css', [ $this, 'wfacp_internal_css' ] );
-
+			add_action( 'process_wfacp_html', array( $this, 'call_fields_hook' ), 50, 2 );
+			add_action( 'woocommerce_billing_fields', array( $this, 'checkout_fields' ), 100 );
+			add_action( 'wfacp_checkout_page_found', array( $this, 'action' ) );
+			add_filter( 'woocommerce_form_field_args', array( $this, 'add_default_wfacp_styling' ), 10, 2 );
+			add_filter( 'wfacp_internal_css', array( $this, 'wfacp_internal_css' ) );
 
 			/* update order meta of funnelkit checkout fields*/
-			add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'woocommerce_checkout_update_order_meta' ], 99, 2 );
+			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'woocommerce_checkout_update_order_meta' ), 99, 2 );
 
 			/* prevent third party fields and wrapper*/
 
 			add_action( 'wfacp_add_billing_shipping_wrapper', '__return_false' );
-			add_filter( 'wfacp_third_party_billing_fields', [ $this, 'disabled_third_party_billing_fields' ] );
+			add_filter( 'wfacp_third_party_billing_fields', array( $this, 'disabled_third_party_billing_fields' ) );
 		}
 
 		public function checkout_fields( $fields ) {
@@ -52,7 +51,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 					$this->new_fields[ $field_key ] = $fields[ $field_key ];
 				}
 			}
-
 
 			return $fields;
 		}
@@ -69,15 +67,18 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 		}
 
 		public function setup_fields_billing() {
-			new WFACP_Add_Address_Field( 'wfacp_wc_italian_add_on', array(
-				'type'        => 'wfacp_html',
-				'label'       => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
-				'placeholder' => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
-				'cssready'    => [ 'wfacp-col-left-third' ],
-				'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
-				'required'    => false,
-				'priority'    => 60,
-			) );
+			new WFACP_Add_Address_Field(
+				'wfacp_wc_italian_add_on',
+				array(
+					'type'        => 'wfacp_html',
+					'label'       => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
+					'placeholder' => __( 'WC Italian Fields', 'woofunnels-aero-checkout' ),
+					'cssready'    => array( 'wfacp-col-left-third' ),
+					'class'       => array( 'form-row-third first', 'wfacp-col-full' ),
+					'required'    => false,
+					'priority'    => 60,
+				)
+			);
 		}
 
 		public function call_fields_hook( $field, $key ) {
@@ -85,7 +86,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 			if ( empty( $key ) || 'billing_wfacp_wc_italian_add_on' !== $key || empty( $this->new_fields ) ) {
 				return;
 			}
-
 
 			foreach ( $this->new_fields as $field_key => $field_val ) {
 				woocommerce_form_field( $field_key, $field_val );
@@ -98,18 +98,17 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 				return $args;
 			}
 
-			$all_cls          = array_merge( [ 'wfacp-form-control-wrapper wfacp-col-full ' ], $args['class'] );
+			$all_cls          = array_merge( array( 'wfacp-form-control-wrapper wfacp-col-full ' ), $args['class'] );
 			$args['class']    = $all_cls;
-			$args['cssready'] = [ 'wfacp-col-full' ];
+			$args['cssready'] = array( 'wfacp-col-full' );
 
 			if ( isset( $args['type'] ) && 'checkbox' !== $args['type'] ) {
-				$input_class         = array_merge( [ 'wfacp-form-control' ], $args['input_class'] );
+				$input_class         = array_merge( array( 'wfacp-form-control' ), $args['input_class'] );
 				$args['input_class'] = $input_class;
-				$label_class         = array_merge( [ 'wfacp-form-control-label' ], $args['label_class'] );
+				$label_class         = array_merge( array( 'wfacp-form-control-label' ), $args['label_class'] );
 				$args['label_class'] = $label_class;
 
 			}
-
 
 			return $args;
 		}
@@ -120,9 +119,9 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 			}
 			$order = wc_get_order( $order_id );
 			foreach ( $this->add_fields as $item ) {
-				if ( isset( $_POST[ $item ] ) ) {
-					$order->{$item} = $_POST[ $item ];
-					$order->update_meta_data( '_' . $item, $_POST[ $item ] );
+				if ( isset( $_POST[ $item ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout handles nonce verification
+					$order->{$item} = sanitize_text_field( wp_unslash( $_POST[ $item ] ) );
+					$order->update_meta_data( '_' . $item, sanitize_text_field( wp_unslash( $_POST[ $item ] ) ) );
 				}
 			}
 			$order->save();
@@ -139,8 +138,6 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_Italian_Add_ON' ) ) {
 
 			return $fields;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_WC_Italian_Add_ON(), 'wfacp-wc-italian-add-on' );

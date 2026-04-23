@@ -11,30 +11,32 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 
 		public static function load_all_compatibilities() {
 			$compatibilities = array(
-				'class-wffn-beaver-builder-compatibility.php'            => class_exists( 'FLBuilderLoader' ),
-				'class-wffn-cartflows-compatibility.php'                 => class_exists( 'Cartflows_Checkout_Markup' ),
-				'class-wffn-nextmove-compatibility.php'                  => class_exists( 'xlwcty' ),
-				'class-wffn-oxygen-builder-compatibility.php'            => true, //force load for now
-				'class-wffn-pixel-cog.php'                               => defined( 'PIXEL_COG_VERSION' ),
-				'class-wffn-thrive-theme-compatibility.php'              => defined( 'THRIVE_TEMPLATE' ),
-				'class-wffn-ux-builder-compatibility.php'                => function_exists( 'add_ux_builder_post_type' ),
-				'class-wffn-wc-cashfree.php'                             => class_exists( 'WC_Gateway_cashfree' ),
-				'class-wffn-wc-deposite.php'                             => function_exists( 'wc_deposits_woocommerce_is_active' ) && wc_deposits_woocommerce_is_active(),
-				'class-wffn-weglot-compatibility.php'                    => ( defined( 'WEGLOT_VERSION' ) || class_exists( 'WeglotWP\Third\Woocommerce\WC_Filter_Urls_Weglot' ) ),
-				'class-wffn-breakdance-builder-compatibility.php'        => defined( 'BREAKDANCE_WOO_DIR' ),
-				'class-wffn-pys-compatibility.php'                       => class_exists( 'PixelYourSite\EventsManager' ),
-				'class-wffn-paghiper-compatibility.php'                 => class_exists( 'WC_Paghiper' ),
-				'rest/class-bwfan-compatibility-with-sg-cache.php'       => function_exists( 'sg_cachepress_purge_cache' ),
-				'rest/class-wffn-clearfy-compatibility.php'              => class_exists( 'Clearfy_Plugin' ),
-				'rest/class-wffn-force-login-compability.php'            => function_exists( 'v_forcelogin_rest_access' ),
-				'rest/class-wffn-password-protected-compability.php'     => class_exists( 'Password_Protected' ),
-				'rest/class-wffn-permatters-compability.php'             => defined( 'PERFMATTERS_VERSION' ),
+				'class-wffn-beaver-builder-compatibility.php' => class_exists( 'FLBuilderLoader' ),
+				'class-wffn-cartflows-compatibility.php'   => class_exists( 'Cartflows_Checkout_Markup' ),
+				'class-wffn-nextmove-compatibility.php'    => class_exists( 'xlwcty' ),
+				'class-wffn-oxygen-builder-compatibility.php' => true, // force load for now
+				'class-wffn-pixel-cog.php'                 => defined( 'PIXEL_COG_VERSION' ),
+				'class-wffn-thrive-theme-compatibility.php' => defined( 'THRIVE_TEMPLATE' ),
+				'class-wffn-ux-builder-compatibility.php'  => function_exists( 'add_ux_builder_post_type' ),
+				'class-wffn-wc-cashfree.php'               => class_exists( 'WC_Gateway_cashfree' ),
+				'class-wffn-wc-deposite.php'               => function_exists( 'wc_deposits_woocommerce_is_active' ) && wc_deposits_woocommerce_is_active(),
+				'class-wffn-weglot-compatibility.php'      => ( defined( 'WEGLOT_VERSION' ) || class_exists( 'WeglotWP\Third\Woocommerce\WC_Filter_Urls_Weglot' ) ),
+				'class-wffn-breakdance-builder-compatibility.php' => defined( 'BREAKDANCE_WOO_DIR' ),
+				'class-wffn-pys-compatibility.php'         => class_exists( 'PixelYourSite\EventsManager' ),
+				'class-wffn-paghiper-compatibility.php'    => class_exists( 'WC_Paghiper' ),
+				'rest/class-bwfan-compatibility-with-sg-cache.php' => function_exists( 'sg_cachepress_purge_cache' ),
+				'rest/class-wffn-clearfy-compatibility.php' => class_exists( 'Clearfy_Plugin' ),
+				'rest/class-wffn-force-login-compability.php' => function_exists( 'v_forcelogin_rest_access' ),
+				'rest/class-wffn-password-protected-compability.php' => class_exists( 'Password_Protected' ),
+				'rest/class-wffn-permatters-compability.php' => defined( 'PERFMATTERS_VERSION' ),
 				'rest/class-wffn-wp-rest-authenticate-compatibility.php' => function_exists( 'mo_api_auth_activate_miniorange_api_authentication' ),
-				'class-wffn-wpml-plugin-compatibility.php'               => class_exists( 'SitePress' ) && defined( 'ICL_SITEPRESS_VERSION' ),
-				'class-wffn-polylang-plugin-compatibility.php'           => function_exists( 'pll_default_language' ) && function_exists( 'pll_home_url' ),
+				'class-wffn-wpml-plugin-compatibility.php' => class_exists( 'SitePress' ) && defined( 'ICL_SITEPRESS_VERSION' ),
+				'class-wffn-polylang-plugin-compatibility.php' => function_exists( 'pll_default_language' ) && function_exists( 'pll_home_url' ),
+				'class-wffn-greenshift-compatibility.php'  => function_exists( 'gspb_get_final_css' ),
+				'class-wffn-complianz-compatibility.php'   => class_exists( 'COMPLIANZ' ),
 			);
 
-			add_action( 'after_setup_theme', [ __CLASS__, 'themes' ] );
+			add_action( 'after_setup_theme', array( __CLASS__, 'themes' ) );
 			self::add_files( $compatibilities );
 		}
 
@@ -46,24 +48,24 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 					}
 					include_once __DIR__ . '/' . $file;
 				}
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 				BWF_Logger::get_instance()->log( 'Error while loading compatibility files: ' . $e->getMessage(), 'wffn-compatibilities' );
 			}
 		}
 
 		public static function themes() {
 			$themes_compatibilities = array(
-				'class-wffn-bricks-theme-compatibility.php'  => function_exists( 'bricks_is_builder' ),
-				'class-wffn-divi-theme-compatibility.php'    => defined( 'ET_CORE_VERSION' ) || function_exists( 'et_setup_theme' ),
-				'class-wffn-enfold-theme-compatibility.php'  => class_exists( 'AviaBuilder' ),
-				'class-wffn-rehub-theme-compatibility.php'   => defined( 'RH_MAIN_THEME_VERSION' ),
+				'class-wffn-bricks-theme-compatibility.php' => function_exists( 'bricks_is_builder' ),
+				'class-wffn-divi-theme-compatibility.php'  => defined( 'ET_CORE_VERSION' ) || function_exists( 'et_setup_theme' ),
+				'class-wffn-enfold-theme-compatibility.php' => class_exists( 'AviaBuilder' ),
+				'class-wffn-rehub-theme-compatibility.php' => defined( 'RH_MAIN_THEME_VERSION' ),
 				'class-wffn-woodmart-theme-compatibilty.php' => defined( 'WOODMART_THEME_DIR' ),
-				'class-wffn-thrive-theme-compatibility.php'  => defined( 'THRIVE_TEMPLATE' ),
-				'class-wffn-ux-builder-compatibility.php'    => function_exists( 'add_ux_builder_post_type' ),
-				'class-wffn-avada-theme-compatibility.php'   => class_exists( 'FusionBuilder' ),
+				'class-wffn-thrive-theme-compatibility.php' => defined( 'THRIVE_TEMPLATE' ),
+				'class-wffn-ux-builder-compatibility.php'  => function_exists( 'add_ux_builder_post_type' ),
+				'class-wffn-etch-compatibility.php'        => defined( 'ETCH_PLUGIN_FILE' ),
+				'class-wffn-avada-theme-compatibility.php' => class_exists( 'FusionBuilder' ),
 			);
 			self::add_files( $themes_compatibilities );
-
 		}
 
 		public static function register( $object, $slug ) {
@@ -89,10 +91,7 @@ if ( ! class_exists( 'WFFN_Plugin_Compatibilities' ) ) {
 
 			return '';
 		}
-
-
 	}
 
 	WFFN_Plugin_Compatibilities::load_all_compatibilities();
 }
-

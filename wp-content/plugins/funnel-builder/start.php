@@ -9,12 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 	#[AllowDynamicProperties]
 
-  class WooFunnel_Loader {
+	class WooFunnel_Loader {
 
-		public static $plugins = array();
-		public static $loaded = false;
+		public static $plugins       = array();
+		public static $loaded        = false;
 		public static $ultimate_path = '';
-		public static $version = null;
+		public static $version       = null;
 
 
 		public static function include_core() {
@@ -30,7 +30,6 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 
 				}
 			}
-
 		}
 
 		public static function register( $configuration ) {
@@ -39,26 +38,28 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 
 		public static function get_the_latest() {
 			$get_all = self::$plugins;
-			uasort( $get_all, function ( $a, $b ) {
-				if ( version_compare( $a['version'], $b['version'], '=' ) ) {
-					return 0;
-				} else {
-					return ( version_compare( $a['version'], $b['version'], '<' ) ) ? - 1 : 1;
+			uasort(
+				$get_all,
+				function ( $a, $b ) {
+					if ( version_compare( $a['version'], $b['version'], '=' ) ) {
+						return 0;
+					} else {
+						return ( version_compare( $a['version'], $b['version'], '<' ) ) ? - 1 : 1;
+					}
 				}
-			} );
+			);
 
 			$get_most_recent_configuration = end( $get_all );
 
 			return $get_most_recent_configuration;
 		}
-
 	}
 }
 
 
 #[AllowDynamicProperties]
 
-  class WooFunnel_WFFN {
+class WooFunnel_WFFN {
 
 	public static $version = WFFN_BWF_VERSION;
 
@@ -71,13 +72,12 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 			'class'       => __CLASS__,
 		);
 		WooFunnel_Loader::register( $configuration );
-
 	}
 
 
 	public static function load_files() {
 
-		$get_global_path = dirname( __FILE__ ) . '/woofunnels/';
+		$get_global_path = __DIR__ . '/woofunnels/';
 
 		if ( false === @file_exists( $get_global_path . 'includes/class-woofunnels-api.php' ) ) {
 			_doing_it_wrong( __FUNCTION__, __( 'WooFunnels Core should be present in folder \'woofunnels\' in order to run this properly. ' ), self::$version );
@@ -95,25 +95,7 @@ if ( ! class_exists( 'WooFunnel_Loader' ) ) {
 			_doing_it_wrong( __FUNCTION__, __( 'WooFunnels Core should be at the same version as declared in your start.php' ), self::$version );
 			die( 0 );
 		}
-
-
 	}
 }
 
 WooFunnel_WFFN::register();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

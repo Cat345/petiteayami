@@ -45,10 +45,6 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 
 		protected function order_summary( $field_key ) {
 
-
-
-
-
 			$tab_id = $this->add_tab( __( 'Order summary', 'woocommerce' ), 2 );
 			$this->add_heading( $tab_id, 'Product' );
 
@@ -164,6 +160,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			$this->add_heading( $tab_id, __( 'Label Typography', 'woocommerce' ) );
 			$this->add_typography( $tab_id, $field_key . '_cart_total_label_typo', implode( ',', $cart_total_label_typo_option ), $fields_options, '', [], $font_side_default );
 			$this->add_heading( $tab_id, __( 'Price Typography', 'woocommerce' ) );
+
 			$this->add_typography( $tab_id, $field_key . '_cart_subtotal_heading_typo', implode( ',', $cart_total_value_typo_option ), $fields_options, '', [], $font_side_default );
 			$this->add_color( $tab_id, $field_key . '_cart_subtotal_heading_color', $cart_total_color_option, '', '' );
 
@@ -297,7 +294,6 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details span',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_subs_details *',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_sec .wfacp_product_select_options .wfacp_qv-button',
-
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span *',
 				'%%order_class%% #wfacp-e-form .wfacp_main_form.woocommerce .wfacp-product-switch-panel fieldset:not(.wfacp-selected-product) .wfacp_product_price_sec > span bdi',
@@ -320,6 +316,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			];
 
 			$field_keys[] = $this->add_color( $tab_id, $field_key . '_optional_label_color', $optionalLabelColorOpt, esc_attr__( 'Item Color', 'woofunnels-aero-checkout' ) );
+
 
 
 			/* Items Price Color */
@@ -352,7 +349,9 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 
 			$this->add_controls_tab( $controls_tab_id, __( 'Non-selected Items', 'woofunnels-aero-checkout' ), $field_keys );
 
+
 			unset( $field_keys );
+
 
 
 			//Best value Controls
@@ -960,6 +959,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 			$font_side_default = [ 'default' => '14px', 'unit' => 'px' ];
 
 
+
 			if ( false !== strpos( $field_key, 'non_selected' ) ) {
 
 				$saveTextColorOption = [
@@ -997,6 +997,7 @@ if ( ! class_exists( 'WFACP_Divi_HTML_BLOCK' ) ) {
 				];
 			}
 
+			
 			$typography_selectors = implode( ',', $typography );
 
 

@@ -7,10 +7,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Flatsome' ) ) {
 	class WFACP_Compatibility_With_Theme_Flatsome {
 
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'remove_actions' ] );
-			add_action( 'init', [ $this, 'builder_post_type' ] );
-			add_action( 'wfacp_template_load', [ $this, 'add_terms_condition' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_internal_css' ] );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'remove_actions' ) );
+			add_action( 'init', array( $this, 'builder_post_type' ) );
+			add_action( 'wfacp_template_load', array( $this, 'add_terms_condition' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_internal_css' ) );
 		}
 
 		public function remove_actions() {
@@ -44,20 +44,18 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Flatsome' ) ) {
 				return;
 			}
 
-
 			$instance = wfacp_template();
 			if ( ! $instance instanceof WFACP_Template_Common ) {
 				return;
 			}
-			$bodyClass = "body ";
-
+			$bodyClass = 'body ';
 
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			echo "<style>";
+			echo '<style>';
 			echo $bodyClass . '.wfacp_form #payment select {-webkit-appearance: menulist;-moz-appearance: menulist;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $bodyClass . ' ul.woocommerce-error li .container {padding: 0;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $bodyClass . ' #payment div.payment_box p {position: relative;font-weight: normal;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -70,67 +68,67 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Theme_Flatsome' ) ) {
 			echo $bodyClass . ' .wfacp_main_form .wfacp-coupon-section .wfacp-coupon-page .wfacp_coupon_field_box { margin-top: 10px;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $bodyClass . ' button.button.button-primary:after{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $bodyClass . ' button.button.button-primary:before{   display: none;}'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo "</style>";
+			echo '</style>';
 
-            if ( !function_exists('flatsome_scripts') ) {
-                return;
-            }
+			if ( ! function_exists( 'flatsome_scripts' ) ) {
+				return;
+			}
 
 			?>
 			<script>
-                window.addEventListener('load', function () {
+				window.addEventListener('load', function () {
 
 
-                    (function ($) {
+					(function ($) {
 
-                        var checkoutAjaxFlag = false;
+						var checkoutAjaxFlag = false;
 
-                        // Before AJAX handler - set flag
-                        var ajaxBeforeHandler = function(event, jqxhr, settings) {
-                            try {
-                                if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
-                                    checkoutAjaxFlag = true;
-                                }
-                            } catch (error) {
-                                console.error('Error in ajaxBeforeHandler:', error);
-                            }
-                        };
+						// Before AJAX handler - set flag
+						var ajaxBeforeHandler = function(event, jqxhr, settings) {
+							try {
+								if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
+									checkoutAjaxFlag = true;
+								}
+							} catch (error) {
+								console.error('Error in ajaxBeforeHandler:', error);
+							}
+						};
 
-                    // After AJAX handler
-                        var ajaxHandler = function (event, jqxhr, settings) {
-                            try {
-                                // Condition 1: Flag set -> add class and return (ALWAYS)
-                                if (checkoutAjaxFlag === true) {
-                                    $("#wfacp_checkout_form").addClass("processing");
+					// After AJAX handler
+						var ajaxHandler = function (event, jqxhr, settings) {
+							try {
+								// Condition 1: Flag set -> add class and return (ALWAYS)
+								if (checkoutAjaxFlag === true) {
+									$("#wfacp_checkout_form").addClass("processing");
 
-                                }
+								}
 
 								if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
-                                    if(jqxhr.responseJSON){
-                                    	if (jqxhr.responseJSON.result === 'failure') {
-                                       	$("#wfacp_checkout_form").removeClass("processing");
-                                       	checkoutAjaxFlag = false;
-                                    	} else if (jqxhr.responseJSON.result === 'success') {
-                                       	$("#wfacp_checkout_form").addClass("processing");
-                                       	checkoutAjaxFlag = false;
-                                   	}
-                               		}
-                                }
+									if(jqxhr.responseJSON){
+										if (jqxhr.responseJSON.result === 'failure') {
+											$("#wfacp_checkout_form").removeClass("processing");
+											checkoutAjaxFlag = false;
+										} else if (jqxhr.responseJSON.result === 'success') {
+											$("#wfacp_checkout_form").addClass("processing");
+											checkoutAjaxFlag = false;
+										}
+										}
+								}
 
 
-                            } catch (error) {
-                                console.error('Error in ajaxHandler:', error);
-                            }
-                        };
+							} catch (error) {
+								console.error('Error in ajaxHandler:', error);
+							}
+						};
 
-                        $(document).ajaxSend(ajaxBeforeHandler);
-                        $(document).ajaxComplete(ajaxHandler);
+						$(document).ajaxSend(ajaxBeforeHandler);
+						$(document).ajaxComplete(ajaxHandler);
 
-                    })(jQuery);
-                });
+					})(jQuery);
+				});
 			</script>
 
-<?php
+			<?php
 		}
 	}
 

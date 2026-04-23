@@ -48,9 +48,13 @@ if ( ! class_exists( 'WFCO_Load_Connectors' ) ) {
 		 * @return void
 		 */
 		public static function load_connectors_rest_call() {
-			$rest_route = isset( $_GET['rest_route'] ) ? $_GET['rest_route'] : '';
+			if ( isset( $_GET['rest_route'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Nonce verification not required for REST API route detection; route paths contain slashes as part of path structure
+				$rest_route = sanitize_text_field( $_GET['rest_route'] ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			} else {
+				$rest_route = '';
+			}
 			if ( empty( $rest_route ) ) {
-				$rest_route = $_SERVER['REQUEST_URI'];
+				$rest_route = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- REQUEST_URI is part of the URL structure, slashes are intentional
 			}
 			if ( empty( $rest_route ) ) {
 				return;
@@ -87,7 +91,7 @@ if ( ! class_exists( 'WFCO_Load_Connectors' ) ) {
 			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				return;
 			}
-			$ajax_action = $_POST['action'] ?? '';
+			$ajax_action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- AJAX action verification handled by WordPress AJAX system
 			if ( empty( $ajax_action ) ) {
 				return;
 			}

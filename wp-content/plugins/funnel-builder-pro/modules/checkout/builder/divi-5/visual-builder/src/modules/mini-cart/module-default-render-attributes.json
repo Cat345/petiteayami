@@ -1,0 +1,340 @@
+{
+  "_comment": "Default render attributes for Mini Cart module",
+  "module": {
+    "advanced": {
+      "text": {
+        "text": {
+          "desktop": {
+            "value": {
+              "align": "left",
+              "orientation": "left"
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartHeading": {
+    "innerContent": {
+      "desktop": {
+        "value": "Order summary"
+      }
+    }
+  },
+  "enableProductImage": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "enableQuantityBox": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "enableDeleteItem": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "miniCartEnableStrikeThroughPrice": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "miniCartEnableLowStockTrigger": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "miniCartEnableSavingPriceMessage": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "enableCoupon": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "enableCouponCollapsible": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "miniCartCouponButtonText": {
+    "innerContent": {
+      "desktop": {
+        "value": "Apply"
+      }
+    }
+  },
+  "miniCartCouponInputFieldBorder": {
+    "decoration": {
+      "border": {
+        "desktop": {
+          "value": {
+            "radius": {
+              "topLeft": "4px",
+              "topRight": "4px",
+              "bottomLeft": "4px",
+              "bottomRight": "4px",
+              "sync": "on"
+            },
+            "styles": {
+              "all": {
+                "width": "1px",
+                "color": "#bfbfbf"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacpFormMiniCartCouponFocusColor": {
+    "decoration": {
+      "border": {
+        "desktop": {
+          "value": {
+            "radius": {
+              "topLeft": "4px",
+              "topRight": "4px",
+              "bottomLeft": "4px",
+              "bottomRight": "4px",
+              "sync": "on"
+            },
+            "styles": {
+              "all": {
+                "width": "1px",
+                "color": "#bfbfbf"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacp_form_mini_cart_coupon_focus_color_box_shadow": {
+    "decoration": {
+      "boxShadow": {
+        "boxShadow": {
+          "desktop": {
+            "value": {
+              "enable": "off",
+              "vertical": "0px",
+              "color": {
+                "hex": "#000000"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartCouponButtonBackground": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": "#000000"
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartCouponButtonHoverBackground": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "mini_cart_coupon_btn_hover_label_color": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "color": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartProductMetaTypo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "14px",
+              "weight": "400"
+            }
+          }
+        }
+      },
+      "colors": {
+        "normal": {
+          "color": {
+            "desktop": {
+              "value": {
+                "hex": "#666666"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "mini_cart_total_label_typo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "24px",
+              "color": "#323232"
+            }
+          }
+        }
+      }
+    }
+  },
+  "mini_cart_total_typo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "24px",
+              "color": "#323232"
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartCouponCodeLabelTypo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "14px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "miniCartCouponCodeValueTypo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "size": "14px"
+            }
+          }
+        }
+      },
+      "colors": {
+        "normal": {
+          "color": {
+            "desktop": {
+              "value": {
+                "hex": "#24ae4e"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "mini_cart_divider_color": {
+    "decoration": {
+      "border": {
+        "border": {
+          "desktop": {
+            "value": {
+              "styles": {
+                "all": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacp_mini_cart_spacing": {
+    "decoration": {
+      "spacing": {
+        "desktop": {
+          "value": {
+            "margin": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            },
+            "padding": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacp_mini_cart_border": {
+    "decoration": {
+      "border": {
+        "border": {
+          "desktop": {
+            "value": {
+              "radius": {
+                "topLeft": "0px",
+                "topRight": "0px",
+                "bottomLeft": "0px",
+                "bottomRight": "0px",
+                "sync": "on"
+              },
+              "styles": {
+                "all": {
+                  "width": "1px",
+                  "color": "#dddddd"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacp_mini_cart_background": {
+    "decoration": {
+      "background": {
+        "color": {
+          "desktop": {
+            "value": {
+              "hex": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

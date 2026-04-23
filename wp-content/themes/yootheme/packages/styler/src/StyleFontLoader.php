@@ -59,7 +59,7 @@ class StyleFontLoader
 
         // generate fonts css
         $info = "/* {$url} generated on {$date} */\n";
-        $data = join(array_map([$this, 'cssFontFace'], $fonts));
+        $data = join('', array_map([$this, 'cssFontFace'], $fonts));
 
         // save file in cache
         if ($fonts && @file_put_contents($file, $info . $data)) {
@@ -92,7 +92,7 @@ class StyleFontLoader
             $output .= "{$name}: {$value}; ";
         }
 
-        return "$output}\n";
+        return "{$output}}\n";
     }
 
     /**
@@ -107,7 +107,7 @@ class StyleFontLoader
         foreach ($this->parseFontFamilies($url) as $url) {
             // load font formats based on user agents
             foreach ($this->formats as $userAgent) {
-                $options = compact('userAgent');
+                $options = ['userAgent' => $userAgent];
                 $response = $this->client->get($url, $options);
 
                 if ($result = $this->parseFonts($response->getBody())) {
@@ -228,7 +228,6 @@ class StyleFontLoader
     /**
      * Parses properties from source.
      *
-     * @param string $source
      *
      * @return array<string, string>
      */
@@ -251,7 +250,7 @@ class StyleFontLoader
 
         if (isset($query['family'])) {
             return array_map(
-                fn($family) => (string) $uri->withQueryParams(compact('family') + $query),
+                fn($family) => (string) $uri->withQueryParams(['family' => $family] + $query),
                 explode('|', $query['family']),
             );
         }

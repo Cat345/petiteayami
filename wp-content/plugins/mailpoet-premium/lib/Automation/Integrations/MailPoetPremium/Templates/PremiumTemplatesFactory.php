@@ -10,6 +10,7 @@ use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Templates\AutomationBuilder;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
+use MailPoet\WooCommerce\WooCommerceBookings\Helper as WooCommerceBookingsHelper;
 
 class PremiumTemplatesFactory {
   /** @var AutomationBuilder */
@@ -21,14 +22,19 @@ class PremiumTemplatesFactory {
   /** @var PremiumEmailFactory */
   private $emailFactory;
 
+  /** @var WooCommerceBookingsHelper */
+  private $woocommerceBookingsHelper;
+
   public function __construct(
     AutomationBuilder $builder,
     WooCommerce $woocommerce,
-    PremiumEmailFactory $emailFactory
+    PremiumEmailFactory $emailFactory,
+    WooCommerceBookingsHelper $woocommerceBookingsHelper
   ) {
     $this->builder = $builder;
     $this->woocommerce = $woocommerce;
     $this->emailFactory = $emailFactory;
+    $this->woocommerceBookingsHelper = $woocommerceBookingsHelper;
   }
 
   /** @return AutomationTemplate[] */
@@ -51,6 +57,14 @@ class PremiumTemplatesFactory {
       $templates[] = $this->createFollowUpOnChurnedSubscriptionTemplate();
       $templates[] = $this->createFollowUpWhenTrialEndsTemplate();
       $templates[] = $this->createWinBackChurnedSubscribersTemplate();
+      if ($this->woocommerceBookingsHelper->isWooCommerceBookingsActive()) {
+        $templates[] = $this->createWcBookingAbandonedSpotTemplate();
+        $templates[] = $this->createWcBookingNewBookingFollowUpTemplate();
+        $templates[] = $this->createWcBookingPreVisitReminderTemplate();
+        $templates[] = $this->createWcBookingPreVisitDripTemplate();
+        $templates[] = $this->createWcBookingPostVisitReviewTemplate();
+        $templates[] = $this->createWcBookingNextBookingNudgeTemplate();
+      }
     }
 
     return $templates;
@@ -798,6 +812,220 @@ class PremiumTemplatesFactory {
       },
       [
         'automationSteps' => 2, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingAbandonedSpotTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-abandoned-spot',
+      'bookings',
+      __('Abandoned booking reminder', 'mailpoet-premium'),
+      __(
+        'Remind customers who left a booking in their cart to complete their reservation.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Abandoned booking reminder', 'mailpoet-premium'),
+          [
+            ['key' => 'woocommerce-bookings:booking-status-changed', 'args' => ['from' => 'any', 'to' => 'was-in-cart']],
+            ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'HOURS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Your spot is waiting', 'mailpoet-premium'),
+                'subject' => __('Your spot is waiting', 'mailpoet-premium'),
+                'preheader' => __('Complete your booking', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingNewBookingFollowUpTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-new-booking-follow-up',
+      'bookings',
+      __('Follow-up after a new booking', 'mailpoet-premium'),
+      __(
+        'Send a confirmation email after a new booking is created.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Follow-up after a new booking', 'mailpoet-premium'),
+          [
+            ['key' => 'woocommerce-bookings:booking-created'],
+            ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'HOURS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Booking confirmation', 'mailpoet-premium'),
+                'subject' => __('Your booking is confirmed', 'mailpoet-premium'),
+                'preheader' => __('Here’s what to expect', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingPreVisitReminderTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-pre-visit-reminder',
+      'bookings',
+      __('Pre-visit reminder', 'mailpoet-premium'),
+      __(
+        'Send a reminder before a booking starts. Customize the timing in the trigger settings.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Pre-visit reminder', 'mailpoet-premium'),
+          [
+            [
+              'key' => 'woocommerce-bookings:booking-starts',
+              'args' => [
+                'timing' => 'before',
+                'time_value' => 1,
+                'time_unit' => 'days',
+                'booking_statuses' => ['confirmed', 'paid'],
+              ],
+            ],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Getting ready for your appointment', 'mailpoet-premium'),
+                'subject' => __('A reminder about your upcoming booking', 'mailpoet-premium'),
+                'preheader' => __('See you soon', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingPreVisitDripTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-pre-visit-drip',
+      'bookings',
+      __('Educational drip after booking', 'mailpoet-premium'),
+      __(
+        'Send a series of emails after a booking is created to help customers prepare for their visit.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Educational drip after booking', 'mailpoet-premium'),
+          [
+            ['key' => 'woocommerce-bookings:booking-created'],
+            ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'DAYS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('What to expect', 'mailpoet-premium'),
+                'subject' => __('Prepare for your visit', 'mailpoet-premium'),
+                'preheader' => __('Everything you need to know', 'mailpoet-premium'),
+              ],
+            ],
+            ['key' => 'core:delay', 'args' => ['delay' => 2, 'delay_type' => 'DAYS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Make the most of your booking', 'mailpoet-premium'),
+                'subject' => __('Tips for your upcoming booking', 'mailpoet-premium'),
+                'preheader' => __('Get the most out of your experience', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 2, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingPostVisitReviewTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-post-visit-review',
+      'bookings',
+      __('Post-booking review request', 'mailpoet-premium'),
+      __(
+        'Ask for feedback after a booking is completed.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Post-booking review request', 'mailpoet-premium'),
+          [
+            ['key' => 'woocommerce-bookings:booking-status-changed', 'args' => ['from' => 'any', 'to' => 'complete']],
+            ['key' => 'core:delay', 'args' => ['delay' => 1, 'delay_type' => 'DAYS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('How was your experience?', 'mailpoet-premium'),
+                'subject' => __('How was your experience?', 'mailpoet-premium'),
+                'preheader' => __('We’d love your feedback', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
+      ],
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createWcBookingNextBookingNudgeTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'wc-booking-next-booking-nudge',
+      'bookings',
+      __('Next booking nudge', 'mailpoet-premium'),
+      __(
+        'Encourage customers to rebook after their booking is completed.',
+        'mailpoet-premium'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Next booking nudge', 'mailpoet-premium'),
+          [
+            ['key' => 'woocommerce-bookings:booking-status-changed', 'args' => ['from' => 'any', 'to' => 'complete']],
+            ['key' => 'core:delay', 'args' => ['delay' => 30, 'delay_type' => 'DAYS']],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Ready to book again?', 'mailpoet-premium'),
+                'subject' => __('It’s time for your next visit', 'mailpoet-premium'),
+                'preheader' => __('Book your next appointment', 'mailpoet-premium'),
+              ],
+            ],
+          ]
+        );
+      },
+      [
+        'automationSteps' => 1, // trigger and all delay steps are excluded
       ],
       AutomationTemplate::TYPE_DEFAULT
     );

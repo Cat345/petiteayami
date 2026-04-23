@@ -3,6 +3,7 @@ if ( ! function_exists( 'wfacp_pro_dependency' ) ) {
 
 	/**
 	 * Function to check if pro-version is loaded and activated or not?
+	 *
 	 * @return bool True|False
 	 */
 	function wfacp_pro_dependency() {
@@ -25,14 +26,14 @@ if ( wfacp_pro_dependency() ) {
 	return;
 }
 
-if ( ! class_exists( 'WFACP_Core' ) ):
+if ( ! class_exists( 'WFACP_Core' ) ) :
 	#[AllowDynamicProperties]
 	final class WFACP_Core {
 
-		private static $ins = null;
-		private static $_registered_entity = [];
-		public $is_dependency_exists = true;
-		private $dir = '';
+		private static $ins                = null;
+		private static $_registered_entity = array();
+		public $is_dependency_exists       = true;
+		private $dir                       = '';
 
 		private $url = '';
 		/**
@@ -96,7 +97,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function definition() {
 
-
 			define( 'WFACP_VERSION', WFFN_VERSION );
 			define( 'WFACP_MIN_WP_VERSION', '4.9' );
 			define( 'WFACP_MIN_WC_VERSION', '3.3' );
@@ -119,7 +119,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function do_dependency_check() {
 			include_once WFACP_PLUGIN_DIR . '/woo-includes/woo-functions.php';
-			if (function_exists('wfacp_is_woocommerce_active') && ! wfacp_is_woocommerce_active() ) {
+			if ( function_exists( 'wfacp_is_woocommerce_active' ) && ! wfacp_is_woocommerce_active() ) {
 				$this->is_dependency_exists = false;
 			}
 		}
@@ -131,9 +131,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-optimizations.php';
 			require WFACP_PLUGIN_DIR . '/includes/class-compatibilities.php';
 
-
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-ajax-controller.php';
-
 
 			$this->importer_files();
 			WFACP_Common::init();
@@ -148,7 +146,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 2 );
 			add_action( 'activated_plugin', array( $this, 'maybe_flush_permalink' ) );
-			add_action( 'wfacp_before_loaded', [ $this, 'init_elementor' ] );
+			add_action( 'wfacp_before_loaded', array( $this, 'init_elementor' ) );
 		}
 
 		/**
@@ -170,11 +168,10 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		}
 
 		public function localization() {
-			load_plugin_textdomain( 'woofunnels-aero-checkout', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'woofunnels-aero-checkout', false, plugin_basename( __DIR__ ) . '/languages' ); // phpcs:ignore FunnelBuilder.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 		}
 
 		public function load_classes() {
-
 
 			require WFACP_PLUGIN_DIR . '/includes/functions.php';
 			require WFACP_PLUGIN_DIR . '/admin/class-wfacp-admin.php';
@@ -196,7 +193,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			require WFACP_PLUGIN_DIR . '/includes/class-mobile-detect.php';
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-reporting.php';
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-role-capability.php';
-
 		}
 
 		public function register_classes() {
@@ -228,7 +224,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		private function remove_embed_form() {
 			if ( class_exists( 'WFACPEF_Core' ) ) {
 				$embed_form_instance = WFACPEF_Core();
-				remove_action( 'wfacp_loaded', [ $embed_form_instance, 'wfacp_loaded' ] );
+				remove_action( 'wfacp_loaded', array( $embed_form_instance, 'wfacp_loaded' ) );
 
 			}
 		}
@@ -242,7 +238,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			if ( defined( 'ELEMENTOR_VERSION' ) ) {
 				include_once WFACP_PLUGIN_DIR . '/importer/class-wfacp-elementor-importer.php';
 			}
-			add_action( 'wp_loaded', [ $this, 'load_divi_importer' ], 150 );
+			add_action( 'wp_loaded', array( $this, 'load_divi_importer' ), 150 );
 			do_action( 'wfacp_importer' );
 			require WFACP_PLUGIN_DIR . '/importer/class-wfacp-gutenberg-importer.php';
 		}
@@ -252,6 +248,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			$response = WFACP_Common::check_builder_status( 'divi' );
 			if ( true === $response['found'] && empty( $response['error'] ) ) {
 				require WFACP_PLUGIN_DIR . '/importer/class-wfacp-divi-importer.php';
+				require WFACP_PLUGIN_DIR . '/importer/class-wfacp-divi5-importer.php';
 			}
 
 			$response = WFACP_Common::check_builder_status( 'oxy' );
@@ -260,7 +257,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 				require WFACP_PLUGIN_DIR . '/importer/class-wfacp-oxy-importer.php';
 			}
-
 		}
 
 		/**
@@ -322,7 +318,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		 */
 		protected function __clone() {
 		}
-
 	}
 endif;
 
@@ -334,4 +329,3 @@ if ( ! function_exists( 'WFACP_Core' ) ) {
 }
 
 WFACP_Core();
-

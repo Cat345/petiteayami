@@ -23,6 +23,7 @@ if ( ! function_exists( 'woofunnels_upstroke_powerpack_dependency' ) ) {
 
 	/**
 	 * Function to check if woofunnels upstroke pro version is loaded and activated or not?
+	 *
 	 * @return bool True|False
 	 */
 	function woofunnels_upstroke_powerpack_dependency() {
@@ -66,8 +67,7 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			add_action( 'wfocu_loaded', array( $this, 'load_upstroke_powerpack' ), 999 );
 			add_action( 'plugins_loaded', [ $this, 'load_sublium' ], 100 );
 			add_action( 'wfocu_load_rule_files', array( $this, 'load_rule_files' ) );
-			add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
-
+			add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 		}
 
 		public static function instance() {
@@ -83,6 +83,11 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 				$this->old_plugins['dynamic_shpping'] = __( 'Dynamic Shipping', 'woofunnels-upstroke-power-pack' );
 			} else {
 				include_once plugin_dir_path( __FILE__ ) . 'addons/dynamic-shipping/class-woofunnels-upstroke-dynamic-shipping.php';
+			}
+			if ( class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
+				$this->old_plugins['dynamic_tax'] = __( 'Dynamic tax', 'woofunnels-upstroke-power-pack' );
+			} else {
+				include_once plugin_dir_path( __FILE__ ) . 'addons/dynamic-tax-rates/class-woofunnels-upstroke-dynamic-tax.php';
 			}
 
 			if ( class_exists( 'WFOCU_MultiProduct' ) ) {
@@ -105,7 +110,6 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 
 			include_once plugin_dir_path( __FILE__ ) . 'addons/subscriptions/compatibilities/class-wfocu-wc-atts-compatibility.php';
 
-
 			if ( count( $this->old_plugins ) > 0 ) {
 				add_action( 'admin_notices', array( $this, 'old_plugins_notices' ) );
 			}
@@ -123,15 +127,15 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 
 		public function old_plugins_notices() {
 			foreach ( $this->old_plugins as $p_name ) { ?>
-                <div class="error">
-                    <p>
-                        <strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
+				<div class="error">
+					<p>
+						<strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
 						<?php
 						/* translators: %1$s: Plugin name %2$s Plugin name */
-						echo sprintf( esc_html__( 'Old version of "UpStroke: %1$s" is installed and active. Please deactivate it to run updated "Upstroke PowerPack - %2$s" module', 'woofunnels-upstroke-power-pack' ), esc_attr( $p_name ), esc_attr( $p_name ) );
+						printf( esc_html__( 'Old version of "UpStroke: %1$s" is installed and active. Please deactivate it to run updated "Upstroke PowerPack - %2$s" module', 'woofunnels-upstroke-power-pack' ), esc_attr( $p_name ), esc_attr( $p_name ) );
 						?>
-                    </p>
-                </div>
+					</p>
+				</div>
 				<?php
 			}
 		}
@@ -145,15 +149,15 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 		 */
 		public function wfocu_version_check_notice() {
 			?>
-            <div class="error">
-                <p>
-                    <strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
+			<div class="error">
+				<p>
+					<strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
 					<?php
 					/* translators: %1$s: Min required upstroke version */
-					echo sprintf( esc_html__( 'UpStroke PowerPack requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin.', 'woofunnels-upstroke-power-pack' ), esc_attr( WFOCU_MIN_POWERPACK_VERSION ) );
+					printf( esc_html__( 'UpStroke PowerPack requires  WooFunnels UpStroke: One Click Upsell version %1$s or greater. Kindly update the WooFunnels UpStroke: One Click Upsell plugin.', 'woofunnels-upstroke-power-pack' ), esc_attr( WFOCU_MIN_POWERPACK_VERSION ) );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
@@ -175,14 +179,20 @@ if ( ! class_exists( 'WooFunnels_UpStroke_PowerPack' ) ) {
 			unload_textdomain( 'woofunnels-upstroke-power-pack' );
 			load_textdomain( 'woofunnels-upstroke-power-pack', WP_LANG_DIR . '/woofunnels-upstroke-power-pack' . $locale . '.mo' );
 
-			load_plugin_textdomain( 'woofunnels-upstroke-power-pack', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'woofunnels-upstroke-power-pack', false, plugin_basename( __DIR__ ) . '/languages' );
 		}
 
 		public function load_rule_files() {
 
 			/** add new rule for all thing subscription */
 			include_once plugin_dir_path( __FILE__ ) . 'addons/rules/wfocu-rule-ats-order-subs.php';
-			include_once plugin_dir_path( __FILE__ ) . 'addons/rules/wfocu-rule-sublium-order-subs.php';
+			if ( defined( 'SUBLIUM_WCS_WC_DIR' ) ) {
+				try {
+					include_once SUBLIUM_WCS_WC_DIR . '/compatibilities/funnelkit/upsell-rules.php';
+				} catch ( \Exception|\Error $e ) {
+					error_log( sprintf( 'Sublium: Failed to load upsell rule classes: %s', $e->getMessage() ) );
+				}
+			}
 		}
 
 		public static function is_hpos_enabled() {
@@ -237,14 +247,14 @@ if ( ! function_exists( 'wfocu_powerpack_upstroke_not_installed_notice' ) ) {
 
 	function wfocu_powerpack_upstroke_not_installed_notice() {
 		?>
-        <div class="error">
-            <p>
-                <strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
+		<div class="error">
+			<p>
+				<strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
 				<?php
 				esc_html_e( 'UpStroke PowerPack contains a "UpStroke: WooCommerce One Click Upsells" addons and would only work if it is installed and activated. Please install and activate it first.', 'woofunnels-upstroke-power-pack' );
 				?>
-            </p>
-        </div>
+			</p>
+		</div>
 		<?php
 	}
 }

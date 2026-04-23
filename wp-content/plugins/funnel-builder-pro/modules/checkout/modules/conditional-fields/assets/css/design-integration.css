@@ -1,0 +1,85 @@
+/**
+ * Design Tab Modal - Phase 2
+ *
+ * @package FunnelKit\Checkout\Modules\Conditional_Fields
+ */
+
+.fkcf-design-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.fkcf-design-modal-overlay.fkcf-design-modal-visible {
+	opacity: 1;
+	visibility: visible;
+}
+
+body.fkcf-design-modal-open {
+	overflow: hidden;
+}
+
+.fkcf-design-modal {
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+	max-width: 900px;
+	width: 90vw;
+	max-height: 85vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.fkcf-design-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #ddd;
+	flex-shrink: 0;
+}
+
+.fkcf-design-modal-header h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.fkcf-design-modal-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	color: #666;
+	padding: 0 4px;
+}
+
+.fkcf-design-modal-close:hover {
+	color: #000;
+}
+
+.fkcf-design-modal-body {
+	flex: 1;
+	min-height: 400px;
+	overflow: hidden;
+}
+
+.fkcf-design-modal-body iframe {
+	width: 100%;
+	height: 70vh;
+	min-height: 500px;
+	border: none;
+	display: block;
+}

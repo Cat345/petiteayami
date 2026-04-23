@@ -101,7 +101,7 @@ abstract class SystemCheck
             );
         }
 
-        $memory_limit = $this->parseSize((string) ini_get('memory_limit'));
+        $memory_limit = $this->parseSize(ini_get('memory_limit'));
         if ($memory_limit > 0 && $memory_limit < $this->parseSize('128M')) {
             $res[] = trans(
                 'A higher memory limit is recommended. Set the <code>memory_limit</code> to 128M in the <a href="https://php.net/manual/en/ini.core.php" target="_blank">PHP configuration</a>.',

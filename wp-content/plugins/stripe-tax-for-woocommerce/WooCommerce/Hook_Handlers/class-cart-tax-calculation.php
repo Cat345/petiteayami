@@ -9,6 +9,7 @@ namespace Stripe\StripeTaxForWooCommerce\WooCommerce\Hook_Handlers;
 
 defined( 'ABSPATH' ) || exit;
 
+use Stripe\StripeTaxForWooCommerce\Stripe\StripeCalculationTracker;
 use Stripe\StripeTaxForWooCommerce\WordPress\Hook_Handlers;
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Data;
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Cart_Controller;
@@ -38,7 +39,7 @@ abstract class Cart_Tax_Calculation extends Hook_Handlers {
 	 * @throws Throwable Throws caught exception.
 	 */
 	public static function after_calculate_totals( WC_Cart $cart ): void {
-		if ( ! static::is_enabled() ) {
+		if ( ! static::is_enabled() || ! StripeCalculationTracker::is_calculation_needed() ) {
 			return;
 		}
 

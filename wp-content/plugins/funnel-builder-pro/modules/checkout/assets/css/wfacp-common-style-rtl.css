@@ -55,8 +55,8 @@ body .wfacp_main_form.woocommerce .wfacp-order-summary-toggle {
 }
 
 body .wfacp_main_form.woocommerce .wfacp-order-summary-toggle-text {
-    padding-right: 0;;
-    padding-left: 12px
+    padding-right: 0;
+    padding-left: 12px;
 }
 
 body .wfacp_main_form.woocommerce .wfacp-order-summary-toggle-price {
@@ -101,7 +101,7 @@ body .wfacp_main_form.woocommerce .wfacp_form_cart .wfacp-coupon-page .woocommer
 body .wfacp_main_form.woocommerce .wfacp_form_cart .wfacp-coupon-page .woocommerce-error {
     padding: 0 10px 0 0 !important;
     border-left: none !important;
-    border-right: 2px solid #24ae4e !important
+    border-right: 2px solid #24ae4e !important;
 }
 
 body body .wfacp_main_form.woocommerce .wfacp_form_cart .wfacp-coupon-page .woocommerce-error {
@@ -477,17 +477,17 @@ body .wfacp_mini_cart_start_h .wfacp_delete_item_wrap a:before {
 
 .wfacp_mini_cart_start_h ul.woocommerce-error,
 .wfacp_mini_cart_start_h div.woocommerce-error,
-.wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss) {
+.wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success) {
     border-left: none !important;
     border-right: 2px solid #d0011b !important;
 }
 
-.wfacp_mini_cart_start_h .woocommerce-message.wfacp_sucuss {
+.wfacp_mini_cart_start_h .woocommerce-message.wfacp_success {
     border-left: none !important;
     border-right: 2px solid #24ae4e !important;
 }
 
-.wfacp_mini_cart_start_h .woocommerce-message.wfacp_sucuss .woocommerce-message1 {
+.wfacp_mini_cart_start_h .woocommerce-message.wfacp_success .woocommerce-message1 {
     border-left: none !important;
     border-right: 2px solid #24ae4e !important;
 }
@@ -1238,11 +1238,11 @@ body #wfacp-e-form .iti--separate-dial-code .iti__selected-dial-code {
     margin-right: 5px;
 }
 
-@media (min-width: 768px)and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
     body .wfacp_main_form.woocommerce .wfacp-terms-footer span.woocommerce-terms-and-conditions-checkbox-text {
         text-align: right;
         padding-left: 0;
-        padding-right: 5px
+        padding-right: 5px;
     }
 }
 
@@ -1259,7 +1259,7 @@ body #wfacp-e-form .iti--separate-dial-code .iti__selected-dial-code {
     }
 }
 
-@media (min-width: 320px)and (max-width: 767px) {
+@media (min-width: 320px) and (max-width: 767px) {
     body .wfacp_main_form.woocommerce .step-by-step ul li {
         margin-left: 0;
     }
@@ -1279,14 +1279,14 @@ body #wfacp-e-form .iti--separate-dial-code .iti__selected-dial-code {
 
 @media (min-width: 768px) {
     body .wfacp_main_form.woocommerce p.form-row-first.wfacp-col-left-half {
-        float: right
+        float: right;
     }
     body .wfacp_main_form.woocommerce p.form-row-last.wfacp-col-left-half {
         float: left;
     }
 
     body .wfacp_main_form.woocommerce p.form-row.wfacp-col-left-third {
-        float: right
+        float: right;
     }
 
     body .wfacp_main_form.woocommerce p.form-row.wfacp-col-two-third {

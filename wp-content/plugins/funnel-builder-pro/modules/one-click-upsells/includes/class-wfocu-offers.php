@@ -6,13 +6,13 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 	 */
 	class WFOCU_Offers {
 
-		const INVALIDATION_PRODUCT_IN_ORDER = 1;
-		const INVALIDATION_NOT_PURCHASABLE = 2;
-		const INVALIDATION_PAST_PURCHASED = 3;
+		const INVALIDATION_PRODUCT_IN_ORDER         = 1;
+		const INVALIDATION_NOT_PURCHASABLE          = 2;
+		const INVALIDATION_PAST_PURCHASED           = 3;
 		const INVALIDATION_NOT_SUPPORT_SUBSCRIPTION = 4;
-		const INVALIDATION_IS_SOLD_IND = 5;
-		private static $ins = null;
-		public $is_custom_page = false;
+		const INVALIDATION_IS_SOLD_IND              = 5;
+		private static $ins                         = null;
+		public $is_custom_page                      = false;
 
 		public function __construct() {
 			add_filter( 'wfocu_offer_product_data', array( $this, 'offer_product_setup_stock_data' ), 9, 4 );
@@ -25,7 +25,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -80,13 +80,13 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 		/**
 		 * Return the first offer in the list
+		 *
 		 * @return int|null|string
 		 */
 		public function get_the_first_offer() {
 			$get_offers = WFOCU_Core()->data->get( 'funnel' );
 
 			return $this->get_the_offer( 'yes', null, $get_offers );
-
 		}
 
 		public function get_the_offer( $type, $offer, $get_offers ) {
@@ -107,7 +107,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				if ( false !== $get_current_offer_index ) {
 					return apply_filters( 'wfocu_get_offer_id_filter', absint( WFOCU_Core()->funnels->get_next_upsell( $get_funnel_steps, $get_current_offer_index ) ), $type, $get_offers );
 				}
-
 			}
 
 			$get_offer_type_key = $this->get_meta_key_for_offer_type( $type );
@@ -125,7 +124,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			);
 
 			return array_search( $type, $offer_type, true );
-
 		}
 
 		/**
@@ -156,10 +154,8 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					if ( '' !== $get_offer_data && ! empty( $get_offer_data->settings->terminate_if_accepted ) && true === $get_offer_data->settings->terminate_if_accepted ) {
 						return 0;
 					}
-				} else {
-					if ( '' !== $get_offer_data && ! empty( $get_offer_data->settings->terminate_if_declined ) && true === $get_offer_data->settings->terminate_if_declined ) {
+				} elseif ( '' !== $get_offer_data && ! empty( $get_offer_data->settings->terminate_if_declined ) && true === $get_offer_data->settings->terminate_if_declined ) {
 						return 0;
-					}
 				}
 			}
 
@@ -184,12 +180,11 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						break;
 					}
 
-					$key ++;
+					++$key;
 				}
 			}
 
 			return $index;
-
 		}
 
 
@@ -209,12 +204,11 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						break;
 					}
 
-					$key ++;
+					++$key;
 				}
 			}
 
 			return $id;
-
 		}
 
 		public function get_offer_attributes( $offer_id, $get = 'type' ) {
@@ -245,15 +239,14 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					}
 
 					if ( 'upsell' === $step['type'] ) {
-						$upsells ++;
+						++$upsells;
 					} else {
-						$downsells ++;
+						++$downsells;
 					}
 				}
 			}
 
 			return null;
-
 		}
 
 		public function get_offer_meta( $offer_id ) {
@@ -292,7 +285,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					$complete_package[ $i ]['_product']       = wc_get_product( $complete_package[ $i ]['product'] );
 					$complete_package[ $i ]['meta']           = array();
 				}
-				$i ++;
+				++$i;
 			}
 
 			return $complete_package;
@@ -316,7 +309,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			$get_product_raw_price  = $price = apply_filters( 'wfocu_product_raw_price', $regular_price, $product, $options );
 			$do_not_apply_discounts = apply_filters( 'wfocu_do_not_apply_discounts', false, $product, $options, $offer_settings );
 			if ( is_object( $options ) && isset( $options->discount_type ) && false === $do_not_apply_discounts ) {
-				if ( in_array( $options->discount_type, [ 'percentage_on_sale', 'fixed_on_sale' ], true ) ) {
+				if ( in_array( $options->discount_type, array( 'percentage_on_sale', 'fixed_on_sale' ), true ) ) {
 					$sale_price            = floatval( $product->get_price() ) * $options->quantity;
 					$get_product_raw_price = apply_filters( 'wfocu_product_raw_sale_price', $sale_price, $product, $options, $get_product_raw_price );
 				}
@@ -334,17 +327,23 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			$price = ( true === $incl_tax ) ? wc_get_price_including_tax( $product, array( 'price' => $price ) ) : wc_get_price_excluding_tax( $product, array( 'price' => $price ) );
 
 			return apply_filters( 'wfocu_offer_product_price', $price, $incl_tax, $original_price, $offer_settings, $product );
-
 		}
 
 		public function parse_posted_data() {
 			$posted_data = array();
-			$data        = $_POST;   // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$data        = $_POST;   // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
-			if ( false === in_array( filter_input( INPUT_POST, 'action', FILTER_UNSAFE_RAW ), apply_filters( 'wfocu_allow_ajax_actions_for_charge_setup', array(
-					WFOCU_AJAX_Controller::CHARGE_ACTION,
-					WFOCU_AJAX_Controller::SHIPPING_CALCULATION_ACTION,
-				) ), true ) ) {
+			if ( false === in_array(
+				filter_input( INPUT_POST, 'action', FILTER_UNSAFE_RAW ),
+				apply_filters(
+					'wfocu_allow_ajax_actions_for_charge_setup',
+					array(
+						WFOCU_AJAX_Controller::CHARGE_ACTION,
+						WFOCU_AJAX_Controller::SHIPPING_CALCULATION_ACTION,
+					)
+				),
+				true
+			) ) {
 
 				return $posted_data;
 			}
@@ -363,22 +362,28 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						wp_parse_str( implode( '&', $data['itemsData'][ $key ] ), $variation_attributes );
 						$exclude = array( '_wfocu_variation' );
 
-						$filtered = array_filter( $variation_attributes, function ( $key ) use ( $exclude ) {
-							return ! in_array( $key, $exclude, true );
-						}, ARRAY_FILTER_USE_KEY );
+						$filtered = array_filter(
+							$variation_attributes,
+							function ( $key ) use ( $exclude ) {
+								return ! in_array( $key, $exclude, true );
+							},
+							ARRAY_FILTER_USE_KEY
+						);
 
 						$result = array();
 
 						if ( ! empty( $get_attribute_values ) ) {
-							array_walk( $filtered, function ( &$value, $key ) use ( &$result, $get_attribute_values ) {
+							array_walk(
+								$filtered,
+								function ( &$value, $key ) use ( &$result, $get_attribute_values ) {
 
-								if ( isset( $get_attribute_values[ $key ] ) ) {
-									$result[ $get_attribute_values[ $key ] ] = $value;
-								} else {
-									$result[ $key ] = $value;
+									if ( isset( $get_attribute_values[ $key ] ) ) {
+										$result[ $get_attribute_values[ $key ] ] = $value;
+									} else {
+										$result[ $key ] = $value;
+									}
 								}
-
-							} );
+							);
 						} else {
 							$result = $filtered;
 						}
@@ -392,7 +397,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 
 			return $posted_data;
-
 		}
 
 		public function get_offer_from_post( $post ) {
@@ -407,7 +411,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				return false;
 			}
 
-			//if single offer page
+			// if single offer page
 			if ( WFOCU_Common::get_offer_post_type_slug() === $post->post_type ) {
 				return $post->ID;
 			}
@@ -432,6 +436,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 		 * Here we find out whether to show tax info during side cart totals.
 		 * The decision for it came from the settings for the woocommerce.
 		 * So if woocommerce says "show cart items including prices" that means no separate row needs to be make on cart table
+		 *
 		 * @return bool
 		 */
 		public function show_tax_info_in_confirmation() {
@@ -448,7 +453,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					$product_details->is_purchasable = $product_details->data->is_purchasable();
 				}
 				if ( in_array( $product_details->data->get_type(), $this->product_compatible_for_stock_check(), true ) ) {
-
 
 					$product_details->is_in_stock        = $product_details->data->is_in_stock();
 					$product_details->max_qty            = $this->get_max_purchase_quantity( $product_details->data );
@@ -480,7 +484,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			if ( $is_batching_on ) {
 				$order = WFOCU_Core()->data->get_parent_order();
 
-
 				if ( $order instanceof WC_Order ) {
 					$get_items = $order->get_items();
 					if ( is_array( $get_items ) && count( $get_items ) > 0 ) {
@@ -491,11 +494,9 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						}
 					}
 				}
-
 			}
 
 			return 0 === $product_object->get_max_purchase_quantity() ? 0 : $product_object->get_max_purchase_quantity() - $qty_in_order;
-
 		}
 
 		public function product_compatible_for_stock_check() {
@@ -513,7 +514,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 		public function validate_product_offers( $offer_build ) {
 
 			if ( new stdClass() === $offer_build->products ) {
-				//no products
+				// no products
 				return false;
 			}
 			$get_order                = WFOCU_Core()->data->get_parent_order();
@@ -581,7 +582,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						$offer_product_id = $offer_product->get_parent_id();
 					}
 
-
 					if ( in_array( $offer_product_id, $purchased_products, true ) ) {
 						/**
 						 * If any of the offer Product IDs matches with the purchased product then
@@ -591,19 +591,19 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					}
 				}
 
-			/**
-			 * Items are already purchased. as products in offer are available in purchased products
-			 */
-			if ( $purchased ) {
-				WFOCU_Core()->template_loader->invalidation_reason = self::INVALIDATION_PAST_PURCHASED;
-				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Items are already purchased in past' );
-				WFOCU_Core()->session_db->set_skip_id( 8 );
-				return false;
+				/**
+				 * Items are already purchased. as products in offer are available in purchased products
+				 */
+				if ( $purchased ) {
+					WFOCU_Core()->template_loader->invalidation_reason = self::INVALIDATION_PAST_PURCHASED;
+					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Items are already purchased in past' );
+					WFOCU_Core()->session_db->set_skip_id( 8 );
+					return false;
+				}
 			}
-		}
-		$is_sold_indiv = false;
-		foreach ( $offer_build->products as $product_data ) {
-			$iteration = true;
+			$is_sold_indiv = false;
+			foreach ( $offer_build->products as $product_data ) {
+				$iteration = true;
 
 				if ( 'trash' === $product_data->status ) {
 					WFOCU_Core()->session_db->set_skip_id( 11 );
@@ -676,9 +676,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				}
 			}
 
-
 			return false;
-
 		}
 
 		public function append_offer_unique_class( $classes ) {
@@ -699,7 +697,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 
 			return apply_filters( 'wfocu_front_offer_url', get_permalink( $offer ) );
-
 		}
 
 		public function get_offer( $offer_id, $build = false ) {
@@ -731,12 +728,13 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 			$offer_data = apply_filters( 'wfocu_build_offer_product_before', $offer_data, $offer_id, $is_front );
 
-			$offer_settings                = isset( $offer_data->settings ) ? $offer_data->settings : [];
-			$offer_data->settings          = (object) array_merge( (array) $this->get_default_offer_setting(), (array) $offer_settings );
-			$products_list                 = $offer_data->products;
-			$output                        = new stdClass();
-			$output->fields                = $offer_data->fields;
-			$output->settings              = ! empty( $offer_data->settings ) ? $offer_data->settings : $this->get_default_offer_setting();
+			$offer_settings       = isset( $offer_data->settings ) ? $offer_data->settings : array();
+			$offer_data->settings = (object) array_merge( (array) $this->get_default_offer_setting(), (array) $offer_settings );
+			$products_list        = $offer_data->products;
+			$output               = new stdClass();
+			$output->fields       = $offer_data->fields;
+			$output->settings     = ! empty( $offer_data->settings ) ? $offer_data->settings : $this->get_default_offer_setting();
+
 			$output->template_group        = isset( $offer_data->template_group ) ? $offer_data->template_group : '';
 			$output->have_multiple_product = isset( $offer_data->have_multiple_product ) ? $offer_data->have_multiple_product : 1;
 			$output->is_show_confirmation  = $offer_data->settings->ask_confirmation;
@@ -763,7 +761,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 			foreach ( $products_list as $hash_key => $pid ) {
 				$offer_data->fields->{$hash_key}->discount_type = WFOCU_Common::get_discount_setting( $offer_data->fields->{$hash_key}->discount_type );
-				$pro                                            = wc_get_product( $pid );
+				$pro = wc_get_product( $pid );
 				if ( $pro instanceof WC_Product ) {
 					if ( $pro->is_type( 'variable' ) ) {
 
@@ -854,7 +852,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 							$product_details->sale_modify_price_excl_tax = WFOCU_Core()->offers->get_product_price( $pro, $offer_data->fields->{$hash_key}, false, $offer_data, true );
 							$product_details->sale_modify_price_incl_tax = WFOCU_Core()->offers->get_product_price( $pro, $offer_data->fields->{$hash_key}, true, $offer_data, true );
 
-
 							if ( $this->show_price_including_tax() ) {
 								$product_details->price         = $product_details->sale_price_incl_tax;
 								$product_details->price_raw     = $product_details->sale_price_incl_tax;
@@ -887,7 +884,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					if ( ! property_exists( $product_details, 'needs_shipping' ) ) {
 						$product_details->needs_shipping = wc_shipping_enabled() && $pro->needs_shipping();
 					}
-
 
 					$products->{$hash_key} = apply_filters( 'wfocu_offer_product_data', $product_details, $output, $offer_data, $is_front, $hash_key );
 					unset( $product_details );
@@ -943,7 +939,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			$get_price = $this->get_product_price( $product, $options, $incl_tax, $offer_data );
 
 			return wc_price( $get_price );
-
 		}
 
 		public function show_price_including_tax() {
@@ -978,10 +973,8 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 							unset( $product->{$key}->{$internal_keys} );
 						}
 					}
-				} else {
-					if ( isset( $product->{$value} ) ) {
+				} elseif ( isset( $product->{$value} ) ) {
 						unset( $product->{$value} );
-					}
 				}
 			}
 
@@ -1002,10 +995,12 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			 * update post status on disabled offer state
 			 */
 			if ( absint( $step['id'] ) > 0 ) {
-				wp_update_post( array(
-					'ID'          => $step['id'],
-					'post_status' => ( 1 === absint( $step['state'] ) ) ? 'publish' : 'draft'
-				) );
+				wp_update_post(
+					array(
+						'ID'          => $step['id'],
+						'post_status' => ( 1 === absint( $step['state'] ) ) ? 'publish' : 'draft',
+					)
+				);
 			}
 
 			foreach ( $keys_to_filter as $value ) {
@@ -1047,16 +1042,15 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 
 			return 'NA';
-
 		}
 
 		public function invalidation_reasons() {
 			return array(
-				self::INVALIDATION_PRODUCT_IN_ORDER         => __( 'Offer product(s) exist in parent order.', 'woofunnels-upstroke-one-click-upsell' ),
-				self::INVALIDATION_NOT_PURCHASABLE          => __( 'Offer Product is not purchasable/in stock.', 'woofunnels-upstroke-one-click-upsell' ),
-				self::INVALIDATION_PAST_PURCHASED           => __( 'Offer product(s) previously purchased by customer.', 'woofunnels-upstroke-one-click-upsell' ),
+				self::INVALIDATION_PRODUCT_IN_ORDER => __( 'Offer product(s) exist in parent order.', 'woofunnels-upstroke-one-click-upsell' ),
+				self::INVALIDATION_NOT_PURCHASABLE  => __( 'Offer Product is not purchasable/in stock.', 'woofunnels-upstroke-one-click-upsell' ),
+				self::INVALIDATION_PAST_PURCHASED   => __( 'Offer product(s) previously purchased by customer.', 'woofunnels-upstroke-one-click-upsell' ),
 				self::INVALIDATION_NOT_SUPPORT_SUBSCRIPTION => __( 'Offer product(s) is of type subscription and gateway not supported. Please contact support.', 'woofunnels-upstroke-one-click-upsell' ),
-				self::INVALIDATION_IS_SOLD_IND              => __( 'Offer product(s) are marked as sold individually.', 'woofunnels-upstroke-one-click-upsell' ),
+				self::INVALIDATION_IS_SOLD_IND      => __( 'Offer product(s) are marked as sold individually.', 'woofunnels-upstroke-one-click-upsell' ),
 			);
 		}
 
@@ -1100,18 +1094,19 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 		public function get_default_product_key( $post ) {
 			return md5( $post );
-
 		}
 
 		public function get_default_product() {
 			$bwf_cache      = WooFunnels_Cache::get_instance();
 			$latest_product = $bwf_cache->get_cache( 'get_latest_product', 'upstroke' );
 			if ( empty( $latest_product ) ) {
-				$query    = new WC_Product_Query( array(
-					'limit'  => 1,
-					'type'   => 'simple',
-					'return' => 'ids',
-				) );
+				$query    = new WC_Product_Query(
+					array(
+						'limit'  => 1,
+						'type'   => 'simple',
+						'return' => 'ids',
+					)
+				);
 				$products = $query->get_products();
 
 				if ( is_array( $products ) ) {
@@ -1124,7 +1119,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			}
 
 			return $latest_product;
-
 		}
 
 		public function get_offer_state( $steps, $offer_id ) {
@@ -1184,7 +1178,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				return $price;
 			}
 			$get_offer_id      = WFOCU_Core()->data->get( 'current_offer' );
-			$get_target_offers = apply_filters( 'wfocu_offers_to_cancel_primary', [ WFOCU_Core()->offers->get_the_first_offer() ] );
+			$get_target_offers = apply_filters( 'wfocu_offers_to_cancel_primary', array( WFOCU_Core()->offers->get_the_first_offer() ) );
 
 			/* check which accept offers to cancel the primary order */
 			if ( ! in_array( $get_offer_id, $get_target_offers ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
@@ -1193,7 +1187,8 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 			$get_parent_order = WFOCU_Core()->data->get( 'porder', false, '_orders' );
 			if ( ! empty( $get_parent_order ) ) {
-				/* Less primary order price, shipping and tax from offer price
+				/*
+				Less primary order price, shipping and tax from offer price
 					shipping auto added parent get_total function like price = 10 and shipping = 2 so get_total return 12
 				*/
 				if ( $get_parent_order->get_total() <= $price ) {
@@ -1202,10 +1197,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 					} else {
 						$price = $price - ( $get_parent_order->get_total() - $get_parent_order->get_total_tax() );
 					}
-
-
 				}
-
 			}
 
 			return $price;
@@ -1241,7 +1233,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						$product_variation_data = $product['_offer_data']->variations_data['prices'][ $product['id'] ];
 						if ( $product_variation_data['sale_modify_price_excl_tax'] !== $product_variation_data['price_excl_tax'] ) {
 
-
 							/**
 							 * its a free trail case with zero charge
 							 */
@@ -1263,7 +1254,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 								$total += $modify_price_excl_tax;
 
-
 							} else {
 								$modify_price          = $product['_offer_data']->variations_data['prices'][ $product['id'] ]['sale_modify_price_incl_tax'];
 								$modify_price_excl_tax = $product['_offer_data']->variations_data['prices'][ $product['id'] ]['sale_modify_price_excl_tax'];
@@ -1272,7 +1262,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 								}
 								$total += $modify_price_excl_tax;
 							}
-
 
 							/*
 							 * Modify package difference charge price before charging order
@@ -1289,17 +1278,14 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 							break;
 						}
-
 					}
 				} else {
-
 
 					if ( $product['_offer_data']->type === 'bundle' || isset( $product['_child_of_bundle'] ) ) {
 						continue;
 					}
 					$temp_product = get_object_vars( $product['_offer_data'] );
 					if ( is_array( $temp_product ) && array_key_exists( 'sale_modify_price_excl_tax', $temp_product ) ) {
-
 
 						if ( $product['_offer_data']->sale_modify_price_excl_tax !== $product['_offer_data']->sale_price_excl_tax ) {
 
@@ -1309,7 +1295,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 							if ( array_key_exists( 'free_trial_length', $temp_product ) && ! empty( $product['_offer_data']->free_trial_length ) && empty( $product['_offer_data']->signup_fee_excluding_tax ) ) {
 								continue;
 							}
-
 
 							if ( array_key_exists( 'free_trial_length', $temp_product ) && ! empty( $product['_offer_data']->free_trial_length ) && array_key_exists( 'signup_fee_excluding_tax', $temp_product ) && ! empty( $product['_offer_data']->signup_fee_excluding_tax ) ) {
 								$modify_price          = ( $product['_offer_data']->signup_fee_including_tax - ( $product['_offer_data']->sale_price_incl_tax - $product['_offer_data']->sale_modify_price_incl_tax ) );
@@ -1327,7 +1312,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 								}
 								$total += $modify_price_excl_tax;
 							}
-
 
 							/*
 							 * Modify package difference charge price before charging order
@@ -1360,7 +1344,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 			$shipping = ( isset( $package['shipping'] ) && isset( $package['shipping']['diff'] ) && isset( $package['shipping']['diff']['tax'] ) ) ? $shipping + ( $package['shipping']['diff']['tax'] ) : $shipping;
 			$taxes    = $tax;
 
-			//modified charging amount
+			// modified charging amount
 			$package['total'] = $total + $shipping + $taxes;
 
 			return $package;
@@ -1410,8 +1394,8 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 		 */
 		public function duplicate_offer( $duplicate_id, $title = '', $upsell_id = 0, $funnel_meta = true ) {
 			$offer_id_new = 0;
-			$steps_data   = [];
-			$new_step     = [];
+			$steps_data   = array();
+			$new_step     = array();
 
 			if ( 0 === absint( $duplicate_id ) ) {
 				return $offer_id_new;
@@ -1485,14 +1469,14 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				$new_step['old_id'] = $get_offer;
 				$new_step['url']    = get_site_url() . '?wfocu_offer=' . $new_offer_slug;
 
-				$exclude_meta_keys_to_copy = apply_filters( 'wfocu_do_not_duplicate_meta', [ '_funnel_id', '_wfocu_edit_last', '_bwf_ab_variation_of' ], $get_offer, $offer_id_new, $new_step );
+				$exclude_meta_keys_to_copy = apply_filters( 'wfocu_do_not_duplicate_meta', array( '_funnel_id', '_wfocu_edit_last', '_bwf_ab_variation_of' ), $get_offer, $offer_id_new, $new_step );
 
 				global $wpdb;
 
 				$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 				if ( ! empty( $post_meta_all ) ) {
-					$sql_query_selects = [];
+					$sql_query_selects = array();
 					foreach ( $post_meta_all as $meta_info ) {
 
 						$meta_key = $meta_info->meta_key;
@@ -1504,7 +1488,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 						$meta_key   = esc_sql( $meta_key );
 						$meta_value = esc_sql( $meta_info->meta_value );
 
-						$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+						$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 					}
 
 					$sql_query_meta_val = implode( ',', $sql_query_selects );
@@ -1522,7 +1506,7 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 				if ( is_array( $steps_data ) && count( $steps_data ) > 0 ) {
 					array_push( $steps_data, $new_step );
 				} else {
-					$steps_data   = [];
+					$steps_data   = array();
 					$steps_data[] = $new_step;
 				}
 				update_post_meta( $upsell_id, '_funnel_steps', $steps_data );
@@ -1532,7 +1516,6 @@ if ( ! class_exists( 'WFOCU_Offers' ) ) {
 
 			return $offer_id_new;
 		}
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {

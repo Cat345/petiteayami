@@ -179,7 +179,7 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M9.33182 5.8912C8.65 7.80539 7.88636 8.73514 7.19091 8.80351C6.41364 8.89921 5.73182 8.55739 5.09091 7.70968C5.05163 7.65831 5.00578 7.61234 4.95455 7.57295C5.13886 7.32655 5.23479 7.02496 5.22681 6.71706C5.21883 6.40916 5.1074 6.11298 4.91057 5.8765C4.71374 5.64003 4.44305 5.47712 4.14235 5.41417C3.84165 5.35122 3.52856 5.39191 3.2538 5.52965C2.97905 5.6674 2.75872 5.89413 2.62853 6.1731C2.49834 6.45208 2.4659 6.76696 2.53648 7.06672C2.60706 7.36649 2.77651 7.63358 3.01739 7.82473C3.25826 8.01587 3.55645 8.11987 3.86364 8.11987L3.87727 8.28394L4.99546 12.7139C5.10481 13.1574 5.35872 13.5516 5.71692 13.834C6.07511 14.1164 6.51709 14.2707 6.97273 14.2726H13.0273C13.4829 14.2707 13.9249 14.1164 14.2831 13.834C14.6413 13.5516 14.8952 13.1574 15.0045 12.7139L16.1227 8.28394C16.1334 8.22993 16.1379 8.1749 16.1364 8.11987C16.4435 8.11987 16.7417 8.01587 16.9826 7.82473C17.2235 7.63358 17.3929 7.36649 17.4635 7.06672C17.5341 6.76696 17.5017 6.45208 17.3715 6.1731C17.2413 5.89413 17.021 5.6674 16.7462 5.52965C16.4714 5.39191 16.1584 5.35122 15.8577 5.41417C15.5569 5.47712 15.2863 5.64003 15.0894 5.8765C14.8926 6.11298 14.7812 6.40916 14.7732 6.71706C14.7652 7.02496 14.8611 7.32655 15.0455 7.57295C14.9951 7.60811 14.9493 7.64945 14.9091 7.69601C14.2409 8.54372 13.5455 8.88554 12.8091 8.80351C12.1273 8.73514 11.3909 7.79172 10.6682 5.8912C10.931 5.74306 11.1375 5.51174 11.2553 5.23343C11.3731 4.95512 11.3955 4.64551 11.3192 4.35304C11.2428 4.06056 11.0719 3.80171 10.8332 3.61697C10.5946 3.43224 10.3015 3.33203 10 3.33203C9.69847 3.33203 9.40545 3.43224 9.16676 3.61697C8.92807 3.80171 8.75718 4.06056 8.68082 4.35304C8.60446 4.64551 8.62693 4.95512 8.74472 5.23343C8.86251 5.51174 9.06897 5.74306 9.33182 5.8912ZM14.0909 15.2981C14.2717 15.2981 14.4452 15.3701 14.573 15.4983C14.7009 15.6265 14.7727 15.8004 14.7727 15.9817C14.7727 16.163 14.7009 16.3369 14.573 16.4651C14.4452 16.5933 14.2717 16.6654 14.0909 16.6654H5.90909C5.72826 16.6654 5.55484 16.5933 5.42697 16.4651C5.29911 16.3369 5.22727 16.163 5.22727 15.9817C5.22727 15.8004 5.29911 15.6265 5.42697 15.4983C5.55484 15.3701 5.72826 15.2981 5.90909 15.2981H14.0909Z" fill="#353030"/>
 							</svg>
-							<span> <?php echo wp_kses_post( __( 'Get more with FunnelKit PRO—upgrade from Lite for additional features <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar" target="_blank">Upgrade to PRO</a>' ) ); ?></span>
+							<span> <?php echo wp_kses_post( __( 'Get more with FunnelKit PRO—upgrade from Lite for additional features <a href="https://funnelkit.com/exclusive-offer/?utm_source=WordPress&utm_campaign=FB+Lite+Plugin&utm_medium=Dashboard+Widget+TopBar" target="_blank">Upgrade to PRO</a>', 'funnel-builder' ) ); ?></span>
 						</div>
 						<?php
 						break;
@@ -284,6 +284,15 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 						<span><span class="bwf-widget-action-box-title"> <?php echo esc_html__( 'Get FunnelKit Stripe', 'funnel-builder' ); ?></span><br><span class="bwf-widget-action-box-subtitle"><?php echo esc_html__( 'Installs from WordPress.org', 'funnel-builder' ); ?></span></span>
 						<span class="bwf-widget-action-box-r"><button class="bwf-button is-stripe is-activate"><span><?php echo esc_html__( 'Install', 'funnel-builder' ); ?></span></button> <span data-type="1" class="bwf-widget-action-box-remove"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_676_13273)"><path d="M2.76782 2.87703L2.8178 2.81914C3.00103 2.6359 3.28777 2.61924 3.48983 2.76917L3.54771 2.81914L7.99996 7.27115L12.4522 2.81914C12.6538 2.61758 12.9806 2.61758 13.1821 2.81914C13.3837 3.0207 13.3837 3.3475 13.1821 3.54906L8.73011 8.0013L13.1821 12.4535C13.3654 12.6368 13.382 12.9235 13.2321 13.1256L13.1821 13.1835C12.9989 13.3667 12.7121 13.3834 12.5101 13.2334L12.4522 13.1835L7.99996 8.73145L3.54771 13.1835C3.34615 13.385 3.01936 13.385 2.8178 13.1835C2.61624 12.9819 2.61624 12.6551 2.8178 12.4535L7.26981 8.0013L2.8178 3.54906C2.63456 3.36582 2.6179 3.07908 2.76782 2.87703L2.8178 2.81914L2.76782 2.87703Z" fill="#82838E"/></g><defs><clipPath id="clip0_676_13273"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span></span>
 					</div>
+					<?php if ( 'lite' !== $app_state ) : ?>
+					<div class="bwf-widget-action-box" id="bwf-d-square" data-index="5" style="display:none;">
+						<svg width="44" height="44" viewBox="0 0 502 502" fill="none" xmlns="http://www.w3.org/2000/svg" class="bwf-widget-action-box-icon">
+							<path d="M501.43 83.79V417.63C501.43 463.9 463.93 501.42 417.64 501.42H83.79C37.51 501.42 0 463.92 0 417.63V83.79C0 37.52 37.52 0 83.79 0H417.63C463.92 0 501.42 37.5 501.42 83.79H501.43ZM410.23 117.65C410.23 103.04 398.38 91.2 383.78 91.2H117.63C103.02 91.2 91.18 103.04 91.18 117.65V383.84C91.18 398.45 103.02 410.29 117.63 410.29H383.8C398.41 410.29 410.25 398.44 410.25 383.84V117.65H410.23ZM182.32 197.6C182.32 189.17 189.11 182.34 197.49 182.34H303.89C312.28 182.34 319.06 189.18 319.06 197.6V303.84C319.06 312.27 312.31 319.1 303.89 319.1H197.49C189.1 319.1 182.32 312.26 182.32 303.84V197.6Z" fill="#000000"/>
+						</svg>
+						<span><span class="bwf-widget-action-box-title"> <?php echo esc_html__( 'Get FunnelKit Square', 'funnel-builder' ); ?></span><br><span class="bwf-widget-action-box-subtitle"><?php echo esc_html__( 'Credit Cards, Apple Pay, Google Pay, ACH, Gift Cards, Afterpay, Cash App', 'funnel-builder' ); ?></span></span>
+						<span class="bwf-widget-action-box-r"><button class="bwf-button is-square is-activate"><span><?php echo esc_html__( 'Install', 'funnel-builder' ); ?></span></button> <span data-type="5" class="bwf-widget-action-box-remove"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_676_13273)"><path d="M2.76782 2.87703L2.8178 2.81914C3.00103 2.6359 3.28777 2.61924 3.48983 2.76917L3.54771 2.81914L7.99996 7.27115L12.4522 2.81914C12.6538 2.61758 12.9806 2.61758 13.1821 2.81914C13.3837 3.0207 13.3837 3.3475 13.1821 3.54906L8.73011 8.0013L13.1821 12.4535C13.3654 12.6368 13.382 12.9235 13.2321 13.1256L13.1821 13.1835C12.9989 13.3667 12.7121 13.3834 12.5101 13.2334L12.4522 13.1835L7.99996 8.73145L3.54771 13.1835C3.34615 13.385 3.01936 13.385 2.8178 13.1835C2.61624 12.9819 2.61624 12.6551 2.8178 12.4535L7.26981 8.0013L2.8178 3.54906C2.63456 3.36582 2.6179 3.07908 2.76782 2.87703L2.8178 2.81914L2.76782 2.87703Z" fill="#82838E"/></g><defs><clipPath id=\"clip0_676_13273\"><rect width=\"16\" height=\"16\" fill=\"white\"/></clipPath></defs></svg></span></span>
+					</div>
+					<?php endif; ?>
 					<div class="bwf-widget-action-box" id="bwf-d-automations" data-index="2" style="display:none;">
 						<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" class="bwf-widget-action-box-icon">
 							<rect x="0.5" y="0.5" width="43" height="43" rx="7.5" fill="#F9F9FF" stroke="#DEDFEA"/>
@@ -317,6 +326,25 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 						<span><span class="bwf-widget-action-box-title"><?php echo esc_html__( ' Get FunnelKit Side Cart', 'funnel-builder' ); ?></span><br><span class="bwf-widget-action-box-subtitle"><?php echo esc_html__( 'Meet dynamic, reward-based side cart for WooCommerce', 'funnel-builder' ); ?></span></span>
 						<span class="bwf-widget-action-box-r"><button class="bwf-button is-primary"><span><?php echo esc_html__( 'Install', 'funnel-builder' ); ?></span></button> <span data-type="4" class="bwf-widget-action-box-remove"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_676_13273)"><path d="M2.76782 2.87703L2.8178 2.81914C3.00103 2.6359 3.28777 2.61924 3.48983 2.76917L3.54771 2.81914L7.99996 7.27115L12.4522 2.81914C12.6538 2.61758 12.9806 2.61758 13.1821 2.81914C13.3837 3.0207 13.3837 3.3475 13.1821 3.54906L8.73011 8.0013L13.1821 12.4535C13.3654 12.6368 13.382 12.9235 13.2321 13.1256L13.1821 13.1835C12.9989 13.3667 12.7121 13.3834 12.5101 13.2334L12.4522 13.1835L7.99996 8.73145L3.54771 13.1835C3.34615 13.385 3.01936 13.385 2.8178 13.1835C2.61624 12.9819 2.61624 12.6551 2.8178 12.4535L7.26981 8.0013L2.8178 3.54906C2.63456 3.36582 2.6179 3.07908 2.76782 2.87703L2.8178 2.81914L2.76782 2.87703Z" fill="#82838E"/></g><defs><clipPath id="clip0_676_13273"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span></span>
 					</div>
+					<div class="bwf-widget-action-box" id="bwf-d-sublium" data-index="6" style="display:none;">
+						<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect width="44" height="44" rx="8" fill="#563AF3"/>
+						<g clip-path="url(#sublium_widget_c)">
+						<path d="M19.323 18.9924L18.8754 23.0592C18.8531 23.2624 18.6307 23.3765 18.4535 23.2745L18.3463 23.2128C14.4901 20.9915 8.99051 18.3972 10.4558 14.1951C10.7719 13.2886 11.2965 12.6676 11.8836 12.2523C13.4941 11.113 15.6065 11.9775 17.3603 12.8806C19.6359 14.0524 21.8289 15.2124 20.9649 14.8821C19.7472 14.4165 19.4773 17.3273 19.3242 18.9788L19.323 18.9924Z" fill="white"/>
+						<path d="M22.3806 7.16118L33.191 13.0153C33.6892 13.2851 33.9996 13.8061 33.9996 14.3727C33.9996 18.3005 29.7549 20.7629 26.3418 18.8191C20.5287 15.5085 14.5371 12.1164 14.1249 11.9548C13.5134 11.7151 12.4942 11.9972 12.1375 12.0971C14.3797 10.7489 19.2618 7.79038 20.2402 7.31099C21.2187 6.8316 22.0748 7.01137 22.3806 7.16118Z" fill="white"/>
+						<path d="M24.677 25.0076L25.1246 20.9408C25.1469 20.7376 25.3693 20.6235 25.5465 20.7255L25.6537 20.7872C29.5099 23.0085 35.0095 25.6028 33.5442 29.8049C33.2281 30.7114 32.7035 31.3324 32.1164 31.7477C30.5059 32.887 28.3935 32.0225 26.6397 31.1194C24.3641 29.9476 22.1711 28.7876 23.0351 29.1179C24.2528 29.5835 24.5227 26.6727 24.6758 25.0212L24.677 25.0076Z" fill="white"/>
+						<path d="M21.6192 36.8388L10.8088 30.9847C10.3105 30.7149 10.0002 30.1939 10.0002 29.6273C10.0002 25.6995 14.2449 23.2371 17.6579 25.1809C23.471 28.4915 29.4627 31.8836 29.8748 32.0452C30.4864 32.2849 31.5056 32.0028 31.8623 31.9029C29.62 33.2511 24.738 36.2096 23.7595 36.689C22.7811 37.1684 21.925 36.9886 21.6192 36.8388Z" fill="white"/>
+						</g>
+						<defs>
+						<clipPath id="sublium_widget_c">
+						<rect width="24" height="30" fill="white" transform="translate(10 7)"/>
+						</clipPath>
+						</defs>
+						</svg>
+
+						<span><span class="bwf-widget-action-box-title"><?php echo esc_html__( 'Get Sublium Subscription by Funnelkit', 'funnel-builder' ); ?></span><br><span class="bwf-widget-action-box-subtitle"><?php echo esc_html__( 'Smarter Subscriptions for WooCommerce', 'funnel-builder' ); ?></span></span>
+						<span class="bwf-widget-action-box-r"><button class="bwf-button is-sublium"><span><?php echo esc_html__( 'Install', 'funnel-builder' ); ?></span></button> <span data-type="6" class="bwf-widget-action-box-remove"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_676_13273)"><path d="M2.76782 2.87703L2.8178 2.81914C3.00103 2.6359 3.28777 2.61924 3.48983 2.76917L3.54771 2.81914L7.99996 7.27115L12.4522 2.81914C12.6538 2.61758 12.9806 2.61758 13.1821 2.81914C13.3837 3.0207 13.3837 3.3475 13.1821 3.54906L8.73011 8.0013L13.1821 12.4535C13.3654 12.6368 13.382 12.9235 13.2321 13.1256L13.1821 13.1835C12.9989 13.3667 12.7121 13.3834 12.5101 13.2334L12.4522 13.1835L7.99996 8.73145L3.54771 13.1835C3.34615 13.385 3.01936 13.385 2.8178 13.1835C2.61624 12.9819 2.61624 12.6551 2.8178 12.4535L7.26981 8.0013L2.8178 3.54906C2.63456 3.36582 2.6179 3.07908 2.76782 2.87703L2.8178 2.81914L2.76782 2.87703Z" fill="#82838E"/></g><defs><clipPath id="clip0_676_13273"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span></span>
+					</div>
 				</div>
 				<div class="bwf-widget-footer">
 					<div class="bwf-widget-footer-l">
@@ -339,16 +367,27 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 			<script type="text/javascript">
 
 				var fkwidget = {};
-				fkwidget.basenames = ['funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php', 'wp-marketing-automations/wp-marketing-automations.php', 'wp-marketing-automations-pro/wp-marketing-automations-pro.php', 'cart-for-woocommerce/plugin.php'];
-				fkwidget.slugs = ['funnelkit-stripe-woo-payment-gateway', 'wp-marketing-automations', 'wp-marketing-automations-pro', 'cart-for-woocommerce'];
+				fkwidget.basenames = ['funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php', 'wp-marketing-automations/wp-marketing-automations.php', 'wp-marketing-automations-pro/wp-marketing-automations-pro.php', 'cart-for-woocommerce/plugin.php', 'funnelkit-payment-gateway-square-for-woocommerce/funnelkit-square.php', 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php'];
+				fkwidget.slugs = ['funnelkit-stripe-woo-payment-gateway', 'wp-marketing-automations', 'wp-marketing-automations-pro', 'cart-for-woocommerce', 'funnelkit-payment-gateway-square-for-woocommerce', 'sublium-subscriptions-for-woocommerce'];
 				fkwidget.stripe = <?php echo wp_json_encode( WFFN_Common::stripe_state() ); ?>;
+				<?php if ( 'lite' !== $app_state ) : ?>
+				fkwidget.square = <?php echo wp_json_encode( WFFN_Common::square_state() ); ?>;
+				<?php else : ?>
+				fkwidget.square = {status: 'connected', link: ''};
+				<?php endif; ?>
 				fkwidget.automations = '<?php echo esc_attr( WFFN_Common::get_plugin_status( 'wp-marketing-automations/wp-marketing-automations.php' ) ); ?>';
 				fkwidget.cart = '<?php echo esc_attr( WFFN_Common::get_plugin_status( 'cart-for-woocommerce/plugin.php' ) ); ?>';
 				fkwidget.automations_pro = '<?php echo esc_attr( WFFN_Common::get_plugin_status( 'wp-marketing-automations-pro/wp-marketing-automations-pro.php' ) ); ?>';
+				fkwidget.sublium = '<?php echo esc_attr( WFFN_Common::get_plugin_status( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php' ) ); ?>';
 				fkwidget.current_index = 1;
 				fkwidget.current_day_before_month = '<?php echo esc_attr( self::get_thirty_days_ago() ); ?>';
 				fkwidget.dismissed = <?php echo wp_json_encode( get_user_meta( get_current_user_id(), '_bwf_notifications_close', true ) ); ?>;
 				fkwidget.is_wc = '<?php echo esc_attr( wffn_bool_to_string( wffn_is_wc_active() ) ); ?>';
+				<?php if ( 'lite' !== $app_state ) : ?>
+				fkwidget.is_wc_square = '<?php echo esc_attr( wffn_bool_to_string( WFFN_Common::is_wc_square_active() ) ); ?>';
+				<?php else : ?>
+				fkwidget.is_wc_square = 'no';
+				<?php endif; ?>
 			</script>
 			<script>
 				(function ($) {
@@ -378,8 +417,15 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 								jQuery('.bwf-widget-action-box.bfcm-widget').show();
 								return;
 							}
-							if (fkwidget.is_wc === 'yes' && jQuery.inArray("wizard_close_1", fkwidget.dismissed) === -1 && fkwidget.stripe.status !== 'connected') {
+							if (fkwidget.is_wc === 'yes' && fkwidget.is_wc_square !== 'yes' && jQuery.inArray("wizard_close_1", fkwidget.dismissed) === -1 && fkwidget.stripe.status !== 'connected') {
+								fkwidget.current_index = 1;
 								jQuery('#bwf-d-stripe').show();
+								return;
+							}
+
+							if (fkwidget.is_wc_square === 'yes' && jQuery.inArray("wizard_close_5", fkwidget.dismissed) === -1 && fkwidget.square.status !== 'connected') {
+								fkwidget.current_index = 5;
+								jQuery('#bwf-d-square').show();
 								return;
 							}
 
@@ -399,6 +445,12 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 							if (fkwidget.is_wc === 'yes' && jQuery.inArray("wizard_close_4", fkwidget.dismissed) === -1 && fkwidget.cart !== 'activated') {
 								fkwidget.current_index = 4;
 								jQuery('#bwf-d-cart').show();
+								return;
+							}
+
+							if (fkwidget.is_wc === 'yes' && jQuery.inArray("wizard_close_6", fkwidget.dismissed) === -1 && fkwidget.sublium !== 'activated') {
+								fkwidget.current_index = 6;
+								jQuery('#bwf-d-sublium').show();
 							}
 
 						}
@@ -425,11 +477,28 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 								4: {
 									'install': {text: '<?php echo esc_html__( 'Install', 'funnel-builder' ); ?>', action: 'activate'},
 									'activate': {text: '<?php echo esc_html__( 'Activate', 'funnel-builder' ); ?>', action: 'activate'}
+								},
+								5: {
+									'not_installed': {text: '<?php echo esc_html__( 'Install', 'funnel-builder' ); ?>', action: 'activate'},
+									'not_activated': {text: '<?php echo esc_html__( 'Activate', 'funnel-builder' ); ?>', action: 'activate'},
+									'not_connected': {text: '<?php echo esc_html__( 'Connect', 'funnel-builder' ); ?>', action: 'redirect', href: fkwidget.square.link}
+								},
+								6: {
+									'install': {text: '<?php echo esc_html__( 'Install', 'funnel-builder' ); ?>', action: 'activate'},
+									'activate': {text: '<?php echo esc_html__( 'Activate', 'funnel-builder' ); ?>', action: 'activate'}
 								}
 							};
 
-							let currentStatus = fkwidget[["stripe", "automations", "automations_pro", "cart"][fkwidget.current_index - 1]];
-							if (fkwidget.current_index === 1) {
+							const indexMap = {
+								1: 'stripe',
+								2: 'automations',
+								3: 'automations_pro',
+								4: 'cart',
+								5: 'square',
+								6: 'sublium'
+							};
+							let currentStatus = fkwidget[indexMap[fkwidget.current_index]];
+							if (fkwidget.current_index === 1 || fkwidget.current_index === 5) {
 								currentStatus = currentStatus.status;
 							}
 							const mapping = statusMapping[fkwidget.current_index][currentStatus];
@@ -455,6 +524,10 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 								4: {
 									'install': 'admin.php?page=fkcart',
 									'activate': 'admin.php?page=fkcart',
+								},
+								6: {
+									'install': 'admin.php?page=sublium',
+									'activate': 'admin.php?page=sublium',
 								}
 							}
 							const redirect = redirectMapping?.[fkwidget.current_index]?.[currentStatus];
@@ -483,14 +556,15 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 							}), 'application/json').then((res) => {
 								if (res.next_action) {
 									apiService(res.next_action, 'GET', {}, 'application/json').then((res) => {
+										const targetKey = fkwidget.current_index === 5 ? 'square' : 'stripe';
 										if (res.link) {
-											fkwidget.stripe.status = 'not_connected';
-											fkwidget.stripe.link = res.link;
+											fkwidget[targetKey].status = 'not_connected';
+											fkwidget[targetKey].link = res.link;
 											btn.toggleClass("is-busy").prop("disabled", false);
 											showHideWidget();
 											ShowWidgetState();
 										} else {
-											fkwidget.stripe.status = 'connected';
+											fkwidget[targetKey].status = 'connected';
 											showHideWidget();
 											ShowWidgetState();
 										}
@@ -514,6 +588,12 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 									}
 									if (fkwidget.current_index === 4) {
 										fkwidget.cart = 'activated';
+									}
+									if (fkwidget.current_index === 5) {
+										fkwidget.square.status = 'connected';
+									}
+									if (fkwidget.current_index === 6) {
+										fkwidget.sublium = 'activated';
 									}
 
 									showHideWidget();
@@ -786,6 +866,14 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 
 				.bwf-button.is-stripe {
 					background: #6c63ff
+				}
+
+				.bwf-button.is-square {
+					background: #000000
+				}
+
+				.bwf-button.is-sublium {
+					background: #0073aa
 				}
 
 				.bwf-button.is-warning {
@@ -1213,4 +1301,3 @@ if ( ! class_exists( 'WFFN_Admin_Dashboard_Widget' ) ) {
 
 
 WFFN_Admin_Dashboard_Widget::get_instance();
-

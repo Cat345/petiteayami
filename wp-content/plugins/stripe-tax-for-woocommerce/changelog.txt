@@ -1,4 +1,21 @@
 *** Stripe Tax - Sales tax automation for WooCommerce ***
+
+2026-04-07 - version 2.0.2
+* Reduced excessive calls to the /v1/tax/settings endpoint to improve performance.
+* Extended validation coverage for tax location handling.
+* Reduced the number of requests to the /v1/tax/registrations endpoint.
+* Updated cache expiration time.
+* Fixed issue where taxes disappear on checkout when fee taxability changes or when adding a new payment method.
+
+2026-03-20 - version 2.0.1
+* Mapped invalid API request errors on the admin page.
+* Ensured "Exempt" tax status is correctly applied across shop tax calculations.
+* Fixed an issue where shipping costs were ignored when shipping was set to non-taxable.
+* Reactivated native WooCommerce tax functionality when Stripe Tax is disabled.
+* Fixed an issue where Stripe Tax failed silently and taxes were not applied when API connectivity was lost.
+* Ensured "Exempt" tax status is correctly applied across admin tax calculations.
+* Fixed an issue where child variations did not inherit the parent product tax code.
+
 2026-03-02 - version 2.0.0
 * Replaced the "Connect to Stripe" button with an API secret key input field.
 * Implemented a logging system.

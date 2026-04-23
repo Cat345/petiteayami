@@ -1,0 +1,409 @@
+{
+  "name": "wfocu/reject-link",
+  "d4Shortcode": "et_wfocu_reject_link",
+  "title": "FK Upsell Reject Link",
+  "titles": "FK Upsell Reject Links",
+  "category": "module",
+  "attributes": {
+    "module": {
+      "type": "object",
+      "selector": "{{selector}}",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {},
+      "settings": {
+        "meta": {
+          "adminLabel": {}
+        },
+        "advanced": {
+          "htmlAttributes": {}
+        },
+        "decoration": {
+          "attributes": {},
+          "background": {},
+          "sizing": {},
+          "spacing": {},
+          "border": {},
+          "boxShadow": {},
+          "filters": {},
+          "transform": {},
+          "animation": {},
+          "overflow": {},
+          "disabledOn": {},
+          "transition": {},
+          "position": {},
+          "zIndex": {},
+          "scroll": {},
+          "sticky": {}
+        }
+      }
+    },
+    "textAlign": {
+      "type": "object",
+      "default": {
+        "desktop": {
+          "value": "center"
+        }
+      },
+      "settings": {
+        "groupType": "group-item",
+        "item": {
+          "groupSlug": "contentRejectOffer",
+          "priority": 7,
+          "render": true,
+          "attrName": "textAlign",
+          "label": "Alignment",
+          "description": "Text alignment for the reject link",
+          "features": {
+            "sticky": false,
+            "dynamicContent": false,
+            "responsive": true
+          },
+          "component": {
+            "name": "divi/button-options",
+            "type": "field",
+            "props": {
+              "options": {
+                "left": {
+                  "icon": "divi/align-left"
+                },
+                "center": {
+                  "icon": "divi/align-center"
+                },
+                "right": {
+                  "icon": "divi/align-right"
+                }
+              },
+              "showLabel": false
+            }
+          }
+        }
+      }
+    },
+    "text": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject",
+      "tagName": "a",
+      "attributes": {
+        "class": "wfocu-reject wfocu_skip_offer",
+        "href": "javascript:void(0);"
+      },
+      "inlineEditor": "plainText",
+      "childrenSanitizer": "et_core_esc_previously",
+      "default": {
+        "innerContent": {
+          "desktop": {
+            "value": "No thanks, I don't want to take advantage of this one-time offer"
+          }
+        },
+        "decoration": {
+          "colors": {
+            "normal": {
+              "color": {
+                "desktop": {
+                  "value": {
+                    "hex": "#777777"
+                  }
+                }
+              }
+            }
+          },
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "size": "16px",
+                  "lineHeight": "1.5em",
+                  "textDecoration": "underline",
+                  "style": [
+                    "underline"
+                  ],
+                  "color": "#777777"
+                }
+              }
+            }
+          },
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "style": "none"
+                }
+              }
+            }
+          },
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off",
+                  "vertical": "0px",
+                  "color": {
+                    "hex": "#00B211"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "settings": {
+        "innerContent": {
+          "groupType": "group-item",
+          "item": {
+            "groupSlug": "contentRejectOffer",
+            "priority": 10,
+            "render": true,
+            "attrName": "text.innerContent",
+            "label": "Reject Offer",
+            "description": "No thanks, I don't want to take advantage of this one-time offer",
+            "features": {
+              "sticky": false,
+              "dynamicContent": false
+            },
+            "component": {
+              "name": "divi/text",
+              "type": "field"
+            }
+          }
+        },
+        "decoration": {
+          "font": {
+            "groupType": "group-item",
+            "item": {
+              "groupSlug": "designRejectLink",
+              "priority": 10,
+              "render": true,
+              "attrName": "text.decoration.font",
+              "component": {
+                "type": "group",
+                "name": "divi/font",
+                "props": {
+                  "grouped": true,
+                  "groupLabel": "Typography",
+                  "fieldLabel": "Typography",
+                  "fields": {
+                    "textAlign": {
+                      "render": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_background_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_background_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject:hover",
+      "styleProps": {
+        "background": {}
+      },
+      "default": {
+        "decoration": {
+          "background": {
+            "color": {
+              "desktop": {
+                "value": {
+                  "hex": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_text_hover_color": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject:hover",
+      "styleProps": {
+        "font": {
+          "important": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "decoration": {
+          "font": {
+            "font": {
+              "desktop": {
+                "value": {
+                  "color": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_border": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject",
+      "styleProps": {
+        "border": {
+          "important": true
+        }
+      },
+      "default": {
+        "decoration": {
+          "border": {
+            "border": {
+              "desktop": {
+                "value": {
+                  "radius": {
+                    "topLeft": "0px",
+                    "topRight": "0px",
+                    "bottomLeft": "0px",
+                    "bottomRight": "0px",
+                    "sync": "on"
+                  },
+                  "styles": {
+                    "all": {
+                      "width": "0px",
+                      "color": "#dddddd"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_box_shadow": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "boxShadow": {
+            "boxShadow": {
+              "desktop": {
+                "value": {
+                  "enable": "off",
+                  "vertical": "0px",
+                  "color": {
+                    "hex": "#00B211"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wfocu_reject_link_spacing": {
+      "type": "object",
+      "selector": "{{selector}} .wfocu-reject",
+      "styleProps": {},
+      "default": {
+        "decoration": {
+          "spacing": {
+            "margin": {
+              "desktop": {
+                "value": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            },
+            "padding": {
+              "desktop": {
+                "value": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "customCssFields": {
+    "text": {
+      "subName": "text",
+      "selector": "div{{selector}}",
+      "selectorSuffix": " .wfocu-reject"
+    }
+  },
+  "settings": {
+    "content": "auto",
+    "design": "auto",
+    "advanced": "auto",
+    "groups": {
+      "contentRejectOffer": {
+        "panel": "content",
+        "priority": 10,
+        "groupName": "contentRejectOffer",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Reject Offer"
+          }
+        }
+      },
+      "designRejectLink": {
+        "panel": "design",
+        "priority": 20,
+        "groupName": "designRejectLink",
+        "multiElements": true,
+        "component": {
+          "name": "divi/composite",
+          "props": {
+            "groupLabel": "Reject Link"
+          }
+        }
+      }
+    }
+  }
+}

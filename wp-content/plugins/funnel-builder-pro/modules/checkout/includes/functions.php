@@ -33,6 +33,7 @@ if ( ! function_exists( 'wfacp_elementor_edit_mode' ) ) {
 if ( ! function_exists( 'wfacp_template' ) ) {
 	/**
 	 * Return instance of Current Template Class
+	 *
 	 * @return WFACP_Template_Common
 	 */
 	function wfacp_template() {
@@ -83,7 +84,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 	 * Outputs a checkout/address form field.
 	 *
 	 * @param string $key Key.
-	 * @param mixed $args Arguments.
+	 * @param mixed  $args Arguments.
 	 * @param string $value (default: null).
 	 *
 	 * @return string
@@ -114,6 +115,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 		$key  = apply_filters( 'wfacp_form_field_key', $key, $args, $value );
 		$args = apply_filters( 'woocommerce_form_field_args', $args, $key, $value );
 
+		$args['class'] = (array) ( $args['class'] ?? array() );
 		if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';
 			$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>';
@@ -145,7 +147,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 			$args['custom_attributes']['autofocus'] = 'autofocus';
 		}
 
-		if (isset($args['description']) &&  $args['description'] ) {
+		if ( isset( $args['description'] ) && $args['description'] ) {
 			$args['custom_attributes']['aria-describedby'] = $args['id'] . '-description';
 		}
 
@@ -194,7 +196,7 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 				break;
 			case 'state':
 				/* Get country this state field is representing */ $for_country = isset( $args['country'] ) ? $args['country'] : WC()->checkout->get_value( 'billing_state' === $key ? 'billing_country' : 'shipping_country' );
-				$states                                                         = WC()->countries->get_states( $for_country );
+				$states = WC()->countries->get_states( $for_country );
 
 				if ( is_array( $states ) && empty( $states ) ) {
 
@@ -297,15 +299,14 @@ if ( ! function_exists( 'wfacp_form_field' ) ) {
 
 			$field_html .= '<span class="woocommerce-input-wrapper">' . $field;
 
-
-			if (isset($args['description']) && $args['description']  ) {
+			if ( isset( $args['description'] ) && $args['description'] ) {
 				$field_html .= '<span class="description" id="' . esc_attr( $args['id'] ) . '-description" aria-hidden="true">' . wp_kses_post( $args['description'] ) . '</span>';
 
 			}
 
 			$field_html .= '</span>';
 
-			$container_class = esc_attr( implode( ' ', $args['class'] ) );
+			$container_class = esc_attr( implode( ' ', is_array( $args['class'] ) ? $args['class'] : array( $args['class'] ) ) );
 			$container_id    = esc_attr( $args['id'] ) . '_field';
 			$field           = sprintf( $field_container, $container_class, $container_id, $field_html );
 		}

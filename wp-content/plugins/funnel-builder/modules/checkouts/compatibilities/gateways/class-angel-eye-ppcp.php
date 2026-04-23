@@ -7,16 +7,15 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 	class WFACP_Compatibility_With_Angel_Eye_PPCP {
 		public function __construct() {
 
-			add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ], 15 );
-			add_action( 'wfacp_smart_button_container_angelleye_ppcp', [ $this, 'add_paypal_buttons' ] );
-			add_filter( 'wfacp_enable_hashtag_for_multistep_checkout', [ $this, 'disabled_hashtag_form_multistep_checkout' ] );
-			add_filter( 'wfacp_css_js_removal_paths', [ $this, 'remove_some_js' ], 15 );
-			add_action( 'woocommerce_checkout_order_processed', [ $this, 'update_aero_field' ], 11, 3 );
-			add_filter( 'wfacp_mark_conversion_post_id', [ $this, 'update_conversion_post_id' ], 10, 2 );
-			add_action( 'woocommerce_checkout_create_order', [ $this, 'update_checkout_id' ], 10 );
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ), 15 );
+			add_action( 'wfacp_smart_button_container_angelleye_ppcp', array( $this, 'add_paypal_buttons' ) );
+			add_filter( 'wfacp_enable_hashtag_for_multistep_checkout', array( $this, 'disabled_hashtag_form_multistep_checkout' ) );
+			add_filter( 'wfacp_css_js_removal_paths', array( $this, 'remove_some_js' ), 15 );
+			add_action( 'woocommerce_checkout_order_processed', array( $this, 'update_aero_field' ), 11, 3 );
+			add_filter( 'wfacp_mark_conversion_post_id', array( $this, 'update_conversion_post_id' ), 10, 2 );
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'update_checkout_id' ), 10 );
 
-			add_action( 'wfacp_internal_css', [ $this, 'internal_css' ] );
-
+			add_action( 'wfacp_internal_css', array( $this, 'internal_css' ) );
 		}
 
 
@@ -32,17 +31,20 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				return $buttons;
 			}
 
-			//VERSION_PFW
-			add_action( 'wfacp_internal_css', function () {
-				$instance = AngellEYE_PayPal_PPCP_Smart_Button::instance();
-				remove_action( 'woocommerce_before_checkout_form', [ $instance, 'display_paypal_button_top_checkout_page' ], 5 );
-				remove_action( 'woocommerce_checkout_before_customer_details', [ $instance, 'display_paypal_button_top_checkout_page' ], 1 );
-			} );
-			$buttons['angelleye_ppcp'] = [
+			// VERSION_PFW
+			add_action(
+				'wfacp_internal_css',
+				function () {
+					$instance = AngellEYE_PayPal_PPCP_Smart_Button::instance();
+					remove_action( 'woocommerce_before_checkout_form', array( $instance, 'display_paypal_button_top_checkout_page' ), 5 );
+					remove_action( 'woocommerce_checkout_before_customer_details', array( $instance, 'display_paypal_button_top_checkout_page' ), 1 );
+				}
+			);
+			$buttons['angelleye_ppcp'] = array(
 				'iframe' => true,
 				'name'   => $settings['title'],
-			];
-			add_filter( 'wfacp_smart_container_display_hook', [ $this, 'change_top_position_hook' ] );
+			);
+			add_filter( 'wfacp_smart_container_display_hook', array( $this, 'change_top_position_hook' ) );
 
 			return $buttons;
 		}
@@ -60,7 +62,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 			$position_hook = 'woocommerce_before_checkout_form';
 
 			return $position_hook;
-
 		}
 
 		public function add_paypal_buttons() {
@@ -81,13 +82,12 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				$status = 'no';
 			}
 
-
 			return $status;
 		}
 
 
 		public function remove_some_js( $paths ) {
-			//Remved Woo-postnl JS due Payment Gateway stuck in loop
+			// Remved Woo-postnl JS due Payment Gateway stuck in loop
 			if ( ! is_null( WC()->session ) && WFACP_Common::get_id() > 0 && ! is_null( WC()->session->get( 'paypal_express_checkout', null ) ) ) {
 				$paths[] = 'js/wcmp-frontend';
 			}
@@ -98,9 +98,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 
 		public function print_html() {
 			?>
-            <p>
-                <strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
-            </p>
+			<p>
+				<strong><?php _e( 'Full Name', 'woofunnels-aero-checkout' ); ?></strong> <?php echo esc_html( WFACP_Core()->public->billing_details['first_name'] . ' ' . WFACP_Core()->public->billing_details['last_name'] ); ?>
+			</p>
 			<?php
 		}
 
@@ -111,7 +111,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				return;
 			}
 
-			$http_referer = [];
+			$http_referer = array();
 
 			if ( isset( $posted_data['_wp_http_referer'] ) ) {
 				parse_str( $posted_data['_wp_http_referer'], $http_referer );
@@ -155,7 +155,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				return $post_id;
 			}
 
-			$http_referer = [];
+			$http_referer = array();
 			if ( isset( $posted_data['_wp_http_referer'] ) ) {
 				parse_str( $posted_data['_wp_http_referer'], $http_referer );
 			}
@@ -189,7 +189,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 			}
 
 			return $post_id;
-
 		}
 
 
@@ -197,8 +196,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 			if ( ! class_exists( 'AngellEYE_PayPal_PPCP_Front_Action' ) || ! isset( $_GET['angelleye_ppcp_action'] ) || ! isset( $_GET['wfacp_id'] ) ) {
 				return;
 			}
-			$order->update_meta_data( '_wfacp_post_id', $_GET['wfacp_id'] );
-
+			$order->update_meta_data( '_wfacp_post_id', absint( wp_unslash( $_GET['wfacp_id'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 		}
 
 		public function internal_css() {
@@ -208,18 +206,17 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Angel_Eye_PPCP' ) ) {
 				return;
 			}
 
-			$bodyClass = "body";
+			$bodyClass = 'body';
 			if ( 'pre_built' !== $instance->get_template_type() ) {
 
-				$bodyClass = "body #wfacp-e-form ";
+				$bodyClass = 'body #wfacp-e-form ';
 			}
 
-			$cssHtml = "<style>";
-			$cssHtml .= $bodyClass . "#wfacp_smart_buttons .wfacp_smart_button_inner #angelleye_ppcp_checkout_top{    height: auto;line-height: 1;}";
-			$cssHtml .= "</style>";
+			$cssHtml  = '<style>';
+			$cssHtml .= $bodyClass . '#wfacp_smart_buttons .wfacp_smart_button_inner #angelleye_ppcp_checkout_top{    height: auto;line-height: 1;}';
+			$cssHtml .= '</style>';
 			echo $cssHtml;
 		}
-
 	}
 
 

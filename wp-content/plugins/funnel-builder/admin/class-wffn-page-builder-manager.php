@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Page_Builder_Manager
@@ -9,12 +9,11 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Page_Builder_Manager {
 
-		private static $ins = null;
-		private $funnel = null;
+		private static $ins        = null;
+		private $funnel            = null;
 		private $installed_plugins = null;
 
 		public function __construct() {
-
 		}
 
 		/**
@@ -22,7 +21,7 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -33,18 +32,21 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 			if ( ! function_exists( 'activate_plugin' ) ) {
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
+
+			$lookup_builder = WFFN_Common::get_remote_builder_key( $builder );
+
 			$data                     = array();
 			$pageBuildersTexts        = $this->localize_page_builder_texts();
 			$pageBuildersOptions      = $this->get_plugins_groupby_page_builders();
-			$data['builders_texts']   = isset( $pageBuildersTexts[ $builder ] ) ? $pageBuildersTexts[ $builder ] : array();
-			$data['builders_options'] = isset( $pageBuildersOptions[ $builder ]['plugins'][0] ) ? $pageBuildersOptions[ $builder ]['plugins'][0] : array();
+			$data['builders_texts']   = isset( $pageBuildersTexts[ $lookup_builder ] ) ? $pageBuildersTexts[ $lookup_builder ] : array();
+			$data['builders_options'] = isset( $pageBuildersOptions[ $lookup_builder ]['plugins'][0] ) ? $pageBuildersOptions[ $lookup_builder ]['plugins'][0] : array();
 
 			return $data;
 		}
 
 		public function localize_page_builder_texts() {
 			$get_all_opted_page_builders = WFFN_Core()->admin->get_all_active_page_builders();
-			$pageBuildersTexts           = [];
+			$pageBuildersTexts           = array();
 
 			if ( empty( $get_all_opted_page_builders ) ) {
 				return $pageBuildersTexts;
@@ -66,7 +68,6 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 				$install         = sprintf( __( ' Install and activate %s.', 'funnel-builder' ), esc_html( $page_builder['title'] ) );
 				$builder_link    = '';
 
-
 				/**
 				 * If its a divi builder we need to handle few cases down there for best user experience
 				 */
@@ -76,23 +77,23 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 						$plugin_string .= $string;
 					} else {
 						$plugin_string .= $install;
-						$button_text   = __( 'Install Divi Builder', 'funnel-builder' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://www.elegantthemes.com/' );
+						$button_text    = __( 'Install Divi Builder', 'funnel-builder' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://www.elegantthemes.com/' );
 					}
-				} else if ( 'oxy' === $builder ) {
+				} elseif ( 'oxy' === $builder ) {
 					if ( 'install' === $plugin_status ) {
 						$plugin_string .= $string;
-						$button_text   = __( 'Install Oxygen Classic Builder', 'funnel-builder' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://oxygenbuilder.com/' );
+						$button_text    = __( 'Install Oxygen Classic Builder', 'funnel-builder' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://oxygenbuilder.com/' );
 					} else {
 						$plugin_string .= $string;
 					}
-				}else if ( 'bricks' === $builder ) {
+				} elseif ( 'bricks' === $builder ) {
 
-					if ( false ===  $theme_status ) {
-						$plugin_string = __('This template needs <strong>Bricks Theme</strong> activated. Please Install and Activate Bricks.', 'funnel-builder');
+					if ( false === $theme_status ) {
+						$plugin_string = __( 'This template needs <strong>Bricks Theme</strong> activated. Please Install and Activate Bricks.', 'funnel-builder' );
 						$button_text   = __( 'Install Bricks Theme', 'funnel-builder' );
 						$no_install    = 'yes';
 						$builder_link  = esc_url( 'https://bricksbuilder.io/' );
@@ -136,7 +137,6 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 		 *
 		 * @return array Required Plugins list.
 		 * @since 1.1.4
-		 *
 		 */
 		public function get_plugins_groupby_page_builders() {
 
@@ -203,8 +203,6 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 				),
 			);
 
-
-
 			$plugins['wp_editor']['plugins'][] = array(
 				'slug'   => '',
 				'status' => null,
@@ -251,9 +249,7 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 		 */
 		public function is_divi_theme_enabled() {
 
-
 			$theme = wp_get_theme();
-
 
 			if ( 'Divi' === $theme->name || 'Divi' === $theme->parent_theme || 'Extra' === $theme->name || 'Extra' === $theme->parent_theme ) {
 				return true;
@@ -273,7 +269,6 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 		public function is_bricks_theme_enabled() {
 
 			$theme = wp_get_theme();
-
 
 			if ( 'Bricks' === $theme->name || 'Bricks' === $theme->parent_theme ) {
 				return true;
@@ -295,7 +290,6 @@ if ( ! class_exists( 'WFFN_Page_Builder_Manager' ) ) {
 
 			);
 		}
-
 	}
 
 

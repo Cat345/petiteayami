@@ -292,6 +292,7 @@ class ComposerStaticInit11ca85ea0e870d096a6e757d9e6583a6
         'WooCommerce\\Facebook\\Events\\Normalizer' => __DIR__ . '/../..' . '/includes/Events/Normalizer.php',
         'WooCommerce\\Facebook\\ExternalVersionUpdate\\Update' => __DIR__ . '/../..' . '/includes/ExternalVersionUpdate/Update.php',
         'WooCommerce\\Facebook\\FBSignedData\\FBPublicKey' => __DIR__ . '/../..' . '/includes/FBSignedData/FBPublicKey.php',
+        'WooCommerce\\Facebook\\FBSignedData\\JWTAlgorithmMismatchException' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTAlgorithmMismatchException.php',
         'WooCommerce\\Facebook\\FBSignedData\\JWTCodec' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTCodec.php',
         'WooCommerce\\Facebook\\FBSignedData\\JWTExpiredException' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTExpiredException.php',
         'WooCommerce\\Facebook\\FBSignedData\\JWTSignatureInvalidException' => __DIR__ . '/../..' . '/includes/FBSignedData/JWTSignatureInvalidException.php',

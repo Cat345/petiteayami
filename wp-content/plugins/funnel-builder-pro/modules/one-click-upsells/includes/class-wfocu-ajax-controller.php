@@ -6,11 +6,10 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 	 */
 	class WFOCU_AJAX_Controller {
 
-		const CHARGE_ACTION = 'wfocu_front_charge';
+		const CHARGE_ACTION               = 'wfocu_front_charge';
 		const SHIPPING_CALCULATION_ACTION = 'wfocu_front_calculate_shipping';
 
 		public static function init() {
-
 
 			add_action( 'init', array( __CLASS__, 'maybe_set_error_reporting_false' ) );
 			/**
@@ -54,6 +53,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				self::handle_admin_ajax();
 			}
 
+			add_action( 'wp_ajax_wfocu_front_calculate_standard_rates', array( __CLASS__, 'calculate_standard_tax_rates' ) );
+			add_action( 'wp_ajax_nopriv_wfocu_front_calculate_standard_rates', array( __CLASS__, 'calculate_standard_tax_rates' ) );
+			add_action( 'wc_ajax_wfocu_front_calculate_standard_rates', array( __CLASS__, 'calculate_standard_tax_rates' ) );
 		}
 
 		public static function handle_admin_ajax() {
@@ -113,7 +115,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		public static function handle_offer_skipped() {
 			check_ajax_referer( 'wfocu_front_offer_skipped', 'nonce' );
 			$data                 = array();
-			$data_posted          = isset( $_POST['data'] ) ? wc_clean( $_POST['data'] ) : [];
+			$data_posted          = isset( $_POST['data'] ) ? bwf_clean( wp_unslash( $_POST['data'] ) ) : array(); // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Frontend AJAX handler, capability check not required
 			$get_type_of_offer    = $data_posted['offer_type'];
 			$get_type_index_offer = $data_posted['offer_type_index'];
 			$get_current_offer    = WFOCU_Core()->data->get_current_offer();
@@ -196,9 +198,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 			WFOCU_Core()->data->set( '_offer_result', true );
-			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST );
+			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Frontend AJAX handler, capability check not required
 			$response    = false;
-			$data        = [];
+			$data        = array();
 			$get_order   = WFOCU_Core()->data->get_current_order();
 
 			WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': UpSell Accept Call Received for Offer: ' . $get_current_offer );
@@ -230,7 +232,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 					} /** @noinspection PhpUndefinedClassInspection */ catch ( Error $e ) {
 
-						$data = $get_integration->handle_api_error( 'Offer payment failed. Reason: Some PHP error occurred', 'Error Captured: ' . print_r( $e->getMessage() . " <-- Generated on" . $e->getFile() . ":" . $e->getLine(), true ), $get_order ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						$data = $get_integration->handle_api_error( 'Offer payment failed. Reason: Some PHP error occurred', 'Error Captured: ' . print_r( $e->getMessage() . ' <-- Generated on' . $e->getFile() . ':' . $e->getLine(), true ), $get_order ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 					} catch ( WFOCU_Payment_Gateway_Exception $e ) {
 						WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Payment Failed' );
@@ -255,7 +257,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 
 			wp_send_json( $response_ajax );
-
 		}
 
 		/**
@@ -284,9 +285,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				}
 			}
 
-
 			return apply_filters( 'wfocu_validate_charge_request', $status, $get_current_offer, $get_current_offer_meta );
-
 		}
 
 		public static function add_funnel() {
@@ -304,21 +303,24 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			);
 			if ( isset( $_POST['funnel_name'] ) && '' !== $_POST['funnel_name'] ) {
 				$post                 = array();
-				$post['post_title']   = wc_clean( $_POST['funnel_name'] );
+				$post['post_title']   = sanitize_text_field( wp_unslash( $_POST['funnel_name'] ) );
 				$post['post_type']    = WFOCU_Common::get_funnel_post_type_slug();
 				$post['post_status']  = WFOCU_SLUG . '-disabled';
-				$post['post_content'] = isset( $_POST['funnel_desc'] ) ? wc_clean( $_POST['funnel_desc'] ) : '';
+				$post['post_content'] = isset( $_POST['funnel_desc'] ) ? sanitize_textarea_field( wp_unslash( $_POST['funnel_desc'] ) ) : '';
 				$post['menu_order']   = WFOCU_Common::get_next_funnel_priority();
 
 				if ( ! empty( $post ) ) {
 					$funnel_id = wp_insert_post( $post );
 					if ( 0 !== $funnel_id && ! is_wp_error( $funnel_id ) ) {
 						$resp['status']       = true;
-						$resp['redirect_url'] = add_query_arg( array(
-							'page'    => 'upstroke',
-							'section' => 'offers',
-							'edit'    => $funnel_id,
-						), admin_url( 'admin.php' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'page'    => 'upstroke',
+								'section' => 'offers',
+								'edit'    => $funnel_id,
+							),
+							admin_url( 'admin.php' )
+						);
 						$resp['msg']          = 'Funnel Successfully Created';
 						WFOCU_Core()->funnels->save_funnel_priority( $funnel_id, $post['menu_order'] );
 
@@ -354,20 +356,19 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				check_admin_referer( 'wfocu_add_offer', '_nonce' );
 			}
 
-
 			if ( isset( $posted_data['funnel_id'] ) && ! empty( $posted_data['funnel_id'] ) && isset( $posted_data['step_name'] ) && ! empty( $_POST['step_name'] ) ) {  // Input var okay.
 
-				$funnel_id = wc_clean( $posted_data['funnel_id'] );  // Input var okay.
+				$funnel_id = absint( $posted_data['funnel_id'] );  // Input var okay.
 
 				if ( isset( $posted_data['step_type'] ) && '' !== $posted_data['step_type'] ) {  // Input var okay.
 
-					$offer_type = wc_clean( wp_unslash( $posted_data['step_type'] ) );  // Input var okay.
+					$offer_type = bwf_clean( wp_unslash( $posted_data['step_type'] ) );  // Input var okay.
 				} else {
 					$offer_type = 'upsell';
 				}
 				$post_type = WFOCU_Common::get_offer_post_type_slug();
 				$post      = array(
-					'post_title'  => wc_clean( wp_unslash( $posted_data['step_name'] ) ), // Input var okay.
+					'post_title'  => bwf_clean( wp_unslash( $posted_data['step_name'] ) ), // Input var okay.
 					'post_type'   => $post_type,
 					'post_status' => 'publish',
 				);
@@ -392,7 +393,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					$resp['id']        = $id;
 					$resp['url']       = get_the_permalink( $id );
 					$resp['slug']      = get_post( $id )->post_name;
-					$resp['title']     = wc_clean( wp_unslash( $_POST['step_name'] ) ); // Input var okay.
+					$resp['title']     = sanitize_text_field( wp_unslash( $_POST['step_name'] ) ); // Input var okay.
 					$resp['funnel_id'] = $funnel_id;
 					$resp['status']    = true;
 					$resp['data']      = $default_settings;
@@ -400,7 +401,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 
 			wp_send_json( $resp );
-
 		}
 
 		public static function save_funnel_offer_settings() {
@@ -413,17 +413,16 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			check_admin_referer( 'wfocu_save_funnel_offer_settings', '_nonce' );
 
-
 			if ( isset( $_POST['funnel_id'] ) && ! empty( $_POST['funnel_id'] ) ) { // Input var okay.
-				$post = get_post( wc_clean( wp_unslash( $_POST['funnel_id'] ) ) ); // Input var okay.
+				$post = get_post( absint( wp_unslash( $_POST['funnel_id'] ) ) ); // Input var okay.
 				if ( ! is_null( $post ) ) {
 					$funnel_id = $post->ID;
-					$offer_id  = isset( $_POST['offer_id'] ) ? wc_clean( wp_unslash( $_POST['offer_id'] ) ) : 0; // Input var okay
+					$offer_id  = isset( $_POST['offer_id'] ) ? absint( wp_unslash( $_POST['offer_id'] ) ) : 0; // Input var okay
 					$settings  = ( isset( $_POST['settings'] ) && is_array( ( wp_unslash( $_POST['settings'] ) ) ) && count( ( wp_unslash( $_POST['settings'] ) ) ) ) > 0 ? (object) ( wp_unslash( $_POST['settings'] ) ) : new stdClass(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					foreach ( is_object( $settings ) ? $settings : array() as $key => $value ) {
-						if ( ! in_array( $key, [ 'upsell_page_track_code', 'upsell_page_purchase_code' ], true ) ) {
-							$settings->{$key} = wc_clean( $value );
+						if ( ! in_array( $key, array( 'upsell_page_track_code', 'upsell_page_purchase_code' ), true ) ) {
+							$settings->{$key} = bwf_clean( $value );
 						}
 					}
 
@@ -459,15 +458,15 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			check_admin_referer( 'wfocu_save_funnel_steps', '_nonce' );
 
+			if ( isset( $_POST['funnel_id'] ) ) { // Input var OK
 
-			if ( isset( $_POST['funnel_id'] ) ) { //Input var OK
-
-				$post = get_post( wc_clean( wp_unslash( $_POST['funnel_id'] ) ) ); //Input var OK
+				$post = get_post( absint( wp_unslash( $_POST['funnel_id'] ) ) ); // Input var OK
 
 				$update_steps = array();
 				if ( ! is_null( $post ) ) {
 					$funnel_id = $post->ID;
-					$steps     = ( isset( $_POST['steps'] ) && is_array( wc_clean( wp_unslash( $_POST['steps'] ) ) ) && count( wc_clean( wp_unslash( $_POST['steps'] ) ) ) ) > 0 ? wp_unslash( wc_clean( $_POST['steps'] ) ) : new stdClass();  //Input var OK
+					$steps_raw = isset( $_POST['steps'] ) ? wp_unslash( $_POST['steps'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized in filter_step_object_for_db
+					$steps     = ( is_array( $steps_raw ) && count( $steps_raw ) > 0 ) ? $steps_raw : new stdClass();  // Input var OK
 
 					foreach ( $steps as $key => $step ) {
 						if ( ! empty( $step ) ) {
@@ -493,14 +492,14 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						if ( $accepted > 0 && isset( $offer_settings->settings->jump_on_accepted ) && true === $offer_settings->settings->jump_on_accepted ) {
 							if ( array_search( absint( $accepted ), $available_offer_ids, true ) < array_search( absint( $offer_id ), $available_offer_ids, true ) ) {
 								$offer_settings->settings->jump_to_offer_on_accepted = 'automatic';
-								$need_update                                         = true;
+								$need_update = true;
 							}
 						}
 
 						if ( $rejected > 0 && isset( $offer_settings->settings->jump_on_rejected ) && true === $offer_settings->settings->jump_on_rejected ) {
 							if ( array_search( absint( $rejected ), $available_offer_ids, true ) < array_search( absint( $offer_id ), $available_offer_ids, true ) ) {
 								$offer_settings->settings->jump_to_offer_on_rejected = 'automatic';
-								$need_update                                         = true;
+								$need_update = true;
 							}
 						}
 						if ( true === $need_update ) {
@@ -544,19 +543,19 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				check_admin_referer( 'wfocu_save_funnel_offer_products', '_nonce' );
 			}
 
-
 			$products_list = array();
 
 			if ( isset( $posted_data['funnel_id'] ) ) {
 
-				$post = get_post( wc_clean( wp_unslash( $posted_data['funnel_id'] ) ) );  //input var ok
+				$post = get_post( absint( $posted_data['funnel_id'] ) );  // input var ok
 				if ( ! is_null( $post ) ) {
 
 					$funnel_id      = $post->ID;
-					$offer_id       = isset( $posted_data['offer_id'] ) ? wc_clean( wp_unslash( $posted_data['offer_id'] ) ) : 0; //input var ok
-					$offers         = ( isset( $posted_data['offers'] ) && is_array( wc_clean( wp_unslash( $posted_data['offers'] ) ) ) && count( wc_clean( wp_unslash( $_POST['offers'] ) ) ) ) > 0 ? wc_clean( wp_unslash( $_POST['offers'] ) ) : array(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
-					$offer_state    = ( isset( $posted_data['offer_state'] ) && wc_clean( wp_unslash( $posted_data['offer_state'] ) ) === 'on' ) ? '1' : '0';  //input var ok
-					$update_steps   = [];
+					$offer_id       = isset( $posted_data['offer_id'] ) ? absint( $posted_data['offer_id'] ) : 0; // input var ok
+					$offers_raw     = isset( $posted_data['offers'] ) ? $posted_data['offers'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- Will be sanitized in filter_step_object_for_db
+					$offers         = ( is_array( $offers_raw ) && count( $offers_raw ) > 0 ) ? $offers_raw : array();
+					$offer_state    = ( isset( $posted_data['offer_state'] ) && bwf_clean( wp_unslash( $posted_data['offer_state'] ) ) === 'on' ) ? '1' : '0';  // input var ok
+					$update_steps   = array();
 					$offers_setting = new stdClass();
 					if ( ! empty( $offers ) && count( $offers ) > 0 && isset( $offers[ $offer_id ] ) ) {
 
@@ -648,7 +647,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				wp_die();
 			}
 			check_admin_referer( 'wfocu_product_search', '_nonce' );
-			$term = empty( $term ) ? ( isset( $_POST['term'] ) ) ? stripslashes( wc_clean( $_POST['term'] ) ) : '' : $term;
+			$term = empty( $term ) ? ( isset( $_POST['term'] ) ) ? stripslashes( bwf_clean( wp_unslash( $_POST['term'] ) ) ) : '' : $term;
 
 			if ( empty( $term ) ) {
 				wp_die();
@@ -663,17 +662,22 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			/**
 			 * Products types that are allowed in the offers
 			 */
-			$allowed_types   = apply_filters( 'wfocu_offer_product_types', array(
-				'simple',
-				'variable',
-				'variation',
-			) );
+			$allowed_types   = apply_filters(
+				'wfocu_offer_product_types',
+				array(
+					'simple',
+					'variable',
+					'variation',
+				)
+			);
 			$product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_editable' );
-			$product_objects = array_filter( $product_objects, function ( $arr ) use ( $allowed_types ) {
+			$product_objects = array_filter(
+				$product_objects,
+				function ( $arr ) use ( $allowed_types ) {
 
-				return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types, true );
-
-			} );
+					return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $allowed_types, true );
+				}
+			);
 			$products        = array();
 			foreach ( $product_objects as $product_object ) {
 				if ( 'publish' === $product_object->get_status() ) {
@@ -696,16 +700,16 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			check_admin_referer( 'wfocu_add_product', '_nonce' );
 
-
 			if ( isset( $_POST['funnel_id'] ) && $_POST['funnel_id'] > 0 && isset( $_POST['offer_id'] ) && $_POST['offer_id'] > 0 ) {
 
-				$offer_id = wc_clean( $_POST['offer_id'] );
+				$offer_id = absint( wp_unslash( $_POST['offer_id'] ) );
 
-				$funnel_id     = wc_clean( $_POST['funnel_id'] );
+				$funnel_id     = absint( wp_unslash( $_POST['funnel_id'] ) );
 				$products      = array();
 				$fields        = array();
 				$variations    = array();
-				$products_list = ( isset( $_POST['products'] ) && is_array( wc_clean( $_POST['products'] ) ) && count( wc_clean( $_POST['products'] ) ) > 0 ) ? wc_clean( $_POST['products'] ) : array();
+				$products_raw  = isset( $_POST['products'] ) ? wp_unslash( $_POST['products'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized later
+				$products_list = ( is_array( $products_raw ) && count( $products_raw ) > 0 ) ? $products_raw : array();
 
 				if ( ! is_array( $products_list ) ) {
 					$products_list = array();
@@ -875,22 +879,22 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			if ( isset( $_POST['funnel_id'] ) && $_POST['funnel_id'] > 0 && isset( $_POST['offer_id'] ) && $_POST['offer_id'] > 0 && isset( $_POST['product_key'] ) && $_POST['product_key'] !== '' ) {
 
-				$funnel_id   = wc_clean( $_POST['funnel_id'] );
-				$offer_id    = wc_clean( $_POST['offer_id'] );
-				$product_key = wc_clean( $_POST['product_key'] );
+				$funnel_id   = absint( wp_unslash( $_POST['funnel_id'] ) );
+				$offer_id    = absint( wp_unslash( $_POST['offer_id'] ) );
+				$product_key = bwf_clean( wp_unslash( $_POST['product_key'] ) );
 
 				$updatable       = 0;
 				$offer_meta_data = WFOCU_Core()->offers->get_offer( $offer_id );
 				if ( isset( $offer_meta_data->products ) && isset( $offer_meta_data->products->{$product_key} ) ) {
-					$updatable ++;
+					++$updatable;
 					unset( $offer_meta_data->products->{$product_key} );
 				}
 				if ( isset( $offer_meta_data->fields ) && isset( $offer_meta_data->fields->{$product_key} ) ) {
-					$updatable ++;
+					++$updatable;
 					unset( $offer_meta_data->fields->{$product_key} );
 				}
 				if ( isset( $offer_meta_data->variations ) && isset( $offer_meta_data->variations->{$product_key} ) ) {
-					$updatable ++;
+					++$updatable;
 					unset( $offer_meta_data->variations->{$product_key} );
 				}
 
@@ -920,15 +924,15 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			check_admin_referer( 'wfocu_update_offer', '_nonce' );
 
 			if ( isset( $_POST['funnel_id'] ) && isset( $_POST['offer_id'] ) && isset( $_POST['step_name'] ) && $_POST['step_name'] !== '' ) {
-				$offer_id  = wc_clean( $_POST['offer_id'] );
-				$funnel_id = wc_clean( $_POST['funnel_id'] );
-				$title     = wc_clean( $_POST['step_name'] );
+				$offer_id  = absint( wp_unslash( $_POST['offer_id'] ) );
+				$funnel_id = absint( wp_unslash( $_POST['funnel_id'] ) );
+				$title     = bwf_clean( wp_unslash( $_POST['step_name'] ) );
 				$post      = get_post( $offer_id );
 				if ( ! is_wp_error( $post ) ) {
 					$args        = array(
 						'ID'         => $offer_id,
 						'post_title' => $title,
-						'post_name'  => isset( $_POST['funnel_step_slug'] ) ? wc_clean( $_POST['funnel_step_slug'] ) : '',
+						'post_name'  => isset( $_POST['funnel_step_slug'] ) ? sanitize_title( wp_unslash( $_POST['funnel_step_slug'] ) ) : '',
 					);
 					$update_post = wp_update_post( $args );
 
@@ -938,8 +942,8 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						$resp['msg']    = __( 'Offer Updated successfully', 'woofunnels-upstroke-one-click-upsell' );
 						$resp['url']    = get_the_permalink( $offer_id );
 						$resp['name']   = $title;
-						$resp['slug']   = wc_clean( $_POST['funnel_step_slug'] );
-						$resp['type']   = isset( $_POST['step_type'] ) ? wc_clean( $_POST['step_type'] ) : 'upsell';
+						$resp['slug']   = isset( $_POST['funnel_step_slug'] ) ? sanitize_title( wp_unslash( $_POST['funnel_step_slug'] ) ) : '';
+						$resp['type']   = isset( $_POST['step_type'] ) ? bwf_clean( wp_unslash( $_POST['step_type'] ) ) : 'upsell';
 					}
 				}
 			}
@@ -957,15 +961,15 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			check_admin_referer( 'wfocu_update_funnel', '_nonce' );
 
 			if ( isset( $_POST['funnel_id'] ) ) {
-				$funnel_id = wc_clean( $_POST['funnel_id'] );
+				$funnel_id = absint( wp_unslash( $_POST['funnel_id'] ) );
 				$args      = array(
 					'ID' => $funnel_id,
 				);
 				if ( isset( $_POST['funnel_name'] ) && $_POST['funnel_name'] !== '' ) {
-					$args['post_title'] = wc_clean( $_POST['funnel_name'] );
+					$args['post_title'] = sanitize_text_field( wp_unslash( $_POST['funnel_name'] ) );
 				}
 				if ( isset( $_POST['funnel_desc'] ) && $_POST['funnel_desc'] !== '' ) {
-					$args['post_content'] = wc_clean( $_POST['funnel_desc'] );
+					$args['post_content'] = wp_kses_post( wp_unslash( $_POST['funnel_desc'] ) );
 				}
 
 				if ( count( $args ) > 1 ) {
@@ -1005,8 +1009,8 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 
 			if ( isset( $posted_data['offer_id'] ) && $posted_data['offer_id'] > 0 && isset( $posted_data['funnel_id'] ) ) {
-				$offer_id  = wc_clean( $posted_data['offer_id'] );
-				$funnel_id = wc_clean( $posted_data['funnel_id'] );
+				$offer_id  = absint( $posted_data['offer_id'] );
+				$funnel_id = absint( $posted_data['funnel_id'] );
 				$status    = wp_delete_post( $offer_id, true );
 				WFOCU_Common::update_funnel_time( $funnel_id );
 
@@ -1038,7 +1042,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			$data = array();
 			if ( isset( $_POST['data'] ) ) {
-				wp_parse_str( $_POST['data'], $data );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				wp_parse_str( wp_unslash( $_POST['data'] ), $data );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				if ( isset( $data['funnel_id'] ) && $data['funnel_id'] > 0 && isset( $data['wfocu_rule'] ) && ! empty( $data['wfocu_rule'] ) > 0 ) {
 					$funnel_id = $data['funnel_id'];
 					$rules     = $data['wfocu_rule'];
@@ -1065,7 +1069,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			check_ajax_referer( 'wfocu_front_calculate_shipping', 'nonce' );
 
-			//prepare shipping call package
+			// prepare shipping call package
 			$order_behavior = WFOCU_Core()->funnels->get_funnel_option( 'order_behavior' );
 			$is_batching_on = ( 'batching' === $order_behavior ) ? true : false;
 
@@ -1084,7 +1088,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			);
 			$get_shipping_methods_from_session = WFOCU_Core()->data->get( 'chosen_shipping_methods', array() );
 
-			//If parent order have a shipping applied
+			// If parent order have a shipping applied
 			if ( $methods && is_array( $methods ) && count( $methods ) ) {
 				foreach ( $methods as $method ) {
 					$method_id = WFOCU_WC_Compatibility::get_method_id( $method ) . ':' . WFOCU_WC_Compatibility::get_instance_id( $method );
@@ -1127,14 +1131,14 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					 * For now we just need to break it after one iteration, so that we always know which shipping method we need to process & replace.
 					 */
 
-					//break;
+					// break;
 				}
 			}
-			//if previous order have some shipping methods pass it as existing methods to calculate new shipping methods
+			// if previous order have some shipping methods pass it as existing methods to calculate new shipping methods
 			if ( ! empty( $get_shipping_methods_from_session ) ) {
 				$existing_methods = $get_shipping_methods_from_session;
 			}
-			//If previous order opted free shipping then passing remove all shipping from existing methods
+			// If previous order opted free shipping then passing remove all shipping from existing methods
 			if ( count( $existing_methods ) > 0 && WFOCU_Core()->shipping->is_free_shipping( $existing_methods[0] ) ) {
 				$existing_methods = array();
 			}
@@ -1190,16 +1194,18 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 								if ( ! empty( $meta_data->get_data() ) && $meta_data->get_data()['key'] ) {
 									$item_attribute[ 'attribute_' . $meta_data->get_data()['key'] ] = $meta_data->get_data()['value'];
 								}
-
 							}
 						}
 
-						array_push( $products, array(
-							'product_id'           => $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id(),
-							'qty'                  => $item->get_quantity(),
-							'price'                => $price / $item->get_quantity(),
-							'variation_attributes' => $item_attribute,
-						) );
+						array_push(
+							$products,
+							array(
+								'product_id'           => $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id(),
+								'qty'                  => $item->get_quantity(),
+								'price'                => $price / $item->get_quantity(),
+								'variation_attributes' => $item_attribute,
+							)
+						);
 					}
 				}
 
@@ -1214,13 +1220,16 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					if ( isset( $item['_product'] ) && $item['_product'] instanceof WC_Product_Variation ) {
 						$variation_attribute = $item['meta'];
 					}
-					array_push( $products, array(
-						'product_id'           => $item['product'],
-						'qty'                  => (int) $item['qty'],
-						'price'                => $price / (int) $item['qty'],
-						'variation_attributes' => $variation_attribute,
-						'offer_product'        => true,
-					) );
+					array_push(
+						$products,
+						array(
+							'product_id'           => $item['product'],
+							'qty'                  => (int) $item['qty'],
+							'price'                => $price / (int) $item['qty'],
+							'variation_attributes' => $variation_attribute,
+							'offer_product'        => true,
+						)
+					);
 				}
 
 				/**
@@ -1265,13 +1274,16 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					$response_ajax = array(
 						'success' => 'true',
 					);
-					WFOCU_Core()->log->log( ' Dynamic Shipping calculated is '.  print_r( $get_shipping, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-					$response_ajax['data'] = wp_parse_args( $get_shipping, array(
-						'free_shipping' => array(),
-						'shipping'      => array(),
-						'shipping_prev' => $old_shipping_cost,
+					WFOCU_Core()->log->log( ' Dynamic Shipping calculated is ' . print_r( $get_shipping, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					$response_ajax['data'] = wp_parse_args(
+						$get_shipping,
+						array(
+							'free_shipping' => array(),
+							'shipping'      => array(),
+							'shipping_prev' => $old_shipping_cost,
 
-					) );
+						)
+					);
 				} else {
 					$response_ajax['data'] = array(
 						'free_shipping' => array(),
@@ -1291,8 +1303,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		public static function register_views() {
 			check_ajax_referer( 'wfocu_front_register_views', 'nonce' );
 
+			// phpcs:ignore FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint
 			if ( isset( $_POST['data'] ) ) {
-				$data                 = wc_clean( $_POST['data'] );
+				$data                 = bwf_clean( wp_unslash( $_POST['data'] ) );
 				$get_current_offer    = WFOCU_Core()->data->get_current_offer();
 				$get_order            = WFOCU_Core()->data->get_current_order();
 				$get_type_of_offer    = $data['offer_type'];
@@ -1300,7 +1313,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				do_action( 'wfocu_offer_viewed_event', $get_current_offer, WFOCU_WC_Compatibility::get_order_id( $get_order ), WFOCU_Core()->data->get_funnel_id(), $get_type_of_offer, $get_type_index_offer, WFOCU_Core()->data->get( 'useremail' ) );
 
 			}
-
 		}
 
 		public static function page_search() {
@@ -1334,13 +1346,13 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function get_custom_page() {
-			$resp = [];
+			$resp = array();
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_get_custom_page', '_nonce' );
-			$offer_id = ( isset( $_POST['offer_id'] ) ) ? wc_clean( $_POST['offer_id'] ) : '';
-			$page_id  = ( isset( $_POST['page_id'] ) ) ? wc_clean( $_POST['page_id'] ) : '';
+			$offer_id = ( isset( $_POST['offer_id'] ) ) ? absint( wp_unslash( $_POST['offer_id'] ) ) : 0;
+			$page_id  = ( isset( $_POST['page_id'] ) ) ? absint( wp_unslash( $_POST['page_id'] ) ) : 0;
 
 			update_post_meta( $offer_id, '_wfocu_custom_page', $page_id );
 			update_post_meta( $page_id, '_wfocu_offer', $offer_id );
@@ -1356,22 +1368,22 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function update_template() {
-			$resp = [];
+			$resp = array();
 
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_update_template', '_nonce' );
-			$offer     = ( isset( $_POST['offer_id'] ) && wc_clean( $_POST['offer_id'] ) ) ? wc_clean( $_POST['offer_id'] ) : 0;
-			$funnel_id = ( isset( $_POST['id'] ) && wc_clean( $_POST['id'] ) ) ? wc_clean( $_POST['id'] ) : 0;
-			$resp      = [];
+			$offer     = ( isset( $_POST['offer_id'] ) ) ? absint( wp_unslash( $_POST['offer_id'] ) ) : 0;
+			$funnel_id = ( isset( $_POST['id'] ) ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
+			$resp      = array();
 			$meta      = get_post_meta( $offer, '_wfocu_setting', true );
 
 			if ( is_object( $meta ) ) {
-				$meta->template       = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
-				$meta->template_group = isset( $_POST['template_group'] ) ? sanitize_text_field( $_POST['template_group'] ) : '';
+				$meta->template       = isset( $_POST['template'] ) ? sanitize_text_field( wp_unslash( $_POST['template'] ) ) : '';
+				$meta->template_group = isset( $_POST['template_group'] ) ? sanitize_text_field( wp_unslash( $_POST['template_group'] ) ) : '';
 
-				$response = WFOCU_Core()->importer->maybe_import_data( wc_clean( $_POST['template_group'] ), wc_clean( $_POST['template'] ), $offer, $meta );
+				$response = WFOCU_Core()->importer->maybe_import_data( sanitize_text_field( wp_unslash( $_POST['template_group'] ) ), sanitize_text_field( wp_unslash( $_POST['template'] ) ), $offer, $meta );
 
 				if ( is_string( $response ) ) {
 					$resp['status'] = false;
@@ -1395,13 +1407,13 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 
 		public static function save_funnel_settings() {
-			$resp = [];
+			$resp = array();
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_save_funnel_settings', '_nonce' );
-			$funnel_id = ( isset( $_POST['funnel_id'] ) && wc_clean( $_POST['funnel_id'] ) ) ? wc_clean( $_POST['funnel_id'] ) : 0;
-			$options   = ( isset( $_POST['data'] ) ) ? $_POST['data'] : []; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$funnel_id = ( isset( $_POST['funnel_id'] ) ) ? absint( wp_unslash( $_POST['funnel_id'] ) ) : 0;
+			$options   = ( isset( $_POST['data'] ) ) ? wp_unslash( $_POST['data'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized in update_funnel_settings
 
 			if ( is_array( $options ) ) {
 
@@ -1424,12 +1436,12 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		}
 
 		public static function save_global_settings() {
-			$resp = [];
+			$resp = array();
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_save_global_settings', '_nonce' );
-			$options = isset( $_POST['data'] ) ? $_POST['data'] : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$options = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : 0; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized in update_global_settings_fields
 			$resp    = self::update_global_settings_fields( $options );
 			wp_send_json( $resp );
 		}
@@ -1437,11 +1449,11 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		public static function update_global_settings_fields( $options ) {
 			$options = ( is_array( $options ) && count( $options ) > 0 ) ? wp_unslash( $options ) : 0;
 
-			$resp = [
+			$resp = array(
 				'status' => false,
 				'msg'    => __( 'Settings Updated', 'woofunnels-upstroke-one-click-upsell' ),
 				'data'   => '',
-			];
+			);
 
 			if ( ! is_array( $options ) || count( $options ) === 0 ) {
 				return $resp;
@@ -1461,22 +1473,30 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			/**
 			 * This code ensures that intersection of supported and enabled gateways will used for checking to prevent any value/gateway to save when its not enabled.
-			 *
 			 */
 			$supported_gateways = WFOCU_Core()->gateways->get_gateways_list();
 			if ( isset( $options['gateways'] ) && $supported_gateways && is_array( $supported_gateways ) && count( $supported_gateways ) > 0 ) {
 				$supported_gateways_keys = wp_list_pluck( $supported_gateways, 'value' );
 
-				$parsed = array_filter( $options['gateways'], function ( $val ) use ( $supported_gateways_keys ) {
-					return in_array( $val, $supported_gateways_keys, true );
-				} );
+				$parsed = array_filter(
+					$options['gateways'],
+					function ( $val ) use ( $supported_gateways_keys ) {
+						return in_array( $val, $supported_gateways_keys, true );
+					}
+				);
 				if ( isset( $options['gateways'] ) ) {
 					$options['gateways'] = $parsed;
 				}
 			}
 
 			if ( ! isset( $options['gateways'] ) ) {
-				$options['gateways'] = [];
+				$options['gateways'] = array();
+			}
+
+			if ( isset( $options['enable_dynamic_tax'] ) && is_array( $options['enable_dynamic_tax'] ) && in_array( 'false', $options['enable_dynamic_tax'], true ) ) {
+				$options['enable_dynamic_tax'] = array( 'true' );
+			} else {
+				$options['enable_dynamic_tax'] = array();
 			}
 
 			WFOCU_Core()->data->update_options( $options );
@@ -1496,7 +1516,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			check_admin_referer( 'wfocu_preview_details', '_nonce' );
 
 			if ( isset( $_POST['funnel_id'] ) && $_POST['funnel_id'] > 0 ) {
-				$funnel_id    = wc_clean( $_POST['funnel_id'] );
+				$funnel_id    = absint( wp_unslash( $_POST['funnel_id'] ) );
 				$funnel_post  = get_post( $funnel_id );
 				$data_funnels = WFOCU_Core()->funnels->get_funnel_offers_admin( $funnel_id );
 
@@ -1549,7 +1569,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				'status' => true,
 			);
 			if ( isset( $_POST['funnel_id'] ) && $_POST['funnel_id'] > 0 ) {
-				$funnel_id = wc_clean( $_POST['funnel_id'] );
+				$funnel_id = absint( wp_unslash( $_POST['funnel_id'] ) );
 
 				$resp = self::duplicating_funnel( $funnel_id, $resp );
 
@@ -1635,7 +1655,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 					$offer_id_new = wp_insert_post( $offer_post_new );
 					if ( ! is_wp_error( $offer_id_new ) && $offer_id_new ) {
-						$new_step       = [];
+						$new_step       = array();
 						$get_offer      = $steps['id'];
 						$offer_type_new = $steps['type'];
 
@@ -1659,18 +1679,24 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						$new_step['url']    = get_site_url() . '?wfocu_offer=' . $new_offer_slug;
 						array_push( $new_steps, $new_step );
 
-						$exclude_meta_keys_to_copy = apply_filters( 'wfocu_do_not_duplicate_meta', [
-							'_funnel_id',
-							'_wfocu_edit_last',
-							'_elementor_page_assets'
-						], $get_offer, $offer_id_new, $new_step );
+						$exclude_meta_keys_to_copy = apply_filters(
+							'wfocu_do_not_duplicate_meta',
+							array(
+								'_funnel_id',
+								'_wfocu_edit_last',
+								'_elementor_page_assets',
+							),
+							$get_offer,
+							$offer_id_new,
+							$new_step
+						);
 
 						global $wpdb;
 
 						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 						if ( ! empty( $post_meta_all ) ) {
-							$sql_query_selects = [];
+							$sql_query_selects = array();
 
 							foreach ( $post_meta_all as $meta_info ) {
 
@@ -1698,7 +1724,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 								$meta_key   = esc_sql( $meta_key );
 								$meta_value = esc_sql( $meta_value );
 
-								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 
 							}
 
@@ -1708,7 +1734,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						}
 
 						do_action( 'wfocu_offer_duplicated', $offer_id_new, $get_offer );
-
 
 						// Need to Re save for Gutenberg
 						$temp_post               = get_post( $offer_id_new );
@@ -1737,7 +1762,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 				$new_settings = WFOCU_Core()->offers->get_offer( $new_step['id'], false );
 				if ( is_object( $new_settings ) && isset( $new_settings->settings ) && is_array( $new_settings->settings ) && count( $new_settings->settings ) > 0 ) {
-					$new_settings->settings = ( object ) $new_settings->settings;
+					$new_settings->settings = (object) $new_settings->settings;
 				}
 				if ( is_object( $new_settings ) && isset( $new_settings->settings ) && is_object( $new_settings->settings ) ) {
 					$new_settings->settings->jump_to_offer_on_accepted = ( 'automatic' === $old_jump_accepted || 'terminate' === $old_jump_accepted ) ? $old_jump_accepted : ( empty( $old_accept_index ) ? 'automatic' : $new_steps[ $old_accept_index ]['id'] );
@@ -1784,7 +1809,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 					$offer_id_new = wp_insert_post( $offer_post_new );
 					if ( ! is_wp_error( $offer_id_new ) && $offer_id_new ) {
-						$new_step       = [];
+						$new_step       = array();
 						$get_offer      = $steps['id'];
 						$offer_type_new = $steps['type'];
 
@@ -1808,14 +1833,14 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						$new_step['url']    = get_site_url() . '?wfocu_offer=' . $new_offer_slug;
 						$new_steps[]        = $new_step;
 
-						$exclude_meta_keys_to_copy = apply_filters( 'wfocu_do_not_duplicate_meta', [ '_funnel_id', '_wfocu_edit_last' ], $get_offer, $offer_id_new, $new_step );
+						$exclude_meta_keys_to_copy = apply_filters( 'wfocu_do_not_duplicate_meta', array( '_funnel_id', '_wfocu_edit_last' ), $get_offer, $offer_id_new, $new_step );
 
 						global $wpdb;
 
 						$post_meta_all = $wpdb->get_results( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$get_offer" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 						if ( ! empty( $post_meta_all ) ) {
-							$sql_query_selects = [];
+							$sql_query_selects = array();
 							foreach ( $post_meta_all as $meta_info ) {
 
 								$meta_key = $meta_info->meta_key;
@@ -1827,7 +1852,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 								$meta_key   = esc_sql( $meta_key );
 								$meta_value = esc_sql( $meta_info->meta_value );
 
-								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+								$sql_query_selects[] = "( $offer_id_new, '$meta_key', '$meta_value')"; // db call ok; no-cache ok; WPCS: unprepared SQL ok.
 							}
 
 							$sql_query_meta_val = implode( ',', $sql_query_selects );
@@ -1876,7 +1901,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			return $resp;
 		}
 
-		//Duplicating a funnel ajax function
+		// Duplicating a funnel ajax function
 
 		public static function toggle_funnel_state() {
 			$resp = array(
@@ -1889,15 +1914,17 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			check_admin_referer( 'wfocu_toggle_funnel_state', '_nonce' );
 
 			if ( isset( $_POST['id'] ) && $_POST['id'] > 0 ) {
-				$funnel_id = wc_clean( $_POST['id'] );
+				$funnel_id = absint( wp_unslash( $_POST['id'] ) );
 				$status    = WFOCU_SLUG . '-disabled';
-				if ( isset( $_POST['state'] ) && 'true' === wc_clean( $_POST['state'] ) ) {
+				if ( isset( $_POST['state'] ) && 'true' === bwf_clean( wp_unslash( $_POST['state'] ) ) ) {
 					$status = 'publish';
 				}
-				wp_update_post( array(
-					'ID'          => $funnel_id,
-					'post_status' => $status,
-				) );
+				wp_update_post(
+					array(
+						'ID'          => $funnel_id,
+						'post_status' => $status,
+					)
+				);
 
 			}
 			wp_send_json( $resp );
@@ -1916,7 +1943,6 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 				}
 				$GLOBALS['wpdb']->hide_errors();
 			}
-
 		}
 
 		public static function is_wfocu_front_ajax() {
@@ -1951,9 +1977,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 				$offer_id = absint( $_POST['offer_id'] );
 				if ( $offer_id > 0 ) {
-					$template_name = trim( wc_clean( $_POST['template_name'] ) );
+					$template_name = trim( sanitize_text_field( wp_unslash( $_POST['template_name'] ) ) );
 					$customize_key = WFOCU_SLUG . '_c_' . $offer_id;
-					$template_data = get_option( $customize_key, [] );
+					$template_data = get_option( $customize_key, array() );
 
 					if ( is_array( $template_data ) && count( $template_data ) > 0 ) {
 						$template_data_keys = array_keys( $template_data );
@@ -1963,13 +1989,13 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 							}
 						}
 
-						$template_names                   = get_option( 'wfocu_template_names', [] );
+						$template_names                   = get_option( 'wfocu_template_names', array() );
 						$template_slug                    = sanitize_title( $template_name );
-						$template_slug                    .= '_' . time();
-						$template_names[ $template_slug ] = [
+						$template_slug                   .= '_' . time();
+						$template_names[ $template_slug ] = array(
 							'name' => $template_name,
 							'time' => time(),
-						];
+						);
 						update_option( 'wfocu_template_names', $template_names );
 						update_option( $template_slug, $template_data, 'no' );
 
@@ -2008,11 +2034,11 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			if ( isset( $_POST['template_slug'] ) && '' !== $_POST['template_slug'] && isset( $_POST['offer_id'] ) ) {
 
-				$offer_id = absint( $_POST['offer_id'] );
+				$offer_id = absint( wp_unslash( $_POST['offer_id'] ) );
 				if ( $offer_id > 0 ) {
-					$template_name = trim( wc_clean( $_POST['template_slug'] ) );
-					$current_data  = get_option( WFOCU_SLUG . '_c_' . $offer_id, [] );
-					$data          = get_option( $template_name, [] );
+					$template_name = trim( sanitize_text_field( wp_unslash( $_POST['template_slug'] ) ) );
+					$current_data  = get_option( WFOCU_SLUG . '_c_' . $offer_id, array() );
+					$data          = get_option( $template_name, array() );
 					if ( is_array( $data ) && count( $data ) > 0 ) {
 						foreach ( $data as $key => $val ) {
 							$current_data[ $key ] = $val;
@@ -2037,10 +2063,10 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 			if ( isset( $_POST['template_slug'] ) && '' !== $_POST['template_slug'] && isset( $_POST['offer_id'] ) ) {
 
-				$offer_id = absint( $_POST['offer_id'] );
+				$offer_id = absint( wp_unslash( $_POST['offer_id'] ) );
 				if ( $offer_id > 0 ) {
-					$template_name  = trim( wc_clean( $_POST['template_slug'] ) );
-					$template_names = get_option( 'wfocu_template_names', [] );
+					$template_name  = trim( sanitize_text_field( wp_unslash( $_POST['template_slug'] ) ) );
+					$template_names = get_option( 'wfocu_template_names', array() );
 					if ( isset( $template_names[ $template_name ] ) ) {
 						unset( $template_names[ $template_name ] );
 						update_option( 'wfocu_template_names', $template_names );
@@ -2094,7 +2120,8 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 					$refunded_offers = $order->get_meta( '_wfocu_refunded_offers', true );
 					if ( empty( $refunded_offers ) ) {
-						$refunded_offers = WFOCU_Common::get_order_meta( $order, '_wfocu_refunded_offers' );;
+						$refunded_offers = WFOCU_Common::get_order_meta( $order, '_wfocu_refunded_offers' );
+
 					}
 					$refunded_offers = empty( $refunded_offers ) ? array() : $refunded_offers;
 
@@ -2103,7 +2130,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					 * Add them to the line items so that we can tell the woocommerce that these items are getting refunded
 					 */
 					$get_items_added = WFOCU_Core()->track->get_meta( $event_id, '_items_added' );
-					$line_items      = [];
+					$line_items      = array();
 					$order_taxes     = wc_get_order( $order_id )->get_taxes();
 					if ( ! empty( $get_items_added ) ) {
 						$get_items_added = json_decode( $get_items_added, true );
@@ -2120,7 +2147,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 							$line_items[ $item_id ]['refund_total'] = wc_format_decimal( $get_item->get_total() );
 							$tax_data                               = $get_item->get_taxes();
-							$tax_item_total                         = [];
+							$tax_item_total                         = array();
 							foreach ( $order_taxes as $tax_item ) {
 								$tax_item_id                    = $tax_item->get_rate_id();
 								$tax_item_total[ $tax_item_id ] = isset( $tax_data['total'][ $tax_item_id ] ) ? $tax_data['total'][ $tax_item_id ] : 0;
@@ -2142,10 +2169,10 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						if ( ! empty( $get_shipping_batch ) ) {
 							$get_shipping_batch                                  = json_decode( $get_shipping_batch, ARRAY_A );
 							$line_items[ $get_shipping_item_id ]['refund_total'] = wc_format_decimal( $get_shipping_batch['cost'] );
-							$tax_item_total                                      = [];
+							$tax_item_total                                      = array();
 							foreach ( $order_taxes as $tax_item ) {
 								$tax_item_id                    = $tax_item->get_rate_id();
-								$tax_item_total[ $tax_item_id ] = $get_shipping_batch['tax'];//tax here;
+								$tax_item_total[ $tax_item_id ] = $get_shipping_batch['tax'];// tax here;
 							}
 							$line_items[ $get_shipping_item_id ]['refund_tax'] = array_filter( array_map( 'wc_format_decimal', $tax_item_total ) );
 						}
@@ -2156,15 +2183,17 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					$order->save();
 					$refund_note = ( isset( $refund_data['refund_reason'] ) && ! empty( $refund_data['refund_reason'] ) ) ? sprintf( __( '<br/>Reason: %s', 'woofunnels-upstroke-one-click-upsell' ), $refund_data['refund_reason'] ) : '';
 					$gateway->wfocu_add_order_note( $order, $amount, $refund_txn_id, $offer_id, $refund_note );
-					$refund_reason = empty( $refund_note ) ? '' : sprintf( __( '%s', 'woofunnels-upstroke-one-click-upsell' ), $refund_data['refund_reason'] );
-					$refund        = wc_create_refund( array(
-						'amount'         => $amount,
-						'reason'         => $refund_reason,
-						'order_id'       => $order_id,
-						'refund_payment' => false,
-						'line_items'     => $line_items,
-						'restock_items'  => true,
-					) );
+					$refund_reason = empty( $refund_note ) ? '' : sanitize_text_field( $refund_data['refund_reason'] );
+					$refund        = wc_create_refund(
+						array(
+							'amount'         => $amount,
+							'reason'         => $refund_reason,
+							'order_id'       => $order_id,
+							'refund_payment' => false,
+							'line_items'     => $line_items,
+							'restock_items'  => true,
+						)
+					);
 
 					if ( is_wp_error( $refund ) ) {
 						WFOCU_Core()->log->log( 'Refund Offer attempt failed' . print_r( $refund, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -2181,9 +2210,9 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 
 		public static function clear_template() {
 			check_ajax_referer( 'wfocu_clear_template', '_nonce' );
-			$offer     = ( isset( $_POST['offer_id'] ) && wc_clean( $_POST['offer_id'] ) ) ? wc_clean( $_POST['offer_id'] ) : 0;
-			$funnel_id = ( isset( $_POST['id'] ) && wc_clean( $_POST['id'] ) ) ? wc_clean( $_POST['id'] ) : 0;
-			$resp      = [];
+			$offer     = ( isset( $_POST['offer_id'] ) ) ? absint( wp_unslash( $_POST['offer_id'] ) ) : 0;
+			$funnel_id = ( isset( $_POST['id'] ) ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
+			$resp      = array();
 			$meta      = get_post_meta( $offer, '_wfocu_setting', true );
 
 			if ( is_object( $meta ) ) {
@@ -2207,12 +2236,12 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		 * Ajax action to activate plugin
 		 */
 		public static function activate_plugins() {
-			$resp = [];
+			$resp = array();
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_activate_plugins', '_nonce' );
-			$plugin_init = isset( $_POST['plugin_init'] ) ? sanitize_text_field( $_POST['plugin_init'] ) : '';
+			$plugin_init = isset( $_POST['plugin_init'] ) ? sanitize_text_field( wp_unslash( $_POST['plugin_init'] ) ) : '';
 
 			$activate        = activate_plugin( $plugin_init, '', false, true );
 			$resp            = array( 'success' => true );
@@ -2240,7 +2269,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			check_admin_referer( 'wfocu_make_wpml_duplicate', '_nonce' );
 
-			$posted_data = ( isset( $_POST ) && isset( $_POST['href'] ) ) ? wc_clean( $_POST['href'] ) : [];
+			$posted_data = ( isset( $_POST ) && isset( $_POST['href'] ) ) ? bwf_clean( wp_unslash( $_POST['href'] ) ) : array();
 			if ( isset( $posted_data['trid'] ) && $posted_data['trid'] > 0 && class_exists( 'SitePress' ) && method_exists( 'SitePress', 'get_original_element_id_by_trid' ) ) {
 				$trid           = absint( $posted_data['trid'] );
 				$lang           = isset( $posted_data['lang'] ) ? trim( $posted_data['lang'] ) : '';
@@ -2254,17 +2283,20 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						$new_post = get_post( $duplicate_id );
 						if ( ! is_null( $new_post ) ) {
 							$args               = array();
-							$args['post_title'] = $new_post->post_title . ' - ' . __( 'Copy - ' . $lang, 'woofunnels-upstroke-one-click-upsell' );
+							$args['post_title'] = $new_post->post_title . ' - ' . sprintf( __( 'Copy - %s', 'woofunnels-upstroke-one-click-upsell' ), $lang );
 
 							$args['ID'] = $duplicate_id;
 							wp_update_post( $args );
 							$resp = self::duplicate_offers( $master_post_id, $duplicate_id, $resp );
 						}
-						$resp['redirect_url'] = add_query_arg( [
-							'section' => 'offers',
-							'edit'    => $duplicate_id,
-							'lang'    => $lang
-						], admin_url( 'admin.php?page=upstroke' ) );
+						$resp['redirect_url'] = add_query_arg(
+							array(
+								'section' => 'offers',
+								'edit'    => $duplicate_id,
+								'lang'    => $lang,
+							),
+							admin_url( 'admin.php?page=upstroke' )
+						);
 						$resp['duplicate_id'] = $duplicate_id;
 						$resp['status']       = true;
 					}
@@ -2283,16 +2315,19 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			}
 			check_admin_referer( 'wfocu_get_wpml_edit_url', '_nonce' );
 
-			$posted_data = ( isset( $_POST ) && isset( $_POST['href'] ) ) ? wc_clean( $_POST['href'] ) : [];
+			$posted_data = ( isset( $_POST ) && isset( $_POST['href'] ) ) ? bwf_clean( wp_unslash( $_POST['href'] ) ) : array();
 			if ( isset( $posted_data['post'] ) && $posted_data['post'] > 0 ) {
 				$edit = absint( $posted_data['post'] );
 				$lang = isset( $posted_data['lang'] ) ? trim( $posted_data['lang'] ) : '';
 
-				$resp['redirect_url'] = add_query_arg( [
-					'section' => 'offers',
-					'edit'    => $edit,
-					'lang'    => $lang
-				], admin_url( 'admin.php?page=upstroke' ) );
+				$resp['redirect_url'] = add_query_arg(
+					array(
+						'section' => 'offers',
+						'edit'    => $edit,
+						'lang'    => $lang,
+					),
+					admin_url( 'admin.php?page=upstroke' )
+				);
 				$resp['status']       = true;
 
 			}
@@ -2303,13 +2338,13 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			check_ajax_referer( 'wfocu_fire_conv_api_event' );
 
 			try {
-				$events = isset( $_POST['data'] ) ? wc_clean( $_POST['data'] ) : '';
+				$events = isset( $_POST['data'] ) ? bwf_clean( wp_unslash( $_POST['data'] ) ) : '';
 				if ( ! empty( $events ) ) {
 
 					$events = json_decode( wp_kses_stripslashes( $events ), true );
 					WFOCU_Core()->ecom_tracking->maybe_render_conv_api( $events, true );
 				}
-			} catch ( Exception|error $e ) {
+			} catch ( Exception | error $e ) {
 				WFOCU_Core()->log->log( $e->getMessage() );
 			}
 		}
@@ -2319,13 +2354,13 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 		 * add ct_inner in oxygen url
 		 */
 		public static function update_edit_url() {
-			$resp = [];
+			$resp = array();
 			if ( false === WFOCU_Core()->role->user_access( 'funnel', 'write' ) ) {
 				wp_send_json( $resp );
 			}
 			check_admin_referer( 'wfocu_update_edit_url', '_nonce' );
 
-			$id             = isset( $_POST['id'] ) ? wc_clean( $_POST['id'] ) : 0;
+			$id             = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
 			$edit_link_href = '';
 
 			$edit_url = '';
@@ -2333,7 +2368,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 			if ( function_exists( 'oxygen_add_posts_quick_action_link' ) ) {
 				$post = get_post( $id );
 				if ( ! is_null( $post ) ) {
-					$actions = oxygen_add_posts_quick_action_link( array(), $post, "array" );
+					$actions = oxygen_add_posts_quick_action_link( array(), $post, 'array' );
 					if ( is_array( $actions ) && isset( $actions['url'] ) ) {
 						$get_query_string = explode( '?', $actions['url'] );
 						$edit_url         = isset( $get_query_string[1] ) ? $get_query_string[1] : '';
@@ -2365,7 +2400,7 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					} else {
 						$post_editable = true;
 					}
-				} else if ( $post_template == - 1 ) { //phpcs:ignore 
+				} else if ( $post_template == - 1 ) { //phpcs:ignore
 					$post_editable = true;
 				} else { // Custom template
 					$shortcodes = get_post_meta( $post_template, WFOCU_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), true );
@@ -2380,18 +2415,18 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 						$edit_link_href = '&ct_inner=true';
 					}
 				}
-
 			}
 
-			$resp = [
+			$resp = array(
 				'status' => true,
 				'url'    => ! empty( $edit_url ) ? $edit_url : $edit_link_href,
-			];
+			);
 			wp_send_json( $resp );
 		}
 
 		/**
 		 * handle normalize call from wc order list table
+		 *
 		 * @return void
 		 */
 		public static function normalize_order_from_wc_list() {
@@ -2400,11 +2435,206 @@ if ( ! class_exists( 'WFOCU_AJAX_Controller' ) ) {
 					WFOCU_Core()->orders->maybe_handle_cron_normalize_stasuses();
 					WFOCU_Core()->orders->maybe_execute_thankyou_hook();
 				}
-			} catch ( Exception|Error $e ) {
-				WFOCU_Core()->log->log( "Error in normalizing order from wc list table: " . $e->getMessage(), 'error' );
+			} catch ( Exception | Error $e ) {
+				WFOCU_Core()->log->log( 'Error in normalizing order from wc list table: ' . $e->getMessage(), 'error' );
 			}
 		}
 
+
+		/**
+		 * Modified calculate_tax method for your main class
+		 * This replaces the calculate_shipping method but for tax calculation
+		 */
+		public static function calculate_standard_tax_rates() {
+			check_ajax_referer( 'wfocu_calculate_standard_rates', 'nonce' );
+
+			if ( ! class_exists( 'WFFN_Core' ) && ! class_exists( 'WFFN_Pro_Core' ) ) {
+				wp_send_json(
+					array(
+						'success' => 'false',
+						'data'    => array(
+							'total_tax'       => 0,
+							'tax_data'        => array(),
+							'tax_data_by_key' => array(),
+							'error'           => 'Dynamic tax is available only with Funnel Builder.',
+						),
+					)
+				);
+			}
+
+			$products  = array();
+			$get_order = WFOCU_Core()->data->get_current_order();
+			WFOCU_Core()->offers->parse_posted_data( $_POST );
+
+			$variation_context = isset( $_POST['variation_context'] ) ? $_POST['variation_context'] : array();//phpcs:ignore
+			$items = isset( $_POST['items'] ) ? $_POST['items'] : array();//phpcs:ignore
+
+			$order_behavior      = WFOCU_Core()->funnels->get_funnel_option( 'order_behavior' );
+			$is_batching_on      = ( 'batching' === $order_behavior );
+			$include_batch_items = $is_batching_on && empty( $items );
+			$include_batch_items = apply_filters( 'wfocu_include_batch_items_in_tax_calc', $include_batch_items, $items, $get_order );
+
+			// Handle batching products first
+			if ( $include_batch_items ) {
+				foreach ( $get_order->get_items() as $item_id => $item ) {
+					$price = wc_get_order_item_meta( $item_id, '_line_total', true );
+					if ( WFOCU_WC_Compatibility::display_prices_including_tax() ) {
+						$price += wc_get_order_item_meta( $item_id, '_line_tax', true );
+					}
+
+					$products[] = array(
+						'product_id' => $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id(),
+						'qty'        => $item->get_quantity(),
+						'price'      => $price / $item->get_quantity(),
+						'offer_key'  => 'batch_' . $item_id, // Special key for batch items
+					);
+				}
+			}
+
+			// Handle offer products
+			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
+			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
+			$build_offer_data       = WFOCU_Core()->offers->build_offer_product( $get_current_offer_meta, $get_current_offer, true );
+			if ( isset( $build_offer_data->products ) && is_object( $build_offer_data->products ) ) {
+				foreach ( $build_offer_data->products as $key => $product_obj ) {
+					// Skip if this product key is not in the requested items
+					if ( ! empty( $items ) && ! in_array( $key, $items ) ) {//phpcs:ignore
+						continue;
+					}
+					$product_id   = is_object( $product_obj ) && isset( $product_obj->id ) ? $product_obj->id : $product_obj;
+					$qty          = 1;
+					$price        = 0;
+					$variation_id = 0;
+
+					// Handle variation context
+					if ( isset( $variation_context[ $key ] ) && isset( $variation_context[ $key ]['variation_id'] ) ) {
+						$variation_id = intval( $variation_context[ $key ]['variation_id'] );
+
+						// For variations, we want to use the variation ID as the product ID
+						if ( $variation_id > 0 ) {
+							$product_id = $variation_id;
+						}
+					}
+					// Get quantity and price from offer fields
+					if ( isset( $build_offer_data->fields ) && is_object( $build_offer_data->fields ) && isset( $build_offer_data->fields->{$key} ) ) {
+						$field = $build_offer_data->fields->{$key};
+						if ( isset( $field->quantity ) ) {
+							$qty = (int) $field->quantity;
+						}
+					}
+
+					// Prefer tax-exclusive offer prices for calculation
+					if ( is_object( $product_obj ) ) {
+						if ( $variation_id > 0 && isset( $product_obj->variations_data ) && isset( $product_obj->variations_data['prices'] ) && isset( $product_obj->variations_data['prices'][ $variation_id ] ) ) {
+							$variation_price_data = $product_obj->variations_data['prices'][ $variation_id ];
+							if ( isset( $variation_price_data['price_excl_tax_raw'] ) && $variation_price_data['price_excl_tax_raw'] > 0 ) {
+								$price = (float) $variation_price_data['price_excl_tax_raw'];
+							} elseif ( isset( $variation_price_data['price_excl_tax'] ) && $variation_price_data['price_excl_tax'] > 0 ) {
+								$price = (float) $variation_price_data['price_excl_tax'];
+							}
+						}
+
+						if ( $price <= 0 && isset( $product_obj->sale_price_excl_tax ) && $product_obj->sale_price_excl_tax > 0 ) {
+							$price = (float) $product_obj->sale_price_excl_tax;
+						} elseif ( $price <= 0 && isset( $product_obj->price_excl_tax ) && $product_obj->price_excl_tax > 0 ) {
+							$price = (float) $product_obj->price_excl_tax;
+						}
+					}
+
+					if ( $price <= 0 && isset( $field ) && isset( $field->price_raw ) ) {
+						$price = (float) $field->price_raw;
+					} elseif ( $price <= 0 && is_object( $product_obj ) && isset( $product_obj->price_raw ) ) {
+						$price = (float) $product_obj->price_raw;
+					}
+
+					// For variations, get the actual variation price as last fallback
+					if ( $price <= 0 && $variation_id > 0 ) {
+						$variation_product = wc_get_product( $variation_id );
+						if ( $variation_product && $variation_product->is_type( 'variation' ) ) {
+							$variation_price = $variation_product->get_price();
+							if ( $variation_price > 0 ) {
+								$price = $variation_price;
+							}
+						}
+					}
+
+					$products[] = array(
+						'product_id'   => (int) $product_id,
+						'variation_id' => $variation_id,
+						'qty'          => $qty,
+						'price'        => WFOCU_Core()->offers->get_product_price( $variation_id ? $variation_id : $product_id, $build_offer_data->fields->{$key}, true, $build_offer_data->fields ),
+						'offer_key'    => $key, // This is crucial for mapping back to frontend
+					);
+
+				}
+			}
+
+			// Get customer location for tax calculation
+			$country  = empty( $get_order->get_shipping_country() ) ? $get_order->get_billing_country() : $get_order->get_shipping_country();
+			$state    = empty( $get_order->get_shipping_state() ) ? $get_order->get_billing_state() : $get_order->get_shipping_state();
+			$city     = empty( $get_order->get_shipping_city() ) ? $get_order->get_billing_city() : $get_order->get_shipping_city();
+			$postcode = empty( $get_order->get_shipping_postcode() ) ? $get_order->get_billing_postcode() : $get_order->get_shipping_postcode();
+
+			// Fallback to customer data if order data is empty
+			$customer_id = WFOCU_WC_Compatibility::get_order_data( $get_order, '_customer_user' );
+			if ( $customer_id > 0 ) {
+				$customer = new WC_Customer( $customer_id );
+				if ( empty( $country ) ) {
+					$country = empty( $customer->get_shipping_country() ) ? $customer->get_billing_country() : $customer->get_shipping_country();
+				}
+				if ( empty( $state ) ) {
+					$state = empty( $customer->get_shipping_state() ) ? $customer->get_billing_state() : $customer->get_shipping_state();
+				}
+				if ( empty( $city ) ) {
+					$city = empty( $customer->get_shipping_city() ) ? $customer->get_billing_city() : $customer->get_shipping_city();
+				}
+				if ( empty( $postcode ) ) {
+					$postcode = empty( $customer->get_shipping_postcode() ) ? $customer->get_billing_postcode() : $customer->get_shipping_postcode();
+				}
+			}
+
+			$location = array( $country, $state, $city, $postcode );
+
+			// Return empty response if no products to calculate
+			if ( empty( $products ) ) {
+				wp_send_json(
+					array(
+						'success' => 'true',
+						'data'    => array(
+							'total_tax'       => 0,
+							'tax_data'        => array(),
+							'tax_data_by_key' => array(),
+						),
+					)
+				);
+				return;
+			}
+
+			// Calculate taxes
+			if ( class_exists( 'WooFunnels_UpStroke_Dynamic_Tax' ) ) {
+				$tax_module      = WooFunnels_UpStroke_Dynamic_Tax::instance();
+				$tax_calculation = $tax_module->calculate_product_taxes( $products, $location, $get_order );
+
+				wp_send_json(
+					array(
+						'success' => 'true',
+						'data'    => $tax_calculation,
+					)
+				);
+			} else {
+				wp_send_json(
+					array(
+						'success' => 'false',
+						'data'    => array(
+							'total_tax'       => 0,
+							'tax_data'        => array(),
+							'tax_data_by_key' => array(),
+							'error'           => 'Tax calculation module not available',
+						),
+					)
+				);
+			}
+		}
 	}
 
 	WFOCU_AJAX_Controller::init();

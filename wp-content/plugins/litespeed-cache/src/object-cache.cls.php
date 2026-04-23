@@ -305,6 +305,14 @@ class Object_Cache extends Root {
 		} else {
 			$this->_cfg_enabled = false;
 		}
+
+		// If OC not available, mark failure so OC methods return false early.
+		// NOTE: Do NOT call wp_using_ext_object_cache(false) here — it causes
+		// "Cannot redeclare wp_cache_init()" fatal on multisite (second call
+		// to wp_start_object_cache() would load cache.php again).
+		if ( ! $this->_cfg_enabled ) {
+			! defined( 'LITESPEED_OC_FAILURE' ) && define( 'LITESPEED_OC_FAILURE', true );
+		}
 	}
 
 	/**
@@ -506,7 +514,10 @@ class Object_Cache extends Root {
 				}
 
 				if ( $this->_cfg_db ) {
-					$this->_conn->select( $this->_cfg_db );
+					if ( ! $this->_conn->select( $this->_cfg_db ) ) {
+						$this->debug_oc( 'Database ID is invalid' );
+						$failed = true;
+					}
 				}
 
 				$res = $this->_conn->rawCommand('PING');
@@ -567,7 +578,16 @@ class Object_Cache extends Root {
 			$this->_conn        = null;
 			$this->_cfg_enabled = false;
 			! defined( 'LITESPEED_OC_FAILURE' ) && define( 'LITESPEED_OC_FAILURE', true );
-			// error_log( 'Object: false!' );
+
+			// Disable ext OC flag so WP transients fall back to wp_options table.
+			// After muplugins_loaded, all wp_start_object_cache() calls are done — safe to call directly.
+			// Before that (early bootstrap), defer via hook to avoid multisite "Cannot redeclare" fatal.
+			if ( function_exists( 'did_action' ) && did_action( 'muplugins_loaded' ) ) {
+				litespeed_oc_disable_ext_cache();
+			} elseif ( function_exists( 'add_action' ) ) {
+				add_action( 'muplugins_loaded', 'litespeed_oc_disable_ext_cache', -999 );
+			}
+
 			return false;
 		}
 
@@ -675,11 +695,14 @@ class Object_Cache extends Root {
 			return false;
 		}
 
-		$ttl = $expire ? $expire : $this->_cfg_life;
+		// Per WP Object Cache API, expire=0 means "no expiration".
+		// Key eviction is handled by the cache backend (Redis maxmemory / Memcached LRU).
+		$ttl = (int) $expire;
 
 		if ( 'Redis' === $this->_oc_driver ) {
 			try {
-				$res = $this->_conn->setEx( $key, $ttl, $data );
+				$options = ( $ttl > 0 ) ? [ 'ex' => $ttl ] : [];
+				$res     = $this->_conn->set( $key, $data, $options );
 			} catch ( \RedisException $ex ) {
 				$res = false;
 				$msg = sprintf( __( 'Redis encountered a fatal error: %1$s (code: %2$d)', 'litespeed-cache' ), $ex->getMessage(), $ex->getCode() );

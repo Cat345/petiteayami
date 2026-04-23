@@ -638,9 +638,6 @@
     margin-right: 5px
 }
 
-.wfop_popup_wrapper .bwf-custom-button span.bwf-text-wrapper {
-    display: inline-block;
-}
 .elementor-element .wfop_popup_wrapper .bwf-custom-button span.bwf-text-wrapper span.bwf_icon, .elementor-element .wfop_popup_wrapper .bwf-custom-button span.bwf-text-wrapper span.bwf_icon svg {
     height: 1em;
 }

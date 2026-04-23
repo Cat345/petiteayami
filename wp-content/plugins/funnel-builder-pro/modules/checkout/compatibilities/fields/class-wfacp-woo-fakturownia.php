@@ -107,16 +107,14 @@ if ( ! class_exists( 'WFACP_Compatibility_WC_fakturownia' ) ) {
 		}
 
 		public function woocommerce_checkout_update_order_meta( $order_id, $data ) {
-			if ( ! isset( $_POST['_wfacp_post_id'] ) ) {
+			if ( ! isset( $_POST['_wfacp_post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by WooCommerce checkout process
 				return;
 			}
 			$order = wc_get_order( $order_id );
 
 			foreach ( $this->add_fields as $item ) {
-				if ( isset( $_POST[ $item ] ) ) {
-
-					$order->{$item} = $_POST[ $item ];
-					$order->update_meta_data( '_' . $item, $_POST[ $item ] );
+				if ( isset( $_POST[ $item ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by WooCommerce checkout process
+					$order->update_meta_data( '_' . $item, bwf_clean( wp_unslash( $_POST[ $item ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification handled by WooCommerce checkout process
 				}
 			}
 			$order->save();

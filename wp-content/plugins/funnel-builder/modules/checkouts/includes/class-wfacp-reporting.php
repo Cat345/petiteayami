@@ -1,27 +1,27 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFACP_Reporting' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Reporting {
 
-		private static $ins = null;
+		private static $ins       = null;
 		private $is_cart_restored = false;
 
 		private function __construct() {
 			global $wpdb;
 			$wpdb->wfacp_stats = $wpdb->prefix . 'wfacp_stats';
-			add_action( 'admin_init', [ $this, 'create_table' ] );
-			add_action( 'woocommerce_checkout_create_order', [ $this, 'update_reporting_data_in_meta' ], 11, 2 );
+			add_action( 'admin_init', array( $this, 'create_table' ) );
+			add_action( 'woocommerce_checkout_create_order', array( $this, 'update_reporting_data_in_meta' ), 11, 2 );
 			add_action( 'woocommerce_order_status_changed', array( $this, 'insert_row_for_ipn_based_gateways' ), 10, 3 );
 
-			add_action( 'woocommerce_delete_order', [ $this, 'delete_report_for_order' ] );
-			add_action( 'delete_post', [ $this, 'delete_report_for_order' ] );
+			add_action( 'woocommerce_delete_order', array( $this, 'delete_report_for_order' ) );
+			add_action( 'delete_post', array( $this, 'delete_report_for_order' ) );
 
-			add_action( 'wfab_pre_abandoned_cart_restored', [ $this, 'check_if_autobot_cart_restored' ] );
-			add_action( 'woocommerce_thankyou', [ $this, 'wfacp_clear_view_session' ], 10, 1 );
+			add_action( 'wfab_pre_abandoned_cart_restored', array( $this, 'check_if_autobot_cart_restored' ) );
+			add_action( 'woocommerce_thankyou', array( $this, 'wfacp_clear_view_session' ), 10, 1 );
 
-			add_action( 'woocommerce_thankyou', [ $this, 'updating_reports_from_orders' ] );
-			add_action( 'woocommerce_checkout_update_order_review', [ $this, 'update_order_review' ] );
+			add_action( 'woocommerce_thankyou', array( $this, 'updating_reports_from_orders' ) );
+			add_action( 'woocommerce_checkout_update_order_review', array( $this, 'update_order_review' ) );
 
 			add_action( 'woocommerce_order_fully_refunded', array( $this, 'fully_refunded_process' ), 10, 1 );
 			add_action( 'woocommerce_order_partially_refunded', array( $this, 'partially_refunded_process' ), 10, 2 );
@@ -41,7 +41,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			if ( false !== get_option( 'wfacp_db_ver_2_1', false ) ) {
 				return;
 			}
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 			$collate = '';
 			if ( $wpdb->has_cap( 'collation' ) ) {
@@ -165,16 +165,21 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 					$bump_total += isset( $bump_datum['total'] ) ? floatval( $bump_datum['total'] ) : 0;
 				}
 				$wfacp_used_total -= $bump_total;
-				$wfacp_used_total = round( $wfacp_used_total, 2 );
+				$wfacp_used_total  = round( $wfacp_used_total, 2 );
 			}
-
 
 			$fid = ( 0 === $wfacp_id ) ? $funnel_id : get_post_meta( $wfacp_id, '_bwf_in_funnel', true );
 			if ( $fid > 0 ) {
 				$funnel_id = $fid;
 			}
 
-			$order->update_meta_data( '_wfacp_report_data', array( 'wfacp_total' => $wfacp_used_total, 'funnel_id' => $funnel_id ) );
+			$order->update_meta_data(
+				'_wfacp_report_data',
+				array(
+					'wfacp_total' => $wfacp_used_total,
+					'funnel_id'   => $funnel_id,
+				)
+			);
 		}
 
 		/**
@@ -204,7 +209,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				return false;
 			}
 
-			add_filter( 'woocommerce_order_is_paid_statuses', [ $this, 'wfacp_custom_order_status' ] );
+			add_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfacp_custom_order_status' ) );
 			$payment_method = $order->get_payment_method();
 			/**
 			 * if woocommerce thank you showed up and order status not paid, save meta to normalize status later
@@ -231,7 +236,6 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			$funnel_id    = ( is_array( $wfacp_report_data ) && isset( $wfacp_report_data['funnel_id'] ) ) ? $wfacp_report_data['funnel_id'] : 0;
 			$date_created = $order->get_date_created();
 
-
 			if ( ! empty( $date_created ) ) {
 
 				$timezone = new DateTimeZone( wp_timezone_string() );
@@ -239,23 +243,23 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				$date_created = $date_created->format( 'Y-m-d H:i:s' );
 			}
 
-		$wfacp_data = [
-			'order_id'      => absint( $order_id ),
-			'wfacp_id'      => absint( $wfacp_id ),
-			'total_revenue' => abs( $wfacp_total ),
-			'date'          => empty( $date_created ) ? current_time( 'mysql' ) : $date_created,
-			'cid'           => $cid,
-			'fid'           => $funnel_id
-		];
+			$wfacp_data = array(
+				'order_id'      => absint( $order_id ),
+				'wfacp_id'      => absint( $wfacp_id ),
+				'total_revenue' => abs( $wfacp_total ),
+				'date'          => empty( $date_created ) ? current_time( 'mysql' ) : $date_created,
+				'cid'           => $cid,
+				'fid'           => $funnel_id,
+			);
 
-		$insert_data = $this->maybe_upsert_data( $wfacp_data, [ 'order_id'=> absint( $order_id ) ] );
-		if ( $insert_data ) {
-			$order->delete_meta_data( '_wfacp_report_data' );
-			$order->delete_meta_data( '_wfacp_report_needs_normalization' );
-			$order->save();
+			$insert_data = $this->maybe_upsert_data( $wfacp_data, array( 'order_id' => absint( $order_id ) ) );
+			if ( $insert_data ) {
+				$order->delete_meta_data( '_wfacp_report_data' );
+				$order->delete_meta_data( '_wfacp_report_needs_normalization' );
+				$order->save();
+			}
+			remove_filter( 'woocommerce_order_is_paid_statuses', array( $this, 'wfacp_custom_order_status' ) );
 		}
-		remove_filter( 'woocommerce_order_is_paid_statuses', [ $this, 'wfacp_custom_order_status' ] );
-	}
 
 		public function delete_report_for_order( $order_id ) {
 			if ( empty( $order_id ) || absint( 0 === $order_id ) ) {
@@ -268,67 +272,67 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->delete( $wpdb->wfacp_stats, [ 'order_id' => $order_id ], [ '%d' ] );
+			$wpdb->delete( $wpdb->wfacp_stats, array( 'order_id' => $order_id ), array( '%d' ) );
 		}
 
-	/**
-	 * check is order id already exits and then insert and update data
-	 *
-	 * @param $data
-	 * @param $where
-	 *
-	 * @return bool|int|mysqli_result|null
-	 */
-	private function maybe_upsert_data( $data, $where ) {
-		try {
-			$existing_entry = $this->get_entry( $where );
-			if ( $existing_entry ) {
-				return $this->update_data( $data, $where );
-			} else {
-				return $this->insert_data( $data );
+		/**
+		 * check is order id already exits and then insert and update data
+		 *
+		 * @param $data
+		 * @param $where
+		 *
+		 * @return bool|int|mysqli_result|null
+		 */
+		private function maybe_upsert_data( $data, $where ) {
+			try {
+				$existing_entry = $this->get_entry( $where );
+				if ( $existing_entry ) {
+					return $this->update_data( $data, $where );
+				} else {
+					return $this->insert_data( $data );
+				}
+			} catch ( Exception $e ) {
+
 			}
-		} catch ( Exception $e ) {
 
-		}
-
-		return false;
-	}
-
-	private function get_entry( $where ) {
-		if ( empty( $where ) || ! is_array( $where ) ) {
 			return false;
 		}
 
-		global $wpdb;
-		// Build WHERE clause dynamically
-		$conditions = [];
-		$values     = [];
-		foreach ( $where as $key => $value ) {
-			$conditions[] = "{$key} = %s";
-			$values[]     = $value;
+		private function get_entry( $where ) {
+			if ( empty( $where ) || ! is_array( $where ) ) {
+				return false;
+			}
+
+			global $wpdb;
+			// Build WHERE clause dynamically
+			$conditions = array();
+			$values     = array();
+			foreach ( $where as $key => $value ) {
+				$conditions[] = "{$key} = %s";
+				$values[]     = $value;
+			}
+			$where_sql = implode( ' AND ', $conditions );
+
+			// Query to check if entry exists
+			$query  = $wpdb->prepare( "SELECT * FROM {$wpdb->wfacp_stats} WHERE {$where_sql} LIMIT 1", ...$values );
+			$result = $wpdb->get_row( $query, ARRAY_A );
+
+			return ! empty( $result ) ? $result : false;
 		}
-		$where_sql = implode( ' AND ', $conditions );
 
-		// Query to check if entry exists
-		$query  = $wpdb->prepare( "SELECT * FROM {$wpdb->wfacp_stats} WHERE {$where_sql} LIMIT 1", ...$values );
-		$result = $wpdb->get_row( $query, ARRAY_A );
-
-		return ! empty( $result ) ? $result : false;
-	}
-
-	private function insert_data( $data ) {
-		global $wpdb;
-		$status = $wpdb->insert( $wpdb->wfacp_stats, $data, [ '%d', '%d', '%s', '%s', '%d', '%d' ] );
-		if ( false !== $status ) {
-			return $status;
-		}
+		private function insert_data( $data ) {
+			global $wpdb;
+			$status = $wpdb->insert( $wpdb->wfacp_stats, $data, array( '%d', '%d', '%s', '%s', '%d', '%d' ) );
+			if ( false !== $status ) {
+				return $status;
+			}
 
 			return null;
 		}
 
 		private function update_data( $data, $where ) {
 			global $wpdb;
-			$status = $wpdb->update( $wpdb->wfacp_stats, $data, $where, [ '%s' ], [ '%d', '%d' ] );
+			$status = $wpdb->update( $wpdb->wfacp_stats, $data, $where, array( '%s' ), array( '%d', '%d' ) );
 			if ( false !== $status ) {
 				return true;
 			}
@@ -351,14 +355,14 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 
 		public function wfacp_clear_view_session( $order_id ) {
 			$aero_id = ( $order_id > 0 ) ? wfacp_get_order_meta( wc_get_order( $order_id ), '_wfacp_post_id' ) : 0;
-			if ( $aero_id > 0 && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( $aero_id > 0 && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 				WC()->session->set( 'wfacp_view_session_' . $aero_id, false );
 			}
 		}
 
 		public function update_order_review( $postdata ) {
-			$post_data = [];
-			parse_str( $postdata, $post_data );  
+			$post_data = array();
+			parse_str( $postdata, $post_data );
 			$wfacp_id  = isset( $post_data['_wfacp_post_id'] ) ? $post_data['_wfacp_post_id'] : 0;
 			$funnel_id = 0;
 			if ( $wfacp_id < 1 ) {
@@ -406,7 +410,6 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			if ( absint( $funnel_id ) > 0 ) {
 				WFCO_Model_Report_views::update_data( gmdate( 'Y-m-d', current_time( 'timestamp' ) ), $funnel_id, 7 );
 			}
-
 		}
 
 		public function wfacp_custom_order_status( $all_status ) {
@@ -424,7 +427,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 		 */
 		public function fully_refunded_process( $order_id ) {
 			global $wpdb;
-			$wpdb->update( $wpdb->prefix . "wfacp_stats", [ 'total_revenue' => 0 ], [ 'order_id' => $order_id ] );
+			$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => 0 ), array( 'order_id' => $order_id ) );
 		}
 
 		/**
@@ -432,7 +435,6 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 		 * @param $refund_id
 		 * Partially refunded process for analytics
 		 */
-
 		public function partially_refunded_process( $order_id, $refund_id ) {
 			global $wpdb;
 			$order         = wc_get_order( $order_id );
@@ -447,14 +449,16 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				return;
 			}
 
-
-			$types = apply_filters( 'wfacp_order_type_to_group', array(
-				'line_item',
-				'tax',
-				'shipping',
-				'fee',
-				'coupon',
-			) );
+			$types = apply_filters(
+				'wfacp_order_type_to_group',
+				array(
+					'line_item',
+					'tax',
+					'shipping',
+					'fee',
+					'coupon',
+				)
+			);
 			if ( 0 < count( $refund->get_items( $types ) ) ) {
 				foreach ( $refund->get_items( $types ) as $refund_item ) {
 					$item_id = $refund_item->get_meta( '_refunded_item_id', true );
@@ -476,9 +480,9 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 			}
 
 			if ( $refund_amount > 0 ) {
-				$get_total     = $wpdb->get_var( "SELECT total_revenue FROM " . $wpdb->prefix . "wfacp_stats WHERE order_id = " . $order_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared*/
+				$get_total     = $wpdb->get_var( 'SELECT total_revenue FROM ' . $wpdb->prefix . 'wfacp_stats WHERE order_id = ' . $order_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared*/
 				$refund_amount = ( $get_total <= $refund_amount ) ? 0 : $get_total - $refund_amount;
-				$wpdb->update( $wpdb->prefix . "wfacp_stats", [ 'total_revenue' => $refund_amount ], [ 'order_id' => $order_id ] );
+				$wpdb->update( $wpdb->prefix . 'wfacp_stats', array( 'total_revenue' => $refund_amount ), array( 'order_id' => $order_id ) );
 			}
 		}
 
@@ -501,7 +505,7 @@ if ( ! class_exists( 'WFACP_Reporting' ) ) {
 				'linecredit',
 				'duitnowqriswallet',
 				'duitnowqr',
-				'duitnowqris'
+				'duitnowqris',
 			);
 
 			return apply_filters( 'wfacp_ipn_gateways_list', $ipn_gateways );

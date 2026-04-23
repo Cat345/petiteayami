@@ -420,6 +420,9 @@ var BWFAN_Public;
             var sid = $('#bwfan_sid');
             sid = (0 === sid.length) ? urlParams.get('sid') : sid.val();
 
+            var tid = $('#bwfan_tid');
+            tid = (0 === tid.length) ? urlParams.get('tid') : tid.val();
+
             var oneClick = $('#bwfan_one_click').val();
 
             var uid = $('#bwfan_form_uid_id');
@@ -453,7 +456,7 @@ var BWFAN_Public;
                 method: 'post',
                 dataType: 'json',
                 url: bwfanParamspublic.ajax_url,
-                data: $('#bwfan_unsubscribe_fields').serialize() + "&action=bwfan_unsubscribe_user" + "&recipient=" + recipient + "&sid=" + sid + "&unsubscribe_lists=" + lists + "&_nonce=" + bwfan_nonce.val() + "&one_click=" + oneClick + "&one_click_get=" + oneClickArgs,
+                data: $('#bwfan_unsubscribe_fields').serialize() + "&action=bwfan_unsubscribe_user" + "&recipient=" + recipient + "&sid=" + sid + "&tid=" + tid + "&unsubscribe_lists=" + lists + "&_nonce=" + bwfan_nonce.val() + "&one_click=" + oneClick + "&one_click_get=" + oneClickArgs,
                 success: function (result) {
                     // Add the redirect handling here
                     if (result.redirect && result.redirect_url) {

@@ -13,7 +13,7 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 		/**
 		 * @var array $modules_instance | Instance Array.
 		 */
-		public $modules_instance = [];
+		public $modules_instance = array();
 
 		/**
 		 * @var object $post | Post Object.
@@ -23,19 +23,18 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 		/**
 		 * @var array $widgets_json | Widgets Json.
 		 */
-		protected $widgets_json = [];
+		protected $widgets_json = array();
 
 		/**
 		 * @var object $optin_object | Optin Object.
 		 */
 		public $optin_object = null;
-		private $url = '';
+		private $url         = '';
 
 		/**
 		 * Class constructor
 		 */
 		private function __construct() {
-
 
 			$this->register();
 		}
@@ -79,12 +78,10 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 				$js_path    = "/$app_name.js";
 				$style_path = "/$app_name.css";
 
-
 				wp_enqueue_script( 'wfoptin-pro-script', $frontend_dir . $js_path, array( 'wfoptin-script' ), time(), true );
 				wp_enqueue_style( 'wfoptin-pro-default', $frontend_dir . $style_path, array(), time() );
 
 			}
-
 		}
 
 
@@ -96,7 +93,7 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 			$post_id = 0;
 			if ( isset( $_REQUEST['post'] ) && $_REQUEST['post'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$post_id = absint( $_REQUEST['post'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			} else if ( isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			} elseif ( isset( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$post_id = absint( $_REQUEST['edit'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
@@ -109,9 +106,7 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 				return;
 			}
 
-			add_action( 'wp', [ $this, 'prepare_frontend_module' ], - 5 );
-
-
+			add_action( 'wp', array( $this, 'prepare_frontend_module' ), - 5 );
 		}
 
 		/**
@@ -128,7 +123,6 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 				if ( current_action() == 'wp' && ! is_admin() ) {
 					$this->register_scripts();
 				}
-
 			}
 
 			$this->prepare_module();
@@ -152,9 +146,9 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 			}
 
 			if ( 'wp_editor' === $design['selected_type'] || 'gutenberg' === $design['selected_type'] ) {
-				add_action( 'enqueue_block_editor_assets', [ $this, 'admin_script_style' ] );
+				add_action( 'enqueue_block_editor_assets', array( $this, 'admin_script_style' ) );
+				add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_editor_css_in_iframe' ) );
 			}
-
 		}
 
 		/**
@@ -191,10 +185,36 @@ if ( ! class_exists( 'WFOP_Gutenberg_PRO' ) ) {
 				wp_enqueue_style( 'bwf-optin-pro-gutenberg-defaults', $frontend_dir . $style_path, array( 'bwf-optin-block-style' ), $version );
 
 			}
-
 		}
 
+		/**
+		 * Enqueue CSS inside the block editor iframe via enqueue_block_assets.
+		 */
+		public function enqueue_block_editor_css_in_iframe() {
+			if ( ! is_admin() ) {
+				return;
+			}
 
+			global $pagenow, $post;
+
+			if ( ! isset( $post->post_type ) || $this->optin_object->get_post_type_slug() !== $post->post_type || 'post.php' !== $pagenow ) {
+				return;
+			}
+
+			$app_name     = 'optin-popup-block';
+			$frontend_dir = defined( 'BWFOP_POPUP_REACT_ENVIRONMENT' ) ? BWFOP_POPUP_REACT_ENVIRONMENT : $this->url . 'dist';
+			$style_path   = "/$app_name.css";
+
+			wp_enqueue_style( 'wfoptin-pro-default', $frontend_dir . $style_path, array(), time() );
+
+			// Layer 1: Enqueue saved default font for iframe editor
+			$default_font = get_post_meta( $post->ID, 'bwfblock_default_font', true );
+			if ( ! empty( $default_font ) ) {
+				$font_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $default_font ) . ':100,200,300,400,500,600,700,800,900';
+				wp_enqueue_style( 'bwfblock-editor-default-font', $font_url, array(), null );
+				wp_add_inline_style( 'bwfblock-editor-default-font', '.editor-styles-wrapper { font-family: ' . esc_attr( $default_font ) . '; }' );
+			}
+		}
 	}
 
 	WFOP_Gutenberg_PRO::get_instance();

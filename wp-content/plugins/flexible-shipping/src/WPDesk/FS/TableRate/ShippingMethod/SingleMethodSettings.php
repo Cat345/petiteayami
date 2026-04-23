@@ -39,7 +39,7 @@ class SingleMethodSettings implements MethodSettings {
 		$new_settings_fields = [];
 		foreach ( $settings_fields as $key => $settings_field ) {
 			$new_settings_fields[ $key ] = $settings_field;
-			if ( CommonMethodSettings::METHOD_DESCRIPTION === $key ) {
+			if ( CommonMethodSettings::METHOD_LOGO_ID === $key ) {
 				$new_settings_fields['tax_heading'] = [
 					'title'       => __( 'Tax', 'flexible-shipping' ),
 					'type'        => 'title',

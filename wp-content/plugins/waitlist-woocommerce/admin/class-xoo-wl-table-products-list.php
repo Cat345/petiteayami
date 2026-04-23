@@ -151,7 +151,7 @@ class Xoo_WL_Table_Products_List extends WP_List_Table {
 		if ( $search !== '' || $stock_status !== '' ) {
 
 			$args = array(
-				'post_type'      => 'product',
+				'post_type'      => array('product', 'product_variation'),
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 			);

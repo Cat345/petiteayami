@@ -4,14 +4,13 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 
 		private static $ins = null;
 		public $environment = 'customizer-preview';
-		private $scripts = array();
+		private $scripts    = array();
 
 		private $styles = array();
 
 		public function __construct() {
-			add_action( 'wp', [ $this, 'maybe_register_assets_on_load' ] );
-			add_filter( 'bwf_general_settings_default_config', [ $this, 'migrate_modify_allowed_theme_settings' ], 99, 1 );
-
+			add_action( 'wp', array( $this, 'maybe_register_assets_on_load' ) );
+			add_filter( 'bwf_general_settings_default_config', array( $this, 'migrate_modify_allowed_theme_settings' ), 99, 1 );
 		}
 
 		public static function get_instance() {
@@ -53,7 +52,6 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					$this->add_styles( $handle, $styles['path'], $styles['version'], $styles['in_footer'] );
 				}
 			}
-
 		}
 
 		public function get_scripts() {
@@ -67,162 +65,165 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				$suffix = '.min';
 			}
 
-			return apply_filters( 'wfocu_assets_scripts', array(
-				'jquery'     => array(
-					'path'      => includes_url() . 'js/jquery/jquery.js',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+			return apply_filters(
+				'wfocu_assets_scripts',
+				array(
+					'jquery'                      => array(
+						'path'      => includes_url() . 'js/jquery/jquery.js',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'underscore' => array(
-					'path'      => includes_url() . 'js/underscore.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+					'underscore'                  => array(
+						'path'      => includes_url() . 'js/underscore.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'wp-util'    => array(
-					'path'      => includes_url() . 'js/wp-util.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+					'wp-util'                     => array(
+						'path'      => includes_url() . 'js/wp-util.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
 
-				'accounting' => array(
-					'path'      => WC()->plugin_url() . '/assets/js/accounting/accounting.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'offer',
-						'offer-page',
-						'customizer-preview',
-						'offer-single',
+					'accounting'                  => array(
+						'path'      => WC()->plugin_url() . '/assets/js/accounting/accounting.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'offer',
+							'offer-page',
+							'customizer-preview',
+							'offer-single',
+						),
 					),
-				),
 
-				'flickity' => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-single',
-						'offer-page'
+					'flickity'                    => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-single',
+							'offer-page',
+						),
 					),
-				),
 
-				'wfocu-product'               => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/wfocu-product' . $suffix . '.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+					'wfocu-product'               => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/wfocu-product' . $suffix . '.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'wfocu-jquery-countdown'      => array(
-					'path' => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/jquery.countdown.min.js',
+					'wfocu-jquery-countdown'      => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/jquery.countdown.min.js',
 
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-single',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-single',
+						),
 					),
-				),
-				'wfocu-polyfill'              => array(
-					'path'      => WFOCU_PLUGIN_URL . '/admin/assets/js/wfocu-polyfill.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'offer',
-						'offer-page',
-						'offer-single',
+					'wfocu-polyfill'              => array(
+						'path'      => WFOCU_PLUGIN_URL . '/admin/assets/js/wfocu-polyfill.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'wfocu-swal'                  => array(
-					'path'      => WFOCU_PLUGIN_URL . '/admin/assets/js/wfocu-sweetalert.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'offer',
-						'offer-page',
-						'offer-single',
+					'wfocu-swal'                  => array(
+						'path'      => WFOCU_PLUGIN_URL . '/admin/assets/js/wfocu-sweetalert.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'wfocu-global'                => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/wfocu-public' . $suffix . '.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'offer',
-						'offer-page',
-						'customizer-preview',
-						'offer-single',
+					'wfocu-global'                => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/wfocu-public' . $suffix . '.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'offer',
+							'offer-page',
+							'customizer-preview',
+							'offer-single',
+						),
 					),
-				),
-				'customize-base'              => array(
-					'path'      => includes_url() . 'js/customize-base.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
+					'customize-base'              => array(
+						'path'      => includes_url() . 'js/customize-base.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
 
+						),
 					),
-				),
-				'customize-preview'           => array(
-					'path'      => includes_url() . 'js/customize-preview.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
+					'customize-preview'           => array(
+						'path'      => includes_url() . 'js/customize-preview.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+						),
 					),
-				),
-				'wfocu_customizer_live'       => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/customizer' . $suffix . '.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
+					'wfocu_customizer_live'       => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/' . $live_or_dev . '/js/customizer' . $suffix . '.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+						),
 					),
-				),
-				'customize-selective-refresh' => array(
-					'path'      => includes_url() . 'js/customize-selective-refresh.min.js',
-					'version'   => null,
-					'in_footer' => true,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
+					'customize-selective-refresh' => array(
+						'path'      => includes_url() . 'js/customize-selective-refresh.min.js',
+						'version'   => null,
+						'in_footer' => true,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+						),
 					),
-				),
-			) );
+				)
+			);
 		}
 
 		public function add_scripts( $handle, $src, $version = null, $is_footer = false ) {
@@ -245,79 +246,82 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				$suffix = '.min';
 			}
 
-			return apply_filters( 'wfocu_assets_styles', array(
-				'wfocu-grid-css'               => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/css/grid.min.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
+			return apply_filters(
+				'wfocu_assets_styles',
+				array(
+					'wfocu-grid-css'               => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/css/grid.min.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+						),
 					),
-				),
-				'wfocu-global-css'             => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/css/style' . $suffix . '.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
+					'wfocu-global-css'             => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/css/style' . $suffix . '.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+						),
 					),
-				),
-				'wfocu-offer-confirmation-css' => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/css/style-offer-confirmation' . $suffix . '.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+					'wfocu-offer-confirmation-css' => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/css/style-offer-confirmation' . $suffix . '.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
 					),
-				),
-				'flickity'                     => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/flickity/flickity.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-single',
+					'flickity'                     => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/flickity/flickity.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-single',
+						),
 					),
-				),
-				'flickity-common'              => array(
-					'path'      => WFOCU_PLUGIN_URL . '/assets/css/flickity-common.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(),
-				),
-				'customize-preview'            => array(
-					'path'      => includes_url() . 'css/customize-preview.min.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
+					'flickity-common'              => array(
+						'path'      => WFOCU_PLUGIN_URL . '/assets/css/flickity-common.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(),
 					),
-				),
-				'dashicons'                    => array(
-					'path'      => includes_url() . 'css/dashicons.min.css',
-					'version'   => null,
-					'in_footer' => false,
-					'supports'  => array(
-						'customizer',
-						'customizer-preview',
-						'offer',
-						'offer-page',
-						'offer-single',
+					'customize-preview'            => array(
+						'path'      => includes_url() . 'css/customize-preview.min.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+						),
 					),
-				),
+					'dashicons'                    => array(
+						'path'      => includes_url() . 'css/dashicons.min.css',
+						'version'   => null,
+						'in_footer' => false,
+						'supports'  => array(
+							'customizer',
+							'customizer-preview',
+							'offer',
+							'offer-page',
+							'offer-single',
+						),
+					),
 
-			) );
+				)
+			);
 		}
 
 		public function add_styles( $handle, $src, $version = null, $is_footer = false ) {
@@ -330,7 +334,6 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				'version' => ( is_null( $version ) ) ? WFOCU_VERSION_DEV : $version,
 				'foot'    => $is_footer,
 			);
-
 		}
 
 		public function print_scripts( $is_head = false ) {
@@ -350,8 +353,12 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 						 * Ensuring if script has been enqueued already
 						 */
 						if ( true === apply_filters( 'wfocu_should_render_script_' . $handle, true ) ) {
-							printf( ' <!--suppress ALL -->
-<script type="text/javascript" id="%s" src="%s"></script>', esc_attr( 'script_' . $handle ), esc_url( $data['src'] . '?v=' . $data['version'] ) );//phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+							printf(
+								' <!--suppress ALL -->
+<script type="text/javascript" id="%s" src="%s"></script>',
+								esc_attr( 'script_' . $handle ),
+								esc_url( $data['src'] . '?v=' . $data['version'] )
+							);//phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 							unset( $this->scripts[ $handle ] );
 						}
@@ -399,7 +406,6 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 		public function maybe_register_assets_on_load() {
 			global $post;
 
-
 			$canvas_template = WFOCU_Common::get_canvas_template();
 			$boxed_template  = WFOCU_Common::get_boxed_template();
 			$page_template   = isset( $post->ID ) ? get_post_meta( $post->ID, '_wp_page_template', true ) : '';
@@ -408,35 +414,34 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				$should_register = apply_filters( 'wfocu_should_register_assets', true );
 
 				if ( true === $should_register ) {
-					$this->maybe_register_assets( [], '', true );
+					$this->maybe_register_assets( array(), '', true );
 				}
 
-			if ( ( $canvas_template === $page_template ) || ( $boxed_template === $page_template ) ) {
-				if ( $this->maybe_theme_script_enable( $post ) ) {
+				if ( ( $canvas_template === $page_template ) || ( $boxed_template === $page_template ) ) {
+					if ( $this->maybe_theme_script_enable( $post ) ) {
 
-					/**
-					 * handle case for boxed template and manage width
-					 */
-					if ( $boxed_template === $page_template ) {
-						add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_add_upsell_frontend_styles' ), 30 );
+						/**
+						 * handle case for boxed template and manage width
+						 */
+						if ( $boxed_template === $page_template ) {
+							add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_add_upsell_frontend_styles' ), 30 );
+						}
+
+						return;
 					}
-
-					return;
+					add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_remove_conflicted_themes_styles' ), 9999 );
+					add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_add_upsell_frontend_styles' ), 30 );
 				}
-				add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_remove_conflicted_themes_styles' ), 9999 );
-				add_action( 'wp_enqueue_scripts', array( $this, 'wfocu_add_upsell_frontend_styles' ), 30 );
 			}
 		}
-	}
 
-		public function maybe_register_assets( $handles = [], $environment = '', $force_environment = false ) {
+		public function maybe_register_assets( $handles = array(), $environment = '', $force_environment = false ) {
 
 			$this->maybe_register_styles( $handles, $environment, $force_environment );
 			$this->maybe_register_scripts( $handles, $environment, $force_environment );
-
 		}
 
-		public function maybe_register_styles( $handles = [], $environment = '', $force_environment = false ) {
+		public function maybe_register_styles( $handles = array(), $environment = '', $force_environment = false ) {
 
 			$styles = $this->get_styles();
 
@@ -450,12 +455,11 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					continue;
 				}
 
-				wp_register_style( $handle, $style['path'], [], $style['version'] );
+				wp_register_style( $handle, $style['path'], array(), $style['version'] );
 			}
-
 		}
 
-		public function maybe_register_scripts( $handles = [], $environment = '', $force_environment = false ) {
+		public function maybe_register_scripts( $handles = array(), $environment = '', $force_environment = false ) {
 			$scripts = $this->get_scripts();
 
 			foreach ( $scripts as $handle => $script ) {
@@ -466,7 +470,7 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				if ( false === $force_environment && ! empty( $environment ) && false === in_array( $environment, $script['supports'], true ) ) {
 					continue;
 				}
-				wp_register_script( $handle, $script['path'], [], $script['version'], $script['in_footer'] );
+				wp_register_script( $handle, $script['path'], array(), $script['version'], $script['in_footer'] );
 			}
 		}
 
@@ -481,19 +485,22 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 		}
 
 		public function wfocu_remove_conflicted_themes_styles() {
+			if ( ! empty( $_GET['et_fb'] ) ) {
+				return;
+			}
 
-		//globally registered styles and scripts
-		global $wp_styles;
-		global $wp_scripts;
+			// globally registered styles and scripts
+			global $wp_styles;
+			global $wp_scripts;
 
-			$get_stylesheet = 'themes/' . get_stylesheet() . '/';
-			$get_template   = 'themes/' . get_template() . '/';
+				$get_stylesheet = 'themes/' . get_stylesheet() . '/';
+				$get_template   = 'themes/' . get_template() . '/';
 
-		if ( 'flatsome' === get_template() ) {
-			remove_action( 'wp_head', 'flatsome_custom_css', 100 );
-		}
+			if ( 'flatsome' === get_template() ) {
+				remove_action( 'wp_head', 'flatsome_custom_css', 100 );
+			}
 
-		wp_enqueue_style( 'dashicons' );
+			wp_enqueue_style( 'dashicons' );
 
 			// Dequeue and deregister all of the registered styles
 			foreach ( $wp_styles->registered as $handle => $data ) {
@@ -527,7 +534,7 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				wp_dequeue_style( 'porto-shortcodes' );
 				wp_dequeue_style( 'porto-bootstrap' );
 				wp_dequeue_style( 'porto-dynamic-style' );
-				if ( is_rtl() ) { //font-awesome css is written in this css in porto theme
+				if ( is_rtl() ) { // font-awesome css is written in this css in porto theme
 					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins_rtl.css?ver=' . PORTO_VERSION );
 				} else {
 					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins.css?ver=' . PORTO_VERSION );
@@ -537,37 +544,36 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 		}
 
 
-	public function maybe_theme_script_enable( $post ) {
-		if ( empty( $post ) ) {
+		public function maybe_theme_script_enable( $post ) {
+			if ( empty( $post ) ) {
+				return false;
+			}
+			if ( class_exists( 'BWF_Admin_General_Settings' ) ) {
+				$allowed_steps = BWF_Admin_General_Settings::get_instance()->get_option( 'allow_theme_css' );
+				if ( ( is_array( $allowed_steps ) && in_array( $post->post_type, $allowed_steps, true ) ) || $this->maybe_save_allowed_theme_settings() ) {
+					add_filter( 'wfocu_allow_externals_on_customizer', '__return_true' );
+
+					return true;
+				}
+			}
+
 			return false;
 		}
-		if ( class_exists( 'BWF_Admin_General_Settings' ) ) {
-			$allowed_steps = BWF_Admin_General_Settings::get_instance()->get_option( 'allow_theme_css' );
-			if ( ( is_array( $allowed_steps ) && in_array( $post->post_type, $allowed_steps, true ) ) || $this->maybe_save_allowed_theme_settings() ) {
-				add_filter( 'wfocu_allow_externals_on_customizer', '__return_true' );
 
-				return true;
-			}
-		}
-
-		return false;
-
-	}
-
-	/**
-	 * @param $args
-	 *
-	 * @return mixed
-	 */
-	public function migrate_modify_allowed_theme_settings( $args ) {
-		$db_options = get_option( 'bwf_gen_config', [] );
+		/**
+		 * @param $args
+		 *
+		 * @return mixed
+		 */
+		public function migrate_modify_allowed_theme_settings( $args ) {
+			$db_options = get_option( 'bwf_gen_config', array() );
 
 			if ( ! empty( $db_options ) && ! empty( $db_options['allow_theme_css'] ) ) {
 				return $args;
 			}
 
 			if ( ! isset( $args['allow_theme_css'] ) ) {
-				$args['allow_theme_css'] = [];
+				$args['allow_theme_css'] = array();
 			}
 
 			/**
@@ -585,13 +591,13 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 		/**
 		 * Save allow theme script settings
 		 * And it's a one time process
+		 *
 		 * @return bool
 		 */
 		public function maybe_save_allowed_theme_settings() {
 
 			$is_updated = false;
-			$db_options = get_option( 'bwf_gen_config', [] );
-
+			$db_options = get_option( 'bwf_gen_config', array() );
 
 			/**
 			 * check if db options  contains allow_theme_css key, then no need to update any settings, we must respect custom choice here
@@ -600,13 +606,12 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 				return $is_updated;
 			}
 
-
 			/**
 			 * Allow default theme script if user use any snippet
 			 */
-			$allowed_themes = apply_filters( 'wffn_allowed_themes', [ 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ] );
+			$allowed_themes = apply_filters( 'wffn_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ) );
 
-			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', [ 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ] );
+			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ) );
 
 			$general_settings = BWF_Admin_General_Settings::get_instance();
 
@@ -616,7 +621,7 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					'wffn_ty',
 					'wffn_landing',
 					'wffn_optin',
-					'wffn_oty'
+					'wffn_oty',
 				);
 
 				$is_updated = true;
@@ -630,7 +635,6 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 					);
 				}
 
-
 				$is_updated = true;
 			}
 
@@ -640,7 +644,6 @@ if ( ! class_exists( 'WFOCU_Assets_Loader' ) ) {
 			}
 
 			return $is_updated;
-
 		}
 	}
 

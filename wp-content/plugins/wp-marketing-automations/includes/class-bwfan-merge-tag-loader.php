@@ -26,7 +26,7 @@ class BWFAN_Merge_Tag_Loader {
 	private static $localize_tags_with_group = [];
 
 	private $_form_merge_tags = [
-		'contact_confirmation_link'
+		'contact_confirmation_link', // Form-only when Pro registers it; filtered from broadcast. When merged, Pro skips registration.
 	];
 
 	private $_fields_merge_tags = [

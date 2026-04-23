@@ -129,7 +129,7 @@ return [
             'description' => 'Set the maximum content width.',
             'type' => 'checkbox',
             'text' => 'Remove horizontal padding',
-            'enable' => 'width && width != \'expand\'',
+            'enable' => "width && width != 'expand'",
         ],
         'width_expand' => [
             'label' => 'Expand One Side',
@@ -137,11 +137,11 @@ return [
                 'Expand the width of one side to the left or right while the other side keeps within the constraints of the max width.',
             'type' => 'select',
             'options' => [
-                'Don\'t expand' => '',
+                "Don't expand" => '',
                 'To left' => 'left',
                 'To right' => 'right',
             ],
-            'enable' => 'width && width != \'expand\'',
+            'enable' => "width && width != 'expand'",
         ],
         'height' => [
             'type' => 'select',
@@ -160,7 +160,7 @@ return [
                 'min' => 0,
                 'step' => 10,
             ],
-            'enable' => 'height == \'viewport\' || height == \'pixels\'',
+            'enable' => "height == 'viewport' || height == 'pixels'",
         ],
         'height_viewport_offset' => [
             'description' =>
@@ -168,7 +168,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Subtract height above section',
             'enable' =>
-                'height == \'viewport\' && (height_viewport || 0) <= 100 || height == \'section\'',
+                "height == 'viewport' && (height_viewport || 0) <= 100 || height == 'section'",
         ],
         'vertical_align' => [
             'label' => 'Vertical Alignment',
@@ -491,7 +491,7 @@ return [
                     'text' => 'Edit Parallax',
                     'panel' => 'image-parallax',
                     'show' => 'image && !video',
-                    'enable' => 'image_effect == \'parallax\'',
+                    'enable' => "image_effect == 'parallax'",
                 ],
                 'media_visibility' => [
                     'label' => 'Visibility',
@@ -509,7 +509,7 @@ return [
                 'media_background' => [
                     'label' => 'Background Color',
                     'description' =>
-                        'Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn\'t cover the whole section.',
+                        "Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn't cover the whole section.",
                     'type' => 'color',
                 ],
                 'media_blend_mode' => [

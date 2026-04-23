@@ -158,8 +158,6 @@ class DateHelper
 
     /**
      * @param array<null|DateTime> $dates
-     * @param string $nominator
-     * @param string $unit
      */
     protected static function modify($dates, string $nominator, string $unit): void
     {

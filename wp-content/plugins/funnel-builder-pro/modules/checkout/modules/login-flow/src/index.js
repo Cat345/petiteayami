@@ -1,4 +1,9 @@
 (function ($) {
+    // Defensive check for required global object
+    if (typeof wfacp_frontend === 'undefined' || !wfacp_frontend) {
+        return;
+    }
+
     if ('yes' === wfacp_frontend.is_user_logged_in) {
         return;
     }
@@ -12,7 +17,7 @@
 
         initializeModal() {
             const self = this; // Store 'this' in 'self'
-            $(document).on("click", "#funnelkitLoginModalToggler", (e) => this.showModal(e))
+            $(document).on("click", "#funnelkitLoginModalToggler", (e) => this.handleLoginClick(e))
                 .on("click", `${this.modalSelector} .wfacp-quickv-close`, (e) => this.hideModal(e),)
                 .on("click", "body", (e) => this.hideModalOnOutsideClick(e));
 
@@ -20,9 +25,83 @@
             $(window).on('load', function () {
                 $(document.body).off("click", "a.wfacp_display_smart_login");
                 $(document.body).on("click", "a.wfacp_display_smart_login", (e) => {
-                    self.showModal(e);
+                    self.handleLoginClick(e);
                 });
             });
+        }
+
+        handleLoginClick(e) {
+            e.preventDefault();
+
+            // Check login form style: 'true' = Overlay, 'false' = Inline
+            const loginFormStyle = wfacp_frontend.hasOwnProperty('display_smart_login')
+                ? wfacp_frontend.display_smart_login
+                : 'true';
+
+            if (loginFormStyle === 'false') {
+                this.scrollToInlineLogin();
+            } else {
+                this.showModal(e);
+            }
+        }
+
+        // Helper method to autofill username field
+        autofillUsernameField(container) {
+            let emailToFill = $('#funnelkitLoginModalToggler').attr('data-email-id');
+            if (!emailToFill || emailToFill.trim() === '') {
+                emailToFill = $(".wfacp-section #billing_email").val();
+            }
+
+            if (emailToFill && emailToFill.trim() !== '') {
+                const usernameField = container.find('input[name="username"]');
+                if (usernameField.length > 0) {
+                    usernameField.val(emailToFill);
+                    usernameField.parents('.wfacp-form-control-wrapper').addClass('wfacp-anim-wrap');
+                }
+            }
+        }
+
+        scrollToInlineLogin() {
+            // Find login section (try multiple selectors)
+            let loginSection = $('.wfacp-login-wrapper').first();
+            if (loginSection.length === 0) {
+                loginSection = $('.wfacp-coupon-section').first();
+            }
+            if (loginSection.length === 0) {
+                loginSection = $('.woocommerce-account-fields').first();
+            }
+            if (loginSection.length === 0) {
+                loginSection = $('.showlogin').closest('.wfacp-coupon-section');
+            }
+
+            if (loginSection.length === 0) {
+                return;
+            }
+
+            // Reveal form if hidden
+            const showLoginLink = $('.showlogin');
+            const loginForm = loginSection.find('form.woocommerce-form-login');
+
+            if (showLoginLink.length > 0 && loginForm.is(':hidden')) {
+                showLoginLink.trigger('click');
+            }
+
+            if (loginForm.length > 0 && loginForm.is(':hidden')) {
+                loginForm.slideDown(300);
+            }
+
+            if (loginSection.is(':hidden')) {
+                loginSection.slideDown(300);
+            }
+
+            // Autofill username
+            this.autofillUsernameField(loginSection);
+
+            // Scroll to section
+            setTimeout(() => {
+                const offsetTop = loginSection.offset().top - 100;
+                $('html, body').animate({ scrollTop: offsetTop }, 500);
+            }, 300);
         }
 
 
@@ -72,6 +151,9 @@
             this.nonce = wfacp_frontend.nonce;
             this.debounceDelay = 1000;
             this.timeout = null;
+            this.emailCheckInProgress = false;
+            this.userFoundButNotLoggedIn = false;
+            this.lastCheckedEmail = ''; // Track last checked email to prevent unnecessary checks
             $(document).ready(this.init.bind(this));
         }
 
@@ -87,17 +169,51 @@
             }
 
             this.field_key.on("keyup", (event) => {
-                $("#funnelkitLoginAction").remove();
+                const $target = $(event.target);
+                const currentEmail = $target.val();
+
+                // Only remove login prompt if email is being modified (different from last checked)
+                if (currentEmail !== this.lastCheckedEmail) {
+                    $("#funnelkitLoginAction").remove();
+                    this.userFoundButNotLoggedIn = false;
+                }
+
                 clearTimeout(this.timeout);
                 this.timeout = setTimeout(() => {
-                    const email = $(event.target).val();
-                    this.validate_email(email);
+                    // Get fresh value at timeout execution (user may have continued typing)
+                    this.validate_email($target.val());
                 }, this.debounceDelay);
+            });
+
+            // Prevent form submission on email field Enter key press if login prompt is visible
+            this.field_key.on("keydown", (event) => {
+                if (event.key === "Enter" || event.keyCode === 13) {
+                    const email = $(event.target).val();
+
+                    // Only validate complete emails
+                    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        // Only block if guest checkout is DISABLED
+                        // When disabled, users MUST login - so enforce it
+                        const guestCheckoutDisabled = wfacp_frontend.enable_guest_checkout !== 'yes';
+
+                        // If login prompt is visible and guest checkout is disabled, prevent submission
+                        if (guestCheckoutDisabled && $("#funnelkitLoginAction").length > 0) {
+                            event.preventDefault();
+                            this.shakeLoginPrompt();
+                            return false;
+                        }
+                    }
+                }
             });
         }
 
         validate_email(email) {
+            // Only check if email is valid and different from last checked email
             if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                // Prevent duplicate checks for the same email
+                if (email === this.lastCheckedEmail) {
+                    return;
+                }
                 this.checkUserByEmail(email);
             }
         }
@@ -107,6 +223,11 @@
             if (true === this.rate_limit) {
                 return;
             }
+
+            this.emailCheckInProgress = true;
+
+            // Temporarily disable next button during AJAX call
+            $('.wfacp_next_page_button').addClass('wfacp-checking-user');
 
             $.ajax({
                 url: this.ajaxUrl,
@@ -121,39 +242,61 @@
                 success: (response) => this.successHandler(response),
                 error: (jqXHR, textStatus, errorThrown) =>
                     this.errorHandler(jqXHR, textStatus, errorThrown),
+                complete: () => {
+                    this.emailCheckInProgress = false;
+
+                    // Re-enable next button after AJAX completes
+                    $('.wfacp_next_page_button').removeClass('wfacp-checking-user');
+                }
             });
         }
 
         // Placeholder methods for callbacks, or you can define actual logic here
         beforeSendHandler() {
+            // Only remove if it exists (will be replaced by new one if user found)
             $("#funnelkitLoginAction").remove();
+            this.userFoundButNotLoggedIn = false;
         }
 
         successHandler(response) {
             if (response.data.hasOwnProperty('rate_limit') && 'yes' === response.data.rate_limit) {
                 this.rate_limit = true;
             }
-            let username_field = $('#funnelkitLoginModal input[name="username"]');
-            if (undefined !== response.data.email_id) {
-                username_field.val(response.data.email_id);
-                username_field.parents('.wfacp-form-control-wrapper').addClass('wfacp-anim-wrap');
-            } else {
-                $('#funnelkitLoginModal input[name="username"]').val('');
-                username_field.parents('.wfacp-form-control-wrapper').removeClass('wfacp-anim-wrap');
+
+            // Update last checked email after successful check
+            const currentEmail = this.field_key.val();
+            this.lastCheckedEmail = currentEmail;
+
+            // Store email_id for inline form autofill
+            const emailId = response.data.email_id;
+            if (emailId) {
+                $('#funnelkitLoginModalToggler').attr('data-email-id', emailId);
             }
 
-            if (response.success == true) {
+            // Autofill overlay modal username field
+            const usernameField = $('#funnelkitLoginModal input[name="username"]');
+            if (emailId) {
+                usernameField.val(emailId);
+                usernameField.parents('.wfacp-form-control-wrapper').addClass('wfacp-anim-wrap');
+            } else {
+                usernameField.val('');
+                usernameField.parents('.wfacp-form-control-wrapper').removeClass('wfacp-anim-wrap');
+            }
+
+            if (response.success === true) {
+                this.userFoundButNotLoggedIn = true;
+
+                // Print the HTML (login prompt)
                 $(".wfacp-section #billing_email_field").after(response.data.html);
 
                 setTimeout(function () {
                     $(".wfacp-section .wfacp-search-wrap").addClass("wfacp-show-field");
                 }, 30);
 
-                $("#wfacp-sec-wrapper .woocommerce-account-fields").addClass('wfacp-hide-element');
+                // Button remains enabled - event capture will handle blocking
             } else {
 
-
-                $("#wfacp-sec-wrapper .woocommerce-account-fields").removeClass('wfacp-hide-element');
+                this.userFoundButNotLoggedIn = false;
                 $(".wfacp-section .wfacp-search-wrap").removeClass("wfacp-show-field");
                 setTimeout(function () {
                     $(".wfacp-section .wfacp-search-wrap").remove();
@@ -165,6 +308,54 @@
 
         errorHandler(jqXHR, textStatus, errorThrown) {
             $("#funnelkitLoginAction").remove();
+            this.userFoundButNotLoggedIn = false;
+            // Reset last checked email on error
+            this.lastCheckedEmail = '';
+        }
+
+        shakeLoginPrompt() {
+            const loginPrompt = $("#funnelkitLoginAction");
+            if (loginPrompt.length > 0) {
+                // Add shake animation
+                loginPrompt.addClass('wfacp-shake-animation');
+
+                // Add persistent red color class
+                loginPrompt.addClass('wfacp-login-required');
+
+                // Announce error to screen readers (accessibility)
+                this.announceToScreenReader(wfacp_frontend.loginRequiredMessage || 'Please log in to continue with checkout');
+
+                // Remove shake animation class after animation completes, but keep red color
+                setTimeout(function () {
+                    loginPrompt.removeClass('wfacp-shake-animation');
+                    // wfacp-login-required class stays to keep red color
+                }, 400);
+
+                // Scroll to the login prompt and set focus for keyboard users
+                $('html, body').animate({
+                    scrollTop: loginPrompt.offset().top - 100
+                }, 300, function() {
+                    // Set focus to login button for keyboard accessibility
+                    const loginButton = loginPrompt.find('button, a').first();
+                    if (loginButton.length > 0) {
+                        loginButton.focus();
+                    }
+                });
+            }
+        }
+
+        // Announce message to screen readers via ARIA live region
+        announceToScreenReader(message) {
+            let liveRegion = $('#wfacp-sr-announcer');
+            if (liveRegion.length === 0) {
+                liveRegion = $('<div id="wfacp-sr-announcer" role="alert" aria-live="assertive" aria-atomic="true" class="screen-reader-text" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"></div>');
+                $('body').append(liveRegion);
+            }
+            // Clear and set message (clearing first ensures announcement even for same message)
+            liveRegion.text('');
+            setTimeout(function() {
+                liveRegion.text(message);
+            }, 100);
         }
 
         debounce(func, wait) {
@@ -201,29 +392,25 @@
         }
 
 
-        // Login user
+        // Login user - now uses PHP form submission (no AJAX)
         handleLogin(e) {
-            e.preventDefault();
             const form = $(e.target);
             let username = form.find('input[name="username"]').val();
             let password = form.find('input[name="password"]').val();
             let live_validation = wfacp_frontend.wfacp_enable_live_validation;
+            
+            // Only do client-side validation, then allow form to submit normally
             if ((username == '' || password == '') && (live_validation == "true" || live_validation == true)) {
+                e.preventDefault();
                 form.find('.wfacp-form-control:visible').trigger('focusout', {'inline_validation': true})
-                return;
+                return false;
             }
 
-            $.ajax({
-                url: this.ajaxUrl,
-                type: "POST",
-                dataType: "json",
-                data: form.serialize(),
-                beforeSend: () => this.beforeSendHandler(),
-                success: (response) => this.successHandler(response),
-                error: (jqXHR, textStatus, errorThrown) =>
-                    this.errorHandler(jqXHR, textStatus, errorThrown),
-                complete: () => this.completeHandler(),
-            });
+            // Show loading state
+            this.login_form.find("button").addClass("wfacp_btn_clicked");
+            
+            // Allow normal form submission - PHP will handle login and redirect
+            return true;
         }
 
         beforeSendHandler() {
@@ -250,7 +437,7 @@
 
 
             } else {
-                // Handle successful login here (e.g., redirect to a new page)
+                // Handle successful login - page will reload and user will be logged in
                 window.location.reload();
             }
         }
@@ -381,7 +568,47 @@
 
 
         if ('true' === wfacp_frontend.display_prompt_returning_user) {
-            new WfacpUserEmailChecker();
+            const emailChecker = new WfacpUserEmailChecker();
+
+            // Only enable force login validation if guest checkout is DISABLED
+            // When guest checkout is disabled, users MUST login - enforce it with blocking
+            const guestCheckoutDisabled = wfacp_frontend.enable_guest_checkout !== 'yes';
+
+            if (guestCheckoutDisabled) {
+                // Add validation before next step navigation - use capture phase for higher priority
+                document.addEventListener('click', function (e) {
+                    const target = e.target;
+
+                    // Check if clicked element is next button or its child
+                    if (target.closest('.wfacp_next_page_button')) {
+                        // Check if login prompt is visible and user is not logged in
+                        if ($('#funnelkitLoginAction').length > 0 && 'yes' !== wfacp_frontend.is_user_logged_in) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+
+                            // Shake the login prompt
+                            emailChecker.shakeLoginPrompt();
+
+                            return false;
+                        }
+                    }
+                }, true); // Use capture phase to run before other handlers
+
+                // Add validation before form submission
+                $(document).on('submit', 'form.checkout', function (e) {
+                    // Check if login prompt is visible and user is not logged in
+                    if ($('#funnelkitLoginAction').length > 0 && 'yes' !== wfacp_frontend.is_user_logged_in) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+
+                        // Shake the login prompt
+                        emailChecker.shakeLoginPrompt();
+
+                        return false;
+                    }
+                });
+            }
         }
 
 

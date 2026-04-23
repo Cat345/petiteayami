@@ -4,18 +4,18 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 	class WFACP_Template_Importer {
 
 		private static $instance = null;
-		private static $importer = [];
+		private static $importer = array();
 
 		private function __construct() {
 		}
 
 		public static function get_error_message( $code ) {
-			$messages = [
+			$messages = array(
 				'license-or-domain-invalid' => __( 'This site does not have access to template library.  To get access activate the license. For any further help contact support.', 'funnel-builder' ),
 				'license-expired'           => __( 'This site does not have access to template library as license has expired. To get access renew the license. For any further help contact support.', 'funnel-builder' ),
 				'invalid-step'              => sprintf( __( 'Please check if you have valid license key. Try activating the license again. For any further help contact support. <a href=%s target="_blank">Go to Licenses</a>', 'funnel-builder' ), esc_url( admin_url( 'admin.php?page=bwf&path=/settings' ) ) ),
-				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'funnel-builder' )
-			];
+				'template-not-exists'       => __( 'Template not available in cloud library. Please contact support.', 'funnel-builder' ),
+			);
 			if ( isset( $messages[ $code ] ) ) {
 				return $messages[ $code ];
 			}
@@ -45,8 +45,14 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 		 * @return bool
 		 */
 		public function import( $aero_id, $builder, $slug, $is_multi = 'no' ) {
-			if ( isset( self::$importer[ $builder ] ) ) {
-				$importer = self::$importer[ $builder ];
+			// divi5 falls back to divi importer if no dedicated divi5 importer is registered
+			$importer_key = $builder;
+			if ( 'divi5' === $builder && ! isset( self::$importer['divi5'] ) && isset( self::$importer['divi'] ) ) {
+				$importer_key = 'divi';
+			}
+
+			if ( isset( self::$importer[ $importer_key ] ) ) {
+				$importer = self::$importer[ $importer_key ];
 				if ( method_exists( $importer, 'import_child' ) ) {
 
 					$status = $importer->import_child( $aero_id, $slug, $is_multi );
@@ -60,21 +66,20 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			if ( $builder === 'elementor' ) {
 				if ( ( ! version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ( version_compare( ELEMENTOR_VERSION, '2.8.0', '>=' ) ) ) ) {
-					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the wordpress version to import the template.', 'woofunnels-aero-checkout' ), '5.0' );
+					$message = sprintf( esc_html__( 'Elementor requires WordPress version %s+. please update the WordPress version to import the template.', 'funnel-builder' ), '5.0' );
 
-					return [ 'error' => $message ];
+					return array( 'error' => $message );
 				}
 			}
-			if ( $builder === 'divi' ) {
+			if ( $builder === 'divi' || $builder === 'divi5' ) {
 				$response = WFACP_Common::check_builder_status( 'divi' );
 				if ( ! empty( $response['error'] ) ) {
 					$message = $response['error'];
 				}
 
-				return [ 'error' => $message ];
+				return array( 'error' => $message );
 
 			}
-
 
 			return false;
 		}
@@ -107,6 +112,7 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 		/**
 		 * Import template remotely.
+		 *
 		 * @return mixed
 		 */
 		public function get_remote_template( $template_id, $builder ) {
@@ -123,32 +129,42 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				$content = file_get_contents( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' );
 				unlink( WFFN_TEMPLATE_UPLOAD_DIR . $template_file_path . '.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Cleaning up temporary template file after import
 
-				return [ 'success' => true, 'data' => $content ];
+				return array(
+					'success' => true,
+					'data'    => $content,
+				);
 			}
 
 			$license = false;
 
 			$requestBody = array(
-				'step'     => $funnel_step,
-				"domain"   => $this->get_domain(),
-				"license"  => $license,
-				"template" => $template_id,
-				"builder"  => $builder,
-				"builder_version" => WFFN_Common::get_builder_version( $builder ),
-				"version"  => 4,
-				"locale" => get_locale()
+				'step'            => $funnel_step,
+				'domain'          => $this->get_domain(),
+				'license'         => $license,
+				'template'        => $template_id,
+				'builder'         => $builder,
+				'builder_version' => WFFN_Common::get_builder_version( $builder ),
+				'version'         => 4,
+				'locale'          => get_locale(),
 			);
+
+			if ( 'elementor' === $builder && class_exists( 'WFFN_Common' ) ) {
+				$requestBody['elementor_container'] = WFFN_Common::is_elementor_container_active() ? 'active' : 'inactive';
+			}
 
 			$requestBody  = wp_json_encode( $requestBody );
 			$endpoint_url = $this->get_template_api_url();
 
-			$response = wp_remote_post( $endpoint_url, array(
-				"body"    => $requestBody,
-				"timeout" => 30, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- Template import requires longer timeout for large files
-				'headers' => [
-					'content-type' => 'application/json'
-				]
-			) );
+			$response = wp_remote_post(
+				$endpoint_url,
+				array(
+					'body'    => $requestBody,
+					'timeout' => 30, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout -- Template import requires longer timeout for large files
+				'headers'     => array(
+					'content-type' => 'application/json',
+				),
+				)
+			);
 			BWF_Logger::get_instance()->log( 'Import $requestBody: ' . print_r( $requestBody, true ), 'wffn_template_import' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			if ( $response instanceof WP_Error ) {
 				return false;
@@ -156,18 +172,21 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 
 			$response = json_decode( $response['body'], true );
 			if ( ! is_array( $response ) ) {
-				return [ 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'funnel-builder' ) ];
+				return array( 'error' => __( 'It seems we are unable to import this template from the cloud library. Please contact support.', 'funnel-builder' ) );
 			}
 			if ( isset( $response['error'] ) ) {
-				return [ 'error' => self::get_error_message( $response['error'] ) ];
+				return array( 'error' => self::get_error_message( $response['error'] ) );
 			}
 			$checkout_data = $response[ $funnel_step ];
 
 			if ( empty( $checkout_data ) ) {
-				return [ 'error' => __( 'No Template found', 'funnel-builder' ) ];
+				return array( 'error' => __( 'No Template found', 'funnel-builder' ) );
 			}
 
-			return [ 'success' => true, 'data' => $checkout_data ];
+			return array(
+				'success' => true,
+				'data'    => $checkout_data,
+			);
 		}
 
 		public function get_domain() {
@@ -200,11 +219,9 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 				if ( is_array( $active_plugins ) && in_array( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ), true ) || array_key_exists( WFFN_PLUGIN_BASENAME, apply_filters( 'active_plugins', $active_plugins ) ) ) {
 					$domain = get_site_url( get_network()->site_id );
 				}
-
 			}
 
-
-			$domain = str_replace( [ 'https://', 'http://' ], '', $domain );
+			$domain = str_replace( array( 'https://', 'http://' ), '', $domain );
 			$domain = trim( $domain, '/' );
 
 			return $domain;
@@ -218,8 +235,6 @@ if ( ! class_exists( 'WFACP_Template_Importer' ) ) {
 		public static function update_import_page_settings( $aero_id, $import_page_settings ) {
 			if ( ! empty( $import_page_settings ) ) {
 				$page_settings = WFACP_Common::get_page_settings( $aero_id );
-
-
 
 				foreach ( $import_page_settings as $key => $setting ) {
 					$page_settings[ $key ] = $import_page_settings[ $key ];

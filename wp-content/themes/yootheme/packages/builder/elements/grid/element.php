@@ -241,7 +241,7 @@ return [
             'description' => 'Show a divider between grid columns.',
             'type' => 'checkbox',
             'text' => 'Show dividers',
-            'enable' => 'grid_column_gap != \'collapse\' && grid_row_gap != \'collapse\'',
+            'enable' => "grid_column_gap != 'collapse' && grid_row_gap != 'collapse'",
         ],
         'grid_column_align' => [
             'label' => 'Alignment',
@@ -372,7 +372,7 @@ return [
             'label' => 'Manual Order',
             'description' =>
                 'Enter a comma-separated list of tags to manually order the filter navigation.',
-            'enable' => 'filter && filter_order == \'manual\'',
+            'enable' => "filter && filter_order == 'manual'",
         ],
         'filter_style' => [
             'label' => 'Style',
@@ -422,7 +422,7 @@ return [
             'description' =>
                 'Set whether filter items are forced into one line or can wrap into multiple lines.',
             'type' => 'checkbox',
-            'text' => 'Don\'t wrap into multiple lines',
+            'text' => "Don't wrap into multiple lines",
             'enable' => 'filter',
         ],
         'filter_align' => [
@@ -435,7 +435,7 @@ return [
                 'Center' => 'center',
                 'Justify' => 'justify',
             ],
-            'enable' => 'filter && filter_position == \'top\'',
+            'enable' => "filter && filter_position == 'top'",
         ],
         'filter_margin' => [
             'label' => 'Margin',
@@ -449,7 +449,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'filter && filter_position == \'top\'',
+            'enable' => "filter && filter_position == 'top'",
         ],
         'filter_grid_width' => [
             'label' => 'Grid Width',
@@ -658,7 +658,7 @@ return [
                 'Large' => 'large',
             ],
             'enable' =>
-                'panel_style || (!panel_style && (show_image || show_video) && image_align != \'between\')',
+                "panel_style || (!panel_style && (show_image || show_video) && image_align != 'between')",
         ],
         'panel_image_no_padding' => [
             'description' =>
@@ -666,7 +666,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Align image without padding',
             'show' => 'panel_style',
-            'enable' => '(show_image || show_video) && image_align != \'between\'',
+            'enable' => "(show_image || show_video) && image_align != 'between'",
         ],
         'item_maxwidth' => [
             'type' => 'select',
@@ -684,7 +684,7 @@ return [
         'panel_content_width' => [
             'label' => '1 Column Content Width',
             'description' =>
-                'Set an optional content width which doesn\'t affect the image if there is just one column.',
+                "Set an optional content width which doesn't affect the image if there is just one column.",
             'type' => 'select',
             'options' => [
                 'Auto' => '',
@@ -693,7 +693,7 @@ return [
             ],
             'show' => '!panel_style',
             'enable' =>
-                '(show_image || show_video) && image_align == \'top\' && !panel_padding && !item_maxwidth && (!grid_default || grid_default == \'1\') && (!grid_small || grid_small == \'1\') && (!grid_medium || grid_medium == \'1\') && (!grid_large || grid_large == \'1\') && (!grid_xlarge || grid_xlarge == \'1\')',
+                "(show_image || show_video) && image_align == 'top' && !panel_padding && !item_maxwidth && (!grid_default || grid_default == '1') && (!grid_small || grid_small == '1') && (!grid_medium || grid_medium == '1') && (!grid_large || grid_large == '1') && (!grid_xlarge || grid_xlarge == '1')",
         ],
         'image_expand' => [
             'label' => 'Height',
@@ -725,7 +725,7 @@ return [
                 'Text Small' => 'text-small',
                 'Text Large' => 'text-large',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_link' => [
             'label' => 'Link',
@@ -733,7 +733,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Link title',
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && show_link',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && show_link",
         ],
         'title_hover_style' => [
             'label' => 'Hover Style',
@@ -745,7 +745,7 @@ return [
                 'Default Link' => '',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && show_link && (title_link || panel_link)',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && show_link && (title_link || panel_link)",
         ],
         'title_decoration' => [
             'label' => 'Decoration',
@@ -758,7 +758,7 @@ return [
                 'Bullet' => 'bullet',
                 'Line' => 'line',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_font_family' => [
             'label' => 'Font Family',
@@ -772,12 +772,12 @@ return [
                 'Secondary' => 'secondary',
                 'Tertiary' => 'tertiary',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -790,7 +790,7 @@ return [
                 'Danger' => 'danger',
                 'Background' => 'background',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_element' => [
             'label' => 'HTML Element',
@@ -806,7 +806,7 @@ return [
                 'h6' => 'h6',
                 'div' => 'div',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_align' => [
             'label' => 'Alignment',
@@ -816,7 +816,7 @@ return [
                 'Top' => 'top',
                 'Left' => 'left',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_grid_width' => [
             'label' => 'Grid Width',
@@ -842,7 +842,7 @@ return [
                 '2X-Large' => '2xlarge',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && title_align == \'left\'',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && title_align == 'left'",
         ],
         'title_grid_column_gap' => [
             'label' => 'Grid Column Gap',
@@ -856,7 +856,7 @@ return [
                 'None' => 'collapse',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && title_align == \'left\'',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && title_align == 'left'",
         ],
         'title_grid_row_gap' => [
             'label' => 'Grid Row Gap',
@@ -870,7 +870,7 @@ return [
                 'None' => 'collapse',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && title_align == \'left\'',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && title_align == 'left'",
         ],
         'title_grid_breakpoint' => [
             'label' => 'Grid Breakpoint',
@@ -884,7 +884,7 @@ return [
                 'X-Large (Large Screens)' => 'xl',
             ],
             'enable' =>
-                'show_title && (title_display != \'lightbox\' && lightbox || !lightbox) && title_align == \'left\'',
+                "show_title && (title_display != 'lightbox' && lightbox || !lightbox) && title_align == 'left'",
         ],
         'title_margin' => [
             'label' => 'Margin Top',
@@ -900,13 +900,13 @@ return [
                 'X-Large' => 'xlarge',
                 'None' => 'remove',
             ],
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'title_margin_auto' => [
             'label' => 'Margin Bottom',
             'type' => 'checkbox',
             'text' => 'Auto',
-            'enable' => 'show_title && (title_display != \'lightbox\' && lightbox || !lightbox)',
+            'enable' => "show_title && (title_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'meta_style' => [
             'label' => 'Style',
@@ -1025,14 +1025,14 @@ return [
                 'Heading H6' => 'h6',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_align' => [
             'label' => 'Alignment',
             'type' => 'checkbox',
             'text' => 'Force left alignment',
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_dropcap' => [
             'label' => 'Drop Cap',
@@ -1040,7 +1040,7 @@ return [
             'type' => 'checkbox',
             'text' => 'Enable drop cap',
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_column' => [
             'label' => 'Columns',
@@ -1055,14 +1055,14 @@ return [
                 'Sixths' => '1-6',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_column_divider' => [
             'description' => 'Show a divider between text columns.',
             'type' => 'checkbox',
             'text' => 'Show dividers',
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox) && content_column',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox) && content_column",
         ],
         'content_column_breakpoint' => [
             'label' => 'Columns Breakpoint',
@@ -1076,7 +1076,7 @@ return [
                 'X-Large (Large Screens)' => 'xl',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox) && content_column',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox) && content_column",
         ],
         'content_margin' => [
             'label' => 'Margin Top',
@@ -1093,14 +1093,14 @@ return [
                 'None' => 'remove',
             ],
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'content_margin_auto' => [
             'label' => 'Margin Bottom',
             'type' => 'checkbox',
             'text' => 'Auto',
             'enable' =>
-                'show_content && (content_display != \'lightbox\' && lightbox || !lightbox)',
+                "show_content && (content_display != 'lightbox' && lightbox || !lightbox)",
         ],
         'image_width' => [
             'type' => 'number',
@@ -1135,7 +1135,7 @@ return [
                 'Pill' => 'pill',
             ],
             'enable' =>
-                '(show_image || show_video) && (!panel_style || (panel_style && (!panel_image_no_padding || image_align == \'between\')))',
+                "(show_image || show_video) && (!panel_style || (panel_style && (!panel_image_no_padding || image_align == 'between')))",
         ],
         'image_box_shadow' => [
             'label' => 'Box Shadow',
@@ -1308,7 +1308,7 @@ return [
                 'None' => 'remove',
             ],
             'enable' =>
-                '(show_image || show_video) && (image_align == \'between\' || (image_align == \'bottom\' && !(panel_style && panel_image_no_padding)))',
+                "(show_image || show_video) && (image_align == 'between' || (image_align == 'bottom' && !(panel_style && panel_image_no_padding)))",
         ],
         'image_svg_inline' => [
             'label' => 'Inline SVG',
@@ -1384,7 +1384,7 @@ return [
         'link_target' => [
             'label' => 'Attributes',
             'description' =>
-                'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+                "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link && !lightbox',
@@ -1537,7 +1537,7 @@ return [
                                 [
                                     'label' => 'Parallax Start/End',
                                     'description' =>
-                                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the element\'s height.',
+                                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the element's height.",
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => ['grid_parallax_start', 'grid_parallax_end'],

@@ -43,15 +43,17 @@ class RenderTransform
         }
 
         // check product elements
-        if (in_array($node->type, $types) && ($section = $builder->parent($path, 'section'))) {
-            // section needs product classes for styling and product variation images script
-            if (empty($section->attrs['class']) || !in_array('product', $section->attrs['class'])) {
-                Arr::update($section->attrs, 'class', function ($class) {
-                    global $product;
+        // section needs product classes for styling and product variation images script
+        if (
+            in_array($node->type, $types) &&
+            ($section = $builder->parent($path, 'section')) &&
+            (empty($section->attrs['class']) || !in_array('product', $section->attrs['class']))
+        ) {
+            Arr::update($section->attrs, 'class', function ($class) {
+                global $product;
 
-                    return array_merge($class ?: [], wc_get_product_class('', $product));
-                });
-            }
+                return array_merge($class ?: [], wc_get_product_class('', $product));
+            });
         }
     }
 }

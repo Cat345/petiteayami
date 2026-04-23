@@ -8,7 +8,7 @@
  */
 
 
-define( 'BWF_VERSION', '1.10.12.76' );
+define( 'BWF_VERSION', '1.10.12.77' );
 define( 'BWF_DB_VERSION', '1.0.6' );
 if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 	#[AllowDynamicProperties]

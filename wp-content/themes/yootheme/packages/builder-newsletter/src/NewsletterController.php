@@ -25,7 +25,6 @@ class NewsletterController
 
     /**
      * @param Providers $providers
-     * @param string $secret
      */
     public function __construct(array $providers, string $secret)
     {

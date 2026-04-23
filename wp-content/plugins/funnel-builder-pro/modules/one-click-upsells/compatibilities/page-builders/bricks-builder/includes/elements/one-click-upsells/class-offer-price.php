@@ -12,8 +12,8 @@ use WC_Product;
 if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
 	class Offer_Price extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfocu-offer-price';
-		public $icon = 'wfocu-icon-product_offer';
+		public $name     = 'wfocu-offer-price';
+		public $icon     = 'wfocu-icon-product_offer';
 
 		/**
 		 * Retrieves the label for the Offer Price element.
@@ -265,7 +265,6 @@ if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
 
 			$product_key = WFOCU_Core()->template_loader->default_product_key( $product_key );
 
-
 			$product = '';
 			if ( isset( $product_data->{$product_key} ) ) {
 				$product = $product_data->{$product_key}->data;
@@ -282,11 +281,11 @@ if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
 			}
 
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                    <div class="bricks-element bricks-element-wfocu_price" data-element_type="wfocu_price.default">
-                        <div class="bricks-element-container">
-                            <div class="bricks-element-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					<div class="bricks-element bricks-element-wfocu_price" data-element_type="wfocu_price.default">
+						<div class="bricks-element-container">
+							<div class="bricks-element-price-wrapper wfocu_price_wrapper" data-key="<?php echo esc_attr( $product_key ); ?>">
 								<?php
 								/** Price */
 								$regular_price     = isset( $settings['showRegPrice'] ) && $settings['showRegPrice'] ? WFOCU_Common::maybe_parse_merge_tags( '{{product_regular_price info="no" key="' . $product_key . '"}}' ) : 0;
@@ -297,22 +296,24 @@ if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
 								$reg_label   = isset( $settings['regLabel'] ) ? '<span class="wfocu-reg-label">' . $settings['regLabel'] . '</span>' : '';
 								$offer_label = isset( $settings['offerLabel'] ) ? '<span class="wfocu-offer-label">' . $settings['offerLabel'] . '</span>' : '';
 
-								$price_output = '';
+								$enable_dynamic_tax = WFOCU_Core()->data->is_dynamic_tax_enabled();
+								$show_tax_price     = WFOCU_Core()->funnels->show_prices_including_tax();
+								$is_preview         = ( isset( WFOCU_Core()->public ) && method_exists( WFOCU_Core()->public, 'if_is_preview' ) ) ? WFOCU_Core()->public->if_is_preview() : false;
+								$shimmer_class      = ( $enable_dynamic_tax && $show_tax_price && ! $is_preview ) ? ' wfocu-price-shimmer' : '';
+								$price_output       = '';
 								if ( round( $sale_price_raw, 2 ) !== round( $regular_price_raw, 2 ) ) {
 									if ( isset( $settings['showRegPrice'] ) && $settings['showRegPrice'] ) {
 										$price_output .= '<span class="reg_wrapper">' . $reg_label . '<span class="wfocu-regular-price"><strike>' . $regular_price . '</strike></span></span>';
 									}
 
 									if ( isset( $settings['showOfferPrice'] ) && $settings['showOfferPrice'] ) {
-										$price_output .= '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>';
+										$price_output .= '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>';
 									}
-								} else {
-									if ( 'variable' === $product->get_type() ) {
+								} elseif ( 'variable' === $product->get_type() ) {
 										$price_output .= sprintf( '<span class="wfocu-regular-price"><strike><span class="wfocu_variable_price_regular" style="display: none;" data-key="%s"></span></strike></span>', $product_key );
-										$price_output .= $sale_price ? '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
-									} else {
-										$price_output .= $sale_price ? '<span class="offer_wrapper">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
-									}
+										$price_output .= $sale_price ? '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
+								} else {
+									$price_output .= $sale_price ? '<span class="offer_wrapper' . $shimmer_class . '">' . $offer_label . '<span class="wfocu-sale-price">' . $sale_price . '</span></span>' : '';
 								}
 
 								echo $price_output; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -327,11 +328,11 @@ if ( ! class_exists( '\WfocuFunnelKit\Offer_Price' ) ) {
 									echo WFOCU_Common::maybe_parse_merge_tags( '{{product_recurring_total_string info="yes" key="' . $product_key . '" recurring_label="' . $recurring_label . '"}}' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 								?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<?php
 		}
 	}

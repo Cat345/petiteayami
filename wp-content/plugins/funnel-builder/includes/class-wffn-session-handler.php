@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Funnel Session handler class
@@ -12,11 +12,11 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 		/**
 		 * @var null $transient_key
 		 */
-		public $transient_key = null;
+		public $transient_key    = null;
 		public $transient_object = null;
-		private $default_group = 'funnel';
-		private $groups = array( 'funnel', 'orders' );
-		private $_data = array();
+		private $default_group   = 'funnel';
+		private $groups          = array( 'funnel', 'orders' );
+		private $_data           = array();
 
 		/**
 		 * Constructor for the session class.
@@ -32,7 +32,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 		public static function get_instance() {
 			if ( self::$ins === null ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -63,7 +63,6 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			}
 
 			do_action( 'wffn_session_loaded' );
-
 		}
 
 		public function get_transient_key() {
@@ -81,10 +80,9 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 				 * Serve the transient from the wc_session if exists
 				 */
 
-				if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+				if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 					WC()->session->set( '_wffn_session_id', $get_hash );
 				}
-
 			}
 		}
 
@@ -96,8 +94,8 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 		 * Set a session variable.
 		 *
 		 * @param string $key Key to set.
-		 * @param mixed $value Value to set.
-		 * @param mixed $group Value to set.
+		 * @param mixed  $value Value to set.
+		 * @param mixed  $group Value to set.
 		 *
 		 * @return object
 		 */
@@ -108,7 +106,6 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			if ( $value !== $this->get( $key, null, $group ) ) {
 				/**
 				 * unset funnel title fro session
-				 *
 				 */
 				if ( 'funnel' === $key && ! empty( $value ) && ! empty( $value->title ) ) {
 					unset( $value->title );
@@ -123,14 +120,13 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			}
 
 			return $this;
-
 		}
 
 		/**
 		 * Get a session variable.
 		 *
 		 * @param string $key Key to get.
-		 * @param mixed $default used if the session variable isn't set.
+		 * @param mixed  $default used if the session variable isn't set.
 		 *
 		 * @return array|string|object|mixed value of session variable
 		 */
@@ -165,15 +161,13 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 			$this->transient_key = null;
 
-			if ( wffn_is_wc_active() && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( wffn_is_wc_active() && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 				WC()->session->set( '_wffn_session_id', '' );
 			}
 
 			$this->set_cookie( 'wffn_ay_' . $get_key, '', time() - DAY_IN_SECONDS );
 			$this->set_cookie( 'wffn_si', '', time() - DAY_IN_SECONDS );
-			WFFN_Core()->logger->log( "Clearing the session" . print_r( $get_key, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-
+			WFFN_Core()->logger->log( 'Clearing the session' . print_r( $get_key, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 
 		public function save( $group = null ) {
@@ -201,17 +195,16 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			$existing[ $group ] = $clean_data;
 
 			$this->transient_object->set_transient( $this->transient_key, $existing, HOUR_IN_SECONDS * 24, 'wffn' );
-
 		}
 
 		/**
 		 * Set a cookie - wrapper for setcookie using WP constants.
 		 *
-		 * @param string $name Name of the cookie being set.
-		 * @param string $value Value of the cookie.
+		 * @param string  $name Name of the cookie being set.
+		 * @param string  $value Value of the cookie.
 		 * @param integer $expire Expiry of the cookie.
-		 * @param bool $secure Whether the cookie should be served only over https.
-		 * @param bool $httponly Whether the cookie is only accessible over HTTP, not scripting languages like JavaScript. @since 3.6.0.
+		 * @param bool    $secure Whether the cookie should be served only over https.
+		 * @param bool    $httponly Whether the cookie is only accessible over HTTP, not scripting languages like JavaScript. @since 3.6.0.
 		 */
 		public function set_cookie( $name, $value, $expire = 0, $secure = false, $httponly = false ) {
 			/**
@@ -227,7 +220,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			}
 
 			if ( headers_sent() ) {
-				WFFN_Core()->logger->log( "unable to set up cookie, headers sent" );
+				WFFN_Core()->logger->log( 'unable to set up cookie, headers sent' );
 
 				return;
 			}
@@ -237,6 +230,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 		/**
 		 * Checks whether the current request is a WP cron request
+		 *
 		 * @return bool
 		 */
 		public function is_cron() {
@@ -249,6 +243,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 		/**
 		 * Checks whether the current request is a WP rest request
+		 *
 		 * @return bool
 		 */
 		public function is_rest() {
@@ -261,6 +256,7 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 		/**
 		 * Checks whether the current request is a WP CLI request
+		 *
 		 * @return bool
 		 */
 		public function is_cli() {
@@ -272,21 +268,25 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 		}
 
 		public function load_transient_from_cookie() {
-			$cookie_value = '';
-			if ( isset( $_REQUEST['wffn-si'] ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$cookie_value = wffn_clean( $_REQUEST['wffn-si'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
+			$cookie_value  = '';
+			$session_index = filter_input( INPUT_GET, 'wffn-si', FILTER_UNSAFE_RAW );
+			if ( ! $session_index ) {
+				$session_index = filter_input( INPUT_POST, 'wffn-si', FILTER_UNSAFE_RAW );
+			}
+			if ( $session_index ) {
+				$cookie_value = wffn_clean( $session_index );
 			}
 			/**
 			 * Serve the transient from the wc_session if exists
 			 */
-			if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( function_exists( 'WC' ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 
 				$cookie_value = WC()->session->get( '_wffn_session_id', '' );
 			}
 
 			if ( empty( $cookie_value ) ) {
-				$cookie_value = isset( $_COOKIE['wffn_si'] ) ? wffn_clean( $_COOKIE['wffn_si'] ) : false; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+
+				$cookie_value = filter_input( INPUT_COOKIE, 'wffn_si', FILTER_UNSAFE_RAW );
 			}
 			if ( $cookie_value && $cookie_value !== false && '' !== $cookie_value ) {
 				$this->transient_key = $cookie_value;
@@ -296,11 +296,11 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 		public function generate_transient_key() {
 
 				return md5( bwf_generate_random_bytes( 32 ) );
-
 		}
 
 		/**
 		 * detect whether we have a valid session running
+		 *
 		 * @return bool
 		 * @since 2.0
 		 */
@@ -313,7 +313,6 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -331,8 +330,5 @@ if ( ! class_exists( 'WFFN_Session_Handler' ) ) {
 
 			return add_query_arg( array( 'wffn-si' => $key ), $url );
 		}
-
-
 	}
 }
-

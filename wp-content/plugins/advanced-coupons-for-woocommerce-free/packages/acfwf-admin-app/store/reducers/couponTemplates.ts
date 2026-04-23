@@ -16,6 +16,10 @@ import {
   ITogglePremiumModalPayload,
   ISetSearchFiltersPayload,
   ISetSortOptionsPayload,
+  IToggleAIGeneratorModalPayload,
+  ISetAIGeneratingPayload,
+  ISetSavedAITemplatesPayload,
+  IToggleStoreAgentUpsellModalPayload,
 } from '../actions/couponTemplates';
 
 import { cloneDeep } from 'lodash';
@@ -44,8 +48,16 @@ const reducer = (
       sortBy: 'title',
       sortOrder: 'asc',
     },
+    // AI Generator initial state
+    aiGeneratorModal: false,
+    aiGenerating: false,
+    // AI Template Storage initial state
+    savedAITemplates: [],
+    // StoreAgent Upsell initial state
+    storeagentUpsellModal: false,
+    storeagentUpsellMode: 'install',
   },
-  action: { type: string; payload: any }
+  action: { type: string; payload: any },
 ): ICouponTemplatesStore => {
   let index;
   switch (action.type) {
@@ -197,6 +209,33 @@ const reducer = (
     case ECouponTemplatesActionTypes.SET_SORT_OPTIONS: {
       const { sortBy, sortOrder } = action.payload as ISetSortOptionsPayload;
       return { ...state, sortOptions: { sortBy, sortOrder } };
+    }
+
+    // AI Generator cases
+    case ECouponTemplatesActionTypes.TOGGLE_AI_GENERATOR_MODAL: {
+      const { show } = action.payload as IToggleAIGeneratorModalPayload;
+      return { ...state, aiGeneratorModal: show };
+    }
+
+    case ECouponTemplatesActionTypes.SET_AI_GENERATING: {
+      const { generating } = action.payload as ISetAIGeneratingPayload;
+      return { ...state, aiGenerating: generating };
+    }
+
+    // AI Template Storage cases
+    case ECouponTemplatesActionTypes.SET_SAVED_AI_TEMPLATES: {
+      const { templates } = action.payload as ISetSavedAITemplatesPayload;
+      return { ...state, savedAITemplates: templates };
+    }
+
+    // StoreAgent Upsell cases
+    case ECouponTemplatesActionTypes.TOGGLE_STOREAGENT_UPSELL_MODAL: {
+      const { show, mode = 'install' } = action.payload as IToggleStoreAgentUpsellModalPayload;
+      return {
+        ...state,
+        storeagentUpsellModal: show,
+        storeagentUpsellMode: show ? mode : state.storeagentUpsellMode,
+      };
     }
   }
 

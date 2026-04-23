@@ -66,7 +66,7 @@
     background-color: #89e047;
 }
 
-.et-db #et-boc .et-l .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions a:hover, et-db #et-boc .wfty_wrap table.wfty_order_downloads tr td.download-file a:hover {
+.et-db #et-boc .et-l .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions a:hover, .et-db #et-boc .wfty_wrap table.wfty_order_downloads tr td.download-file a:hover {
     color: #ffffff;
     background-color: #89e047;
 }

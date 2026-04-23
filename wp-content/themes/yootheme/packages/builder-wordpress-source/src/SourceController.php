@@ -7,10 +7,6 @@ use YOOtheme\Http\Response;
 
 class SourceController
 {
-    /**
-     * @param Request  $request
-     * @param Response $response
-     */
     public static function posts(Request $request, Response $response): Response
     {
         $ids = $request->getQueryParam('ids');
@@ -31,10 +27,6 @@ class SourceController
         return $response->withJson($names);
     }
 
-    /**
-     * @param Request  $request
-     * @param Response $response
-     */
     public static function users(Request $request, Response $response): Response
     {
         $ids = $request->getQueryParam('ids');

@@ -133,6 +133,6 @@ class ProductType
             $exclude = array_merge($exclude ?: [], wc_get_product($post)->get_cross_sell_ids());
         }
 
-        return PostType::relatedPosts($post, $args + compact('exclude'));
+        return PostType::relatedPosts($post, $args + ['exclude' => $exclude]);
     }
 }

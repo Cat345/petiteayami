@@ -1,0 +1,209 @@
+{
+  "_comment": "Default render attributes for Optin Form Popup module",
+  "module": {
+    "advanced": {
+      "text": {
+        "text": {
+          "desktop": {
+            "value": {
+              "align": "left",
+              "orientation": "center"
+            }
+          }
+        }
+      }
+    }
+  },
+  "btn_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Signup Now"
+      }
+    }
+  },
+  "btn_subheading_text": {
+    "innerContent": {
+      "desktop": {
+        "value": ""
+      }
+    }
+  },
+  "btn_icon_field": {
+    "desktop": {
+      "value": ""
+    }
+  },
+  "btn_icon_field_position": {
+    "desktop": {
+      "value": "left"
+    }
+  },
+  "wfop_optin_form_popup_btn_bg_color": {
+    "decoration": {
+      "background": {
+        "desktop": {
+          "value": {
+            "color": "#000000"
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_popup_btn_hover_bg_color": {
+    "decoration": {
+      "background": {
+        "desktop": {
+          "value": {
+            "color": "#000000"
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_popup_btn_text_spacing": {
+    "decoration": {
+      "spacing": {
+        "margin": {
+          "desktop": {
+            "value": {
+              "top": "5px",
+              "right": "5px",
+              "bottom": "5px",
+              "left": "5px"
+            }
+          }
+        },
+        "padding": {
+          "desktop": {
+            "value": {
+              "top": "5px",
+              "right": "5px",
+              "bottom": "5px",
+              "left": "5px"
+            }
+          }
+        },
+        "desktop": {
+          "value": {
+            "padding": {
+              "top": "5px",
+              "syncVertical": "off",
+              "syncHorizontal": "off",
+              "bottom": "5px",
+              "left": "5px",
+              "right": "5px"
+            },
+            "margin": {
+              "top": "5px",
+              "syncVertical": "off",
+              "syncHorizontal": "off",
+              "bottom": "5px",
+              "left": "5px",
+              "right": "5px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_popup_popup_button_width": {
+    "decoration": {
+      "sizing": {
+        "desktop": {
+          "value": {
+            "width": "30%"
+          }
+        }
+      }
+    }
+  },
+  "wfop_optin_form_popup_btn_text_typo": {
+    "decoration": {
+      "font": {
+        "font": {
+          "desktop": {
+            "value": {
+              "textAlign": "center"
+            }
+          }
+        }
+      }
+    }
+  },
+  "enable_popup_bar_on_builder": {
+    "desktop": {
+      "value": "off"
+    }
+  },
+  "popup_open_animation": "fade",
+  "popup_bar_pp": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "popup_bar_text_position": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "popup_bar_animation": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "popup_bar_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Almost Complete..."
+      }
+    }
+  },
+  "popup_heading": {
+    "innerContent": {
+      "desktop": {
+        "value": "You're just one step away!"
+      }
+    }
+  },
+  "popup_sub_heading": {
+    "innerContent": {
+      "desktop": {
+        "value": "Enter your details below and we'll get you signed up"
+      }
+    }
+  },
+  "show_labels": {
+    "desktop": {
+      "value": "on"
+    }
+  },
+  "button_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Send Me My Free Guide"
+      }
+    }
+  },
+  "subtitle": {
+    "innerContent": {
+      "desktop": {
+        "value": ""
+      }
+    }
+  },
+  "button_submitting_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Submitting..."
+      }
+    }
+  },
+  "popup_footer_text": {
+    "innerContent": {
+      "desktop": {
+        "value": "Your Information is 100% Secure"
+      }
+    }
+  },
+  "input_size": "12px"
+}

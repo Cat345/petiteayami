@@ -11,10 +11,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Compatibility_With_WooCommerce_Payments {
 		public function __construct() {
-			add_action( 'wfacp_internal_css', [ $this, 'enqueue_scripts' ] );
-			add_action( 'wfacp_outside_header', [ $this, 'detect_woo_payment' ] );
-			add_filter( 'wfacp_product_switcher_price_data', [ $this, 'wfacp_product_switcher_price_data' ], 10, 2 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'action' ] );
+			add_action( 'wfacp_internal_css', array( $this, 'enqueue_scripts' ) );
+			add_action( 'wfacp_outside_header', array( $this, 'detect_woo_payment' ) );
+			add_filter( 'wfacp_product_switcher_price_data', array( $this, 'wfacp_product_switcher_price_data' ), 10, 2 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'action' ) );
 		}
 
 		/*
@@ -24,24 +24,23 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			$instance = WFACP_Common::remove_actions( 'woocommerce_checkout_billing', 'WC_Payments', 'woopay_fields_before_billing_details' );
 
 			if ( $instance == 'WC_Payments' ) {
-				add_action( 'wfacp_internal_css', [ $this, 'css' ] );
-				add_filter( 'woocommerce_form_field_args', [ $this, 'add_aero_basic_classes' ], 10, 2 );
+				add_action( 'wfacp_internal_css', array( $this, 'css' ) );
+				add_filter( 'woocommerce_form_field_args', array( $this, 'add_aero_basic_classes' ), 10, 2 );
 			}
-
 		}
 
 		public function css() {
-			echo "<style>div#contact_details > h3{display:none}div#contact_details {clear: both;}</style>";
+			echo '<style>div#contact_details > h3{display:none}div#contact_details {clear: both;}</style>';
 		}
 
 		public function add_aero_basic_classes( $field, $key ) {
 			if ( $key === 'billing_email' ) {
 				$field['input_class'][] = 'wfacp-form-control';
-				$tmp                    = [];
+				$tmp                    = array();
 				if ( isset( $field['class'] ) && is_array( $field['class'] ) ) {
 					$tmp = $field['class'];
 				}
-				$field['class']         = array_merge( [ 'woopay-billing-email' ], $tmp );
+				$field['class']         = array_merge( array( 'woopay-billing-email' ), $tmp );
 				$field['label_class'][] = 'wfacp-form-control-label';
 			}
 
@@ -66,9 +65,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			if ( method_exists( $gateway, 'get_payment_fields_js_config' ) ) {
 				wp_localize_script( 'wcpay-checkout', 'wcpay_config', $gateway->get_payment_fields_js_config() );
 				wp_enqueue_script( 'wcpay-checkout' );
-				wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), [], WC_Payments::get_file_version( 'dist/checkout.css' ) );
+				wp_enqueue_style( 'wcpay-checkout', plugins_url( 'dist/checkout.css', WCPAY_PLUGIN_FILE ), array(), WC_Payments::get_file_version( 'dist/checkout.css' ) );
 			}
-
 		}
 
 		/**
@@ -93,22 +91,22 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 		 * @return mixed one of condition check the required key which was throwing the notice
 		 */
 		public function action() {
-			add_action( 'woocommerce_checkout_fields', [ $this, 'checkout_fields' ], 9 );
-			add_action( 'wfacp_before_form', [ $this, 'add_wcpay_hidden_div' ], 99 );
+			add_action( 'woocommerce_checkout_fields', array( $this, 'checkout_fields' ), 9 );
+			add_action( 'wfacp_before_form', array( $this, 'add_wcpay_hidden_div' ), 99 );
 		}
 
 		/**
 		 * Add hidden div for WooCommerce Payments compatibility
 		 */
 		public function add_wcpay_hidden_div() {
-			echo '<div id="wcpay-hidden-div" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
+			echo '<div id="wcpay-hidden-div" aria-hidden="true" style="position: absolute; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden;">
     <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
-        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" style="transition: none;">
-        <label id="wcpay-hidden-valid-active-label"></label>
+        <label for="wcpay-hidden-input" id="wcpay-hidden-valid-active-label">Payment processing field</label>
+        <input class="wfacp-form-control" id="wcpay-hidden-input" type="text" value="" aria-label="Payment processing field" tabindex="-1" autocomplete="off" style="transition: none;">
     </p>
     <p class="form-row form-row-first wfacp-form-control-wrapper wfacp-col-left-full">
-        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="">
-        <label id="wcpay-hidden-invalid-input"></label>
+        <label for="wcpay-hidden-invalid-input" id="wcpay-hidden-invalid-input-label">Payment validation field</label>
+        <input class="wfacp-form-control" id="wcpay-hidden-invalid-input" type="text" value="" aria-label="Payment validation field" tabindex="-1" autocomplete="off">
     </p>
 </div>';
 		}
@@ -117,7 +115,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 			if ( ! is_array( $fields ) || count( $fields ) == 0 ) {
 				return $fields;
 			}
-
 
 			foreach ( $fields as $i => $field ) {
 
@@ -130,14 +127,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WooCommerce_Payments' ) ) {
 						$fields[ $i ][ $k ]['required'] = false;
 					}
 				}
-
 			}
-
 
 			return $fields;
 		}
-
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_WooCommerce_Payments(), 'woocommerce_checkout' );

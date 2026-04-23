@@ -9,7 +9,7 @@ abstract class Memory
      */
     public static function raise(string $memory = '512M'): void
     {
-        $limit = static::toBytes((string) ini_get('memory_limit'));
+        $limit = static::toBytes(ini_get('memory_limit'));
 
         if ($limit !== -1 && $limit < static::toBytes($memory)) {
             @ini_set('memory_limit', $memory);

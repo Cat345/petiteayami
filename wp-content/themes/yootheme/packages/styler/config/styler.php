@@ -155,16 +155,16 @@ return [
         ],
         'align' => [
             'name' => 'Align',
-            'hover' => '[class*=\'uk-align\']',
-            'inspect' => '[class*=\'uk-align\'], [class*=\'uk-align\'] > *',
+            'hover' => "[class*='uk-align']",
+            'inspect' => "[class*='uk-align'], [class*='uk-align'] > *",
         ],
         'animation' => [
             'name' => 'Animation',
             'groups' => [
                 'slide' => '@animation-slide-*',
             ],
-            'hover' => '[class*=\'uk-animation-\']',
-            'inspect' => '[class*=\'uk-animation-\'], [class*=\'uk-animation-\'] > *',
+            'hover' => "[class*='uk-animation-']",
+            'inspect' => "[class*='uk-animation-'], [class*='uk-animation-'] > *",
         ],
         'article' => [
             'name' => 'Article',
@@ -280,7 +280,7 @@ return [
             ],
             'hover' => '.uk-card',
             'inspect' =>
-                '.uk-card, .uk-card-body, .uk-card-body > *, .uk-card-header, .uk-card-header > *, .uk-card-footer, .uk-card-footer > *, [class*=\'uk-card-media\'], .uk-card-title, .uk-card-title > *, .uk-card-badge',
+                ".uk-card, .uk-card-body, .uk-card-body > *, .uk-card-header, .uk-card-header > *, .uk-card-footer, .uk-card-footer > *, [class*='uk-card-media'], .uk-card-title, .uk-card-title > *, .uk-card-badge",
         ],
         'close' => [
             'name' => 'Close',
@@ -292,8 +292,8 @@ return [
             'groups' => [
                 'divider' => '@column-divider-*',
             ],
-            'hover' => '[class*=\'uk-column-\']',
-            'inspect' => '[class*=\'uk-column-\'], [class*=\'uk-column-\'] > *',
+            'hover' => "[class*='uk-column-']",
+            'inspect' => "[class*='uk-column-'], [class*='uk-column-'] > *",
         ],
         'comment' => [
             'name' => 'Comment',
@@ -414,9 +414,9 @@ return [
                 'icon' => '@form-icon-*',
             ],
             'hover' =>
-                '.uk-input, .uk-select, .uk-textarea, .uk-range, .uk-radio, .uk-checkbox, .uk-legend, .uk-fieldset, [class*=\'uk-form\']',
+                ".uk-input, .uk-select, .uk-textarea, .uk-range, .uk-radio, .uk-checkbox, .uk-legend, .uk-fieldset, [class*='uk-form']",
             'inspect' =>
-                '.uk-input, .uk-select, .uk-textarea, .uk-range, .uk-radio, .uk-checkbox, .uk-legend, .uk-fieldset, [class*=\'uk-form\'], [class*=\'uk-form\'] > *',
+                ".uk-input, .uk-select, .uk-textarea, .uk-range, .uk-radio, .uk-checkbox, .uk-legend, .uk-fieldset, [class*='uk-form'], [class*='uk-form'] > *",
         ],
         'grid' => [
             'name' => 'Grid',
@@ -537,8 +537,8 @@ return [
                 'large' => '@margin-large-*',
                 'xlarge' => '@margin-xlarge-*',
             ],
-            'hover' => '[class*=\'uk-margin\']',
-            'inspect' => '[class*=\'uk-margin\'], [class*=\'uk-margin\'] > *',
+            'hover' => "[class*='uk-margin']",
+            'inspect' => "[class*='uk-margin'], [class*='uk-margin'] > *",
         ],
         'marker' => [
             'name' => 'Marker',
@@ -559,7 +559,7 @@ return [
             ],
             'hover' => '.uk-modal',
             'inspect' =>
-                '.uk-modal, .uk-modal-dialog, .uk-modal-container, .uk-modal-body, .uk-modal-body > *, .uk-modal-header, .uk-modal-header > *, .uk-modal-footer, .uk-modal-footer > *, .uk-modal-title, .uk-modal-title > *, [class*=\'uk-modal-close-\']',
+                ".uk-modal, .uk-modal-dialog, .uk-modal-container, .uk-modal-body, .uk-modal-body > *, .uk-modal-header, .uk-modal-header > *, .uk-modal-footer, .uk-modal-footer > *, .uk-modal-title, .uk-modal-title > *, [class*='uk-modal-close-']",
         ],
         'nav' => [
             'name' => 'Nav',
@@ -677,8 +677,8 @@ return [
                 'small' => '@padding-small-*',
                 'large' => '@padding-large-*',
             ],
-            'hover' => '[class*=\'uk-padding\']',
-            'inspect' => '[class*=\'uk-padding\'], [class*=\'uk-padding\'] > *',
+            'hover' => "[class*='uk-padding']",
+            'inspect' => "[class*='uk-padding'], [class*='uk-padding'] > *",
         ],
         'pagination' => [
             'name' => 'Pagination',
@@ -697,8 +697,8 @@ return [
         ],
         'position' => [
             'name' => 'Position',
-            'hover' => '[class*=\'uk-position\']',
-            'inspect' => '[class*=\'uk-position\'], [class*=\'uk-position\'] > *',
+            'hover' => "[class*='uk-position']",
+            'inspect' => "[class*='uk-position'], [class*='uk-position'] > *",
         ],
         'progress' => [
             'name' => 'Progress',
@@ -812,8 +812,8 @@ return [
                 'background' => '@text-background-*',
                 'stroke' => '@text-stroke-*',
             ],
-            'hover' => '[class*=\'uk-text-\']',
-            'inspect' => '[class*=\'uk-text-\'], [class*=\'uk-text-\'] > *',
+            'hover' => "[class*='uk-text-']",
+            'inspect' => "[class*='uk-text-'], [class*='uk-text-'] > *",
         ],
         'thumbnav' => [
             'name' => 'Thumbnav',
@@ -855,8 +855,8 @@ return [
             'groups' => [
                 'slide' => '@transition-slide-*',
             ],
-            'hover' => '[class*=\'uk-transition-\']',
-            'inspect' => '[class*=\'uk-transition-\'], [class*=\'uk-transition-\'] > *',
+            'hover' => "[class*='uk-transition-']",
+            'inspect' => "[class*='uk-transition-'], [class*='uk-transition-'] > *",
         ],
         'utility' => [
             'name' => 'Utility',

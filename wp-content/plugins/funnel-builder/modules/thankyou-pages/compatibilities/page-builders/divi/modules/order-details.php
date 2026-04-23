@@ -2,12 +2,12 @@
 if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Order_Details extends WFTY_Divi_HTML_BLOCK {
-		public $slug = 'wfty_order_details';
+		public $slug     = 'wfty_order_details';
 		public $main_css = '%%order_class%%.et_wfty_order_details';
 
 		public function __construct() {
 			parent::__construct();
-			add_action( 'wp_footer', [ $this, 'localize_locals' ] );
+			add_action( 'wp_footer', array( $this, 'localize_locals' ) );
 		}
 
 		public function setup_data() {
@@ -18,7 +18,6 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			$this->add_text( $sub_id, 'order_subscription_heading', __( 'Heading', 'funnel-builder' ), __( 'Subscription', 'funnel-builder' ) );
 			$this->add_switcher( $sub_id, 'order_subscription_preview', __( 'Show Subscription Preview', 'funnel-builder' ), 'off' );
 
-
 			$down_id = $this->add_tab( __( 'Download', 'funnel-builder' ), 5 );
 			$this->add_text( $down_id, 'order_download_heading', __( 'Heading', 'funnel-builder' ), __( 'Downloads', 'funnel-builder' ) );
 			$this->add_text( $down_id, 'order_downloads_btn_text', __( 'Download Button Text', 'funnel-builder' ), __( 'Download', 'funnel-builder' ) );
@@ -27,24 +26,22 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			$this->add_switcher( $down_id, 'order_downloads_file_expiry', __( 'Show File Expiry Column', 'funnel-builder' ), 'off' );
 
 			$this->style_field();
-
 		}
 
 		private function style_field() {
 
-			$key = "wfty_order_details";
+			$key = 'wfty_order_details';
 
 			$font_side_default = array(
 				'font_size'   => array(
 					'default' => '24px',
-					'unit'    => 'px'
+					'unit'    => 'px',
 				),
 				'line_height' => array(
 					'default' => '1.5',
-					'unit'    => 'em'
+					'unit'    => 'em',
 				),
 			);
-
 
 			$head_id = $this->add_tab( __( 'Heading', 'funnel-builder' ), 2 );
 
@@ -53,7 +50,6 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			$this->add_color( $head_id, $key . '_heading_color', '%%order_class%% .wffn_order_details_table .wfty_title, %%order_class%% .wffn_order_details_table .wc-bacs-bank-details-heading', __( 'Color', 'funnel-builder' ), '#000000' );
 
 			$this->add_text_alignments( $head_id, 'align', '%%order_class%% .wffn_order_details_table .wfty_title, %%order_class%% .wffn_order_details_table .wc-bacs-bank-details-heading', '', 'left' );
-
 
 			$detail_id = $this->add_tab( __( 'Details', 'funnel-builder' ), 2 );
 
@@ -99,23 +95,23 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 
 			$this->add_heading( $subs_id, __( 'Button', 'funnel-builder' ) );
 
-			$controls_tabs_id = $this->add_controls_tabs( $subs_id, "Button Color" );
+			$controls_tabs_id = $this->add_controls_tabs( $subs_id, 'Button Color' );
 
-			$colors_field = [];
+			$colors_field = array();
 
 			$colors_field[] = $this->add_color( $subs_id, $key . '_subs_button_text_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions a', __( 'Label', 'funnel-builder' ), '#ffffff' );
 
 			$colors_field[] = $this->add_background_color( $subs_id, $key . '_subs_button_background_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions a', '#70dc1d', __( 'Background', 'funnel-builder' ) );
 
-			$this->add_controls_tab( $controls_tabs_id, "Normal", $colors_field );
+			$this->add_controls_tab( $controls_tabs_id, 'Normal', $colors_field );
 
-			$colors_field = [];
+			$colors_field = array();
 
 			$colors_field[] = $this->add_color( $subs_id, $key . '_subs_button_text_hover_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions:hover a', __( 'Label', 'funnel-builder' ), '#ffffff' );
 
 			$colors_field[] = $this->add_background_color( $subs_id, $key . '_subs_button_background_hover_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_subscription table tr td.subscription-actions:hover a', '#89e047', __( 'Background', 'funnel-builder' ) );
 
-			$this->add_controls_tab( $controls_tabs_id, "Hover", $colors_field );
+			$this->add_controls_tab( $controls_tabs_id, 'Hover', $colors_field );
 
 			$down_id = $this->add_tab( __( 'Download', 'funnel-builder' ), 2 );
 
@@ -128,24 +124,23 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 
 			$this->add_heading( $down_id, __( 'Button', 'funnel-builder' ) );
 
-			$controls_tabs_id = $this->add_controls_tabs( $down_id, "Button Color" );
+			$controls_tabs_id = $this->add_controls_tabs( $down_id, 'Button Color' );
 
-			$colors_field = [];
+			$colors_field = array();
 
 			$colors_field[] = $this->add_color( $down_id, $key . '_download_button_text_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_order_download table tr td.download-file a', __( 'Label', 'funnel-builder' ), '#ffffff' );
 
 			$colors_field[] = $this->add_background_color( $down_id, $key . '_download_button_background_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_order_download table tr td.download-file a', '#70dc1d', __( 'Background', 'funnel-builder' ) );
 
-			$this->add_controls_tab( $controls_tabs_id, "Normal", $colors_field );
+			$this->add_controls_tab( $controls_tabs_id, 'Normal', $colors_field );
 
-			$colors_field = [];
+			$colors_field = array();
 
 			$colors_field[] = $this->add_color( $down_id, $key . '_download_button_text_hover_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_order_download table tr td.download-file a:hover', __( 'Label', 'funnel-builder' ), '#ffffff' );
 
 			$colors_field[] = $this->add_background_color( $down_id, $key . '_download_button_background_hover_color', '%%order_class%% .wffn_order_details_table .wfty_wrap .wfty_order_download table tr td.download-file a:hover', '#89e047', __( 'Background', 'funnel-builder' ) );
 
-			$this->add_controls_tab( $controls_tabs_id, "Hover", $colors_field );
-
+			$this->add_controls_tab( $controls_tabs_id, 'Hover', $colors_field );
 		}
 
 		public function localize_locals() {
@@ -162,7 +157,7 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 				'shipping_price' => '3.00',
 				'shipping'       => 'false',
 				'currency'       => html_entity_decode( get_woocommerce_currency_symbol() ),
-				'img_url'        => wc_placeholder_img_src('thumbnail'),
+				'img_url'        => wc_placeholder_img_src( 'thumbnail' ),
 				'pro_name'       => __( 'Test Product', 'funnel-builder' ),
 				'sub_head'       => __( 'Subtotal', 'funnel-builder' ),
 				'ship_head'      => __( 'Shipping', 'funnel-builder' ),
@@ -188,31 +183,38 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			$shipping_option = get_option( 'woocommerce_ship_to_countries' );
 			if ( 'disabled' !== $shipping_option ) {
 				$data['total_price'] += $data['shipping_price'];
-				$data['total_price'] = $data['total_price'] . '.00';
-				$data['shipping']    = 'true';
+				$data['total_price']  = $data['total_price'] . '.00';
+				$data['shipping']     = 'true';
 			}
 
-			$data = implode( ', ', array_map( function ( $v, $k ) {
-				return sprintf( "%s:'%s'", $k, $v );
-			}, $data, array_keys( $data ) ) );
+			$data = implode(
+				', ',
+				array_map(
+					function ( $v, $k ) {
+						return sprintf( "%s:'%s'", $k, $v );
+					},
+					$data,
+					array_keys( $data )
+				)
+			);
 			?>
-            <script>
-                let wftyDiviOrder = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
-            </script>
+			<script>
+				let wftyDiviOrder = {<?php echo $data; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>};
+			</script>
 			<?php
 		}
 
 		protected function html() {
 			$settings                   = $this->props;
-			$order_heading_text         = $settings['order_details_heading'];
-			$order_subscription_heading = $settings['order_subscription_heading'];
-			$order_download_heading     = $settings['order_download_heading'];
-			$download_btn_text          = $settings['order_downloads_btn_text'];
+			$order_heading_text         = isset( $settings['order_details_heading'] ) ? $settings['order_details_heading'] : '';
+			$order_subscription_heading = isset( $settings['order_subscription_heading'] ) ? $settings['order_subscription_heading'] : '';
+			$order_download_heading     = isset( $settings['order_download_heading'] ) ? $settings['order_download_heading'] : '';
+			$download_btn_text          = isset( $settings['order_downloads_btn_text'] ) ? $settings['order_downloads_btn_text'] : '';
 			$show_column_download       = ( ! isset( $settings['order_downloads_file'] ) || 'on' !== $settings['order_downloads_file'] ) ? 'false' : 'true';
 			$show_column_file_expiry    = ( ! isset( $settings['order_downloads_file_expiry'] ) || 'on' !== $settings['order_downloads_file_expiry'] ) ? 'false' : 'true';
 			$order_details_img          = ( ! isset( $settings['order_details_img'] ) || 'on' !== $settings['order_details_img'] ) ? 'false' : 'true';
 			$class                      = ( ! isset( $settings['order_download_preview'] ) || 'on' !== $settings['order_download_preview'] ) ? 'wfty-hide-download' : '';
-			$class                      .= ( ! isset( $settings['order_subscription_preview'] ) || 'on' !== $settings['order_subscription_preview'] ) ? ' wfty-hide-subscription' : '';
+			$class                     .= ( ! isset( $settings['order_subscription_preview'] ) || 'on' !== $settings['order_subscription_preview'] ) ? ' wfty-hide-subscription' : '';
 
 			ob_start();
 			?>
@@ -224,9 +226,7 @@ if ( ! class_exists( 'WFTY_Order_Details' ) ) {
 			<?php
 			return ob_get_clean();
 		}
-
-
 	}
 
-	return new WFTY_Order_Details;
+	return new WFTY_Order_Details();
 }

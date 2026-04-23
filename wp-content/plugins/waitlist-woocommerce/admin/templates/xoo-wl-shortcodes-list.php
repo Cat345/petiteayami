@@ -1,13 +1,14 @@
 <?php
 
 $placeholders = array(
-	'[user_email]' 		=> 'User email',
-	'[quantity]' 		=> 'Quantity requested',
-	'[join_date]' 		=> 'Waitlisted Date',
-	'[product_id]' 		=> 'Product ID',
-	'[product_name]' 	=> 'Product name',
-	'[product_link]' 	=> 'Product link',
-	'[product_price]' 	=> 'Product price'
+	'[user_email]' 			=> 'User email',
+	'[quantity]' 			=> 'Quantity requested',
+	'[join_date]' 			=> 'Waitlisted Date',
+	'[product_id]' 			=> 'Product ID',
+	'[product_name]' 		=> 'Product name',
+	'[product_link]' 		=> 'Product link',
+	'[product_link_raw]' 	=> 'Raw Product link',
+	'[product_price]' 		=> 'Product price'
 );
 
 

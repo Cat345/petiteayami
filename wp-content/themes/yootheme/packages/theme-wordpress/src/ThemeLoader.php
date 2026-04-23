@@ -22,7 +22,6 @@ class ThemeLoader
     /**
      * Load theme configurations.
      *
-     * @param Container $container
      * @param Configs   $configs
      */
     public static function load(Container $container, array $configs): void

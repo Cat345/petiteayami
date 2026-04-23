@@ -280,7 +280,7 @@ body #wfacp-e-form .wfacp_product_restore_wrap {
     padding: 0 10px 0 0;
 }
 
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h div.woocommerce-error,
 .et-db #et-boc .et-l .wfacp_mini_cart_start_h ul.woocommerce-error,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-error,
@@ -295,13 +295,13 @@ body #wfacp-e-form .wfacp_woocommerce_form_coupon .wfacp-coupon-page .wfacp_coup
 }
 
 
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp-coupon-page .wfacp_coupon_remove_msg,
 .et-db #et-boc .et-l .wfacp_main_form .wfacp-success,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form .woocommerce-message,
 .et-db #et-boc .et-l #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-message,
 .et-db #et-boc .et-l .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg,
-.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_sucuss),
+.et-db #et-boc .et-l .wfacp_mini_cart_start_h .woocommerce-message:not(.wfacp_success),
 .et-db #et-boc .et-l .wfacp_main_form.woocommerce #wfacp_checkout_form .wfacp_coupon_field_msg > .wfacp_single_coupon_msg {
     border-left: none;
     border-right: 2px solid #24ae4e;

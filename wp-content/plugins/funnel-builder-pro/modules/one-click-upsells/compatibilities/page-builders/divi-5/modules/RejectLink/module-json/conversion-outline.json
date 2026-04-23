@@ -1,0 +1,78 @@
+{
+  "module": {
+    "text": "text.innerContent.*",
+    "align": "textAlign.*",
+
+    "wfocu_reject_text_color": "text.decoration.font.font.*.color",
+    "hover_color": "wfocu_reject_link_text_hover_color.decoration.font.font.*.color",
+
+    "wfocu_reject_background_color": "wfocu_reject_link_background_color.decoration.background.*.color",
+    "wfocu_reject_background_hover_color": "wfocu_reject_link_background_hover_color.decoration.background.*.color",
+
+    "border_border_type": "wfocu_reject_link_border.decoration.border.border.*.styles.all.style",
+    "border_border_color": "wfocu_reject_link_border.decoration.border.border.*.styles.all.color",
+    "border_border_width_top": "wfocu_reject_link_border.decoration.border.border.*.width.top",
+    "border_border_width_bottom": "wfocu_reject_link_border.decoration.border.border.*.width.bottom",
+    "border_border_width_left": "wfocu_reject_link_border.decoration.border.border.*.width.left",
+    "border_border_width_right": "wfocu_reject_link_border.decoration.border.border.*.width.right",
+    "border_border_radius_top": "wfocu_reject_link_border.decoration.border.border.*.radius.topLeft",
+    "border_border_radius_bottom": "wfocu_reject_link_border.decoration.border.border.*.radius.bottomLeft",
+    "border_border_radius_left": "wfocu_reject_link_border.decoration.border.border.*.radius.bottomRight",
+    "border_border_radius_right": "wfocu_reject_link_border.decoration.border.border.*.radius.topRight",
+
+    "text_margin": "wfocu_reject_link_spacing.decoration.spacing.*.margin",
+    "text_padding": "wfocu_reject_link_spacing.decoration.spacing.*.padding",
+
+    "typography_typograhy": "text.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "border": "wfocu_reject_link_border.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "box_shadow": "wfocu_reject_link_box_shadow.decoration.boxShadow"
+    },
+    "fonts": {
+      "typography": "text.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "text_margin": "convertSpacing",
+    "text_padding": "convertSpacing",
+    "typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "border_border_width_top": "convertBorderWidth",
+    "border_border_width_bottom": "convertBorderWidth",
+    "border_border_width_left": "convertBorderWidth",
+    "border_border_width_right": "convertBorderWidth",
+    "border_border_radius_top": "convertBorderWidth",
+    "border_border_radius_bottom": "convertBorderWidth",
+    "border_border_radius_left": "convertBorderWidth",
+    "border_border_radius_right": "convertBorderWidth"
+  }
+}

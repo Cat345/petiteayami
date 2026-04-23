@@ -7,14 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 	class WFFN_REST_OPTIN_API_EndPoint extends WFFN_REST_Controller {
 
-		private static $ins = null;
+		private static $ins  = null;
 		protected $namespace = 'funnelkit-app';
 
 		/**
 		 * WFFN_REST_API_EndPoint constructor.
 		 */
 		public function __construct() {
-			add_action( 'rest_api_init', [ $this, 'register_endpoint' ], 12 );
+			add_action( 'rest_api_init', array( $this, 'register_endpoint' ), 12 );
 		}
 
 		/**
@@ -22,7 +22,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -31,98 +31,117 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 		public function register_endpoint() {
 
 			// Register routes for form fields.
-			register_rest_route( $this->namespace, '/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_form_fields' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_form_fields' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_form_fields' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_form_fields' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register route for Add Optin Form field.
-			register_rest_route( $this->namespace, '/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields' . '/add_field', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-						'required'    => true,
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields' . '/add_field',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'add_op_field' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+							'required'    => true,
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'add_op_field' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register route for Remove Optin Form field.
-			register_rest_route( $this->namespace, '/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields' . '/remove_field', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
-						'required'    => true,
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/form_fields' . '/remove_field',
 				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'remove_op_field' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+							'required'    => true,
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'remove_op_field' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Optin Form Actions.
-			register_rest_route( $this->namespace, '/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/actions', array(
-				'args'   => array(
-					'step_id' => array(
-						'description' => __( 'Current step id.', 'funnel-builder' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . 'funnel-optin' . '/(?P<step_id>[\d]+)' . '/actions',
+				array(
+					'args'   => array(
+						'step_id' => array(
+							'description' => __( 'Current step id.', 'funnel-builder' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_op_actions' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_op_actions' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_op_actions' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_op_actions' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Route for Testing Email Option.
 			// Route to Search Pages.
-			register_rest_route( $this->namespace, '/funnel-optin/testing_email', array(
+			register_rest_route(
+				$this->namespace,
+				'/funnel-optin/testing_email',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'testing_email' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'options' => array(
-							'description'       => __( 'Notify Options', 'funnel-builder' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'testing_email' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'options' => array(
+								'description'       => __( 'Notify Options', 'funnel-builder' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-			) );
-
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -165,7 +184,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 						if ( ! empty( $field['options'] ) ) {
 							$option           = sanitize_title( $field['options'] );
-							$field['options'] = [ $option => $field['options'] ];
+							$field['options'] = array( $option => $field['options'] );
 						}
 
 						if ( isset( $field['hint'] ) ) {
@@ -219,8 +238,8 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 					$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 
 				}
-				$resp['data']['funnel_data'] =  WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id );
-				$resp['data']['step_data'] = $step_post;
+				$resp['data']['funnel_data'] = WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id );
+				$resp['data']['step_data']   = $step_post;
 
 				$fields    = WFFN_Optin_Pages::get_instance()->get_page_layout( $step_id );
 				$op_fields = $this->format_op_form_fields( $fields, $step_id, false );
@@ -249,11 +268,11 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 			if ( absint( $step_id ) > 0 && ! empty( $fields ) ) {
 
-				$posted_data = $this->sanitize_custom( $fields );
+				$posted_data = $this->sanitize_custom( $fields, 1 );
 
 				if ( is_array( $posted_data ) && ! empty( $posted_data['fields'] ) ) {
 
-					$label        = ( isset( $posted_data['fields']['label'] ) ) ? stripslashes( wffn_clean( $posted_data['fields']['label'] ) ) : '';
+					$label        = ( isset( $posted_data['fields']['label'] ) ) ? wp_kses_post( stripslashes( $posted_data['fields']['label'] ) ) : '';
 					$placeholder  = ( isset( $posted_data['fields']['placeholder'] ) ) ? stripslashes( wffn_clean( $posted_data['fields']['placeholder'] ) ) : '';
 					$width        = ! empty( $posted_data['fields']['width'] ) ? wffn_clean( $posted_data['fields']['width'] ) : 'wffn-sm-100';
 					$field_type   = ! empty( $posted_data['fields']['field_type'] ) ? wffn_clean( $posted_data['fields']['field_type'] ) : 'text';
@@ -287,7 +306,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 					if ( 'radio' === $field_type ) {
 						if ( ! empty( $posted_data['fields']['radio_alignment'] ) ) {
-							$data['radio_alignment'] = ! empty( $posted_data['fields']['radio_alignment'] ) ? wffn_clean( $posted_data['fields']['radio_alignment'] ) : "";
+							$data['radio_alignment'] = ! empty( $posted_data['fields']['radio_alignment'] ) ? wffn_clean( $posted_data['fields']['radio_alignment'] ) : '';
 						}
 					}
 
@@ -299,7 +318,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 					$data['id']         = $name;
 					$data['unique_id']  = $name;
-					$data['options']    = ! empty( $new_sanitize_option ) ? array_values( $new_sanitize_option )[0] : [];
+					$data['options']    = ! empty( $new_sanitize_option ) ? array_values( $new_sanitize_option )[0] : array();
 					$data['field_type'] = $section_type;
 					$resp['success']    = true;
 					$resp['data']       = $data;
@@ -389,7 +408,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 					if ( ! empty( $options['test_email'] ) ) {
 						unset( $options['test_email'] );
 					}
-					$service_form = isset( $options['optin_service_form'] ) ? $options['optin_service_form'] : [];  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$service_form = isset( $options['optin_service_form'] ) ? $options['optin_service_form'] : array();  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$optin_data   = array();
 					if ( ! empty( $service_form['fields'] ) ) {
 						$optin_data['optin_form_enable'] = isset( $service_form['optin_form_enable'] ) ? $service_form['optin_form_enable'] : 'false';
@@ -401,8 +420,8 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 					$options['optin_service_form'] = $optin_data;
 
-					if ( ! empty( $posted_data['lead_notification_body'] ) ) {
-						$options['lead_notification_body'] = preg_replace( '/(\v|\s)+/', ' ', $posted_data['lead_notification_body'] );
+					if ( ! empty( $options['lead_notification_body'] ) ) {
+						$options['lead_notification_body'] = $this->normalize_notification_body( $options['lead_notification_body'] );
 					}
 
 					if ( ! empty( $options['assign_ld_course'] ) ) {
@@ -445,14 +464,14 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			if ( absint( $step_id ) > 0 ) {
 
 				$resp['data']['step'] = wffn_rest_funnel_modules()->get_step_design( $step_id );
-				$step_post = wffn_rest_api_helpers()->get_step_post( $step_id);
+				$step_post            = wffn_rest_api_helpers()->get_step_post( $step_id );
 
 				if ( 0 === absint( $funnel_id ) ) {
 					$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
 
 				}
-				$resp['data']['funnel_data'] =  WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id );
-				$resp['data']['step_data'] = $step_post;
+				$resp['data']['funnel_data'] = WFFN_REST_Funnels::get_instance()->get_funnel_data( $funnel_id );
+				$resp['data']['step_data']   = $step_post;
 
 				$db_actions = get_post_meta( $step_id, 'wffn_actions_custom_settings', true );
 
@@ -517,7 +536,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 			$subject  = do_shortcode( $option['notify_subject'] );
 			$result   = WFFN_Optin_Action_User_Email::get_instance()->trigger_email( $optin_email, $subject, $db_options['op_user_name'], $db_options['op_user_email'], $db_options['op_user_email_reply'], $content );
-			$response = [ 'success' => true ];
+			$response = array( 'success' => true );
 
 			if ( ! $result ) {
 				$response['success'] = false;
@@ -530,7 +549,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 
 			$field_sets = $fields['fieldsets'];
 			if ( is_array( $field_sets ) ) {
-				$options = [];
+				$options = array();
 				foreach ( $field_sets as $_key => $field_set ) {
 					foreach ( $field_set as $_fields => $fields ) {
 						$key_array = array();
@@ -569,7 +588,6 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 							if ( empty( $field['field_type'] ) ) {
 								$field_sets[ $_key ][ $_fields ]['fields'][ $_field ]['field_type'] = $this->get_field_type( $field['id'], $step_id );
 							}
-
 
 							$required_field = $field_sets[ $_key ][ $_fields ]['fields'][ $_field ]['required'];
 
@@ -643,7 +661,6 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			}
 
 			return '';
-
 		}
 
 		public function optin_fetch_fields( $step_id ) {
@@ -661,6 +678,22 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			return $fields;
 		}
 
+		/**
+		 * Strips invalid UTF-8 bytes and collapses whitespace/vertical-space sequences to a single space.
+		 *
+		 * @param string $text Raw notification body text.
+		 * @return string Cleaned text, or original if preg_replace fails.
+		 */
+		protected function normalize_notification_body( $text ) {
+			if ( empty( $text ) ) {
+				return '';
+			}
+			$text    = wp_check_invalid_utf8( $text, true );
+			$cleaned = preg_replace( '/(\v|\s)+/u', ' ', $text );
+
+			return ( null !== $cleaned ) ? $cleaned : $text;
+		}
+
 		public function sanitize_custom( $data, $skip_clean = 0 ) {
 			$data = json_decode( $data, true );
 
@@ -674,7 +707,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 		public function get_action_tabs( $values, $step_id ) {
 
 			$lms_active       = $lifterlms_active = false;
-			$learndash_course = $lifterlms_course = "";
+			$learndash_course = $lifterlms_course = '';
 
 			$lifterlms_hint   = __( 'Note: LifterLMS plugin needs to be activated to enable integration.', 'funnel-builder' );
 			$lms_hint         = __( 'Note: Learndash plugin needs to be activated to enable integration.', 'funnel-builder' );
@@ -702,10 +735,12 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				}
 			}
 
+			$notification_body = ! empty( $values['lead_notification_body'] ) ? $this->normalize_notification_body( $values['lead_notification_body'] ) : '';
+
 			$notify_fields = array(
 				'lead_enable_notify'        => ! empty( $values['lead_enable_notify'] ) ? wffn_clean( $values['lead_enable_notify'] ) : 'false',
 				'lead_notification_subject' => ! empty( $values['lead_notification_subject'] ) ? wffn_clean( $values['lead_notification_subject'] ) : '',
-				'lead_notification_body'    => ! empty( $values['lead_notification_body'] ) ? preg_replace( '/(\v|\s)+/', ' ', $values['lead_notification_body'] ) : '',
+				'lead_notification_body'    => $notification_body,
 				'test_email'                => ! empty( $values['test_email'] ) ? wffn_clean( $values['test_email'] ) : '',
 				'admin_email_notify'        => ! empty( $values['admin_email_notify'] ) ? wffn_clean( $values['admin_email_notify'] ) : 'false',
 				'op_admin_email'            => ! empty( $values['op_admin_email'] ) ? wffn_clean( $values['op_admin_email'] ) : '',
@@ -717,7 +752,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				'optin_service_form' => ! empty( $values['optin_service_form'] ) ? wffn_clean( $values['optin_service_form'] ) : '',
 				'is_pro_active'      => $is_pro_active,
 				'pro_inactive_label' => __( 'Get pro to enable CRM integration.', 'funnel-builder' ),
-				'is_pro'			 => true,
+				'is_pro'             => true,
 			);
 
 			$webhook_fields = array(
@@ -728,14 +763,14 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			if ( isset( $values['lms_course'] ) && true === wffn_string_to_bool( $values['lms_course'] ) ) {
 				$learndash_course = ! empty( $values['assign_ld_course']['id'] ) ? array(
 					'id'   => $values['assign_ld_course']['id'],
-					'name' => html_entity_decode( get_the_title( $values['assign_ld_course']['id'] ) )
+					'name' => html_entity_decode( get_the_title( $values['assign_ld_course']['id'] ) ),
 				) : '';
 			}
 
 			if ( isset( $values['lifterlms_course'] ) && true === wffn_string_to_bool( $values['lifterlms_course'] ) ) {
 				$lifterlms_course = ! empty( $values['assign_lifter_course']['id'] ) ? array(
 					'id'   => $values['assign_lifter_course']['id'],
-					'name' => html_entity_decode( get_the_title( $values['assign_lifter_course']['id'] ) )
+					'name' => html_entity_decode( get_the_title( $values['assign_lifter_course']['id'] ) ),
 				) : '';
 			}
 
@@ -745,7 +780,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				'pro_inactive_label'   => __( 'Get pro to enable Affiliate WP integration.', 'funnel-builder' ),
 				'is_plugin_active'     => $affiliatewp_active,
 				'plugin_inactive_hint' => $affiliatewp_hint,
-				'is_pro'			   => true,
+				'is_pro'               => true,
 			);
 
 			$learndash_fields = array(
@@ -755,7 +790,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				'pro_inactive_label'   => __( 'Get pro to enable Learndash integration.', 'funnel-builder' ),
 				'is_plugin_active'     => $lms_active,
 				'plugin_inactive_hint' => $lms_hint,
-				'is_pro'			   => true,
+				'is_pro'               => true,
 			);
 
 			$lifterlms_fields = array(
@@ -765,7 +800,7 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 				'pro_inactive_label'   => __( 'Get pro to enable Learndash integration.', 'funnel-builder' ),
 				'is_plugin_active'     => $lifterlms_active,
 				'plugin_inactive_hint' => $lifterlms_hint,
-				'is_pro'			   => true,
+				'is_pro'               => true,
 			);
 
 			$action_builder_services = array(
@@ -785,238 +820,241 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 			$form_builders_optin = array();
 
 			foreach ( $action_builder_services as $key => $_services ) {
-				$form_builders_optin[] = array( 'value' => $key, 'label' => $_services );
+				$form_builders_optin[] = array(
+					'value' => $key,
+					'label' => $_services,
+				);
 			}
 
 			// Hide Select Services from List.
 			unset( $action_builder_services['select-services'] );
 
-			$tabs = [
-				'notifications' => [
+			$tabs = array(
+				'notifications' => array(
 					'title'    => __( 'Notifications', 'funnel-builder' ),
 					'heading'  => __( 'Email Notification', 'funnel-builder' ),
 					'slug'     => 'notifications',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'lead_enable_notify',
 							'label'  => __( 'Optin Notification', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'    => 'input',
 							'key'     => 'lead_notification_subject',
 							'label'   => __( 'Subject', 'funnel-builder' ),
 							'hint'    => '',
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'lead_enable_notify',
 								'value' => 'true',
-							],
-						],
-						2 => [
+							),
+						),
+						2 => array(
 							'type'    => 'text-editor',
 							'key'     => 'lead_notification_body',
 							'label'   => __( 'Body', 'funnel-builder' ),
 							'hint'    => $lms_hint,
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'lead_enable_notify',
 								'value' => 'true',
-							],
-						],
-						3 => [
+							),
+						),
+						3 => array(
 							'type'        => 'input',
 							'key'         => 'test_email',
 							'label'       => __( 'Test Email', 'funnel-builder' ),
 							'placeholder' => __( 'Enter your email to test', 'funnel-builder' ),
 							'hint'        => '',
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'lead_enable_notify',
 								'value' => 'true',
-							],
-						],
-						4 => [
+							),
+						),
+						4 => array(
 							'type'        => 'input_button',
 							'key'         => 'btn_test_email',
 							'label'       => __( 'Test Email', 'funnel-builder' ),
 							'hint'        => '',
 							'apiEndPoint' => '/funnel-optin/testing_email',
-							'data_fields' => [
+							'data_fields' => array(
 								'notify_subject' => 'lead_notification_subject',
 								'notify_body'    => 'lead_notification_body',
 								'notify_email'   => 'test_email',
-							],
-							'toggler'     => [
+							),
+							'toggler'     => array(
 								'key'   => 'lead_enable_notify',
 								'value' => 'true',
-							],
-						],
-						5 => [
+							),
+						),
+						5 => array(
 							'type'   => 'radios',
 							'key'    => 'admin_email_notify',
 							'label'  => __( 'Admin Notification', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						6 => [
+								),
+							),
+						),
+						6 => array(
 							'type'    => 'input',
 							'key'     => 'op_admin_email',
 							'label'   => __( 'Email', 'funnel-builder' ),
 							'hint'    => __( 'Enter comma separated email IDs for multiple emails', 'funnel-builder' ),
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'admin_email_notify',
 								'value' => 'true',
-							],
-						],
-					],
+							),
+						),
+					),
 					'priority' => 5,
 					'values'   => $notify_fields,
-				],
-				'crm'           => [
+				),
+				'crm'           => array(
 					'title'    => __( 'CRM', 'funnel-builder' ),
 					'heading'  => __( 'CRM', 'funnel-builder' ),
 					'slug'     => 'crm',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'optin_form_enable',
 							'label'  => __( 'Enable Integration', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'    => 'select',
 							'key'     => 'optin_form_builder',
 							'label'   => __( 'Send contacts to', 'funnel-builder' ),
 							'hint'    => '',
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'optin_form_enable',
 								'value' => 'true',
-							],
+							),
 							'options' => $form_builders_optin,
-						],
-						2 => [
+						),
+						2 => array(
 							'type'    => 'input_button_reset',
 							'key'     => 'wffn_crm_reset',
 							'label'   => __( 'Reset', 'funnel-builder' ),
 							'hint'    => '',
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'optin_service_form',
 								'value' => 'true',
-							]
-						],
-						3 => [
+							),
+						),
+						3 => array(
 							'type'        => 'check_service',
 							'key'         => 'optin_service_form',
 							'label'       => '',
 							'placeholder' => __( 'Paste form embed code here.', 'funnel-builder' ),
 							'hint'        => '',
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'optin_form_builder',
 								'value' => array_keys( $action_builder_services ),
-							],
+							),
 							'options'     => $values['form_fields'],
-						],
-						4 => [
+						),
+						4 => array(
 							'type'    => 'input_button_continue',
 							'key'     => 'wffn_crm_continue',
 							'class'   => 'wffn-disabled',
 							'label'   => __( 'Continue', 'funnel-builder' ),
 							'hint'    => '',
-							'toggler' => [
+							'toggler' => array(
 								'key'   => 'optin_service_form',
 								'value' => 'true',
-							]
-						]
-					],
+							),
+						),
+					),
 					'priority' => 10,
 					'values'   => $crm_fields,
-				],
-				'webhook'       => [
+				),
+				'webhook'       => array(
 					'title'    => __( 'Webhook', 'funnel-builder' ),
 					'heading'  => __( 'Webhook', 'funnel-builder' ),
 					'slug'     => 'webhook',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'op_webhook_enable',
 							'label'  => __( 'Enable', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'url',
 							'key'         => 'op_webhook_url',
 							'label'       => __( 'Webhook URL', 'funnel-builder' ),
 							'placeholder' => __( 'Enter Webhook URL', 'funnel-builder' ),
 							'hint'        => '',
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'op_webhook_enable',
 								'value' => 'true',
-							],
-						],
-					],
+							),
+						),
+					),
 					'priority' => 20,
 					'values'   => $webhook_fields,
-				],
-				'learndash'     => [
+				),
+				'learndash'     => array(
 					'title'    => __( 'Learndash', 'funnel-builder' ),
 					'heading'  => __( 'Assign Course', 'funnel-builder' ),
 					'slug'     => 'learndash',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'lms_course',
 							'label'  => __( 'LMS Course', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'custom-select',
 							'key'         => 'assign_ld_course',
 							'placeholder' => __( 'Select Course', 'funnel-builder' ),
@@ -1024,38 +1062,38 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 							'label'       => __( 'Select Course', 'funnel-builder' ),
 							'hint'        => '',
 							'hintLabel'   => __( 'Enter minimum 3 letters.', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'lms_course',
 								'value' => 'true',
-							],
+							),
 							'values'      => $learndash_course,
-						],
-					],
+						),
+					),
 					'priority' => 15,
 					'values'   => $learndash_fields,
-				],
-				'lifterlms'     => [
+				),
+				'lifterlms'     => array(
 					'title'    => __( 'Lifter LMS', 'funnel-builder' ),
 					'heading'  => __( 'Assign Course', 'funnel-builder' ),
 					'slug'     => 'lifterlms',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'lifterlms_course',
 							'label'  => __( 'LMS Course', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-						1 => [
+								),
+							),
+						),
+						1 => array(
 							'type'        => 'custom-select',
 							'key'         => 'assign_lifter_course',
 							'placeholder' => __( 'Select Course', 'funnel-builder' ),
@@ -1063,42 +1101,42 @@ if ( ! class_exists( 'WFFN_REST_OPTIN_API_EndPoint' ) ) {
 							'label'       => __( 'Select Course', 'funnel-builder' ),
 							'hint'        => '',
 							'hintLabel'   => __( 'Enter minimum 3 letters.', 'funnel-builder' ),
-							'toggler'     => [
+							'toggler'     => array(
 								'key'   => 'lifterlms_course',
 								'value' => 'true',
-							],
+							),
 							'values'      => $lifterlms_course,
-						],
-					],
+						),
+					),
 					'priority' => 25,
 					'values'   => $lifterlms_fields,
-				],
-				'affiliatewp'   => [
+				),
+				'affiliatewp'   => array(
 					'title'    => __( 'AffiliateWP', 'funnel-builder' ),
 					'heading'  => __( 'AffiliateWP', 'funnel-builder' ),
 					'slug'     => 'affiliatewp_id',
-					'fields'   => [
-						0 => [
+					'fields'   => array(
+						0 => array(
 							'type'   => 'radios',
 							'key'    => 'affiliatewp_id',
 							'label'  => __( 'Enable', 'funnel-builder' ),
 							'hint'   => '',
-							'values' => [
-								0 => [
+							'values' => array(
+								0 => array(
 									'value' => 'true',
 									'name'  => __( 'Yes', 'funnel-builder' ),
-								],
-								1 => [
+								),
+								1 => array(
 									'value' => 'false',
 									'name'  => __( 'No', 'funnel-builder' ),
-								],
-							],
-						],
-					],
+								),
+							),
+						),
+					),
 					'priority' => 35,
 					'values'   => $affiliatewp_fields,
-				],
-			];
+				),
+			);
 
 			return apply_filters( 'wfopp_default_actions_args', $tabs, $values, $step_id, $localization_data );
 		}

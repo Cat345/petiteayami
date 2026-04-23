@@ -39,6 +39,8 @@ class BWFAN_One_Click_Unsubscribe_Link extends BWFAN_Merge_Tag {
 		$email        = isset( $get_data['email'] ) ? $get_data['email'] : '';
 		$contact_id   = isset( $get_data['contact_id'] ) ? $get_data['contact_id'] : '';
 		$broadcast_id = isset( $get_data['broadcast_id'] ) ? $get_data['broadcast_id'] : '';
+		$form_feed_id = isset( $get_data['form_feed_id'] ) ? $get_data['form_feed_id'] : '';
+		$template_id  = isset( $get_data['template_id'] ) ? $get_data['template_id'] : '';
 
 		$unsubscribe_link = $this->get_unsubscribe_page_url();
 
@@ -57,7 +59,15 @@ class BWFAN_One_Click_Unsubscribe_Link extends BWFAN_Merge_Tag {
 		if ( ! empty( $broadcast_id ) ) {
 			$query_args['bid'] = $broadcast_id;
 		}
+		if ( ! empty( $form_feed_id ) ) {
+			$query_args['form_feed_id'] = absint( $form_feed_id );
+		}
 
+		/** Set template id to identify the transactional mail for unsubscribe link */
+		if ( ! empty( $template_id ) ) {
+			$query_args['tid'] = intval( $template_id );
+		}
+		
 		if ( ! empty( $uid ) ) {
 			$unsubscribe_link = add_query_arg( $query_args, $unsubscribe_link );
 		}

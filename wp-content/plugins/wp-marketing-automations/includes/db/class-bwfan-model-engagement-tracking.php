@@ -629,7 +629,7 @@ if ( ! class_exists( 'BWFAN_Model_Engagement_Tracking' ) && BWFAN_Common::is_pro
 						$mail_class                               = BWFCRM_Core()->transactional_mails;
 						$transactional_val                        = $mail_class->get_transactional_mail_by_slug( $template['title'] );
 						$title                                    = ! empty( $transactional_val['title'] ) ? $transactional_val['title'] : $template['title'];
-						$transactional_data[ $template['title'] ] = $transactional_val['title'];
+						$transactional_data[ $template['title'] ] = $transactional_val['title'] ?? '';
 					} else {
 						$transactional_data[ $template['title'] ] = $template['title'];
 					}

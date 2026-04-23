@@ -11,7 +11,7 @@ if ( ! function_exists( 'wffn_handle_store_checkout_config' ) ) {
 
 		/** Remove _is_global meta if any funnel exists */
 		global $wpdb;
-		$sql_query     = $wpdb->prepare( "SELECT bwf_funnel_id as id FROM {table_name_meta} WHERE meta_key = %s",'_is_global' );
+		$sql_query     = $wpdb->prepare( 'SELECT bwf_funnel_id as id FROM {table_name_meta} WHERE meta_key = %s', '_is_global' );
 		$found_funnels = WFFN_Core()->get_dB()->get_results( $sql_query );
 		if ( is_array( $found_funnels ) && count( $found_funnels ) > 0 && isset( $found_funnels[0]['id'] ) && absint( $found_funnels[0]['id'] ) > 0 ) {
 			foreach ( $found_funnels as $funnel ) {
@@ -39,7 +39,6 @@ if ( ! function_exists( 'wffn_handle_store_checkout_config' ) ) {
 		if ( empty( $get_funnel_id ) ) {
 			return;
 		}
-
 
 		WFFN_Common::update_store_checkout_meta( $get_funnel_id, 1 );
 
@@ -161,7 +160,6 @@ if ( ! function_exists( 'wffn_alter_conversion_table_add_source' ) ) {
 				return;
 			}
 
-
 			global $wpdb;
 
 			$conv_table = BWF_Ecomm_Tracking_Common::get_instance()->conversion_table_name();
@@ -190,7 +188,7 @@ if ( ! function_exists( 'wffn_alter_conversion_table_add_source' ) ) {
 			} else {
 				WFFN_Core()->logger->log( __FUNCTION__ . ' Successfully add source id in conversion table.', 'wffn', true );
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 			WFFN_Core()->logger->log( __FUNCTION__ . ' error during during add source id in conversion table: ' . $e->getMessage(), 'wffn', true );
 
 		}
@@ -239,7 +237,7 @@ if ( ! function_exists( 'wffn_add_order_number_column_in_conversion_table' ) ) {
 			} else {
 				WFFN_Core()->logger->log( __FUNCTION__ . ' Successfully added order_number column to conversion table.', 'wffn', true );
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 			WFFN_Core()->logger->log( __FUNCTION__ . ' error during adding order_number column in conversion table: ' . $e->getMessage(), 'wffn', true );
 		}
 	}
@@ -248,6 +246,7 @@ if ( ! function_exists( 'wffn_add_order_number_column_in_conversion_table' ) ) {
 if ( ! function_exists( 'wffn_update_migrate_data_for_currency_switcher' ) ) {
 	/**
 	 * Update previous orders value for currency switcher compatibility
+	 *
 	 * @return void
 	 */
 	function wffn_update_migrate_data_for_currency_switcher() {
@@ -268,7 +267,7 @@ if ( ! function_exists( 'wffn_update_migrate_data_for_currency_switcher' ) ) {
 			}
 
 			// Check if the conversion tracking migration has been run
-			if ( ! function_exists( 'wffn_conversion_tracking_migrator' ) || ! in_array( absint( WFFN_Conversion_Tracking_Migrator::get_instance()->get_upgrade_state() ), [ 0, 3, 4 ], true ) ) {
+			if ( ! function_exists( 'wffn_conversion_tracking_migrator' ) || ! in_array( absint( WFFN_Conversion_Tracking_Migrator::get_instance()->get_upgrade_state() ), array( 0, 3, 4 ), true ) ) {
 				WFFN_Core()->logger->log( 'Conversion migration not yet run on site', 'wffn', true );
 
 				return;
@@ -278,7 +277,7 @@ if ( ! function_exists( 'wffn_update_migrate_data_for_currency_switcher' ) ) {
 			if ( function_exists( 'wffn_update_currency_switcher_data' ) ) {
 				wffn_update_currency_switcher_data();
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 			WFFN_Core()->logger->log( 'error during currency switcher migration: ' . $e->getMessage(), 'wffn', true );
 
 		}
@@ -312,8 +311,15 @@ if ( ! function_exists( 'wffn_update_currency_switcher_data' ) ) {
 		/**
 		 * This query below will only update the value column for all the rows where checkout_total or bump_total or offer_total is not 0
 		 */
-		$wpdb->query( $wpdb->prepare( "UPDATE {$table_name}
-			 SET value = IFNULL(checkout_total, %d) + IFNULL(bump_total, %d) + IFNULL(offer_total, %d) WHERE IFNULL(checkout_total, 0) <> 0 OR IFNULL(bump_total, 0) <> 0;", 0, 0, 0 ) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$table_name}
+			 SET value = IFNULL(checkout_total, %d) + IFNULL(bump_total, %d) + IFNULL(offer_total, %d) WHERE IFNULL(checkout_total, 0) <> 0 OR IFNULL(bump_total, 0) <> 0;",
+				0,
+				0,
+				0
+			)
+		);
 		WFFN_Core()->logger->log( 'Time after query:: ' . current_time( 'timestamp' ), 'wffn', true );
 
 		// Log database errors or success
@@ -331,9 +337,7 @@ if ( ! function_exists( 'wffn_update_email_default_settings' ) ) {
 	 *
 	 * @return void
 	 */
-
 	function wffn_update_email_default_settings() {
-
 
 		$new_settings = array(
 			'bwf_enable_notification'    => true,
@@ -346,8 +350,12 @@ if ( ! function_exists( 'wffn_update_email_default_settings' ) ) {
 			'bwf_external_user'          => array(),
 		);
 
-
-		$users         = get_users( array( 'role' => 'administrator', 'number' => 10 ) );
+		$users         = get_users(
+			array(
+				'role'   => 'administrator',
+				'number' => 10,
+			)
+		);
 		$user_selector = array();
 
 		foreach ( $users as $user ) {
@@ -369,7 +377,6 @@ if ( ! function_exists( 'wffn_set_default_value_in_autoload_option' ) ) {
 	 *
 	 * @return void
 	 */
-
 	function wffn_set_default_value_in_autoload_option() {
 		try {
 
@@ -380,8 +387,6 @@ if ( ! function_exists( 'wffn_set_default_value_in_autoload_option' ) ) {
 			if ( empty( $gen_config ) && class_exists( 'BWF_Admin_General_Settings' ) ) {
 				BWF_Admin_General_Settings::get_instance()->update_global_settings_fields( array( 'fb_pixel_key' => '' ) );
 			}
-
-			
 
 			/**
 			 * Update notice option on onload
@@ -404,7 +409,7 @@ if ( ! function_exists( 'wffn_set_default_value_in_autoload_option' ) ) {
 			 */
 			$fb_site_options = get_option( 'fb_site_options' );
 			if ( empty( $fb_site_options ) ) {
-				update_option( 'fb_site_options', [], true );
+				update_option( 'fb_site_options', array(), true );
 			}
 
 			/**
@@ -422,19 +427,15 @@ if ( ! function_exists( 'wffn_set_default_value_in_autoload_option' ) ) {
 				 */
 				$options = BWF_Admin_General_Settings::get_instance()->setup_options();
 				if ( empty( $options['funnelkit_google_map_key'] ) ) {
-					$global_settings                     = get_option( '_wfacp_global_settings', [] );
+					$global_settings                     = get_option( '_wfacp_global_settings', array() );
 					$options['funnelkit_google_map_key'] = isset( $global_settings['wfacp_google_address_key'] ) ? $global_settings['wfacp_google_address_key'] : '';
 					BWF_Admin_General_Settings::get_instance()->update_global_settings_fields( $options );
 				}
-
 			}
-
-
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 
 		}
 	}
-
 }
 
 if ( ! function_exists( 'wffn_cleanup_data_for_conversion' ) ) {
@@ -470,9 +471,9 @@ if ( ! function_exists( 'wffn_detect_and_set_default_page_builder' ) ) {
 				BWF_Logger::get_instance()->log( 'Page builder detection completed during database upgrade', 'wffn_page_builder_detection' );
 			}
 		} catch ( \Throwable $e ) {
-			BWF_Logger::get_instance()->log( 
-				sprintf( 'Error during page builder detection in database upgrade: %s', $e->getMessage() ), 
-				'wffn_page_builder_detection' 
+			BWF_Logger::get_instance()->log(
+				sprintf( 'Error during page builder detection in database upgrade: %s', $e->getMessage() ),
+				'wffn_page_builder_detection'
 			);
 		}
 	}

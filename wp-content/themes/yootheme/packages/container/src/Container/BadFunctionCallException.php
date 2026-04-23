@@ -25,11 +25,9 @@ class BadFunctionCallException extends \BadFunctionCallException implements
         } elseif (is_array($callback)) {
             [$class, $method] = $callback;
 
-            if (is_string($class)) {
-                $function = "{$class}::{$method}";
-            } else {
-                $function = get_class($class) . "@{$method}";
-            }
+            $function = is_string($class)
+                ? "{$class}::{$method}"
+                : get_class($class) . "@{$method}";
         }
 
         return new self("Function {$function} is not a callable", $code, $previous);

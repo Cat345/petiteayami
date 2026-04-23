@@ -186,7 +186,7 @@ return [
             'description' =>
                 'Set whether navigation items are forced into one line or can wrap into multiple lines.',
             'type' => 'checkbox',
-            'text' => 'Don\'t wrap into multiple lines',
+            'text' => "Don't wrap into multiple lines",
         ],
         'nav_align' => [
             'label' => 'Alignment',
@@ -280,19 +280,19 @@ return [
             'attrs' => [
                 'placeholder' => 'auto',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_height' => [
             'attrs' => [
                 'placeholder' => 'auto',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_shrink' => [
             'description' => 'Shrink thumbnails if the container is too small.',
             'type' => 'checkbox',
             'text' => 'Shrink thumbnails',
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_svg_inline' => [
             'label' => 'Thumbnail Inline SVG',
@@ -300,7 +300,7 @@ return [
                 'Inject SVG images into the page markup so that they can easily be styled with CSS.',
             'type' => 'checkbox',
             'text' => 'Make SVG stylable with CSS',
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail',
+            'enable' => "nav == 'thumbnav' && show_thumbnail",
         ],
         'thumbnav_svg_color' => [
             'label' => 'Thumbnail SVG Color',
@@ -317,7 +317,7 @@ return [
                 'Warning' => 'warning',
                 'Danger' => 'danger',
             ],
-            'enable' => 'nav == \'thumbnav\' && show_thumbnail && thumbnav_svg_inline',
+            'enable' => "nav == 'thumbnav' && show_thumbnail && thumbnav_svg_inline",
         ],
         'title_style' => [
             'label' => 'Style',
@@ -375,7 +375,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -439,7 +439,7 @@ return [
                 'X-Large' => 'xlarge',
                 '2X-Large' => '2xlarge',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_column_gap' => [
             'label' => 'Grid Column Gap',
@@ -452,7 +452,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_row_gap' => [
             'label' => 'Grid Row Gap',
@@ -465,7 +465,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_grid_breakpoint' => [
             'label' => 'Grid Breakpoint',
@@ -478,7 +478,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'show_title && title_align == \'left\'',
+            'enable' => "show_title && title_align == 'left'",
         ],
         'title_margin' => [
             'label' => 'Margin Top',
@@ -857,7 +857,7 @@ return [
                 'X-Large' => 'xlarge',
                 'None' => 'remove',
             ],
-            'enable' => 'show_image && image_align == \'bottom\'',
+            'enable' => "show_image && image_align == 'bottom'",
         ],
         'link_text' => [
             'label' => 'Text',
@@ -866,7 +866,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',

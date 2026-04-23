@@ -221,19 +221,21 @@ class BWFAN_API_Get_Recoverable_Carts extends BWFAN_API_Base {
 		if ( is_array( $products_data ) ) {
 			$hide_free_products = BWFAN_Common::hide_free_products_cart_order_items();
 			foreach ( $products_data as $product ) {
-				if ( true === $hide_free_products && empty( $product['line_total'] ) ) {
-					continue;
-				}
-				if ( ! $product['data'] instanceof WC_Product ) {
+				if (
+					! is_array( $product ) ||
+					( true === $hide_free_products && empty( $product['line_total'] ) ) ||
+					( ! isset( $product['data'] ) || ! ( $product['data'] instanceof WC_Product ) ) ||
+					empty( $product['quantity'] )
+				) {
 					continue;
 				}
 
-				$product_line_total = isset( $product['line_total'] ) ? $product['line_total'] : 0;
-				$product_line_tax   = isset( $product['line_tax'] ) ? $product['line_tax'] : 0;
+				$product_line_total = isset( $product['line_total'] ) ? floatval( $product['line_total'] ) : 0;
+				$product_line_tax   = isset( $product['line_tax'] ) ? floatval( $product['line_tax'] ) : 0;
 				$product_price      = $product_line_total + $product_line_tax;
 				$product_price      = ! empty( $product_price ) ? number_format( ( $product_price ), 2, '.', '' ) : 0;
-				$product_sub_total  = isset( $product['line_subtotal'] ) ? $product['line_subtotal'] : 0;
-				$line_subtotal_tax  = isset( $product['line_subtotal_tax'] ) ? $product['line_subtotal_tax'] : 0;
+				$product_sub_total  = isset( $product['line_subtotal'] ) ? floatval( $product['line_subtotal'] ) : 0;
+				$line_subtotal_tax  = isset( $product['line_subtotal_tax'] ) ? floatval( $product['line_subtotal_tax'] ) : 0;
 				$product_sub_total  = $product_sub_total + $line_subtotal_tax;
 				$product_sub_total  = ! empty( $product_sub_total ) ? number_format( ( $product_sub_total ), 2, '.', '' ) : 0;
 				$product_discount   = $product_sub_total - $product_price;
@@ -277,7 +279,10 @@ class BWFAN_API_Get_Recoverable_Carts extends BWFAN_API_Base {
 
 		if ( is_array( $coupon_data ) && 0 !== count( $coupon_data ) ) {
 			foreach ( $coupon_data as $key => $coupon ) {
-				$data['discount'] += isset( $coupon['discount_incl_tax'] ) ? number_format( $coupon['discount_incl_tax'], 2, '.', '' ) : 0;
+				if ( ! is_array( $coupon ) ) {
+					continue;
+				}
+				$data['discount'] += isset( $coupon['discount_incl_tax'] ) ? floatval( $coupon['discount_incl_tax'] ) : 0;
 			}
 		}
 
@@ -297,17 +302,20 @@ class BWFAN_API_Get_Recoverable_Carts extends BWFAN_API_Base {
 
 	public function get_items( $item ) {
 		$items = maybe_unserialize( $item->items );
-		if ( empty( $items ) ) {
-			return '';
+		if ( empty( $items ) || ! is_array( $items ) ) {
+			return [];
 		}
 
 		$hide_free_products = BWFAN_Common::hide_free_products_cart_order_items();
 		$names              = [];
 		foreach ( $items as $value ) {
+			if ( ! is_array( $value ) ) {
+				continue;
+			}
 			if ( true === $hide_free_products && empty( $value['line_total'] ) ) {
 				continue;
 			}
-			if ( ! $value['data'] instanceof WC_Product ) {
+			if ( ! isset( $value['data'] ) || ! ( $value['data'] instanceof WC_Product ) ) {
 				continue;
 			}
 			$names[ $value['data']->get_id() ] = wp_strip_all_tags( $value['data']->get_name() );

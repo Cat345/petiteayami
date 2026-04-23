@@ -73,14 +73,15 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 
 			$sql = 'SELECT COUNT(*) FROM ' . self::_table();
 			if ( ! is_null( $dependency ) ) {
+				$col_value = isset( $dependency['col_value'] ) ? $dependency['col_value'] : '';
 
 				$sql .= ' INNER JOIN ' . $dependency['dependency_table'];
 				$sql .= ' on ' . self::_table() . '.' . $dependency['dependent_col'];
 				$sql .= ' =' . $dependency['dependency_table'] . '.' . $dependency['dependency_col'];
-				$sql .= ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'];
-				$sql .= ' =' . $dependency['col_value'];
+				$sql .= $wpdb->prepare( ' WHERE ' . $dependency['dependency_table'] . '.' . $dependency['col_name'] . ' = %s', $col_value ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( isset( $dependency['connector_id'] ) ) {
-					$sql .= ' AND ' . $dependency['connector_table'] . '.' . $dependency['connector_col'] . '=' . $dependency['connector_id'];
+					$connector_id = absint( $dependency['connector_id'] );
+					$sql         .= $wpdb->prepare( ' AND ' . $dependency['connector_table'] . '.' . $dependency['connector_col'] . ' = %d', $connector_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 			}
 
@@ -90,7 +91,15 @@ if ( ! class_exists( 'WFCO_Model' ) ) {
 		static function get_specific_rows( $where_key, $where_value ) {
 			global $wpdb;
 			$table_name = self::_table();
-			$results    = $wpdb->get_results( "SELECT * FROM $table_name WHERE $where_key = '$where_value'", ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+
+			// Whitelist allowed column names to prevent column injection
+			$allowed_columns = array( 'ID', 'id', 'slug', 'connector_id' );
+			if ( ! in_array( $where_key, $allowed_columns, true ) ) {
+				return array();
+			}
+
+			$query   = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `{$where_key}` = %s", $where_value ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$results = $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			return $results;
 		}

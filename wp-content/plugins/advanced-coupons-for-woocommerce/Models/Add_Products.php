@@ -229,6 +229,12 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
 
         $add_products = $coupon->get_add_products_data();
 
+        // For backward compatibility, if enable_add_products is not set but has data, consider it enabled.
+        $enable_state = $coupon->get_advanced_prop( 'enable_add_products' );
+        if ( 'no' === $enable_state || ( '' === $enable_state && empty( $add_products ) ) ) {
+            return;
+        }
+
         // skip if add products data is not present.
         if ( ! is_array( $add_products ) || empty( $add_products ) ) {
             return;
@@ -273,6 +279,13 @@ class Add_Products extends Base_Model implements Model_Interface, Initiable_Inte
     public function apply_coupon_add_products_to_cart( $coupon ) {
         $coupon       = $coupon instanceof Advanced_Coupon ? $coupon : new Advanced_Coupon( $coupon );
         $add_products = apply_filters( 'acfwp_coupon_add_products', $coupon->get_add_products_data() );
+
+        // Check if the Add Products module is enabled for this coupon.
+        // For backward compatibility, if enable_add_products is not set but has data, consider it enabled.
+        $enable_state = $coupon->get_advanced_prop( 'enable_add_products' );
+        if ( 'no' === $enable_state || ( '' === $enable_state && empty( $add_products ) ) ) {
+            return;
+        }
 
         if ( ! is_array( $add_products ) || empty( $add_products ) ) {
             return;

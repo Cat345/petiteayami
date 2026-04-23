@@ -101,10 +101,15 @@ if ( is_array( $data ) && ! empty( $data['coupons'] ) && is_array( $data['coupon
 					<?php endif; ?>
                     <td style="width: 60% !important;">
                         <h4 style="vertical-align:middle; <?php echo esc_html( $text_align ); ?> word-wrap: break-word;">
-							<?php 
-								echo wp_kses_post( BWFAN_Common::get_name( $product ) ); 
+							<?php
+								echo wp_kses_post( BWFAN_Common::get_name( $product ) );
 								// Meta data.
-								echo wc_get_formatted_cart_item_data( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								if ( false === BWFAN_Merge_Tag_Loader::get_data( 'is_preview' ) ) {
+									echo wc_get_formatted_cart_item_data( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								} else {
+									echo wp_kses_post( BWFAN_Common::get_name( $product ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								}
+
 							?>
                         </h4>
                     </td>

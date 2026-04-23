@@ -5,6 +5,7 @@ require plugin_dir_path( __FILE__ ) . '/class-wfty-woo-order-data.php';
 
 /**
  * Class WFTY_Data
+ *
  * @package WFTY
  * @author XlPlugins
  */
@@ -12,39 +13,37 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 	#[AllowDynamicProperties]
 	class WFTY_Data {
 
-		private static $ins = null;
-		public $page_id = false;
-		public $page_link = false;
-		private $order_id = false;
-		private $order = false;
-		private $error_showed = null;
+		private static $ins             = null;
+		public $page_id                 = false;
+		public $page_link               = false;
+		private $order_id               = false;
+		private $order                  = false;
+		private $error_showed           = null;
 		public $component_order_details = false;
 
 		private $dummy_order_data = array(
-			"name"       => "John Doe",
-			"email"      => "john.doe@example.com",
-			"first_name" => "John",
-			"last_name"  => "Doe",
-			"phone"      => "(999) 999-9999",
+			'name'       => 'John Doe',
+			'email'      => 'john.doe@example.com',
+			'first_name' => 'John',
+			'last_name'  => 'Doe',
+			'phone'      => '(999) 999-9999',
 			'address_1'  => '711-2880 Nulla St',
 			'address_2'  => '',
 			'city'       => 'New York',
 			'state'      => 'NY',
 			'postcode'   => '10001',
-			'country'    => 'US'
+			'country'    => 'US',
 		);
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
-
 
 			return self::$ins;
 		}
 
 		public function __construct() {
-
 		}
 
 		/**
@@ -62,11 +61,9 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 
 			$this->load_order( $order_id );
 
-			$contents = apply_filters( 'wffn_wfty_filter_page_ids', [], $this->get_order() );
-
+			$contents = apply_filters( 'wffn_wfty_filter_page_ids', array(), $this->get_order() );
 
 			$get_the_decided_page = is_array( $contents ) && count( $contents ) > 0 ? $contents[0] : false;
-
 
 			if ( false !== $get_the_decided_page ) {
 				$this->page_id   = $this->maybe_custom_thankyou( $get_the_decided_page );
@@ -191,11 +188,11 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 
 		public function get_order_details( $args ) {
 			if ( is_string( $args ) ) {
-				$args = [];
+				$args = array();
 			}
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'funnel', 'read' );
 
-			//Unable to get Order & User or Guest doesn't have funnel read permission.
+			// Unable to get Order & User or Guest doesn't have funnel read permission.
 			if ( false === $this->get_order() ) {
 				if ( ( false === $user ) && ( false === apply_filters( 'wffn_show_dummy_ty_order_data', false ) ) ) {
 					return $this->show_error_message();
@@ -211,7 +208,7 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 
 		public function get_customer_info( $args ) {
 			if ( is_string( $args ) ) {
-				$args = [];
+				$args = array();
 			}
 
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'funnel', 'read' );
@@ -263,7 +260,6 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 				return '<p class="woocommerce-notice">' . __( 'Order not found. You cannot access this page directly.', 'funnel-builder' ) . '</p>';
 
 			}
-
 		}
 
 		public function get_order_details_current_component() {
@@ -272,9 +268,12 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 
 		public function get_order_total( $atts ) {
 
-			$atts = shortcode_atts( array(
-				'order_id' => 0,
-			), $atts );
+			$atts = shortcode_atts(
+				array(
+					'order_id' => 0,
+				),
+				$atts
+			);
 
 			$order_id = absint( $atts['order_id'] );
 			if ( $order_id === 0 ) {
@@ -318,7 +317,7 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 			}
 			$metadata = BWF_WC_Compatibility::get_order_meta( wc_get_order( $order_id ), $key );
 			if ( is_string( $metadata ) ) {
-				return $metadata;
+				return esc_html( $metadata );
 			}
 
 			return '';
@@ -337,9 +336,7 @@ if ( ! class_exists( 'WFTY_Data' ) ) {
 				$order_id = apply_filters( 'woocommerce_thankyou_order_id', $order_id );
 			}
 
-
 			return $order_id;
 		}
-
 	}
 }

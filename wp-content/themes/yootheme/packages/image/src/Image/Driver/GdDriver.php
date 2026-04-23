@@ -50,7 +50,7 @@ class GdDriver implements DriverInterface
      */
     public function save($file, string $type, int $quality, array $info = []): bool
     {
-        if ($type == 'jpeg') {
+        if ($type === 'jpeg') {
             if (!imagejpeg($this->image, $file, (int) round($quality))) {
                 return false;
             }
@@ -59,31 +59,30 @@ class GdDriver implements DriverInterface
                 is_string($file) &&
                 !empty($info['APP13']) &&
                 ($iptc = iptcparse($info['APP13'])) &&
-                ($data = static::embedIptc($iptc, $file)) &&
-                !file_put_contents($file, $data)
+                ($data = static::embedIptc($iptc, $file))
             ) {
-                return false;
+                return (bool) file_put_contents($file, $data);
             }
 
             return true;
         }
 
-        if ($type == 'png') {
+        if ($type === 'png') {
             imagealphablending($this->image, false);
             imagesavealpha($this->image, true);
 
             return imagepng($this->image, $file, 9);
         }
 
-        if ($type == 'gif') {
+        if ($type === 'gif') {
             return imagegif($this->image, $file);
         }
 
-        if ($type == 'webp') {
+        if ($type === 'webp') {
             return imagewebp($this->image, $file, $quality);
         }
 
-        if ($type == 'avif') {
+        if ($type === 'avif') {
             /** @phpstan-ignore function.notFound */
             return imageavif($this->image, $file, $quality);
         }
@@ -193,7 +192,7 @@ class GdDriver implements DriverInterface
 
         imagefill($image, 0, 0, $rgba);
 
-        if ($color == 'transparent') {
+        if ($color === 'transparent') {
             imagecolortransparent($image, $rgba);
         }
 
@@ -209,7 +208,7 @@ class GdDriver implements DriverInterface
      */
     protected static function normalizeImage($image)
     {
-        if (imageistruecolor($image) && imagecolortransparent($image) == -1) {
+        if (imageistruecolor($image) && imagecolortransparent($image) === -1) {
             return $image;
         }
 

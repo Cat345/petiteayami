@@ -1,9 +1,9 @@
 <?php
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
-$settings       = [
-	'show_on_next_step' => [
-		'single_step' => [
+$settings       = array(
+	'show_on_next_step' => array(
+		'single_step' => array(
 			'billing_email'       => 'true',
 			'billing_first_name'  => 'false',
 			'billing_last_name'   => 'false',
@@ -11,165 +11,165 @@ $settings       = [
 			'shipping-address'    => 'true',
 			'billing_phone'       => 'false',
 			'shipping_calculator' => 'true',
-		],
-	],
-];
+		),
+	),
+);
 
-$customizer_data = [
-	'wfacp_form' => [
-		'wfacp_form_section_embed_forms_2_disable_steps_bar'                          => false,
-		'wfacp_form_section_embed_forms_2_select_type'                                => "breadcrumb",
-		'wfacp_form_section_breadcrumb_0_step_text'                                   => __( 'Shipping', 'woocommerce' ),
-		'wfacp_form_section_breadcrumb_1_step_text'                                   => __( 'Payment', 'woocommerce' ),
-		'wfacp_form_section_text_below_placeorder_btn'                                => __( "* 100% Secure &amp; Safe Payments *", 'woofunnels-aero-checkout' ),
-		'wfacp_form_section_embed_forms_2_step_alignment'                             => "center",
-		'wfacp_form_section_embed_forms_2_step_form_max_width'                        => '664',
-		'wfacp_form_section_embed_forms_2_form_border_type'                           => 'none',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_address_1'                    => 'wfacp-col-left-half',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_city'                         => 'wfacp-col-left-half',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_postcode'                     => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_country'                      => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_state'                        => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1'                   => 'wfacp-col-left-half',
-		'wfacp_form_form_fields_1_embed_forms_2_shipping_city'                        => 'wfacp-col-left-half',
-		'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode'                    => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_shipping_country'                     => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_shipping_state'                       => 'wfacp-col-left-third',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_first_name'                   => 'wfacp-col-left-half',
-		'wfacp_form_form_fields_1_embed_forms_2_billing_last_name'                    => 'wfacp-col-left-half',
-		'wfacp_order_summary_section_embed_forms_2_order_summary_hide_img'            => true,
-		'wfacp_form_section_embed_forms_2_sec_heading_color'                          => '#333',
+$customizer_data = array(
+	'wfacp_form' => array(
+		'wfacp_form_section_embed_forms_2_disable_steps_bar' => false,
+		'wfacp_form_section_embed_forms_2_select_type'    => 'breadcrumb',
+		'wfacp_form_section_breadcrumb_0_step_text'       => __( 'Shipping', 'woocommerce' ),
+		'wfacp_form_section_breadcrumb_1_step_text'       => __( 'Payment', 'woocommerce' ),
+		'wfacp_form_section_text_below_placeorder_btn'    => __( '* 100% Secure &amp; Safe Payments *', 'woofunnels-aero-checkout' ),
+		'wfacp_form_section_embed_forms_2_step_alignment' => 'center',
+		'wfacp_form_section_embed_forms_2_step_form_max_width' => '664',
+		'wfacp_form_section_embed_forms_2_form_border_type' => 'none',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_address_1' => 'wfacp-col-left-half',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_city' => 'wfacp-col-left-half',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_postcode' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_country' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_state' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_shipping_address_1' => 'wfacp-col-left-half',
+		'wfacp_form_form_fields_1_embed_forms_2_shipping_city' => 'wfacp-col-left-half',
+		'wfacp_form_form_fields_1_embed_forms_2_shipping_postcode' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_shipping_country' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_shipping_state' => 'wfacp-col-left-third',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_first_name' => 'wfacp-col-left-half',
+		'wfacp_form_form_fields_1_embed_forms_2_billing_last_name' => 'wfacp-col-left-half',
+		'wfacp_order_summary_section_embed_forms_2_order_summary_hide_img' => true,
+		'wfacp_form_section_embed_forms_2_sec_heading_color' => '#333',
 		'wfacp_form_product_switcher_section_embed_forms_2_product_switcher_bg_color' => '#f7f7f7',
-		'wfacp_form_section_embed_forms_2_heading_fs'                                 => [
+		'wfacp_form_section_embed_forms_2_heading_fs'     => array(
 			'desktop'      => '20',
 			'tablet'       => '20',
 			'mobile'       => '14',
 			'desktop-unit' => 'px',
 			'tablet-unit'  => 'px',
 			'mobile-unit'  => 'px',
-		]
-	]
-];
+		),
+	),
+);
 
-$steps = [
-	'single_step' => [
+$steps = array(
+	'single_step' => array(
 		'name'          => __( 'Step 1', 'woofunnels-aero-checkout' ),
 		'slug'          => 'single_step',
 		'friendly_name' => __( 'Single Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'yes',
-	],
-	'two_step'    => [
+	),
+	'two_step'    => array(
 		'name'          => __( 'Step 2', 'woofunnels-aero-checkout' ),
 		'slug'          => 'two_step',
 		'friendly_name' => __( 'Two Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'yes',
-	],
-	'third_step'  => [
+	),
+	'third_step'  => array(
 		'name'          => __( 'Step 3', 'woofunnels-aero-checkout' ),
 		'slug'          => 'third_step',
 		'friendly_name' => __( 'Three Step Checkout', 'woofunnels-aero-checkout' ),
 		'active'        => 'no',
-	],
-];
+	),
+);
 
-$pageLayout = [
+$pageLayout = array(
 	'steps'                       => $steps,
-	'fieldsets'                   => [
-		'single_step' => [
-			0 => [
+	'fieldsets'                   => array(
+		'single_step' => array(
+			0 => array(
 				'name'        => __( 'Contact Information', 'woofunnels-aero-checkout' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'fields'      => [
-					[
+				'fields'      => array(
+					array(
 						'label'        => __( 'Email', 'woocommerce' ),
 						'required'     => 'true',
 						'type'         => 'email',
-						'class'        => [ 0 => 'form-row-wide', ],
-						'validate'     => [ 0 => 'email', ],
-						'autocomplete' => 'email username',
+						'class'        => array( 0 => 'form-row-wide' ),
+						'validate'     => array( 0 => 'email' ),
+						'autocomplete' => 'email',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
+					),
+					array(
 						'label'        => __( 'First name', 'woocommerce' ),
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-first', ],
+						'class'        => array( 0 => 'form-row-first' ),
 						'autocomplete' => 'given-name',
 						'priority'     => '10',
 						'type'         => 'text',
 						'id'           => 'billing_first_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
-					[
+					),
+					array(
 						'label'        => __( 'Last name', 'woocommerce' ),
 						'required'     => 'true',
-						'class'        => [ 0 => 'form-row-last', ],
+						'class'        => array( 0 => 'form-row-last' ),
 						'autocomplete' => 'family-name',
 						'priority'     => '20',
 						'type'         => 'text',
 						'id'           => 'billing_last_name',
 						'field_type'   => 'billing',
 						'placeholder'  => '',
-					],
+					),
 					WFACP_Common::get_single_address_fields(),
 					WFACP_Common::get_single_address_fields( 'shipping' ),
-					[
+					array(
 						'label'        => __( 'Phone', 'woocommerce' ),
 						'type'         => 'tel',
-						'class'        => [ 'form-row-wide' ],
+						'class'        => array( 'form-row-wide' ),
 						'id'           => 'billing_phone',
 						'field_type'   => 'billing',
-						'validate'     => [ 'phone' ],
+						'validate'     => array( 'phone' ),
 						'placeholder'  => '',
 						'autocomplete' => 'tel',
 						'priority'     => 100,
-					],
-				],
-			],
-			[
+					),
+				),
+			),
+			array(
 				'name'        => __( 'Your Products', 'woofunnels-aero-checkout' ),
 				'class'       => 'wfacp_product_switcher',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'product_switching' => 'true',
 					'order_coupon'      => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 					$product_field['product_switching'],
 
-				],
-			],
-			[
+				),
+			),
+			array(
 				'name'        => __( 'Shipping Method', 'woocommerce' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [ 'shipping_calculator' => true ],
-				'fields'      => [
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
-				],
-			],
-		],
-		'two_step'    => [
-			[
+				'html_fields' => array( 'shipping_calculator' => true ),
+				'fields'      => array(
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
+				),
+			),
+		),
+		'two_step'    => array(
+			array(
 				'name'        => __( 'Order summary', 'woocommerce' ),
 				'class'       => 'wfacp_order_summary_box',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'order_coupon'  => 'true',
 					'order_summary' => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 
 					$advanced_field['order_summary'],
-				],
-			],
-		]
-	],
-	'product_settings'            => [
+				),
+			),
+		),
+	),
+	'product_settings'            => array(
 		'coupons'                             => '',
 		'enable_coupon'                       => 'false',
 		'disable_coupon'                      => 'false',
@@ -190,7 +190,7 @@ $pageLayout = [
 		'preferred_countries_enable'          => 'false',
 		'preferred_countries'                 => '',
 		'product_switcher_template'           => 'default',
-	],
+	),
 	'have_coupon_field'           => 'true',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -199,10 +199,10 @@ $pageLayout = [
 	'enabled_product_switching'   => 'yes',
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'two_step',
-];
+);
 
-return [
+return array(
 	'default_customizer_value' => $customizer_data,
 	'page_layout'              => $pageLayout,
-	'page_settings'            => $settings
-];
+	'page_settings'            => $settings,
+);

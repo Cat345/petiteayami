@@ -4,37 +4,37 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 	class WFOB_Bump {
 
-		private $wfob_id = 0;
-		protected $products = [];
-		private $design_data = [];
-		private $settings = [];
-		private $bump_name = '';
-		protected $bumps_html = [];
+		private $wfob_id            = 0;
+		protected $products         = array();
+		private $design_data        = array();
+		private $settings           = array();
+		private $bump_name          = '';
+		protected $bumps_html       = array();
 		protected $single_bump_html = '';
 
-		protected static $slug = 'layout_1';
-		protected $is_variable_product = false;
-		protected $cart_variation_id = 0;
-		protected $cart_item_key = '';
-		protected $cart_item = [];
-		protected $wc_product_object = null;
-		protected $blink_url = "";
-		protected $selected_layout = "";
-		protected $header_enable_pointing_arrow = "false";
-		protected $dynamic_css = [];
-		protected $temp_dynamic_css = [];
-		public $dynamic_inline_css = '';
-		protected $fields_labels = [];
-		protected $wfob_bump_products = [];
-		protected $css_print_already = false;
+		protected static $slug                  = 'layout_1';
+		protected $is_variable_product          = false;
+		protected $cart_variation_id            = 0;
+		protected $cart_item_key                = '';
+		protected $cart_item                    = array();
+		protected $wc_product_object            = null;
+		protected $blink_url                    = '';
+		protected $selected_layout              = '';
+		protected $header_enable_pointing_arrow = 'false';
+		protected $dynamic_css                  = array();
+		protected $temp_dynamic_css             = array();
+		public $dynamic_inline_css              = '';
+		protected $fields_labels                = array();
+		protected $wfob_bump_products           = array();
+		protected $css_print_already            = false;
 
-		protected $field_changes = [];
-		protected $wfob_default_model = [];
-		protected $wfob_dynamic_css = [];
-		protected $bump_all_selectors = [];
+		protected $field_changes      = array();
+		protected $wfob_default_model = array();
+		protected $wfob_dynamic_css   = array();
+		protected $bump_all_selectors = array();
 
-		public $override_layout_design_data = [
-			'layout_1'  => [
+		public $override_layout_design_data = array(
+			'layout_1'  => array(
 				'heading_box_padding'          => '10 12 10 12',
 				'heading_box_border_radius'    => '8',
 				'featured_image_border_radius' => '8',
@@ -44,9 +44,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'box_border_radius'            => '8',
 				'exclusive_content_bg_color'   => '#D80027',
 				'exclusive_content_color'      => '#ffffff',
-				'social_proof_enable'          => "true",
-			],
-			'layout_2'  => [
+				'social_proof_enable'          => 'true',
+			),
+			'layout_2'  => array(
 				'heading_box_padding'          => '10 12 10 12',
 				'heading_box_border_radius'    => '8',
 				'featured_image_border_radius' => '8',
@@ -54,9 +54,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'price_sale_font_size'         => '14',
 				'price_color'                  => '#ffffff',
 				'price_sale_color'             => '#ffffff',
-				'social_proof_enable'          => "true",
-			],
-			'layout_3'  => [
+				'social_proof_enable'          => 'true',
+			),
+			'layout_3'  => array(
 				'price_sale_font_size'         => '14',
 				'price_color'                  => '#353030',
 				'price_sale_color'             => '#e15334',
@@ -65,16 +65,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'box_border_radius'            => '8',
 
 
-			],
-			'layout_4'  => [
+			),
+			'layout_4'  => array(
 				'price_sale_font_size'         => '14',
 				'price_color'                  => '#353030',
 				'price_sale_color'             => '#e15334',
 				'add_button_border_radius'     => '4',
 				'featured_image_border_radius' => '8',
 				'box_border_radius'            => '8',
-			],
-			'layout_5'  => [
+			),
+			'layout_5'  => array(
 				'price_sale_font_size'         => '14',
 				'price_sale_color'             => '#353030',
 				'heading_box_border_radius'    => '4',
@@ -82,12 +82,12 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'box_border_radius'            => '8',
 				'exclusive_content_bg_color'   => '#09B29C',
 				'exclusive_content_color'      => '#ffffff',
-				'social_proof_enable'          => "true",
-			],
-			'layout_6'  => [
-				'exclusive_content_enable'     => "true",
-				'heading_box_border_style'     => "dashed",
-				'heading_box_border_color'     => "#82A6DA",
+				'social_proof_enable'          => 'true',
+			),
+			'layout_6'  => array(
+				'exclusive_content_enable'     => 'true',
+				'heading_box_border_style'     => 'dashed',
+				'heading_box_border_color'     => '#82A6DA',
 				'price_sale_font_size'         => '14',
 				'price_sale_color'             => '#353030',
 				'heading_box_border_radius'    => '0',
@@ -95,31 +95,31 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				'box_border_radius'            => '8',
 				'exclusive_content_bg_color'   => '#E15333',
 				'exclusive_content_color'      => '#ffffff',
-				'social_proof_enable'          => "true",
-			],
-			'layout_7'  => [
+				'social_proof_enable'          => 'true',
+			),
+			'layout_7'  => array(
 				'exclusive_content_bg_color' => '#09B29C',
 				'exclusive_content_color'    => '#ffffff',
-				'social_proof_enable'        => "true",
-			],
-			'layout_8'  => [
+				'social_proof_enable'        => 'true',
+			),
+			'layout_8'  => array(
 				'exclusive_content_bg_color' => '#ED1A55',
 				'exclusive_content_color'    => '#ffffff',
-				'social_proof_enable'        => "true",
-			],
-			'layout_9'  => [
+				'social_proof_enable'        => 'true',
+			),
+			'layout_9'  => array(
 				'exclusive_content_bg_color' => '#353030',
 				'exclusive_content_color'    => '#ffffff',
-				'social_proof_enable'        => "true",
-			],
-			'layout_10' => [
+				'social_proof_enable'        => 'true',
+			),
+			'layout_10' => array(
 				'exclusive_content_bg_color' => '#353030',
 				'exclusive_content_color'    => '#ffffff',
-				'social_proof_enable'        => "true",
-			]
+				'social_proof_enable'        => 'true',
+			),
 
 
-		];
+		);
 
 
 		public function __construct( $wfob_id = 0 ) {
@@ -127,8 +127,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$this->wfob_id = $wfob_id;
 
 			}
-
-
 		}
 
 
@@ -147,7 +145,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$session_products = WFOB_Common::get_pre_checked_bumps();
 			$products         = WFOB_Common::get_bump_products( $this->wfob_id );
 			$product_design   = WFOB_Common::get_design_data_meta( $this->wfob_id );
-			add_filter( 'woocommerce_add_cart_item', [ 'WFOB_Common', 'handle_swap_product' ], 10, 2 );
+			add_filter( 'woocommerce_add_cart_item', array( 'WFOB_Common', 'handle_swap_product' ), 10, 2 );
 			foreach ( $products as $key => $value ) {
 				if ( isset( $session_products[ $key ] ) || isset( WFOB_Common::$removed_bump_products[ $key ] ) ) {
 					continue;
@@ -155,15 +153,12 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$this->add_to_cart( $product_design, $value, $key );
 			}
-
 		}
 
 		public function add_to_cart( $product_design, $product, $product_key ) {
 
-
 			$product_id = absint( $product['id'] );
 			$quantity   = absint( $product['quantity'] );
-
 
 			$product_obj = WFOB_Common::wc_get_product( $product_id );
 			if ( ! $product_obj instanceof WC_Product || ! $product_obj->is_purchasable() || false === WFOB_Common::check_manage_stock( $product_obj, $quantity ) ) {
@@ -171,21 +166,21 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			}
 
 			$t_k = "product_{$product_key}";
-			if ( isset( $product_design["{$t_k}_title"] ) && '' != $product_design["{$t_k}_title"] ) {
-				$product['title'] = $product_design["{$t_k}_title"];
+			if ( isset( $product_design[ "{$t_k}_title" ] ) && '' != $product_design[ "{$t_k}_title" ] ) {
+				$product['title'] = $product_design[ "{$t_k}_title" ];
 			}
 
 			$custom_image_url = '';
-			$featured_image   = wc_string_to_bool( isset( $product_design["{$t_k}_featured_image"] ) ? $product_design["{$t_k}_featured_image"] : 'false' );
-			if ( true == $featured_image && isset( $product_design["{$t_k}_featured_image_options"] ) && ! empty( $product_design["{$t_k}_featured_image_options"] ) ) {
-				$image_options = $product_design["{$t_k}_featured_image_options"];
+			$featured_image   = wc_string_to_bool( isset( $product_design[ "{$t_k}_featured_image" ] ) ? $product_design[ "{$t_k}_featured_image" ] : 'false' );
+			if ( true == $featured_image && isset( $product_design[ "{$t_k}_featured_image_options" ] ) && ! empty( $product_design[ "{$t_k}_featured_image_options" ] ) ) {
+				$image_options = $product_design[ "{$t_k}_featured_image_options" ];
 				if ( 'custom' == $image_options['type'] && ! empty( $image_options['custom_url'] ) ) {
 					$custom_image_url = $image_options['custom_url'];
 				}
 			}
 
 			// For Variable Product
-			$attributes   = [];
+			$attributes   = array();
 			$variation_id = 0;
 
 			if ( in_array( $product['product_type'], WFOB_Common::get_variation_product_type() ) ) {
@@ -197,16 +192,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( count( $attributes ) == 0 ) {
 					$attributes = $is_found_variation['attributes'];
 				}
-			} else if ( isset( $product['variable'] ) ) {
+			} elseif ( isset( $product['variable'] ) ) {
 				$variation_id = absint( $product['default_variation'] );
 				$attributes   = $product['default_variation_attr'];
 			}
 
-
 			if ( $variation_id > 0 ) {
 				$custom_data['wfob_variable_attributes'] = $attributes;
 			}
-
 
 			$custom_data['_wfob_product']                 = true;
 			$custom_data['_wfob_pre_checked']             = $this->wfob_id;
@@ -219,111 +212,109 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		}
 
 		protected function admin_product_image_field( $product, $product_key ) {
-			$schema   = [];
-			$schema[] = [
-				"type"         => "toggle",
-				"key"          => "product_" . $product_key . "_featured_image",
-				"label"        => __( "Product Image", 'woofunnels-order-bump' ),
-				"selectors"    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-				"contentClass" => 'wfob_enable_image',
+			$schema   = array();
+			$schema[] = array(
+				'type'         => 'toggle',
+				'key'          => 'product_' . $product_key . '_featured_image',
+				'label'        => __( 'Product Image', 'woofunnels-order-bump' ),
+				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
+				'contentClass' => 'wfob_enable_image',
 
+			);
 
-			];
-
-			$schema[] = [
-				"type"               => "image",
-				"key"                => "product_" . $product_key . "_featured_image_options",
-				"label"              => '',
-				"selectors"          => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
+			$schema[] = array(
+				'type'               => 'image',
+				'key'                => 'product_' . $product_key . '_featured_image_options',
+				'label'              => '',
+				'selectors'          => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
 				'alignmentSelectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-				'alignmentClassList' => [
-					"top"   => "wfob_img_position_top",
-					"left"  => "wfob_img_position_left",
-					"right" => "wfob_img_position_right"
-				],
+				'alignmentClassList' => array(
+					'top'   => 'wfob_img_position_top',
+					'left'  => 'wfob_img_position_left',
+					'right' => 'wfob_img_position_right',
+				),
 				'widthSelectors'     => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_pro_image_wrap',
-				"toggler"            => [
-					'key'   => "product_" . $product_key . "_featured_image",
-					"value" => true
-				],
-			];
+				'toggler'            => array(
+					'key'   => 'product_' . $product_key . '_featured_image',
+					'value' => true,
+				),
+			);
 
 			return $schema;
 		}
 
 		protected function get_product_content_schema( $product, $product_key ) {
 
-			$schema = [];
+			$schema = array();
 
 			$description_richeditor = __( 'Use merge tag {{quantity_incrementer}} to show the quantity changer', 'woofunnels-order-bump' );
 
-			$schema[] = [
-				"type"      => "text",
-				"key"       => "product_" . $product_key . "_title",
-				"label"     => __( "Call To Action Text", 'woofunnels-order-bump' ),
-				"selectors" => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_title',
-				"hint"      => "Use merge tag {{product_name}} to show product name dynamically."
-			];
+			$schema[] = array(
+				'type'      => 'text',
+				'key'       => 'product_' . $product_key . '_title',
+				'label'     => __( 'Call To Action Text', 'woofunnels-order-bump' ),
+				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_title',
+				'hint'      => 'Use merge tag {{product_name}} to show product name dynamically.',
+			);
 
-			$schema[] = [
-				"type"      => "richeditor",
-				"key"       => "product_" . $product_key . "_description",
-				"label"     => __( "Description", 'woofunnels-order-bump' ),
-				"selectors" => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_skin_description',
-				"hint"      => $description_richeditor
-			];
-			$schema[] = [
-				"type"         => "checkbox",
-				"key"          => "product_" . $product_key . "_exclusive_content_enable",
-				"label"        => __( "Add Exclusive Offer Text", 'woofunnels-order-bump' ),
+			$schema[] = array(
+				'type'      => 'richeditor',
+				'key'       => 'product_' . $product_key . '_description',
+				'label'     => __( 'Description', 'woofunnels-order-bump' ),
+				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_skin_description',
+				'hint'      => $description_richeditor,
+			);
+			$schema[] = array(
+				'type'         => 'checkbox',
+				'key'          => 'product_' . $product_key . '_exclusive_content_enable',
+				'label'        => __( 'Add Exclusive Offer Text', 'woofunnels-order-bump' ),
 				'contentClass' => 'wfob_active_exclusive',
-				"selectors"    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-			];
+				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
+			);
 
-			$schema[] = [
-				"type"  => "text",
-				"key"   => "product_" . $product_key . "_exclusive_content",
-				"label" => '',
+			$schema[] = array(
+				'type'      => 'text',
+				'key'       => 'product_' . $product_key . '_exclusive_content',
+				'label'     => '',
 
-				"selectors" => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_exclusive_content span',
-				'toggler'   => [
-					'key'   => "product_" . $product_key . "_exclusive_content_enable",
-					'value' => true
-				],
+				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob_exclusive_content span',
+				'toggler'   => array(
+					'key'   => 'product_' . $product_key . '_exclusive_content_enable',
+					'value' => true,
+				),
 
-			];
+			);
 
-			$schema[] = [
-				"type"         => "checkbox",
-				"key"          => "product_" . $product_key . "_social_proof_enable",
-				"label"        => __( "Enable Social Proof Tool Tip", 'woofunnels-order-bump' ),
+			$schema[] = array(
+				'type'         => 'checkbox',
+				'key'          => 'product_' . $product_key . '_social_proof_enable',
+				'label'        => __( 'Enable Social Proof Tool Tip', 'woofunnels-order-bump' ),
 				'contentClass' => 'wfob_active_social_proof',
-				"selectors"    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
-			];
+				'selectors'    => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]',
+			);
 
-			$schema[] = [
-				"type"      => "text",
-				"key"       => "product_" . $product_key . "_social_proof_heading",
-				"label"     => '',
-				"selectors" => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-header',
-				'toggler'   => [
-					'key'   => "product_" . $product_key . "_social_proof_enable",
-					'value' => true
-				],
+			$schema[] = array(
+				'type'      => 'text',
+				'key'       => 'product_' . $product_key . '_social_proof_heading',
+				'label'     => '',
+				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-header',
+				'toggler'   => array(
+					'key'   => 'product_' . $product_key . '_social_proof_enable',
+					'value' => true,
+				),
 
-			];
+			);
 
-			$schema[] = [
-				"type"      => "richeditor",
-				"key"       => "product_" . $product_key . "_social_proof_content",
-				"label"     => '',
-				"selectors" => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-content',
-				'toggler'   => [
-					'key'   => "product_" . $product_key . "_social_proof_enable",
-					'value' => true
-				],
-			];
-
+			$schema[] = array(
+				'type'      => 'richeditor',
+				'key'       => 'product_' . $product_key . '_social_proof_content',
+				'label'     => '',
+				'selectors' => 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"] .wfob-social-proof-tooltip .wfob-social-proof-tooltip-content',
+				'toggler'   => array(
+					'key'   => 'product_' . $product_key . '_social_proof_enable',
+					'value' => true,
+				),
+			);
 
 			return $schema;
 		}
@@ -331,23 +322,21 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		/**
 		 *
 		 * admin schema to use in the css & other setting at backend
+		 *
 		 * @return array
 		 */
 		public function get_admin_schema() {
 
-
 			$products = WFOB_Common::get_bump_products( $this->wfob_id );
 
+			$schema          = array();
+			$temp['content'] = array();
+			$product_names   = array();
 
-			$schema          = [];
-			$temp['content'] = [];
-			$product_names   = [];
-
-			$products_key = [];
+			$products_key = array();
 
 			$bump_design_data           = $this->get_design_data();
 			$add_product_default_values = false;
-
 
 			foreach ( $products as $key => $product ) {
 				$product_obj = wc_get_product( $product['id'] );
@@ -358,15 +347,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$html      = '';
 				$content_s = $this->get_product_content_schema( $product, $key );
 
-
 				$temp['content'][ $key ] = array_merge( $content_s, $this->admin_product_image_field( $product, $key ) );
 
-				$product_names[] = [ 'id' => $key, "name" => $product['title'] ];
+				$product_names[] = array(
+					'id'   => $key,
+					'name' => $product['title'],
+				);
 
 				if ( ! isset( $bump_design_data[ 'product_' . $key . '_title' ] ) ) {
 					$add_product_default_values = true;
 				}
-
 
 				/**
 				 * Enable Social Proof Section
@@ -383,34 +373,28 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$bump_design_data[ 'product_' . $key . '_social_proof_content' ] = $bump_design_data['social_proof_content'];
 				}
 
-
 				unset( $content_s );
 
 			}
-
 
 			$funnel_id             = get_post_meta( $this->wfob_id, '_bwf_in_funnel', true );
 			$schema['funnel_data'] = wffn_rest_funnels()->get_funnel_data( $funnel_id );
 			$schema['step_data']   = wffn_rest_api_helpers()->get_step_post( $this->wfob_id );
 			$schema['contents']    = $temp;
 
-
 			$merge_design_data = array_merge( $bump_design_data, $products_key );
 
 			$schema['products'] = $product_names;
 
-
 			$this->print_bump( false );
 
 			if ( ! is_array( $products ) || count( $products ) == 0 ) {
-				$schema['products'] = [];
+				$schema['products'] = array();
 
 				return $schema;
 			}
 
-
 			$schema['design'] = $this->admin_design_fields( $merge_design_data );
-
 
 			if ( isset( $this->field_changes['merged_array'] ) && is_array( $this->field_changes['field_changes'] ) && count( $this->field_changes['merged_array'] ) > 0 ) {
 				foreach ( $this->field_changes['merged_array'] as $fkey => $fvalue ) {
@@ -418,106 +402,91 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					if ( isset( $merge_design_data[ $fkey ] ) || array_key_exists( $fkey, $this->field_changes['new_key_value_updated'] ) ) {
 						$merge_design_data[ $fkey ] = $fvalue;
 					}
-
 				}
 			}
 
-
 			$schema['values'] = $merge_design_data;
-
 
 			if ( $add_product_default_values === true && is_array( $this->wfob_bump_products ) && count( $this->wfob_bump_products ) > 0 ) {
 				$schema['values'] = array_merge( $merge_design_data, $this->wfob_bump_products );
 
 			}
 
-
 			$schema['html'] = $this->bumps_html;
 
 			/*-----------------------------------General Tab setting----------------------------------------*/
 
-
 			$default_selected_bump_position = WFOB_Common::default_bump_position();
 			$get_all_bump_positions         = WFOB_Common::get_bump_position();
-			$options                        = [];
-			$mb_options                     = [];
+			$options                        = array();
+			$mb_options                     = array();
 			if ( is_array( $get_all_bump_positions ) && count( $get_all_bump_positions ) > 0 ) {
 				foreach ( $get_all_bump_positions as $bkey => $bvalue ) {
 
-					$options[] = [
+					$options[] = array(
 						'label' => $bvalue['name'],
 						'value' => $bvalue['id'],
 						'key'   => $bvalue['id'],
-					];
-
+					);
 
 				}
 			}
-
 
 			$bump_settings = WFOB_Common::get_setting_data( $this->wfob_id );
 			if ( is_array( $bump_settings ) && count( $bump_settings ) > 0 && isset( $bump_settings['order_bump_position_hooks'] ) && ! empty( $bump_settings['order_bump_position_hooks'] ) ) {
 				$default_selected_bump_position = $bump_settings['order_bump_position_hooks'];
 			}
 
-
-			$position_fields = [
-				[
+			$position_fields = array(
+				array(
 					'label'   => __( 'Position in Desktop', 'woofunnels-order-bump' ),
 					'type'    => 'select',
 					'key'     => 'order_bump_position_hooks',
 					'class'   => 'bwf-field-one-full',
 					'options' => $options,
-				],
-				[
+				),
+				array(
 					'label'   => __( 'Position in Mobile', 'woofunnels-order-bump' ),
 					'type'    => 'select',
 					'key'     => 'order_bump_position_hooks_mobile',
 					'class'   => 'bwf-field-one-full',
 					'options' => $options,
-				],
-				[
+				),
+				array(
 					'label'   => __( 'Pre-select Order Bump by default', 'woofunnels-order-bump' ),
 					'type'    => 'bwf-toggle',
 					'key'     => 'order_bump_auto_added',
 					'class'   => 'bwf-field-one-full',
-					'tooltip' => __( 'Enable pre-selection for Order Bumps at checkout. Useful for adding Free Products or Trials to the cart.', 'woofunnels-order-bump' )
-				],
-				[
+					'tooltip' => __( 'Enable pre-selection for Order Bumps at checkout. Useful for adding Free Products or Trials to the cart.', 'woofunnels-order-bump' ),
+				),
+				array(
 					'label'   => __( 'Hide Order Bump after selection', 'woofunnels-order-bump' ),
 					'type'    => 'bwf-toggle',
 					'key'     => 'order_bump_auto_hide',
 					'class'   => 'bwf-field-one-full',
 					'tooltip' => __( 'Hide Order Bumps after selection. Add Mini Cart Widget to Checkout for easy removal.', 'woofunnels-order-bump' ),
-				]
-			];
+				),
+			);
 
-			$default_hook = $bump_settings['order_bump_position_hooks'];
-			if ( isset( $bump_settings['order_bump_position_hooks_mobile'] ) && ! empty( $bump_settings['order_bump_position_hooks_mobile'] ) ) {
-				$default_hook = $bump_settings['order_bump_position_hooks_mobile'];
-			}
+			// Get the actual saved mobile position value without override for admin form
+			// The override logic for 'mini_cart' should only apply on frontend display, not in admin form
+			$mobile_position_value = isset( $bump_settings['order_bump_position_hooks_mobile'] ) && ! empty( $bump_settings['order_bump_position_hooks_mobile'] )
+				? $bump_settings['order_bump_position_hooks_mobile']
+				: ( $bump_settings['order_bump_position_hooks'] ?? 'woocommerce_checkout_order_review_below_payment_gateway' );
 
+			$schema['bump-settings'] = array(
 
-			if ( strpos( $default_hook, 'mini_cart' ) !== false ) {
-				$default_hook = 'woocommerce_checkout_order_review_below_payment_gateway';
-			}
-
-
-			$schema['bump-settings'] = [
-
-				'values' => [
+				'values' => array(
 					'order_bump_position_hooks'        => $default_selected_bump_position,
-					'order_bump_position_hooks_mobile' => $default_hook ?? 'woocommerce_checkout_order_review_below_payment_gateway',
+					'order_bump_position_hooks_mobile' => $mobile_position_value,
 					'order_bump_auto_added'            => $bump_settings['order_bump_auto_added'] ?? false,
 					'order_bump_auto_hide'             => $bump_settings['order_bump_auto_hide'] ?? false,
-				],
+				),
 				'fields' => $position_fields,
 
-			];
-
+			);
 
 			/*-----------------------------------General Tab setting----------------------------------------*/
-
 
 			ob_start();
 			include WFOB_PLUGIN_DIR . '/assets/css/public.min.css';
@@ -527,15 +496,12 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$css_file = ob_get_clean();
 
-
 			ob_start();
 			include WFOB_PLUGIN_DIR . '/assets/js/wfob-bump-script.js';
 			$js = ob_get_clean();
 
-
 			$schema['default_css']    = $css_file;
 			$schema['default_script'] = $js;
-
 
 			return $schema;
 		}
@@ -546,33 +512,27 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$html = ob_get_clean();
 
-
 			return $html;
 		}
 
 
-		public function products_key_data( $key, $bump_design_data = [] ) {
-
+		public function products_key_data( $key, $bump_design_data = array() ) {
 
 			$product_key = 'product_' . $key;
-
 
 			if ( isset( $bump_design_data[ $product_key ] ) && ! empty( $bump_design_data[ $product_key ] ) ) {
 
 				$this->wfob_bump_products[ $product_key ] = $bump_design_data[ $product_key ];
 			}
 
-
 			if ( ! isset( $bump_design_data[ $product_key . '_title' ] ) && empty( $bump_design_data[ $product_key . '_title' ] ) ) {
 				$this->wfob_bump_products[ $product_key . '_title' ] = $bump_design_data['product_title'];
 			}
-
 
 			if ( ! isset( $bump_design_data[ $product_key . '_description' ] ) && empty( $bump_design_data[ $product_key . '_description' ] ) ) {
 
 				$this->wfob_bump_products[ $product_key . '_description' ] = $bump_design_data['product_description'];
 			}
-
 
 			if ( ! isset( $bump_design_data[ $product_key . '_featured_image_options' ] ) && empty( $bump_design_data[ $product_key . '_featured_image_options' ] ) ) {
 
@@ -581,18 +541,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['width']     = '96';
 				$this->wfob_bump_products[ $product_key . '_featured_image_options' ]['type']      = 'product';
 
-
 			}
 
-
 			if ( ! isset( $bump_design_data[ $product_key . '_featured_image' ] ) ) {
-
 
 				$this->wfob_bump_products[ $product_key . '_featured_image' ] = wc_string_to_bool( $bump_design_data['product_featured_image'] );
 			}
 
 			if ( isset( $bump_design_data['layout'] ) && ( $bump_design_data['layout'] == 'layout_3' || $bump_design_data['layout'] == 'layout_4' ) ) {
-
 
 				if ( ! isset( $bump_design_data[ $product_key . '_sub_title' ] ) ) {
 					$this->wfob_bump_products[ $product_key . '_sub_title' ] = $bump_design_data['product_small_title'];
@@ -615,10 +571,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( isset( $bump_design_data['icon_on_button'] ) ) {
 					$this->wfob_bump_products['icon_on_button'] = $bump_design_data['icon_on_button'];
 				}
-
-
 			}
-
 
 			/**
 			 * Enable Social Proof Section
@@ -634,40 +587,34 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			if ( ! isset( $bump_design_data[ $product_key . '_social_proof_content' ] ) && isset( $bump_design_data['social_proof_content'] ) ) {
 				$this->wfob_bump_products[ $product_key . '_social_proof_content' ] = $bump_design_data['social_proof_content'];
 			}
-
-
 		}
 
 		/*--------------------------------------------Bump fields-----------------------------------------------  */
 
-		public function create_bump_field( $key, $bump_design_data, $temp_hover_keys = [], $bump_design_fields = [] ) {
+		public function create_bump_field( $key, $bump_design_data, $temp_hover_keys = array(), $bump_design_fields = array() ) {
 
 			$type = isset( $bump_design_fields[ $key ]['type'] ) ? $bump_design_fields[ $key ]['type'] : '';
 			if ( empty( $type ) ) {
-				return [];
+				return array();
 			}
-
 
 			$label    = isset( $bump_design_fields[ $key ]['label'] ) ? $bump_design_fields[ $key ]['label'] : 'Label';
 			$stylekey = isset( $bump_design_fields[ $key ]['stylekey'] ) ? $bump_design_fields[ $key ]['stylekey'] : '';
 
-
-			$selector = isset( $bump_design_fields[ $key ]['selector'] ) ? $bump_design_fields[ $key ]['selector'] : [];
+			$selector = isset( $bump_design_fields[ $key ]['selector'] ) ? $bump_design_fields[ $key ]['selector'] : array();
 
 			$styleUnit = isset( $bump_design_fields[ $key ]['styleUnit'] ) ? $bump_design_fields[ $key ]['styleUnit'] : '';
 
 			$class        = isset( $bump_design_fields[ $key ]['class'] ) ? $bump_design_fields[ $key ]['class'] : '';
-			$options      = isset( $bump_design_fields[ $key ]['options'] ) ? $bump_design_fields[ $key ]['options'] : [];
+			$options      = isset( $bump_design_fields[ $key ]['options'] ) ? $bump_design_fields[ $key ]['options'] : array();
 			$contentClass = isset( $bump_design_fields[ $key ]['contentClass'] ) ? $bump_design_fields[ $key ]['contentClass'] : '';
-			$toggler      = isset( $bump_design_fields[ $key ]['toggler'] ) ? $bump_design_fields[ $key ]['toggler'] : [];
+			$toggler      = isset( $bump_design_fields[ $key ]['toggler'] ) ? $bump_design_fields[ $key ]['toggler'] : array();
 
-			$hint = isset( $bump_design_fields[ $key ]['hint'] ) ? $bump_design_fields[ $key ]['hint'] : [];
+			$hint = isset( $bump_design_fields[ $key ]['hint'] ) ? $bump_design_fields[ $key ]['hint'] : array();
 
-
-			$field = [
+			$field = array(
 				'label' => $label,
-			];
-
+			);
 
 			if ( ! empty( $hint ) ) {
 				$field['hint'] = $hint;
@@ -702,10 +649,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$field['toggler'] = $toggler;
 			}
 
-
 			if ( is_array( $temp_hover_keys ) && count( $temp_hover_keys ) > 0 && isset( $temp_hover_keys[ $key ] ) ) {
-				$field['hoverSelectors'] = isset( $temp_hover_keys[ $key ]['selector'] ) ? $temp_hover_keys[ $key ]['selector'] : [];
-				$field['hoverKey']       = isset( $temp_hover_keys[ $key ]['key'] ) ? $temp_hover_keys[ $key ]['key'] : [];
+				$field['hoverSelectors'] = isset( $temp_hover_keys[ $key ]['selector'] ) ? $temp_hover_keys[ $key ]['selector'] : array();
+				$field['hoverKey']       = isset( $temp_hover_keys[ $key ]['key'] ) ? $temp_hover_keys[ $key ]['key'] : array();
 				$field['isHover']        = true;
 
 			}
@@ -724,7 +670,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			}
 
 			$bump_design_fields = $this->get_bump_design_selectors();
-			$tmp_fields         = [];
+			$tmp_fields         = array();
 			$bump_design_data   = $this->design_data;
 
 			if ( empty( $selected_layout ) || ! is_array( $this->design_data ) || count( $this->design_data ) == 0 ) {
@@ -732,15 +678,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				return $tmp_fields;
 			}
 
-
-			$exclude_keys    = [
+			$exclude_keys    = array(
 				'layout',
 				'layout_name',
 				'product_title',
 				'product_featured_image',
 				'product_description',
-			];
-			$temp_hover_keys = [];
+			);
+			$temp_hover_keys = array();
 
 			foreach ( $bump_design_fields as $key => $value ) {
 
@@ -751,31 +696,30 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( strpos( $key, 'hover' ) !== false ) {
 
 					$tmp = $key;
-					$key = str_replace( [ '_hover_', '_hover', 'hover_' ], '_', $key );
+					$key = str_replace( array( '_hover_', '_hover', 'hover_' ), '_', $key );
 
 					if ( ! isset( $value['selectors'] ) ) {
 						continue;
 					}
 					$val = isset( $this->design_data[ $key ] ) ? $this->design_data[ $key ] : '';
 
-					$temp_hover_keys[ trim( $key, '_' ) ] = [
+					$temp_hover_keys[ trim( $key, '_' ) ] = array(
 						'selector' => $value['selectors'],
 						'key'      => $tmp,
 						'value'    => $val,
-					];
+					);
 					continue;
 				}
 				$temp_without_hover_keys[ $key ] = $val;
 			}
 
-
-			$layout_fields = [
+			$layout_fields = array(
 				'border_width',
 				'border_style',
 				'border_color',
 				'bump_max_width',
 
-			];
+			);
 
 			foreach ( $bump_design_fields as $key => $value ) {
 
@@ -789,29 +733,26 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				if ( ( strpos( $key, 'heading_' ) !== false || strpos( $key, 'error_' ) !== false || strpos( $key, 'point' ) !== false ) && strpos( $key, 'sub_heading' ) === false && strpos( $key, 'social_proof_tooltip_' ) === false ) {
 					$group_key   = 'wfob_group_1';
-					$group_label = __( "Call To Action Text", 'woofunnels-order-bump' );
-
+					$group_label = __( 'Call To Action Text', 'woofunnels-order-bump' );
 
 				} elseif ( strpos( $key, 'featured' ) !== false ) {
 					$group_key   = 'wfob_group_2';
-					$group_label = __( "Image", 'woocommerce' );
+					$group_label = __( 'Image', 'woocommerce' );
 
 				} elseif ( strpos( $key, 'content_' ) !== false && strpos( $key, 'exclusive_' ) === false && strpos( $key, 'sub_content_' ) === false ) {
 					$group_key   = 'wfob_group_3';
 					$group_label = __( 'Description', 'woocommerce' );
 
-
 				} elseif ( strpos( $key, 'price_' ) !== false || strpos( $key, '_price' ) !== false ) {
 					$group_key   = 'wfob_group_4';
-					$group_label = __( "Price", 'woocommerce' );
-
+					$group_label = __( 'Price', 'woocommerce' );
 
 				} elseif ( ( strpos( $key, 'box_' ) !== false || in_array( $key, $layout_fields ) ) && strpos( $key, 'content_box_padding' ) == false && strpos( $key, 'add_button' ) === false ) {
 					$group_key   = 'wfob_group_5';
-					$group_label = __( "Layout", 'woocommerce' );
+					$group_label = __( 'Layout', 'woocommerce' );
 				} elseif ( strpos( $key, 'exclusive_' ) !== false ) {
 					$group_key   = 'wfob_group_6';
-					$group_label = __( "Exclusive Offer text", 'woofunnels-order-bump' );
+					$group_label = __( 'Exclusive Offer text', 'woofunnels-order-bump' );
 				} elseif ( strpos( $key, 'sub_heading_' ) !== false ) {
 					$group_key   = 'wfob_group_7';
 					$group_label = __( 'Sub Heading', 'woofunnels-order-bump' );
@@ -824,21 +765,20 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$group_label = __( 'Buttons', 'woofunnels-order-bump' );
 				} elseif ( strpos( $key, '_line_color' ) !== false || strpos( $key, '_switch_color' ) !== false ) {
 					$group_key   = 'wfob_group_10';
-					$group_label = __( 'Toggle', 'woofunnels-order-bump' );;
+					$group_label = __( 'Toggle', 'woofunnels-order-bump' );
+
 				} elseif ( strpos( $key, 'social_proof_tooltip_' ) !== false ) {
 					$group_key   = 'wfob_group_11';
-					$group_label = __( "Enable Social Proof Tool Tip", 'woocommerce' );
+					$group_label = __( 'Enable Social Proof Tool Tip', 'woocommerce' );
 
 				}
-
 
 				$tmp_fields[ $group_key ]['key']   = $group_key;
 				$tmp_fields[ $group_key ]['label'] = $group_label;
 
-
 				if ( is_array( $temp_hover_keys ) && count( $temp_hover_keys ) > 0 && isset( $temp_hover_keys[ $key ] ) ) {
-					$value['hoverSelectors'] = isset( $temp_hover_keys[ $key ]['selector'] ) ? $temp_hover_keys[ $key ]['selector'] : [];
-					$value['hoverKey']       = isset( $temp_hover_keys[ $key ]['key'] ) ? $temp_hover_keys[ $key ]['key'] : [];
+					$value['hoverSelectors'] = isset( $temp_hover_keys[ $key ]['selector'] ) ? $temp_hover_keys[ $key ]['selector'] : array();
+					$value['hoverKey']       = isset( $temp_hover_keys[ $key ]['key'] ) ? $temp_hover_keys[ $key ]['key'] : array();
 					$value['isHover']        = true;
 
 				}
@@ -850,28 +790,25 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( is_array( $value ) && count( $value ) ) {
 					$tmp_fields[ $group_key ]['fields'][] = $value;
 				}
-
-
 			}
 
-
 			return array_values( $tmp_fields );
-
-
 		}
 
 
 		/**
 		 * Get Default Setting of bump
+		 *
 		 * @return array
 		 */
 		public static function get_default_models() {
-			return [];
+			return array();
 		}
 
 
 		/**
 		 * For Frontend only
+		 *
 		 * @return void
 		 */
 		public function prepare_frontend_data() {
@@ -886,6 +823,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		/**
 		 * get Bump Id
+		 *
 		 * @return int
 		 */
 		public function get_id() {
@@ -894,12 +832,12 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		/**
 		 * Return all design Data of bump products
+		 *
 		 * @return array
 		 */
 		public function get_design_data() {
 			if ( is_array( $this->design_data ) && count( $this->design_data ) > 0 ) {
 				$this->design_data = WFOB_Common::check_default_bump_keys( $this->design_data );
-
 
 			}
 
@@ -911,36 +849,31 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$this->design_data = $design_data;
 
-
 				if ( is_null( $this->products ) || true === $preview ) {
 					$unique_id      = uniqid( 'wfob_' );
-					$this->products = [];
+					$this->products = array();
 
-					$this->products[ $unique_id ] = [
+					$this->products[ $unique_id ] = array(
 						'title'       => $this->design_data['product_title'],
 						'description' => $this->design_data['product_description'],
 						'image'       => $this->design_data['product_image_url'],
 						'price'       => $this->design_data['product_price'],
-					];
-
+					);
 
 				}
 
-
 				$tmp_product                  = $this->products;
-				$this->products               = [];
+				$this->products               = array();
 				$first_key                    = array_key_first( $tmp_product );
 				$this->products[ $first_key ] = $tmp_product[ $first_key ];
 
-
 			}
-
-
 		}
 
 
 		/**
 		 * Return bump product is exist or not
+		 *
 		 * @return bool
 		 */
 		public function have_bumps() {
@@ -949,7 +882,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 
 		public function get_position() {
-
 
 			$display_hook = $this->settings['order_bump_position_hooks'];
 			if ( class_exists( 'WFACP_Mobile_Detect' ) ) {
@@ -964,13 +896,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 			}
 
-
 			$available_position = WFOB_Common::get_bump_position( true );
-
 
 			if ( isset( $available_position[ $display_hook ] ) ) {
 				$position = $available_position[ $display_hook ];
-
 
 				return $position['id'];
 			}
@@ -991,7 +920,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$this->print_css();
 
 			return ob_get_clean();
-
 		}
 
 
@@ -1026,7 +954,15 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			}
 
 			$this->bump_name   = $post->post_title;
-			$this->products    = WFOB_Common::get_prepared_products( $this->wfob_id );
+			$prepared = WFOB_Common::get_prepared_products( $this->wfob_id );
+			if ( is_array( $prepared ) ) {
+				// Allow developers to filter the prepared products list before frontend rendering.
+				// e.g., add_filter( 'wfob_frontend_prepared_bump_products', fn( $products, $id ) => array_slice( $products, 0, 2 ), 10, 2 )
+				$filtered       = apply_filters( 'wfob_frontend_prepared_bump_products', $prepared, $this->wfob_id );
+				$this->products = is_array( $filtered ) ? $filtered : $prepared;
+			} else {
+				$this->products = $prepared;
+			}
 			$this->settings    = WFOB_Common::get_setting_data( $this->wfob_id );
 			$this->design_data = WFOB_Common::get_design_data_meta( $this->wfob_id );
 
@@ -1034,9 +970,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$this->design_data = $this->get_default_design_data();
 			}
 
-
 			$this->selected_layout = $this->design_data['layout'];
-
 		}
 
 
@@ -1054,11 +988,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			if ( empty( $product_key ) || ! class_exists( 'WFOB_Common' ) ) {
 
-				return [];
+				return array();
 			}
 
 			$result = WFOB_Common::get_cart_item_key( $product_key );
-
 
 			if ( ! is_null( $result ) ) {
 				$this->cart_item_key = $result[0];
@@ -1077,7 +1010,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			return $this->cart_item;
 		}
 
-		public function get_bump_product_object( $cart_item = [], $data = [] ) {
+		public function get_bump_product_object( $cart_item = array(), $data = array() ) {
 
 			if ( ! empty( $cart_item ) && ! is_null( $cart_item ) ) {
 				$qty        = $cart_item['quantity'];
@@ -1085,22 +1018,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( isset( $cart_item['variation_id'] ) ) {
 					$cart_variation_id = $cart_item['variation_id'];
 				}
-
-			} else {
-
-				if ( isset( $data['variable'] ) ) {
+			} elseif ( isset( $data['variable'] ) ) {
 
 					$is_variable_product = true;
 					$wc_product          = WFOB_Common::wc_get_product( $data['id'] );
-					if ( isset( $data['default_variation'] ) ) {
-						$variation_id = absint( $data['default_variation'] );
-						$wc_product   = WFOB_Common::wc_get_product( $variation_id );
-					}
-
-
-				} else {
-					$wc_product = WFOB_Common::wc_get_product( $data['id'] );
+				if ( isset( $data['default_variation'] ) ) {
+					$variation_id = absint( $data['default_variation'] );
+					$wc_product   = WFOB_Common::wc_get_product( $variation_id );
 				}
+			} else {
+					$wc_product = WFOB_Common::wc_get_product( $data['id'] );
 			}
 			$this->wc_product_object = $wc_product;
 
@@ -1121,88 +1048,80 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		/*------------------------------Get Product Title------------------------------------------ */
 
-		public function get_bump_product_title( $bump_id, $product_key, $design_data = [] ) {
+		public function get_bump_product_title( $bump_id, $product_key, $design_data = array() ) {
 			$product_title = '';
 
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
 
-
 			if ( isset( $design_data['product_title'] ) ) {
 				$product_title = $design_data['product_title'];
 			}
 
-
-			if ( isset( $design_data["product_{$product_key}_title"] ) ) {
-				$product_title = $design_data["product_{$product_key}_title"];
+			if ( isset( $design_data[ "product_{$product_key}_title" ] ) ) {
+				$product_title = $design_data[ "product_{$product_key}_title" ];
 			}
-
 
 			return $product_title;
 		}
 
 		/*------------------------------Get Product Description------------------------------------------ */
 
-		public function get_bump_product_description( $bump_id, $product_key, $design_data = [], $parent_product = null ) {
+		public function get_bump_product_description( $bump_id, $product_key, $design_data = array(), $parent_product = null ) {
 
 			$description = '';
 			if ( ! is_array( $design_data ) || count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
 
-
 			if ( isset( $design_data['product_description'] ) ) {
 				$description = $design_data['product_description'];
 			}
 
-			if ( isset( $design_data["product_{$product_key}_description"] ) ) {
-				$description = $design_data["product_{$product_key}_description"];
+			if ( isset( $design_data[ "product_{$product_key}_description" ] ) ) {
+				$description = $design_data[ "product_{$product_key}_description" ];
 			} elseif ( empty( $description ) && $parent_product !== null ) {
 				$description = $parent_product->get_short_description();
 			}
-
 
 			return $description;
 		}
 
 
 		/*------------------------------Get Other Fields------------------------------------------ */
-		public function get_bump_product_other_fields( $bump_id, $product_key, $design_data = [], $key = '' ) {
+		public function get_bump_product_other_fields( $bump_id, $product_key, $design_data = array(), $key = '' ) {
 
 			return '';
-
 		}
 
 
 		/*------------------------------Get Feature Image------------------------------------------ */
-		public function is_enable_bump_product_feature_image( $bump_id, $product_key, $design_data = [] ) {
+		public function is_enable_bump_product_feature_image( $bump_id, $product_key, $design_data = array() ) {
 
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
 
-
 			$featured_image = true;
-			if ( ! isset( $design_data["product_{$product_key}_featured_image"] ) || '' == $design_data["product_{$product_key}_featured_image"] ) {
+			if ( ! isset( $design_data[ "product_{$product_key}_featured_image" ] ) || '' == $design_data[ "product_{$product_key}_featured_image" ] ) {
 				$featured_image = false;
 			} else {
-				$featured_image = wc_string_to_bool( $design_data["product_{$product_key}_featured_image"] );
+				$featured_image = wc_string_to_bool( $design_data[ "product_{$product_key}_featured_image" ] );
 			}
 
 			return $featured_image;
 		}
 
-		public function get_bump_product_feature_image_options( $bump_id, $product_key, $design_data = [] ) {
+		public function get_bump_product_feature_image_options( $bump_id, $product_key, $design_data = array() ) {
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
 
-			$featured_image_options = [];
+			$featured_image_options = array();
 
-
-			if ( isset( $design_data[ "product_" . $product_key . "_featured_image_options" ] ) ) {
-				$image_options = $design_data[ "product_" . $product_key . "_featured_image_options" ];
+			if ( isset( $design_data[ 'product_' . $product_key . '_featured_image_options' ] ) ) {
+				$image_options = $design_data[ 'product_' . $product_key . '_featured_image_options' ];
 
 				if ( isset( $image_options['type'] ) && 'custom' == $image_options['type'] ) {
 					$featured_image_options['type'] = $image_options['type'];
@@ -1216,25 +1135,22 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						$featured_image_options['image_html'] = ob_get_clean();
 					}
 				}
-
-
 			}
-			if ( isset( $design_data["product_{$product_key}_featured_image_options"]['position'] ) ) {
-				$featured_image_options['img_position']       = $design_data["product_{$product_key}_featured_image_options"]['position'];
+			if ( isset( $design_data[ "product_{$product_key}_featured_image_options" ]['position'] ) ) {
+				$featured_image_options['img_position']       = $design_data[ "product_{$product_key}_featured_image_options" ]['position'];
 				$featured_image_options['image_position_cls'] = 'wfob_img_position_' . $featured_image_options['img_position'];
 
 			}
-			if ( isset( $design_data["product_{$product_key}_featured_image_options"]['width'] ) ) {
-				$featured_image_options['image_width'] = $design_data["product_{$product_key}_featured_image_options"]['width'];
+			if ( isset( $design_data[ "product_{$product_key}_featured_image_options" ]['width'] ) ) {
+				$featured_image_options['image_width'] = $design_data[ "product_{$product_key}_featured_image_options" ]['width'];
 			}
-
 
 			return $featured_image_options;
 		}
 
 		/*------------------------------------Enable Price--------------------------------------------- */
 
-		public function is_enable_bump_product_price( $bump_id, $product_key, $design_data = [] ) {
+		public function is_enable_bump_product_price( $bump_id, $product_key, $design_data = array() ) {
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
@@ -1254,10 +1170,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		public function get_bump_product_price_data( $wc_product, $qty = 1 ) {
 
 			if ( ! $wc_product instanceof WC_Product ) {
-				return [];
+				return array();
 			}
 
-			$price_data = apply_filters( 'wfob_product_switcher_price_data', [], $wc_product, $qty );
+			$price_data = apply_filters( 'wfob_product_switcher_price_data', array(), $wc_product, $qty );
 			if ( empty( $price_data ) ) {
 				$price_data['regular_org'] = $wc_product->get_regular_price( 'edit' );
 				$price_data['price']       = $wc_product->get_price( 'edit' );
@@ -1269,18 +1185,15 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$price_data['price'] = floatval( $price_data['price'] );
 			}
 
-
 			return $price_data;
 		}
 
-		public function print_bump_price( $final_data = [], $product_key = '' ) {
-
-
+		public function print_bump_price( $final_data = array(), $product_key = '' ) {
 		}
 
 		/*------------------------------------Enable Pointer--------------------------------------------- */
 
-		public function is_enable_pointer( $bump_id, $design_data = [] ) {
+		public function is_enable_pointer( $bump_id, $design_data = array() ) {
 			if ( is_array( $design_data ) && count( $design_data ) == 0 ) {
 				$design_data = $this->get_design_data( $bump_id );
 			}
@@ -1304,7 +1217,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		public function get_product_attributes( $cart_item, $wc_product ) {
 
-			$product_attributes = [];
+			$product_attributes = array();
 			if ( ! is_null( $cart_item ) && isset( $cart_item['variation_id'] ) ) {
 				if ( is_array( $cart_item['variation'] ) && count( $cart_item['variation'] ) ) {
 					$product_attributes = $cart_item['variation'];
@@ -1328,10 +1241,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$price_data['quantity'] = $qty;
 			}
 
-
 			$printed_price = '';
 			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data ) ) {
-				$printed_price = WFOB_Common::decode_merge_tags( "{{price}}", $price_data, $wc_product, [], $cart_item, $cart_item_key, '', [] );
+				$printed_price = WFOB_Common::decode_merge_tags( '{{price}}', $price_data, $wc_product, array(), $cart_item, $cart_item_key, '', array() );
 			} else {
 				$printed_price = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data );
 			}
@@ -1343,14 +1255,11 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$bump_id = $this->get_id();
 
-
 			$featured_image        = $this->is_enable_bump_product_feature_image( $bump_id, $product_key, $design_data );
 			$feature_image_options = $this->get_bump_product_feature_image_options( $bump_id, $product_key, $design_data );
 
-
 			$default_width = isset( $feature_image_options['image_width'] ) ? $feature_image_options['image_width'] : '96';
-			$default_size  = apply_filters( 'wfob_product_image_size', [ $default_width, $default_width ] );
-
+			$default_size  = apply_filters( 'wfob_product_image_size', array( $default_width, $default_width ) );
 
 			if ( isset( $data['variable'] ) && 'yes' == $data['variable'] && empty( $cart_item_key ) ) {
 				$image_url                           = WFOB_Common::get_product_image( $parent_product, $data );
@@ -1359,9 +1268,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			} else {
 				$feature_image_options['image_html'] = $wc_product->get_image();
 
-
 				$tmp_url = wp_get_attachment_image_src( get_post_thumbnail_id( $wc_product->get_iD() ) );
-
 
 				if ( isset( $feature_image_options['type'] ) && $feature_image_options['type'] == 'custom' ) {
 
@@ -1371,9 +1278,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				} elseif ( is_array( $tmp_url ) && count( $tmp_url ) > 0 && isset( $tmp_url[0] ) ) {
 					$feature_image_options['image_url'] = $tmp_url[0];
 				}
-
 			}
-
 
 			$image_position_cls    = 'wfob_img_position_left';
 			$image_width           = '96';
@@ -1381,7 +1286,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 			$image_url             = WFOB_PLUGIN_URL . '/admin/assets/img/product_default_icon.jpg';
 			$image_html            = '<img src=' . $image_url . ' alt="">';
 			$active_image_settings = true;
-			if ( false !== strpos( $_SERVER['REQUEST_URI'], '/skins/all/' ) ) {
+			if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/skins/all/' ) ) {
 				$active_image_settings = false;
 			}
 
@@ -1403,55 +1308,48 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( isset( $feature_image_options['image_url'] ) ) {
 					$image_url = $feature_image_options['image_url'];
 				}
-
-
 			}
 
-
-			return [ $image_html, $image_position_cls, $image_width, $img_position, $featured_image, $image_url ];
+			return array( $image_html, $image_position_cls, $image_width, $img_position, $featured_image, $image_url );
 		}
 
 		/*----------------------------------------Get Bump Heading--------------------------------------------  */
 		public function get_bump_heading( $product_key, $wc_product, $cart_item_key, $data, $selected_layout, $skin_type ) {
 			$product_title = '';
-			if ( ! isset( $design_data["product_{$product_key}_title"] ) || '' == $design_data["product_{$product_key}_title"] ) {
+			if ( ! isset( $design_data[ "product_{$product_key}_title" ] ) || '' == $design_data[ "product_{$product_key}_title" ] ) {
 				$product_title = $wc_product->get_title();
 				if ( in_array( $wc_product->get_type(), WFOB_Common::get_variation_product_type() ) ) {
 					if ( absint( $data['parent_product_id'] ) > 0 || '' !== $cart_item_key ) {
 						$product_title = $wc_product->get_name();
 
-
 					}
 				}
 			} else {
-				$product_title = $design_data["product_{$product_key}_title"];
+				$product_title = $design_data[ "product_{$product_key}_title" ];
 			}
 
-
 			return $product_title;
-
 		}
 
 		/*----------------------------------------Get Bump Description-----------------------------------------  */
 		public function get_bump_description( $product_key, $parent_product, $cart_item_key, $data, $selected_layout, $skin_type ) {
 			$description = '';
-			if ( ! isset( $design_data["product_{$product_key}_description"] ) || '' == $design_data["product_{$product_key}_description"] ) {
+			if ( ! isset( $design_data[ "product_{$product_key}_description" ] ) || '' == $design_data[ "product_{$product_key}_description" ] ) {
 				$description = $parent_product->get_short_description();
 			} else {
-				$description = $design_data["product_{$product_key}_description"];
+				$description = $design_data[ "product_{$product_key}_description" ];
 			}
 
 			return $description;
-
 		}
 
 		/*----------------------------------------Get Bump Feature Image----------------------------------------  */
 		public function get_bump_featured_image( $product_key, $selected_layout, $skin_type ) {
 			$featured_image = true;
-			if ( ! isset( $design_data["product_{$product_key}_featured_image"] ) || '' == $design_data["product_{$product_key}_featured_image"] ) {
+			if ( ! isset( $design_data[ "product_{$product_key}_featured_image" ] ) || '' == $design_data[ "product_{$product_key}_featured_image" ] ) {
 				$featured_image = true;
 			} else {
-				$featured_image = $design_data["product_{$product_key}_featured_image"];
+				$featured_image = $design_data[ "product_{$product_key}_featured_image" ];
 			}
 
 			return $featured_image;
@@ -1460,17 +1358,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		/*----------------------------------------Get Bump Printed Price------------------------------------  */
 		public function get_bump_printed_price( $product_key, $wc_product, $cart_item_key, $price_data, $selected_layout, $skin_type, $cart_item, $design_data, $data ) {
 
-
 			$printed_price = '';
 
 			if ( apply_filters( 'wfob_show_product_price', true, $wc_product, $cart_item_key, $price_data ) ) {
-				$printed_price = WFOB_Common::decode_merge_tags( "{{price}}", $price_data, $wc_product, $data, $cart_item, $cart_item_key, $product_key, $design_data );
-
+				$printed_price = WFOB_Common::decode_merge_tags( '{{price}}', $price_data, $wc_product, $data, $cart_item, $cart_item_key, $product_key, $design_data );
 
 			} else {
 				$printed_price = apply_filters( 'wfob_show_product_price_placeholder', $printed_price, $wc_product, $cart_item_key, $price_data );
 			}
-
 
 			return $printed_price;
 		}
@@ -1478,19 +1373,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		/**
 		 * Print all bump ui at checkout page
 		 */
-		public function print_bump( $print_bump = true, $products_key = [] ) {
-
+		public function print_bump( $print_bump = true, $products_key = array() ) {
 
 			if ( ! $this->have_bumps() ) {
 				return '';
 			}
 			$this->wfob_default_model = $this->get_default_models();
 
-
 			$max_bumps = '';
 
 			$max_bumps = WFOB_Bump_Fc::maximum_bump_print();
-
 
 			$print_css    = false;
 			$bump_id      = $this->get_id();
@@ -1498,19 +1390,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 			$design_data = $this->get_design_data();
 
-			$this->wfob_default_model['exclusive_content_color'] = "#002565";
-			$design_data['exclusive_content_color']              = "#666756";
+			$this->wfob_default_model['exclusive_content_color'] = '#002565';
+			$design_data['exclusive_content_color']              = '#666756';
 
-
-			$final_data           = [];
-			$image_position_style = [];
-			$dynamic_temp_style   = [];
-
+			$final_data           = array();
+			$image_position_style = array();
+			$dynamic_temp_style   = array();
 
 			foreach ( $this->products as $product_key => $data ) {
 
 				$this->products_key_data( $product_key, $design_data );
-
 
 				if ( is_array( $this->wfob_bump_products ) && count( $this->wfob_bump_products ) > 0 ) {
 
@@ -1518,11 +1407,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				}
 
-
-				if ( '' !== $max_bumps && $max_bumps > 0 && count( WFOB_Bump_Fc::$number_of_bump_print ) >= $max_bumps ) {
-					break;
-				}
-
+				// Note: The global "number of bumps per checkout" limit is now applied
+				// at the selection stage in setup_order_bumps(), so this check is no longer needed.
+				// The previous check was counting products instead of bumps, which was incorrect.
 
 				// Product not in stock then do not print bump
 				if ( ! isset( $data['stock'] ) || false == $data['stock'] && $print_bump == true ) {
@@ -1530,16 +1417,14 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					continue;
 				}
 
-
 				$data['item_key'] = $product_key;
 				$print_css        = true;
 
-
 				$cart_item_key       = '';
-				$cart_item           = [];
+				$cart_item           = array();
 				$result              = $this->get_bump_cart_item_details( $product_key );
 				$is_variable_product = $this->is_variable_product();
-				$cart_variation_id   = $this->is_cart_variation_id();;
+				$cart_variation_id   = $this->is_cart_variation_id();
 
 				/*---------------------------------Parent ID--------------------------------*/
 
@@ -1557,9 +1442,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$qty = absint( $data['quantity'] );
 				}
 
-
 				/*---------------------------------Product Object--------------------------------*/
-
 
 				if ( ! empty( $cart_item ) && ! is_null( $cart_item ) ) {
 					$qty        = $cart_item['quantity'];
@@ -1567,35 +1450,26 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					if ( isset( $cart_item['variation_id'] ) ) {
 						$cart_variation_id = $cart_item['variation_id'];
 					}
-
-				} else {
-
-					if ( isset( $data['variable'] ) ) {
+				} elseif ( isset( $data['variable'] ) ) {
 
 						$is_variable_product = true;
 						$wc_product          = WFOB_Common::wc_get_product( $data['id'] );
-						if ( isset( $data['default_variation'] ) ) {
-							$variation_id = absint( $data['default_variation'] );
-							$wc_product   = WFOB_Common::wc_get_product( $variation_id );
-						}
-
-
-					} else {
-						$wc_product = WFOB_Common::wc_get_product( $data['id'] );
+					if ( isset( $data['default_variation'] ) ) {
+						$variation_id = absint( $data['default_variation'] );
+						$wc_product   = WFOB_Common::wc_get_product( $variation_id );
 					}
+				} else {
+						$wc_product = WFOB_Common::wc_get_product( $data['id'] );
 				}
 				$this->wc_product_object = $wc_product;
-
 
 				if ( ! $wc_product instanceof WC_Product || ( ! $wc_product->is_purchasable() && '' == $cart_item_key ) ) {
 					break;
 				}
 
-
 				$wc_product = $this->set_product_price( $wc_product, $data, $cart_item_key );
 
 				$parent_product = $this->get_bump_parent_product( $parent_id );
-
 
 				/*------------------------------Get Product Title--------------------------------------- */
 
@@ -1604,7 +1478,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$wc_product_price = $wc_product->get_price();
 
 				/*---------------------------------------Title Heading---------------------------- */
-
 
 				$titleHeading = $product_title;
 
@@ -1616,11 +1489,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$description = $this->get_bump_product_description( $bump_id, $product_key, $design_data, $parent_product );
 
-
 				if ( ! empty( $description ) ) {
 					$final_data[ $product_key ]['description'] = $description;
 				}
-
 
 				/*-----------------------------------Variable Checkbox---------------------------- */
 
@@ -1630,20 +1501,17 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$final_data[ $product_key ]['wfob_choose_variation'] = $variable_checkbox;
 				}
 
-
 				/*--------------------------------------- Product Price Data--------------------------------- */
 
 				$price_data = $this->get_bump_product_price_data( $wc_product, $qty );
 
 				$price_data['regular_org'] *= $qty;
 				$price_data['price']       *= $qty;
-				$price_data['quantity']    = $qty;
-
+				$price_data['quantity']     = $qty;
 
 				if ( is_array( $price_data ) && count( $price_data ) > 0 ) {
 					$final_data[ $product_key ]['price_data'] = $price_data;
 				}
-
 
 				/*---------------------------------------Enable Product Price--------------------------------- */
 
@@ -1652,7 +1520,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( ! empty( $enable_price ) ) {
 					$final_data[ $product_key ]['enable_price'] = $enable_price;
 				}
-
 
 				/*---------------------------------------Product Attributes--------------------------------- */
 
@@ -1668,7 +1535,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				/*---------------------------------------Print Price------------------------------ */
 				$printed_price = $this->get_price_html( $wc_product, $cart_item_key, $price_data, $qty );
 
-
 				/* ----------------------------------------Tax label with price------------------------- */
 
 				$tax_label = '';
@@ -1679,11 +1545,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					}
 				}
 
-
 				if ( ! empty( $printed_price ) ) {
 					$final_data[ $product_key ]['printed_price'] = $printed_price;
 				}
-
 
 				/*---------------------------------------Output Response ----------------------- */
 
@@ -1694,18 +1558,15 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$wfob_error_message = $output_response['error'];
 				}
 
-
 				/*-----------------------------------Get Feature Image-------------------------------------- */
 				list( $image_html, $image_position_cls, $image_width, $img_position, $featured_image, $image_url ) = $this->get_featured_image( $product_key, $wc_product, $parent_product, $design_data, $print_bump );
 
-
 				if ( isset( $image_url ) && ! empty( $image_url ) ) {
-					if ( isset( $this->wfob_bump_products[ "product_" . $product_key . "_featured_image_options" ]['image_url'] ) ) {
-						$this->wfob_bump_products[ "product_" . $product_key . "_featured_image_options" ]['image_url'] = $image_url;
+					if ( isset( $this->wfob_bump_products[ 'product_' . $product_key . '_featured_image_options' ]['image_url'] ) ) {
+						$this->wfob_bump_products[ 'product_' . $product_key . '_featured_image_options' ]['image_url'] = $image_url;
 
 					}
 				}
-
 
 				/*---------------------------------------Selected Layout -------------------------------------- */
 
@@ -1724,24 +1585,22 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$checkbox_class = 'wfob_choose_variation';
 				}
 
-
 				/*---------------------------------------Disabled --------------------------------------------- */
 
 				$disabled = '';
 				if ( true === apply_filters( 'wfob_disabled_checkbox', false, $product_key ) ) {
-					$disabled = "disabled";
+					$disabled = 'disabled';
 				}
 
 				/*---------------------------------------Wrapper  Class -------------------------------------- */
 
-				$css_class = [
+				$css_class = array(
 					'wfob_bump',
 					'wfob_bump_section',
 					'wfob_clear',
-					"wfob_" . $selected_layout,
-				];
+					'wfob_' . $selected_layout,
+				);
 				$skin_type = '';
-
 
 				if ( $selected_layout == 'layout_1' || $selected_layout == 'layout_2' || $selected_layout == 'layout_8' ) {
 					$css_class[] = 'bump_skin_type_1';
@@ -1769,7 +1628,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$css_class[] = 'wfob_bump_price_on_sale';
 				}
 
-
 				if ( ! empty( $tax_label ) ) {
 					$css_class[] = 'wfob_display_tax_label';
 				}
@@ -1778,7 +1636,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$css_class[] = 'wfob_enable_image';
 				}
 				$css_class[] = $image_position_cls;
-
 
 				$small_description = $this->get_bump_product_other_fields( $bump_id, $product_key, $design_data, 'small_description', 'small_description' );
 				$sub_title         = $this->get_bump_product_other_fields( $bump_id, $product_key, $design_data, 'small_title', 'sub_title' );
@@ -1795,7 +1652,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( strpos( $sub_title, '{{more}}' ) !== false ) {
 					$css_class[] = 'wfob_merge_tag_active';
 				}
-
 
 				if ( ! empty( $cart_item_key ) ) {
 					$css_class[] = 'wfob_product_added_to_cart';
@@ -1831,10 +1687,8 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$image_position_style[ $bump_id ]['desktop'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]  .wfob_pro_image_wrap{ max-width: ' . $image_width . 'px;}';
 					$image_position_style[ $bump_id ]['desktop'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image  .bwf_display_col_flex.wfob_pro_txt_wrap{flex:1;}';
 
-
 					$this->dynamic_css[ $product_key ]['mobile'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image #wfob_wrapper_' . $bump_id . ' .bwf_display_col_flex.wfob_pro_txt_wrap{width: 100%;}';
 				}
-
 
 				if ( isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
 					if ( '1' == $design_data['point_animation'] ) {
@@ -1845,7 +1699,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$css_class[]                  = 'wfob_header_enable_pointing_arrow';
 					$header_enable_pointing_arrow = wc_string_to_bool( $design_data['header_enable_pointing_arrow'] );
 				}
-
 
 				if ( isset( $design_data['enable_price'] ) && wc_string_to_bool( $design_data['enable_price'] ) ) {
 					$css_class[] = 'wfob_enable_price';
@@ -1864,66 +1717,61 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 
 				if ( true === $print_bump ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $html is generated from template file with proper escaping
 					echo $html;
 				}
 
 				$this->bumps_html[ $product_key ] = $html;
 				$this->single_bump_html           = $html;
 
-
 				if ( true == $status ) {
 					WFOB_Bump_Fc::$number_of_bump_print[ $product_key ] = 1;
 				}
 			}
 
-
 			/*--------------------------------------------Dynamic Style------------------------------------ */
-
 
 			if ( WFOB_Bump_Fc::$number_of_bump_print >= 1 && apply_filters( 'wfacp_disabled_order_bump_css_printing', true, $this ) && ! empty( $selected_layout ) ) {
 				$this->dynamic_css = $this->generate_bump_css( $bump_id, $design_data, $skin_type );
-
 
 				$bump_inline_css = apply_filters( 'wfob_bump_inline_css', $this->dynamic_css, $this );
 
 				$dynamic_inline_css = '';
 
-
 				if ( count( $image_position_style ) > 0 ) {
 					$bump_inline_css = array_merge( $bump_inline_css, $image_position_style );
 				}
-
 
 				if ( is_array( $bump_inline_css ) && count( $bump_inline_css ) > 0 ) {
 					foreach ( $bump_inline_css as $dynamic_css_key => $dynamic_css_val ) {
 						/*-------------------------------Dynamic CSS for Desktop---------------------------------------*/
 						if ( isset( $dynamic_css_val['desktop'] ) && is_array( $dynamic_css_val['desktop'] ) && count( $dynamic_css_val['desktop'] ) > 0 ) {
-							$dynamic_inline_css .= "<style>";
+							$dynamic_inline_css .= '<style>';
 							foreach ( $dynamic_css_val['desktop'] as $desktop_key => $desktop_css ) {
 								$dynamic_inline_css .= $desktop_css;
 							}
-							$dynamic_inline_css .= "</style>";
+							$dynamic_inline_css .= '</style>';
 						}
 						/*-------------------------------Dynamic CSS for Mobile---------------------------------------*/
 
 						if ( isset( $dynamic_css_val['mobile'] ) && is_array( $dynamic_css_val['mobile'] ) && count( $dynamic_css_val['mobile'] ) > 0 ) {
 
-							$dynamic_inline_css .= "<style>@media (max-width: 767px) {";
+							$dynamic_inline_css .= '<style>@media (max-width: 767px) {';
 							foreach ( $dynamic_css_val['mobile'] as $mobile_key => $mobile_css ) {
 								$dynamic_inline_css .= $mobile_css;
 							}
-							$dynamic_inline_css .= "}</style>";
+							$dynamic_inline_css .= '}</style>';
 						}
 
 						if ( isset( $dynamic_css_val['min-media'] ) && is_array( $dynamic_css_val['min-media'] ) && count( $dynamic_css_val['min-media'] ) > 0 ) {
 
 							foreach ( $dynamic_css_val['min-media'] as $min_css_key => $min_css_val ) {
-								$dynamic_inline_css .= "<style>@media (min-width: " . $min_css_key . "px) {";
+								$dynamic_inline_css .= '<style>@media (min-width: ' . $min_css_key . 'px) {';
 								foreach ( $min_css_val as $inner_mobile_key => $inner_mobile_css ) {
 									$dynamic_inline_css .= $inner_mobile_css;
 								}
 
-								$dynamic_inline_css .= "}</style>";
+								$dynamic_inline_css .= '}</style>';
 
 							}
 						}
@@ -1933,69 +1781,56 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( ! empty( $dynamic_inline_css ) ) {
 					$this->dynamic_inline_css = $dynamic_inline_css;
 					if ( true === $print_bump ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $dynamic_inline_css contains internal CSS, not user input
 						echo $this->dynamic_inline_css;
 					}
-
-
 				}
 
 				if ( true === $print_bump ) {
 					/* Print Custom Css */
 					include WFOB_SKIN_DIR . '/style.php';
 				}
-
-
 			}
-
-
 		}
 
-		public function print_preview_bump( $print_bump = true, $products_key = [] ) {
+		public function print_preview_bump( $print_bump = true, $products_key = array() ) {
 
 			if ( ! $this->have_bumps() ) {
 				return '';
 			}
 
-
 			$design_data = $this->get_default_models();
 
 			$this->wfob_default_model = $this->override_design_data_keys( $design_data, $design_data['layout'] );
-
 
 			$max_bumps   = 1;
 			$print_css   = false;
 			$bump_id     = $this->get_id();
 			$design_data = $this->wfob_default_model;
 
-
 			$wfob_error_message   = '';
 			$disabled             = '';
-			$final_data           = [];
-			$image_position_style = [];
-			$dynamic_temp_style   = [];
-
+			$final_data           = array();
+			$image_position_style = array();
+			$dynamic_temp_style   = array();
 
 			foreach ( $this->products as $product_key => $data ) {
 
-
-				if ( '' !== $max_bumps && $max_bumps > 0 && count( WFOB_Bump_Fc::$number_of_bump_print ) >= $max_bumps ) {
-					break;
-				}
-
+				// Note: The global "number of bumps per checkout" limit is now applied
+				// at the selection stage in setup_order_bumps(), so this check is no longer needed.
+				// The previous check was counting products instead of bumps, which was incorrect.
 
 				$data['item_key'] = $product_key;
 
 				$print_css = true;
 
-
 				$cart_item_key       = '';
-				$cart_item           = [];
+				$cart_item           = array();
 				$result              = $this->get_bump_cart_item_details( $product_key );
 				$is_variable_product = $this->is_variable_product();
 				$cart_variation_id   = $this->is_cart_variation_id();
 
 				$qty = 1;
-
 
 				/*---------------------------------------Title Heading---------------------------- */
 				$titleHeading     = $this->wfob_default_model['product_title'];
@@ -2014,7 +1849,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$description = $this->wfob_default_model['product_description'];
 
-
 				if ( ! empty( $description ) ) {
 					$final_data[ $product_key ]['description'] = $description;
 				}
@@ -2025,21 +1859,17 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$exclusive_content          = $this->wfob_default_model['exclusive_content'];
 				$exclusive_content_position = $this->wfob_default_model['exclusive_content_position'];
 
-
 				/*------------------------------Get Product Description---------------------------------- */
 
 				$social_proof_enable  = $this->wfob_default_model['social_proof_enable'];
 				$social_proof_heading = $this->wfob_default_model['social_proof_heading'];
 				$social_proof_content = $this->wfob_default_model['social_proof_content'];
 
-
 				/*-----------------------------------Variable Checkbox---------------------------- */
 
 				$variable_checkbox = '';
 
-
 				/*--------------------------------------- Product Price Data--------------------------------- */
-
 
 				if ( isset( $this->wfob_default_model['product_price'] ) ) {
 					$price_data['price'] = $this->wfob_default_model['product_price'];
@@ -2047,21 +1877,17 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$price_data['quantity'] = $qty;
 
-
 				if ( is_array( $price_data ) && count( $price_data ) > 0 ) {
 					$final_data[ $product_key ]['price_data'] = $price_data;
 				}
 
-
 				/*---------------------------------------Enable Product Price--------------------------------- */
-
 
 				$enable_price = $this->is_enable_bump_product_price( $bump_id, $product_key, $design_data );
 
 				if ( ! empty( $enable_price ) ) {
 					$final_data[ $product_key ]['enable_price'] = $enable_price;
 				}
-
 
 				/*---------------------------------------is Enable Pointer------------------------------ */
 
@@ -2076,11 +1902,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$printed_price = $this->wfob_default_model['product_price'];
 				}
 
-
 				if ( ! empty( $printed_price ) ) {
 					$final_data[ $product_key ]['printed_price'] = $printed_price;
 				}
-
 
 				/*-----------------------------------Get Feature Image-------------------------------------- */
 
@@ -2090,13 +1914,11 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$img_position       = $this->wfob_default_model['product_image_position'];
 				$image_url          = $this->wfob_default_model['product_image_url'];
 
-
 				$image_html = '';
 				if ( $featured_image == true ) {
 					$image_html = '<img src=' . $image_url . ' alt="">';
 
 				}
-
 
 				/*---------------------------------------Selected Layout -------------------------------------- */
 
@@ -2110,16 +1932,15 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 				$checkbox_class = 'wfob_bump_product';
 
-
 				/*---------------------------------------Wrapper  Class -------------------------------------- */
 				$skin_type = '';
-				$css_class = [
+				$css_class = array(
 					'wfob_bump',
 					'wfob_bump_section',
 					'wfob_preview_bump_active',
 					'wfob_clear',
-					"wfob_" . $selected_layout,
-				];
+					'wfob_' . $selected_layout,
+				);
 
 				if ( $selected_layout == 'layout_1' || $selected_layout == 'layout_2' || $selected_layout == 'layout_8' ) {
 					$css_class[] = 'bump_skin_type_1';
@@ -2148,11 +1969,9 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$css_class[] = $image_position_cls;
 				}
 
-
 				$css_class[] = 'wfob_bump_price_on';
 
 				$css_class[] = 'wfob_bump_price_on_sale';
-
 
 				$small_description = '';
 				$sub_title         = '';
@@ -2182,7 +2001,6 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$icon_on_button = $this->wfob_default_model['icon_on_button'];
 				}
 
-
 				/*------------------------------------------Merge Tag----------------------------------------- */
 
 				$description_display_none = '';
@@ -2202,10 +2020,8 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$image_position_style[ $bump_id ]['desktop'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]  .wfob_pro_image_wrap{ max-width: ' . $image_width . 'px;}';
 					$image_position_style[ $bump_id ]['desktop'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image  .bwf_display_col_flex.wfob_pro_txt_wrap{flex:1;}';
 
-
 					$this->dynamic_css[ $product_key ]['mobile'][] = 'body #wfob_wrap .wfob_bump[data-product-key="' . $product_key . '"]:not(.wfob_img_position_top).wfob_enable_image #wfob_wrapper_' . $bump_id . ' .bwf_display_col_flex.wfob_pro_txt_wrap{width: 100%;}';
 				}
-
 
 				if ( isset( $design_data['header_enable_pointing_arrow'] ) && wc_string_to_bool( $design_data['header_enable_pointing_arrow'] ) ) {
 					if ( '1' == $design_data['point_animation'] ) {
@@ -2216,13 +2032,11 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					$header_enable_pointing_arrow = wc_string_to_bool( $design_data['header_enable_pointing_arrow'] );
 				}
 
-
 				if ( isset( $design_data['enable_price'] ) && wc_string_to_bool( $design_data['enable_price'] ) ) {
 					$css_class[] = 'wfob_enable_price';
 				}
 
 				$css_class[] = 'wfob_enable_featured_image_border';
-
 
 				$inner_wrapper_class = implode( ' ', $css_class );
 
@@ -2239,70 +2053,62 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 
 				if ( true === $print_bump ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $html is generated from template file with proper escaping
 					echo $html;
 				}
 
-
 				$this->bumps_html[ $product_key ] = $html;
 				$this->single_bump_html           = $html;
-
 
 				if ( true == $status ) {
 					WFOB_Bump_Fc::$number_of_bump_print[ $product_key ] = 1;
 				}
 			}
 
-
 			/*--------------------------------------------Dynamic Style------------------------------------ */
-
 
 			if ( WFOB_Bump_Fc::$number_of_bump_print >= 1 && apply_filters( 'wfacp_disabled_order_bump_css_printing', true, $this ) ) {
 
-
 				$this->dynamic_css = $this->generate_bump_css( $bump_id, $design_data, $skin_type );
-
 
 				$bump_inline_css = apply_filters( 'wfob_bump_inline_css', $this->dynamic_css, $this );
 
-
 				$dynamic_inline_css = '';
-
 
 				if ( count( $image_position_style ) > 0 ) {
 					$bump_inline_css = array_merge( $bump_inline_css, $image_position_style );
 				}
 
-
 				if ( is_array( $bump_inline_css ) && count( $bump_inline_css ) > 0 ) {
 					foreach ( $bump_inline_css as $dynamic_css_key => $dynamic_css_val ) {
 						/*-------------------------------Dynamic CSS for Desktop---------------------------------------*/
 						if ( isset( $dynamic_css_val['desktop'] ) && is_array( $dynamic_css_val['desktop'] ) && count( $dynamic_css_val['desktop'] ) > 0 ) {
-							$dynamic_inline_css .= "<style>";
+							$dynamic_inline_css .= '<style>';
 							foreach ( $dynamic_css_val['desktop'] as $desktop_key => $desktop_css ) {
 								$dynamic_inline_css .= $desktop_css;
 							}
-							$dynamic_inline_css .= "</style>";
+							$dynamic_inline_css .= '</style>';
 						}
 						/*-------------------------------Dynamic CSS for Mobile---------------------------------------*/
 
 						if ( isset( $dynamic_css_val['mobile'] ) && is_array( $dynamic_css_val['mobile'] ) && count( $dynamic_css_val['mobile'] ) > 0 ) {
 
-							$dynamic_inline_css .= "<style>@media (max-width: 767px) {";
+							$dynamic_inline_css .= '<style>@media (max-width: 767px) {';
 							foreach ( $dynamic_css_val['mobile'] as $mobile_key => $mobile_css ) {
 								$dynamic_inline_css .= $mobile_css;
 							}
-							$dynamic_inline_css .= "}</style>";
+							$dynamic_inline_css .= '}</style>';
 						}
 
 						if ( isset( $dynamic_css_val['min-media'] ) && is_array( $dynamic_css_val['min-media'] ) && count( $dynamic_css_val['min-media'] ) > 0 ) {
 
 							foreach ( $dynamic_css_val['min-media'] as $min_css_key => $min_css_val ) {
-								$dynamic_inline_css .= "<style>@media (min-width: " . $min_css_key . "px) {";
+								$dynamic_inline_css .= '<style>@media (min-width: ' . $min_css_key . 'px) {';
 								foreach ( $min_css_val as $inner_mobile_key => $inner_mobile_css ) {
 									$dynamic_inline_css .= $inner_mobile_css;
 								}
 
-								$dynamic_inline_css .= "}</style>";
+								$dynamic_inline_css .= '}</style>';
 
 							}
 						}
@@ -2312,23 +2118,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				if ( ! empty( $dynamic_inline_css ) ) {
 					$this->dynamic_inline_css = $dynamic_inline_css;
 
-
 					$this->wfob_dynamic_css[] = $dynamic_inline_css;
 
-
 				}
-
-
 			}
-
-
 		}
 
-		public function generate_bump_css( $bump_id, $design_data = [], $skin_type = 'bump_skin_type_1' ) {
-
+		public function generate_bump_css( $bump_id, $design_data = array(), $skin_type = 'bump_skin_type_1' ) {
 
 			if ( empty( $bump_id ) || count( $design_data ) == 0 ) {
-				return [];
+				return array();
 			}
 			$selected_layout = '';
 			if ( isset( $design_data['layout'] ) && ! empty( $design_data['layout'] ) ) {
@@ -2342,11 +2141,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				return $this->dynamic_css;
 			}
 
-
 			$this->dynamic_css[ $bump_id ]                = $css_arr['dynamic_css'];
-			$this->field_changes['field_changes']         = [];
-			$this->field_changes['merged_array']          = [];
-			$this->field_changes['new_key_value_updated'] = [];
+			$this->field_changes['field_changes']         = array();
+			$this->field_changes['merged_array']          = array();
+			$this->field_changes['new_key_value_updated'] = array();
 
 			if ( isset( $css_arr['field_changes'] ) ) {
 				$this->field_changes['field_changes'] = $css_arr['field_changes'];
@@ -2360,12 +2158,10 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$this->field_changes['new_key_value_updated'] = $css_arr['new_key_value_updated'];
 			}
 
-
 			if ( isset( $css_arr['temp_dynamic_css'] ) ) {
 
 				$this->temp_dynamic_css = $css_arr['temp_dynamic_css'];
 			}
-
 
 			return $this->dynamic_css;
 		}
@@ -2385,149 +2181,148 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 
 		public function set_bump_design_selectors( $bump_id, $selected_layout, $skin_type ) {
 
-
 			$bump_selector_section = 'body #wfob_wrap .wfob_wrapper[data-wfob-id="' . $bump_id . '"] .wfob_bump.wfob_' . $selected_layout . '.wfob_bump_section';
 
 			$bump_selector_wrapper = $bump_selector_section . ' #wfob_wrapper_' . $bump_id;
 
-			$title = [
-				'heading_background'           => [
-					'label'    => __( 'Background', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'heading_background',
-					'stylekey' => 'background-color',
+			$title = array(
+				'heading_background'           => array(
+					'label'     => __( 'Background', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'heading_background',
+					'stylekey'  => 'background-color',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'background-color:{{value}}',
-				],
-				'heading_hover_background'     => [
-					'label'    => __( 'Background Hover', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'heading_hover_background',
-					'stylekey' => 'background-color',
+				),
+				'heading_hover_background'     => array(
+					'label'     => __( 'Background Hover', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'heading_hover_background',
+					'stylekey'  => 'background-color',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table:hover'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table:hover',
+					),
 					'value'     => 'background-color:{{value}}',
 
-				],
-				'heading_color'                => [
-					'label'    => __( 'Text', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'heading_color',
-					'stylekey' => 'color',
+				),
+				'heading_color'                => array(
+					'label'     => __( 'Text', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'heading_color',
+					'stylekey'  => 'color',
 
-					'selectors' => [
-						$bump_selector_wrapper . '  .wfob_title'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . '  .wfob_title',
+					),
 					'value'     => 'color:{{value}}',
 
-				],
-				'heading_hover_color'          => [
+				),
+				'heading_hover_color'          => array(
 					'label'     => __( 'Text Hover Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'heading_hover_color',
 					'stylekey'  => 'color',
-					'selectors' => [
-						$bump_selector_wrapper . '  .wfob_title:hover'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . '  .wfob_title:hover',
+					),
 					'value'     => 'color:{{value}}',
 
-				],
-				'heading_font_size'            => [
+				),
+				'heading_font_size'            => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'heading_font_size',
 					'stylekey'  => 'font-size',
 					'styleUnit' => 'px',
 					'min'       => 0,
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . '  .wfob_title',
 						$bump_selector_wrapper . '  .wfob_title *',
 						$bump_selector_wrapper . '  .wfob_title label',
 						$bump_selector_wrapper . '  .wfob_title span',
 						$bump_selector_wrapper . '  .wfob_title span.amount',
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
 
-				],
-				'heading_box_padding'          => [
+				),
+				'heading_box_padding'          => array(
 					'label'     => __( 'Padding', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'key'       => 'heading_box_padding',
 					'stylekey'  => 'padding',
 					'styleUnit' => 'px',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'padding:{{value}}px',
 
-				],
-				'heading_box_border_style'     => [
+				),
+				'heading_box_border_style'     => array(
 					'label'     => __( 'Border Style', 'woofunnels-order-bump' ),
 					'type'      => 'select',
 					'key'       => 'heading_box_border_style',
 					'stylekey'  => 'border-style',
 					'class'     => 'bwf-field-one-half',
-					'options'   => [
-						[
+					'options'   => array(
+						array(
 							'label' => 'None',
 							'value' => 'none',
 							'key'   => 'none',
-						],
-						[
+						),
+						array(
 							'label' => 'Solid',
 							'value' => 'solid',
 							'key'   => 'solid',
-						],
-						[
+						),
+						array(
 							'label' => 'Dotted',
 							'value' => 'dotted',
 							'key'   => 'dotted',
-						],
-						[
+						),
+						array(
 							'label' => 'Dashed',
 							'value' => 'dashed',
 							'key'   => 'dashed',
-						],
+						),
 
-					],
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					),
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'border-style:{{value}}',
 
-				],
-				'heading_box_border_color'     => [
-					'label'    => __( 'Border Color', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'heading_box_border_color',
-					'stylekey' => 'border-color',
-					'class'    => 'bwf-field-one-half',
+				),
+				'heading_box_border_color'     => array(
+					'label'     => __( 'Border Color', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'heading_box_border_color',
+					'stylekey'  => 'border-color',
+					'class'     => 'bwf-field-one-half',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'border-color:{{value}}',
 
-				],
-				'heading_box_border_width'     => [
+				),
+				'heading_box_border_width'     => array(
 					'label'     => __( 'Border Width', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'key'       => 'heading_box_border_width',
 					'stylekey'  => 'border-width',
 					'class'     => 'bwf-field-one-full',
 					'styleUnit' => 'px',
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'border-width:{{value}}px',
-				],
-				'heading_box_border_radius'    => [
+				),
+				'heading_box_border_radius'    => array(
 					'label'     => __( 'Corner Radius', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'heading_box_border_radius',
@@ -2535,118 +2330,117 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'min'       => 0,
 					'styleUnit' => 'px',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_bgBox_table'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_bgBox_table',
+					),
 					'value'     => 'border-radius:{{value}}px',
-				],
-				'header_enable_pointing_arrow' => [
+				),
+				'header_enable_pointing_arrow' => array(
 					'label'        => __( 'Enable Arrow', 'woofunnels-order-bump' ),
 					'type'         => 'toggle',
 					'key'          => 'header_enable_pointing_arrow',
 					'contentClass' => 'wfob_header_enable_pointing_arrow',
-					'selectors'    => [
-						$bump_selector_section
-					],
+					'selectors'    => array(
+						$bump_selector_section,
+					),
 					'value'        => '',
 
-				],
-				'point_animation'              => [
+				),
+				'point_animation'              => array(
 
 					'label'        => __( 'Arrow Animation', 'woofunnels-order-bump' ),
 					'type'         => 'toggle',
 					'key'          => 'point_animation',
 					'contentClass' => 'wfob_point_animation',
-					'toggler'      => [
+					'toggler'      => array(
 						'key'   => 'header_enable_pointing_arrow',
-						'value' => true
-					],
-					'selectors'    => [
-						$bump_selector_section
-					],
+						'value' => true,
+					),
+					'selectors'    => array(
+						$bump_selector_section,
+					),
 					'value'        => '',
 
-				],
+				),
 
-				'point_animation_color' => [
+				'point_animation_color'        => array(
 					'label'     => __( 'Pointer Animation color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'point_animation_color',
 					'stylekey'  => 'fill',
-					'toggler'   => [
+					'toggler'   => array(
 						'key'   => 'header_enable_pointing_arrow',
-						'value' => true
-					],
-					'selectors' => [
+						'value' => true,
+					),
+					'selectors' => array(
 						$bump_selector_section . ' .wfob_checkbox_input_wrap span.wfob_blink_img_wrap svg path',
-					],
+					),
 					'value'     => 'fill:{{value}}',
-				],
-			];
+				),
+			);
 
-			$image   = [
-				'enable_featured_image_border' => [
+			$image = array(
+				'enable_featured_image_border' => array(
 					'label'        => __( 'Enable Image Border', 'woofunnels-order-bump' ),
 					'type'         => 'toggle',
 					'key'          => 'enable_featured_image_border',
 					'contentClass' => 'wfob_enable_featured_image_border',
 					'class'        => 'bwf-field-hide',
-					'selectors'    => [
-						$bump_selector_section
-					],
+					'selectors'    => array(
+						$bump_selector_section,
+					),
 					'value'        => '',
 
+				),
+				'featured_image_border_style'  => array(
+					'label'     => __( 'Border Style', 'woofunnels-order-bump' ),
+					'type'      => 'select',
+					'key'       => 'featured_image_border_style',
+					'stylekey'  => 'border-style',
+					'class'     => 'bwf-field-one-half',
 
-				],
-				'featured_image_border_style'  => [
-					'label'    => __( 'Border Style', 'woofunnels-order-bump' ),
-					'type'     => 'select',
-					'key'      => 'featured_image_border_style',
-					'stylekey' => 'border-style',
-					'class'    => 'bwf-field-one-half',
-
-					'options'   => [
-						[
+					'options'   => array(
+						array(
 							'label' => 'None',
 							'value' => 'none',
 							'key'   => 'none',
-						],
-						[
+						),
+						array(
 							'label' => 'Solid',
 							'value' => 'solid',
 							'key'   => 'solid',
-						],
-						[
+						),
+						array(
 							'label' => 'Dotted',
 							'value' => 'dotted',
 							'key'   => 'dotted',
-						],
-						[
+						),
+						array(
 							'label' => 'Dashed',
 							'value' => 'dashed',
 							'key'   => 'dashed',
-						]
+						),
 
-					],
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_pro_img_wrap img'
-					],
+					),
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_pro_img_wrap img',
+					),
 					'value'     => 'border-style:{{value}}',
-				],
-				'featured_image_border_color'  => [
+				),
+				'featured_image_border_color'  => array(
 
-					'label'    => __( 'Border Color', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'featured_image_border_color',
-					'stylekey' => 'border-color',
-					'class'    => 'bwf-field-one-half',
+					'label'     => __( 'Border Color', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'featured_image_border_color',
+					'stylekey'  => 'border-color',
+					'class'     => 'bwf-field-one-half',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_pro_img_wrap img'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_pro_img_wrap img',
+					),
 					'value'     => 'border-color:{{value}}',
-				],
-				'featured_image_border_width'  => [
+				),
+				'featured_image_border_width'  => array(
 					'label'     => __( 'Border Width', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'stylekey'  => 'border-width',
@@ -2654,38 +2448,37 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'key'       => 'featured_image_border_width',
 					'class'     => 'bwf-field-one-full',
 
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_pro_img_wrap img'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_pro_img_wrap img',
+					),
 					'value'     => 'border-width:{{value}}px',
-				],
-				'featured_image_border_radius' => [
+				),
+				'featured_image_border_radius' => array(
 					'label'     => __( 'Corner Radius', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'featured_image_border_radius',
 					'stylekey'  => 'border-radius',
 					'styleUnit' => 'px',
 					'min'       => 0,
-					'selectors' => [
-						$bump_selector_wrapper . ' .wfob_pro_img_wrap img'
-					],
+					'selectors' => array(
+						$bump_selector_wrapper . ' .wfob_pro_img_wrap img',
+					),
 
-					'value' => 'border-radius:{{value}}px',
-				],
-			];
-			$content = [
-				'content_font_size'                  => [
+					'value'     => 'border-radius:{{value}}px',
+				),
+			);
+			$content = array(
+				'content_font_size'                  => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'content_font_size',
 					'stylekey'  => 'font-size',
 					'styleUnit' => 'px',
 					'min'       => 0,
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_text_inner',
-						$bump_selector_wrapper . ' .wfob_text_inner *',
 						$bump_selector_wrapper . ' .wfob_text_inner p',
-						$bump_selector_wrapper . ' .wfob_text_inner span',
+						$bump_selector_wrapper . ' .wfob_text_inner > span',
 						$bump_selector_wrapper . ' .wfob_text_inner span.amount',
 						$bump_selector_wrapper . ' .wfob_text_inner span bdi',
 						$bump_selector_wrapper . ' .wfob_description_wrap a:not(.wfob_qv-button)',
@@ -2696,20 +2489,20 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						$bump_selector_wrapper . ' .wfob_text_inner ol',
 						$bump_selector_wrapper . ' .wfob_text_inner ol li',
 
-					],
+					),
 					'class'     => 'bwf-field-one-half',
 					'value'     => 'font-size:{{value}}px',
-				],
-				'content_color'                      => [
+				),
+				'content_color'                      => array(
 					'label'     => __( 'Text Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'content_color',
 					'stylekey'  => 'color',
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_text_inner',
 						$bump_selector_wrapper . ' .wfob_text_inner p',
-						$bump_selector_wrapper . ' .wfob_text_inner span',
+						$bump_selector_wrapper . ' .wfob_text_inner > span',
 						$bump_selector_wrapper . ' .wfob_text_inner span.amount',
 						$bump_selector_wrapper . ' .wfob_text_inner span bdi',
 						$bump_selector_wrapper . ' .wfob_description_wrap a:not(.wfob_qv-button)',
@@ -2720,66 +2513,66 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						$bump_selector_wrapper . ' .wfob_text_inner ol',
 						$bump_selector_wrapper . ' .wfob_text_inner ol li',
 
-					],
+					),
 					'value'     => 'color:{{value}}',
-				],
-				'content_variation_link_color'       => [
+				),
+				'content_variation_link_color'       => array(
 					'label'     => __( 'Variant Link', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'content_variation_link_color',
 					'stylekey'  => 'color',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_qv-button',
-					],
+					),
 					'value'     => 'color:{{value}}',
-				],
-				'content_variation_link_hover_color' => [
+				),
+				'content_variation_link_hover_color' => array(
 					'label'     => __( 'Link Hover Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'content_variation_link_hover_color',
 					'stylekey'  => 'color',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_qv-button:hover',
-					],
+					),
 					'value'     => 'color:{{value}}',
-				],
-				'content_box_padding'                => [
+				),
+				'content_box_padding'                => array(
 					'label'     => __( 'Padding', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'key'       => 'content_box_padding',
 					'stylekey'  => 'padding',
 					'styleUnit' => 'px',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_text_inner',
-					],
+					),
 					'value'     => 'padding:{{value}}px',
-				],
-			];
-			$price   = [
-				'enable_price'             => [
+				),
+			);
+			$price = array(
+				'enable_price'             => array(
 					'label'        => __( 'Enable Price', 'woofunnels-order-bump' ),
 					'type'         => 'toggle',
 					'key'          => 'enable_price',
 					'contentClass' => 'wfob_enable_price',
-					'selectors'    => [
-						$bump_selector_section
-					],
+					'selectors'    => array(
+						$bump_selector_section,
+					),
 					'value'        => '',
 
-				],
-				'regular_price_label_text' => [
+				),
+				'regular_price_label_text' => array(
 					'label'   => __( 'Regular Price', 'woofunnels-order-bump' ),
 					'type'    => 'bwf-label',
 					'key'     => 'regular_price_label_text',
 					'class'   => 'has-border',
 					'value'   => '',
-					'toggler' => [
+					'toggler' => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
+						'value' => true,
+					),
 
-				],
-				'price_font_size'          => [
+				),
+				'price_font_size'          => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'price_font_size',
@@ -2787,7 +2580,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'class'     => 'bwf-field-one-half',
 					'min'       => 0,
 					'styleUnit' => 'px',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del *',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del bdi',
@@ -2798,21 +2591,20 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount bdi',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount span',
 
-
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
-					'toggler'   => [
+					'toggler'   => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
-				],
-				'price_color'              => [
+						'value' => true,
+					),
+				),
+				'price_color'              => array(
 					'label'     => __( 'Text', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'price_color',
 					'class'     => 'bwf-field-one-half',
 					'stylekey'  => 'color',
-					'selectors' => [
+					'selectors' => array(
 
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price del *',
@@ -2824,27 +2616,26 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount bdi',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price > .woocommerce-Price-amount span',
 
-
-					],
+					),
 					'value'     => 'color:{{value}}',
-					'toggler'   => [
+					'toggler'   => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
-				],
-				'sale_price_label_text'    => [
+						'value' => true,
+					),
+				),
+				'sale_price_label_text'    => array(
 					'label'   => __( 'Sale Price', 'woofunnels-order-bump' ),
 					'type'    => 'bwf-label',
 					'key'     => 'sale_price_label_text',
 					'class'   => 'has-border',
 					'value'   => '',
-					'toggler' => [
+					'toggler' => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
+						'value' => true,
+					),
 
-				],
-				'price_sale_font_size'     => [
+				),
+				'price_sale_font_size'     => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'price_sale_font_size',
@@ -2852,136 +2643,136 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'class'     => 'bwf-field-one-half',
 					'min'       => 0,
 					'styleUnit' => 'px',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins *',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins bdi',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span *',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span.amount',
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
-					'toggler'   => [
+					'toggler'   => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
-				],
-				'price_sale_color'         => [
+						'value' => true,
+					),
+				),
+				'price_sale_color'         => array(
 					'label'     => __( 'Text', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'price_sale_color',
 					'class'     => 'bwf-field-one-half',
 					'stylekey'  => 'color',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins *',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins bdi',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span *',
 						$bump_selector_wrapper . ' .wfob_price_container .wfob_price ins span.amount',
-					],
+					),
 					'value'     => 'color:{{value}}',
-					'toggler'   => [
+					'toggler'   => array(
 						'key'   => 'enable_price',
-						'value' => true
-					],
-				],
-			];
-			$layout  = [
-				'box_background'       => [
+						'value' => true,
+					),
+				),
+			);
+			$layout = array(
+				'box_background'       => array(
 					'label'     => __( 'Background Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'box_background',
 					'stylekey'  => 'background-color',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'background:{{value}}',
-				],
-				'box_background_hover' => [
+				),
+				'box_background_hover' => array(
 					'label'     => __( 'Background Hover Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'box_background_hover',
 					'stylekey'  => 'background-color',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section . ':hover',
-					],
+					),
 					'value'     => 'background:{{value}}',
-				],
-				'box_padding'          => [
+				),
+				'box_padding'          => array(
 					'label'     => __( 'Padding', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'key'       => 'box_padding',
 					'stylekey'  => 'padding',
 					'styleUnit' => 'px',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'padding:{{value}}px',
-				],
-				'enable_box_border'    => [
+				),
+				'enable_box_border'    => array(
 					'label'        => __( 'Enable Box Border', 'woofunnels-order-bump' ),
 					'type'         => 'toggle',
 					'key'          => 'enable_box_border',
 					'class'        => 'bwf-field-hide',
 					'contentClass' => 'wfob_enable_box_border',
-					'selectors'    => [
-						$bump_selector_section
-					],
+					'selectors'    => array(
+						$bump_selector_section,
+					),
 					'value'        => '',
-					'ref_key'      => [
+					'ref_key'      => array(
 						'key'   => 'enable_box_border',
 						'value' => 'border-style:none',
-					],
-				],
-				'border_style'         => [
-					'label'    => __( 'Border Style', 'woofunnels-order-bump' ),
-					'type'     => 'select',
-					'key'      => 'border_style',
-					'stylekey' => 'border-style',
-					'class'    => 'bwf-field-one-half',
+					),
+				),
+				'border_style'         => array(
+					'label'     => __( 'Border Style', 'woofunnels-order-bump' ),
+					'type'      => 'select',
+					'key'       => 'border_style',
+					'stylekey'  => 'border-style',
+					'class'     => 'bwf-field-one-half',
 
-					'options'   => [
-						[
+					'options'   => array(
+						array(
 							'label' => 'None',
 							'value' => 'none',
 							'key'   => 'none',
-						],
-						[
+						),
+						array(
 							'label' => 'Solid',
 							'value' => 'solid',
 							'key'   => 'solid',
-						],
-						[
+						),
+						array(
 							'label' => 'Dotted',
 							'value' => 'dotted',
 							'key'   => 'dotted',
-						],
-						[
+						),
+						array(
 							'label' => 'Dashed',
 							'value' => 'dashed',
 							'key'   => 'dashed',
-						]
+						),
 
-					],
-					'selectors' => [
+					),
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'border-style:{{value}}',
 					'ref_key'   => 'enable_box_border',
-				],
-				'border_color'         => [
-					'label'    => __( 'Border Color', 'woofunnels-order-bump' ),
-					'type'     => 'color',
-					'key'      => 'border_color',
-					'stylekey' => 'border-color',
-					'class'    => 'bwf-field-one-half',
+				),
+				'border_color'         => array(
+					'label'     => __( 'Border Color', 'woofunnels-order-bump' ),
+					'type'      => 'color',
+					'key'       => 'border_color',
+					'stylekey'  => 'border-color',
+					'class'     => 'bwf-field-one-half',
 
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'border-color:{{value}}',
 					'ref_key'   => 'enable_box_border',
-				],
-				'border_width'         => [
+				),
+				'border_width'         => array(
 					'label'     => __( 'Border Width', 'woofunnels-order-bump' ),
 					'type'      => 'dimension-control',
 					'key'       => 'border_width',
@@ -2989,94 +2780,91 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'styleUnit' => 'px',
 					'class'     => 'bwf-field-one-full',
 
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'border-width:{{value}}px',
 					'ref_key'   => 'enable_box_border',
-				],
-				'box_border_radius'    => [
+				),
+				'box_border_radius'    => array(
 					'label'     => __( 'Corner Radius', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'box_border_radius',
 					'stylekey'  => 'border-radius',
 					'styleUnit' => 'px',
 					'min'       => 0,
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_section,
-					],
+					),
 					'value'     => 'border-radius:{{value}}px',
-				],
-				'bump_max_width'       => [
+				),
+				'bump_max_width'       => array(
 					'label'              => __( 'Width', 'woofunnels-order-bump' ),
 					'type'               => 'width',
 					'key'                => 'bump_max_width',
 					'stylekey'           => 'max-width',
 					'defaultCustomValue' => 540,
 					'styleUnit'          => 'px',
-					'selectors'          => [
+					'selectors'          => array(
 						$bump_selector_section,
-					],
+					),
 					'value'              => 'max-width:{{value}}px',
-				],
-			];
-
+				),
+			);
 
 			/*--------------------------------Exclusive Content------------------------------*/
 
-			$exlusive_content_position_list = [
-				[
+			$exlusive_content_position_list = array(
+				array(
 					'label' => __( 'Outside - Top Left', 'woofunnels-order-bump' ),
 					'value' => 'wfob_exclusive_outside_top_left',
 					'key'   => 'wfob_exclusive_outside_top_left',
-				],
-				[
+				),
+				array(
 					'label' => __( 'Outside - Top Right', 'woofunnels-order-bump' ),
 					'value' => 'wfob_exclusive_outside_top_right',
 					'key'   => 'wfob_exclusive_outside_top_right',
-				],
-				[
+				),
+				array(
 					'label' => __( 'Inside - Above Description', 'woofunnels-order-bump' ),
 					'value' => 'wfob_exclusive_above_description',
 					'key'   => 'wfob_exclusive_above_description',
-				],
-				[
+				),
+				array(
 					'label' => __( 'Inside - Below Description', 'woofunnels-order-bump' ),
 					'value' => 'wfob_exclusive_below_description',
 					'key'   => 'wfob_exclusive_below_description',
-				]
-			];
+				),
+			);
 
 			/*--------------------------------Exclusive Content------------------------------*/
-			$sub_heading       = [];
-			$short_description = [];
+			$sub_heading       = array();
+			$short_description = array();
 
-			$exclude_keys = [];
-
+			$exclude_keys = array();
 
 			if ( $skin_type != 'bump_skin_type_1' && $skin_type != 'bump_skin_type_3' && $selected_layout != 'layout_7' && $selected_layout != 'layout_11' ) {
-				$exlusive_content_position_list[] = [
+				$exlusive_content_position_list[] = array(
 					'label' => 'Above Title',
 					'value' => 'wfob_exclusive_above_title',
 					'key'   => 'wfob_exclusive_above_title',
-				];
+				);
 			}
 
-
-			$exclusive = [
-				'exclusive_content_bg_color'  => [
+			$exclusive = array(
+				'exclusive_content_bg_color'  => array(
 					'label'     => __( 'Background', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'exclusive_content_bg_color',
 					'stylekey'  => 'background-color',
 					'class'     => 'bwf-field-one-full',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_exclusive_content span',
-					],
+					),
 
-					'value' => 'background-color:{{value}}',
-				],
-				'exclusive_content_font_size' => [
+					'value'     => 'background-color:{{value}}',
+				),
+				'exclusive_content_font_size' => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'exclusive_content_font_size',
@@ -3084,72 +2872,71 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'styleUnit' => 'px',
 					'min'       => 0,
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_exclusive_content',
 						$bump_selector_wrapper . ' .wfob_exclusive_content *',
 						$bump_selector_wrapper . ' .wfob_exclusive_content span',
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
-				],
-				'exclusive_content_color'     => [
+				),
+				'exclusive_content_color'     => array(
 
 					'label'     => __( 'Text', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'exclusive_content_color',
 					'stylekey'  => 'color',
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob_exclusive_content',
 						$bump_selector_wrapper . ' .wfob_exclusive_content *',
 						$bump_selector_wrapper . ' .wfob_exclusive_content span',
-					],
+					),
 
-					'value' => 'color:{{value}}',
-				],
-				'exclusive_content_position'  => [
+					'value'     => 'color:{{value}}',
+				),
+				'exclusive_content_position'  => array(
 					'label'      => __( 'Exclusive Content Position', 'woofunnels-order-bump' ),
 					'type'       => 'select',
-					'allClasses' => [
+					'allClasses' => array(
 						'wfob_exclusive_above_description',
 						'wfob_exclusive_below_description',
 						'wfob_exclusive_above_title',
 						'wfob_exclusive_outside_top_right',
 						'wfob_exclusive_outside_top_left',
-					],
+					),
 					'key'        => 'exclusive_content_position',
 					'class'      => 'bwf-field-one-full',
 					'options'    => $exlusive_content_position_list,
-					'selectors'  => [
-						$bump_selector_section
-					],
-				],
-			];
-
+					'selectors'  => array(
+						$bump_selector_section,
+					),
+				),
+			);
 
 			/*--------------------------------Social proof Tool tip---------------------------------------- */
 
-			$social_proof_tooltip = [
-				'social_proof_tooltip_layout_label'      => [
+			$social_proof_tooltip = array(
+				'social_proof_tooltip_layout_label'      => array(
 					'label' => __( 'Layout', 'woofunnels-order-bump' ),
 					'type'  => 'bwf-label',
 					'key'   => 'social_proof_tooltip_layout_label',
 					'class' => 'has-border',
 					'value' => '',
 
-				],
-				'social_proof_tooltip_bg_color'          => [
+				),
+				'social_proof_tooltip_bg_color'          => array(
 					'label'     => __( 'Background', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'social_proof_tooltip_bg_color',
 					'stylekey'  => 'background-color',
 					'class'     => 'bwf-field-one-full',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip',
-					],
+					),
 
-					'value' => 'background-color:{{value}}',
-				],
-				'social_proof_tooltip_font_size'         => [
+					'value'     => 'background-color:{{value}}',
+				),
+				'social_proof_tooltip_font_size'         => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'social_proof_tooltip_font_size',
@@ -3157,47 +2944,47 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'styleUnit' => 'px',
 					'min'       => 0,
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-content',
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-content *',
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
-				],
-				'social_proof_tooltip_color'             => [
+				),
+				'social_proof_tooltip_color'             => array(
 
 					'label'     => __( 'Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'social_proof_tooltip_color',
 					'stylekey'  => 'color',
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-content',
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-content *',
-					],
+					),
 
-					'value' => 'color:{{value}}',
-				],
-				'social_proof_tooltip_heading_label'     => [
+					'value'     => 'color:{{value}}',
+				),
+				'social_proof_tooltip_heading_label'     => array(
 					'label' => __( 'Heading', 'woofunnels-order-bump' ),
 					'type'  => 'bwf-label',
 					'key'   => 'social_proof_tooltip_heading_label',
 					'class' => 'has-border',
 					'value' => '',
 
-				],
-				'social_proof_tooltip_heading_bg_color'  => [
+				),
+				'social_proof_tooltip_heading_bg_color'  => array(
 					'label'     => __( 'Background', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'social_proof_tooltip_heading_bg_color',
 					'stylekey'  => 'background-color',
 					'class'     => 'bwf-field-one-full',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip .wfob-social-proof-tooltip-header',
-					],
+					),
 
-					'value' => 'background-color:{{value}}',
-				],
-				'social_proof_tooltip_heading_font_size' => [
+					'value'     => 'background-color:{{value}}',
+				),
+				'social_proof_tooltip_heading_font_size' => array(
 					'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 					'type'      => 'number',
 					'key'       => 'social_proof_tooltip_heading_font_size',
@@ -3205,254 +2992,251 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 					'styleUnit' => 'px',
 					'min'       => 0,
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-header',
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-header *',
-					],
+					),
 					'value'     => 'font-size:{{value}}px',
-				],
-				'social_proof_tooltip_heading_color'     => [
+				),
+				'social_proof_tooltip_heading_color'     => array(
 
 					'label'     => __( 'Color', 'woofunnels-order-bump' ),
 					'type'      => 'color',
 					'key'       => 'social_proof_tooltip_heading_color',
 					'stylekey'  => 'color',
 					'class'     => 'bwf-field-one-half',
-					'selectors' => [
+					'selectors' => array(
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-header',
 						$bump_selector_wrapper . ' .wfob-social-proof-tooltip-header *',
-					],
+					),
 
-					'value' => 'color:{{value}}',
-				],
-			];
-
+					'value'     => 'color:{{value}}',
+				),
+			);
 
 			/*--------------------------------Old Skins--------------------------------------------- */
 
-
 			if ( $selected_layout == 'layout_3' || $selected_layout == 'layout_4' ) {
-				$exclusive         = [];
-				$sub_heading       = [
-					'sub_heading_font_size'   => [
+				$exclusive   = array();
+				$sub_heading = array(
+					'sub_heading_font_size'   => array(
 						'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 						'type'      => 'number',
 						'key'       => 'sub_heading_font_size',
 						'stylekey'  => 'font-size',
 						'min'       => 0,
 						'styleUnit' => 'px',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head span',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head span bdi',
-						],
+						),
 						'value'     => 'font-size:{{value}}px',
 
-					],
-					'sub_heading_color'       => [
+					),
+					'sub_heading_color'       => array(
 						'label'     => __( 'Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'sub_heading_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head span',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head span bdi',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-					'sub_heading_hover_color' => [
+					),
+					'sub_heading_hover_color' => array(
 						'label'     => __( 'Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'sub_heading_hover_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head:hover',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head:hover span',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_head:hover span bdi',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-				];
-				$short_description = [
-					'sub_content_font_size' => [
+					),
+				);
+				$short_description = array(
+					'sub_content_font_size' => array(
 						'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 						'type'      => 'number',
 						'key'       => 'sub_content_font_size',
 						'stylekey'  => 'font-size',
 						'styleUnit' => 'px',
 						'min'       => 0,
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_desc',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_desc *',
-						],
+						),
 						'value'     => 'font-size:{{value}}px',
 
-					],
-					'sub_content_color'     => [
+					),
+					'sub_content_color'     => array(
 						'label'     => __( 'Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'sub_content_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_desc',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_desc span',
 							$bump_selector_wrapper . ' .wfob_l3_c_sub_desc a:not(.wfob_read_more_link)',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-				];
+					),
+				);
 			}
-
 
 			if ( $skin_type == 'bump_skin_type_2' || $skin_type == 'bump_skin_type_4' ) {
 
-				$add_to_button = [
-					'add_button_bg_color'       => [
+				$add_to_button = array(
+					'add_button_bg_color'       => array(
 						'label'     => __( 'Background Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'add_button_bg_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-full',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
 
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
-					'add_button_hover_bg_color' => [
+					),
+					'add_button_hover_bg_color' => array(
 						'label'     => __( 'Background Hover Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'add_button_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-full',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add:hover',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
-					'add_button_color'          => [
+					),
+					'add_button_color'          => array(
 						'label'     => __( 'Text', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'add_button_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-full',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add span',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-					'add_button_hover_color'    => [
+					),
+					'add_button_hover_color'    => array(
 						'label'     => __( 'Hover Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'add_button_hover_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-full',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add:hover',
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add:hover > span',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
+					),
 
-					'add_button_font_size'     => [
+					'add_button_font_size'      => array(
 						'label'     => __( 'Font Size', 'woofunnels-order-bump' ),
 						'type'      => 'number',
 						'key'       => 'add_button_font_size',
 						'stylekey'  => 'font-size',
 						'min'       => 0,
 						'styleUnit' => 'px',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add span',
-						],
+						),
 						'value'     => 'font-size:{{value}}px',
 
-					],
-					'add_button_padding'       => [
+					),
+					'add_button_padding'        => array(
 						'label'     => __( 'Padding', 'woofunnels-order-bump' ),
 						'type'      => 'dimension-control',
 						'key'       => 'add_button_padding',
 						'stylekey'  => 'padding',
 						'styleUnit' => 'px',
 
-						'selectors' => [
-							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add'
-						],
+						'selectors' => array(
+							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
+						),
 						'value'     => 'padding:{{value}}px',
 
-					],
-					'add_button_border_radius' => [
+					),
+					'add_button_border_radius'  => array(
 						'label'     => __( 'Corner Radius', 'woofunnels-order-bump' ),
 						'type'      => 'number',
 						'key'       => 'add_button_border_radius',
 						'stylekey'  => 'border-radius',
 						'styleUnit' => 'px',
-						'selectors' => [
-							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add'
-						],
+						'selectors' => array(
+							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
+						),
 						'value'     => 'border-radius:{{value}}px',
-					],
+					),
 
-					'add_button_border_style' => [
-						'label'    => __( 'Border Style', 'woofunnels-order-bump' ),
-						'type'     => 'select',
-						'key'      => 'add_button_border_style',
-						'stylekey' => 'border-style',
-						'class'    => 'bwf-field-one-half',
+					'add_button_border_style'   => array(
+						'label'     => __( 'Border Style', 'woofunnels-order-bump' ),
+						'type'      => 'select',
+						'key'       => 'add_button_border_style',
+						'stylekey'  => 'border-style',
+						'class'     => 'bwf-field-one-half',
 
-						'options'   => [
-							[
+						'options'   => array(
+							array(
 								'label' => 'None',
 								'value' => 'none',
 								'key'   => 'none',
-							],
-							[
+							),
+							array(
 								'label' => 'Solid',
 								'value' => 'solid',
 								'key'   => 'solid',
-							],
-							[
+							),
+							array(
 								'label' => 'Dotted',
 								'value' => 'dotted',
 								'key'   => 'dotted',
-							],
-							[
+							),
+							array(
 								'label' => 'Dashed',
 								'value' => 'dashed',
 								'key'   => 'dashed',
-							]
+							),
 
-						],
-						'selectors' => [
+						),
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
-						],
+						),
 						'value'     => 'border-style:{{value}}',
-					],
-					'add_button_border_color' => [
-						'label'    => __( 'Border Color', 'woofunnels-order-bump' ),
-						'type'     => 'color',
-						'key'      => 'add_button_border_color',
-						'stylekey' => 'border-color',
-						'class'    => 'bwf-field-one-half',
+					),
+					'add_button_border_color'   => array(
+						'label'     => __( 'Border Color', 'woofunnels-order-bump' ),
+						'type'      => 'color',
+						'key'       => 'add_button_border_color',
+						'stylekey'  => 'border-color',
+						'class'     => 'bwf-field-one-half',
 
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
-						],
+						),
 						'value'     => 'border-color:{{value}}',
-					],
-					'add_button_border_width' => [
+					),
+					'add_button_border_width'   => array(
 						'label'     => __( 'Border Width', 'woofunnels-order-bump' ),
 						'type'      => 'dimension-control',
 						'key'       => 'add_button_border_width',
@@ -3460,195 +3244,193 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 						'styleUnit' => 'px',
 						'class'     => 'bwf-field-one-full',
 
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
-						],
+						),
 						'value'     => 'border-width:{{value}}px',
-					],
-					'add_button_width'        => [
+					),
+					'add_button_width'          => array(
 						'label'     => __( 'Width', 'woofunnels-order-bump' ),
 						'type'      => 'number',
 						'key'       => 'add_button_width',
 						'stylekey'  => 'min-width',
 						'styleUnit' => 'px',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_add',
 
-						],
+						),
 						'value'     => 'min-width:{{value}}px',
-					],
+					),
 
-
-					'added_button_label_text' => [
+					'added_button_label_text'   => array(
 						'label' => __( 'Added To Cart Button', 'woofunnels-order-bump' ),
 						'type'  => 'bwf-label',
 						'key'   => 'added_button_label_text',
 						'class' => 'has-border',
 						'value' => '',
 
-					],
-					'added_button_color'      => [
+					),
+					'added_button_color'        => array(
 						'label'     => __( 'Added Button Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'added_button_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present',
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present span',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-					'added_button_bg_color'   => [
+					),
+					'added_button_bg_color'     => array(
 						'label'     => __( 'Background Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'added_button_bg_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present',
 
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
+					),
 
-					'remove_button_label_text' => [
+					'remove_button_label_text'  => array(
 						'label' => __( 'Removed from Cart Button', 'woofunnels-order-bump' ),
 						'type'  => 'bwf-label',
 						'key'   => 'remove_button_label_text',
 						'class' => 'has-border',
 						'value' => '',
 
-					],
-					'remove_button_color'      => [
+					),
+					'remove_button_color'       => array(
 						'label'     => __( 'Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'remove_button_color',
 						'stylekey'  => 'color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_s_btn a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present:hover',
 							$bump_selector_wrapper . ' .wfob_l3_s_btn a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present:hover span',
-						],
+						),
 						'value'     => 'color:{{value}}',
 
-					],
-					'remove_button_bg_color'   => [
+					),
+					'remove_button_bg_color'    => array(
 						'label'     => __( 'Background Color', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'remove_button_bg_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob_l3_s_btn a.wfob_l3_f_btn.wfob_btn_remove.wfob_item_present:hover',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
+					),
 
-					'icon_on_button' => [
+					'icon_on_button'            => array(
 						'label'     => __( 'Show Icon', 'woofunnels-order-bump' ),
 						'type'      => 'select',
 						'key'       => 'icon_on_button',
 						'class'     => 'bwf-field-one-full',
-						'options'   => [
-							[
+						'options'   => array(
+							array(
 								'label' => 'None',
 								'value' => 'none',
 								'key'   => 'none',
-							],
-							[
+							),
+							array(
 								'label' => 'Cursor',
 								'value' => 'wfob_cta_cursor',
 								'key'   => 'cursor',
 								'icon'  => '<svg width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M9.31421 6.90121L13.509 11.096C13.7188 11.3058 13.7188 11.6728 13.509 11.8826L11.8835 13.5081C11.6738 13.7178 11.3068 13.7178 11.097 13.5081L6.90219 9.31323L4.59503 12.5642C4.22799 13.0361 3.49389 12.9313 3.33659 12.3545L0.347774 1.18576C0.242904 0.713845 0.714821 0.241927 1.18674 0.346798L12.3555 3.33561C12.9322 3.49292 13.0371 4.22701 12.5652 4.59406L9.31421 6.90121Z" fill="#353030"/>
-							</svg>'
-							],
-							[
+							</svg>',
+							),
+							array(
 								'label' => 'Cart',
 								'value' => 'wfob_cta_cart',
 								'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
 							<path id="Shape" d="M0 0.6427C0 0.287747 0.287747 0 0.6427 0H1.20617C2.14058 0 2.67708 0.608092 2.98785 1.21426C3.20081 1.62963 3.35417 2.13638 3.48088 2.57519H16.7138C17.5667 2.57519 18.1831 3.39066 17.9505 4.21123L16.0281 10.9911C15.7145 12.0972 14.7046 12.8606 13.5548 12.8606H7.02598C5.8668 12.8606 4.851 12.0848 4.54585 10.9665L3.72009 7.94029C3.71501 7.92654 3.71036 7.91252 3.70615 7.89824L2.38304 3.40221C2.33764 3.25304 2.29586 3.10848 2.25553 2.9689C2.12718 2.52476 2.01344 2.13115 1.84402 1.80068C1.63918 1.40113 1.45109 1.2854 1.20617 1.2854H0.6427C0.287747 1.2854 0 0.997654 0 0.6427ZM7.07347 18C8.13833 18 9.00157 17.1368 9.00157 16.0719C9.00157 15.007 8.13833 14.1438 7.07347 14.1438C6.00861 14.1438 5.14537 15.007 5.14537 16.0719C5.14537 17.1368 6.00861 18 7.07347 18ZM13.5005 18C14.5653 18 15.4286 17.1368 15.4286 16.0719C15.4286 15.007 14.5653 14.1438 13.5005 14.1438C12.4356 14.1438 11.5724 15.007 11.5724 16.0719C11.5724 17.1368 12.4356 18 13.5005 18Z" fill="#353030"/>
-							</svg>'
+							</svg>',
 
-							],
+							),
 
-						],
-						'selectors' => [
+						),
+						'selectors' => array(
 							$bump_selector_section,
-						],
-						'classList' => [
-							"none"            => "",
-							"wfob_cta_cursor" => "wfob_cta_cursor",
-							"wfob_cta_cart"   => "wfob_cta_cart"
-						],
-					]
-				];
-
+						),
+						'classList' => array(
+							'none'            => '',
+							'wfob_cta_cursor' => 'wfob_cta_cursor',
+							'wfob_cta_cart'   => 'wfob_cta_cart',
+						),
+					),
+				);
 
 				$final_fields = $layout + $title + $sub_heading + $short_description + $add_to_button + $image + $content + $price + $exclusive;
 
 			} elseif ( $selected_layout == 'layout_6' ) {
-				$toggle_color = [
-					'unselect_line_color'     => [
+				$toggle_color = array(
+					'unselect_line_color'     => array(
 						'label'     => __( 'Line Color (Inactive)', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'unselect_line_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob-switch + label span.sw',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
-					'select_line_color'       => [
+					),
+					'select_line_color'       => array(
 						'label'     => __( 'Line Color (Active)', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'select_line_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob-switch:checked + label span.sw',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
-					],
-					'switch_color_label_text' => [
+					),
+					'switch_color_label_text' => array(
 						'label' => __( 'Switch Color', 'woofunnels-order-bump' ),
 						'type'  => 'bwf-label',
 						'key'   => 'switch_color_label_text',
 						'class' => 'has-border',
 						'value' => '',
 
-					],
-					'unselect_switch_color'   => [
+					),
+					'unselect_switch_color'   => array(
 						'label'     => __( 'Circle Color (Inactive)', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'unselect_switch_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob-switch + label span.sw:before',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
 
-					],
-					'select_switch_color'     => [
+					),
+					'select_switch_color'     => array(
 						'label'     => __( 'Circle Color (Active)', 'woofunnels-order-bump' ),
 						'type'      => 'color',
 						'key'       => 'select_switch_color',
 						'stylekey'  => 'background-color',
 						'class'     => 'bwf-field-one-half',
-						'selectors' => [
+						'selectors' => array(
 							$bump_selector_wrapper . ' .wfob-switch:checked + label span:before',
-						],
+						),
 						'value'     => 'background-color:{{value}}',
-					],
+					),
 
-				];
+				);
 
 				$final_fields = $layout + $title + $toggle_color + $image + $content + $price + $exclusive;
 
@@ -3656,17 +3438,15 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$final_fields = $layout + $title + $image + $content + $price + $exclusive;
 			}
 
-
 			/**
 			 * Add Social Proof setting
 			 */
-			//$final_fields = $social_proof_tooltip;
+			// $final_fields = $social_proof_tooltip;
 
 			if ( is_array( $social_proof_tooltip ) && count( $social_proof_tooltip ) > 0 ) {
 				$final_fields = array_merge( $final_fields, $social_proof_tooltip );
 
 			}
-
 
 			/*---------------------------------Remove Keys from template ------------------------------------------*/
 
@@ -3681,13 +3461,11 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				$exclude_keys[] = 'heading_box_border_radius';
 			}
 
-
 			if ( $selected_layout !== 'layout_3' && $selected_layout !== 'layout_4' ) {
 				$exclude_keys[] = 'remove_button_label_text';
 				$exclude_keys[] = 'remove_button_color';
 				$exclude_keys[] = 'remove_button_bg_color';
 			}
-
 
 			if ( is_array( $exclude_keys ) && count( $exclude_keys ) > 0 ) {
 				foreach ( $exclude_keys as $index => $unset_key ) {
@@ -3699,10 +3477,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 			}
 
-
 			$this->bump_all_selectors = $final_fields;
-
-
 		}
 
 
@@ -3718,19 +3493,16 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		public function get_wfob_bump_css() {
 
 			return $this->wfob_dynamic_css;
-
 		}
 
 		public function override_design_data_keys( $design_data, $layout ) {
 
-
 			if ( ! is_array( $this->override_layout_design_data ) || count( $this->override_layout_design_data ) == 0 ) {
 				return $design_data;
 			}
-			$overide_keys = [];
+			$overide_keys = array();
 			if ( isset( $this->override_layout_design_data[ $layout ] ) ) {
 				$overide_keys = $this->override_layout_design_data[ $layout ];
-
 
 			}
 			if ( is_array( $overide_keys ) && count( $overide_keys ) > 0 ) {
@@ -3739,9 +3511,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 				}
 			}
 
-
 			return $design_data;
-
 		}
 
 		/**
@@ -3749,7 +3519,7 @@ if ( ! class_exists( 'WFOB_Bump' ) ) {
 		 */
 		public function need_to_hide( $wc_product, $cart_item_key ) {
 			$status = ( ! empty( $cart_item_key ) && isset( $this->settings['order_bump_auto_hide'] ) && wc_string_to_bool( $this->settings['order_bump_auto_hide'] ) );
-			//backward compatibility
+			// backward compatibility
 			$status = apply_filters( 'wfob_hide_order_bump_after_selected', $status, $this->get_id(), $cart_item_key );
 
 			return apply_filters( 'wfob_do_not_display_order_bump_product', $status, $this->get_id(), $wc_product, $cart_item_key );

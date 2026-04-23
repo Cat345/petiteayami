@@ -22,11 +22,11 @@ class LoadSourceTypes
             return;
         }
 
-        $source->objectType('ToolsetValueField', Type\ValueType::config());
-        $source->objectType('ToolsetDateField', Type\ValueType::configDate());
+        $source->objectType('ToolsetValueField', [Type\ValueType::class, 'config']);
+        $source->objectType('ToolsetDateField', [Type\ValueType::class, 'configDate']);
 
         if (class_exists(\Toolset_Addon_Maps_Common::class)) {
-            $source->objectType('ToolsetMapsField', Type\MapsFieldType::config());
+            $source->objectType('ToolsetMapsField', [Type\MapsFieldType::class, 'config']);
         }
 
         // add user fields
@@ -72,7 +72,7 @@ class LoadSourceTypes
             ],
         ]);
 
-        $source->objectType($type, Type\FieldsType::config($source, $fields));
+        $source->objectType($type, fn() => Type\FieldsType::config($source, $fields));
     }
 
     /**
@@ -99,7 +99,7 @@ class LoadSourceTypes
 
         $source->objectType(
             $type,
-            Type\RelationshipFieldsType::config($source, $name, $relationships),
+            fn() => Type\RelationshipFieldsType::config($source, $name, $relationships),
         );
     }
 }

@@ -42,6 +42,7 @@ class BWFAN_API_Update_Import extends BWFAN_API_Base {
 			'tags'                    => $tags,
 			'lists'                   => $lists,
 			'update_existing'         => ! empty( $data['update_existing'] ),
+			'skip_existing'           => ! empty( $data['skip_existing'] ),
 			'disable_events'          => ! empty( $data['disable_events'] ),
 			'dont_update_blank'       => ! empty( $data['dont_update_blank'] ),
 			'trigger_events'          => ! empty( $data['trigger_events'] ),

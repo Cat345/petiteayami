@@ -8,6 +8,7 @@
 namespace WPDesk\FS\TableRate\ImporterExporter\Exporter;
 
 use WPDesk\FS\TableRate\ImporterExporter\ShippingClassTrait;
+use WPDesk\FS\TableRate\ShippingMethod\CommonMethodSettings;
 use WPDesk_Flexible_Shipping;
 
 /**
@@ -81,6 +82,7 @@ class JSON {
 			'id',
 			'method_title',
 			'method_description',
+			CommonMethodSettings::METHOD_LOGO_ID,
 			'method_free_shipping_requires',
 			'method_free_shipping',
 			'method_free_shipping_ignore_discounts',

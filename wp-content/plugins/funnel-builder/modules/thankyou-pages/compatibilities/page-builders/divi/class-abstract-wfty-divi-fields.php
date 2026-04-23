@@ -2,21 +2,21 @@
 if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 	#[AllowDynamicProperties]
 	abstract class WFTY_Divi_Field extends ET_Builder_Module {
-		protected $get_local_slug = '';
-		protected $ajax = false;
-		public $vb_support = 'on';
-		protected $post_id = 0;
-		protected $tabs = [];
-		protected $sub_tabs = [];
-		protected $html_fields = [];
-		protected $section_fields = [];
-		protected $modules_fields = [];
-		protected $typography = [];
-		protected $tab_array = [];
-		protected $style_selector = [];
-		protected static $product_options = [];
-		protected $main_css = '%%order_class%%';
-		protected $module_credits = array(
+		protected $get_local_slug         = '';
+		protected $ajax                   = false;
+		public $vb_support                = 'on';
+		protected $post_id                = 0;
+		protected $tabs                   = array();
+		protected $sub_tabs               = array();
+		protected $html_fields            = array();
+		protected $section_fields         = array();
+		protected $modules_fields         = array();
+		protected $typography             = array();
+		protected $tab_array              = array();
+		protected $style_selector         = array();
+		protected static $product_options = array();
+		protected $main_css               = '%%order_class%%';
+		protected $module_credits         = array(
 			'module_uri' => '',
 			'author'     => 'FunnelKit',
 			'author_uri' => 'https://funnelkit.com/',
@@ -27,7 +27,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->slug = 'et_' . strtolower( $name );
 			parent::__construct();
 			if ( true === $this->ajax ) {
-				add_action( 'wp_ajax_' . $this->slug, [ $this, 'render_ajax' ] );
+				add_action( 'wp_ajax_' . $this->slug, array( $this, 'render_ajax' ) );
 			}
 		}
 
@@ -49,18 +49,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		}
 
 
-		public function add_heading( $tab_id, $heading, $separator = '', $conditions = [] ) {
+		public function add_heading( $tab_id, $heading, $separator = '', $conditions = array() ) {
 			$key                          = $this->get_unique_id();
 			$this->modules_fields[ $key ] = array(
 				'label'     => $heading,
 				'type'      => 'text',
 				'className' => 'wfty_heading_divi_builder',
-				'default'   => ''
+				'default'   => '',
 			);
 
-
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
-
 
 				$this->show_if( $key, $conditions );
 			}
@@ -69,13 +67,13 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		public function add_subheading( $tab_id, $heading, $separator = '', $conditions = [] ) {
+		public function add_subheading( $tab_id, $heading, $separator = '', $conditions = array() ) {
 			$key                          = $this->get_unique_id();
 			$this->modules_fields[ $key ] = array(
 				'label'     => $heading,
 				'type'      => 'text',
 				'className' => 'wfty_subheading_divi_builder',
-				'default'   => ''
+				'default'   => '',
 			);
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -85,7 +83,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_switcher( $tab_id, $key, $label = '', $default = 'off', $conditions = [], $description = '' ) {
+		protected function add_switcher( $tab_id, $key, $label = '', $default = 'off', $conditions = array(), $description = '' ) {
 			if ( empty( $label ) ) {
 				$label = __( 'Enable', 'funnel-builder' );
 			}
@@ -110,10 +108,9 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			}
 
 			return $key;
-
 		}
 
-		protected function add_select( $tab_id, $key, $label, $options, $field_default_cls, $conditions = [] ) {
+		protected function add_select( $tab_id, $key, $label, $options, $field_default_cls, $conditions = array() ) {
 			$this->modules_fields[ $key ] = array(
 				'label'          => $label,
 				'type'           => 'select',
@@ -130,7 +127,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		public function add_text( $tab_id, $key, $label, $default = '', $conditions = [], $description = '', $placeholder = '', $classes = '' ) {
+		public function add_text( $tab_id, $key, $label, $default = '', $conditions = array(), $description = '', $placeholder = '', $classes = '' ) {
 
 			$this->modules_fields[ $key ] = array(
 				'label'     => $label,
@@ -138,7 +135,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'default'   => $default,
 				'className' => 'wfty_divi_text',
 			);
-
 
 			if ( ! empty( $description ) ) {
 				$this->modules_fields[ $key ]['description'] = $description;
@@ -155,7 +151,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			}
 			$this->assign_tab( $key, $tab_id );
 
-
 			return $key;
 		}
 
@@ -165,13 +160,13 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			}
 		}
 
-		protected function add_textArea( $tab_id, $key, $label, $default = '', $conditions = [] ) {
+		protected function add_textArea( $tab_id, $key, $label, $default = '', $conditions = array() ) {
 
-			$this->modules_fields[ $key ] = [
+			$this->modules_fields[ $key ] = array(
 				'label'   => $label,
 				'type'    => 'textarea',
 				'default' => $default,
-			];
+			);
 
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -181,12 +176,12 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_typography( $tab_id, $key, $selectors = '', $label = [], $conditions = [], $font_side_default = [] ) {
+		protected function add_typography( $tab_id, $key, $selectors = '', $label = array(), $conditions = array(), $font_side_default = array() ) {
 
-			$keys        = [];
-			$font_args   = isset( $font_side_default['font_size'] ) ? $font_side_default['font_size'] : [];
+			$keys        = array();
+			$font_args   = isset( $font_side_default['font_size'] ) ? $font_side_default['font_size'] : array();
 			$font_family = isset( $font_side_default['font'] ) ? $font_side_default['font'] : '';
-			$line_args   = isset( $font_side_default['line_height'] ) ? $font_side_default['line_height'] : [];
+			$line_args   = isset( $font_side_default['line_height'] ) ? $font_side_default['line_height'] : array();
 
 			$font_label   = isset( $label['font_size'] ) ? $label['font_size'] : '';
 			$family_label = isset( $label['font'] ) ? $label['font'] : '';
@@ -199,7 +194,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $keys;
 		}
 
-		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = [] ) {
+		protected function add_text_alignments( $tab_id, $key, $selectors = '', $label = '', $default = 'left', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Alignment', 'et_builder' );
 			}
@@ -219,13 +214,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_font_size( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Font Size', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '15px', 'unit' => 'px' ];
+				$default = array(
+					'default' => '15px',
+					'unit'    => 'px',
+				);
 			}
 
 			if ( ! isset( $default['range_settings'] ) ) {
@@ -238,7 +236,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			if ( ! isset( $default['allowed_units'] ) ) {
 				$default['allowed_units'] = array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
 			}
-			$this->typography[ $key . '_font_size' ] = $key . "_typograhy";
+			$this->typography[ $key . '_font_size' ] = $key . '_typograhy';
 			$key                                     = $key . '_font_size';
 			$this->modules_fields[ $key ]            = array(
 				'label'           => $label,
@@ -262,13 +260,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		}
 
 
-		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_letter_spacing( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Letter Spacing', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '0.9px', 'unit' => 'px' ];
+				$default = array(
+					'default' => '0.9px',
+					'unit'    => 'px',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -281,7 +282,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				$default['allowed_units'] = array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
 			}
 
-			$this->modules_fields[ $key ] = [
+			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
 				'type'            => 'range',
 				'option_category' => 'font_option',
@@ -289,11 +290,11 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'default'         => $default['default'],
 				'default_unit'    => $default['unit'],
 
-				'allowed_units'  => $default['allowed_units'],
-				'range_settings' => $default['range_settings'],
-				'responsive'     => true,
-				'mobile_options' => true,
-			];
+				'allowed_units'   => $default['allowed_units'],
+				'range_settings'  => $default['range_settings'],
+				'responsive'      => true,
+				'mobile_options'  => true,
+			);
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
 			}
@@ -303,7 +304,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = '', $conditions = [] ) {
+		protected function add_font( $tab_id, $key, $selectors = '', $label = '', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Select Font', 'et_builder' );
 			}
@@ -323,7 +324,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = [] ) {
+		protected function add_color( $tab_id, $key, $selectors = '', $label = 'Color', $default = '#000000', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = 'Color';
 			}
@@ -343,12 +344,11 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		public function add_background_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $conditions = [] ) {
+		public function add_background_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Background', 'elementor' );
+				$label = esc_attr__( 'Background', 'divi' );
 			}
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'        => $label,
@@ -367,10 +367,10 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		public function add_border_color( $tab_id, $key, $selectors = [], $default = '#000000', $label = '', $conditions = [] ) {
+		public function add_border_color( $tab_id, $key, $selectors = array(), $default = '#000000', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
-				$label = esc_attr__( 'Color', 'elementor' );
+				$label = esc_attr__( 'Color', 'divi' );
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -387,20 +387,21 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->set_selector( $key, $selectors );
 
 			return $key;
-
 		}
 
-		protected function add_border_radius( $tab_id, $key, $selector, $conditions = [], $default = [], $custom_label = '' ) {
+		protected function add_border_radius( $tab_id, $key, $selector, $conditions = array(), $default = array(), $custom_label = '' ) {
 
-			$label = __( 'Border Radius', 'elementor' );
+			$label = __( 'Border Radius', 'divi' );
 
 			if ( ! empty( $custom_label ) ) {
 				$label = $custom_label;
 			}
 
-
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '0', 'unit' => 'px' ];
+				$default = array(
+					'default' => '0',
+					'unit'    => 'px',
+				);
 			}
 
 			$this->modules_fields[ $key ] = array(
@@ -411,11 +412,10 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'default'          => $default['default'],
 				'default_unit'     => $default['unit'],
 				'default_on_front' => '',
-				'allowed_units'    => [ 'px', 'em', '%' ],
+				'allowed_units'    => array( 'px', 'em', '%' ),
 				'hover'            => 'tabs',
 				'mobile_options'   => true,
 			);
-
 
 			if ( is_array( $conditions ) && ! empty( $conditions ) ) {
 				$this->show_if( $key, $conditions );
@@ -424,15 +424,13 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->set_selector( $key, $selector );
 
 			return $key;
-
 		}
 
-		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = [] ) {
+		protected function add_padding( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Padding', 'et_builder' );
 			}
-
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -453,7 +451,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = [] ) {
+		protected function add_margin( $tab_id, $key, $selector, $default = '', $label = '', $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Margin', 'et_builder' );
@@ -477,18 +475,18 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_border( $tab_id, $key, $selectors, $conditions = [], $default = [] ) {
+		protected function add_border( $tab_id, $key, $selectors, $conditions = array(), $default = array() ) {
 
-			$border_option = [
+			$border_option = array(
 				'none'   => __( 'None', 'funnel-builder' ),
 				'solid'  => __( 'Solid', 'funnel-builder' ),
 				'double' => __( 'Double', 'funnel-builder' ),
 				'dotted' => __( 'Dotted', 'funnel-builder' ),
 				'dashed' => __( 'Dashed', 'funnel-builder' ),
 				'groove' => __( 'Groove', 'funnel-builder' ),
-			];
+			);
 
-			$default_args = [
+			$default_args = array(
 				'border_type'          => 'solid',
 				'border_width_top'     => '1',
 				'border_width_bottom'  => '1',
@@ -500,9 +498,9 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'border_radius_right'  => '0',
 				'border_color'         => '#dddddd',
 				'show_radius'          => true,
-			];
+			);
 
-			$fields_keys = [];
+			$fields_keys = array();
 			$default     = wp_parse_args( $default, $default_args );
 
 			$wfty_start_border                          = $this->get_unique_id();
@@ -511,16 +509,15 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'type'      => 'hidden',
 				'c_type'    => 'wfty_start_border',
 				'field_key' => $key,
-				'selector'  => $selectors
+				'selector'  => $selectors,
 			);
 
 			$border_type    = $this->add_select( $tab_id, $key . '_border_type', __( 'Type', 'funnel-builder' ), $border_option, $default['border_type'] );
 			$fields_keys[]  = $border_type;
-			$type_condition = [ $border_type => [ 'solid', 'double', 'dotted', 'dashed', 'groove' ] ];
+			$type_condition = array( $border_type => array( 'solid', 'double', 'dotted', 'dashed', 'groove' ) );
 			if ( ! empty( $conditions ) ) {
 				$type_condition = array_merge( $type_condition, $conditions );
 			}
-
 
 			$fields_keys[] = $this->add_subheading( $tab_id, __( 'Width', 'funnel-builder' ), '', $type_condition );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_border_width_top', __( 'Top', 'funnel-builder' ), $default['border_width_top'], $type_condition );
@@ -541,7 +538,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'label'     => 'end border',
 				'type'      => 'hidden',
 				'c_type'    => 'wfty_end_border',
-				'field_key' => $key
+				'field_key' => $key,
 			);
 
 			$this->add_class( $key . '_border_width_top', 'wfty_divi_border_width_start wfty_border_width_top' );
@@ -554,20 +551,17 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->add_class( $key . '_border_radius_left', 'wfty_border_width_left' );
 			$this->add_class( $key . '_border_radius_right', 'wfty_divi_border_width_end wfty_border_width_right' );
 
-
 			return $fields_keys;
 		}
 
-		protected function add_box_shadow( $tab_id, $key, $selectors, $default = [], $conditions = [] ) {
+		protected function add_box_shadow( $tab_id, $key, $selectors, $default = array(), $conditions = array() ) {
 
-
-			$border_option = [
+			$border_option = array(
 				''      => __( 'Ouline', 'funnel-builder' ),
 				'inset' => __( 'Inset', 'funnel-builder' ),
-			];
+			);
 
-
-			$default_args = [
+			$default_args = array(
 				'enable'     => 'off',
 				'type'       => '',
 				'horizontal' => '0',
@@ -575,10 +569,9 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'blur'       => '0',
 				'spread'     => '0',
 				'color'      => '#dddddd',
-			];
+			);
 
-
-			$fields_keys                                = [];
+			$fields_keys                                = array();
 			$default                                    = wp_parse_args( $default, $default_args );
 			$wfty_start_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfty_start_border ] = array(
@@ -586,14 +579,13 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'type'      => 'hidden',
 				'c_type'    => 'wfty_start_box_shadow',
 				'field_key' => $key,
-				'selector'  => $selectors
+				'selector'  => $selectors,
 			);
 
-
-			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'funnel-builder', '', $conditions ) );
+			$fields_keys[] = $this->add_heading( $tab_id, __( 'Box Shadow', 'funnel-builder' ), '', $conditions );
 			$enabled       = $this->add_switcher( $tab_id, $key . '_shadow_enable', __( 'Enable', 'funnel-builder' ), $default['enable'], $conditions );
 
-			$type_condition = [ $enabled => 'on' ];
+			$type_condition = array( $enabled => 'on' );
 			if ( ! empty( $conditions ) ) {
 				$type_condition = array_merge( $type_condition, $conditions );
 			}
@@ -604,13 +596,12 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_blur', __( 'Blur', 'funnel-builder' ), $default['blur'], $type_condition );
 			$fields_keys[] = $this->add_text( $tab_id, $key . '_shadow_spread', __( 'Spread', 'funnel-builder' ), $default['spread'], $type_condition );
 
-
 			$wfty_end_border                          = $this->get_unique_id();
 			$this->modules_fields[ $wfty_end_border ] = array(
 				'label'     => 'end border',
 				'type'      => 'hidden',
 				'c_type'    => 'wfty_end_box_shadow',
-				'field_key' => $key
+				'field_key' => $key,
 			);
 
 			$this->add_class( $key . '_shadow_horizontal', 'wfty_divi_border_width_start wfty_border_width_top' );
@@ -621,13 +612,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $fields_keys;
 		}
 
-		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_line_height( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Line Height', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '1.5', 'unit' => 'px' ];
+				$default = array(
+					'default' => '1.5',
+					'unit'    => 'px',
+				);
 			}
 
 			if ( ! isset( $default['range_settings'] ) ) {
@@ -662,16 +656,18 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			$this->set_selector( $key, $selectors );
 
 			return $key;
-
 		}
 
-		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Width', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '100', 'unit' => '%' ];
+				$default = array(
+					'default' => '100',
+					'unit'    => '%',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -706,13 +702,16 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = [], $conditions = [] ) {
+		protected function add_min_width( $tab_id, $key, $selectors = '', $label = '', $default = array(), $conditions = array() ) {
 
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Min Width', 'et_builder' );
 			}
 			if ( empty( $default ) ) {
-				$default = [ 'default' => '100', 'unit' => '%' ];
+				$default = array(
+					'default' => '100',
+					'unit'    => '%',
+				);
 			}
 			if ( ! isset( $default['range_settings'] ) ) {
 				$default['range_settings'] = array(
@@ -747,7 +746,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_controls_tabs( $tab_id, $label, $conditions = [] ) {
+		protected function add_controls_tabs( $tab_id, $label, $conditions = array() ) {
 
 			$key                          = $this->get_unique_id();
 			$this->modules_fields[ $key ] = array(
@@ -772,7 +771,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 			if ( isset( $this->modules_fields[ $control_tabs_id ] ) ) {
 				$this->modules_fields[ $control_tabs_id ]['composite_structure'][ $id ]['label'] = $label;
-				$controls                                                                        = [];
+				$controls = array();
 
 				foreach ( $field_keys as $field_key ) {
 					if ( ! isset( $this->modules_fields[ $field_key ] ) ) {
@@ -780,9 +779,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 						continue;
 					}
 
-
 					$controls[ $field_key ] = $this->modules_fields[ $field_key ];
-
 
 					if ( count( $controls ) > 0 ) {
 						$this->tab_array[ $field_key ] = $this->modules_fields[ $field_key ];
@@ -799,12 +796,10 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				}
 			}
 
-
-			return [ $id, $control_tabs_id ];
+			return array( $id, $control_tabs_id );
 		}
 
-		public function add_animation_fields( $tab_id, $key, $selectors = '', $label = 'Animation Style', $default = 'none', $conditions = [] ) {
-
+		public function add_animation_fields( $tab_id, $key, $selectors = '', $label = 'Animation Style', $default = 'none', $conditions = array() ) {
 
 			$this->modules_fields[ $key ] = array(
 				'label'           => $label,
@@ -832,7 +827,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 			return $key;
 		}
 
-		protected function add_icon( $tab_id, $key, $label = '', $default = '', $conditions = [] ) {
+		protected function add_icon( $tab_id, $key, $label = '', $default = '', $conditions = array() ) {
 			if ( empty( $label ) ) {
 				$label = esc_html__( 'Icon', 'et_builder' );
 			}
@@ -847,7 +842,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				$this->show_if( $key, $conditions );
 			}
 			$this->assign_tab( $key, $tab_id );
-
 		}
 
 		protected function set_selector( $key, $selector ) {
@@ -873,71 +867,111 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		}
 
 		protected function create_css_property( $key, $type ) {
-			$property = [];
+			$property = array();
 			$default  = isset( $this->modules_fields[ $key ]['default'] ) ? $this->modules_fields[ $key ]['default'] : '';
 
-
 			switch ( $type ) {
-				case  'text_align':
+				case 'text_align':
 					$default  = isset( $this->modules_fields[ $key ]['default'] ) ? $this->modules_fields[ $key ]['default'] : ( is_rtl() ? 'right' : 'left' );
-					$property = [ 'property' => 'text-align', 'value' => $default ];
+					$property = array(
+						'property' => 'text-align',
+						'value'    => $default,
+					);
 					break;
-				case  'letter_spacing':
-					$property = [ 'property' => 'letter-spacing', 'value' => $default ];
+				case 'letter_spacing':
+					$property = array(
+						'property' => 'letter-spacing',
+						'value'    => $default,
+					);
 					break;
-				case  'line_height':
-					$property = [ 'property' => 'line-height', 'value' => $default ];
+				case 'line_height':
+					$property = array(
+						'property' => 'line-height',
+						'value'    => $default,
+					);
 					break;
-				case  'width':
-					$property = [ 'property' => 'width', 'value' => $default ];
+				case 'width':
+					$property = array(
+						'property' => 'width',
+						'value'    => $default,
+					);
 					break;
-				case  'min_width':
-					$property = [ 'property' => 'min-width', 'value' => $default ];
+				case 'min_width':
+					$property = array(
+						'property' => 'min-width',
+						'value'    => $default,
+					);
 					break;
-				case  'margin':
-					$property = [ 'property' => 'margin', 'value' => $default ];
+				case 'margin':
+					$property = array(
+						'property' => 'margin',
+						'value'    => $default,
+					);
 					break;
-				case  'padding':
-					$property = [ 'property' => 'margin', 'value' => $default ];
+				case 'padding':
+					$property = array(
+						'property' => 'margin',
+						'value'    => $default,
+					);
 					break;
-				case  'border_radius':
-					$property = [ 'property' => 'border-radius', 'value' => $default ];
+				case 'border_radius':
+					$property = array(
+						'property' => 'border-radius',
+						'value'    => $default,
+					);
 					break;
-				case  'border_color':
-					$property = [ 'property' => 'border-color', 'value' => $default ];
+				case 'border_color':
+					$property = array(
+						'property' => 'border-color',
+						'value'    => $default,
+					);
 					break;
-				case  'background_color':
-					$property = [ 'property' => 'background-color', 'value' => $default ];
+				case 'background_color':
+					$property = array(
+						'property' => 'background-color',
+						'value'    => $default,
+					);
 					break;
-				case  'color':
-					$property = [ 'property' => 'color', 'value' => $default ];
+				case 'color':
+					$property = array(
+						'property' => 'color',
+						'value'    => $default,
+					);
 					break;
-				case  'color-alpha':
-					$property = [ 'property' => 'color', 'value' => $default ];
+				case 'color-alpha':
+					$property = array(
+						'property' => 'color',
+						'value'    => $default,
+					);
 					break;
-				case  'font_size':
-					$property = [ 'property' => 'font-size', 'value' => $default ];
+				case 'font_size':
+					$property = array(
+						'property' => 'font-size',
+						'value'    => $default,
+					);
 					break;
-				case  'box_shadow':
-					$property = [ 'property' => 'box-shadow', 'value' => '' ];
+				case 'box_shadow':
+					$property = array(
+						'property' => 'box-shadow',
+						'value'    => '',
+					);
 					break;
 				default:
 					break;
 
 			}
 
-
 			return $property;
 		}
 
 
 		protected function get_class_options() {
-			return [
+			return array(
 				'wfty-col-full'       => __( 'Full', 'funnel-builder' ),
 				'wfty-col-left-half'  => __( 'One Half', 'funnel-builder' ),
 				'wfty-col-left-third' => __( 'One Third', 'funnel-builder' ),
 				'wfty-col-two-third'  => __( 'Two Third', 'funnel-builder' ),
-			];
+			);
 		}
 
 		protected function show_if( $key, $condition ) {
@@ -946,8 +980,6 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function show_if_not( $key, $condition ) {
 			$this->modules_fields[ $key ]['show_if_not'] = $condition;
-
-
 		}
 
 		protected function add_responsive_control( $key ) {
@@ -982,24 +1014,27 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 			if ( $type == '5' ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 				$type = 'general';
-			} else if ( $type == '3' ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			} elseif ( $type == '3' ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 				$type = 'custom_css';
-			} else if ( $type == '2' ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			} elseif ( $type == '2' ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 				$type = 'advanced';
 			} else {
 				$type = 'general';
 			}
-			//advanced
+			// advanced
 
 			if ( empty( $id ) ) {
 				$id = $this->get_unique_id();
 			}
 			if ( isset( $this->settings_modal_toggles[ $type ] ) ) {
-				$this->settings_modal_toggles[ $type ]['toggles'][ $id ] = [ 'title' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $id ] = array( 'title' => $name );
 			} else {
-				$this->settings_modal_toggles[ $type ] = [ 'toggles' => [ $id => [ 'title' => $name ] ] ];
+				$this->settings_modal_toggles[ $type ] = array( 'toggles' => array( $id => array( 'title' => $name ) ) );
 			}
-			$this->tabs[ $id ] = [ 'type' => $type, 'name' => $name ];
+			$this->tabs[ $id ] = array(
+				'type' => $type,
+				'name' => $name,
+			);
 
 			return $id;
 		}
@@ -1013,13 +1048,18 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 			if ( isset( $this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ] ) ) {
 				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['tabbed_subtoggles']   = true;
-				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = [ 'name' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = array( 'name' => $name );
 			} else {
 				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['tabbed_subtoggles']   = true;
-				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = [ 'name' => $name ];
+				$this->settings_modal_toggles[ $type ]['toggles'][ $tab_id ]['sub_toggles'] [ $id ] = array( 'name' => $name );
 			}
 
-			$this->sub_tabs[ $id ] = [ 'type' => $type, 'id' => $id, 'name' => $name, 'tab_id' => $tab_id ];
+			$this->sub_tabs[ $id ] = array(
+				'type'   => $type,
+				'id'     => $id,
+				'name'   => $name,
+				'tab_id' => $tab_id,
+			);
 
 			return $this->sub_tabs[ $id ];
 		}
@@ -1030,7 +1070,7 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 		protected function get_unique_id() {
 			static $count = 0;
-			$count ++;
+			++$count;
 			$key = md5( 'wfty_' . $count );
 
 			return $key;
@@ -1055,23 +1095,32 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 
 			if ( wp_doing_ajax() ) {
 				$post_type = WFFN_Core()->thank_you_pages->get_post_type_slug();
-				if ( isset( $_REQUEST['action'] ) && "et_fb_get_saved_templates" === $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder action detection
+				if ( isset( $_REQUEST['action'] ) && 'et_fb_get_saved_templates' === $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
 					return;
 				}
-				if ( isset( $_REQUEST['action'] ) && "et_fb_update_builder_assets" === $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder action detection
+				if ( isset( $_REQUEST['action'] ) && 'et_fb_update_builder_assets' === $_REQUEST['action'] && isset( $_REQUEST['et_post_type'] ) && $post_type !== $_REQUEST['et_post_type'] ) {
 					return;
 				}
 				$post_id = 0;
-				if ( isset( $_REQUEST['action'] ) && "heartbeat" === $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					if ( isset( $_REQUEST['data']['et'] ) ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						$post_id = $_REQUEST['data']['et']['post_id']; //phpcs:ignore
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder heartbeat detection
+				if ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] && isset( $_REQUEST['data'] ) ) {
+					// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder heartbeat detection
+					if ( isset( $_REQUEST['data']['et'] ) ) {
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder heartbeat detection
+						$post_id = sanitize_text_field( wp_unslash( $_REQUEST['data']['et']['post_id'] ) );//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated , WordPress.Security.NonceVerification.Recommended , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 					}
 				}
-				if ( isset( $_REQUEST['post_id'] ) ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					$post_id = absint( $_REQUEST['post_id'] );  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder post ID detection
+				if ( isset( $_REQUEST['post_id'] ) ) {
+					// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder post ID detection
+					$post_id = absint( $_REQUEST['post_id'] );
 				}
-				if ( isset( $_REQUEST['et_post_id'] ) ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					$post_id = absint( $_REQUEST['et_post_id'] );  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder post ID detection
+				if ( isset( $_REQUEST['et_post_id'] ) ) {
+					// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder post ID detection
+					$post_id = absint( $_REQUEST['et_post_id'] );
 				}
 				if ( $post_id > 0 ) {
 					$post = get_post( $post_id );//phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -1088,15 +1137,15 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 		}
 
 		public function render_ajax() {
-
-			$this->props = $_REQUEST; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Nonce verification not required for Divi builder AJAX render
+			$this->props = $_REQUEST;
 			echo "<div id='{$this->slug}'>" . $this->html( [] ) . '</div>';//phpcs:ignore
 			exit;
 		}
 
 		private function setup_offer() {
 			if ( empty( self::$product_options ) ) {
-				self::$product_options = array( '0' => __( '--No Product--', 'funnel-builder' ) );;
+				self::$product_options = array( '0' => __( '--No Product--', 'funnel-builder' ) );
 
 			}
 		}
@@ -1140,17 +1189,17 @@ if ( ! class_exists( 'WFTY_Divi_Field' ) ) {
 				'filters'        => array(
 					'css' => array(
 						'main' => $this->main_css,
-					)
+					),
 				),
 				'background'     => array(
 					'css' => array(
 						'main' => $this->main_css,
-					)
+					),
 				),
 				'animation'      => array(
 					'css' => array(
 						'main' => $this->main_css,
-					)
+					),
 				),
 				'fonts'          => false,
 				'text'           => false,

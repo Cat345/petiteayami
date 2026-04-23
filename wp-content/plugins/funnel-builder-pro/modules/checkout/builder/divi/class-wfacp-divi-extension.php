@@ -51,8 +51,11 @@ if ( ! class_exists( 'WFACP_Divi_Extension' ) ) {
 		}
 
 		protected function _enqueue_bundles() {
+			// Divi 5 uses its own module system — D4 extension bundles not needed
+			if ( function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled() ) {
+				return;
+			}
 
-			//parent::_enqueue_bundles();
 			if ( WFACP_Common::is_theme_builder() ) {
 				$this->enqueue_module_js();
 			} else {

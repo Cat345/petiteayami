@@ -5,9 +5,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 	 */
 	#[AllowDynamicProperties]
 	class WFOCU_Gateway_Integration_PayPal_Payments extends WFOCU_Gateway {
-		protected $key = 'ppcp-gateway';
-		protected static $ins = null;
-		protected $container = null;
+		protected $key            = 'ppcp-gateway';
+		protected static $ins     = null;
+		protected $container      = null;
 		protected $payal_order_id = null;
 
 		public function __construct() {
@@ -15,12 +15,19 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 
 			add_action( 'wfocu_footer_before_print_scripts', array( $this, 'maybe_render_in_offer_transaction_scripts' ), 999 );
 			add_filter( 'wfocu_allow_ajax_actions_for_charge_setup', array( $this, 'allow_action' ) );
+			/**
+			 * Hook for PayPal Payments plugin when orders are created manually via wc_create_order()
+			 * This hook fires specifically when PayPal creates orders in ApproveOrderEndpoint
+			 *
+			 * @see WooCommerce\PayPalCommerce\Button\Helper\WooCommerceOrderCreator::create_from_paypal_order()
+			 */
+			add_action( 'woocommerce_paypal_payments_woocommerce_order_created_from_cart', array( $this, 'maybe_decide_funnel_on_paypal_order' ), 99, 2 );
 			$this->refund_supported = true;
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -40,64 +47,65 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				return;
 			}
 			?>
-            <script>
-                (
-                    function ($) {
-                        "use strict";
+			<script>
+				(
+					function ($) {
+						"use strict";
 
 
-                        $(document).on('wfocu_external', function (e, Bucket) {
+						$(document).on('wfocu_external', function (e, Bucket) {
 
-                            /**
-                             * Check if we need to mark inoffer transaction to prevent default behavior of page
-                             */
-                            if (0 !== Bucket.getTotal()) {
+							/**
+							 * Check if we need to mark inoffer transaction to prevent default behavior of page
+							 */
+							if (0 !== Bucket.getTotal()) {
 
-                                Bucket.inOfferTransaction = true;
-                                var getBucketData = Bucket.getBucketSendData();
+								Bucket.inOfferTransaction = true;
+								var getBucketData = Bucket.getBucketSendData();
 
-                                var postData = $.extend(getBucketData, {action: 'wfocu_front_handle_paypal_payments'});
-
-
-                                if (typeof wfocu_vars.wc_ajax_url !== "undefined") {
-                                    var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_paypal_payments'), postData);
-
-                                } else {
-                                    var action = $.post(wfocu_vars.ajax_url, postData);
-
-                                }
-
-                                action.done(function (data) {
-
-                                    if (data.status === true) {
-                                        window.location = data.redirect_url;
-                                    } else {
-                                        Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                        window.location = wfocu_vars.redirect_url + '&ec=ppec_token_not_found';
-                                    }
-
-                                });
-
-                                action.fail(function () {
-                                    Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                    /** move to order received page */
-                                    if (typeof wfocu_vars.order_received_url !== 'undefined') {
-
-                                        window.location = wfocu_vars.order_received_url;
-
-                                    }
-
-                                });
-
-                            }
+								var postData = $.extend(getBucketData, {action: 'wfocu_front_handle_paypal_payments'});
 
 
-                        });
+								if (typeof wfocu_vars.wc_ajax_url !== "undefined") {
+									var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_paypal_payments'), postData);
+
+								} else {
+									var action = $.post(wfocu_vars.ajax_url, postData);
+
+								}
+
+								action.done(function (data) {
+
+									if (data.status === true) {
+										window.location = data.redirect_url;
+									} else {
+										Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+										window.location = wfocu_vars.redirect_url + '&ec=ppec_token_not_found';
+									}
+
+								});
+
+								action.fail(function () {
+									Bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+									/** move to order received page */
+									if (typeof wfocu_vars.order_received_url !== 'undefined') {
+
+										window.location = wfocu_vars.order_received_url;
+
+									}
+
+								});
+
+							}
 
 
-                    })
-                (jQuery);
-            </script> <?php
+						});
+
+
+					})
+				(jQuery);
+			</script> 
+			<?php
 		}
 
 		public function is_run_without_token() {
@@ -113,7 +121,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 			WFOCU_Core()->data->set( '_offer_result', true );
-			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 
 			if ( true === WFOCU_AJAX_Controller::validate_charge_request( $posted_data ) ) {
 
@@ -146,20 +154,26 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					),
 
 				);
-				WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args: " . wp_json_encode( $data ) );
-				$arguments = apply_filters( 'wfocu_ppcp_gateway_process_client_order_api_args', array(
-					'method'  => 'POST',
-					'headers' => array(
-						'Content-Type'                  => 'application/json',
-						'Authorization'                 => 'Bearer ' . $this->get_bearer( $get_order ),
-						'PayPal-Partner-Attribution-Id' => 'BWF_PPCP',
+				WFOCU_Core()->log->log( 'Order: #' . $get_order->get_id() . ' paypal args: ' . wp_json_encode( $data ) );
+				$arguments = apply_filters(
+					'wfocu_ppcp_gateway_process_client_order_api_args',
+					array(
+						'method'  => 'POST',
+						'headers' => array(
+							'Content-Type'  => 'application/json',
+							'Authorization' => 'Bearer ' . $this->get_bearer( $get_order ),
+							'PayPal-Partner-Attribution-Id' => 'BWF_PPCP',
+						),
+						'body'    => $data,
+						'timeout' => 30,
 					),
-					'body'    => $data,
-					'timeout' => 30,
-				), $get_order, $posted_data, $offer_package );
+					$get_order,
+					$posted_data,
+					$offer_package
+				);
 
 				$arguments['body'] = wp_json_encode( $arguments['body'] );
-				WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args: " . wp_json_encode( $arguments ) );
+				WFOCU_Core()->log->log( 'Order: #' . $get_order->get_id() . ' paypal args: ' . wp_json_encode( $arguments ) );
 
 				$payment_env = $get_order->get_meta( '_ppcp_paypal_payment_mode' );
 				// Refer https://developer.paypal.com/docs/api/orders/v2/ documentation to generate create order endpoint.
@@ -174,7 +188,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 						'status'       => false,
 						'redirect_url' => $data['redirect_url'],
 					);
-
 
 					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to create paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
@@ -213,7 +226,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 							'redirect_url' => $data['redirect_url'],
 						);
 
-
 						WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to create paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 						wp_send_json( $json_response );
@@ -223,7 +235,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				wp_send_json( $json_response );
 
 			}
-
 		}
 
 		/**
@@ -242,7 +253,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			 * if ( ! empty( $bearer ) )   {
 			 * $bearer = json_decode( $bearer );
 			 * $token  = $bearer->access_token;
-			 * } **/
+			 * } */
 
 			// Generate new token if token does not exists.
 			if ( empty( $token ) ) {
@@ -273,7 +284,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 						'Authorization' => 'Basic ' . base64_encode( $client_id . ':' . $secret_key ),
 					),
 				);
-
 
 				$response = wp_remote_get( $url, $args ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
 				if ( function_exists( 'WFOCU_Core' ) && isset( WFOCU_Core()->log ) ) {
@@ -321,22 +331,33 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 * Create purchase unite for create order.
 		 *
 		 * @param WC_Order $order WC Order.
-		 * @param array $offer_product upsell/downsell product.
-		 * @param object $args Posted and payment gateway setting data.
+		 * @param array    $offer_product upsell/downsell product.
+		 * @param object   $args Posted and payment gateway setting data.
 		 *
 		 * @return array $purchase_unit.
 		 */
 		public function get_purchase_units( $order, $package ) {
 
+			$prefix       = $this->get_paypal_option_by_key( 'prefix' );
+			$order_number = $this->get_order_number( $order );
+			$invoice_id   = $prefix . '-wfocu-' . $order_number;
 
-			$prefix     = $this->get_paypal_option_by_key( 'prefix' );
-			$invoice_id = $prefix . '-wfocu-' . $this->get_order_number( $order );
+			/**
+			 * Filter the invoice ID for PayPal Payments gateway.
+			 *
+			 * @param string $invoice_id The invoice ID.
+			 * @param WC_Order $order The WooCommerce order object.
+			 * @param string $prefix The invoice prefix from PayPal settings.
+			 *
+			 * @since 1.0.0
+			 */
+			$invoice_id = apply_filters( 'wfocu_ppcp_gateway_invoice_id', $invoice_id, $order, $prefix );
 
 			// Get breakdown first to calculate the correct total
 			$breakdown = $this->get_item_breakdown( $order, $package );
 
 			// Calculate total from breakdown components to ensure accuracy
-			$calculated_total = 0;
+			$calculated_total  = 0;
 			$calculated_total += (float) $breakdown['item_total']['value'];
 			$calculated_total += (float) $breakdown['tax_total']['value'];
 
@@ -355,16 +376,16 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 
 			// If there's a significant discrepancy, adjust the breakdown to match package total
 			$package_total = $this->round( $package['total'] );
-			$discrepancy = abs( $total_amount - $package_total );
+			$discrepancy   = abs( $total_amount - $package_total );
 
 			if ( $discrepancy > 0.01 ) { // Allow for small rounding differences
 				// Adjust tax to match the package total
 				$tax_adjustment = $package_total - $calculated_total;
-				$new_tax = (float) $breakdown['tax_total']['value'] + $tax_adjustment;
+				$new_tax        = (float) $breakdown['tax_total']['value'] + $tax_adjustment;
 
 				if ( $new_tax >= 0 ) {
 					$breakdown['tax_total']['value'] = (string) $this->round( $new_tax );
-					$total_amount = $package_total;
+					$total_amount                    = $package_total;
 					WFOCU_Core()->log->log( "PayPal amount adjusted - Tax adjusted by: {$tax_adjustment}, New tax: {$breakdown['tax_total']['value']}, Final total: {$total_amount}" );
 				}
 			}
@@ -372,7 +393,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			// Log the calculation for debugging
 			WFOCU_Core()->log->log( "PayPal amount calculation - Item total: {$breakdown['item_total']['value']}, Tax total: {$breakdown['tax_total']['value']}, Calculated total: {$total_amount}, Original package total: {$package['total']}" );
 
-			$purchase_unit   = array(
+			$purchase_unit = array(
 				'reference_id' => 'default',
 				'amount'       => array(
 					'currency_code' => $order->get_currency(),
@@ -401,7 +422,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 * Create breakdown for item amount.
 		 *
 		 * @param WC_Order $order WC Order.
-		 * @param array $offer_product upsell/downsell product.
+		 * @param array    $offer_product upsell/downsell product.
 		 *
 		 * @return array $breakdown item amount breakdown.
 		 */
@@ -451,7 +472,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 						'currency_code' => $order->get_currency(),
 						'value'         => (string) $this->round( abs( $shipping_cost ) ),
 					);
-					$breakdown['shipping'] = array(
+					$breakdown['shipping']          = array(
 						'currency_code' => $order->get_currency(),
 						'value'         => '0.00',
 					);
@@ -471,38 +492,36 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 * Add product's item data.
 		 *
 		 * @param object $order WC Order.
-		 * @param array $offer_product upsell/downsell product.
+		 * @param array  $offer_product upsell/downsell product.
 		 *
 		 * @return array $offer_items item data.
 		 */
 		public function add_offer_item_data( $order, $offer_package ) {
 
+			$order_items = array();
+			foreach ( $offer_package['products'] as $item ) {
 
-		$order_items = [];
-		foreach ( $offer_package['products'] as $item ) {
+				$product = $item['data'];
 
-			$product = $item['data'];
-
-			try {
-				$title   = $product->get_title();
-				if ( strlen( $title ) > 127 ) {
-					$title = substr( $title, 0, 124 ) . '...';
+				try {
+					$title = $product->get_title();
+					if ( strlen( $title ) > 127 ) {
+						$title = substr( $title, 0, 124 ) . '...';
+					}
+					$order_items[] = array(
+						'name'        => $title,
+						'unit_amount' => array(
+							'currency_code' => $order->get_currency(),
+							'value'         => (string) $this->round( $item['price'] ),
+						),
+						'quantity'    => 1,
+						'description' => $this->get_item_description( $product ),
+					);
+				} catch ( Throwable $e ) {
+					WFOCU_Core()->log->log( 'Error processing product data in PayPal payments gateway: ' . $e->getMessage() );
+					continue;
 				}
-				$order_items[] = array(
-					'name'        => $title,
-					'unit_amount' => array(
-						'currency_code' => $order->get_currency(),
-						'value'         => (string) $this->round( $item['price'] ),
-					),
-					'quantity'    => 1,
-					'description' => $this->get_item_description( $product ),
-				);
-			} catch ( Throwable $e ) {
-				WFOCU_Core()->log->log( 'Error processing product data in PayPal payments gateway: ' . $e->getMessage() );
-				continue;
 			}
-
-			};
 
 			return $order_items;
 		}
@@ -514,7 +533,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 *
 		 * The description is automatically truncated to the 127 char limit.
 		 *
-		 * @param array $item cart or order item
+		 * @param array       $item cart or order item
 		 * @param \WC_Product $product product data
 		 *
 		 * @return string
@@ -535,17 +554,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			}
 
 			return html_entity_decode( $item_desc, ENT_NOQUOTES, 'UTF-8' );
-
 		}
 
 		/**
 		 * Round a float
 		 *
 		 * @param float $number
-		 * @param int $precision Optional. The number of decimal digits to round to.
+		 * @param int   $precision Optional. The number of decimal digits to round to.
 		 *
 		 * @since 2.0.9
-		 *
 		 */
 		private function round( $number, $precision = 2 ) {
 			return round( (float) $number, $precision );
@@ -587,9 +604,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				),
 			);
 
-
 			$capture_url = $this->get_api_base( $environment ) . 'v2/checkout/orders/' . $paypal_order_id . '/capture';
-
 
 			$captured_resp = wp_remote_get( $capture_url, $capture_args ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
 
@@ -602,15 +617,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to capture paypal Order refer error below' . print_r( $captured_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				if ( isset( $data->details ) && is_array( $data->details ) && ! empty( $data->details[0]->issue ) ) {
-					$this->handle_api_error( esc_attr__( 'Offer payment failed. Reason: ' . $data->details[0]->description, 'woofunnels-upstroke-one-click-upsell' ), '', $get_order );
+					$this->handle_api_error( esc_attr__( 'Offer payment failed. Reason: ' . $data->details[0]->description, 'woofunnels-upstroke-one-click-upsell' ), '', $get_order ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 				}
-
 			} else {
 
 				$retrived_body = wp_remote_retrieve_body( $captured_resp );
 
 				$resp_body = json_decode( $retrived_body );
-
 
 				if ( isset( $resp_body->status ) && 'COMPLETED' === $resp_body->status ) {
 					if ( isset( $resp_body->payment_source->paypal->attributes->vault->id ) && isset( $resp_body->payment_source->paypal->attributes->vault->status ) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status ) {
@@ -624,22 +637,24 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 						$get_order->save_meta_data();
 						WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': vault token created' );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
-
 					} else {
 						$txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;
 					}
 
+					// Extract and store PayPal fees from the capture response.
+					$this->update_paypal_fees( $get_order, $resp_body );
+
 					WFOCU_Core()->data->set( '_transaction_id', $txn_id );
 					add_action( 'wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array( $this, 'add_order_id_as_meta' ) );
 					add_action( 'wfocu_offer_new_order_created_' . $this->get_key(), array( $this, 'add_paypal_meta_in_new_order' ), 10, 2 );
+					add_action( 'wfocu_offer_new_order_created_' . $this->get_key(), array( $this, 'add_paypal_payouts_to_order' ), 10, 1 );
 
 					$this->payal_order_id = $paypal_order_id;
 					$data                 = WFOCU_Core()->process_offer->_handle_upsell_charge( true );
 
-
 				} elseif ( isset( $resp_body->details ) && is_array( $resp_body->details ) && ( 'ORDER_ALREADY_CAPTURED' === $resp_body->details[0]->issue ) ) {
 					$get_offer            = WFOCU_Core()->offers->get_the_next_offer();
-					$data                 = [];
+					$data                 = array();
 					$data['redirect_url'] = WFOCU_Core()->public->get_the_upsell_url( $get_offer );
 
 				} else {
@@ -647,15 +662,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to capture paypal Order refer error below' . print_r( $resp_body, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 					if ( isset( $data->details ) && is_array( $data->details ) && ! empty( $data->details[0]->issue ) ) {
-						$this->handle_api_error( esc_attr__( 'Offer payment failed. Reason: ' . $data->details[0]->description, 'woofunnels-upstroke-one-click-upsell' ), '', $get_order );
+						$this->handle_api_error( esc_attr__( 'Offer payment failed. Reason: ' . $data->details[0]->description, 'woofunnels-upstroke-one-click-upsell' ), '', $get_order ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					}
 				}
 			}
 
 			wp_redirect( $data['redirect_url'] );
 			exit;
-
-
 		}
 
 		public function get_api_base( $mode ) {
@@ -698,6 +711,117 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		}
 
 		/**
+		 * Extract and store PayPal fees from the capture response.
+		 *
+		 * @param WC_Order $order The WooCommerce order.
+		 * @param object   $resp_body The PayPal capture response.
+		 *
+		 * @return void
+		 */
+		public function update_paypal_fees( $order, $resp_body ) {
+			try {
+				// Get the capture from the response.
+				if ( ! isset( $resp_body->purchase_units[0]->payments->captures[0] ) ) {
+					return;
+				}
+
+				$capture = $resp_body->purchase_units[0]->payments->captures[0];
+
+				// Check if seller_receivable_breakdown exists.
+				if ( ! isset( $capture->seller_receivable_breakdown ) ) {
+					return;
+				}
+
+				$breakdown = $capture->seller_receivable_breakdown;
+
+				$fees_data = array();
+
+				// Extract PayPal fee.
+				if ( isset( $breakdown->paypal_fee ) ) {
+					$fees_data['paypal_fee'] = array(
+						'value'         => $breakdown->paypal_fee->value,
+						'currency_code' => $breakdown->paypal_fee->currency_code,
+					);
+				}
+
+				// Extract net amount (payout).
+				if ( isset( $breakdown->net_amount ) ) {
+					$fees_data['net_amount'] = array(
+						'value'         => $breakdown->net_amount->value,
+						'currency_code' => $breakdown->net_amount->currency_code,
+					);
+				}
+
+				// Extract gross amount.
+				if ( isset( $breakdown->gross_amount ) ) {
+					$fees_data['gross_amount'] = array(
+						'value'         => $breakdown->gross_amount->value,
+						'currency_code' => $breakdown->gross_amount->currency_code,
+					);
+				}
+
+				if ( ! empty( $fees_data ) ) {
+					// Store fees data in WFOCU data store for later use.
+					WFOCU_Core()->data->set( 'wfocu_ppcp_fees', $fees_data );
+
+					// Get existing fees from order if batching is enabled.
+					$order_behavior = WFOCU_Core()->funnels->get_funnel_option( 'order_behavior' );
+					$is_batching_on = ( 'batching' === $order_behavior );
+
+					if ( $is_batching_on ) {
+						$existing_fees = $order->get_meta( '_ppcp_paypal_fees' );
+
+						if ( is_array( $existing_fees ) && ! empty( $existing_fees ) ) {
+							// Add upsell fees to existing fees.
+							if ( isset( $existing_fees['paypal_fee'] ) && isset( $fees_data['paypal_fee'] ) ) {
+								$fees_data['paypal_fee']['value'] = (string) ( (float) $existing_fees['paypal_fee']['value'] + (float) $fees_data['paypal_fee']['value'] );
+							}
+							if ( isset( $existing_fees['net_amount'] ) && isset( $fees_data['net_amount'] ) ) {
+								$fees_data['net_amount']['value'] = (string) ( (float) $existing_fees['net_amount']['value'] + (float) $fees_data['net_amount']['value'] );
+							}
+							if ( isset( $existing_fees['gross_amount'] ) && isset( $fees_data['gross_amount'] ) ) {
+								$fees_data['gross_amount']['value'] = (string) ( (float) $existing_fees['gross_amount']['value'] + (float) $fees_data['gross_amount']['value'] );
+							}
+						}
+
+						// Update the order meta with combined fees.
+						$order->update_meta_data( '_ppcp_paypal_fees', $fees_data );
+						$order->save_meta_data();
+					}
+
+					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $order ) . ': PayPal fees extracted - ' . wp_json_encode( $fees_data ) );
+				}
+			} catch ( Throwable $e ) {
+				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $order ) . ': Error extracting PayPal fees - ' . $e->getMessage() );
+			}
+		}
+
+		/**
+		 * Add PayPal payouts to new upsell order.
+		 *
+		 * @param WC_Order $order The new upsell order.
+		 *
+		 * @return void
+		 */
+		public function add_paypal_payouts_to_order( $order ) {
+			try {
+				$fees_data = WFOCU_Core()->data->get( 'wfocu_ppcp_fees' );
+
+				if ( empty( $fees_data ) || ! is_array( $fees_data ) ) {
+					return;
+				}
+
+				// Update the new order with PayPal fees.
+				$order->update_meta_data( '_ppcp_paypal_fees', $fees_data );
+				$order->save_meta_data();
+
+				WFOCU_Core()->log->log( 'Upsell Order #' . WFOCU_WC_Compatibility::get_order_id( $order ) . ': PayPal fees added - ' . wp_json_encode( $fees_data ) );
+			} catch ( Throwable $e ) {
+				WFOCU_Core()->log->log( 'Upsell Order #' . WFOCU_WC_Compatibility::get_order_id( $order ) . ': Error adding PayPal fees - ' . $e->getMessage() );
+			}
+		}
+
+		/**
 		 * Handling refund offer request
 		 *
 		 * @param $order
@@ -706,7 +830,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 		 */
 		public function process_refund_offer( $order ) {
 
-			$refund_data = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$refund_data = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			$order_id    = WFOCU_WC_Compatibility::get_order_id( $order );
 			$amount      = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
 			$event_id    = isset( $refund_data['event_id'] ) ? $refund_data['event_id'] : '';
@@ -718,7 +842,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					$environment = $order->get_meta( '_ppcp_paypal_payment_mode' );
 					$api_url     = $this->get_api_base( $environment ) . 'v2/payments/captures/' . $txn_id . '/refund';
 
-
 					$data      = array(
 						'amount' => array(
 							'currency_code' => $order->get_currency(),
@@ -728,8 +851,8 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 					$arguments = array(
 						'method'  => 'POST',
 						'headers' => array(
-							'Content-Type'                  => 'application/json',
-							'Authorization'                 => 'Bearer ' . $this->get_bearer( $order ),
+							'Content-Type'  => 'application/json',
+							'Authorization' => 'Bearer ' . $this->get_bearer( $order ),
 							'PayPal-Partner-Attribution-Id' => 'BWF_PPCP',
 						),
 						'body'    => wp_json_encode( $data ),
@@ -779,7 +902,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 
 			// If there's a discrepancy, adjust tax to match the total
 			$tax_adjustment = $total_amount - $expected_total;
-			$adjusted_tax = $tax + $tax_adjustment;
+			$adjusted_tax   = $tax + $tax_adjustment;
 
 			// Ensure tax is not negative
 			if ( $adjusted_tax < 0 ) {
@@ -797,7 +920,55 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_PayPal_Payments' ) ) {
 			return get_option( 'woocommerce-ppcp-data-common' );
 		}
 
+		/**
+		 * Handles funnel decision for PayPal Payments plugin when orders are created manually.
+		 * This hook fires when PayPal creates orders via WooCommerceOrderCreator::create_from_paypal_order()
+		 *
+		 * @param WC_Order $wc_order WooCommerce order object.
+		 * @param WC_Cart  $wc_cart WooCommerce cart object.
+		 */
+		public function maybe_decide_funnel_on_paypal_order( $wc_order, $wc_cart ) {
+			// Prevent duplicate execution if already processed via woocommerce_checkout_order_processed.
+			if ( did_action( 'woocommerce_checkout_order_processed' ) ) {
+				return;
+			}
 
+			if ( ! $wc_order instanceof WC_Order ) {
+				return;
+			}
+
+			// Skip if this is an upsell order (has a parent order).
+			$parent_order_id = $wc_order->get_meta( '_wfocu_parent_order' );
+			if ( ! empty( $parent_order_id ) ) {
+				return;
+			}
+
+			// Only process if this is a PayPal Payments order.
+			if ( $this->get_key() !== $wc_order->get_payment_method() ) {
+				return;
+			}
+
+			$order_id = $wc_order->get_id();
+
+			// Extract posted data from order object for rule matching.
+			$posted_data = array(
+				'billing_first_name' => $wc_order->get_billing_first_name(),
+				'billing_last_name'  => $wc_order->get_billing_last_name(),
+				'billing_email'      => $wc_order->get_billing_email(),
+				'billing_phone'      => $wc_order->get_billing_phone(),
+				'billing_country'    => $wc_order->get_billing_country(),
+				'billing_state'      => $wc_order->get_billing_state(),
+				'billing_city'       => $wc_order->get_billing_city(),
+				'billing_postcode'   => $wc_order->get_billing_postcode(),
+				'billing_address_1'  => $wc_order->get_billing_address_1(),
+				'billing_address_2'  => $wc_order->get_billing_address_2(),
+			);
+
+			// Call the public method to decide funnel.
+			if ( method_exists( WFOCU_Public::get_instance(), 'maybe_decide_funnel_on_order' ) ) {
+				WFOCU_Public::get_instance()->maybe_decide_funnel_on_order( $order_id, $posted_data );
+			}
+		}
 	}
 
 	WFOCU_Gateway_Integration_PayPal_Payments::get_instance();

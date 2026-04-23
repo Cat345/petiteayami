@@ -18,28 +18,14 @@ if ( ! class_exists( 'WFOCU_Plugin_Integration_EU_VAT' ) ) {
 			if ( ! $this->is_enable() ) {
 				return;
 			}
-			add_action( 'woocommerce_before_calculate_totals', array( $this, 'maybe_disable_eu_vat_during_upsell' ), 1 );
+			add_action( 'init', array( $this, 'disable_funnel_fragments' ), 1 );
 		}
 
 		/**
-		 * Disable EU VAT during upsell process
+		 * Disable funnel fragments completely (no upsell context checking)
 		 */
-		public function maybe_disable_eu_vat_during_upsell() {
-			if ( $this->is_upsell_context() ) {
-				remove_action( 'woocommerce_before_calculate_totals', array( alg_wc_eu_vat()->core, 'maybe_exclude_vat' ), 99 );
-			}
-		}
-
-		/**
-		 * Check if we're in an upsell context
-		 */
-		private function is_upsell_context() {
-			// Check for FunnelKit upsell indicators
-			return (
-				( isset( $_REQUEST['wfocu-key'] ) && ! empty( $_REQUEST['wfocu-key'] ) ) ||
-				( isset( $_REQUEST['offer'] ) && ! empty( $_REQUEST['offer'] ) ) ||
-				( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_POST['action'] ) && strpos( $_POST['action'], 'wfocu_' ) === 0 )
-			);
+		public function disable_funnel_fragments() {
+			remove_action( 'woocommerce_update_order_review_fragments', array( \WFOCU_Core()->public, 'maybe_decide_funnel_on_fragments' ), 10 );
 		}
 
 		/**

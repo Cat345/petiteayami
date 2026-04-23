@@ -2112,6 +2112,85 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
 
     /*
     |--------------------------------------------------------------------------
+    | Advanced Promo Kit Upsell
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Register Advanced Promo Kit upsell page.
+     *
+     * @since 4.7.3
+     * @access public
+     *
+     * @param array $app_pages List of app pages.
+     * @return array Filtered list of app pages.
+     */
+    public function register_advanced_promo_kit_menu( $app_pages ) {
+        $merged = array_merge(
+            array(
+                'advanced-promo-kit' => array(
+                    'slug'  => 'advanced-promo-kit',
+                    'label' => __( 'Advanced Promo Kit', 'advanced-coupons-for-woocommerce-free' ),
+                    'page'  => 'advanced_promo_kit',
+                ),
+            ),
+            $app_pages
+        );
+
+        return $merged;
+    }
+
+    /**
+     * Register Advanced Promo Kit upsell localized data on admin app.
+     *
+     * @since 4.7.3
+     * @access public
+     *
+     * @param array $data Localized data.
+     * @return array Filtered localized data.
+     */
+    public function register_advanced_promo_kit_upsell_localized_data( $data ) {
+        $data['advanced_promo_kit'] = array(
+            'title'         => __( 'Highlight Product Labels & Badges For Your Promotions', 'advanced-coupons-for-woocommerce-free' ),
+            'description'   => __( 'Advanced Promo Kit gives you powerful product label and badge features so you can draw attention to your promotions and boost conversions on your WooCommerce store.', 'advanced-coupons-for-woocommerce-free' ),
+            'plugin_image'  => array(
+                'src' => $this->_constants->IMAGES_ROOT_URL . 'apk-logo.png',
+                'alt' => __( 'Advanced Promo Kit plugin icon', 'advanced-coupons-for-woocommerce-free' ),
+            ),
+            'features_list' => array(
+                __( '🏷️ Add eye-catching product labels and badges', 'advanced-coupons-for-woocommerce-free' ),
+                __( '🎨 Fully customizable label designs and colors', 'advanced-coupons-for-woocommerce-free' ),
+                __( '🛒 Highlight sale items, new arrivals, and bestsellers', 'advanced-coupons-for-woocommerce-free' ),
+                __( '⚡ Conditional display rules for targeted promotions', 'advanced-coupons-for-woocommerce-free' ),
+                __( '🔗 Seamless integration with Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
+            ),
+            'steps_list'    => array(
+                array(
+                    'step_count'  => '1',
+                    'title'       => __( 'Purchase & Install Advanced Promo Kit', 'advanced-coupons-for-woocommerce-free' ),
+                    'description' => __( 'Advanced Promo Kit lets you create product labels and badges that draw attention to your promotions and help boost conversions on your store.', 'advanced-coupons-for-woocommerce-free' ),
+                    'is_active'   => ! $this->_helper_functions->is_plugin_installed( Plugin_Constants::PROMO_KIT_PLUGIN ),
+                    'action_text' => __( 'Get Advanced Promo Kit', 'advanced-coupons-for-woocommerce-free' ),
+                    'link'        => $this->_helper_functions->get_utm_url( 'pricing/advanced-promo-kit/', 'acfwf', 'upsell', 'advancedpromokitpage' ),
+                    'is_external' => true,
+                ),
+                array(
+                    'step_count'  => '2',
+                    'title'       => __( 'Create Your First Label', 'advanced-coupons-for-woocommerce-free' ),
+                    'description' => __( 'Once installed, you can create product labels and badges in minutes. Draw attention to your best deals and watch your conversions grow.', 'advanced-coupons-for-woocommerce-free' ),
+                    'is_active'   => $this->_helper_functions->is_plugin_installed( Plugin_Constants::PROMO_KIT_PLUGIN ),
+                    'action_text' => __( 'Start Setup', 'advanced-coupons-for-woocommerce-free' ),
+                    'link'        => wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . rawurlencode( Plugin_Constants::PROMO_KIT_PLUGIN ) . '&plugin_status=all&s' ), 'activate-plugin_' . Plugin_Constants::PROMO_KIT_PLUGIN ),
+                    'is_external' => false,
+                ),
+            ),
+        );
+
+        return $data;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Uncanny Automator Upsell
     |--------------------------------------------------------------------------
      */
@@ -2289,6 +2368,12 @@ class Upsell extends Base_Model implements Model_Interface, Initializable_Interf
         if ( ! $this->_helper_functions->is_plugin_active( Plugin_Constants::GIFT_CARDS_PLUGIN ) ) {
             add_filter( 'acfw_admin_app_pages', array( $this, 'register_advanced_gift_cards_menu' ) );
             add_filter( 'acfwf_admin_app_localized', array( $this, 'register_advanced_gift_cards_upsell_localized_data' ) );
+        }
+
+        // only run when advanced promo kit plugin is not active.
+        if ( ! $this->_helper_functions->is_plugin_active( Plugin_Constants::PROMO_KIT_PLUGIN ) ) {
+            add_filter( 'acfw_admin_app_pages', array( $this, 'register_advanced_promo_kit_menu' ) );
+            add_filter( 'acfwf_admin_app_localized', array( $this, 'register_advanced_promo_kit_upsell_localized_data' ) );
         }
 
         // only run when affiliate wp plugin is not active.

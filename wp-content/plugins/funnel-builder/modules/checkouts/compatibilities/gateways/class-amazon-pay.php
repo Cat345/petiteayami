@@ -11,27 +11,31 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 
 		public function __construct() {
 
-			add_filter( 'wfacp_skip_common_loading', [ $this, 'skip_common_loading' ] );
-			add_filter( 'wfacp_skip_add_to_cart', [ $this, 'skip_add_to_cart' ], 15 );
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'actions' ] );
+			add_filter( 'wfacp_skip_common_loading', array( $this, 'skip_common_loading' ) );
+			add_filter( 'wfacp_skip_add_to_cart', array( $this, 'skip_add_to_cart' ), 15 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'actions' ) );
 
-			add_action( 'wfacp_before_process_checkout_template_loader', [ $this, 'ajax_actions' ] );
-			add_filter( 'wfacp_smart_buttons', [ $this, 'add_buttons' ], 8 );
-			add_action( 'wfacp_smart_button_container_amazon_pay', [ $this, 'add_amazon_pay_buttons' ] );
-			add_filter( 'wfacp_css_js_removal_paths', [ $this, 'remove_some_js' ], 15 );
-			add_filter( 'wfacp_display_quantity_increment', [ $this, 'hide_quantity_switcher' ] );
-			add_filter( 'wfacp_mini_cart_enable_delete_item', [ $this, 'hide_delete_icon' ] );
+			add_action( 'wfacp_before_process_checkout_template_loader', array( $this, 'ajax_actions' ) );
+			add_filter( 'wfacp_smart_buttons', array( $this, 'add_buttons' ), 8 );
+			add_action( 'wfacp_smart_button_container_amazon_pay', array( $this, 'add_amazon_pay_buttons' ) );
+			add_filter( 'wfacp_css_js_removal_paths', array( $this, 'remove_some_js' ), 15 );
+			add_filter( 'wfacp_display_quantity_increment', array( $this, 'hide_quantity_switcher' ) );
+			add_filter( 'wfacp_mini_cart_enable_delete_item', array( $this, 'hide_delete_icon' ) );
 
-			add_action( 'wfacp_form_single_step_start', [ $this, 'add_message' ], 99999 );
+			add_action( 'wfacp_form_single_step_start', array( $this, 'add_message' ), 99999 );
 
-			add_filter( 'woocommerce_amazon_payments_logout_checkout_message_html', function ( $msg ) {
+			add_filter(
+				'woocommerce_amazon_payments_logout_checkout_message_html',
+				function ( $msg ) {
 
-				$this->logout_msg = $msg;
+					$this->logout_msg = $msg;
 
-				return '';
-			}, 999 );
-			add_action( 'wfacp_before_form', [ $this, 'remove_action' ] );
-			add_filter( 'wfacp_smart_container_display_hook', [ $this, 'smart_button_display_hook' ], 999 );
+					return '';
+				},
+				999
+			);
+			add_action( 'wfacp_before_form', array( $this, 'remove_action' ) );
+			add_filter( 'wfacp_smart_container_display_hook', array( $this, 'smart_button_display_hook' ), 999 );
 		}
 
 		public function add_message() {
@@ -39,13 +43,13 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 				return;
 			}
 			?>
-            <style>
-                #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_amazon_pay {
-                    display: none;
-                }
-            </style>
+			<style>
+				#wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container#wfacp_smart_button_amazon_pay {
+					display: none;
+				}
+			</style>
 			<?php
-			echo "<div class=wfacp_amazon_logout_msg>" . $this->logout_msg . "</div>";
+			echo '<div class=wfacp_amazon_logout_msg>' . $this->logout_msg . '</div>';
 		}
 
 		public function skip_common_loading( $status ) {
@@ -69,6 +73,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 
 		/**
 		 * Check Payment gateway enabled
+		 *
 		 * @return bool
 		 */
 		private function is_enabled() {
@@ -93,10 +98,10 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 		 * @return string
 		 */
 		private function get_reference_id() {
-			$reference_id = ! empty( $_REQUEST['amazon_reference_id'] ) ? $_REQUEST['amazon_reference_id'] : '';
+			$reference_id = ! empty( $_REQUEST['amazon_reference_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['amazon_reference_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway callback, nonce verification handled by payment gateway
 
-			if ( isset( $_POST['post_data'] ) ) {
-				parse_str( $_POST['post_data'], $post_data );
+			if ( isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout handles nonce verification
+				parse_str( wp_unslash( $_POST['post_data'] ), $post_data ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- post_data is URL-encoded string parsed into array, individual values sanitized as used
 
 				if ( isset( $post_data['amazon_reference_id'] ) ) {
 					$reference_id = $post_data['amazon_reference_id'];
@@ -147,7 +152,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 		 * @return string
 		 */
 		private function get_access_token() {
-			$access_token = ! empty( $_REQUEST['access_token'] ) ? $_REQUEST['access_token'] : ( isset( $_COOKIE['amazon_Login_accessToken'] ) && ! empty( $_COOKIE['amazon_Login_accessToken'] ) ? $_COOKIE['amazon_Login_accessToken'] : '' );
+			$access_token = ! empty( $_REQUEST['access_token'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['access_token'] ) ) : ( isset( $_COOKIE['amazon_Login_accessToken'] ) && ! empty( $_COOKIE['amazon_Login_accessToken'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['amazon_Login_accessToken'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- Payment gateway callback, nonce verification handled by payment gateway
 
 			return $this->check_session( 'access_token', $access_token );
 		}
@@ -157,28 +162,28 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 				return;
 			}
 			?>
-            <style>
-                .wfacp_custom_breadcrumb .wfacp_steps_sec ul li.wfacp_bred_active.wfacp_bred_visited.amazone_list_wrap:nth-last-child(2):before {
-                    background: #000;
-                }
+			<style>
+				.wfacp_custom_breadcrumb .wfacp_steps_sec ul li.wfacp_bred_active.wfacp_bred_visited.amazone_list_wrap:nth-last-child(2):before {
+					background: #000;
+				}
 
-                .wfacp_custom_breadcrumb .wfacp_steps_sec ul li.wfacp_bred_active.wfacp_bred_visited.amazone_list_wrap:before {
-                    background: #fff;
-                }
-            </style>
+				.wfacp_custom_breadcrumb .wfacp_steps_sec ul li.wfacp_bred_active.wfacp_bred_visited.amazone_list_wrap:before {
+					background: #fff;
+				}
+			</style>
 			<?php
 		}
 
 		public function actions() {
 			if ( $this->is_enabled() && $this->is_active_payment() ) {
 				$template = wfacp_template();
-				remove_filter( 'woocommerce_checkout_fields', [ $template, 'woocommerce_checkout_fields' ], 0 );
-				add_filter( 'wfacp_form_template', [ $this, 'replace_form_template' ] );
-				add_filter( 'wfacp_layout_9_active_progress_bar', [ $this, 'active_progress_bar' ], 10, 2 );
-				add_filter( 'wfacp_embed_active_progress_bar', [ $this, 'embedd_active_progress_bar' ], 10, 3 );
-				add_filter( 'wfacp_checkout_fields', [ $this, 'add_custom_class_amazon_fileds' ], - 1, 2 );
+				remove_filter( 'woocommerce_checkout_fields', array( $template, 'woocommerce_checkout_fields' ), 0 );
+				add_filter( 'wfacp_form_template', array( $this, 'replace_form_template' ) );
+				add_filter( 'wfacp_layout_9_active_progress_bar', array( $this, 'active_progress_bar' ), 10, 2 );
+				add_filter( 'wfacp_embed_active_progress_bar', array( $this, 'embedd_active_progress_bar' ), 10, 3 );
+				add_filter( 'wfacp_checkout_fields', array( $this, 'add_custom_class_amazon_fileds' ), - 1, 2 );
 				add_filter( 'wfacp_checkout_fields', array( $this, 'override_checkout_fields_in_amazone_sec' ) );
-				add_action( 'wfacp_internal_css', [ $this, 'amazon_internal_css' ] );
+				add_action( 'wfacp_internal_css', array( $this, 'amazon_internal_css' ) );
 
 				WFACP_Core()->public->is_amazon_express_active_session = true;
 			}
@@ -196,25 +201,28 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 		public function ajax_actions() {
 			if ( $this->is_enabled() && $this->is_active_payment() ) {
 				$template = wfacp_template();
-				remove_filter( 'woocommerce_checkout_fields', [ $template, 'woocommerce_checkout_fields' ], 0 );
+				remove_filter( 'woocommerce_checkout_fields', array( $template, 'woocommerce_checkout_fields' ), 0 );
 			}
 		}
 
 		public function add_custom_class_amazon_fileds( $template_fields, $fields ) {
 
-			add_action( 'woocommerce_before_checkout_form', function () {
-				wp_enqueue_script( 'wfacp_amazone_pay_js', WFACP_PLUGIN_URL . '/compatibilities/js/amazone-pay.min.js', [ 'wfacp_checkout_js' ], WFACP_VERSION );
-			} );
-			$billing_details = [
-				'billing' => [
+			add_action(
+				'woocommerce_before_checkout_form',
+				function () {
+					wp_enqueue_script( 'wfacp_amazone_pay_js', WFACP_PLUGIN_URL . '/compatibilities/js/amazone-pay.min.js', array( 'wfacp_checkout_js' ), WFACP_VERSION );
+				}
+			);
+			$billing_details = array(
+				'billing' => array(
 					'billing_first_name',
 					'billing_last_name',
 					'billing_email',
-				],
-				'account' => [
+				),
+				'account' => array(
 					'account_password',
-				],
-			];
+				),
+			);
 
 			foreach ( $billing_details as $section => $fields ) {
 				if ( ! isset( $template_fields[ $section ] ) ) {
@@ -232,7 +240,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			}
 
 			return $template_fields;
-
 		}
 
 		public function override_checkout_fields_in_amazone_sec( $fields_data ) {
@@ -250,7 +257,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			}
 
 			return $fields_data;
-
 		}
 
 		public function active_progress_bar( $active, $step ) {
@@ -287,28 +293,31 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 			}
 			// if amazon payment session is active then we removed all smart buttons because of no need to display
 			if ( $this->is_active_payment() ) {
-				return [];
+				return array();
 			}
 			$settings = WC_Amazon_Payments_Advanced_API::get_settings();
 			if ( 'yes' != $settings['enabled'] ) {
 				return $buttons;
 			}
 
-			add_action( 'wfacp_internal_css', function () {
-				if ( version_compare( WC_AMAZON_PAY_VERSION, '2.0', '<' ) ) {
-					remove_action( 'woocommerce_before_checkout_form', [ wc_apa(), 'checkout_message' ], 5 );
-				} else {
-					$gateway = wc_apa()->get_gateway();
-					if ( ! is_null( $gateway ) && method_exists( $gateway, 'checkout_message' ) ) {
-						remove_action( 'woocommerce_before_checkout_form', [ $gateway, 'checkout_message' ], 5 );
+			add_action(
+				'wfacp_internal_css',
+				function () {
+					if ( version_compare( WC_AMAZON_PAY_VERSION, '2.0', '<' ) ) {
+						remove_action( 'woocommerce_before_checkout_form', array( wc_apa(), 'checkout_message' ), 5 );
+					} else {
+						$gateway = wc_apa()->get_gateway();
+						if ( ! is_null( $gateway ) && method_exists( $gateway, 'checkout_message' ) ) {
+							remove_action( 'woocommerce_before_checkout_form', array( $gateway, 'checkout_message' ), 5 );
+						}
 					}
 				}
-			} );
-			$buttons['amazon_pay'] = [
+			);
+			$buttons['amazon_pay'] = array(
 				'iframe'       => true,
 				'show_default' => true,
 				'name'         => __( 'Amazon Pay', 'woocommerce-gateway-amazon-payments-advanced' ),
-			];
+			);
 			add_filter( 'wfacp_show_smart_button_shimmer', '__return_false' );
 			add_filter( 'woocommerce_amazon_pa_checkout_message', '__return_empty_string' );
 
@@ -325,7 +334,6 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 					$gateway->checkout_message();
 				}
 			}
-
 		}
 
 		public function hide_quantity_switcher( $status ) {
@@ -355,43 +363,42 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Active_AmzPay' ) ) {
 		}
 
 		public function smart_button_display_hook( $hook ) {
-			add_action( $hook, [ $this, 'js' ] );
+			add_action( $hook, array( $this, 'js' ) );
 
 			return $hook;
 		}
 
 		public function js() {
 			?>
-            <script>
-                window.addEventListener('DOMContentLoaded', function () {
-                    try {
-                        let ele = document.getElementById('pay_with_amazon');
-                        if (null === ele) {
-                            return;
-                        }
+			<script>
+				window.addEventListener('DOMContentLoaded', function () {
+					try {
+						let ele = document.getElementById('pay_with_amazon');
+						if (null === ele) {
+							return;
+						}
 
-                        let interval = null;
-                        let max_time = 5000;
-                        let time_ = 0;
-                        interval = setInterval(() => {
-                            let element = document.getElementById('pay_with_amazon');
-                            if (typeof element.shadowRoot == "object" && null !== element.shadowRoot && element.shadowRoot.innerHTML.length) {
-                                element.shadowRoot.innerHTML = '';
-                                clearInterval(interval);
-                            }
-                            if (max_time <= time_) {
-                                clearInterval(interval);
-                            }
-                            time_ = time_ + 500;
-                        }, 500);
-                    } catch (e) {
+						let interval = null;
+						let max_time = 5000;
+						let time_ = 0;
+						interval = setInterval(() => {
+							let element = document.getElementById('pay_with_amazon');
+							if (typeof element.shadowRoot == "object" && null !== element.shadowRoot && element.shadowRoot.innerHTML.length) {
+								element.shadowRoot.innerHTML = '';
+								clearInterval(interval);
+							}
+							if (max_time <= time_) {
+								clearInterval(interval);
+							}
+							time_ = time_ + 500;
+						}, 500);
+					} catch (e) {
 
-                    }
-                })
-            </script>
+					}
+				})
+			</script>
 			<?php
 		}
-
 	}
 
 	WFACP_Plugin_Compatibilities::register( new WFACP_Compatibility_With_Active_AmzPay(), 'AmzPay' );

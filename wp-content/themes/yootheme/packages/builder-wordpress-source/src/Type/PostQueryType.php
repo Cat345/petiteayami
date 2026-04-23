@@ -13,8 +13,6 @@ use YOOtheme\Str;
 class PostQueryType
 {
     /**
-     * @param Source        $source
-     * @param WP_Post_Type $type
      *
      * @return ObjectConfig
      */

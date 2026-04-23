@@ -8,8 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) ) {
 	class Order_Details extends \Bricks\Element {
 		public $category = 'funnelkit';
-		public $name = 'wfty-order-detail';
-		public $icon = 'wfty-icon-offer_title';
+		public $name     = 'wfty-order-detail';
+		public $icon     = 'wfty-icon-offer_title';
 
 		/**
 		 * Retrieves the label for the "Order Details" element.
@@ -472,7 +472,6 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 		 *
 		 * @return void
 		 * @since 1.0.0
-		 *
 		 */
 		public function render() {
 			$settings                   = $this->settings;
@@ -484,8 +483,8 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 			$show_column_download    = isset( $settings['orderDownloadsShowFileDownloads'] ) ? 'true' : 'false';
 			$show_column_file_expiry = isset( $settings['orderDownloadsShowFileExpiry'] ) ? 'true' : 'false';
 			$order_download_heading  = isset( $settings['orderDownloadHeading'] ) ? $settings['orderDownloadHeading'] : '';
-			$classes                 .= isset( $settings['orderDownloadPreview'] ) ? '' : ' wfty-hide-download';
-			$classes                 .= isset( $settings['orderSubscriptionPreview'] ) ? '' : ' wfty-hide-subscription';
+			$classes                .= isset( $settings['orderDownloadPreview'] ) ? '' : ' wfty-hide-download';
+			$classes                .= isset( $settings['orderSubscriptionPreview'] ) ? '' : ' wfty-hide-subscription';
 
 			$order_details_img = 'false';
 			if ( isset( $settings['orderDetailsImg'] ) ) {
@@ -494,13 +493,13 @@ if ( ! class_exists( '\FunnelKit\Bricks\Elements\ThankYouPages\Order_Details' ) 
 
 			$this->set_attribute( 'wrapper', 'class', $classes );
 			?>
-            <div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<div <?php echo $this->render_attributes( '_root' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+				<div <?php echo $this->render_attributes( 'wrapper' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 					<?php
 					echo do_shortcode( '[wfty_order_details order_details_img="' . $order_details_img . '" order_details_heading="' . $order_heading_text . '" order_subscription_heading="' . $order_subscription_heading . '" order_download_heading="' . $order_download_heading . '" order_downloads_btn_text="' . $download_btn_text . '" order_downloads_show_file_downloads="' . $show_column_download . '"  order_downloads_show_file_expiry="' . $show_column_file_expiry . '"]' );
 					?>
-                </div>
-            </div>
+				</div>
+			</div>
 			<?php
 		}
 	}

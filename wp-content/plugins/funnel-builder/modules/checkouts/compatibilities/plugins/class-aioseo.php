@@ -23,7 +23,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_AIOSEO' ) ) {
 		 */
 		public function __construct() {
 			// Hook into template found action to remove conflicting AIOSEO actions
-			add_action( 'wfacp_after_template_found', [ $this, 'remove_actions' ] );
+			add_action( 'wfacp_after_template_found', array( $this, 'remove_actions' ) );
 		}
 
 		/**

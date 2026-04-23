@@ -51,7 +51,7 @@ return [
                 'Center' => 'center',
                 'Right' => 'right',
             ],
-            'enable' => 'divider_style == \'small\'',
+            'enable' => "divider_style == 'small'",
         ],
         'divider_align_breakpoint' => [
             'label' => 'Alignment Breakpoint',
@@ -64,7 +64,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'divider_style == \'small\' && divider_align',
+            'enable' => "divider_style == 'small' && divider_align",
         ],
         'divider_align_fallback' => [
             'label' => 'Alignment Fallback',
@@ -76,7 +76,7 @@ return [
                 'Center' => 'center',
                 'Right' => 'right',
             ],
-            'enable' => 'divider_style == \'small\' && divider_align && divider_align_breakpoint',
+            'enable' => "divider_style == 'small' && divider_align && divider_align_breakpoint",
         ],
         'position' => '${builder.position}',
         'position_left' => '${builder.position_left}',

@@ -1,0 +1,63 @@
+{
+  "module": {
+    "heading": "heading.innerContent.*",
+    "customer_layout": "customer_layout.innerContent.*",
+    "enable_extra_content": "enable_extra_content.innerContent.*",
+
+    "wfty_customer_details_heading_color": "wfty_customer_details_heading_typography.decoration.font.font.*.color",
+    "wfty_customer_details_det_heading_color": "wfty_customer_details_det_heading_typography.decoration.font.font.*.color",
+    "wfty_customer_details_det_text_color": "wfty_customer_details_det_text_typography.decoration.font.font.*.color",
+
+    "align": "wfty_customer_details_heading_typography.decoration.font.font.*.textAlign",
+
+    "wfty_customer_details_heading_typography_typograhy": "wfty_customer_details_heading_typography.decoration.font.font.*",
+    "wfty_customer_details_det_heading_typography_typograhy": "wfty_customer_details_det_heading_typography.decoration.font.font.*",
+    "wfty_customer_details_det_text_typography_typograhy": "wfty_customer_details_det_text_typography.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "text": "module.advanced.text",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfty_customer_details_heading_typography": "wfty_customer_details_heading_typography.decoration.font",
+      "wfty_customer_details_det_heading_typography": "wfty_customer_details_det_heading_typography.decoration.font",
+      "wfty_customer_details_det_text_typography": "wfty_customer_details_det_text_typography.decoration.font"
+    },
+    "text_shadow": {
+      "default": "module.advanced.text.textShadow"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfty_customer_details_heading_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_customer_details_det_heading_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfty_customer_details_det_text_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

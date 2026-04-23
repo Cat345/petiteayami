@@ -1,0 +1,69 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "text": "text",
+    "align": "textAlign.*",
+    "slider_enabled": "stackedEnabled",
+
+    "wfocu_qty_selector_text_color": "label.decoration.font.font.*.color",
+    "wfocu_qty_selector_bg_color": "label.decoration.colors.normal.*.background",
+    "qty_dropdown_color": "dropdown.decoration.font.font.*.color",
+    "qty_dropdown_bg_color": "dropdown.decoration.colors.normal.*.background",
+
+    "wfocu_qty_selector_qty_block_margin": "label.decoration.spacing.*.margin",
+    "qty_dropdown_width_width": "dropdownWrapper.decoration.sizing.*.width",
+    "qty_dropdown_padding": "dropdown.decoration.spacing.*.padding",
+    "wfocu_qty_selector_margin": "module.decoration.spacing.*.margin",
+    "wfocu_qty_selector_padding": "module.decoration.spacing.*.padding",
+
+    "wfocu_qty_selector_text_typography_typograhy": "label.decoration.font.font.*",
+    "wfocu_qty_selector_qty_select_typograhy": "dropdown.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_qty_selector_border": "module.decoration.border",
+      "qty_dropdown_border": "dropdown.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_qty_selector_box_shadow": "module.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfocu_qty_selector_text_typography": "label.decoration.font",
+      "wfocu_qty_selector_qty_select": "dropdown.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfocu_qty_selector_qty_block_margin": "convertSpacing",
+    "qty_dropdown_padding": "convertSpacing",
+    "wfocu_qty_selector_margin": "convertSpacing",
+    "wfocu_qty_selector_padding": "convertSpacing",
+    "wfocu_qty_selector_text_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "wfocu_qty_selector_qty_select_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

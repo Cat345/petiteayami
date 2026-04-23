@@ -56,6 +56,18 @@ class Frontend extends Base_Model implements Model_Interface {
      */
     private $_price_display = array();
 
+    /**
+     * Meta key used to store the BOGO-intended price directly on the product object
+     * (in-memory only, never saved to DB). The value is a float already in the active
+     * currency. A priority-100 woocommerce_product_get_price filter reads this to
+     * restore the correct price after WooPayments Multi-Currency re-converts it at
+     * priority 99. Following the same pattern as WooPayments's own ProductAddOns
+     * compatibility class (_wcpay_multi_currency_addons_converted).
+     *
+     * @since 4.6.8
+     */
+    const BOGO_LOCKED_PRICE_META_KEY = '_acfw_bogo_locked_price';
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -342,7 +354,14 @@ class Frontend extends Base_Model implements Model_Interface {
                 if ( \wc_tax_enabled() && 'yes' === get_option( 'woocommerce_prices_include_tax' ) && 'excl' === get_option( 'woocommerce_tax_display_cart' ) ) {
                     $price['buy'] = (float) wc_get_price_excluding_tax( $cart_item['data'] );
                 }
-                $cart_item['data']->set_price( apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item ) );
+                // Lock the intended active-currency price directly on the product object
+                // (in-memory only). Our priority-100 woocommerce_product_get_price filter
+                // reads this meta and returns it, overriding whatever WooPayments at
+                // priority 99 computed. This follows the same pattern WooPayments itself
+                // uses in its WooCommerceProductAddOns compatibility class.
+                $bogo_new_price = apply_filters( 'acfw_bogo_get_item_new_price', $new_price, $cart_item );
+                $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $bogo_new_price );
+                $cart_item['data']->set_price( $bogo_new_price );
 
                 // add details to $this->_price_display property price differences on cart table.
                 $this->_price_display[ $key ] = array(
@@ -416,8 +435,15 @@ class Frontend extends Base_Model implements Model_Interface {
             }
 
             // Reset price to original for items without BOGO discounts.
-            $price = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
-            $cart_item['data']->set_price( apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item ) );
+            // Clear the locked-price meta so get_price() returns the WooPayments-converted
+            // customer-currency price, then re-lock that value so our priority-100 filter
+            // returns it unchanged on subsequent get_price() calls (preventing a second
+            // WooPayments conversion of the already-converted value).
+            $cart_item['data']->delete_meta_data( self::BOGO_LOCKED_PRICE_META_KEY );
+            $price       = $this->_helper_functions->get_price( $cart_item['data'], array( 'ignore_always_use_regular_price' => 'all_valid' !== get_option( Plugin_Constants::ALWAYS_USE_REGULAR_PRICE ) ) );
+            $reset_price = apply_filters( 'acfw_bogo_reset_deal_item_price', $price, $cart_item );
+            $cart_item['data']->update_meta_data( self::BOGO_LOCKED_PRICE_META_KEY, (float) $reset_price );
+            $cart_item['data']->set_price( $reset_price );
         }
     }
 
@@ -777,6 +803,58 @@ class Frontend extends Base_Model implements Model_Interface {
     }
 
     /**
+     * Display BOGO eligible deal notices on classic cart pages.
+     *
+     * Reads notices from the BOGO session data and adds them to the WooCommerce notice
+     * queue before WooCommerce outputs all notices (priority 10). This ensures BOGO
+     * notices appear immediately on the current page request for classic cart and
+     * without relying solely on the woocommerce_before_calculate_totals
+     * timing which may fire after notices have already been printed.
+     *
+     * @since 4.7.2
+     * @access public
+     */
+    public function display_bogo_notices_on_classic_pages() {
+        if ( ! $this->_helper_functions->is_module( Plugin_Constants::BOGO_DEALS_MODULE ) ) {
+            return;
+        }
+
+        // Check if a BOGO notice is already in the WC notice queue to avoid duplicates.
+        foreach ( wc_get_notices() as $notices ) {
+            foreach ( $notices as $notice ) {
+                if ( isset( $notice['data']['acfw-bogo'] ) ) {
+                    return;
+                }
+            }
+        }
+
+        // Read notices from the BOGO session data set during the most recent calculation.
+        $session_data = \WC()->session ? \WC()->session->get( 'acfw_bogo_entries' ) : null;
+        if ( ! is_array( $session_data ) || empty( $session_data['notices'] ) || ! is_array( $session_data['notices'] ) ) {
+            return;
+        }
+
+        $allowed_notice_types = array( 'error', 'success', 'notice', 'info' );
+
+        foreach ( $session_data['notices'] as $notice ) {
+            if ( ! is_array( $notice ) || ! isset( $notice['message'], $notice['type'] ) || ! is_string( $notice['message'] ) ) {
+                continue;
+            }
+
+            $type = in_array( $notice['type'], $allowed_notice_types, true ) ? $notice['type'] : 'notice';
+
+            wc_add_notice(
+                $notice['message'],
+                $type,
+                array(
+                    'acfw-bogo' => true,
+                    'coupon'    => $notice['coupon_code'] ?? '',
+                )
+            );
+        }
+    }
+
+    /**
      * Calculate BOGO discounts for a coupon.
      *
      * @since 4.5.8
@@ -834,6 +912,61 @@ class Frontend extends Base_Model implements Model_Interface {
      */
 
     /**
+     * Prevent WooPayments Multi-Currency from re-converting BOGO-adjusted prices.
+     *
+     * When BOGO sets a blended per-item price via set_price(), the value is already
+     * expressed in the customer's active currency (because get_price() returns the
+     * converted value when WooPayments filters are active). Allowing WooPayments to
+     * convert the stored price a second time produces wrong cart totals in non-base
+     * currencies. This callback returns false (skip conversion) for any product that
+     * has been stamped with the BOGO_LOCKED_PRICE_META_KEY meta flag.
+     *
+     * @since 4.6.8
+     * @access public
+     *
+     * @param bool       $should_convert Whether the price should be converted.
+     * @param WC_Product $product        The product being evaluated.
+     *
+     * @return bool False when BOGO has already set the price; original value otherwise.
+     */
+    public function skip_bogo_price_conversion( bool $should_convert, $product ): bool {
+        if ( ! $should_convert ) {
+            return false;
+        }
+        // If BOGO has locked a price onto this product object, tell WooPayments to skip
+        // conversion — the stored value is already in the customer's active currency.
+        return '' === $product->get_meta( self::BOGO_LOCKED_PRICE_META_KEY, true );
+    }
+
+    /**
+     * Restore the BOGO-intended price after WooPayments Multi-Currency converts it.
+     *
+     * WooPayments hooks woocommerce_product_get_price at priority 99 and treats the stored
+     * value as base-currency, converting it to the active currency. When BOGO has already
+     * set a price that is in the active currency (blended or reset), that conversion is
+     * wrong. This callback runs at priority 100 (after WooPayments) and overrides the
+     * converted value with the correct active-currency price that BOGO stored.
+     *
+     * Works alongside skip_bogo_price_conversion() as a safety net: even if the
+     * WooPayments should_convert filter doesn't fire, this restores the right value.
+     *
+     * @since 4.6.8
+     * @access public
+     *
+     * @param mixed      $price   The price returned by the previous filter in the chain.
+     * @param WC_Product $product The product being evaluated.
+     *
+     * @return mixed The stored BOGO price when available; otherwise the unchanged $price.
+     */
+    public function restore_bogo_set_price( $price, $product ) {
+        $locked = $product->get_meta( self::BOGO_LOCKED_PRICE_META_KEY, true );
+        if ( is_numeric( $locked ) ) {
+            return (float) $locked;
+        }
+        return $price;
+    }
+
+    /**
      * Execute Frontend class.
      *
      * @since 1.4
@@ -851,5 +984,13 @@ class Frontend extends Base_Model implements Model_Interface {
         add_filter( 'woocommerce_cart_totals_coupon_html', array( $this, 'display_bogo_discount_summary' ), 10, 3 );
         add_filter( 'acfwf_cart_checkout_block_coupon_summary', array( $this, 'add_bogo_discount_summary_to_cart_checkout_block' ), 10, 2 );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_bogo_discounts_to_order' ), 10, 3 );
+        add_action( 'woocommerce_before_cart', array( $this, 'display_bogo_notices_on_classic_pages' ), 9 );
+        // Prevent WooPayments Multi-Currency from double-converting BOGO-set prices.
+        // skip_bogo_price_conversion (priority 50) asks WooPayments to skip conversion.
+        // restore_bogo_set_price (priority 100) acts as a safety net: if WooPayments
+        // converts anyway, we override the result with the correct active-currency value.
+        add_filter( 'wcpay_multi_currency_should_convert_product_price', array( $this, 'skip_bogo_price_conversion' ), 50, 2 );
+        add_filter( 'woocommerce_product_get_price', array( $this, 'restore_bogo_set_price' ), 100, 2 );
+        add_filter( 'woocommerce_product_variation_get_price', array( $this, 'restore_bogo_set_price' ), 100, 2 );
     }
 }

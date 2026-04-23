@@ -365,15 +365,18 @@ class Script_Loader extends Base_Model implements Model_Interface {
                                 'no_video'           => __( 'There was an issue trying to embed the video. Please click the image to watch the video directly in youtube.com', 'advanced-coupons-for-woocommerce-free' ),
                             ),
                         ),
-                        'create_new_coupon_popup'         => array(
-                            'title'                => __( 'Create New Coupon', 'advanced-coupons-for-woocommerce-free' ),
-                            'description'          => __( 'Choose how you\'d like to create your coupon. Start from scratch or use a pre-built template to save time.', 'advanced-coupons-for-woocommerce-free' ),
-                            'create_manually'      => __( 'Create Coupon Manually', 'advanced-coupons-for-woocommerce-free' ),
-                            'create_manually_desc' => __( 'Build your coupon from the ground up with complete control over every setting and option.', 'advanced-coupons-for-woocommerce-free' ),
-                            'use_template'         => __( 'Choose Coupon Template', 'advanced-coupons-for-woocommerce-free' ),
-                            'use_template_desc'    => __( 'Select from pre-configured templates to quickly create common coupon types with proven settings.', 'advanced-coupons-for-woocommerce-free' ),
-                            'site_url'             => get_site_url(),
-                        ),
+                        'create_new_coupon_popup'         => 'yes' !== get_option( Plugin_Constants::HIDE_COUPON_CREATION_POPUP, 'no' ) ? array(
+                            'title'                   => __( 'Create New Coupon', 'advanced-coupons-for-woocommerce-free' ),
+                            'description'             => __( 'Choose how you\'d like to create your coupon. Start from scratch or use a pre-built template to save time.', 'advanced-coupons-for-woocommerce-free' ),
+                            'create_manually'         => __( 'Create Coupon Manually', 'advanced-coupons-for-woocommerce-free' ),
+                            'create_manually_desc'    => __( 'Build your coupon from the ground up with complete control over every setting and option.', 'advanced-coupons-for-woocommerce-free' ),
+                            'use_template'            => __( 'Choose Coupon Template', 'advanced-coupons-for-woocommerce-free' ),
+                            'use_template_desc'       => __( 'Select from pre-configured templates to quickly create common coupon types with proven settings.', 'advanced-coupons-for-woocommerce-free' ),
+                            'generate_ai'             => __( 'Generate with AI', 'advanced-coupons-for-woocommerce-free' ),
+                            'generate_ai_desc'        => __( 'Use AI to generate a coupon based on a natural language description of your promotion.', 'advanced-coupons-for-woocommerce-free' ),
+                            'site_url'                => get_site_url(),
+                            'is_storeagent_connected' => apply_filters( 'acfwf_is_storeagent_connected', false ),
+                        ) : false,
                     )
                 )
             );

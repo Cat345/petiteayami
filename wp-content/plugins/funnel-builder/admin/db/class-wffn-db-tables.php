@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_DB_Tables
@@ -11,6 +11,7 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 
 		/**
 		 * instance of class
+		 *
 		 * @var null
 		 */
 		private static $ins = null;
@@ -59,7 +60,6 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 		 *
 		 * @return array
 		 * @since 2.0
-		 *
 		 */
 		protected function get_tables_list() {
 
@@ -86,7 +86,6 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 		 * @since 2.0
 		 */
 		public function add_if_needed() {
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			$this->missing_tables = $this->find_missing_tables();
 
 			if ( empty( $this->missing_tables ) ) {
@@ -106,7 +105,6 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 		 */
 		protected function find_missing_tables() {
 
-
 			return $this->get_tables_list();
 		}
 
@@ -116,7 +114,6 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 		 *
 		 * @return array
 		 * @since 2.0
-		 *
 		 */
 		public function get_missing_tables() {
 			return $this->missing_tables;
@@ -128,6 +125,7 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 		 *  Warning: check if it exists first, which could cause SQL errors.
 		 */
 		public function funnels() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 			$collate = '';
 			if ( $wpdb->has_cap( 'collation' ) ) {
@@ -145,11 +143,12 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 			dbDelta( $values_table );
 
 			if ( ! empty( $wpdb->last_error ) ) {
-				WFFN_Core()->logger->log( "bwf failed create table bwf_funnels : " . print_r( $wpdb->last_error, true ), 'woofunnel-failed-actions', true );
+				WFFN_Core()->logger->log( 'bwf failed create table bwf_funnels : ' . wp_json_encode( $wpdb->last_error, true ), 'woofunnel-failed-actions', true );
 			}
 		}
 
 		public function funnelmeta() {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			global $wpdb;
 			$collate = '';
 
@@ -170,7 +169,7 @@ if ( ! class_exists( 'WFFN_DB_Tables' ) ) {
 			dbDelta( $_meta_table );
 
 			if ( ! empty( $wpdb->last_error ) ) {
-				WFFN_Core()->logger->log( "bwf failed create table bwf_funnelmeta : " . print_r( $wpdb->last_error, true ), 'woofunnels-failed-actions', true );
+				WFFN_Core()->logger->log( 'bwf failed create table bwf_funnelmeta : ' . wp_json_encode( $wpdb->last_error, true ), 'woofunnels-failed-actions', true );
 			}
 		}
 	}

@@ -51,7 +51,7 @@ abstract class Path
 
         [$name] = explode('/', $alias, 2);
 
-        static::$aliases[$name]["$alias/"] = "$path/";
+        static::$aliases[$name]["{$alias}/"] = "{$path}/";
     }
 
     /**

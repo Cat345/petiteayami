@@ -57,53 +57,57 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 				return;
 			}
 
-			$bwfblocks = [
-				[
+			$bwfblocks = array(
+				array(
 					'name'     => 'bwfblocks/accept-button',
 					'callback' => 'do_accept_button_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/reject-button',
 					'callback' => 'do_reject_button_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/accept-link',
 					'callback' => 'do_accept_link_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/reject-link',
 					'callback' => 'do_reject_link_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/offer-price',
 					'callback' => 'do_offer_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/quantity-selector',
 					'callback' => 'do_quantity_selector_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/product-description',
 					'callback' => 'do_product_description_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/product-title',
 					'callback' => 'do_product_title_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/variation-selector',
 					'callback' => 'do_variation_selector_block',
-				],
-				[
+				),
+				array(
 					'name'     => 'bwfblocks/product-images',
 					'callback' => 'do_product_images_block',
-				],
-			];
+				),
+			);
 
 			foreach ( $bwfblocks as $block ) {
-				register_block_type( $block['name'], array(
-					'render_callback' => array( $this, $block['callback'] ),
-				) );
+				register_block_type(
+					$block['name'],
+					array(
+						'api_version'     => 3,
+						'render_callback' => array( $this, $block['callback'] ),
+					)
+				);
 			}
 		}
 
@@ -124,7 +128,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -144,7 +148,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -164,7 +168,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -184,7 +188,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -205,7 +209,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -220,17 +224,24 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 				'bwf-btn-wrap',
 				'bwf-' . $settings['uniqueID'],
 				$settings['classWrap'],
-				'wp-block-wrap'
+				'wp-block-wrap',
 			);
 
 			if ( ! empty( $settings['className'] ) ) {
 				// $classNames[] = $settings['className'];
 			}
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
 
 			$type                = $settings['type'] ?? 'solid';
 			$buttonAnchorClasses = array( 'bwf-btn', $type );
@@ -245,7 +256,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$button_rel    = '';
 			$button_target = '';
-			$button        = isset( $settings['button'] ) ? $settings['button'] : [];
+			$button        = isset( $settings['button'] ) ? $settings['button'] : array();
 			if ( isset( $button['newTab'] ) && ! empty( $button['newTab'] ) ) {
 				$button_target = '_blank';
 				$button_rel    = 'noopener noreferrer';
@@ -254,23 +265,32 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 			if ( isset( $button['noFollow'] ) && ! empty( $button['noFollow'] ) ) {
 				$button_rel .= ' nofollow';
 			}
-			$output .= sprintf( '<a %1$s data-key="%2$s" %3$s href="javascript:void(0);">', bwfblocks_attr( 'button-anchor', array(
-				'id'     => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
-				'class'  => implode( ' ', $buttonAnchorClasses ),
-				'href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
-				'target' => $button_target,
-				'rel'    => $button_rel,
-			), $settings ), isset( $settings['product'] ) ? $settings['product'] : '', isset( $settings['attributes'] ) ? $settings['attributes'] : '' );
+			$output .= sprintf(
+				'<a %1$s data-key="%2$s" %3$s href="javascript:void(0);">',
+				bwfblocks_attr(
+					'button-anchor',
+					array(
+						'id'     => isset( $settings['anchor'] ) ? $settings['anchor'] : '',
+						'class'  => implode( ' ', $buttonAnchorClasses ),
+						'href'   => isset( $settings['link'] ) ? esc_url( $settings['link'] ) : '',
+						'target' => $button_target,
+						'rel'    => $button_rel,
+					),
+					$settings
+				),
+				isset( $settings['product'] ) ? $settings['product'] : '',
+				isset( $settings['attributes'] ) ? $settings['attributes'] : ''
+			);
 
 			$outputsvg = '';
-			//Button Icon Left Side
+			// Button Icon Left Side
 			if ( isset( $button['icon'] ) && ! empty( $button['icon'] ) ) {
 				$outputsvg .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
 			}
 
-			//Button content
+			// Button content
 			$content = isset( $settings['content'] ) ? $settings['content'] : '';
-			$output  .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' : '';
+			$output .= isset( $settings['content'] ) ? '<span class="bwf-btn-inner-text">' : '';
 			if ( empty( $button['iconPos'] ) || ( ! empty( $button['iconPos'] ) && 'left' === $button['iconPos'] ) ) {
 				$output .= $outputsvg;
 			}
@@ -279,15 +299,15 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 				$output .= $outputsvg;
 			}
 			$output .= '</span>';
-			//Button Icon Right Side
+			// Button Icon Right Side
 			// if( isset( $button['icon'] ) && ! empty( $button['icon'] ) && 'right' === $button['iconPos'] ) {
-			// 	$output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
+			// $output .= '<span class="bwf-icon-inner-svg">' . $button['icon'] . '</span>';
 			// }
 
 			// Button Secondary Text (Sub heading)
 			if ( isset( $settings['secondaryContentEnable'] ) && ! empty( $settings['secondaryContentEnable'] ) && $settings['secondaryContentEnable'] ) {
 				$content2 = isset( $settings['secondaryContent'] ) ? $settings['secondaryContent'] : '';
-				$output   .= '<span class="bwf-btn-sub-text">' . $content2 . '</span>';
+				$output  .= '<span class="bwf-btn-sub-text">' . $content2 . '</span>';
 			}
 
 			$output .= '</a>';
@@ -299,7 +319,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -327,10 +347,17 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
 
 			$attr = array(
 				'product'          => isset( $settings['product'] ) ? $settings['product'] : '',
@@ -353,7 +380,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 		/**
 		 * Output the dynamic aspects of our Advance Button blocks.
 		 *
-		 * @param array $attributes The block attributes.
+		 * @param array  $attributes The block attributes.
 		 * @param string $content The inner blocks.
 		 *
 		 * @since 1.2.0
@@ -380,11 +407,18 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output            .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
-			$quantity_selector = new  WFOCU_Guten_Quantity_Selector();
+			$output           .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
+			$quantity_selector = new WFOCU_Guten_Quantity_Selector();
 			$attr              = array(
 				'product' => isset( $settings['product'] ) ? $settings['product'] : '',
 				'text'    => $settings['content'],
@@ -418,11 +452,18 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
-			$attr   = array(
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
+			$attr    = array(
 				'product' => isset( $settings['product'] ) ? $settings['product'] : '',
 				'htmlTag' => $settings['htmlTag'],
 			);
@@ -438,7 +479,7 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 			if ( ! class_exists( 'WFOCU_Guten_Product_Title' ) ) {
 				return;
 			}
-			$product_title = new  WFOCU_Guten_Product_Title();
+			$product_title = new WFOCU_Guten_Product_Title();
 			$output        = '';
 			$defaults      = bwfupsell_get_block_defaults();
 
@@ -455,11 +496,18 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
-			$attr   = array(
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
+			$attr    = array(
 				'product'     => isset( $settings['product'] ) ? $settings['product'] : '',
 				'text'        => isset( $settings['content'] ) ? $settings['content'] : '',
 				'header_size' => $settings['htmlTag'],
@@ -493,11 +541,18 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
-			$attr   = array(
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
+			$attr    = array(
 				'product'          => isset( $settings['product'] ) ? $settings['product'] : '',
 				'widget_block_id'  => 'bwf-' . $settings['uniqueID'],
 				'attr_value_block' => true,
@@ -531,11 +586,18 @@ if ( ! class_exists( 'BWFBlocksUpsell_Render_Block' ) ) {
 
 			$classNames = $this->has_block_visibiliy_classes( $settings, $classNames );
 
-			$output .= sprintf( '<div %1$s>', bwfblocks_attr( 'button', array(
-				'class' => implode( ' ', $classNames ),
-				'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
-			), $settings ) );
-			$attr   = array(
+			$output .= sprintf(
+				'<div %1$s>',
+				bwfblocks_attr(
+					'button',
+					array(
+						'class' => implode( ' ', $classNames ),
+						'id'    => isset( $settings['blockID'] ) ? $settings['blockID'] : null,
+					),
+					$settings
+				)
+			);
+			$attr    = array(
 				'product'         => isset( $settings['product'] ) ? $settings['product'] : '',
 				'widget_block_id' => 'bwf-' . $settings['uniqueID'],
 				'slider_enabled'  => $settings['enableSlider'],

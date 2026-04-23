@@ -247,23 +247,20 @@ final class BWFAN_WC_Create_Coupon extends BWFAN_Action {
 	}
 
 	public function get_expiry_dates( $no_of_days ) {
-
-		$dbj        = new DateTime();
+		$store_tz   = new DateTimeZone( wp_timezone_string() );
+		$dbj        = new DateTime( 'now', $store_tz );
 		$no_of_days += 1;
 
-		$exptime = strtotime( "+{$no_of_days} days" );
-		$dbj->setTimestamp( $exptime );
-		$exp_date         = $dbj->format( 'Y-m-d' );
-		$exp_date_email   = date( 'Y-m-d', $exptime );
-		$expiry_timestamp = $exptime;
+		$dbj->add( new DateInterval( sprintf( 'P%dD', $no_of_days ) ) );
 
-		$date = array(
+		$exp_date         = $dbj->format( 'Y-m-d' );
+		$expiry_timestamp = $dbj->getTimestamp();
+
+		return array(
 			'expiry'             => $exp_date,
-			'expire_on'          => $exp_date_email,
+			'expire_on'          => $exp_date,
 			'expiry_timestamped' => $expiry_timestamp,
 		);
-
-		return $date;
 	}
 
 	public function create_coupon( $coupon_name, $meta_data ) {

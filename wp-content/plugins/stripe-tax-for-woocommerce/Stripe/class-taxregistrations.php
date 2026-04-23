@@ -55,19 +55,24 @@ class TaxRegistrations {
 	 * Get registrations from Stripe Tax Registrations API call or cache if exists
 	 *
 	 * @param bool $force Skip cache and force API call.
+	 * @param bool $include_scheduled Include scheduled tax registrations in the response.
 	 *
 	 * @return mixed|Collection
 	 * @throws ApiErrorException In case of API error.
 	 * @throws Exception In case of error.
 	 * @see https://stripe.com/docs/api/tax/registrations/all
 	 */
-	public function get_registrations( bool $force = false ) {
+	public function get_registrations( bool $force = false, bool $include_scheduled = false ) {
 		if ( array_key_exists( $this->api_key, self::$tax_registrations ) && ( ! $force ) ) {
 			return self::$tax_registrations[ $this->api_key ];
 		}
 
 		$active_registrations = $this->get_registrations_by_status();
-		$all_registrations    = $this->get_registrations_by_status( 'scheduled', $active_registrations->data );
+		if ( $include_scheduled ) {
+			$all_registrations = $this->get_registrations_by_status( 'scheduled', $active_registrations->data );
+		} else {
+			$all_registrations = $active_registrations;
+		}
 
 		self::$tax_registrations[ $this->api_key ] = $all_registrations;
 
@@ -170,7 +175,7 @@ class TaxRegistrations {
 	 * @throws ApiErrorException In case of API error.
 	 */
 	public function get_locks(): array {
-		$tax_registrations = $this->get_registrations();
+		$tax_registrations = $this->get_registrations( false, true );
 		$locks             = array();
 		$locks[ StripeTaxPluginHelper::LOCK_COUNTRIES ]            = array();
 		$locks[ StripeTaxPluginHelper::LOCK_US_STATES ]            = array();

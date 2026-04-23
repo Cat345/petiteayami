@@ -17,15 +17,15 @@ if ( ! function_exists( 'wffn_show_notice' ) ) {
 		ob_start();
 		if ( $context === 'version_mismatch' ) {
 			?>
-            <div class="bwf-notice error">
-                <p>
-                    <strong><?php esc_html_e( 'Attention', 'woofunnels-upstroke-power-pack' ); ?></strong>
+			<div class="bwf-notice error">
+				<p>
+					<strong><?php esc_html_e( 'Attention', 'funnel-builder' ); ?></strong>
 					<?php
 					/* translators: %1$s: Plugin name %2$s Plugin name */
-					echo sprintf( esc_html__( 'The %1$s version running your site is not compatible with the Funnel Builder plugin, Please update %1$s to the recent version. ', 'woofunnels-upstroke-power-pack' ), esc_attr( $args['pname'] ) );
+					printf( esc_html__( 'The %1$s version running your site is not compatible with the Funnel Builder plugin, Please update %1$s to the recent version. ', 'funnel-builder' ), esc_attr( $args['pname'] ) );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 
 		} else {
@@ -78,7 +78,7 @@ if ( ! function_exists( 'wffn_maybe_import_funnel_in_background' ) ) {
 			BWF_Logger::get_instance()->log( "Running the callback wffn_maybe_import_funnel_in_background: $funnel_id ", 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			if ( $funnel_id > 0 ) {
 				BWF_Logger::get_instance()->log( 'Importing template for funnel: ' . print_r( $funnel_id, true ) . '-fn- ' . __FUNCTION__, 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-                do_action('wffn_import_template_background', $funnel_id);
+				do_action( 'wffn_import_template_background', $funnel_id );
 				$funnel = new WFFN_Funnel( $funnel_id );
 
 				$funnel_steps = $funnel->get_steps();
@@ -93,35 +93,53 @@ if ( ! function_exists( 'wffn_maybe_import_funnel_in_background' ) ) {
 							BWF_Logger::get_instance()->log( 'Ready to import, step ID: ' . $funnel_step['id'] . ', Template: ' . print_r( $has_scheduled, true ), 'wffn_template_import' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 							$get_object->do_import( $funnel_step['id'] );
-							$get_object->update_template_data( $funnel_step['id'], [
-								'selected'      => $has_scheduled['template'],
-								'selected_type' => $has_scheduled['template_type'],
-							] );
-							if ( $get_object->slug === 'wc_thankyou' ) {
-								do_action( 'wfty_page_design_updated', $funnel_step['id'], [
+							$get_object->update_template_data(
+								$funnel_step['id'],
+								array(
 									'selected'      => $has_scheduled['template'],
 									'selected_type' => $has_scheduled['template_type'],
-								] );
+								)
+							);
+							if ( $get_object->slug === 'wc_thankyou' ) {
+								do_action(
+									'wfty_page_design_updated',
+									$funnel_step['id'],
+									array(
+										'selected'      => $has_scheduled['template'],
+										'selected_type' => $has_scheduled['template_type'],
+									)
+								);
 							}
 							if ( $get_object->slug === 'optin' ) {
-								do_action( 'wfop_page_design_updated', $funnel_step['id'], [
-									'selected'      => $has_scheduled['template'],
-									'selected_type' => $has_scheduled['template_type'],
-								] );
+								do_action(
+									'wfop_page_design_updated',
+									$funnel_step['id'],
+									array(
+										'selected'      => $has_scheduled['template'],
+										'selected_type' => $has_scheduled['template_type'],
+									)
+								);
 							}
 							if ( $get_object->slug === 'optin_ty' ) {
-								do_action( 'wfoty_page_design_updated', $funnel_step['id'], [
-									'selected'      => $has_scheduled['template'],
-									'selected_type' => $has_scheduled['template_type'],
-								] );
+								do_action(
+									'wfoty_page_design_updated',
+									$funnel_step['id'],
+									array(
+										'selected'      => $has_scheduled['template'],
+										'selected_type' => $has_scheduled['template_type'],
+									)
+								);
 							}
 							if ( $get_object->slug === 'landing' ) {
-								do_action( 'wflp_page_design_updated', $funnel_step['id'], [
-									'selected'      => $has_scheduled['template'],
-									'selected_type' => $has_scheduled['template_type'],
-								] );
+								do_action(
+									'wflp_page_design_updated',
+									$funnel_step['id'],
+									array(
+										'selected'      => $has_scheduled['template'],
+										'selected_type' => $has_scheduled['template_type'],
+									)
+								);
 							}
-
 						}
 					}
 				}
@@ -138,21 +156,25 @@ if ( ! function_exists( 'wffn_price' ) ) {
 			return wc_price( $price, $args );
 		}
 
-
 		$currency_pos = 'left';
 		$format       = '%1$s%2$s';
 
-
 		$price_format = apply_filters( 'wffn_price_format', $format, $currency_pos );
 
-		$args = apply_filters( 'wffn_price_args', wp_parse_args( $args, array(
-			'ex_tax_label'       => false,
-			'currency'           => '',
-			'decimal_separator'  => apply_filters( 'wffn_get_price_decimal_separator', '.' ),
-			'thousand_separator' => apply_filters( 'wffn_get_price_thousand_separator', '.' ),
-			'decimals'           => apply_filters( 'wffn_get_price_thousand_separator', '2' ),
-			'price_format'       => $price_format,
-		) ) );
+		$args = apply_filters(
+			'wffn_price_args',
+			wp_parse_args(
+				$args,
+				array(
+					'ex_tax_label'       => false,
+					'currency'           => '',
+					'decimal_separator'  => apply_filters( 'wffn_get_price_decimal_separator', '.' ),
+					'thousand_separator' => apply_filters( 'wffn_get_price_thousand_separator', '.' ),
+					'decimals'           => apply_filters( 'wffn_get_price_thousand_separator', '2' ),
+					'price_format'       => $price_format,
+				)
+			)
+		);
 
 		$unformatted_price = $price;
 		$negative          = $price < 0;
@@ -175,7 +197,6 @@ if ( ! function_exists( 'wffn_price' ) ) {
 		$formatted_price = ( $negative ? '-' : '' ) . sprintf( $args['price_format'], '' . $symbol . '', $price );
 		$return          = $formatted_price;
 
-
 		/**
 		 * Filters the string of price markup.
 		 *
@@ -190,172 +211,175 @@ if ( ! function_exists( 'wffn_price' ) ) {
 if ( ! function_exists( 'wffn_currency_symbols' ) ) {
 	function wffn_currency_symbols() {
 
-		$symbols = apply_filters( 'wffn_currency_symbols', array(
-			'AED' => '&#x62f;.&#x625;',
-			'AFN' => '&#x60b;',
-			'ALL' => 'L',
-			'AMD' => 'AMD',
-			'ANG' => '&fnof;',
-			'AOA' => 'Kz',
-			'ARS' => '&#36;',
-			'AUD' => '&#36;',
-			'AWG' => 'Afl.',
-			'AZN' => 'AZN',
-			'BAM' => 'KM',
-			'BBD' => '&#36;',
-			'BDT' => '&#2547;&nbsp;',
-			'BGN' => '&#1083;&#1074;.',
-			'BHD' => '.&#x62f;.&#x628;',
-			'BIF' => 'Fr',
-			'BMD' => '&#36;',
-			'BND' => '&#36;',
-			'BOB' => 'Bs.',
-			'BRL' => '&#82;&#36;',
-			'BSD' => '&#36;',
-			'BTC' => '&#3647;',
-			'BTN' => 'Nu.',
-			'BWP' => 'P',
-			'BYR' => 'Br',
-			'BYN' => 'Br',
-			'BZD' => '&#36;',
-			'CAD' => '&#36;',
-			'CDF' => 'Fr',
-			'CHF' => '&#67;&#72;&#70;',
-			'CLP' => '&#36;',
-			'CNY' => '&yen;',
-			'COP' => '&#36;',
-			'CRC' => '&#x20a1;',
-			'CUC' => '&#36;',
-			'CUP' => '&#36;',
-			'CVE' => '&#36;',
-			'CZK' => '&#75;&#269;',
-			'DJF' => 'Fr',
-			'DKK' => 'DKK',
-			'DOP' => 'RD&#36;',
-			'DZD' => '&#x62f;.&#x62c;',
-			'EGP' => 'EGP',
-			'ERN' => 'Nfk',
-			'ETB' => 'Br',
-			'EUR' => '&euro;',
-			'FJD' => '&#36;',
-			'FKP' => '&pound;',
-			'GBP' => '&pound;',
-			'GEL' => '&#x20be;',
-			'GGP' => '&pound;',
-			'GHS' => '&#x20b5;',
-			'GIP' => '&pound;',
-			'GMD' => 'D',
-			'GNF' => 'Fr',
-			'GTQ' => 'Q',
-			'GYD' => '&#36;',
-			'HKD' => '&#36;',
-			'HNL' => 'L',
-			'HRK' => 'kn',
-			'HTG' => 'G',
-			'HUF' => '&#70;&#116;',
-			'IDR' => 'Rp',
-			'ILS' => '&#8362;',
-			'IMP' => '&pound;',
-			'INR' => '&#8377;',
-			'IQD' => '&#x639;.&#x62f;',
-			'IRR' => '&#xfdfc;',
-			'IRT' => '&#x062A;&#x0648;&#x0645;&#x0627;&#x0646;',
-			'ISK' => 'kr.',
-			'JEP' => '&pound;',
-			'JMD' => '&#36;',
-			'JOD' => '&#x62f;.&#x627;',
-			'JPY' => '&yen;',
-			'KES' => 'KSh',
-			'KGS' => '&#x441;&#x43e;&#x43c;',
-			'KHR' => '&#x17db;',
-			'KMF' => 'Fr',
-			'KPW' => '&#x20a9;',
-			'KRW' => '&#8361;',
-			'KWD' => '&#x62f;.&#x643;',
-			'KYD' => '&#36;',
-			'KZT' => '&#8376;',
-			'LAK' => '&#8365;',
-			'LBP' => '&#x644;.&#x644;',
-			'LKR' => '&#xdbb;&#xdd4;',
-			'LRD' => '&#36;',
-			'LSL' => 'L',
-			'LYD' => '&#x644;.&#x62f;',
-			'MAD' => '&#x62f;.&#x645;.',
-			'MDL' => 'MDL',
-			'MGA' => 'Ar',
-			'MKD' => '&#x434;&#x435;&#x43d;',
-			'MMK' => 'Ks',
-			'MNT' => '&#x20ae;',
-			'MOP' => 'P',
-			'MRU' => 'UM',
-			'MUR' => '&#x20a8;',
-			'MVR' => '.&#x783;',
-			'MWK' => 'MK',
-			'MXN' => '&#36;',
-			'MYR' => '&#82;&#77;',
-			'MZN' => 'MT',
-			'NAD' => 'N&#36;',
-			'NGN' => '&#8358;',
-			'NIO' => 'C&#36;',
-			'NOK' => '&#107;&#114;',
-			'NPR' => '&#8360;',
-			'NZD' => '&#36;',
-			'OMR' => '&#x631;.&#x639;.',
-			'PAB' => 'B/.',
-			'PEN' => 'S/',
-			'PGK' => 'K',
-			'PHP' => '&#8369;',
-			'PKR' => '&#8360;',
-			'PLN' => '&#122;&#322;',
-			'PRB' => '&#x440;.',
-			'PYG' => '&#8370;',
-			'QAR' => '&#x631;.&#x642;',
-			'RMB' => '&yen;',
-			'RON' => 'lei',
-			'RSD' => '&#1088;&#1089;&#1076;',
-			'RUB' => '&#8381;',
-			'RWF' => 'Fr',
-			'SAR' => '&#x631;.&#x633;',
-			'SBD' => '&#36;',
-			'SCR' => '&#x20a8;',
-			'SDG' => '&#x62c;.&#x633;.',
-			'SEK' => '&#107;&#114;',
-			'SGD' => '&#36;',
-			'SHP' => '&pound;',
-			'SLL' => 'Le',
-			'SOS' => 'Sh',
-			'SRD' => '&#36;',
-			'SSP' => '&pound;',
-			'STN' => 'Db',
-			'SYP' => '&#x644;.&#x633;',
-			'SZL' => 'L',
-			'THB' => '&#3647;',
-			'TJS' => '&#x405;&#x41c;',
-			'TMT' => 'm',
-			'TND' => '&#x62f;.&#x62a;',
-			'TOP' => 'T&#36;',
-			'TRY' => '&#8378;',
-			'TTD' => '&#36;',
-			'TWD' => '&#78;&#84;&#36;',
-			'TZS' => 'Sh',
-			'UAH' => '&#8372;',
-			'UGX' => 'UGX',
-			'USD' => '&#36;',
-			'UYU' => '&#36;',
-			'UZS' => 'UZS',
-			'VEF' => 'Bs F',
-			'VES' => 'Bs.S',
-			'VND' => '&#8363;',
-			'VUV' => 'Vt',
-			'WST' => 'T',
-			'XAF' => 'CFA',
-			'XCD' => '&#36;',
-			'XOF' => 'CFA',
-			'XPF' => 'Fr',
-			'YER' => '&#xfdfc;',
-			'ZAR' => '&#82;',
-			'ZMW' => 'ZK',
-		) );
+		$symbols = apply_filters(
+			'wffn_currency_symbols',
+			array(
+				'AED' => '&#x62f;.&#x625;',
+				'AFN' => '&#x60b;',
+				'ALL' => 'L',
+				'AMD' => 'AMD',
+				'ANG' => '&fnof;',
+				'AOA' => 'Kz',
+				'ARS' => '&#36;',
+				'AUD' => '&#36;',
+				'AWG' => 'Afl.',
+				'AZN' => 'AZN',
+				'BAM' => 'KM',
+				'BBD' => '&#36;',
+				'BDT' => '&#2547;&nbsp;',
+				'BGN' => '&#1083;&#1074;.',
+				'BHD' => '.&#x62f;.&#x628;',
+				'BIF' => 'Fr',
+				'BMD' => '&#36;',
+				'BND' => '&#36;',
+				'BOB' => 'Bs.',
+				'BRL' => '&#82;&#36;',
+				'BSD' => '&#36;',
+				'BTC' => '&#3647;',
+				'BTN' => 'Nu.',
+				'BWP' => 'P',
+				'BYR' => 'Br',
+				'BYN' => 'Br',
+				'BZD' => '&#36;',
+				'CAD' => '&#36;',
+				'CDF' => 'Fr',
+				'CHF' => '&#67;&#72;&#70;',
+				'CLP' => '&#36;',
+				'CNY' => '&yen;',
+				'COP' => '&#36;',
+				'CRC' => '&#x20a1;',
+				'CUC' => '&#36;',
+				'CUP' => '&#36;',
+				'CVE' => '&#36;',
+				'CZK' => '&#75;&#269;',
+				'DJF' => 'Fr',
+				'DKK' => 'DKK',
+				'DOP' => 'RD&#36;',
+				'DZD' => '&#x62f;.&#x62c;',
+				'EGP' => 'EGP',
+				'ERN' => 'Nfk',
+				'ETB' => 'Br',
+				'EUR' => '&euro;',
+				'FJD' => '&#36;',
+				'FKP' => '&pound;',
+				'GBP' => '&pound;',
+				'GEL' => '&#x20be;',
+				'GGP' => '&pound;',
+				'GHS' => '&#x20b5;',
+				'GIP' => '&pound;',
+				'GMD' => 'D',
+				'GNF' => 'Fr',
+				'GTQ' => 'Q',
+				'GYD' => '&#36;',
+				'HKD' => '&#36;',
+				'HNL' => 'L',
+				'HRK' => 'kn',
+				'HTG' => 'G',
+				'HUF' => '&#70;&#116;',
+				'IDR' => 'Rp',
+				'ILS' => '&#8362;',
+				'IMP' => '&pound;',
+				'INR' => '&#8377;',
+				'IQD' => '&#x639;.&#x62f;',
+				'IRR' => '&#xfdfc;',
+				'IRT' => '&#x062A;&#x0648;&#x0645;&#x0627;&#x0646;',
+				'ISK' => 'kr.',
+				'JEP' => '&pound;',
+				'JMD' => '&#36;',
+				'JOD' => '&#x62f;.&#x627;',
+				'JPY' => '&yen;',
+				'KES' => 'KSh',
+				'KGS' => '&#x441;&#x43e;&#x43c;',
+				'KHR' => '&#x17db;',
+				'KMF' => 'Fr',
+				'KPW' => '&#x20a9;',
+				'KRW' => '&#8361;',
+				'KWD' => '&#x62f;.&#x643;',
+				'KYD' => '&#36;',
+				'KZT' => '&#8376;',
+				'LAK' => '&#8365;',
+				'LBP' => '&#x644;.&#x644;',
+				'LKR' => '&#xdbb;&#xdd4;',
+				'LRD' => '&#36;',
+				'LSL' => 'L',
+				'LYD' => '&#x644;.&#x62f;',
+				'MAD' => '&#x62f;.&#x645;.',
+				'MDL' => 'MDL',
+				'MGA' => 'Ar',
+				'MKD' => '&#x434;&#x435;&#x43d;',
+				'MMK' => 'Ks',
+				'MNT' => '&#x20ae;',
+				'MOP' => 'P',
+				'MRU' => 'UM',
+				'MUR' => '&#x20a8;',
+				'MVR' => '.&#x783;',
+				'MWK' => 'MK',
+				'MXN' => '&#36;',
+				'MYR' => '&#82;&#77;',
+				'MZN' => 'MT',
+				'NAD' => 'N&#36;',
+				'NGN' => '&#8358;',
+				'NIO' => 'C&#36;',
+				'NOK' => '&#107;&#114;',
+				'NPR' => '&#8360;',
+				'NZD' => '&#36;',
+				'OMR' => '&#x631;.&#x639;.',
+				'PAB' => 'B/.',
+				'PEN' => 'S/',
+				'PGK' => 'K',
+				'PHP' => '&#8369;',
+				'PKR' => '&#8360;',
+				'PLN' => '&#122;&#322;',
+				'PRB' => '&#x440;.',
+				'PYG' => '&#8370;',
+				'QAR' => '&#x631;.&#x642;',
+				'RMB' => '&yen;',
+				'RON' => 'lei',
+				'RSD' => '&#1088;&#1089;&#1076;',
+				'RUB' => '&#8381;',
+				'RWF' => 'Fr',
+				'SAR' => '&#x631;.&#x633;',
+				'SBD' => '&#36;',
+				'SCR' => '&#x20a8;',
+				'SDG' => '&#x62c;.&#x633;.',
+				'SEK' => '&#107;&#114;',
+				'SGD' => '&#36;',
+				'SHP' => '&pound;',
+				'SLL' => 'Le',
+				'SOS' => 'Sh',
+				'SRD' => '&#36;',
+				'SSP' => '&pound;',
+				'STN' => 'Db',
+				'SYP' => '&#x644;.&#x633;',
+				'SZL' => 'L',
+				'THB' => '&#3647;',
+				'TJS' => '&#x405;&#x41c;',
+				'TMT' => 'm',
+				'TND' => '&#x62f;.&#x62a;',
+				'TOP' => 'T&#36;',
+				'TRY' => '&#8378;',
+				'TTD' => '&#36;',
+				'TWD' => '&#78;&#84;&#36;',
+				'TZS' => 'Sh',
+				'UAH' => '&#8372;',
+				'UGX' => 'UGX',
+				'USD' => '&#36;',
+				'UYU' => '&#36;',
+				'UZS' => 'UZS',
+				'VEF' => 'Bs F',
+				'VES' => 'Bs.S',
+				'VND' => '&#8363;',
+				'VUV' => 'Vt',
+				'WST' => 'T',
+				'XAF' => 'CFA',
+				'XCD' => '&#36;',
+				'XOF' => 'CFA',
+				'XPF' => 'Fr',
+				'YER' => '&#xfdfc;',
+				'ZAR' => '&#82;',
+				'ZMW' => 'ZK',
+			)
+		);
 
 		return $symbols;
 	}
@@ -372,6 +396,8 @@ if ( ! function_exists( 'wffn_is_wc_active' ) ) {
 	}
 }
 
+
+
 if ( ! function_exists( 'wffn_is_plugin_active' ) ) {
 	function wffn_is_plugin_active( $plugin_basename ) {
 
@@ -385,9 +411,7 @@ if ( ! function_exists( 'wffn_is_plugin_active' ) ) {
 			return true;
 		}
 
-
 		return false;
-
 	}
 }
 
@@ -439,8 +463,10 @@ if ( ! function_exists( 'wffn_run_conversion_migrator' ) ) {
 			/**
 			 * delete all duplicate entries from checkout table
 			 */
-			$duplicate_col = $wpdb->get_col( "SELECT s1.ID FROM {$wpdb->prefix}wfacp_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfacp_stats GROUP BY order_id ) AS s2 ON s1.ID = s2.min_id
-WHERE s2.min_id IS NULL" );
+			$duplicate_col = $wpdb->get_col(
+				"SELECT s1.ID FROM {$wpdb->prefix}wfacp_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfacp_stats GROUP BY order_id ) AS s2 ON s1.ID = s2.min_id
+WHERE s2.min_id IS NULL"
+			);
 
 			if ( is_array( $duplicate_col ) && count( $duplicate_col ) > 0 ) {
 				$duplicate_ids = implode( ',', $duplicate_col );
@@ -453,8 +479,10 @@ WHERE s2.min_id IS NULL" );
 			/**
 			 * delete all duplicate entries from bump table
 			 */
-			$ob_duplicate_col = $wpdb->get_col( "SELECT s1.ID FROM {$wpdb->prefix}wfob_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfob_stats GROUP BY oid ) AS s2 ON s1.ID = s2.min_id
-WHERE s2.min_id IS NULL" );
+			$ob_duplicate_col = $wpdb->get_col(
+				"SELECT s1.ID FROM {$wpdb->prefix}wfob_stats AS s1 LEFT JOIN ( SELECT MIN(ID) AS min_id FROM {$wpdb->prefix}wfob_stats GROUP BY oid ) AS s2 ON s1.ID = s2.min_id
+WHERE s2.min_id IS NULL"
+			);
 
 			if ( is_array( $ob_duplicate_col ) && count( $ob_duplicate_col ) > 0 ) {
 				$ob_duplicate_ids = implode( ',', $ob_duplicate_col );
@@ -513,27 +541,31 @@ WHERE s2.min_id IS NULL" );
 			return wffn_run_optin_conversion_migrator();
 		}
 
-		$need_to_delete_orders = [];
-		$need_to_update_orders = [];
-		$need_to_create_orders = [];
-		$upsell_created_orders = [];
+		$need_to_delete_orders = array();
+		$need_to_update_orders = array();
+		$need_to_create_orders = array();
+		$upsell_created_orders = array();
 		$conversion_tracking   = BWF_Ecomm_Tracking_Common::get_instance();
 
 		$order_ids_string = implode( ',', wp_list_pluck( $number_of_order, 'order_id' ) );
-
 
 		/**
 		 * delete all order from conversion if order not exists in wc_order_stats table
 		 */
 
 		$bumps_data   = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wfob_stats where oid IN (%1s)", $order_ids_string ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
-		$upsells_data = $wpdb->get_results( $wpdb->prepare( "SELECT sess.order_id,
-    event_t.object_id AS offer_id, 
+		$upsells_data = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT sess.order_id,
+    event_t.object_id AS offer_id,
     event_t.action_type_id AS action_type,
-    event_t.value AS total_revenue  
- FROM `{$wpdb->prefix}wfocu_session` AS sess JOIN `{$wpdb->prefix}wfocu_event` AS event_t ON sess.id = event_t.sess_id 
-WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_string ), ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
-
+    event_t.value AS total_revenue
+ FROM `{$wpdb->prefix}wfocu_session` AS sess JOIN `{$wpdb->prefix}wfocu_event` AS event_t ON sess.id = event_t.sess_id
+WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);",  //phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+				$order_ids_string
+			),
+			ARRAY_A
+		);
 
 		/***
 		 * prepare process order array
@@ -547,7 +579,7 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 				continue;
 			}
 
-			$offset ++;
+			++$offset;
 			update_option( '_bwf_conversion_offset', $offset );
 
 			/**
@@ -556,7 +588,6 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 			 * 2. Remove order from conversion table which not exists in wc table
 			 */
 			$is_delete = false;
-
 
 			/**
 			 * continue if maybe order need delete
@@ -569,17 +600,17 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 			/**
 			 * merge bump data
 			 */
-			$accepted_bump = [];
-			$rejected_bump = [];
+			$accepted_bump = array();
+			$rejected_bump = array();
 			$bump_total    = 0;
 			if ( ! empty( $bumps_data ) && is_array( $bumps_data ) ) {
 				foreach ( $bumps_data as $bump ) {
 					if ( absint( $item['order_id'] ) === absint( $bump['oid'] ) ) {
 						if ( 1 === absint( $bump['converted'] ) ) {
-							$accepted_bump[] = ( string ) $bump['bid'];
-							$bump_total      += floatval( $bump['total'] );
+							$accepted_bump[] = (string) $bump['bid'];
+							$bump_total     += floatval( $bump['total'] );
 						} else {
-							$rejected_bump[] = ( string ) $bump['bid'];
+							$rejected_bump[] = (string) $bump['bid'];
 						}
 					}
 				}
@@ -588,8 +619,8 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 			/**
 			 * merge offer data
 			 */
-			$accepted_offer = [];
-			$rejected_offer = [];
+			$accepted_offer = array();
+			$rejected_offer = array();
 			$offer_total    = 0;
 
 			if ( ! empty( $upsells_data ) ) {
@@ -597,7 +628,7 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 					if ( absint( $item['order_id'] ) === absint( $u_data['order_id'] ) ) {
 						if ( 4 === absint( $u_data['action_type'] ) ) {
 							$accepted_offer[] = $u_data['offer_id'];
-							$offer_total      += floatval( $u_data['total_revenue'] );
+							$offer_total     += floatval( $u_data['total_revenue'] );
 						}
 						if ( 6 === absint( $u_data['action_type'] ) ) {
 							$rejected_offer[] = $u_data['offer_id'];
@@ -613,11 +644,10 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 
 			$maybe_upsell_orders = '';
 			if ( ! empty( $item['accepted_offer'] ) ) {
-				$maybe_upsell_orders = $wpdb->get_results( $wpdb->prepare( "SELECT metatable.meta_value as 'order_id', event.value as 'total_sales',event.timestamp as 'offertime', event.object_id as 'offer_id' FROM `" . $wpdb->prefix . "wfocu_event` as event  LEFT JOIN " . $wpdb->prefix . "wfocu_event_meta as metatable ON ( event.id = metatable.event_id AND metatable.meta_key = '_new_order') INNER JOIN " . $wpdb->prefix . "wfocu_session as session ON (event.sess_id = session.id) WHERE session.order_id = %d AND event.action_type_id = 4", $item['order_id'] ), ARRAY_A );
+				$maybe_upsell_orders = $wpdb->get_results( $wpdb->prepare( "SELECT metatable.meta_value as 'order_id', event.value as 'total_sales',event.timestamp as 'offertime', event.object_id as 'offer_id' FROM `" . $wpdb->prefix . 'wfocu_event` as event  LEFT JOIN ' . $wpdb->prefix . "wfocu_event_meta as metatable ON ( event.id = metatable.event_id AND metatable.meta_key = '_new_order') INNER JOIN " . $wpdb->prefix . 'wfocu_session as session ON (event.sess_id = session.id) WHERE session.order_id = %d AND event.action_type_id = 4', $item['order_id'] ), ARRAY_A );
 			}
 
 			$conversion = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}bwf_conversion_tracking where type=2 AND source=%d;", $item['order_id'] ), ARRAY_A );
-
 
 			if ( ! empty( $conversion ) ) {
 				/**
@@ -627,7 +657,7 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 					$need_to_delete_orders[] = $order_id;
 					continue;
 				}
-				$conversion_data     = [];
+				$conversion_data     = array();
 				$save_bump_rejected  = ! empty( $conversion['bump_rejected'] ) ? $conversion['bump_rejected'] : '';
 				$save_bump_accepted  = ! empty( $conversion['bump_accepted'] ) ? $conversion['bump_accepted'] : '';
 				$save_offer_rejected = ! empty( $conversion['offer_rejected'] ) ? $conversion['offer_rejected'] : '';
@@ -653,9 +683,9 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 				if ( function_exists( 'wc_get_order' ) ) {
 					$order = wc_get_order( $order_id );
 					if ( $order && method_exists( $order, 'get_order_number' ) ) {
-						$temp_order_number = $order->get_order_number();
+						$temp_order_number               = $order->get_order_number();
 						$conversion_data['order_number'] = $temp_order_number;
-					}else {
+					} else {
 						$need_to_delete_orders[] = $order_id;
 						continue;
 					}
@@ -672,7 +702,7 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 				 * add upsell created order in conversion table
 				 */
 
-				$args = [
+				$args = array(
 					'contact_id'        => '',
 					'utm_source'        => '',
 					'utm_medium'        => '',
@@ -701,44 +731,43 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 					'device'            => 'desktop',
 					'browser'           => '',
 					'country'           => '',
-					'timestamp'         => '0000-00-00 00:00:00'
-				];
-
+					'timestamp'         => '0000-00-00 00:00:00',
+				);
 
 				if ( is_array( $maybe_upsell_orders ) && count( $maybe_upsell_orders ) > 0 ) {
 					foreach ( $maybe_upsell_orders as $upsell_order ) {
-						$offer_id                      = ( string ) $upsell_order['offer_id'];
+						$offer_id                      = (string) $upsell_order['offer_id'];
 						$upsell_created_orders[]       = absint( $upsell_order['order_id'] );
 						$upsell_args                   = $args;
 						$upsell_args['funnel_id']      = $fid;
 						$upsell_args['contact_id']     = $cid;
 						$upsell_args['source']         = $upsell_order['order_id'];
-						$upsell_args['offer_accepted'] = wp_json_encode( [ $offer_id ] );
+						$upsell_args['offer_accepted'] = wp_json_encode( array( $offer_id ) );
 						$upsell_args['timestamp']      = $upsell_order['offertime'];
 						$upsell_args['step_id']        = $step_id;
 						$upsell_args['offer_total']    = floatval( $upsell_order['total_sales'] );
 						if ( function_exists( 'wc_get_order' ) ) {
 							$upsell_order_obj = wc_get_order( $upsell_order['order_id'] );
 							if ( $upsell_order_obj && method_exists( $upsell_order_obj, 'get_order_number' ) ) {
-								$temp_order_number = $upsell_order_obj->get_order_number();
+								$temp_order_number           = $upsell_order_obj->get_order_number();
 								$upsell_args['order_number'] = $temp_order_number;
-							}else {
+							} else {
 								$need_to_delete_orders[] = $order_id;
 								continue;
 							}
 						}
-						$upsell_args['utm_source']     = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_source'] ) : '';
-						$upsell_args['utm_medium']     = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_medium'] ) : '';
-						$upsell_args['utm_campaign']   = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_campaign'] ) : '';
-						$upsell_args['utm_term']       = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_term'] ) : '';
-						$upsell_args['utm_content']    = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_content'] ) : '';
+						$upsell_args['utm_source']   = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_source'] ) : '';
+						$upsell_args['utm_medium']   = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_medium'] ) : '';
+						$upsell_args['utm_campaign'] = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_campaign'] ) : '';
+						$upsell_args['utm_term']     = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_term'] ) : '';
+						$upsell_args['utm_content']  = ! empty( $conversion ) ? $conversion_tracking->string_length( $conversion['utm_content'] ) : '';
 
-						$need_to_create_orders[]       = $upsell_args;
+						$need_to_create_orders[] = $upsell_args;
 					}
 					/***
 					 * remove offer data from primary order
 					 */
-					$accepted_offer = [];
+					$accepted_offer = array();
 					$offer_total    = 0;
 
 				}
@@ -759,9 +788,9 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 				if ( function_exists( 'wc_get_order' ) ) {
 					$order = wc_get_order( $order_id );
 					if ( $order && method_exists( $order, 'get_order_number' ) ) {
-						$temp_order_number = $order->get_order_number();
+						$temp_order_number    = $order->get_order_number();
 						$args['order_number'] = $temp_order_number;
-					}else {
+					} else {
 						$need_to_delete_orders[] = $order_id;
 						continue;
 					}
@@ -769,8 +798,6 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 
 				$need_to_create_orders[] = $args;
 			}
-
-
 		}
 
 		if ( ! empty( $need_to_delete_orders ) ) {
@@ -781,7 +808,6 @@ WHERE sess.order_id IN (%1s) AND event_t.action_type_id IN (4,6);", $order_ids_s
 			if ( ! empty( $wpdb->last_error ) ) {
 				WFFN_Core()->logger->log( 'migration process delete orders query error ' . $wpdb->last_error . ' last query ' . $wpdb->last_query, 'fk_conv_migration', true );
 			}
-
 		}
 
 		if ( ! empty( $need_to_update_orders ) ) {
@@ -803,7 +829,6 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 		global $wpdb;
 		$per_page = 20;
 
-
 		/**
 		 * If threshold is 0 then we will set it to total number of optins
 		 * reaching inside this condition also means that this is the first time we are running this migration
@@ -819,7 +844,6 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 			update_option( '_bwf_optin_conversion_threshold', absint( $number_of_entries ) );
 			$conversion_threshold = $number_of_entries;
 		}
-
 
 		$offset = absint( get_option( '_bwf_optin_conversion_offset', 0 ) );
 		if ( $offset > 0 && $conversion_threshold > 0 && $offset >= $conversion_threshold ) {
@@ -838,7 +862,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 			return false;
 		}
 
-		$default             = [
+		$default             = array(
 			'contact_id'        => '',
 			'utm_source'        => '',
 			'utm_medium'        => '',
@@ -866,14 +890,14 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 			'device'            => 'desktop',
 			'browser'           => '',
 			'country'           => '',
-			'timestamp'         => '0000-00-00 00:00:00'
-		];
+			'timestamp'         => '0000-00-00 00:00:00',
+		);
 		$conversion_tracking = BWF_Ecomm_Tracking_Common::get_instance();
-		$new_data            = [];
-		$update_data         = [];
+		$new_data            = array();
+		$update_data         = array();
 		foreach ( $number_of_entries as $entry ) {
 			WFFN_Core()->logger->log( 'Processing optin : ' . $entry['id'], 'fk_conv_migration', true );
-			$offset ++;
+			++$offset;
 			update_option( '_bwf_optin_conversion_offset', $offset );
 
 			$optin_id  = $entry['id'];
@@ -881,38 +905,37 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 			$step_id   = $entry['step_id'];
 			$funnel_id = $entry['funnel_id'];
 
-
 			$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer FROM {$wpdb->prefix}bwf_conversion_tracking WHERE type=1 AND source = %d", $optin_id ), ARRAY_A );
 
 			if ( ! empty( $_conversion ) ) {
 				// Trim Reference
-				foreach ( [ 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ] as $key ) {
+				foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ) as $key ) {
 					$_conversion[ $key ] = $conversion_tracking->string_length( $_conversion[ $key ] );
 				}
 				$_conversion['referrer'] = $conversion_tracking->filter_referrer( $_conversion['referrer'] );
-
 
 				$update_data[ $_conversion['id'] ] = $_conversion;
 
 			} else {
 
-
 				$_conversion = $wpdb->get_row( $wpdb->prepare( "SELECT id,utm_source, utm_medium, utm_campaign, utm_term, utm_content,referrer,timestamp FROM {$wpdb->prefix}bwf_conversion_tracking WHERE step_id = %d AND contact_id = %d AND timestamp BETWEEN DATE_SUB(%s, INTERVAL 5 SECOND) AND DATE_ADD(%s, INTERVAL 5 SECOND)", $step_id, $cid, $entry['date'], $entry['date'] ), ARRAY_A );
 
-
-				$new_data_entry = wp_parse_args( [
-					'contact_id'  => $cid,
-					'type'        => 1,
-					'step_id'     => $step_id,
-					'source'      => $entry['id'],
-					'funnel_id'   => $funnel_id,
-					'first_click' => $entry['date'],
-					'timestamp'   => $entry['date']
-				], $default );
+				$new_data_entry = wp_parse_args(
+					array(
+						'contact_id'  => $cid,
+						'type'        => 1,
+						'step_id'     => $step_id,
+						'source'      => $entry['id'],
+						'funnel_id'   => $funnel_id,
+						'first_click' => $entry['date'],
+						'timestamp'   => $entry['date'],
+					),
+					$default
+				);
 				if ( ! empty( $_conversion ) ) {
 
 					$_conversion['source'] = $optin_id;
-					foreach ( [ 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ] as $key ) {
+					foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' ) as $key ) {
 						$_conversion[ $key ] = $conversion_tracking->string_length( $_conversion[ $key ] );
 					}
 					$_conversion['referrer'] = $conversion_tracking->filter_referrer( $_conversion['referrer'] );
@@ -924,10 +947,7 @@ if ( ! function_exists( 'wffn_run_optin_conversion_migrator' ) ) {
 					$new_data[] = $new_data_entry;
 				}
 			}
-
-
 		}
-
 
 		if ( ! empty( $update_data ) ) {
 			WFFN_Conversion_Tracking_Migrator::update_multiple_conversion_rows( $update_data );

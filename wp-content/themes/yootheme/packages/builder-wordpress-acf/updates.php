@@ -2,8 +2,14 @@
 
 namespace YOOtheme;
 
+use YOOtheme\Builder\Wordpress\Acf\AcfHelper;
+
 return [
     '2.6.3' => function ($node) {
+        if (!AcfHelper::isActive()) {
+            return;
+        }
+
         if (str_contains($node->source->query->field->name ?? '', 'field.')) {
             $node->source->query->field->name = implode(
                 '.',

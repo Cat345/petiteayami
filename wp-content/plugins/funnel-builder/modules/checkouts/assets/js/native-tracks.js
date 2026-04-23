@@ -264,6 +264,23 @@
 
         }
 
+        /**
+         * Fire JavaScript action hook for add_to_cart events
+         * Allows developers to listen and duplicate events (e.g., for Stape)
+         * 
+         * @param {Object} eventData - The event data object
+         * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
+         */
+        fire_add_to_cart_hook(eventData, eventName) {
+            try {
+                if (typeof $ !== 'undefined' && $.fn && $.fn.trigger) {
+                    $(document).trigger('wffn_add_to_cart_event', [eventData, eventName || 'add_to_cart']);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         add_to_cart() {
             if (this.settings.add_to_cart === 'true') {
                 this.event_add_to_cart();
@@ -472,6 +489,10 @@
                 this.send_data(event, data, event_id);
             }
             data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+            // Fire action hook for AddToCart events
+            if ('AddToCart' === event) {
+                this.fire_add_to_cart_hook(data, 'AddToCart');
+            }
             if (typeof isCustom === 'undefined') {
                 fbq('trackSingle', this.track_id, event, data, {'eventID': event_id});
             } else {
@@ -583,7 +604,28 @@
         }
 
         gtag() {
+            // Fire action hook for add_to_cart events before pushing to dataLayer
+            if (arguments.length >= 2 && arguments[0] === 'event' && arguments[1] === 'add_to_cart') {
+                this.fire_add_to_cart_hook(arguments[2] || {}, 'add_to_cart');
+            }
             dataLayer.push(arguments);
+        }
+
+        /**
+         * Fire JavaScript action hook for add_to_cart events
+         * Allows developers to listen and duplicate events (e.g., for Stape)
+         * 
+         * @param {Object} eventData - The event data object
+         * @param {String} eventName - The event name (e.g., 'add_to_cart', 'AddToCart', 'addtocart', 'ADD_CART')
+         */
+        fire_add_to_cart_hook(eventData, eventName) {
+            try {
+                if (typeof $ !== 'undefined' && $.fn && $.fn.trigger) {
+                    $(document).trigger('wffn_add_to_cart_event', [eventData, eventName || 'add_to_cart']);
+                }
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         event_checkout(checkout_data) {
@@ -612,6 +654,8 @@
             data.event_category = "ecommerce";
             data.non_interaction = true;
             var event_data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+            // Fire action hook before pushing to dataLayer
+            this.fire_add_to_cart_hook(event_data, 'add_to_cart');
             this.gtag('event', 'add_to_cart', event_data);
         }
 
@@ -781,12 +825,58 @@
         pint(event, data) {
             if (window.pintrk) {
                 data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+                // Fire action hook for addtocart events
+                if ('addtocart' === event) {
+                    this.fire_add_to_cart_hook(data, 'addtocart');
+                }
                 pintrk('track', event, data);
             }
         }
 
         event_checkout(checkout_data) {
             let c_data = JSON.parse(checkout_data);
+            
+            // Helper function to hash email with SHA256
+            const hashEmail = async (email) => {
+                if (!email || typeof email !== 'string') return null;
+                const normalizedEmail = email.toLowerCase().trim();
+                const msgBuffer = new TextEncoder().encode(normalizedEmail);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            };
+            
+            // Get email from checkout form if not already in data
+            const getEmailFromForm = () => {
+                const emailField = $('#billing_email');
+                if (emailField.length > 0 && emailField.val()) {
+                    return emailField.val().trim();
+                }
+                return null;
+            };
+            
+            // Process checkout data - ensure email and external_id are included
+            if (Array.isArray(c_data) && c_data.length > 0) {
+                const checkoutEventData = c_data[0];
+                
+                // Add email if not present
+                if (!checkoutEventData.em) {
+                    const formEmail = getEmailFromForm();
+                    if (formEmail) {
+                        hashEmail(formEmail).then(hashedEmail => {
+                            if (hashedEmail) {
+                                checkoutEventData.em = hashedEmail;
+                            }
+                            this.pint('InitiateCheckout', c_data);
+                        }).catch(() => {
+                            // Fallback: send without email
+                            this.pint('InitiateCheckout', c_data);
+                        });
+                        return; // Exit early, will send after hashing
+                    }
+                }
+            }
+            
             this.pint('InitiateCheckout', c_data);
         }
 
@@ -868,6 +958,11 @@
         ttq(event, data) {
             if (typeof ttq !== "object") {
                 return;
+            }
+            // Fire action hook for AddToCart events
+            if ('AddToCart' === event) {
+                let processedData = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
+                this.fire_add_to_cart_hook(processedData, 'AddToCart');
             }
             let self = this;
             setTimeout(function () {
@@ -961,7 +1056,10 @@
             }
 
             data = (typeof wffnAddTrafficParamsToEvent !== "undefined") ? wffnAddTrafficParamsToEvent(data) : data;
-
+            // Fire action hook for ADD_CART events
+            if ('ADD_CART' === event) {
+                this.fire_add_to_cart_hook(data, 'ADD_CART');
+            }
             snaptr('track', event, data);
         }
 

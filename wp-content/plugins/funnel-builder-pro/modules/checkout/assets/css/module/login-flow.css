@@ -189,6 +189,22 @@ body #wfacp-sec-wrapper .woocommerce-input-wrapper.wfacp_searching:after {
     animation: rotation 1s linear infinite;
 }
 
+/* Next button disabled state during email check */
+button.wfacp_next_page_button.wfacp-checking-user {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 body #wfacp-sec-wrapper #funnelkitResetPasswordMessage .wfacp-success {
     padding-left: 0;
     padding-right: 0;
@@ -204,6 +220,44 @@ body #wfacp-sec-wrapper #funnelkitLoginAction {
     font-size: 14px;
 
     background: #F1F2F9;
+}
+
+/* Shake animation for login prompt - 2 shakes only */
+body #wfacp-sec-wrapper #funnelkitLoginAction.wfacp-shake-animation {
+    animation: wfacp-shake 0.4s;
+    border: 1px solid #e15334 !important;
+    background: #fef5f5 !important;
+}
+
+/* Keep red color after shake animation */
+body #wfacp-sec-wrapper #funnelkitLoginAction.wfacp-login-required {
+    border: 1px solid #e15334 !important;
+    background: #fef5f5 !important;
+}
+
+/* Shake animation keyframes - 2 shakes only */
+@keyframes wfacp-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-8px);
+    }
+    50% {
+        transform: translateX(8px);
+    }
+    75% {
+        transform: translateX(-8px);
+    }
+}
+
+/* Next button disabled state when login is required (guest checkout disabled) */
+button.wfacp_next_page_button.wfacp-login-blocked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #999 !important;
+    border-color: #999 !important;
+    pointer-events: none;
 }
 
 body #wfacp-sec-wrapper #funnelkitLoginAction svg {

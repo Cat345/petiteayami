@@ -148,7 +148,7 @@ return [
             'type' => 'select',
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'options' => [
                 'None' => '',
                 'Muted' => 'muted',
@@ -214,7 +214,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'menu_style == \'primary\'',
+            'enable' => "menu_style == 'primary'",
         ],
         'menu_image_width' => [
             'attrs' => [

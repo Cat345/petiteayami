@@ -1,0 +1,102 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "text_align": "textAlign.*",
+    "show_reg_price": "showRegPrice",
+    "reg_label": "regLabel.innerContent.*",
+    "show_offer_price": "showOfferPrice",
+    "offer_label": "offerLabel.innerContent.*",
+    "offer_slider_enabled": "offerSliderEnabled",
+    "show_signup_fee": "showSignupFee",
+    "signup_label": "signupLabel.innerContent.*",
+    "show_rec_price": "showRecPrice",
+    "recurring_label": "recurringLabel.innerContent.*",
+
+    "reg_label_color": "regLabelStyle.decoration.font.font.*.color",
+    "reg_price_color": "regularPriceStyle.decoration.font.font.*.color",
+    "offer_label_color": "offerLabelStyle.decoration.font.font.*.color",
+    "offer_price_color": "offerPriceStyle.decoration.font.font.*.color",
+    "signup_label_color": "signupLabelStyle.decoration.font.font.*.color",
+    "signup_price_color": "signupPriceStyle.decoration.font.font.*.color",
+    "rec_label_color": "recurringLabelStyle.decoration.font.font.*.color",
+    "rec_price_color": "recurringPriceStyle.decoration.font.font.*.color",
+
+    "sale_price_margin": "salePriceMargin.decoration.spacing.*.margin",
+    "reg_label_margin": "regLabelStyle.decoration.spacing.*.margin",
+    "offer_label_margin": "offerLabelStyle.decoration.spacing.*.margin",
+    "signup_label_margin": "signupLabelStyle.decoration.spacing.*.margin",
+    "rec_label_margin": "recurringLabelStyle.decoration.spacing.*.margin",
+    "wfocu_offer_price_margin": "module.decoration.spacing.*.margin",
+    "wfocu_offer_price_padding": "module.decoration.spacing.*.padding",
+
+    "reg_label_typography_typograhy": "regLabelStyle.decoration.font.font.*",
+    "reg_price_typography_typograhy": "regularPriceStyle.decoration.font.font.*",
+    "offer_label_typography_typograhy": "offerLabelStyle.decoration.font.font.*",
+    "offer_price_typography_typograhy": "offerPriceStyle.decoration.font.font.*",
+    "signup_label_typography_typograhy": "signupLabelStyle.decoration.font.font.*",
+    "signup_price_typography_typograhy": "signupPriceStyle.decoration.font.font.*",
+    "rec_label_typography_typograhy": "recurringLabelStyle.decoration.font.font.*",
+    "rec_price_typography_typograhy": "recurringPriceStyle.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_offer_price_border": "module.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_offer_price_box_shadow": "module.decoration.boxShadow"
+    },
+    "fonts": {
+      "reg_label_typography": "regLabelStyle.decoration.font",
+      "reg_price_typography": "regularPriceStyle.decoration.font",
+      "offer_label_typography": "offerLabelStyle.decoration.font",
+      "offer_price_typography": "offerPriceStyle.decoration.font",
+      "signup_label_typography": "signupLabelStyle.decoration.font",
+      "signup_price_typography": "signupPriceStyle.decoration.font",
+      "rec_label_typography": "recurringLabelStyle.decoration.font",
+      "rec_price_typography": "recurringPriceStyle.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "sale_price_margin": "convertSpacing",
+    "reg_label_margin": "convertSpacing",
+    "offer_label_margin": "convertSpacing",
+    "signup_label_margin": "convertSpacing",
+    "rec_label_margin": "convertSpacing",
+    "wfocu_offer_price_margin": "convertSpacing",
+    "wfocu_offer_price_padding": "convertSpacing",
+    "reg_label_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "reg_price_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "offer_label_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "offer_price_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "signup_label_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "signup_price_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "rec_label_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont",
+    "rec_price_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

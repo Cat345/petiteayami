@@ -15,11 +15,13 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 			}
 			add_action( 'wp_footer', array( $this, 'print_custom_js_in_footer' ) );
 			add_filter( 'bwf_general_settings_default_config', array( $this, 'migrate_modify_allowed_theme_settings' ) );
-
 		}
 
 		public function remove_conflicted_themes_styles() {
-			//globally registered styles and scripts
+			if ( ! empty( $_GET['et_fb'] ) ) {
+				return;
+			}
+			// globally registered styles and scripts
 			global $wp_styles;
 			global $wp_scripts;
 			global $post;
@@ -34,13 +36,11 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 			}
 			$post_type = $post->post_type;
 
-
 			if ( $post_type !== $allowed_post_types && ! $this->maybe_checkout_page( $post ) ) {
 				return;
 			}
 
 			$page_template = get_post_meta( $post->ID, '_wp_page_template', true );
-
 
 			/**
 			 * if our templates then prevent CSS and JS
@@ -66,7 +66,6 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 
 			wp_enqueue_style( 'wffn-template-style' );
 
-
 			// Dequeue and deregister all of the registered styles
 			foreach ( $wp_styles->registered as $handle => $data ) {
 
@@ -90,7 +89,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 			if ( 'oceanwp' === strtolower( get_template() ) ) {
 				$enqu_fa = apply_filters( 'wfocu_enqueue_fa_style', true );
 				if ( $enqu_fa ) {
-					wp_enqueue_style( 'wfocu-font-awesome', OCEANWP_CSS_DIR_URI . 'third/font-awesome.min.css', false );
+					wp_enqueue_style( 'wfocu-font-awesome', OCEANWP_CSS_DIR_URI . 'third/font-awesome.min.css', false ); //phpcs:ignore(WordPress.WP.EnqueuedResourceParameters.MissingVersion
 				}
 			}
 			if ( 'porto' === strtolower( get_template() ) ) {
@@ -100,10 +99,10 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 				wp_dequeue_style( 'porto-shortcodes' );
 				wp_dequeue_style( 'porto-bootstrap' );
 				wp_dequeue_style( 'porto-dynamic-style' );
-				if ( is_rtl() ) { //font-awesome css is written in this css in porto theme
-					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins_rtl.css?ver=' . PORTO_VERSION );
+				if ( is_rtl() ) { // font-awesome css is written in this css in porto theme
+					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins_rtl.css?ver=' . PORTO_VERSION );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 				} else {
-					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins.css?ver=' . PORTO_VERSION );
+					wp_register_style( 'porto-plugins', PORTO_URI . '/css/plugins.css?ver=' . PORTO_VERSION );//phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 				}
 				wp_enqueue_style( 'porto-plugins' );
 			}
@@ -119,9 +118,12 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 
 			$db_options = get_post_meta( $module_id, 'wffn_step_custom_settings', true );
 
-			$db_options = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map( function ( $val ) {
-				return is_scalar( $val ) ? html_entity_decode( $val ) : $val;
-			}, $db_options ) : array();
+			$db_options = ( ! empty( $db_options ) && is_array( $db_options ) ) ? array_map(
+				function ( $val ) {
+					return is_scalar( $val ) ? html_entity_decode( $val ) : $val;
+				},
+				$db_options
+			) : array();
 
 			$this->custom_options = wp_parse_args( $db_options, $this->default_custom_settings() );
 
@@ -144,7 +146,6 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 					echo $global_css;//phpcs:ignore
 				}
 			}
-
 		}
 
 		public function print_custom_js_in_footer() {
@@ -175,7 +176,6 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		 *
 		 * add ct_inner in oxygen url
 		 *
-		 *
 		 * @return string
 		 */
 		public function check_oxy_inner_content( $post_ID ) {
@@ -202,7 +202,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 				} else {
 					$post_editable = true;
 				}
-			} else if ( $post_template == - 1 ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			} elseif ( $post_template == - 1 ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 				$post_editable = true;
 			} else { // Custom template
 				$shortcodes = get_post_meta( $post_template, WFFN_Common::oxy_get_meta_prefix( 'ct_builder_shortcodes' ), true );
@@ -228,13 +228,13 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		 * @return mixed
 		 */
 		public function migrate_modify_allowed_theme_settings( $args ) {
-			$db_options = get_option( 'bwf_gen_config', [] );
+			$db_options = get_option( 'bwf_gen_config', array() );
 
 			if ( ! empty( $db_options ) && ! empty( $db_options['allow_theme_css'] ) ) {
 				return $args;
 			}
 			if ( ! isset( $args['allow_theme_css'] ) ) {
-				$args['allow_theme_css'] = [];
+				$args['allow_theme_css'] = array();
 			}
 
 			$allowed_steps = array(
@@ -243,7 +243,7 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 				'wffn_ty',
 				'wffn_landing',
 				'wffn_optin',
-				'wffn_oty'
+				'wffn_oty',
 			);
 
 			/**
@@ -261,11 +261,12 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		/**
 		 * Save allow theme script settings
 		 * And it's a one time process
+		 *
 		 * @return bool
 		 */
 		public function maybe_save_allowed_theme_settings() {
 			$is_updated = false;
-			$db_options = get_option( 'bwf_gen_config', [] );
+			$db_options = get_option( 'bwf_gen_config', array() );
 
 			if ( ! empty( $db_options ) && isset( $db_options['allow_theme_css'] ) ) {
 				return $is_updated;
@@ -274,9 +275,9 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 			/**
 			 * Allow default theme script if user use any snippet
 			 */
-			$allowed_themes = apply_filters( 'wffn_allowed_themes', [ 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ] );
+			$allowed_themes = apply_filters( 'wffn_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'astra', 'jupiterx', 'kadence' ) );
 
-			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', [ 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ] );
+			$allowed_for_upsells_themes = apply_filters( 'wfocu_allowed_themes', array( 'flatsome', 'Extra', 'divi', 'Divi', 'jupiterx', 'kadence' ) );
 
 			$general_settings = BWF_Admin_General_Settings::get_instance();
 
@@ -286,12 +287,12 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 					'wffn_ty',
 					'wffn_landing',
 					'wffn_optin',
-					'wffn_oty'
+					'wffn_oty',
 				);
 
 				$is_updated = true;
 			}
-			if ( function_exists( 'WFFN_Core' ) && (is_array( $allowed_for_upsells_themes ) && in_array( get_template(), $allowed_for_upsells_themes, true ) || WFFN_Core()->page_builders->is_divi_theme_enabled() ) ) {
+			if ( function_exists( 'WFFN_Core' ) && ( is_array( $allowed_for_upsells_themes ) && in_array( get_template(), $allowed_for_upsells_themes, true ) || WFFN_Core()->page_builders->is_divi_theme_enabled() ) ) {
 				if ( ! empty( $db_options['allow_theme_css'] ) ) {
 					$db_options['allow_theme_css'][] = 'wfocu_offer';
 				} else {
@@ -299,7 +300,6 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 						'wfocu_offer',
 					);
 				}
-
 
 				$is_updated = true;
 			}
@@ -322,6 +322,5 @@ if ( ! class_exists( 'WFFN_Module_Common' ) ) {
 		public function maybe_checkout_page( $post ) {
 			return ( ( $post->post_type === 'wfacp_checkout' ) || 0 !== did_action( 'wfacp_after_checkout_page_found' ) );
 		}
-
 	}
 }

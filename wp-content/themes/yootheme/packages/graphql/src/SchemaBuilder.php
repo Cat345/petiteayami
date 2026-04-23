@@ -24,7 +24,11 @@ class SchemaBuilder
     /**
      * @var callable[][]
      */
-    protected array $hooks = [];
+    protected array $hooks = [
+        'onLoad' => [],
+        'onLoadType' => [],
+        'onLoadField' => [],
+    ];
 
     /**
      * @var array<string, array<string, mixed>|callable>
@@ -53,12 +57,6 @@ class SchemaBuilder
      */
     public function __construct(array $plugins = [])
     {
-        $this->hooks = [
-            'onLoad' => [],
-            'onLoadType' => [],
-            'onLoadField' => [],
-        ];
-
         foreach ($plugins as $plugin) {
             $this->loadPlugin($plugin);
         }
@@ -149,9 +147,6 @@ class SchemaBuilder
         return $this->directives[$name] ?? null;
     }
 
-    /**
-     * @param Directive $directive
-     */
     public function setDirective(Directive $directive): void
     {
         $this->directives[$directive->name] = $directive;
@@ -214,7 +209,7 @@ class SchemaBuilder
             $this->configs[$name][] = $config;
         }
 
-        if (!$type instanceof InputObjectType) {
+        if (!($type instanceof InputObjectType)) {
             throw new InvariantViolation("Type '{$name}' must be an InputObjectType.");
         }
 
@@ -238,7 +233,7 @@ class SchemaBuilder
             $this->configs[$name][] = $config;
         }
 
-        if (!$type instanceof ObjectType) {
+        if (!($type instanceof ObjectType)) {
             throw new InvariantViolation("Type '{$name}' must be an ObjectType.");
         }
 
@@ -298,7 +293,6 @@ class SchemaBuilder
      * @param mixed       $value
      * @param mixed       $args
      * @param mixed       $context
-     * @param ResolveInfo $info
      *
      * @return mixed
      */
@@ -307,10 +301,11 @@ class SchemaBuilder
         $resolver = new Middleware([Executor::class, 'defaultFieldResolver']);
 
         foreach ($this->resolveDirectives($info) as ['name' => $name, 'args' => $arguments]) {
-            if (is_callable($directiveDef = $this->getDirective($name))) {
-                if (is_callable($directive = $directiveDef($arguments, $resolver))) {
-                    $resolver->push($directive);
-                }
+            if (
+                is_callable($directiveDef = $this->getDirective($name)) &&
+                is_callable($directive = $directiveDef($arguments, $resolver))
+            ) {
+                $resolver->push($directive);
             }
         }
 

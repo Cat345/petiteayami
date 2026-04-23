@@ -55,37 +55,17 @@ class BWFAN_API_Get_Single_Automation_Stats extends BWFAN_API_Base {
 		}
 		$step_ids = array_column( $step_ids, 'ID' );
 
-		$completed_steps = BWFAN_Model_Automation_Contact_Trail::get_bulk_step_count( $step_ids );
-		$completed_sids  = empty( $completed_steps ) ? [] : array_column( $completed_steps, 'sid' );
-
-		$queued_steps = BWFAN_Model_Automation_Contact_Trail::get_bulk_step_count( $step_ids, 2 );
-		$queued_sids  = empty( $queued_steps ) ? [] : array_column( $queued_steps, 'sid' );
-
-		$skipped_steps = BWFAN_Model_Automation_Contact_Trail::get_bulk_step_count( $step_ids, 4 );
-		$skipped_sids  = empty( $skipped_steps ) ? [] : array_column( $skipped_steps, 'sid' );
-
-		$failed_steps = BWFAN_Model_Automation_Contact_Trail::get_bulk_step_count( $step_ids, 3 );
-		$failed_sids  = empty( $failed_steps ) ? [] : array_column( $failed_steps, 'sid' );
+		/** Single query for all step status counts (completed, queued, failed, skipped) */
+		$step_counts = BWFAN_Model_Automation_Contact_Trail::get_all_step_status_counts( $step_ids );
 
 		foreach ( $step_ids as $sid ) {
-			$index           = array_search( $sid, $completed_sids );
-			$completed_count = ( false !== $index && isset( $completed_steps[ $index ]['count'] ) ) ? $completed_steps[ $index ]['count'] : 0;
-
-			$index        = array_search( $sid, $queued_sids );
-			$queued_count = ( false !== $index && isset( $queued_steps[ $index ]['count'] ) ) ? $queued_steps[ $index ]['count'] : 0;
-
-			$index         = array_search( $sid, $skipped_sids );
-			$skipped_count = ( false !== $index && isset( $skipped_steps[ $index ]['count'] ) ) ? $skipped_steps[ $index ]['count'] : 0;
-
-			$index        = array_search( $sid, $failed_sids );
-			$failed_count = ( false !== $index && isset( $failed_steps[ $index ]['count'] ) ) ? $failed_steps[ $index ]['count'] : 0;
-
+			$counts       = isset( $step_counts[ $sid ] ) ? $step_counts[ $sid ] : array( 'completed' => 0, 'queued' => 0, 'failed' => 0, 'skipped' => 0 );
 			$data[ $sid ] = [
-				'queued'    => $queued_count,
+				'queued'    => $counts['queued'],
 				'active'    => 0,
-				'completed' => $completed_count,
-				'skipped'   => $skipped_count,
-				'failed'    => $failed_count,
+				'completed' => $counts['completed'],
+				'skipped'   => $counts['skipped'],
+				'failed'    => $counts['failed'],
 			];
 		}
 		$meta        = $this->automation_obj->get_automation_meta_data();

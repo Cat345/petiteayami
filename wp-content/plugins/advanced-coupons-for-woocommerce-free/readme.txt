@@ -2,8 +2,8 @@
 Contributors: jkohlbach, RymeraWebCo, Rymera01, smub
 Tags: woocommerce coupons, bogo coupons, store credit, bogo, smart coupons
 Requires at least: 5.2
-Tested up to: 6.9
-Stable tag: 4.7.1.1
+Tested up to: 7.0
+Stable tag: 4.7.2
 Requires PHP: 5.6
 License: GNU General Public License v2.0 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -247,6 +247,16 @@ Finally, in the Premium version, you can auto apply your offers, making it super
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Visit our <a href="https://advancedcouponsplugin.com/knowledgebase/getting-started-features-overview/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">getting started guide</a> to help you get up to speed
 
+== More Plugins From Our Team ==
+
+We build tools to help store owners succeed. Check out our other free plugins on WordPress.org:
+
+* [Wholesale Suite](https://wordpress.org/plugins/woocommerce-wholesale-prices/) - The #1 wholesale pricing plugin for WooCommerce.
+* [SaveTo Wishlist](https://wordpress.org/plugins/saveto-wishlist-lite-for-woocommerce/) - A fast, lightweight wishlist plugin to boost your store's conversions.
+* [StoreAgent](https://wordpress.org/plugins/storeagent-ai-for-woocommerce/) - A powerful WooCommerce AI toolkit featuring an AI Chatbot and automated content tools.
+* [Product Feed Pro by AdTribes](https://wordpress.org/plugins/woo-product-feed-pro/) - Generate optimized product feeds for Google Shopping, Facebook, Bing, and more.
+* [WC Vendors Marketplace](https://wordpress.org/plugins/wc-vendors/) - The easiest way to create your own thriving multivendor marketplace and earn commissions.
+
 == Frequently asked questions ==
 
 We have hundreds of guides and frequently asked questions answered in our online <a href="https://advancedcouponsplugin.com/knowledge-base/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">knowledge base</a>.
@@ -347,6 +357,10 @@ You can also explore our other compatible extensions as well:
 * <a href="https://advancedcouponsplugin.com/pricing/loyalty/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Loyalty Program for WooCommerce</a>
 * <a href="https://advancedcouponsplugin.com/pricing/gift-cards/?utm_source=wprepo&utm_medium=link&utm_campaign=acfwf" rel="friend">Advanced Gift Cards</a>
 
+= Where can I find more help and business advice? =
+
+For expert advice, tutorials, and strategies specifically for store marketing, coupon campaigns, and conversion optimization, visit our resource hub at [Store Owner Tips](https://storeownertips.com/).
+
 = How can I report security bugs? =
 
 You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/9e5fb91f-72fc-4bfa-afe5-949d9d02c27e)
@@ -379,6 +393,17 @@ Thanks,
 Josh Kohlbach (CEO of Rymera Web Co)
 
 == Changelog ==
+
+= 4.7.2 =
+* Bug Fix: Upgrade to premium link not working
+* Bug Fix: BOGO notice not displaying on classic cart/checkout pages
+* Bug Fix: BOGO session cache not invalidated on WooPayments multicurrency currency switch
+* Bug Fix: Role and payment restriction options cannot be enabled when WooPayments is active
+* Bug Fix: Virtual coupon status is set to disabled when WooPayments plugin is active
+* Bug Fix: Potential security issue
+* Feature: AI coupon generator - support for AI-generated coupon configuration
+* Improvement: Advanced tool to clear detached store credit entries
+* Improvement: Introduce option to disable the popup when creating a new coupon
 
 = 4.7.1.1 =
 * Improvement: Enhance WPML support for different domain language formats in URL translation

@@ -15,8 +15,6 @@ use function YOOtheme\trans;
 class CustomTaxonomyQueryType
 {
     /**
-     * @param WP_Taxonomy $taxonomy
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Taxonomy $taxonomy): array
@@ -70,18 +68,23 @@ class CustomTaxonomyQueryType
                     'args' => [
                         'id' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'term_order',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'ASC',
                         ],
                     ],
 
@@ -104,7 +107,6 @@ class CustomTaxonomyQueryType
                                         ],
                                     ),
                                     'type' => 'select',
-                                    'default' => 0,
                                     'options' => [
                                         ['value' => 0, 'text' => trans('Root')],
                                         [
@@ -125,7 +127,6 @@ class CustomTaxonomyQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -135,7 +136,6 @@ class CustomTaxonomyQueryType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -149,7 +149,6 @@ class CustomTaxonomyQueryType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'term_order',
                                         'options' => [
                                             trans('Term Order') => 'term_order',
                                             trans('Alphabetical') => 'name',
@@ -158,7 +157,6 @@ class CustomTaxonomyQueryType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'ASC',
                                         'options' => [
                                             trans('Ascending') => 'ASC',
                                             trans('Descending') => 'DESC',
@@ -187,9 +185,7 @@ class CustomTaxonomyQueryType
      */
     public static function resolveTerm($root, array $args)
     {
-        $args += ['id' => 0];
-
-        $term = get_term($args['id']);
+        $term = get_term($args['id'] ?? 0);
 
         return $term instanceof WP_Term ? $term : null;
     }
@@ -201,13 +197,6 @@ class CustomTaxonomyQueryType
      */
     public static function resolveTerms($root, array $args): array
     {
-        $args += [
-            'order' => 'term_order',
-            'order_direction' => 'ASC',
-            'offset' => 0,
-            'limit' => 10,
-        ];
-
         $query = [
             'taxonomy' => $args['taxonomy'],
             'orderby' => $args['order'],

@@ -8,7 +8,7 @@
  */
 
 
-define( 'BWF_VERSION', '1.10.12.70' );
+define( 'BWF_VERSION', '1.10.12.78' );
 define( 'BWF_DB_VERSION', '1.0.6' );
 if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 	#[AllowDynamicProperties]
@@ -665,7 +665,7 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 		}
 
 		public static function show_right_area() {
-			if ( wp_verify_nonce( filter_input( INPUT_GET, '_nonce', FILTER_UNSAFE_RAW ), 'bwf_tools_action' ) && isset( $_GET['woofunnels_transient'] ) && ( 'clear' === sanitize_text_field( $_GET['woofunnels_transient'] ) ) ) {
+			if ( wp_verify_nonce( filter_input( INPUT_GET, '_nonce', FILTER_UNSAFE_RAW ), 'bwf_tools_action' ) && isset( $_GET['woofunnels_transient'] ) && ( 'clear' === sanitize_text_field( wp_unslash( $_GET['woofunnels_transient'] ) ) ) ) {
 				$woofunnels_transient_obj = WooFunnels_Transient::get_instance();
 				$woofunnels_transient_obj->delete_force_transients();
 				$message = __( 'All Plugins transients cleared.', 'woofunnels' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
@@ -732,12 +732,16 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 			if ( 0 === strpos( $class_name, 'WooFunnels_' ) || 0 === strpos( $class_name, 'BWF_' ) ) {
 				$path         = WooFunnel_Loader::$ultimate_path . 'includes/class-' . self::slugify_classname( $class_name ) . '.php';
 				$contact_path = WooFunnel_Loader::$ultimate_path . 'contact/class-' . self::slugify_classname( $class_name ) . '.php';
+				$abstract_path = WooFunnel_Loader::$ultimate_path . 'includes/abstracts/class-' . self::slugify_classname( $class_name ) . '.php';
 
 				if ( is_file( $path ) ) {
 					require_once $path;
 				}
 				if ( is_file( $contact_path ) ) {
 					require_once $contact_path;
+				}
+				if ( is_file( $abstract_path ) ) {
+					require_once $abstract_path;
 				}
 
 				/**
@@ -786,14 +790,14 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 
 		/**
 		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 * 
+		 *
 		 * @param string $title The title to sanitize
 		 * @return string The sanitized title
 		 */
 		private static function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );
-			
+
 			return $title;
 		}
 
@@ -802,6 +806,9 @@ if ( ! class_exists( 'WooFunnels_Dashboard' ) ) {
 			require dirname( __DIR__ ) . '/contact/woofunnels-db-updater-functions.php';
 			require dirname( __DIR__ ) . '/contact/woofunnels-contact-functions.php';
 			require dirname( __DIR__ ) . '/contact/woofunnels-customer-functions.php';
+
+			// Tracking classes will be autoloaded on demand via autoloader
+			// No need to load them here
 
 			$core_classes = array(
 				'WooFunnels_process',

@@ -12,8 +12,8 @@ defined( 'ABSPATH' ) || exit;
 use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Calculator;
 use Stripe\StripeTaxForWooCommerce\Utils\Amount_Utility;
 use Stripe\StripeTaxForWooCommerce\WooCommerce\StripeOrderItemTax;
-use Stripe\StripeTaxForWooCommerce\Stripe\Tax_Calculation\Cart_Input;
 
+use WC_Customer;
 use WC_Order;
 use WC_Order_Item_Shipping;
 use WC_Order_Item_Product;
@@ -30,13 +30,15 @@ abstract class Order_Controller {
 	 *
 	 * @param WC_Order $order The order.
 	 * @param array    $tax_location_override WC args.
+	 * @param int      $customer_user_id_override Customer user ID.
 	 */
-	public static function calculate_taxes( WC_Order $order, $tax_location_override ) {
+	public static function calculate_taxes( WC_Order $order, $tax_location_override, $customer_user_id_override ) {
 		if ( 'checkout-draft' === $order->get_status() ) {
 			static::set_checkout_order_meta( $order );
 		}
 
-		$tax_calculation_input = Order_Input::from_order( $order, $tax_location_override );
+		$non_taxable_shipping_total = Order_Input::get_non_taxable_shipping_cost_amount( $order );
+		$tax_calculation_input      = Order_Input::from_order( $order, $tax_location_override, $customer_user_id_override );
 
 		$order_id = $order->get_id();
 		if ( ! isset( $tax_calculation_input['line_items'] ) || ! is_array( $tax_calculation_input['line_items'] ) ) {
@@ -82,7 +84,7 @@ abstract class Order_Controller {
 		$result_line = $tax_calculation_result['shipping_cost'];
 
 		if ( Result::TAX_BEHAVIOR_INCLUSIVE === $result_line->tax_behavior ) {
-			$order->set_shipping_total( $result_line->amount );
+			$order->set_shipping_total( $result_line->amount + $non_taxable_shipping_total );
 		}
 	}
 
@@ -152,7 +154,8 @@ abstract class Order_Controller {
 	 * @param object $order The order.
 	 */
 	public static function sync_order_totals( $order ) {
-		$order_id = $order->get_id();
+		$order_id                   = $order->get_id();
+		$non_taxable_shipping_total = Order_Input::get_non_taxable_shipping_cost_amount( $order );
 
 		$tax_calculation = isset( Calculator::$calculations[ $order_id ]['result'] ) ? Calculator::$calculations[ $order_id ]['result'] : null;
 
@@ -168,9 +171,8 @@ abstract class Order_Controller {
 				continue;
 			}
 
-			$item->set_total( $result_line->amount );
-
 			if ( ! ( $item instanceof WC_Order_Item_Shipping ) ) {
+				$item->set_total( $result_line->amount );
 				$item->set_total_tax( $result_line->amount_tax );
 			}
 		}

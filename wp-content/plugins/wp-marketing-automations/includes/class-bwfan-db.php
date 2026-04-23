@@ -321,6 +321,8 @@ class BWFAN_DB {
 			'3.5.2'    => '3_5_2',
 			'3.5.3'    => '3_5_3',
 			'3.5.4'    => '3_5_4',
+			'3.5.5'    => '3_5_5',
+			'3.5.6'    => '3_5_6',
 		);
 		$db_version = get_option( 'bwfan_db', '2.0' );
 
@@ -1896,6 +1898,68 @@ class BWFAN_DB {
 		/** Updating version key */
 		update_option( 'bwfan_db', $version_key, true );
 	}
+
+	/**
+	 * Convert old filter formats to new filter formats in audiences
+	 *
+	 * @param $version_key
+	 *
+	 * @return void
+	 */
+	public function db_update_3_5_5( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		if ( method_exists( 'BWFCRM_Filters', 'convert_filters_to_new_filters' ) ) {
+			// Schedule the filter conversion action to run after 5 minutes
+			if ( ! bwf_has_action_scheduled( 'bwfan_convert_filters_to_new_filters' ) ) {
+				bwf_schedule_recurring_action( time() + ( 5 * MINUTE_IN_SECONDS ), 60, 'bwfan_convert_filters_to_new_filters', array(), 'bwfcrm' );
+			}
+		}
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
+	/**
+	 * add index in c_time column in automation_contact_trail table
+	 *
+	 * @param $version_key
+	 *
+	 * @return void
+	 */
+	public function db_update_3_5_6( $version_key ) {
+		if ( is_array( $this->method_run ) && in_array( '1.0.0', $this->method_run, true ) ) {
+			update_option( 'bwfan_db', $version_key, true );
+			$this->method_run[] = $version_key;
+
+			return;
+		}
+
+		global $wpdb;
+		$db_errors = [];
+		$table = $wpdb->prefix . 'bwfan_automation_contact_trail';
+		$index_exists = $wpdb->get_var( "SHOW INDEX FROM `{$table}` WHERE Key_name = 'c_time'" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( ! $index_exists ) {
+			$wpdb->query( "ALTER TABLE `{$table}` ADD INDEX `c_time` (`c_time`);" ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			if ( ! empty( $wpdb->last_error ) ) {
+				$db_errors[] = 'bwfan_automation_contact_trail add index `c_time` - ' . $wpdb->last_error;
+			}
+		}
+
+		/** Log if any mysql errors */
+		if ( ! empty( $db_errors ) ) {
+			BWFAN_Common::log_test_data( array_merge( [ __FUNCTION__ ], $db_errors ), 'db-creation-errors' );
+		}
+
+		/** Updating version key */
+		update_option( 'bwfan_db', $version_key, true );
+	}
+
 }
 
 if ( class_exists( 'BWFAN_DB' ) ) {

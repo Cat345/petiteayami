@@ -39,11 +39,10 @@ class ConfigLoader
     public function __invoke(Container $container, array $configs): void
     {
         foreach ($configs as $config) {
-            if ($config instanceof Closure) {
-                $config = $config($this->config, $container);
-            } else {
-                $config = $this->loadArray((array) $config);
-            }
+            $config =
+                $config instanceof Closure
+                    ? $config($this->config, $container)
+                    : $this->loadArray((array) $config);
 
             $this->config->add('', $config);
         }
@@ -54,7 +53,7 @@ class ConfigLoader
      */
     public function loadConfig(?object $service, string $id): void
     {
-        if (!$service instanceof ConfigObject) {
+        if (!($service instanceof ConfigObject)) {
             return;
         }
 

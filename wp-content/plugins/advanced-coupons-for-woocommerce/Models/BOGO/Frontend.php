@@ -244,7 +244,7 @@ class Frontend extends Base_Model implements Model_Interface {
      * @return int|boolean The cart item compare value if matched, false otherwise.
      */
     public function advanced_bogo_is_cart_item_match_entries( $matched, $cart_item, $entry, $is_deal, $type, $bogo_deal ) {
-        if ( 'same-products' === $type ) {
+        if ( 'same-products' === $type || 'same-products' === $bogo_deal->deal_type ) {
             return $matched;
         }
 

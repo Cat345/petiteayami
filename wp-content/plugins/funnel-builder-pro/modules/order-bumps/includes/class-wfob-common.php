@@ -6,58 +6,58 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 	 */
 	class WFOB_Common {
 
-		public static $ins = null;
-		public static $design_default_layout = 'layout_1';
-		private static $wfob_id = 0;
-		private static $design_model_data = [];
-		private static $design_default_model_data = [];
-		private static $product_data = [];
-		public static $removed_bump_products = [];
-		public static $bump_settings = [];
+		public static $ins                        = null;
+		public static $design_default_layout      = 'layout_1';
+		private static $wfob_id                   = 0;
+		private static $design_model_data         = array();
+		private static $design_default_model_data = array();
+		private static $product_data              = array();
+		public static $removed_bump_products      = array();
+		public static $bump_settings              = array();
 
-		public static $pre_checked_bumps = [];
+		public static $pre_checked_bumps = array();
 
-		public static $overide_design_keys = [
-			'layout_1'  => [
+		public static $overide_design_keys = array(
+			'layout_1'  => array(
 				'exclusive_content_color'    => '#ffffff',
 				'exclusive_content_bg_color' => '#D80027',
-			],
-			'layout_2'  => [
+			),
+			'layout_2'  => array(
 				'exclusive_content_color' => '#ffffff',
-			],
-			'layout_5'  => [
+			),
+			'layout_5'  => array(
 				'exclusive_content_bg_color' => '#09B29C',
 				'exclusive_content_color'    => '#ffffff',
-			],
-			'layout_6'  => [
+			),
+			'layout_6'  => array(
 				'exclusive_content_bg_color' => '#E15333',
 				'exclusive_content_color'    => '#ffffff',
-			],
-			'layout_7'  => [
+			),
+			'layout_7'  => array(
 				'exclusive_content_bg_color' => '#09B29C',
 				'exclusive_content_color'    => '#ffffff',
-			],
-			'layout_8'  => [
+			),
+			'layout_8'  => array(
 				'exclusive_content_bg_color' => '#ED1A55',
 				'exclusive_content_color'    => '#ffffff',
-			],
-			'layout_9'  => [
+			),
+			'layout_9'  => array(
 				'exclusive_content_bg_color' => '#353030',
 				'exclusive_content_color'    => '#ffffff',
-			],
-			'layout_10' => [
+			),
+			'layout_10' => array(
 				'exclusive_content_bg_color' => '#353030',
 				'exclusive_content_color'    => '#ffffff',
-			],
+			),
 
-		];
+		);
 
 		public static function init() {
 
 			/**
 			 * Loading WooFunnels core
 			 */
-			add_action( 'plugins_loaded', [ __CLASS__, 'include_core' ], - 1 );
+			add_action( 'plugins_loaded', array( __CLASS__, 'include_core' ), - 1 );
 
 			/**
 			 * Register Post Type
@@ -66,22 +66,19 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 			add_action( 'init', array( __CLASS__, 'register_post_status' ), 5 );
 
-
 			add_filter( 'wfob_parse_shortcode', 'do_shortcode' );
-
 
 			add_action( 'wp_ajax_wfob_change_rule_type', array( __CLASS__, 'ajax_render_rule_choice' ) );
 
-			add_filter( 'wcct_get_restricted_action', [ __CLASS__, 'wcct_get_restricted_action' ] );
+			add_filter( 'wcct_get_restricted_action', array( __CLASS__, 'wcct_get_restricted_action' ) );
 			add_filter( 'woofunnels_global_settings_fields', array( __CLASS__, 'add_global_settings_fields' ) );
-			add_action( 'woocommerce_init', [ __CLASS__, 'setup_bump_layouts' ] );
+			add_action( 'woocommerce_init', array( __CLASS__, 'setup_bump_layouts' ) );
 
 			/**
 			 * update bump analytics data for bundle product
 			 */
 			add_filter( 'wfob_add_bump_order_analytics_data', array( __CLASS__, 'maybe_bundle_product_added' ), 10, 3 );
 			add_filter( 'wfob_remove_bump_order_analytics_data', array( __CLASS__, 'maybe_bundle_product_added' ), 10, 3 );
-
 		}
 
 
@@ -95,6 +92,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		/**
 		 * Get current Page id
+		 *
 		 * @return int
 		 */
 		public static function set_id( $wfob_id = 0 ) {
@@ -106,7 +104,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function get_instance() {
 			if ( null == self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -122,27 +120,33 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function register_post_type() {
 
-			register_post_type( self::get_bump_post_type_slug(), apply_filters( 'wfob_bump_post_type_args', array(
-				'labels'              => array(
-					'name'          => __( 'bump', 'woofunnels-order-bump' ),
-					'singular_name' => __( 'Bump', 'woofunnels-order-bump' ),
-					'add_new'       => __( 'Add Bump', 'woofunnels-order-bump' ),
-					'add_new_item'  => __( 'Add New Bump', 'woofunnels-order-bump' ),
-				),
-				'public'              => false,
-				'show_ui'             => true,
-				'capability_type'     => 'product',
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'rewrite'             => false,
-				'query_var'           => true,
-				'supports'            => array( 'title' ),
-				'has_archive'         => false,
-			) ) );
+			register_post_type(
+				self::get_bump_post_type_slug(),
+				apply_filters(
+					'wfob_bump_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => __( 'bump', 'woofunnels-order-bump' ),
+							'singular_name' => __( 'Bump', 'woofunnels-order-bump' ),
+							'add_new'       => __( 'Add Bump', 'woofunnels-order-bump' ),
+							'add_new_item'  => __( 'Add New Bump', 'woofunnels-order-bump' ),
+						),
+						'public'              => false,
+						'show_ui'             => true,
+						'capability_type'     => 'product',
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => false,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'rewrite'             => false,
+						'query_var'           => true,
+						'supports'            => array( 'title' ),
+						'has_archive'         => false,
+					)
+				)
+			);
 		}
 
 		public static function get_bump_post_type_slug() {
@@ -159,12 +163,12 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 			} elseif ( 'all' === $screen_type || 'builder' == $screen_type ) {
 				if ( filter_input( INPUT_GET, 'page' ) == 'wfob' && filter_input( INPUT_GET, 'wfob_id' ) > 0 ) {
-					//&& filter_input( INPUT_GET, 'id' ) !== ''
+					// && filter_input( INPUT_GET, 'id' ) !== ''
 					return true;
 				}
 			} elseif ( 'all' === $screen_type || 'settings' == $screen_type ) {
 				if ( filter_input( INPUT_GET, 'page' ) == 'wfob' && filter_input( INPUT_GET, 'tab' ) == 'settings' ) {
-					//&& filter_input( INPUT_GET, 'id' ) !== ''
+					// && filter_input( INPUT_GET, 'id' ) !== ''
 					return true;
 				}
 			}
@@ -232,7 +236,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return ( $variation_attributes );
-
 		}
 
 		public static function search_products( $term, $include_variations = false ) {
@@ -247,8 +250,8 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			$type_where    = '';
 
 			$product_ids = $wpdb->get_col(
-
-				$wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
+				$wpdb->prepare(
+					"SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
 				LEFT JOIN {$wpdb->postmeta} postmeta ON posts.ID = postmeta.post_id
 				$type_join
 				WHERE (
@@ -260,7 +263,11 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				AND posts.post_type IN ('" . implode( "','", $post_types ) . "')
 				AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "')
 				$type_where
-				ORDER BY posts.post_parent ASC, posts.post_title ASC", $like_term, $like_term ) );
+				ORDER BY posts.post_parent ASC, posts.post_title ASC",
+					$like_term,
+					$like_term
+				)
+			);
 
 			if ( is_numeric( $term ) ) {
 				$post_id   = absint( $term );
@@ -323,10 +330,8 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 *
 		 * @param $class_name
 		 *
-		 *
 		 * @return mixed|string
 		 * @see WFOB_Gateways::integration_autoload();
-		 *
 		 */
 		public static function slugify_classname( $class_name ) {
 			$classname = self::custom_sanitize_title( $class_name );
@@ -337,14 +342,14 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		/**
 		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 * 
+		 *
 		 * @param string $title The title to sanitize
 		 * @return string The sanitized title
 		 */
 		private static function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );
-			
+
 			return $title;
 		}
 
@@ -357,7 +362,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 * @see is_serialized()
 		 */
 		public static function unserialize_recursive( $val ) {
-			//$pattern = "/.*\{(.*)\}/";
+			// $pattern = "/.*\{(.*)\}/";
 			if ( is_serialized( $val ) ) {
 				$val = trim( $val );
 				$ret = unserialize( $val );
@@ -377,7 +382,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			} else {
 				return $val;
 			}
-
 		}
 
 
@@ -420,7 +424,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			$val = str_replace( '&gt;', '>', $val );
 
 			return $val;
-
 		}
 
 		public static function get_post_table_data( $ids = false, $all = false ) {
@@ -468,23 +471,32 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					$status   = get_post_status( get_the_ID() );
 					$priority = $post->menu_order;
 
-					$bump_url    = add_query_arg( array(
-						'page'    => 'wfob',
-						'section' => 'products',
-						'wfob_id' => get_the_ID(),
-					), admin_url( 'admin.php' ) );
+					$bump_url    = add_query_arg(
+						array(
+							'page'    => 'wfob',
+							'section' => 'products',
+							'wfob_id' => get_the_ID(),
+						),
+						admin_url( 'admin.php' )
+					);
 					$row_actions = array();
 
-					$wfob_duplicate = add_query_arg( [
-						'wfob_duplicate' => 'true',
-						'wfob_id'        => $post->ID,
-					], admin_url( 'admin.php?page=wfob' ) );
+					$wfob_duplicate = add_query_arg(
+						array(
+							'wfob_duplicate' => 'true',
+							'wfob_id'        => $post->ID,
+						),
+						admin_url( 'admin.php?page=wfob' )
+					);
 
-					$wfob_export = add_query_arg( [
-						'action'   => 'wfob-export',
-						'_wpnonce' => wp_create_nonce( 'wfob-export' ),
-						'id'       => get_the_ID()
-					], admin_url( 'admin.php?page=wfob' ) );
+					$wfob_export = add_query_arg(
+						array(
+							'action'   => 'wfob-export',
+							'_wpnonce' => wp_create_nonce( 'wfob-export' ),
+							'id'       => get_the_ID(),
+						),
+						admin_url( 'admin.php?page=wfob' )
+					);
 
 					$row_actions['edit'] = array(
 						'action' => 'edit',
@@ -492,7 +504,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						'link'   => $bump_url,
 						'attrs'  => '',
 					);
-
 
 					$row_actions['wfob_duplicate'] = array(
 						'action' => 'wfob_duplicate',
@@ -538,7 +549,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function string2hex( $string ) {
 			$hex = '';
-			for ( $i = 0; $i < strlen( $string ); $i ++ ) {
+			for ( $i = 0; $i < strlen( $string ); $i++ ) {
 				$hex .= dechex( ord( $string[ $i ] ) );
 			}
 
@@ -585,18 +596,21 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return $url;
-
 		}
 
 		public static function get_order_status_settings() {
 			$get_order_statuses = wc_get_order_statuses();
 
-			$result = array_map( function ( $short, $long ) {
-				return array(
-					'id'   => $short,
-					'name' => $long,
-				);
-			}, array_keys( $get_order_statuses ), $get_order_statuses );
+			$result = array_map(
+				function ( $short, $long ) {
+					return array(
+						'id'   => $short,
+						'name' => $long,
+					);
+				},
+				array_keys( $get_order_statuses ),
+				$get_order_statuses
+			);
 
 			return $result;
 		}
@@ -628,7 +642,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return $cloned_option;
-
 		}
 
 		public static function get_next_bump_priority() {
@@ -648,14 +661,17 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function register_post_status() {
 			// acf-disabled
-			register_post_status( WFOB_SLUG . '-disabled', array(
-				'label'                     => __( 'Disabled', 'woofunnels-order-bump' ),
-				'public'                    => true,
-				'exclude_from_search'       => false,
-				'show_in_admin_all_list'    => true,
-				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'woofunnels-order-bump' ),
-			) );
+			register_post_status(
+				WFOB_SLUG . '-disabled',
+				array(
+					'label'                     => __( 'Disabled', 'woofunnels-order-bump' ),
+					'public'                    => true,
+					'exclude_from_search'       => false,
+					'show_in_admin_all_list'    => true,
+					'show_in_admin_status_list' => true,
+					'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'woofunnels-order-bump' ),
+				)
+			);
 		}
 
 		public static function tooltip( $tip, $allow_html = false ) {
@@ -765,31 +781,31 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function get_builder_localization() {
-			$data           = [];
-			$data['global'] = [
+			$data           = array();
+			$data['global'] = array(
 				'settings_success'    => __( 'Changes saved', 'woofunnels-order-bump' ),
 				'skin_imported'       => __( 'Skin Imported', 'woofunnels-order-bump' ),
-				'form_has_changes'    => [
+				'form_has_changes'    => array(
 					'title'             => __( 'Changes have been made!', 'woofunnels-order-bump' ),
 					'text'              => __( 'You need to save changes before generating preview.', 'woofunnels-order-bump' ),
 					'confirmButtonText' => __( 'Yes, Save it!' ),
 					'cancelText'        => __( 'Cancel', 'woofunnels-order-bump' ),
-				],
-				'remove_product'      => [
+				),
+				'remove_product'      => array(
 					'title'             => __( 'Want to remove this product from checkout?', 'woofunnels-order-bump' ),
-					'text'              => __( "You are about to remove this product. This action cannot be undone. Cancel to stop, Delete to proceed.", 'woofunnels-order-bump' ),
+					'text'              => __( 'You are about to remove this product. This action cannot be undone. Cancel to stop, Delete to proceed.', 'woofunnels-order-bump' ),
 					'confirmButtonText' => __( 'Remove', 'woofunnels-order-bump' ),
 					'type'              => 'error',
 					'modal_title'       => __( 'Remove Product', 'woofunnels-order-bump' ),
-				],
+				),
 				'active'              => __( 'Active', 'woofunnels-order-bump' ),
 				'inactive'            => __( 'Inactive', 'woofunnels-order-bump' ),
-				'add_bump'            => [
+				'add_bump'            => array(
 					'heading'           => __( 'Page Title', 'woofunnels-order-bump' ),
 					'checkout_url_slug' => __( 'Checkout Url', 'woofunnels-order-bump' ),
 					'edit_order_bump'   => __( 'Edit OrderBump', 'woofunnels-order-bump' ),
 					'new_bump'          => __( 'New OrderBump', 'woofunnels-order-bump' ),
-				],
+				),
 				'confirm_button_text' => __( 'Ok', 'woofunnels-order-bump' ),
 				'cncel_button_text'   => __( 'Cancel', 'woofunnels-order-bump' ),
 				'delete_wfob_page'    => __( 'Are you sure, you want to delete this permanently? This can`t be undone', 'woofunnels-order-bump' ),
@@ -797,7 +813,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				'remove_modal_text'   => __( 'Remove', 'woofunnels-order-bump' ),
 				'delete_modal_text'   => __( 'Delete', 'woofunnels-order-bump' ),
 				'skin_modal_title'    => __( 'Choose Skin', 'woofunnels-order-bump' ),
-			];
+			);
 
 			$data['global_settings'] = array(
 				'fields' => self::all_global_settings_fields(),
@@ -807,13 +823,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				'fields' => self::all_settings_fields(),
 			);
 
-			$data['settings'] = [
+			$data['settings'] = array(
 				'custom_css_heading'        => __( 'Custom CSS', 'woofunnels-order-bump' ),
 				'custom_css_label'          => __( 'Custom CSS Tweaks', 'woofunnels-order-bump' ),
 				'other_bump_position_label' => __( 'Custom Position', 'woofunnels-order-bump' ),
-			];
+			);
 
-			$data['design'] = [
+			$data['design'] = array(
 				'group_heading'                      => __( 'Heading Bar', 'woofunnels-order-bump' ),
 				'choose_layout_heading'              => __( 'Choose Layout', 'woofunnels-order-bump' ),
 				'title_box'                          => __( 'Title', 'woofunnels-order-bump' ),
@@ -863,114 +879,113 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				'description_hint'                   => __( 'Use merge tag {{quantity_incrementer}} to show the quantity changer.', 'woofunnels-order-bump' ),
 				'short_description'                  => __( 'Short Description', 'woofunnels-order-bump' ),
 				'read_more'                          => __( 'Read More Text', 'woofunnels-order-bump' ),
-				'short_description_hint'             => __( "Use merge tag {{more}} to make Description collapsible", 'woofunnels-order-bump' ),
+				'short_description_hint'             => __( 'Use merge tag {{more}} to make Description collapsible', 'woofunnels-order-bump' ),
 				'add_btn_text'                       => __( 'Add Button', 'woofunnels-order-bump' ),
 				'added_btn_text'                     => __( 'Added Button', 'woofunnels-order-bump' ),
 				'remove_btn_text'                    => __( 'Remove Button', 'woofunnels-order-bump' ),
 				'textOn'                             => __( 'Active', 'woofunnels-order-bump' ),
 				'textOff'                            => __( 'InActive', 'woofunnels-order-bump' ),
 				'choose_option'                      => sprintf( "<p><a href='#' class='wfob_qv-button var_product' qv-id='%d' qv-var-id='%d'>%s</a></p>", 0, 0, __( 'Choose an option', 'woocommerce' ) ),
-				'layout_change'                      => [
+				'layout_change'                      => array(
 					'title'             => __( 'Are you sure want to change skin?', 'woofunnels-order-bump' ),
 					'text'              => __( 'The current style settings would be changed as per new skin.', 'woofunnels-order-bump' ),
 					'confirmButtonText' => __( 'Confirm', 'woofunnels-order-bump' ),
 					'type'              => 'warning',
-				],
-				'border_type'                        => [
-					[
+				),
+				'border_type'                        => array(
+					array(
 						'id'   => 'solid',
 						'name' => __( 'Solid', 'woofunnels-order-bump' ),
-					],
-					[
+					),
+					array(
 						'id'   => 'dotted',
 						'name' => __( 'Dotted', 'woofunnels-order-bump' ),
-					],
-					[
+					),
+					array(
 						'id'   => 'dashed',
 						'name' => __( 'Dashed', 'woofunnels-order-bump' ),
-					],
-				],
-				'yes_no_drop_down'                   => [
-					[
+					),
+				),
+				'yes_no_drop_down'                   => array(
+					array(
 						'id'   => '0',
 						'name' => __( 'No', 'woofunnels-order-bump' ),
-					],
-					[
+					),
+					array(
 						'id'   => '1',
 						'name' => __( 'Yes', 'woofunnels-order-bump' ),
-					],
-				],
-				'layouts'                            => [
-					[
+					),
+				),
+				'layouts'                            => array(
+					array(
 						'id'   => 'layout-1',
 						'name' => __( 'Layout 1', 'woofunnels-order-bump' ),
-					],
-					[
+					),
+					array(
 						'id'   => 'layout-2',
 						'name' => __( 'Layout 2', 'woofunnels-order-bump' ),
-					],
-				],
+					),
+				),
 				'default_layout'                     => 'layout-1',
-			];
+			);
 
 			return $data;
 		}
 
 		public static function get_bump_position( $without_key = false ) {
 
-			$positions = [
-				'woocommerce_checkout_order_review_above_order_summary'   => [
+			$positions = array(
+				'woocommerce_checkout_order_review_above_order_summary' => array(
 					'name'     => __( 'Above The Order Summary', 'woofunnels-order-bump' ),
 					'hook'     => 'woocommerce_checkout_order_review',
 					'priority' => 9,
 					'id'       => 'woocommerce_checkout_order_review_above_order_summary',
-				],
-				'woocommerce_checkout_order_review_below_order_summary'   => [
+				),
+				'woocommerce_checkout_order_review_below_order_summary' => array(
 					'name'     => __( 'Below The Order Summary', 'woofunnels-order-bump' ),
 					'hook'     => 'woocommerce_checkout_order_review',
 					'priority' => 11,
 					'id'       => 'woocommerce_checkout_order_review_below_order_summary',
-				],
-				'woocommerce_checkout_order_review_above_payment_gateway' => [
+				),
+				'woocommerce_checkout_order_review_above_payment_gateway' => array(
 					'name'     => __( 'Above The Payment Gateways', 'woofunnels-order-bump' ),
 					'hook'     => 'wfob_above_payment_gateway',
 					'priority' => 19,
 					'id'       => 'woocommerce_checkout_order_review_above_payment_gateway',
-				],
-				'woocommerce_checkout_order_review_below_payment_gateway' => [
+				),
+				'woocommerce_checkout_order_review_below_payment_gateway' => array(
 					'name'     => __( 'Below The Payment Gateways', 'woofunnels-order-bump' ),
 					'hook'     => 'wfob_below_payment_gateway',
 					'priority' => 21,
 					'id'       => 'woocommerce_checkout_order_review_below_payment_gateway',
-				],
-				'wfacp_below_mini_cart_items'                             => [
+				),
+				'wfacp_below_mini_cart_items'      => array(
 					'name'     => __( 'Inside Mini Cart', 'woofunnels-order-bump' ),
 					'hook'     => 'wfacp_below_mini_cart_item',
 					'priority' => 21,
 					'id'       => 'wfacp_below_mini_cart_items',
-				],
-				'woocommerce_before_checkout_form'                        => [
+				),
+				'woocommerce_before_checkout_form' => array(
 					'name'     => __( 'Above Checkout Form', 'woofunnels-order-bump' ),
 					'hook'     => 'woocommerce_before_checkout_form',
 					'priority' => 1008,
 					'id'       => 'woocommerce_before_checkout_form',
-				],
-				'wfacp_mini_cart_top'                                     => [
+				),
+				'wfacp_mini_cart_top'              => array(
 					'name'     => __( 'Above Mini Cart', 'woofunnels-order-bump' ),
 					'hook'     => 'wfacp_mini_cart_top',
 					'priority' => 21,
 					'id'       => 'wfacp_mini_cart_top',
-				],
-				'wfacp_mini_cart_bottom'                                  => [
+				),
+				'wfacp_mini_cart_bottom'           => array(
 					'name'     => __( 'Below Mini Cart', 'woofunnels-order-bump' ),
 					'hook'     => 'wfacp_mini_cart_bottom',
 					'priority' => 21,
 					'id'       => 'wfacp_mini_cart_bottom',
-				],
-			];
+				),
+			);
 
 			$positions = apply_filters( 'wfob_bump_positions', $positions );
-
 
 			if ( false == $without_key ) {
 				$positions = array_values( $positions );
@@ -987,7 +1002,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 */
 		public static function update_page_product( $wfob_id, $product ) {
 			if ( empty( $product ) ) {
-				$product = [];
+				$product = array();
 			}
 			update_post_meta( $wfob_id, '_wfob_selected_products', $product );
 		}
@@ -1000,7 +1015,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 */
 		public static function update_product_settings( $wfob_id, $product ) {
 			if ( empty( $product ) ) {
-				$product = [];
+				$product = array();
 			}
 			update_post_meta( $wfob_id, '_wfob_product_settings', $product );
 		}
@@ -1020,6 +1035,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		/**
 		 * Function to get timezone string by checking WordPress timezone settings
+		 *
 		 * @return mixed|string|void
 		 */
 		public static function wc_timezone_string() {
@@ -1100,7 +1116,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 			$class = 'wfob_Rule_' . $rule_type;
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfob_rule_rules[ $rule_type ] = new $class;
+				$woocommerce_wfob_rule_rules[ $rule_type ] = new $class();
 
 				return $woocommerce_wfob_rule_rules[ $rule_type ];
 			} else {
@@ -1115,7 +1131,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 			$class = 'wfob_Input_' . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $input_type ) ) );
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfob_rule_inputs[ $input_type ] = new $class;
+				$woocommerce_wfob_rule_inputs[ $input_type ] = new $class();
 			} else {
 				$woocommerce_wfob_rule_inputs[ $input_type ] = apply_filters( 'woocommerce_wfob_rule_get_input_object', $input_type );
 			}
@@ -1180,31 +1196,33 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			wp_update_post( $my_post );
 		}
 
-		public static function update_design_data( $wfob_id, $data = [] ) {
+		public static function update_design_data( $wfob_id, $data = array() ) {
 			update_post_meta( $wfob_id, '_wfob_design_data', $data );
 		}
 
-		public static function update_setting_data( $wfob_id, $settings = [] ) {
+		public static function update_setting_data( $wfob_id, $settings = array() ) {
 
 			update_post_meta( $wfob_id, '_wfob_settings', $settings );
 			if ( isset( $settings['priority'] ) ) {
-				wp_update_post( array(
-					'ID'         => $wfob_id,
-					'menu_order' => $settings['priority'],
-				) );
+				wp_update_post(
+					array(
+						'ID'         => $wfob_id,
+						'menu_order' => $settings['priority'],
+					)
+				);
 			}
 		}
 
 		public static function get_setting_data( $wfob_id ) {
 			$data = self::$bump_settings[ $wfob_id ] ?? get_post_meta( $wfob_id, '_wfob_settings', true );
 			if ( empty( $data ) ) {
-				$data = [
+				$data = array(
 					'priority'                         => 0,
 					'order_bump_position_hooks'        => self::default_bump_position(),
 					'order_bump_position_hooks_mobile' => self::default_bump_position(),
 					'order_bump_auto_added'            => false,
 					'order_bump_auto_hide'             => false,
-				];
+				);
 				if ( $wfob_id > 0 ) {
 					$post = get_post( $wfob_id );
 					if ( ! is_null( $post ) ) {
@@ -1236,45 +1254,45 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			$data['design_default_model_data'] = $design_default_model_data;
 			$data['selected_layout']           = $design_model_data['layout'];
 			$data['model']                     = $design_model_data;
-			$data['layout_position']           = [
-				'layout_1' => [
+			$data['layout_position']           = array(
+				'layout_1' => array(
 					'left'  => __( 'Left', 'woofunnels-order-bump' ),
 					'right' => __( 'Right', 'woofunnels-order-bump' ),
 					'top'   => __( 'Top', 'woofunnels-order-bump' ),
 
-				],
-				'layout_2' => [
+				),
+				'layout_2' => array(
 					'left'  => __( 'Left', 'woofunnels-order-bump' ),
 					'right' => __( 'Right', 'woofunnels-order-bump' ),
 					'top'   => __( 'Top', 'woofunnels-order-bump' ),
 
-				],
-				'layout_3' => [
+				),
+				'layout_3' => array(
 					'left'  => __( 'Left', 'woofunnels-order-bump' ),
 					'right' => __( 'Right', 'woofunnels-order-bump' ),
 					'top'   => __( 'Top', 'woofunnels-order-bump' ),
 
-				],
-				'layout_4' => [
+				),
+				'layout_4' => array(
 					'left'  => __( 'Left', 'woofunnels-order-bump' ),
 					'right' => __( 'Right', 'woofunnels-order-bump' ),
 					'top'   => __( 'Top', 'woofunnels-order-bump' ),
-				],
-				'layout_5' => [
-					'left'  => __( 'Left', 'woofunnels-order-bump' ),
-					'right' => __( 'Right', 'woofunnels-order-bump' ),
-					'top'   => __( 'Top', 'woofunnels-order-bump' ),
-
-				],
-				'layout_6' => [
+				),
+				'layout_5' => array(
 					'left'  => __( 'Left', 'woofunnels-order-bump' ),
 					'right' => __( 'Right', 'woofunnels-order-bump' ),
 					'top'   => __( 'Top', 'woofunnels-order-bump' ),
 
-				]
+				),
+				'layout_6' => array(
+					'left'  => __( 'Left', 'woofunnels-order-bump' ),
+					'right' => __( 'Right', 'woofunnels-order-bump' ),
+					'top'   => __( 'Top', 'woofunnels-order-bump' ),
 
-			];
-			$data                              = self::get_design_product_fields( $wfob_id, $data );
+				),
+
+			);
+			$data = self::get_design_product_fields( $wfob_id, $data );
 
 			return $data;
 		}
@@ -1287,16 +1305,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		public static function get_default_model_data( $wfob_id ) {
 			self::$design_default_model_data = WFOB_Bump_Fc::get_default_models();
 
-
 			$products                        = self::get_prepared_products( $wfob_id );
 			self::$design_default_model_data = apply_filters( 'wfob_default_color_scheme', self::$design_default_model_data );
-
 
 			foreach ( self::$design_default_model_data as $key => $default_data ) {
 
 				self::$design_default_model_data[ $key ] = self::add_product_details_default_layout( $products, $default_data );
 			}
-
 
 			return self::$design_default_model_data;
 		}
@@ -1304,7 +1319,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		/**
 		 * Override Default content color
 		 */
-
 		public static function get_override_design_keys( $default_slug, $default_design_data ) {
 			$override_design_key_fields = self::$overide_design_keys;
 			if ( isset( $override_design_key_fields[ $default_slug ] ) && is_array( $override_design_key_fields[ $default_slug ] ) && count( $override_design_key_fields[ $default_slug ] ) > 0 ) {
@@ -1312,29 +1326,30 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					if ( $default_design_data[ $default_slug ][ $key ] != $value ) {
 						$default_design_data[ $default_slug ][ $key ] = $value;
 					}
-
 				}
 			}
 
 			return $default_design_data;
-
 		}
 
 		public static function get_design_data_meta( $wfob_id ) {
 			$design_data = get_post_meta( $wfob_id, '_wfob_design_data', true );
 
 			if ( empty( $design_data ) ) {
-				$design_data = WFOB_Common::get_default_model_data( $wfob_id );
-				$design_data = $design_data[ WFOB_Common::$design_default_layout ];
+				$design_data = self::get_default_model_data( $wfob_id );
+				$design_data = $design_data[ self::$design_default_layout ];
 			}
 
-			return array_map( function ( $val ) {
-				if ( is_array( $val ) ) {
-					return array_map( 'trim', $val );
-				}
+			return array_map(
+				function ( $val ) {
+					if ( is_array( $val ) ) {
+							return array_map( 'trim', $val );
+					}
 
-				return trim( $val );
-			}, $design_data );
+					return trim( $val );
+				},
+				$design_data
+			);
 		}
 
 		public static function get_post_meta_data( $item_id, $meta_key = '', $force = false ) {
@@ -1457,25 +1472,23 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					}
 
 					if ( ! isset( $model[ 'product_' . $key . '_featured_image_options' ] ) ) {
-						$model[ 'product_' . $key . '_featured_image_options' ] = [
+						$model[ 'product_' . $key . '_featured_image_options' ] = array(
 							'custom_url' => '',
 							'image_url'  => $product['image'],
 							'width'      => '96',
 							'position'   => 'left',
-							'type'       => 'product'// Product,Custom
-						];
+							'type'       => 'product', // Product,Custom
+						);
 					}
 				}
 				if ( isset( $model['enable_price'] ) ) {
 					$model['enable_price'] = wc_string_to_bool( $model['enable_price'] );
 				}
 
-
 				$design_data['model'] = $model;
 			}
 
 			return $design_data;
-
 		}
 
 
@@ -1525,7 +1538,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					$default_data[ 'product_' . $key . '_exclusive_content' ] = $default_data['exclusive_content'];
 				}
 
-
 				/**
 				 * Enable Social Proof Section
 				 */
@@ -1542,18 +1554,15 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 
 				if ( ! isset( $default_data[ 'product_' . $key . '_featured_image_options' ] ) ) {
-					$default_data[ 'product_' . $key . '_featured_image_options' ] = [
+					$default_data[ 'product_' . $key . '_featured_image_options' ] = array(
 						'custom_url' => '',
 						'image_url'  => $product['image'],
 						'width'      => '96',
 						'position'   => 'left',
-						'type'       => 'product'// Product,Custom
-					];
+						'type'       => 'product', // Product,Custom
+					);
 				}
-
-
 			}
-
 
 			return $default_data;
 		}
@@ -1577,7 +1586,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 			}
 
-
 			$images            = wp_get_attachment_image_src( $image_id );
 			$product_image_url = WFOB_PLUGIN_URL . '/admin/assets/img/product_default_icon.jpg';
 			if ( is_array( $images ) && count( $images ) > 0 ) {
@@ -1588,7 +1596,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function get_prepared_products( $wfob_id ) {
-			$output   = [];
+			$output   = array();
 			$products = self::get_bump_products( $wfob_id );
 
 			if ( is_array( $products ) && count( $products ) > 0 ) {
@@ -1602,7 +1610,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 							$default['title'] = $product->get_title();
 						}
 
-
 						$product_image_url = self::get_product_image( $product, $pdata );
 						$default['image']  = apply_filters( 'wfob_product_image', $product_image_url, $product );
 						$default['type']   = $product_type;
@@ -1612,7 +1619,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 						$default['is_sold_individually'] = $product->is_sold_individually();
 						$default['price_range']          = '';
-						if ( in_array( $product_type, WFOB_Common::get_variable_product_type() ) ) {
+						if ( in_array( $product_type, self::get_variable_product_type() ) ) {
 							$default['variable'] = 'yes';
 							$default['price']    = $product->get_price_html();
 							$rg_price            = $product->get_regular_price();
@@ -1621,7 +1628,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 								$default['price_range'] = wc_format_sale_price( $rg_price, $rprice );
 							}
 						} else {
-							if ( in_array( $product_type, WFOB_Common::get_variation_product_type() ) ) {
+							if ( in_array( $product_type, self::get_variation_product_type() ) ) {
 								$default['title'] = $product->get_name();
 							}
 							$row_data                 = $product->get_data();
@@ -1643,7 +1650,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						$default['stock']              = $product->is_in_stock();
 						$resp['product'][ $unique_id ] = $default;
 						$output[ $unique_id ]          = $default;
-					};
+					}
 				}
 				if ( count( $output ) > 0 ) {
 					return $output;
@@ -1660,12 +1667,12 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 */
 		public static function get_product_settings( $wfob_id ) {
 			$settings = get_post_meta( $wfob_id, '_wfob_product_settings', true );
-			//$settings=[];
-			$default = [
+			// $settings=[];
+			$default = array(
 				'bump_action_type'         => '1',
 				'bump_replace_type'        => 'specific',
-				'selected_replace_product' => []
-			];
+				'selected_replace_product' => array(),
+			);
 			if ( empty( $settings ) ) {
 				return $default;
 			}
@@ -1675,44 +1682,46 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		public static function get_bump_products( $wfob_id ) {
 
-			if ( ! is_int( $wfob_id ) ) {
-				return [];
+			$wfob_id = absint( $wfob_id );
+			if ( $wfob_id < 1 ) {
+				return array();
 			}
 
 			$product = self::get_post_meta_data( $wfob_id, '_wfob_selected_products' );
 			$product = apply_filters( 'wfob_bump_products', $product, $wfob_id );
 			if ( ! is_array( $product ) ) {
-				return [];
+				return array();
 			}
 
 			return $product;
-
 		}
 
 		public static function get_default_product_config() {
-			return [
+			return array(
 				'title'           => '',
 				'discount_type'   => 'percent_discount_sale',
 				'discount_amount' => 0,
 				'discount_price'  => 0,
 				'quantity'        => 1,
-			];
-
+			);
 		}
 
 		public static function get_variable_product_type() {
-			return [ 'variable', 'variable-subscription' ];
+			return array( 'variable', 'variable-subscription' );
 		}
 
 		public static function get_variation_product_type() {
-			return [ 'variation', 'subscription_variation' ];
+			return array( 'variation', 'subscription_variation' );
 		}
 
 		public static function get_global_setting() {
-			$data = get_option( '_wfob_global_settings', [
-				'css'                      => '',
-				'number_bump_per_checkout' => '',
-			] );
+			$data = get_option(
+				'_wfob_global_settings',
+				array(
+					'css'                      => '',
+					'number_bump_per_checkout' => '',
+				)
+			);
 
 			return $data;
 		}
@@ -1746,7 +1755,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return $parent_id;
-
 		}
 
 		/**
@@ -1772,14 +1780,14 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 			}
 
-			return [];
+			return array();
 		}
 
 		/**
 		 * Find matching product variation
 		 *
 		 * @param WC_Product $product
-		 * @param array $attributes
+		 * @param array      $attributes
 		 *
 		 * @return int Matching variation ID or 0.
 		 */
@@ -1828,7 +1836,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 			}
 
-			return [];
+			return array();
 		}
 
 		public static function get_cart_item_key( $product_key ) {
@@ -1840,71 +1848,73 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return null;
 			}
 
-
 			foreach ( $cart as $item_key => $item_data ) {
 				if ( isset( $item_data['_wfob_product_key'] ) && $product_key === $item_data['_wfob_product_key'] ) {
-					return [ $item_key, $item_data ];
+					return array( $item_key, $item_data );
 				}
 			}
-            return null;
-
-	}
-
-	public static function handle_variable_product( $product ) {
-
-		$variation_attributes = [];
-		if ( in_array( $product->get_type(), self::get_variation_product_type() ) ) {
-			$product_id           = $product->get_parent_id();
-			$variation_id         = $product->get_id();
-			$variation_attributes = $product->get_attributes();
-			// Find Blank Attribute Any Any Case
-			$blank_attribute = array_filter( $variation_attributes, function ( $v ) {
-				return is_null( $v ) || empty( $v );
-			} );
-			// If Any-Any case found them map Remaining Attribute
-			if ( ! empty( $blank_attribute ) ) {
-				$parent_product       = wc_get_product( $product_id );
-				$variation_attributes = self::map_variation_attributes( $variation_attributes, $parent_product->get_variation_attributes() );
-			}
-
-		} else if ( in_array( $product->get_type(), self::get_variable_product_type() ) ) {
-			/**
-			 * @var $product \WC_Product_Variable
-			 */
-			$product_attributes = $product->get_variation_attributes();
-			$variations         = $product->get_visible_children();
-			if ( ! empty( $product_attributes ) && ! empty( $variations ) ) {
-				$variation_id         = $variations[0];
-				$variation            = wc_get_product( $variation_id );
-				$variation_attributes = $variation->get_attributes();
-				//Handle Any Any Case
-				$variation_attributes = self::map_variation_attributes( $variation_attributes, $product_attributes );
-			}
-
+			return null;
 		}
 
-		return [ 'attributes' => $variation_attributes, 'variation_id' => $variation_id ];
-	}
+		public static function handle_variable_product( $product ) {
 
-	public static function map_variation_attributes( $variation_attr, $product_attr ) {
-		$new_product_attr = [];
-		foreach ( $product_attr as $k => $item ) {
-			$k                      = strtolower( $k );//Lowering the Attribute keys
-			$k                      = str_replace( ' ', '-', $k );
-			$new_product_attr[ $k ] = $item;
-		}
-		$output = [];
-		foreach ( $variation_attr as $key => $attr ) {
-			if ( empty( $attr ) ) {
-				$key  = strtolower( $key );
-				$key  = str_replace( ' ', '-', $key );
-				$attr = $new_product_attr[ $key ][0];
+			$variation_attributes = array();
+			if ( in_array( $product->get_type(), self::get_variation_product_type() ) ) {
+				$product_id           = $product->get_parent_id();
+				$variation_id         = $product->get_id();
+				$variation_attributes = $product->get_attributes();
+				// Find Blank Attribute Any Any Case
+				$blank_attribute = array_filter(
+					$variation_attributes,
+					function ( $v ) {
+						return is_null( $v ) || empty( $v );
+					}
+				);
+				// If Any-Any case found them map Remaining Attribute
+				if ( ! empty( $blank_attribute ) ) {
+					$parent_product       = wc_get_product( $product_id );
+					$variation_attributes = self::map_variation_attributes( $variation_attributes, $parent_product->get_variation_attributes() );
+				}
+			} elseif ( in_array( $product->get_type(), self::get_variable_product_type() ) ) {
+				/**
+				 * @var $product \WC_Product_Variable
+				 */
+				$product_attributes = $product->get_variation_attributes();
+				$variations         = $product->get_visible_children();
+				if ( ! empty( $product_attributes ) && ! empty( $variations ) ) {
+					$variation_id         = $variations[0];
+					$variation            = wc_get_product( $variation_id );
+					$variation_attributes = $variation->get_attributes();
+					// Handle Any Any Case
+					$variation_attributes = self::map_variation_attributes( $variation_attributes, $product_attributes );
+				}
 			}
-			$output[ 'attribute_' . $key ] = $attr;
+
+			return array(
+				'attributes'   => $variation_attributes,
+				'variation_id' => $variation_id,
+			);
 		}
 
-		return $output;
-	}
+		public static function map_variation_attributes( $variation_attr, $product_attr ) {
+			$new_product_attr = array();
+			foreach ( $product_attr as $k => $item ) {
+				$k                      = strtolower( $k );// Lowering the Attribute keys
+				$k                      = str_replace( ' ', '-', $k );
+				$new_product_attr[ $k ] = $item;
+			}
+			$output = array();
+			foreach ( $variation_attr as $key => $attr ) {
+				if ( empty( $attr ) ) {
+					$key  = strtolower( $key );
+					$key  = str_replace( ' ', '-', $key );
+					$attr = $new_product_attr[ $key ][0];
+				}
+				$output[ 'attribute_' . $key ] = $attr;
+			}
+
+			return $output;
+		}
 
 
 
@@ -1931,20 +1941,28 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			$price           = floatval( apply_filters( 'wfob_discount_price_data', $raw_data['price'], $cart_item_key ) );
 			$discount_amount = floatval( apply_filters( 'wfob_discount_amount_data', $data['discount_amount'], $discount_type, $cart_item_key ) );
 
-			$discount_data = [
+			$discount_data = array(
 				'wfob_product_rp'      => $regular_price * $qty,
 				'wfob_product_p'       => $price * $qty,
 				'wfob_discount_amount' => $discount_amount,
 				'wfob_discount_type'   => $discount_type,
-			];
+			);
 
 			if ( 'fixed_discount_sale' == $discount_type || 'fixed_discount_reg' == $discount_type ) {
 				$discount_data['wfob_discount_amount'] = $discount_amount * $qty;
 			}
 
-
 			$new_price  = self::calculate_discount( $discount_data );
-			$parse_data = apply_filters( 'wfob_discounted_price_data', [ 'regular_price' => $regular_price, 'price' => $new_price ], $cart_item_key, $pro, $raw_data );
+			$parse_data = apply_filters(
+				'wfob_discounted_price_data',
+				array(
+					'regular_price' => $regular_price,
+					'price'         => $new_price,
+				),
+				$cart_item_key,
+				$pro,
+				$raw_data
+			);
 
 			if ( ! is_null( $new_price ) ) {
 				if ( apply_filters( 'wfob_set_bump_product_price_params', true, $pro ) ) {
@@ -2057,13 +2075,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					}
 
 					$menu_order  = self::get_highest_menu_order();
-					$args        = [
+					$args        = array(
 						'post_title'   => $post->post_title . $suffix_text,
 						'post_content' => $post->post_content,
 						'menu_order'   => $menu_order + 1,
 						'post_type'    => self::get_bump_post_type_slug(),
 						'post_status'  => 'draft',
-					];
+					);
 					$new_post_id = wp_insert_post( $args );
 					if ( ! is_wp_error( $new_post_id ) ) {
 						self::get_duplicate_data( $new_post_id, $post_id );
@@ -2095,7 +2113,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$encode      = json_encode( $design_data );
 
 				if ( is_array( $selected_products ) && count( $selected_products ) > 0 ) {
-					$products = [];
+					$products = array();
 					foreach ( $selected_products as $key => $values ) {
 						$unique_key              = uniqid( 'wfob_' );
 						$encode                  = str_replace( $key, $unique_key, $encode );
@@ -2104,7 +2122,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 					update_post_meta( $new_post_id, '_wfob_selected_products', $products );
 				} else {
-					update_post_meta( $new_post_id, '_wfob_selected_products', [] );
+					update_post_meta( $new_post_id, '_wfob_selected_products', array() );
 				}
 				$design_data = json_decode( $encode, true );
 
@@ -2115,7 +2133,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				update_post_meta( $new_post_id, '_wfob_product_settings', get_post_meta( $post_id, '_wfob_product_settings', true ) );
 				do_action( 'wfob_duplicate_pages', $new_post_id, $post_id );
 			}
-
 		}
 
 		/**
@@ -2132,24 +2149,36 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$display_type = get_option( 'woocommerce_tax_display_cart' );
 				if ( 'incl' == $display_type ) {
 
-					$price_data['regular_org'] = wc_get_price_including_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $price_data['regular_org'],
-					] );
-					$price_data['price']       = wc_get_price_including_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $price_data['price'],
-					] );
+					$price_data['regular_org'] = wc_get_price_including_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $price_data['regular_org'],
+						)
+					);
+					$price_data['price']       = wc_get_price_including_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $price_data['price'],
+						)
+					);
 
 				} else {
-					$price_data['regular_org'] = wc_get_price_excluding_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $price_data['regular_org'],
-					] );
-					$price_data['price']       = wc_get_price_excluding_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $price_data['price'],
-					] );
+					$price_data['regular_org'] = wc_get_price_excluding_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $price_data['regular_org'],
+						)
+					);
+					$price_data['price']       = wc_get_price_excluding_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $price_data['price'],
+						)
+					);
 				}
 
 				$price_data['quantity'] = $qty;
@@ -2168,20 +2197,26 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 * @return array
 		 */
 		public static function get_cart_product_price_data( $pro, $cart_item, $qty = 1 ) {
-			$price_data = [];
+			$price_data = array();
 			if ( $pro instanceof WC_Product ) {
 				$display_type = get_option( 'woocommerce_tax_display_cart' );
 				if ( 'incl' == $display_type ) {
-					$price_data['regular_org'] = wc_get_price_including_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $pro->get_regular_price(),
-					] );
+					$price_data['regular_org'] = wc_get_price_including_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $pro->get_regular_price(),
+						)
+					);
 					$price_data['price']       = round( $cart_item['line_subtotal'] + $cart_item['line_subtotal_tax'], wc_get_price_decimals() );
 				} else {
-					$price_data['regular_org'] = wc_get_price_excluding_tax( $pro, [
-						'qty'   => $qty,
-						'price' => $pro->get_regular_price(),
-					] );
+					$price_data['regular_org'] = wc_get_price_excluding_tax(
+						$pro,
+						array(
+							'qty'   => $qty,
+							'price' => $pro->get_regular_price(),
+						)
+					);
 					$price_data['price']       = round( $cart_item['line_subtotal'], wc_get_price_decimals() );
 				}
 
@@ -2192,7 +2227,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function get_subscription_product_type() {
-			return [ 'variable-subscription', 'subscription', 'subscription_variation' ];
+			return array( 'variable-subscription', 'subscription', 'subscription_variation' );
 		}
 
 		/**
@@ -2218,7 +2253,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			} else {
 				return $price_data['price'];
 			}
-
 		}
 
 		public static function get_signup_fee( $price ) {
@@ -2238,14 +2272,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 *
 		 * @return string
 		 */
-
 		public static function subscription_product_string( $pro, $product_data, $cart_item, $cart_item_key ) {
 
-			$temp_price = floatval( $pro->get_price() );
+			$temp_price  = floatval( $pro->get_price() );
 			$temp_price *= ( $product_data['quantity'] > 0 ? $product_data['quantity'] : 1 );
-			$temp_data  = [
+			$temp_data   = array(
 				'price' => wc_price( $temp_price ),
-			];
+			);
 			global $wfob_product_switcher_quantity;
 			if ( '' !== $cart_item_key ) {
 				$wfob_product_switcher_quantity = $cart_item['quantity'];
@@ -2259,11 +2292,10 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			remove_filter( 'woocommerce_subscriptions_product_sign_up_fee', 'WFOB_Common::get_signup_fee' );
 			unset( $wfob_product_switcher_quantity );
 
-
-			return "<span class='wfob_subs_wrap'>" . $final_price . "</span>";
+			return "<span class='wfob_subs_wrap'>" . $final_price . '</span>';
 		}
 
-		public static function decode_merge_tags( $content, $price_data, $pro = false, $product_data = [], $cart_item = [], $cart_item_key = '', $product_key = '', $design_data = [] ) {
+		public static function decode_merge_tags( $content, $price_data, $pro = false, $product_data = array(), $cart_item = array(), $cart_item_key = '', $product_key = '', $design_data = array() ) {
 
 			return WFOB_Product_Switcher_Merge_Tags::maybe_parse_merge_tags( $content, $price_data, $pro, $product_data, $cart_item, $cart_item_key, $product_key, $design_data );
 		}
@@ -2295,7 +2327,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			if ( true == $product_obj->managing_stock() ) {
 				$available_qty = $product_obj->get_stock_quantity();
 				if ( $available_qty < $new_qty ) {
-					if ( ! in_array( $product_obj->get_backorders(), [ 'yes', 'notify' ] ) ) {
+					if ( ! in_array( $product_obj->get_backorders(), array( 'yes', 'notify' ) ) ) {
 						return false;
 					}
 				}
@@ -2309,16 +2341,15 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		/**
 		 * Detect builder page is open
+		 *
 		 * @return bool
 		 */
-
 		public static function is_builder() {
 			if ( is_admin() && isset( $_GET['page'] ) && 'wfob' === $_GET['page'] ) {
 				return true;
 			}
 
 			return false;
-
 		}
 
 		public static function remove_actions( $hook, $cls, $function = '' ) {
@@ -2348,17 +2379,23 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 			}
 
-			add_action( 'woocommerce_checkout_update_order_review', function () {
-				if ( isset( $_REQUEST['wc-ajax'] ) && in_array( $_REQUEST['wc-ajax'], [
-						'wfob_add_order_bump',
-						'wfob_remove_order_bump'
-					] ) ) {
-					WFOB_Common::remove_actions( 'woocommerce_checkout_update_order_review', 'WDP_Frontend', 'woocommerce_checkout_update_order_review' );
-				}
-			}, 0 );
+			add_action(
+				'woocommerce_checkout_update_order_review',
+				function () {
+					if ( isset( $_REQUEST['wc-ajax'] ) && in_array(
+						$_REQUEST['wc-ajax'],
+						array(
+							'wfob_add_order_bump',
+							'wfob_remove_order_bump',
+						)
+					) ) {
+						WFOB_Common::remove_actions( 'woocommerce_checkout_update_order_review', 'WDP_Frontend', 'woocommerce_checkout_update_order_review' );
+					}
+				},
+				0
+			);
 
 			return $object;
-
 		}
 
 		/**
@@ -2366,13 +2403,13 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		 * @param $cart_item []
 		 */
 		public static function get_pixel_item( $product_obj, $cart_item ) {
-			$item_added_data['pixel'] = [
+			$item_added_data['pixel'] = array(
 				'value'        => isset( $cart_item['line_subtotal'] ) ? $cart_item['line_subtotal'] : 0,
 				'content_name' => $product_obj->get_title(),
 				'content_type' => 'product',
 				'currency'     => get_woocommerce_currency(),
 				'content_ids'  => $product_obj->get_id(),
-			];
+			);
 
 			return apply_filters( 'wfob_item_added_to_cart', $item_added_data, $product_obj, $cart_item );
 		}
@@ -2382,7 +2419,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return self::get_pixel_item( $product_obj, $cart_item );
 			}
 
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -2404,7 +2441,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return self::get_pixel_item( $product_obj, $cart_item );
 			}
 
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -2432,7 +2469,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				foreach ( $cart_items as $key => $cart_item ) {
 					$pro = $cart_item['data'];
 					if ( $pro instanceof WC_Product && $pro->is_virtual() ) {
-						$virtual_product ++;
+						++$virtual_product;
 					}
 				}
 			}
@@ -2444,7 +2481,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function remove_bump_from_cart( $post ) {
-			$resp = [];
+			$resp = array();
 			if ( isset( $post['cart_key'] ) && '' !== $post['cart_key'] ) {
 				do_action( 'wfob_before_remove_bump_from_cart', $post );
 				$cart_key = trim( $post['cart_key'] );
@@ -2452,14 +2489,14 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				if ( isset( $item['_wfob_product_key'] ) ) {
 					$wfob_id          = $post['wfob_id'];
 					$item_key         = $item['_wfob_product_key'];
-					$session_products = WC()->session->get( 'wfob_added_bump_product', [] );
+					$session_products = WC()->session->get( 'wfob_added_bump_product', array() );
 					if ( isset( $session_products[ $wfob_id ] ) && isset( $session_products[ $wfob_id ] [ $item_key ] ) ) {
 						unset( $session_products[ $wfob_id ] [ $item_key ] );
 						WC()->session->set( 'wfob_added_bump_product', $session_products );
 					}
 
-					$cart_data              = [];
-					$cart_data[ $item_key ] = WFOB_Common::remove_analytics_item( $item['data'], $item );
+					$cart_data              = array();
+					$cart_data[ $item_key ] = self::remove_analytics_item( $item['data'], $item );
 					$cart_data              = apply_filters( 'wfob_remove_bump_order_analytics_data', $cart_data, $item['data'], $item );
 
 					$resp = array(
@@ -2468,7 +2505,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					);
 				}
 
-				WFOB_Common::restore_replaced_products( $item );
+				self::restore_replaced_products( $item );
 
 				WC()->cart->remove_cart_item( $cart_key );
 				do_action( 'wfob_after_remove_bump_from_cart', $post );
@@ -2488,25 +2525,27 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			woocommerce_order_review();
 			$woocommerce_order_review = ob_get_clean();
 
+			return apply_filters(
+				'woocommerce_update_order_review_fragments',
+				array(
+					'.woocommerce-checkout-review-order-table' => $woocommerce_order_review,
 
-			return apply_filters( 'woocommerce_update_order_review_fragments', array(
-				'.woocommerce-checkout-review-order-table' => $woocommerce_order_review,
-
-			) );
+				)
+			);
 		}
 
 		/**
 		 * get pixel initiated pixel checkout data
+		 *
 		 * @return array
 		 */
-
 		public static function pixel_checkout_data() {
 			$output = new stdClass();
 			if ( function_exists( 'WC' ) ) {
 				$subtotal = WC()->cart->get_subtotal();
 				$contents = WC()->cart->get_cart_contents();
 				if ( count( $contents ) > 0 ) {
-					$output = [];
+					$output = array();
 					foreach ( $contents as $item_key => $item ) {
 						if ( $item['data'] instanceof WC_Product ) {
 							$output['content_ids'][] = $item['data']->get_id();
@@ -2527,15 +2566,15 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 
 		/**
 		 * get pixel initiated pixel checkout data
+		 *
 		 * @return array
 		 */
-
 		public static function analytics_checkout_data() {
 			if ( ! class_exists( 'WFACP_Analytics' ) ) {
 				return self::pixel_checkout_data();
 			}
 
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -2560,21 +2599,24 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 
-		public static final function display_not_selected_attribute( $product_data, $pro ) {
+		final public static function display_not_selected_attribute( $product_data, $pro ) {
 			return apply_filters( 'wfob_display_not_selected_attribute', false, $product_data, $pro );
 		}
 
 		public static function wc_dropdown_variation_attribute_options( $args = array() ) {
-			$args = wp_parse_args( apply_filters( 'woocommerce_wfob_dropdown_variation_attribute_options_args', $args ), array(
-				'options'          => false,
-				'attribute'        => false,
-				'product'          => false,
-				'selected'         => false,
-				'name'             => '',
-				'id'               => '',
-				'class'            => '',
-				'show_option_none' => __( 'Choose an option', 'woocommerce' ),
-			) );
+			$args = wp_parse_args(
+				apply_filters( 'woocommerce_wfob_dropdown_variation_attribute_options_args', $args ),
+				array(
+					'options'          => false,
+					'attribute'        => false,
+					'product'          => false,
+					'selected'         => false,
+					'name'             => '',
+					'id'               => '',
+					'class'            => '',
+					'show_option_none' => __( 'Choose an option', 'woocommerce' ),
+				)
+			);
 
 			// Get selected value.
 			if ( false === $args['selected'] && $args['attribute'] && $args['product'] instanceof WC_Product ) {
@@ -2596,15 +2638,19 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$options    = $attributes[ $attribute ];
 			}
 
-			$html = '<select id="' . esc_attr( $id ) . '" class="' . esc_attr( $class ) . '" name="' . esc_attr( $name ) . '" data-attribute_name="attribute_' . esc_attr( sanitize_title( $attribute ) ) . '" data-show_option_none="' . ( $show_option_none ? 'yes' : 'no' ) . '">';
+			$html  = '<select id="' . esc_attr( $id ) . '" class="' . esc_attr( $class ) . '" name="' . esc_attr( $name ) . '" data-attribute_name="attribute_' . esc_attr( sanitize_title( $attribute ) ) . '" data-show_option_none="' . ( $show_option_none ? 'yes' : 'no' ) . '">';
 			$html .= '<option value="">' . esc_html( $show_option_none_text ) . '</option>';
 
 			if ( ! empty( $options ) ) {
 				if ( $product && taxonomy_exists( $attribute ) ) {
 					// Get terms if this is a taxonomy - ordered. We need the names too.
-					$terms = wc_get_product_terms( $product->get_id(), $attribute, array(
-						'fields' => 'all',
-					) );
+					$terms = wc_get_product_terms(
+						$product->get_id(),
+						$attribute,
+						array(
+							'fields' => 'all',
+						)
+					);
 
 					foreach ( $terms as $term ) {
 						if ( in_array( $term->slug, $options, true ) ) {
@@ -2615,7 +2661,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					foreach ( $options as $option ) {
 						// This handles < 2.4.0 bw compatibility where text attributes were not sanitized.
 						$selected = sanitize_title( $args['selected'] ) === $args['selected'] ? selected( $args['selected'], sanitize_title( $option ), false ) : selected( $args['selected'], $option, false );
-						$html     .= '<option value="' . esc_attr( $option ) . '" ' . $selected . '>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</option>';
+						$html    .= '<option value="' . esc_attr( $option ) . '" ' . $selected . '>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</option>';
 					}
 				}
 			}
@@ -2626,7 +2672,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function add_global_settings_fields( $fields ) {
-			$fields["wfob"] = self::all_global_settings_fields();
+			$fields['wfob'] = self::all_global_settings_fields();
 
 			return $fields;
 		}
@@ -2656,20 +2702,20 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						array(
 							'key'          => 'number_bump_per_checkout',
 							'type'         => 'input',
-							'styleClasses' => [ 'wfob_width_70', 'wfob_inline_label' ],
+							'styleClasses' => array( 'wfob_width_70', 'wfob_inline_label' ),
 							'label'        => __( 'Number of Bumps to be shown', 'woofunnels-order-bump' ),
 							'placeholder'  => __( 'Type here...', 'woofunnels-order-bump' ),
-							'hint'         => __( 'Enter the limit of OrderBumps to be display on the checkout page', 'woofunnels-order-bump' )
+							'hint'         => __( 'Enter the limit of OrderBumps to be display on the checkout page', 'woofunnels-order-bump' ),
 						),
 
 					),
 					'priority' => 10,
-				)
+				),
 			);
-			$data  = WFOB_Common::get_global_setting();
+			$data = self::get_global_setting();
 
 			foreach ( $array as &$arr ) {
-				$values = [];
+				$values = array();
 				foreach ( $arr['fields'] as &$field ) {
 					$values[ $field['key'] ] = $data[ $field['key'] ];
 				}
@@ -2690,7 +2736,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 							'key'   => 'priority',
 							'type'  => 'input',
 							'label' => __( 'Set Priority', 'woofunnels-order-bump' ),
-							'hint'  => __( 'There may be a chance that OrderBump can be set up in a way that two OrderBump can trigger. In such cases, Prioirty is used to determine which OrderBump will display. Priority Number 1 is considered highest.', 'woofunnels-order-bump' )
+							'hint'  => __( 'There may be a chance that OrderBump can be set up in a way that two OrderBump can trigger. In such cases, Prioirty is used to determine which OrderBump will display. Priority Number 1 is considered highest.', 'woofunnels-order-bump' ),
 						),
 
 					),
@@ -2710,19 +2756,19 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 							'hint'          => __( 'You can reposition the OrderBump using these option', 'woofunnels-order-bump' ),
 							'default'       => '0',
 							'values'        => self::get_bump_position(),
-							'selectOptions' => [
+							'selectOptions' => array(
 								'hideNoneSelectedText' => true,
-							],
+							),
 						),
 
 					),
 					'priority' => 10,
 				),
 			);
-			$data  = WFOB_Common::get_setting_data( self::get_id() );
+			$data = self::get_setting_data( self::get_id() );
 
 			foreach ( $array as &$arr ) {
-				$values = [];
+				$values = array();
 				foreach ( $arr['fields'] as &$field ) {
 					$values[ $field['key'] ] = $data[ $field['key'] ];
 				}
@@ -2737,18 +2783,18 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return $cart_item;
 			}
 			$bump_id  = $cart_item['_wfob_options']['_wfob_id'];
-			$settings = WFOB_Common::get_product_settings( $bump_id );
+			$settings = self::get_product_settings( $bump_id );
 			if ( empty( $settings ) ) {
 				return $cart_item;
 			}
 
 			$swap_type = $settings['bump_action_type'];
-			if ( "2" !== $swap_type ) {
+			if ( '2' !== $swap_type ) {
 				return $cart_item;
 			}
 			$bump_product_key  = $cart_item['_wfob_product_key'];
 			$bump_replace_type = $settings['bump_replace_type'];
-			$swap_product      = [];
+			$swap_product      = array();
 			if ( 'specific' == $bump_replace_type ) {
 				if ( isset( $settings['selected_replace_product'] ) ) {
 					if ( isset( $settings['selected_replace_product']['id'] ) ) {
@@ -2773,7 +2819,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		}
 
 		public static function swap_product( $swap_product, $bump_product_key = '' ) {
-			$replace_key = [];
+			$replace_key = array();
 			foreach ( WC()->cart->cart_contents as $key => $cart ) {
 				$product_id   = $cart['product_id'];
 				$variation_id = isset( $cart['variation_id'] ) ? $cart['variation_id'] : '';
@@ -2784,9 +2830,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				}
 			}
 
-
 			return $replace_key;
-
 		}
 
 		public static function wcct_get_restricted_action( $actions ) {
@@ -2806,7 +2850,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return;
 			}
 			$swat_cart_keys = $item_data['_wfob_swap_cart_key'];
-			$swat_cart_keys = is_array( $swat_cart_keys ) ? $swat_cart_keys : [ $swat_cart_keys ];
+			$swat_cart_keys = is_array( $swat_cart_keys ) ? $swat_cart_keys : array( $swat_cart_keys );
 
 			foreach ( $swat_cart_keys as $key ) {
 				WC()->cart->restore_cart_item( $key );
@@ -2839,15 +2883,19 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return false;
 			}
 
-			$sum = array_sum( array_map( function ( $item ) {
-				return $item['total'];
-			}, $results ) );
+			$sum = array_sum(
+				array_map(
+					function ( $item ) {
+						return $item['total'];
+					},
+					$results
+				)
+			);
 
 			$order->update_meta_data( '_bump_purchase_item_total', $sum );
 			$order->save();
 
 			return $sum;
-
 		}
 
 		public static function is_hpos_enabled() {
@@ -2890,8 +2938,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return $cart_data;
 			}
 
-
-			$final    = [];
+			$final    = array();
 			$services = WFACP_Analytics::get_available_service();
 			foreach ( $services as $service => $analytic ) {
 				/**
@@ -2905,7 +2952,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 						foreach ( $cart_item['bundled_items'] as $item_key ) {
 							$contents = WC()->cart->get_cart_contents();
 							if ( is_array( $contents ) && isset( $contents[ $item_key ] ) ) {
-								$product_tt         = WFOB_Common::wc_get_product( $contents[ $item_key ]['product_id'] );
+								$product_tt         = self::wc_get_product( $contents[ $item_key ]['product_id'] );
 								$final[ $item_key ] = $analytic->get_item( $product_tt, $contents[ $item_key ] );
 							}
 						}
@@ -2916,11 +2963,9 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return $cart_data;
-
 		}
 
 		public static function store_removed_bump_items() {
-
 
 			$cart_contents = WC()->cart->get_removed_cart_contents();
 			if ( empty( $cart_contents ) ) {
@@ -2934,7 +2979,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$product_key                                 = $content['_wfob_product_key'];
 				self::$removed_bump_products[ $product_key ] = $cart_key;
 			}
-
 		}
 
 		public static function get_pre_checked_bumps() {
@@ -2966,9 +3010,8 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 			}
 
 			return $tax_label;
-
 		}
-		
+
 
 		/**
 		 * Check and add default bump keys if missing
@@ -2980,7 +3023,6 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 		public static function check_default_bump_keys( $design_data ) {
 			try {
 
-
 				// Validate input
 				if ( ! is_array( $design_data ) || count( $design_data ) == 0 ) {
 					return $design_data;
@@ -2990,9 +3032,7 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					return $design_data;
 				}
 
-
-				$class_name = "WFOB_".ucfirst($design_data['layout']);
-
+				$class_name = 'WFOB_' . ucfirst( $design_data['layout'] );
 
 				// Make sure the class exists
 				if ( ! class_exists( $class_name ) ) {
@@ -3003,11 +3043,11 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				$default_design = $class_name::get_default_models();
 
 				if ( ! is_array( $default_design ) ) {
-					throw new Exception( "Default design models not returned as array" );
+					throw new Exception( 'Default design models not returned as array' );
 				}
 
 				// Required field keys to check
-				$required_field_keys = [
+				$required_field_keys = array(
 					'exclusive_content_enable',
 					'exclusive_content',
 					'social_proof_enable',
@@ -3019,21 +3059,18 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 					'social_proof_tooltip_heading_bg_color',
 					'social_proof_tooltip_heading_font_size',
 					'social_proof_tooltip_heading_color',
-				];
-
+				);
 
 				// Add missing keys from default design
 				foreach ( $required_field_keys as $key ) {
 					if ( ! isset( $design_data[ $key ] ) && isset( $default_design[ $key ] ) ) {
-						if($key=='social_proof_enable'){
-							$default_design[ $key ]="true";
+						if ( $key == 'social_proof_enable' ) {
+							$default_design[ $key ] = 'true';
 						}
-						
+
 						$design_data[ $key ] = $default_design[ $key ];
 					}
 				}
-
-
 
 				return $design_data;
 
@@ -3047,6 +3084,5 @@ if ( ! class_exists( 'WFOB_Common' ) ) {
 				return $design_data;
 			}
 		}
-
 	}
 }

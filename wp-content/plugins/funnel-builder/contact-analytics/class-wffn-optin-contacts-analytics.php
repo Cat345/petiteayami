@@ -50,7 +50,6 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 			}
 
 			return $wpdb->get_results( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
 		}
 
 		/**
@@ -62,34 +61,23 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		public function get_all_contacts_records( $funnel_id, $cid ) {
 			global $wpdb;
 
-			$funnel_id = absint( $funnel_id );
-			$cid       = absint( $cid );
-			$query     = $wpdb->prepare(
-				"SELECT optin.step_id as 'object_id', optin.data as 'data', DATE_FORMAT(optin.date, '%%Y-%%m-%%dT%%TZ') as 'date', p.post_title as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries as optin LEFT JOIN ' . $wpdb->prefix . 'posts as p ON optin.step_id = p.id WHERE optin.funnel_id = %d AND optin.cid = %d ORDER BY optin.date ASC',
-				$funnel_id,
-				$cid
-			);
+			$funnel_id = ! empty( $funnel_id ) ? absint( $funnel_id ) : $funnel_id;
+			$cid       = ! empty( $cid ) ? absint( $cid ) : $cid;
+			$query     = $wpdb->prepare( "SELECT optin.step_id as 'object_id',optin.data as 'data',DATE_FORMAT(optin.date, '%%Y-%%m-%%dT%%TZ') as 'date',p.post_title as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries' . ' as optin LEFT JOIN ' . $wpdb->prefix . 'posts' . ' as p ON optin.step_id  = p.id WHERE optin.funnel_id=%d AND optin.cid=%d order by optin.date asc', $funnel_id, $cid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-			$data     = $wpdb->get_results( $query );
+			$data     = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
 			}
 
 			return $data;
-
 		}
 
 		public function get_contacts_optin_records( $cid, $entry_ids ) {
 			global $wpdb;
-			$cid = absint( $cid );
-
-			// Handle entry_ids - can be comma-separated string or array
-			if ( is_string( $entry_ids ) ) {
-				$entry_ids_array = array_map( 'absint', array_filter( explode( ',', $entry_ids ) ) );
-			} else {
-				$entry_ids_array = array_map( 'absint', (array) $entry_ids );
-			}
+			$cid             = ! empty( $cid ) ? absint( $cid ) : $cid;
+			$entry_ids_array = is_string( $entry_ids ) ? array_map( 'absint', array_filter( explode( ',', $entry_ids ) ) ) : array_map( 'absint', (array) $entry_ids );
 
 			if ( empty( $entry_ids_array ) ) {
 				return array();
@@ -97,20 +85,15 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 
 			$placeholders = implode( ',', array_fill( 0, count( $entry_ids_array ), '%d' ) );
 			$query_args   = array_merge( $entry_ids_array, array( $cid ) );
+			$query        = $wpdb->prepare( "SELECT optin.id, optin.funnel_id as fid, optin.email as email, optin.step_id as 'object_id', optin.data as 'data',DATE_FORMAT(optin.date, '%%Y-%%m-%%d %%T') as 'date', COALESCE( p.post_title, '' ) as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries' . ' as optin LEFT JOIN ' . $wpdb->prefix . 'posts' . " as p ON optin.step_id  = p.id WHERE optin.id IN ( $placeholders ) AND optin.cid=%d order by optin.date asc", ...$query_args ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-			$query = $wpdb->prepare(
-				"SELECT optin.id, optin.funnel_id as fid, optin.email as email, optin.step_id as 'object_id', optin.data as 'data', DATE_FORMAT(optin.date, '%%Y-%%m-%%d %%T') as 'date', COALESCE( p.post_title, '' ) as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries as optin LEFT JOIN ' . $wpdb->prefix . "posts as p ON optin.step_id = p.id WHERE optin.id IN ( $placeholders ) AND optin.cid = %d ORDER BY optin.date ASC",
-				...$query_args
-			);
-
-			$data     = $wpdb->get_results( $query );
+			$data     = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
 			}
 
 			return $data;
-
 		}
 
 		/**
@@ -120,20 +103,16 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		 */
 		public function get_all_contact_record_by_cid( $cid ) {
 			global $wpdb;
-			$cid   = absint( $cid );
-			$query = $wpdb->prepare(
-				"SELECT optin.step_id as 'object_id', optin.data as 'data', DATE_FORMAT(optin.date, '%%Y-%%m-%%dT%%TZ') as 'date', p.post_title as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries as optin LEFT JOIN ' . $wpdb->prefix . 'posts as p ON optin.step_id = p.id WHERE optin.cid = %d ORDER BY optin.date ASC',
-				$cid
-			);
+			$cid   = ! empty( $cid ) ? absint( $cid ) : $cid;
+			$query = $wpdb->prepare( "SELECT optin.step_id as 'object_id',optin.data as 'data',DATE_FORMAT(optin.date, '%%Y-%%m-%%dT%%TZ') as 'date',p.post_title as 'object_name', 'optin' as 'type' FROM " . $wpdb->prefix . 'bwf_optin_entries' . ' as optin LEFT JOIN ' . $wpdb->prefix . 'posts' . ' as p ON optin.step_id  = p.id WHERE optin.cid=%d order by optin.date asc', $cid ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-			$data     = $wpdb->get_results( $query );
+			$data     = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
 			}
 
 			return $data;
-
 		}
 
 		/**
@@ -146,29 +125,17 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		 */
 		public function get_timeline_data_query( $limit, $order = 'DESC', $order_by = 'date', $can_union = true ) {
 			global $wpdb;
-
-			// Whitelist allowed ORDER BY columns to prevent SQL injection
-			$allowed_order_by = array( 'date', 'id', 'step_id', 'funnel_id', 'cid' );
-			$order_by         = in_array( $order_by, $allowed_order_by, true ) ? $order_by : 'date';
-
-			// Whitelist ORDER direction
-			$order = strtoupper( $order );
-			$order = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
-
-			// Sanitize LIMIT - ensure it's a positive integer
-			$limit_clause = '';
-			if ( '' !== $limit && is_numeric( $limit ) ) {
-				$limit_clause = ' LIMIT ' . absint( $limit );
-			}
-
+			$limit    = ( $limit !== '' ) ? ' LIMIT ' . $limit : '';
+			$limit    = ! empty( $limit ) ? esc_sql( $limit ) : $limit;
+			$order    = ! empty( $order ) ? esc_sql( $order ) : $order;
+			$order_by = ! empty( $order_by ) ? esc_sql( $order_by ) : $order_by;
 			if ( $can_union ) {
-				return "SELECT stats.step_id as id, stats.funnel_id as 'fid', stats.cid as 'cid', '0' as 'order_id', '0' as 'total_revenue', 'optin' as 'type', posts.post_title as 'post_title', stats.date as date FROM " . $wpdb->prefix . 'bwf_optin_entries AS stats LEFT JOIN ' . $wpdb->prefix . 'posts AS posts ON stats.step_id=posts.ID ORDER BY ' . $order_by . ' ' . $order . $limit_clause;
+				return "SELECT stats.step_id as id, stats.funnel_id as 'fid', stats.cid as 'cid', '0' as 'order_id', '0' as 'total_revenue', 'optin' as 'type', posts.post_title as 'post_title', stats.date as date FROM " . $wpdb->prefix . 'bwf_optin_entries AS stats LEFT JOIN ' . $wpdb->prefix . 'posts AS posts ON stats.step_id=posts.ID ORDER BY ' . $order_by . ' ' . $order . ' ' . $limit;
 
 			} else {
-				return "SELECT stats.step_id as id, stats.funnel_id as 'fid', stats.cid as 'cid', '0' as 'order_id', '0' as 'total_revenue', 'optin' as 'type', posts.post_title as 'post_title', contact.f_name as f_name, contact.l_name as l_name, stats.date as date FROM " . $wpdb->prefix . 'bwf_optin_entries AS stats LEFT JOIN ' . $wpdb->prefix . 'posts AS posts ON stats.step_id=posts.ID LEFT JOIN ' . $wpdb->prefix . "bwf_contact AS contact ON contact.id=cid WHERE contact.id != '' ORDER BY " . $order_by . ' ' . $order . $limit_clause;
+				return "SELECT stats.step_id as id, stats.funnel_id as 'fid', stats.cid as 'cid', '0' as 'order_id', '0' as 'total_revenue', 'optin' as 'type', posts.post_title as 'post_title',contact.f_name as f_name, contact.l_name as l_name, stats.date as date FROM " . $wpdb->prefix . 'bwf_optin_entries AS stats LEFT JOIN ' . $wpdb->prefix . 'posts AS posts ON stats.step_id=posts.ID LEFT JOIN ' . $wpdb->prefix . "bwf_contact AS contact ON contact.id=cid WHERE contact.id != '' ORDER BY " . $order_by . ' ' . $order . ' ' . $limit;
 
 			}
-
 		}
 
 		/**
@@ -179,32 +146,14 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		 */
 		public function delete_contact( $cids, $funnel_id = 0 ) {
 			global $wpdb;
+			$cid_count                = count( $cids );
+			$stringPlaceholders       = array_fill( 0, $cid_count, '%s' );
+			$placeholdersForFavFruits = implode( ',', $stringPlaceholders );
 
-			// Sanitize all cids as integers
-			$cids      = array_map( 'absint', (array) $cids );
-			$cids      = array_filter( $cids ); // Remove zeros
-			$cid_count = count( $cids );
+			$funnel_query = ( absint( $funnel_id ) > 0 ) ? ' AND fid = ' . $funnel_id . ' ' : '';
 
-			if ( empty( $cid_count ) ) {
-				return true;
-			}
-
-			$placeholders = implode( ',', array_fill( 0, $cid_count, '%d' ) );
-			$funnel_id    = absint( $funnel_id );
-
-			if ( $funnel_id > 0 ) {
-				$query = $wpdb->prepare(
-					'DELETE FROM ' . $wpdb->prefix . "bwf_optin_entries WHERE cid IN ($placeholders) AND fid = %d",
-					...array_merge( $cids, array( $funnel_id ) )
-				);
-			} else {
-				$query = $wpdb->prepare(
-					'DELETE FROM ' . $wpdb->prefix . "bwf_optin_entries WHERE cid IN ($placeholders)",
-					...$cids
-				);
-			}
-
-			$wpdb->query( $query );
+			$e_query = 'DELETE FROM ' . $wpdb->prefix . 'bwf_optin_entries WHERE cid IN (' . esc_sql( $placeholdersForFavFruits ) . ') ' . $funnel_query;
+			$wpdb->query( $wpdb->prepare( $e_query, $cids ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
@@ -212,7 +161,6 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 			}
 
 			return true;
-
 		}
 
 		/**
@@ -248,33 +196,19 @@ if ( ! class_exists( 'WFFN_Optin_Contacts_Analytics' ) ) {
 		 */
 		public function delete_optin_entries( $entry_ids ) {
 			global $wpdb;
-
-			// Convert to array and sanitize as integers
-			if ( is_string( $entry_ids ) ) {
-				$entry_ids_array = array_map( 'absint', array_filter( explode( ',', $entry_ids ) ) );
-			} else {
-				$entry_ids_array = array_map( 'absint', array_filter( (array) $entry_ids ) );
-			}
-
-			if ( empty( $entry_ids_array ) ) {
+			$entry_ids = is_array( $entry_ids ) ? implode( ',', $entry_ids ) : $entry_ids;
+			if ( empty( $entry_ids ) ) {
 				return;
 			}
-
-			$placeholders = implode( ',', array_fill( 0, count( $entry_ids_array ), '%d' ) );
-			$query        = $wpdb->prepare(
-				'DELETE FROM ' . $wpdb->prefix . "bwf_optin_entries WHERE id IN ($placeholders)",
-				...$entry_ids_array
-			);
-			$wpdb->query( $query );
+			$e_query = 'DELETE FROM ' . $wpdb->prefix . 'bwf_optin_entries WHERE id IN (' . esc_sql( $entry_ids ) . ')';
+			$wpdb->query( $e_query );
 
 			$db_error = WFFN_Common::maybe_wpdb_error( $wpdb );
 			if ( true === $db_error['db_error'] ) {
 				return $db_error;
 			}
 
-			do_action( 'wffn_delete_optin_entries', $entry_ids_array );
-
+			do_action( 'wffn_delete_optin_entries', $entry_ids );
 		}
-
 	}
 }

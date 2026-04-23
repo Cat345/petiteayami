@@ -14,26 +14,26 @@ if ( ! function_exists( 'bwfblocks_attr' ) ) {
      * @param array  $settings   Optional. Custom data to pass to filter.
      * @return string String of HTML attributes and values.
      */
-    
+
     function bwfblocks_attr( $context, $attributes = array(), $settings = array() ) {
         $output = '';
-    
+
         // Cycle through attributes, build tag attribute string.
         foreach ( $attributes as $key => $value ) {
-    
+
             if ( ! $value ) {
                 continue;
             }
-    
+
             if ( true === $value ) {
                 $output .= esc_html( $key ) . ' ';
             } else {
                 $output .= sprintf( '%s="%s" ', esc_html( $key ), esc_attr( $value ) );
             }
         }
-    
+
         $output = apply_filters( "bwfblocks_attr_{$context}_output", $output, $attributes, $settings, $context );
-    
+
         return trim( $output );
     }
 }
@@ -112,7 +112,7 @@ if ( ! function_exists( 'bwfupsell_get_block_defaults' ) ) {
 		] );
 
 		$defaults['product-images'] = array_merge( $common, [
-			'classWrap'    => 'wfocu-wrap wp-block-wrap wfocu-variation-selector',
+			'classWrap'    => 'wfocu-wrap wp-block-wrap',
 			'enableSlider' => true,
 		] );
 

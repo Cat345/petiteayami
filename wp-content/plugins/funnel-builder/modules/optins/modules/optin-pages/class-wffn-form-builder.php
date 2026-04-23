@@ -1,6 +1,6 @@
 <?php //phpcs:ignore WordPress.WP.TimezoneChange.DeprecatedSniff
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Funnel optin page module
@@ -20,7 +20,6 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		 * WFFN_Optin_Pages constructor.
 		 */
 		public function __construct() {
-
 		}
 
 
@@ -29,7 +28,7 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -37,7 +36,6 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 
 
 		public function form_customization_settings_default( $apply_filter = 1 ) {
-
 
 			$customization_settings_default = array(
 				'input_border_type'         => 'solid',
@@ -84,14 +82,13 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 			} else {
 				return $customization_settings_default;
 			}
-
 		}
 
 		/**
 		 * @return array|mixed
 		 */
 		public function get_preview_form_config() {
-			$data = isset( $_POST['wffn_custom_form'] ) ? wffn_clean( json_decode( wp_unslash( wffn_clean( $_POST['wffn_custom_form'] ) ) ), true ) : []; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$data = isset( $_POST['wffn_custom_form'] ) ? wffn_clean( json_decode( wp_unslash( $_POST['wffn_custom_form'] ), true ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- AJAX nonce verification handled by WordPress AJAX system; JSON data is sanitized recursively by wffn_clean()
 
 			return $data;
 		}
@@ -110,7 +107,7 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 
 		/**
 		 * @param string $key
-		 * @param int $optin_page_id
+		 * @param int    $optin_page_id
 		 *
 		 * @return array|false|mixed
 		 */
@@ -126,9 +123,9 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		}
 
 		/**
-		 * @param int $object_id
+		 * @param int    $object_id
 		 * @param string $key
-		 * @param bool $default
+		 * @param bool   $default
 		 *
 		 * @return array|false|mixed
 		 */
@@ -164,23 +161,23 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		public function setup_form_fields_layout( $object_id ) {
 			$db_options = get_post_meta( $object_id, '_wfop_page_layout', true );
 
-			$form_layout = $steps = [];
+			$form_layout = $steps = array();
 			if ( ! empty( $db_options ) && is_array( $db_options ) && count( $db_options ) > 0 ) {
-				$steps = ( isset( $db_options['fieldsets'] ) && isset( $db_options['fieldsets'] ) ) ? $db_options['fieldsets'] : [];
+				$steps = ( isset( $db_options['fieldsets'] ) && isset( $db_options['fieldsets'] ) ) ? $db_options['fieldsets'] : array();
 			} else {
 				$optin_layout = WFOPP_Core()->optin_pages->get_page_layout( $object_id );
-				$steps        = isset( $optin_layout['fieldsets'] ) ? $optin_layout['fieldsets'] : [];
+				$steps        = isset( $optin_layout['fieldsets'] ) ? $optin_layout['fieldsets'] : array();
 			}
 			foreach ( $steps as $step_slug => $step ) {
-				$form_layout[ $step_slug ] = [];
-				$step_fields               = ( is_array( $step ) && count( $step ) > 0 && isset( $step[0]['fields'] ) ) ? $step[0]['fields'] : [];
+				$form_layout[ $step_slug ] = array();
+				$step_fields               = ( is_array( $step ) && count( $step ) > 0 && isset( $step[0]['fields'] ) ) ? $step[0]['fields'] : array();
 				foreach ( $step_fields as $field ) {
 
 					$form_layout[ $step_slug ][] = $this->get_processed_form_field( $field );
 				}
 			}
 
-			return ( count( $form_layout ) > 0 ) ? $form_layout : [];
+			return ( count( $form_layout ) > 0 ) ? $form_layout : array();
 		}
 
 		public function get_processed_form_field( $field ) {
@@ -215,11 +212,11 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 			}
 
 			$db_options = get_post_meta( $object_id, '_wfop_page_layout', true );
-			$all_fields = [];
+			$all_fields = array();
 			if ( ! empty( $db_options ) && is_array( $db_options ) ) {
-				$steps = ( isset( $db_options['fieldsets'] ) && isset( $db_options['fieldsets'] ) ) ? $db_options['fieldsets'] : [];
+				$steps = ( isset( $db_options['fieldsets'] ) && isset( $db_options['fieldsets'] ) ) ? $db_options['fieldsets'] : array();
 				foreach ( $steps as $step ) {
-					$step_fields = ( is_array( $step ) && count( $step ) > 0 && isset( $step[0]['fields'] ) ) ? $step[0]['fields'] : [];
+					$step_fields = ( is_array( $step ) && count( $step ) > 0 && isset( $step[0]['fields'] ) ) ? $step[0]['fields'] : array();
 					foreach ( $step_fields as $field ) {
 						$all_fields[] = $this->get_processed_form_field( $field );
 					}
@@ -264,7 +261,6 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		 */
 		public function save_form_field_width( $object_id, $data ) {
 
-
 			$data = json_decode( stripslashes( $data ), true );
 
 			if ( ! is_array( $data ) ) {
@@ -287,7 +283,7 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 						if ( ! isset( $field['id'] ) || ! isset( $field['field_type'] ) ) {
 							continue;
 						}
-						$id                                                                       = $field['id'];
+						$id = $field['id'];
 						$page_data['fieldsets'][ $step ][ $index ]['fields'][ $f_index ]['width'] = $data[ $id ];
 					}
 				}
@@ -304,7 +300,5 @@ if ( ! class_exists( 'WFFN_Form_Builder' ) ) {
 		public function save_form_customizations( $object_id, $data ) {
 			update_post_meta( $object_id, 'wffn_form_customization_settings', $data );
 		}
-
-
 	}
 }

@@ -19,8 +19,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Template_Mela_Core' ) ) {
 	class WFACP_Compatibility_With_Template_Mela_Core {
 		public function __construct() {
 			/* checkout page */
-			add_action( 'wfacp_template_load', [ $this, 'remove_actions' ] );
-			add_action( 'wfacp_internal_css', [ $this, 'add_css' ] );
+			add_action( 'wfacp_template_load', array( $this, 'remove_actions' ) );
+			add_action( 'wfacp_internal_css', array( $this, 'add_css' ) );
 		}
 
 		public function remove_actions() {

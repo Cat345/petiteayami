@@ -10,17 +10,27 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 
 		public function __construct() {
 
-
 			$this->encoded_basename = sha1( WFFN_PLUGIN_BASENAME );
 
 			add_action( 'admin_menu', array( $this, 'register_admin_menu' ), 85 );
 			if ( ! WFFN_Common::skip_automation_page() ) {
 				add_action( 'admin_menu', array( $this, 'register_automations_menu' ), 901 );
 			}
+			if ( ! WFFN_Common::skip_subscriptions_page() && 'activated' !== WFFN_Common::get_plugin_status( 'sublium-subscriptions-for-woocommerce/sublium-subscriptions-for-woocommerce.php' ) ) {
+				add_action( 'admin_menu', array( $this, 'register_subscriptions_menu' ), 902 );
+			}
 			add_action( 'admin_menu', array( $this, 'register_menu_for_pro' ), 999 );
 			add_action( 'admin_menu', array( $this, 'add_menus' ), 81 );
+			add_filter( 'woofunnels_register_usage_collectors', array( 'WFFN_Usage_Collector', 'add_to_registry' ), 10, 1 );
 
-
+			// Load WooCommerce collector class if WooCommerce is active
+			// This ensures the filter hook at the bottom of the file is registered
+			if ( class_exists( 'WooCommerce' ) && ! class_exists( 'WFFN_WooCommerce_Usage_Collector' ) ) {
+				$wc_collector_file = defined( 'WFFN_PLUGIN_DIR' ) ? WFFN_PLUGIN_DIR . '/includes/usage/class-wffn-woocommerce-usage-collector.php' : WP_PLUGIN_DIR . '/funnel-builder/includes/usage/class-wffn-woocommerce-usage-collector.php';
+				if ( file_exists( $wc_collector_file ) ) {
+					require_once $wc_collector_file;
+				}
+			}
 		}
 
 		/**
@@ -28,7 +38,7 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -52,11 +62,10 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 				echo $header_ins->render();//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			?>
-            <div class="woofunnels_licenses_wrapper">
+			<div class="woofunnels_licenses_wrapper">
 				<?php WooFunnels_dashboard::load_page(); ?>
-            </div>
+			</div>
 			<?php
-
 		}
 
 		/**
@@ -67,10 +76,18 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 			$user = WFFN_Role_Capability::get_instance()->user_access( 'menu', 'read' );
 
 			if ( ! WooFunnels_dashboard::$is_core_menu && false !== $user ) {
-				add_menu_page( 'WooFunnels', 'WooFunnels', $user, 'woofunnels', array(
-					$this,
-					'woofunnels_page',
-				), '', 59 );
+				add_menu_page(
+					'WooFunnels',
+					'WooFunnels',
+					$user,
+					'woofunnels',
+					array(
+						$this,
+						'woofunnels_page',
+					),
+					'',
+					59
+				);
 				add_submenu_page( 'woofunnels', __( 'Licenses', 'funnel-builder' ), __( 'License', 'funnel-builder' ), $user, 'woofunnels' );
 				WooFunnels_dashboard::$is_core_menu = true;
 			}
@@ -84,60 +101,83 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 			WFFN_Core()->admin->add_automations_menu();
 		}
 
+		public function register_subscriptions_menu() {
+			WFFN_Core()->admin->add_subscriptions_menu();
+		}
+
 
 		private function get_campaign_url( $campaign ) {
-			$url = "https://funnelkit.com/exclusive-offer/";
+			$url = 'https://funnelkit.com/exclusive-offer/';
 
-			return add_query_arg( [
-				'utm_source'   => 'WordPress',
-				'utm_medium'   => 'Admin+Menu+FB',
-				'utm_campaign' => $campaign
-			], $url );
+			return add_query_arg(
+				array(
+					'utm_source'   => 'WordPress',
+					'utm_medium'   => 'Admin+Menu+FB',
+					'utm_campaign' => $campaign,
+				),
+				$url
+			);
 		}
 
 		private function add_admin_submenu( $title, $link ) {
-			add_submenu_page( 'woofunnels', '', '<a href="' . esc_url( $link ) . '" target="_blank">' . esc_html( $title ) . '</a>', 'manage_options', 'upgrade_pro', function () {
-			}, 100 );
+			add_submenu_page(
+				'woofunnels',
+				'',
+				'<a href="' . esc_url( $link ) . '" target="_blank">' . esc_html( $title ) . '</a>',
+				'manage_options',
+				'upgrade_pro',
+				function () {
+				},
+				100
+			);
 		}
 
 		public function register_menu_for_pro() {
 
 			if ( ! defined( 'WFFN_PRO_VERSION' ) ) {
-				$link = add_query_arg( [
-					'utm_source'   => 'WordPress',
-					'utm_medium'   => 'Menu',
-					'utm_campaign' => 'FB+Lite+Plugin',
-				], WFFN_Core()->admin->get_pro_link() );
-				add_submenu_page( 'woofunnels', null, '<a href="' . $link . '" style="background-color:#1DA867; color:white;" target="_blank"><strong>' . __( 'Upgrade to Pro', 'funnel-builder' ) . '</strong></a>', 'manage_options', 'upgrade_pro', function () {
-				}, 99 );
+				$link = add_query_arg(
+					array(
+						'utm_source'   => 'WordPress',
+						'utm_medium'   => 'Menu',
+						'utm_campaign' => 'FB+Lite+Plugin',
+					),
+					WFFN_Core()->admin->get_pro_link()
+				);
+				add_submenu_page(
+					'woofunnels',
+					null,
+					'<a href="' . $link . '" style="background-color:#1DA867; color:white;" target="_blank"><strong>' . __( 'Upgrade to Pro', 'funnel-builder' ) . '</strong></a>',
+					'manage_options',
+					'upgrade_pro',
+					function () {
+					},
+					99
+				);
 
+				$year = gmdate( 'Y' );
 
-			$year = gmdate( 'Y' );
-
-			if ( WFFN_Core()->admin_notifications->show_pre_bfcm_header_notification()
+				if ( WFFN_Core()->admin_notifications->show_pre_bfcm_header_notification()
 				|| WFFN_Core()->admin_notifications->show_bf_header_notification()
 				|| WFFN_Core()->admin_notifications->show_small_business_saturday_header_notification()
 				|| WFFN_Core()->admin_notifications->show_bfext_header_notification() ) {
-				$campaign = 'BF' . $year;
-				$title    = "Black Friday 🔥";
-				$link     = $this->get_campaign_url( $campaign );
-				$this->add_admin_submenu( $title, $link );
+					$campaign = 'BF' . $year;
+					$title    = 'Black Friday 🔥';
+					$link     = $this->get_campaign_url( $campaign );
+					$this->add_admin_submenu( $title, $link );
 
-			} elseif ( WFFN_Core()->admin_notifications->show_cm_header_notification()
+				} elseif ( WFFN_Core()->admin_notifications->show_cm_header_notification()
 				|| WFFN_Core()->admin_notifications->show_cmext_header_notification() ) {
-				$campaign = 'CM' . $year;
-				$title    = "Cyber Monday 🔥";
-				$link     = $this->get_campaign_url( $campaign );
-				$this->add_admin_submenu( $title, $link );
+					$campaign = 'CM' . $year;
+					$title    = 'Cyber Monday 🔥';
+					$link     = $this->get_campaign_url( $campaign );
+					$this->add_admin_submenu( $title, $link );
 
-			} elseif ( WFFN_Core()->admin_notifications->show_green_monday_header_notification() ) {
-				$campaign = 'GM' . $year;
-				$title    = "Green Monday 🔥";
-				$link     = $this->get_campaign_url( $campaign );
-				$this->add_admin_submenu( $title, $link );
-			}
-
-
+				} elseif ( WFFN_Core()->admin_notifications->show_green_monday_header_notification() ) {
+					$campaign = 'GM' . $year;
+					$title    = 'Green Monday 🔥';
+					$link     = $this->get_campaign_url( $campaign );
+					$this->add_admin_submenu( $title, $link );
+				}
 			} else {
 				$License = WooFunnels_licenses::get_instance();
 				$License->get_plugins_list();
@@ -153,24 +193,28 @@ if ( ! class_exists( 'WFFN_WooFunnels_Support' ) ) {
 					 * the expiry should always be less than on current utc
 					 */
 					if ( $expiry->getTimestamp() < $current->getTimestamp() ) {
-						$link = add_query_arg( [
-							'utm_source'   => 'WordPress',
-							'utm_medium'   => 'Admin+Menu',
-							'utm_campaign' => 'FB+Lite+Plugin',
-						], 'https://funnelkit.com/exclusive-offer/' );
-						add_submenu_page( 'woofunnels', null, '<a href="' . $link . '" style="background-color:#e15334; color:white;" target="_blank"><strong>' . __( 'License Expired', 'funnel-builder' ) . '</strong></a>', 'manage_options', 'upgrade_pro', function () {
-						}, 99 );
+						$link = add_query_arg(
+							array(
+								'utm_source'   => 'WordPress',
+								'utm_medium'   => 'Admin+Menu',
+								'utm_campaign' => 'FB+Lite+Plugin',
+							),
+							'https://funnelkit.com/exclusive-offer/'
+						);
+						add_submenu_page(
+							'woofunnels',
+							null,
+							'<a href="' . $link . '" style="background-color:#e15334; color:white;" target="_blank"><strong>' . __( 'License Expired', 'funnel-builder' ) . '</strong></a>',
+							'manage_options',
+							'upgrade_pro',
+							function () {
+							},
+							99
+						);
 					}
-
 				}
-
-
 			}
-
-
 		}
-
-
 	}
 
 	if ( class_exists( 'WFFN_WooFunnels_Support' ) ) {

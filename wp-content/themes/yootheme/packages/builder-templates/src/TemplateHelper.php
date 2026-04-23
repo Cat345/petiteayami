@@ -48,13 +48,12 @@ class TemplateHelper
                 continue;
             }
 
-            if (isset($view['query'])) {
-                if (
-                    (is_callable($view['query']) && !$view['query']($template, $view)) ||
-                    (is_array($view['query']) && !static::matchQuery($template, $view['query']))
-                ) {
-                    continue;
-                }
+            if (
+                isset($view['query']) &&
+                ((is_callable($view['query']) && !$view['query']($template, $view)) ||
+                    (is_array($view['query']) && !static::matchQuery($template, $view['query'])))
+            ) {
+                continue;
             }
 
             return ['id' => $id] + $template;

@@ -21,8 +21,8 @@ declare var acfwAdminApp: any;
 // #region [Component] =================================================================================================
 
 const SelectProductCategories = (props: IFieldComponentProps) => {
-  const { fixtures, onChange } = props;
-  const [selected, setSelected] = useState<IFieldOption[]>([]);
+  const { defaultValue, fixtures, onChange } = props;
+  const [selected, setSelected] = useState<IFieldOption[]>(defaultValue || []);
 
   const searchProducts = async (value: string) => {
     const response = await jQuery.ajax({
@@ -53,6 +53,7 @@ const SelectProductCategories = (props: IFieldComponentProps) => {
   return (
     <DebounceSelect
       mode="multiple"
+      value={selected}
       placeholder={fixtures?.placeholder}
       fetchOptions={searchProducts}
       onChange={handleOnChange}

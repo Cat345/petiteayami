@@ -24,7 +24,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_GLS' ) ) {
 		 * Initializes the compatibility hooks.
 		 */
 		public function __construct() {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'handle_gls_compatibility' ], 999 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'handle_gls_compatibility' ), 999 );
 		}
 
 		/**
@@ -42,12 +42,9 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_GLS' ) ) {
 
 				$shipping_settings = get_option( 'woocommerce_gls_relais_settings' );
 
-				
-
-				if (( !empty( $shipping_settings ) && isset($shipping_settings['enabled']) && "yes"===$shipping_settings['enabled']) || get_option( 'gls_settings_gmaps_enable' ) === 'yes') {
+				if ( ( ! empty( $shipping_settings ) && isset( $shipping_settings['enabled'] ) && 'yes' === $shipping_settings['enabled'] ) || get_option( 'gls_settings_gmaps_enable' ) === 'yes' ) {
 					return;
 				}
-
 
 				$instance = wfacp_template();
 				if ( ! $instance instanceof WFACP_Template_Common ) {
@@ -60,7 +57,7 @@ if ( ! class_exists( 'WFACP_Compatibility_With_Woocommerce_GLS' ) ) {
 				}
 
 				// Add hook to dequeue conflicting scripts
-				add_action( 'wp_enqueue_scripts', [ $this, 'dequeue_gls_scripts' ], 20 );
+				add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_gls_scripts' ), 20 );
 
 			} catch ( Exception $e ) {
 

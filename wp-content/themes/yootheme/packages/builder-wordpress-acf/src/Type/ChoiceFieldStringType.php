@@ -19,6 +19,7 @@ class ChoiceFieldStringType
             'args' => [
                 'separator' => [
                     'type' => 'String',
+                    'defaultValue' => ', ',
                 ],
             ],
             'metadata' => [
@@ -26,7 +27,6 @@ class ChoiceFieldStringType
                     'separator' => [
                         'label' => trans('Separator'),
                         'description' => trans('Set the separator between fields.'),
-                        'default' => ', ',
                     ],
                 ],
             ],
@@ -59,8 +59,6 @@ class ChoiceFieldStringType
      */
     public static function resolve($item, $args, $context, object $info): string
     {
-        $args += ['separator' => ', '];
-
         return join($args['separator'], array_column($item, $info->fieldName));
     }
 }

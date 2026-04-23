@@ -10,8 +10,6 @@ use FSVendor\Octolize\Blocks\Registrator;
 use FSVendor\Octolize\Blocks\StoreEndpoint;
 use FSVendor\Octolize\Brand\Assets\AdminAssets;
 use FSVendor\Octolize\Brand\UpsellingBox\ShippingMethodShouldShowStrategy;
-use FSVendor\Octolize\Docs\Chat\ChatSettings;
-use FSVendor\Octolize\Docs\Chat\HookableChatObjects;
 use FSVendor\Octolize\ShippingExtensions\ShippingExtensions;
 use FSVendor\Octolize\Tracker\DeactivationTracker\OctolizeReasonsFactory;
 use FSVendor\Octolize\Tracker\OptInNotice\ShouldDisplayAndConditions;
@@ -22,6 +20,8 @@ use FSVendor\Octolize\Tracker\TrackerInitializer;
 use FSVendor\Psr\Log\LoggerInterface;
 use FSVendor\Psr\Log\NullLogger;
 use FSVendor\WPDesk\FS\Compatibility\PluginCompatibility;
+use FSVendor\WPDesk\ShowDecision\GetStrategy;
+use FSVendor\WPDesk\ShowDecision\OrStrategy;
 use FSVendor\WPDesk\FS\Shipment\ShipmentFunctionality;
 use FSVendor\WPDesk\FS\TableRate\Logger\Assets;
 use FSVendor\WPDesk\Logger\SimpleLoggerFactory;
@@ -37,9 +37,7 @@ use FSVendor\WPDesk\RepositoryRating\PopupPetition\PopupPetition;
 use FSVendor\WPDesk\RepositoryRating\RepositoryRatingPetitionText;
 use FSVendor\WPDesk\RepositoryRating\TextPetitionDisplayer;
 use FSVendor\WPDesk\Session\SessionFactory;
-use FSVendor\WPDesk\ShowDecision\OrStrategy;
 use FSVendor\WPDesk\ShowDecision\WooCommerce\ShippingMethodInstanceStrategy;
-use FSVendor\WPDesk\ShowDecision\WooCommerce\ShippingMethodStrategy;
 use FSVendor\WPDesk\View\Resolver\ChainResolver;
 use FSVendor\WPDesk\View\Resolver\DirResolver;
 use FSVendor\WPDesk\View\Resolver\WPThemeResolver;
@@ -47,6 +45,7 @@ use FSVendor\WPDesk\WooCommerce\CurrencySwitchers\FilterConvertersFactory;
 use FSVendor\WPDesk\WooCommerce\CurrencySwitchers\ShippingIntegrations;
 use WPDesk\FS\Blocks\FreeShipping\FreeShippingBlock;
 use WPDesk\FS\Blocks\FreeShipping\FreeShippingStoreEndpointData;
+use WPDesk\FS\Admin\MarketplaceSuggestionsRedirect;
 use WPDesk\FS\Helpers\FlexibleShippingMethodsChecker;
 use WPDesk\FS\Helpers\WooSettingsPageChecker;
 use WPDesk\FS\Integration\ExternalPluginAccess;
@@ -88,6 +87,8 @@ use WPDesk\FS\TableRate\ShippingMethod\Duplicate\DuplicateTracker;
 use WPDesk\FS\TableRate\ShippingMethod\Duplicate\DuplicatorChecker;
 use WPDesk\FS\TableRate\ShippingMethod\Management\ShippingMethodManagement;
 use WPDesk\FS\TableRate\ShippingMethod\MethodDescription;
+use WPDesk\FS\TableRate\ShippingMethod\MethodLogoCheckoutBlocksAssets;
+use WPDesk\FS\TableRate\ShippingMethod\MethodLogoSettingsField;
 use WPDesk\FS\TableRate\ShippingMethod\MethodTitle;
 use WPDesk\FS\TableRate\ShippingMethodSingle;
 use WPDesk\FS\TableRate\ShippingMethodsIntegration\ShippingRate;
@@ -271,6 +272,8 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		$this->add_hookable( new MethodTitle() );
 		$this->add_hookable( new MethodDescription( $this->renderer ) );
+		$this->add_hookable( new MethodLogoCheckoutBlocksAssets( $this->get_plugin_url(), $this->scripts_version ) );
+		$this->add_hookable( new MethodLogoSettingsField() );
 
 		$this->add_hookable( new Exporter() );
 		$this->add_hookable( new ImporterData() );
@@ -347,6 +350,9 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 
 		// Newsletter
 		$this->add_hookable( new SubscriptionForm() );
+
+		// Redirect woo marketplace suggestions
+		$this->add_hookable( new MarketplaceSuggestionsRedirect( $this->prepare_marketplace_suggestions_should_show_strategy() ) );
 
 		// Rating petition
 		add_action( 'admin_init', [ $this, 'init_rating_petition' ] );
@@ -530,6 +536,7 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 			false,
 			false
 		) )->hooks();
+
 	}
 
 
@@ -628,6 +635,31 @@ class Flexible_Shipping_Plugin extends AbstractPlugin implements HookableCollect
 		$should_display->add_should_diaplay_condition( $should_display_and_conditions );
 
 		return $should_display;
+	}
+
+	/**
+	 * @return OrStrategy
+	 */
+	private function prepare_marketplace_suggestions_should_show_strategy() {
+		$show_strategy = new OrStrategy(
+			new GetStrategy(
+				[
+					[
+						'page'    => 'wc-settings',
+						'tab'     => 'shipping',
+						'section' => WPDesk_Flexible_Shipping_Settings::METHOD_ID,
+					],
+				]
+			)
+		);
+
+		if ( class_exists( '\WC_Shipping_Zones' ) ) {
+			$shipping_zones = new \WC_Shipping_Zones();
+			$show_strategy->addCondition( new ShippingMethodInstanceStrategy( $shipping_zones, WPDesk_Flexible_Shipping::METHOD_ID ) );
+			$show_strategy->addCondition( new ShippingMethodInstanceStrategy( $shipping_zones, ShippingMethodSingle::SHIPPING_METHOD_ID ) );
+		}
+
+		return $show_strategy;
 	}
 
 	/**

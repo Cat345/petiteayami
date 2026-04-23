@@ -8,7 +8,7 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	private function __construct() {
 		$this->optgroup_label         = esc_html__( 'Reviews', 'wp-marketing-automations' );
 		$this->event_name             = esc_html__( 'Review Received', 'wp-marketing-automations' );
-		$this->event_desc             = esc_html__( 'This event runs after a new review is submitted on a product.', 'wp-marketing-automations' );
+		$this->event_desc             = esc_html__( 'This event runs when a product review is submitted or approved.', 'wp-marketing-automations' );
 		$this->event_merge_tag_groups = array( 'bwf_contact', 'wc_product', 'wc_review' );
 		$this->event_rule_groups      = array(
 			'wc_comment',
@@ -23,6 +23,7 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 		);
 		$this->priority               = 35;
 		$this->v2                     = true;
+		$this->is_goal                = true;
 		$this->optgroup_priority      = 30;
 	}
 
@@ -46,10 +47,10 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	 * @param $status
 	 */
 	public function product_review( $comment_id, $status ) {
-		if ( 1 !== absint( $status ) ) {
+		if ( 'spam' === $status || 'trash' === $status ) {
 			return;
 		}
-		$this->process( $comment_id );
+		$this->process( $comment_id, 'submission', $status );
 	}
 
 	/**
@@ -57,9 +58,11 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	 *
 	 * @param $comment_id
 	 */
-	public function process( $comment_id ) {
-		$data               = $this->get_default_data();
-		$data['comment_id'] = $comment_id;
+	public function process( $comment_id, $trigger_source = 'submission', $comment_status = 1 ) {
+		$data                   = $this->get_default_data();
+		$data['comment_id']     = $comment_id;
+		$data['trigger_source'] = $trigger_source;
+		$data['comment_status'] = $comment_status;
 
 		$this->send_async_call( $data );
 	}
@@ -98,11 +101,11 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	 * @param $comment
 	 */
 	public function my_approve_comment_callback( $new_status, $old_status, $comment ) {
-		if ( 'approved' !== $new_status ) {
+		if ( 'approved' !== $new_status || $old_status === $new_status ) {
 			return;
 		}
 		$comment_id = $comment->comment_ID;
-		$this->process( $comment_id );
+		$this->process( $comment_id, 'approval', 1 );
 	}
 
 	/**
@@ -249,7 +252,15 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 	 * @return array|bool
 	 */
 	public function capture_async_data() {
-		$comment_id            = BWFAN_Common::$events_async_data['comment_id'];
+		$comment_id = BWFAN_Common::$events_async_data['comment_id'];
+
+		/** v1 backward compatibility: only fire for approved reviews */
+		$trigger_source = isset( BWFAN_Common::$events_async_data['trigger_source'] ) ? BWFAN_Common::$events_async_data['trigger_source'] : 'submission';
+		$comment_status = isset( BWFAN_Common::$events_async_data['comment_status'] ) ? BWFAN_Common::$events_async_data['comment_status'] : 1;
+		if ( 'approval' !== $trigger_source && 1 !== absint( $comment_status ) ) {
+			return false;
+		}
+
 		$this->comment_id      = $comment_id;
 		$this->comment_details = $this->get_comment_feed( $this->comment_id );
 		if ( ! isset( $this->comment_details['product_id'] ) ) {
@@ -267,11 +278,10 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 		$this->comment_id      = BWFAN_Common::$events_async_data['comment_id'];
 		$this->comment_details = $this->get_comment_feed( $this->comment_id );
 
-		$this->comment_id      = BWFAN_Common::$events_async_data['comment_id'];
-		$this->comment_details = $this->get_comment_feed( $this->comment_id );
-
-		$automation_data['comment_id']    = $this->comment_id;
-		$automation_data['rating_number'] = isset( $this->comment_details['rating_number'] ) ? $this->comment_details['rating_number'] : '';
+		$automation_data['comment_id']      = $this->comment_id;
+		$automation_data['rating_number']   = isset( $this->comment_details['rating_number'] ) ? $this->comment_details['rating_number'] : '';
+		$automation_data['trigger_source']  = isset( BWFAN_Common::$events_async_data['trigger_source'] ) ? BWFAN_Common::$events_async_data['trigger_source'] : 'submission';
+		$automation_data['comment_status']  = isset( BWFAN_Common::$events_async_data['comment_status'] ) ? BWFAN_Common::$events_async_data['comment_status'] : 1;
 
 		return $automation_data;
 	}
@@ -301,6 +311,175 @@ final class BWFAN_WC_Comment_Post extends BWFAN_Event {
 		}
 
 		return $this->comment_details['user_id'];
+	}
+
+	/**
+	 * Event settings schema for the automation builder UI.
+	 *
+	 * @return array
+	 */
+	public function get_fields_schema() {
+		return array(
+			array(
+				'id'          => 'review_trigger',
+				'label'       => __( 'Trigger When', 'wp-marketing-automations' ),
+				'type'        => 'radio',
+				'options'     => array(
+					array(
+						'label' => __( 'Review Approved', 'wp-marketing-automations' ),
+						'value' => 'review_approved',
+					),
+					array(
+						'label' => __( 'Review Received', 'wp-marketing-automations' ),
+						'value' => 'review_received',
+					),
+				),
+				'class'       => 'bwfan-input-wrapper',
+				'tip'         => '',
+				'required'    => true,
+				'description' => '',
+			),
+		);
+	}
+
+	/**
+	 * Default values for event settings — preserves backward compatibility.
+	 *
+	 * @return array
+	 */
+	public function get_default_values() {
+		return array(
+			'review_trigger' => 'review_approved',
+		);
+	}
+
+	/**
+	 * Validate v2 event settings against the trigger context.
+	 *
+	 * @param array $automation_data
+	 *
+	 * @return bool
+	 */
+	public function validate_v2_event_settings( $automation_data ) {
+		$review_trigger = isset( $automation_data['event_meta']['review_trigger'] ) ? $automation_data['event_meta']['review_trigger'] : 'review_approved';
+		$trigger_source = isset( $automation_data['trigger_source'] ) ? $automation_data['trigger_source'] : 'submission';
+		$comment_status = isset( $automation_data['comment_status'] ) ? $automation_data['comment_status'] : 1;
+
+		if ( 'review_received' === $review_trigger ) {
+			/** Fire only on initial submission, not on later approval transition */
+			return 'submission' === $trigger_source;
+		}
+
+		/** Default: review_approved — fire when approved (auto or manual) */
+		if ( 'approval' === $trigger_source ) {
+			return true;
+		}
+
+		/** From submission hook, only if auto-approved (status=1) */
+		return 1 === absint( $comment_status );
+	}
+
+	/**
+	 * Goal settings schema for the automation builder UI.
+	 *
+	 * @return array[]
+	 */
+	public function get_goal_fields_schema() {
+		return array(
+			array(
+				'id'          => 'review_trigger',
+				'label'       => __( 'Goal Met When', 'wp-marketing-automations' ),
+				'type'        => 'radio',
+				'options'     => array(
+					array(
+						'label' => __( 'Review Received', 'wp-marketing-automations' ),
+						'value' => 'review_received',
+					),
+					array(
+						'label' => __( 'Review Approved', 'wp-marketing-automations' ),
+						'value' => 'review_approved',
+					),
+				),
+				'class'       => 'bwfan-input-wrapper',
+				'tip'         => '',
+				'required'    => true,
+				'description' => '',
+				'hint'        => __( 'The goal will be met when a product review matches the selected condition.', 'wp-marketing-automations' ),
+			),
+		);
+	}
+
+	/**
+	 * Default values for goal settings.
+	 *
+	 * @return array
+	 */
+	public function get_default_goal_values() {
+		return array(
+			'review_trigger' => 'review_received',
+		);
+	}
+
+	/**
+	 * Validate goal settings against the incoming event data.
+	 *
+	 * @param array $automation_settings Goal settings from the automation builder.
+	 * @param array $automation_data     Event data from the trigger.
+	 *
+	 * @return bool
+	 */
+	public function validate_goal_settings( $automation_settings, $automation_data ) {
+		if ( ! is_array( $automation_settings ) || ! is_array( $automation_data ) || ! isset( $automation_data['comment_id'] ) ) {
+			return false;
+		}
+
+		$review_trigger = isset( $automation_settings['review_trigger'] ) ? $automation_settings['review_trigger'] : 'review_received';
+		$trigger_source = isset( $automation_data['trigger_source'] ) ? $automation_data['trigger_source'] : 'submission';
+		$comment_status = isset( $automation_data['comment_status'] ) ? $automation_data['comment_status'] : 1;
+
+		if ( 'review_received' === $review_trigger ) {
+			/** Goal met on initial submission */
+			return 'submission' === $trigger_source;
+		}
+
+		/** review_approved: goal met when approved (auto or manual) */
+		if ( 'approval' === $trigger_source ) {
+			return true;
+		}
+
+		/** From submission hook, only if auto-approved (status=1) */
+		return 1 === absint( $comment_status );
+	}
+
+	/**
+	 * Resolve contact ID from the review's email address for goal processing.
+	 *
+	 * @param array $capture_args Async event data.
+	 *
+	 * @return int
+	 */
+	public function get_contact_id_for_goal( $capture_args ) {
+		if ( ! is_array( $capture_args ) || ! isset( $capture_args['comment_id'] ) || empty( $capture_args['comment_id'] ) ) {
+			return 0;
+		}
+
+		$comment = get_comment( absint( $capture_args['comment_id'] ) );
+		if ( ! $comment instanceof WP_Comment ) {
+			return 0;
+		}
+
+		$email   = $comment->comment_author_email;
+		$user_id = absint( $comment->user_id );
+		if ( empty( $email ) ) {
+			return 0;
+		}
+
+		$contact = new WooFunnels_Contact( $user_id, $email );
+		if ( ! $contact instanceof WooFunnels_Contact || 0 === absint( $contact->get_id() ) ) {
+			return 0;
+		}
+
+		return absint( $contact->get_id() );
 	}
 
 }

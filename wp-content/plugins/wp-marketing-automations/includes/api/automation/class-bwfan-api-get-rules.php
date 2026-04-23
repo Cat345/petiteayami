@@ -14,13 +14,17 @@ class BWFAN_API_Get_Rules extends BWFAN_API_Base {
 	public function __construct() {
 		parent::__construct();
 		$this->method = WP_REST_Server::READABLE;
-		$this->route  = '/automation/event-rules/(?P<event>[a-zA-Z0-9_]+)';
+		$this->route  = '/automation/event-rules/(?P<event>[a-zA-Z0-9_,]+)';
 	}
 
 	public function process_api_call() {
-		$event = $this->get_sanitized_arg( 'event' );
+		$event = $this->get_sanitized_arg( 'event', 'text_field' );
 		if ( empty( $event ) ) {
 			return $this->error_response_200( __( 'Invalid or empty event', 'wp-marketing-automations' ), null, 400 );
+		}
+		/** Support comma-separated events */
+		if ( strpos( $event, ',' ) !== false ) {
+			$event = array_map( 'sanitize_text_field', explode( ',', $event ) );
 		}
 
 		$aid = $this->get_sanitized_arg( 'automation_id' );

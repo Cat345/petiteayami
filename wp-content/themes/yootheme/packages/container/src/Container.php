@@ -109,7 +109,7 @@ class Container implements ContainerInterface
         } elseif ($service instanceof Closure) {
             $service = (new Service($id, $shared))->setFactory($service);
             //@phpstan-ignore instanceof.alwaysTrue
-        } elseif (!$service instanceof Service) {
+        } elseif (!($service instanceof Service)) {
             throw new InvalidArgumentException('Service definition must be string or Closure');
         }
 
@@ -234,8 +234,6 @@ class Container implements ContainerInterface
      *
      * @param callable|string       $callback
      * @param list<mixed> $parameters
-     *
-     * @return callable
      */
     public function wrap($callback, array $parameters = [], bool $resolve = true): callable
     {

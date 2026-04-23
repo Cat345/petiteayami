@@ -97,10 +97,10 @@ class Source extends SchemaBuilder
         ];
 
         $options += [
-            '__Type' => compact('metadata'),
-            '__Field' => compact('metadata'),
-            '__Directive' => compact('metadata'),
-            '__InputValue' => compact('metadata'),
+            '__Type' => ['metadata' => $metadata],
+            '__Field' => ['metadata' => $metadata],
+            '__Directive' => ['metadata' => $metadata],
+            '__InputValue' => ['metadata' => $metadata],
         ];
 
         return GraphQL::executeQuery(

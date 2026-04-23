@@ -42,8 +42,6 @@ class Builder
     /**
      * Constructor.
      *
-     * @param callable $loader
-     * @param callable $renderer
      * @param array<string, object> $params
      */
     public function __construct(callable $loader, callable $renderer, array $params = [])
@@ -137,7 +135,7 @@ class Builder
             ($type = $this->getType($node->type ?? '')) &&
             ($template = $type->templates[$params['context']] ?? '')
         ) {
-            $params = array_merge($params, (array) $node, compact('node'));
+            $params = array_merge($params, (array) $node, ['node' => $node]);
 
             return ($this->renderer)($template, $params);
         }

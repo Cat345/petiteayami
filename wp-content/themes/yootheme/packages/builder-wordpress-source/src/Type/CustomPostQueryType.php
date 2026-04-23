@@ -15,8 +15,6 @@ use function YOOtheme\trans;
 class CustomPostQueryType
 {
     /**
-     * @param WP_Post_Type $type
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Post_Type $type): array
@@ -35,7 +33,6 @@ class CustomPostQueryType
             ? [
                 'label' => trans('Filter by Terms'),
                 'type' => 'select',
-                'default' => [],
                 'options' => array_map(
                     fn($taxonomy) => ['evaluate' => "yootheme.builder.taxonomies['{$taxonomy}']"],
                     array_keys($taxonomies),
@@ -82,7 +79,6 @@ class CustomPostQueryType
                         )
                         : '',
                 'type' => 'select',
-                'default' => 'IN',
                 'options' => [
                     trans('Match one %taxonomy% (OR)', [
                         '%taxonomy%' => mb_strtolower($taxonomy->labels->singular_name),
@@ -90,7 +86,7 @@ class CustomPostQueryType
                     trans('Match all %taxonomies% (AND)', [
                         '%taxonomies%' => mb_strtolower($taxonomy->label),
                     ]) => 'AND',
-                    trans('Don\'t match %taxonomies% (NOR)', [
+                    trans("Don't match %taxonomies% (NOR)", [
                         '%taxonomies%' => mb_strtolower($taxonomy->label),
                     ]) => 'NOT IN',
                 ],
@@ -116,27 +112,33 @@ class CustomPostQueryType
                                 'type' => [
                                     'listOf' => 'Int',
                                 ],
+                                'defaultValue' => [],
                             ],
                             'users_operator' => [
                                 'type' => 'String',
+                                'defaultValue' => 'IN',
                             ],
                             'date_column' => [
                                 'type' => 'String',
                             ],
                             'date_range' => [
                                 'type' => 'String',
+                                'defaultValue' => 'relative',
                             ],
                             'date_relative' => [
                                 'type' => 'String',
+                                'defaultValue' => 'next',
                             ],
                             'date_relative_value' => [
                                 'type' => 'Int',
                             ],
                             'date_relative_unit' => [
                                 'type' => 'String',
+                                'defaultValue' => 'day',
                             ],
                             'date_relative_unit_this' => [
                                 'type' => 'String',
+                                'defaultValue' => 'day',
                             ],
                             'date_relative_start_today' => [
                                 'type' => 'Boolean',
@@ -155,12 +157,15 @@ class CustomPostQueryType
                             ],
                             'offset' => [
                                 'type' => 'Int',
+                                'defaultValue' => 0,
                             ],
                             'order' => [
                                 'type' => 'String',
+                                'defaultValue' => 'date',
                             ],
                             'order_direction' => [
                                 'type' => 'String',
+                                'defaultValue' => 'DESC',
                             ],
                             'order_alphanum' => [
                                 'type' => 'Boolean',
@@ -169,7 +174,7 @@ class CustomPostQueryType
                                 'type' => 'Boolean',
                             ],
                         ],
-                        array_map(fn() => ['type' => 'String'], $operators),
+                        array_map(fn() => ['type' => 'String', 'defaultValue' => 'IN'], $operators),
                     ),
 
                     'metadata' => [
@@ -207,7 +212,6 @@ class CustomPostQueryType
                                 'users' => [
                                     'label' => trans('Filter by Authors'),
                                     'type' => 'select',
-                                    'default' => [],
                                     'options' => [['evaluate' => 'yootheme.builder.authors']],
                                     'attrs' => [
                                         'multiple' => true,
@@ -221,17 +225,17 @@ class CustomPostQueryType
                                         ['%post_types%' => $plural],
                                     ),
                                     'type' => 'select',
-                                    'default' => 'IN',
                                     'options' => [
                                         trans('Match (OR)') => 'IN',
-                                        trans('Don\'t match (NOR)') => 'NOT IN',
+                                        trans("Don't match (NOR)") => 'NOT IN',
                                     ],
                                     'enable' => '!id',
                                 ],
                                 '_date' => [
                                     'label' => trans('Filter by Date'),
-                                    'description' =>
+                                    'description' => trans(
                                         'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                                    ),
                                     'type' => 'grid',
                                     'width' => '1-2',
                                     'fields' => [
@@ -250,7 +254,6 @@ class CustomPostQueryType
                                         ],
                                         'date_range' => [
                                             'type' => 'select',
-                                            'default' => 'relative',
                                             'options' => [
                                                 trans('Relative Range') => 'relative',
                                                 trans('Fixed Range') => 'fixed',
@@ -267,7 +270,6 @@ class CustomPostQueryType
                                     'fields' => [
                                         'date_relative' => [
                                             'type' => 'select',
-                                            'default' => 'next',
                                             'options' => [
                                                 trans('Is in the next') => 'next',
                                                 trans('Is in this') => 'this',
@@ -281,11 +283,10 @@ class CustomPostQueryType
                                                 'class' => 'uk-form-width-xsmall',
                                                 'placeholder' => '∞',
                                             ],
-                                            'show' => 'date_relative !== \'this\'',
+                                            'show' => "date_relative !== 'this'",
                                         ],
                                         'date_relative_unit' => [
                                             'type' => 'select',
-                                            'default' => 'day',
                                             'options' => [
                                                 trans('Days') => 'day',
                                                 trans('Weeks') => 'week',
@@ -295,34 +296,35 @@ class CustomPostQueryType
                                                 trans('Calendar Months') => 'month_calendar',
                                                 trans('Calendar Years') => 'year_calendar',
                                             ],
-                                            'show' => 'date_relative !== \'this\'',
+                                            'show' => "date_relative !== 'this'",
                                         ],
                                         'date_relative_unit_this' => [
                                             'type' => 'select',
-                                            'default' => 'day',
                                             'options' => [
                                                 trans('Day') => 'day',
                                                 trans('Week') => 'week',
                                                 trans('Month') => 'month',
                                                 trans('Year') => 'year',
                                             ],
-                                            'show' => 'date_relative === \'this\'',
+                                            'show' => "date_relative === 'this'",
                                         ],
                                     ],
-                                    'show' => 'date_column && date_range === \'relative\'',
+                                    'show' => "date_column && date_range === 'relative'",
                                 ],
                                 'date_relative_start_today' => [
                                     'type' => 'checkbox',
                                     'text' => trans('Start today'),
-                                    'description' =>
+                                    'description' => trans(
                                         'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
-                                    'enable' => 'date_relative !== \'this\'',
-                                    'show' => 'date_column && date_range === \'relative\'',
+                                    ),
+                                    'enable' => "date_relative !== 'this'",
+                                    'show' => "date_column && date_range === 'relative'",
                                 ],
                                 '_date_range_fixed' => [
                                     'type' => 'grid',
-                                    'description' =>
+                                    'description' => trans(
                                         'Set only one date to load all posts either before or after that date.',
+                                    ),
                                     'width' => '1-2',
                                     'fields' => [
                                         'date_start' => [
@@ -334,12 +336,13 @@ class CustomPostQueryType
                                             'type' => 'datetime',
                                         ],
                                     ],
-                                    'show' => 'date_column && date_range === \'fixed\'',
+                                    'show' => "date_column && date_range === 'fixed'",
                                 ],
                                 '_date_range_custom' => [
                                     'type' => 'grid',
-                                    'description' =>
+                                    'description' => trans(
                                         'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                                    ),
                                     'width' => '1-2',
                                     'fields' => [
                                         'date_start_custom' => [
@@ -363,7 +366,7 @@ class CustomPostQueryType
                                             ],
                                         ],
                                     ],
-                                    'show' => 'date_column && date_range === \'custom\'',
+                                    'show' => "date_column && date_range === 'custom'",
                                 ],
                                 'offset' => [
                                     'label' => trans('Start'),
@@ -372,7 +375,6 @@ class CustomPostQueryType
                                         ['%post_type%' => $singular],
                                     ),
                                     'type' => 'number',
-                                    'default' => 0,
                                     'modifier' => 1,
                                     'attrs' => [
                                         'min' => 1,
@@ -388,7 +390,6 @@ class CustomPostQueryType
                                         'order' => [
                                             'label' => trans('Order'),
                                             'type' => 'select',
-                                            'default' => 'date',
                                             'options' => [
                                                 [
                                                     'evaluate' =>
@@ -403,7 +404,6 @@ class CustomPostQueryType
                                         'order_direction' => [
                                             'label' => trans('Direction'),
                                             'type' => 'select',
-                                            'default' => 'DESC',
                                             'options' => [
                                                 ['text' => trans('Ascending'), 'value' => 'ASC'],
                                                 ['text' => trans('Descending'), 'value' => 'DESC'],
@@ -455,27 +455,33 @@ class CustomPostQueryType
                                 'type' => [
                                     'listOf' => 'Int',
                                 ],
+                                'defaultValue' => [],
                             ],
                             'users_operator' => [
                                 'type' => 'String',
+                                'defaultValue' => 'IN',
                             ],
                             'date_column' => [
                                 'type' => 'String',
                             ],
                             'date_range' => [
                                 'type' => 'String',
+                                'defaultValue' => 'relative',
                             ],
                             'date_relative' => [
                                 'type' => 'String',
+                                'defaultValue' => 'next',
                             ],
                             'date_relative_value' => [
                                 'type' => 'Int',
                             ],
                             'date_relative_unit' => [
                                 'type' => 'String',
+                                'defaultValue' => 'day',
                             ],
                             'date_relative_unit_this' => [
                                 'type' => 'String',
+                                'defaultValue' => 'day',
                             ],
                             'date_relative_start_today' => [
                                 'type' => 'Boolean',
@@ -494,15 +500,19 @@ class CustomPostQueryType
                             ],
                             'offset' => [
                                 'type' => 'Int',
+                                'defaultValue' => 0,
                             ],
                             'limit' => [
                                 'type' => 'Int',
+                                'defaultValue' => 10,
                             ],
                             'order' => [
                                 'type' => 'String',
+                                'defaultValue' => 'date',
                             ],
                             'order_direction' => [
                                 'type' => 'String',
+                                'defaultValue' => 'DESC',
                             ],
                             'order_alphanum' => [
                                 'type' => 'Boolean',
@@ -511,7 +521,7 @@ class CustomPostQueryType
                                 'type' => 'Boolean',
                             ],
                         ],
-                        array_map(fn() => ['type' => 'String'], $operators),
+                        array_map(fn() => ['type' => 'String', 'defaultValue' => 'IN'], $operators),
                     ),
                     'metadata' => [
                         'label' => trans('Custom %post_types%', ['%post_types%' => $type->label]),
@@ -520,7 +530,6 @@ class CustomPostQueryType
                             'users' => [
                                 'label' => trans('Filter by Authors'),
                                 'type' => 'select',
-                                'default' => [],
                                 'options' => [['evaluate' => 'yootheme.builder.authors']],
                                 'attrs' => [
                                     'multiple' => true,
@@ -533,16 +542,16 @@ class CustomPostQueryType
                                     ['%post_types%' => $plural],
                                 ),
                                 'type' => 'select',
-                                'default' => 'IN',
                                 'options' => [
                                     trans('Match (OR)') => 'IN',
-                                    trans('Don\'t match (NOR)') => 'NOT IN',
+                                    trans("Don't match (NOR)") => 'NOT IN',
                                 ],
                             ],
                             '_date' => [
                                 'label' => trans('Filter by Date'),
-                                'description' =>
+                                'description' => trans(
                                     'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                                ),
                                 'type' => 'grid',
                                 'width' => '1-2',
                                 'fields' => [
@@ -561,7 +570,6 @@ class CustomPostQueryType
                                     ],
                                     'date_range' => [
                                         'type' => 'select',
-                                        'default' => 'relative',
                                         'options' => [
                                             trans('Relative Range') => 'relative',
                                             trans('Fixed Range') => 'fixed',
@@ -578,7 +586,6 @@ class CustomPostQueryType
                                 'fields' => [
                                     'date_relative' => [
                                         'type' => 'select',
-                                        'default' => 'next',
                                         'options' => [
                                             trans('Is in the next') => 'next',
                                             trans('Is in this') => 'this',
@@ -592,11 +599,10 @@ class CustomPostQueryType
                                             'class' => 'uk-form-width-xsmall',
                                             'placeholder' => '∞',
                                         ],
-                                        'show' => 'date_relative !== \'this\'',
+                                        'show' => "date_relative !== 'this'",
                                     ],
                                     'date_relative_unit' => [
                                         'type' => 'select',
-                                        'default' => 'day',
                                         'options' => [
                                             trans('Days') => 'day',
                                             trans('Weeks') => 'week',
@@ -606,34 +612,35 @@ class CustomPostQueryType
                                             trans('Calendar Months') => 'month_calendar',
                                             trans('Calendar Years') => 'year_calendar',
                                         ],
-                                        'show' => 'date_relative !== \'this\'',
+                                        'show' => "date_relative !== 'this'",
                                     ],
                                     'date_relative_unit_this' => [
                                         'type' => 'select',
-                                        'default' => 'day',
                                         'options' => [
                                             trans('Day') => 'day',
                                             trans('Week') => 'week',
                                             trans('Month') => 'month',
                                             trans('Year') => 'year',
                                         ],
-                                        'show' => 'date_relative === \'this\'',
+                                        'show' => "date_relative === 'this'",
                                     ],
                                 ],
-                                'show' => 'date_column && date_range === \'relative\'',
+                                'show' => "date_column && date_range === 'relative'",
                             ],
                             'date_relative_start_today' => [
                                 'type' => 'checkbox',
                                 'text' => trans('Start today'),
-                                'description' =>
+                                'description' => trans(
                                     'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
-                                'enable' => 'date_relative !== \'this\'',
-                                'show' => 'date_column && date_range === \'relative\'',
+                                ),
+                                'enable' => "date_relative !== 'this'",
+                                'show' => "date_column && date_range === 'relative'",
                             ],
                             '_date_range_fixed' => [
                                 'type' => 'grid',
-                                'description' =>
+                                'description' => trans(
                                     'Set only one date to load all posts either before or after that date.',
+                                ),
                                 'width' => '1-2',
                                 'fields' => [
                                     'date_start' => [
@@ -645,12 +652,13 @@ class CustomPostQueryType
                                         'type' => 'datetime',
                                     ],
                                 ],
-                                'show' => 'date_column && date_range === \'fixed\'',
+                                'show' => "date_column && date_range === 'fixed'",
                             ],
                             '_date_range_custom' => [
                                 'type' => 'grid',
-                                'description' =>
+                                'description' => trans(
                                     'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                                ),
                                 'width' => '1-2',
                                 'fields' => [
                                     'date_start_custom' => [
@@ -674,7 +682,7 @@ class CustomPostQueryType
                                         ],
                                     ],
                                 ],
-                                'show' => 'date_column && date_range === \'custom\'',
+                                'show' => "date_column && date_range === 'custom'",
                             ],
                             '_offset' => [
                                 'description' => trans(
@@ -687,7 +695,6 @@ class CustomPostQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -697,7 +704,6 @@ class CustomPostQueryType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -712,7 +718,6 @@ class CustomPostQueryType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'date',
                                         'options' => [
                                             [
                                                 'evaluate' =>
@@ -726,7 +731,6 @@ class CustomPostQueryType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'DESC',
                                         'options' => [
                                             ['text' => trans('Ascending'), 'value' => 'ASC'],
                                             ['text' => trans('Descending'), 'value' => 'DESC'],

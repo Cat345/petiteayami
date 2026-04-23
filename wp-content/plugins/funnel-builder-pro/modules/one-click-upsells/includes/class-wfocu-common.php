@@ -7,12 +7,12 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 	class WFOCU_Common {
 
 
-		public static $customizer_key_prefix = '';
-		public static $customizer_key_data = '';
-		public static $funnel_id = 0;
-		public static $tabs_product_obj = null;
-		public static $start_time = 0;
-		protected static $customizer_fields = array();
+		public static $customizer_key_prefix        = '';
+		public static $customizer_key_data          = '';
+		public static $funnel_id                    = 0;
+		public static $tabs_product_obj             = null;
+		public static $start_time                   = 0;
+		protected static $customizer_fields         = array();
 		protected static $customizer_fields_default = array();
 		private static $active_plugins;
 
@@ -54,7 +54,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				wp_die( - 1 );
 			}
 
-			$term = wc_clean( wp_unslash( $_GET['term'] ) );
+			$term = bwf_clean( wp_unslash( $_GET['term'] ) );
 
 			if ( empty( $term ) ) {
 				wp_die();
@@ -63,14 +63,16 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			$ids = array();
 			// Search by ID.
 			if ( is_numeric( $term ) ) {
-				$coupon = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$coupon = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'post__in'         => array( intval( $term ) ),
 					'post_type'        => 'shop_coupon',
 					'fields'           => 'ids',
 					'numberposts'      => 100,
 					'paged'            => 1,
 					'suppress_filters' => false,
-				) );
+					)
+				);
 				if ( count( $coupon ) > 0 ) {
 					$ids = array( current( $coupon ) );
 				}
@@ -96,7 +98,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			$found_coupons = array();
 
 			foreach ( $ids as $id ) {
-				$coupon_title                   = sprintf( /* translators: $1: coupon title */ esc_html__( '%1$s', 'woocommerce' ), get_the_title( $id ) );
+				$coupon_title                   = get_the_title( $id );
 				$found_coupons[ $coupon_title ] = $coupon_title;
 			}
 
@@ -123,26 +125,32 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			/**
 			 * Funnel Post Type
 			 */
-			register_post_type( self::get_funnel_post_type_slug(), apply_filters( 'wfocu_funnel_post_type_args', array(
-				'labels'              => array(
-					'name'          => __( 'Funnels', 'woofunnels-upstroke-one-click-upsell' ),
-					'singular_name' => __( 'Funnel', 'woofunnels-upstroke-one-click-upsell' ),
-					'add_new'       => __( 'Add Funnel', 'woofunnels-upstroke-one-click-upsell' ),
-					'add_new_item'  => __( 'Add New Funnel', 'woofunnels-upstroke-one-click-upsell' ),
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'rewrite'             => false,
-				'query_var'           => true,
-				'supports'            => array( 'title', 'editor', 'revisions', 'author' ),
-				'has_archive'         => false,
-			) ) );
+			register_post_type(
+				self::get_funnel_post_type_slug(),
+				apply_filters(
+					'wfocu_funnel_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => __( 'Funnels', 'woofunnels-upstroke-one-click-upsell' ),
+							'singular_name' => __( 'Funnel', 'woofunnels-upstroke-one-click-upsell' ),
+							'add_new'       => __( 'Add Funnel', 'woofunnels-upstroke-one-click-upsell' ),
+							'add_new_item'  => __( 'Add New Funnel', 'woofunnels-upstroke-one-click-upsell' ),
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => false,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'rewrite'             => false,
+						'query_var'           => true,
+						'supports'            => array( 'title', 'editor', 'revisions', 'author' ),
+						'has_archive'         => false,
+					)
+				)
+			);
 
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 			$rewrite_slug      = apply_filters( 'wfocu_offer_post_type_slug', $bwb_admin_setting->get_option( 'wfocu_page_base' ) );
@@ -151,38 +159,44 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			/**
 			 * Offer Post Type
 			 */
-			register_post_type( self::get_offer_post_type_slug(), apply_filters( 'wfocu_offer_post_type_args', array(
-				'labels'              => array(
-					'name'          => __( 'Offers', 'woofunnels-upstroke-one-click-upsell' ),
-					'singular_name' => __( 'Offer', 'woofunnels-upstroke-one-click-upsell' ),
-					'add_new'       => __( 'Add Offer', 'woofunnels-upstroke-one-click-upsell' ),
-					'add_new_item'  => __( 'Add New Offer', 'woofunnels-upstroke-one-click-upsell' ),
-					'edit_item'     => sprintf( esc_html__( 'Edit %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
-					'view_item'     => sprintf( esc_html__( 'View %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
-					'update_item'   => sprintf( esc_html__( 'Update %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
+			register_post_type(
+				self::get_offer_post_type_slug(),
+				apply_filters(
+					'wfocu_offer_post_type_args',
+					array(
+						'labels'              => array(
+							'name'          => __( 'Offers', 'woofunnels-upstroke-one-click-upsell' ),
+							'singular_name' => __( 'Offer', 'woofunnels-upstroke-one-click-upsell' ),
+							'add_new'       => __( 'Add Offer', 'woofunnels-upstroke-one-click-upsell' ),
+							'add_new_item'  => __( 'Add New Offer', 'woofunnels-upstroke-one-click-upsell' ),
+							'edit_item'     => sprintf( esc_html__( 'Edit %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
+							'view_item'     => sprintf( esc_html__( 'View %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
+							'update_item'   => sprintf( esc_html__( 'Update %s', 'woofunnels-upstroke-one-click-upsell' ), 'Offer' ),
 
-				),
-				'public'              => true,
-				'show_ui'             => true,
-				'map_meta_cap'        => true,
-				'publicly_queryable'  => true,
-				'exclude_from_search' => true,
-				'show_in_menu'        => false,
-				'hierarchical'        => false,
-				'show_in_nav_menus'   => false,
-				'show_in_admin_bar'   => true,
-				'rewrite'             => array(
-					'slug'       => $rewrite_slug,
-					'with_front' => false,
-				),
-				'query_var'           => true,
-				'supports'            => array( 'title', 'editor', 'custom-fields', 'thumbnail', 'author' ),
-				'show_in_rest'        => true,
-				'has_archive'         => false,
-				'capabilities'        => array(
-					'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
-				),
-			) ) );
+						),
+						'public'              => true,
+						'show_ui'             => true,
+						'map_meta_cap'        => true,
+						'publicly_queryable'  => true,
+						'exclude_from_search' => true,
+						'show_in_menu'        => false,
+						'hierarchical'        => false,
+						'show_in_nav_menus'   => false,
+						'show_in_admin_bar'   => true,
+						'rewrite'             => array(
+							'slug'       => $rewrite_slug,
+							'with_front' => false,
+						),
+						'query_var'           => true,
+						'supports'            => array( 'title', 'editor', 'custom-fields', 'thumbnail', 'author' ),
+						'show_in_rest'        => true,
+						'has_archive'         => false,
+						'capabilities'        => array(
+							'create_posts' => 'do_not_allow', // Prior to Wordpress 4.5, this was false.
+						),
+					)
+				)
+			);
 		}
 
 		public static function get_funnel_post_type_slug() {
@@ -202,6 +216,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		/**
 		 * Function to get timezone string by checking WordPress timezone settings
+		 *
 		 * @return mixed|string|void
 		 */
 		public static function wc_timezone_string() {
@@ -229,7 +244,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		 *
 		 * @return string
 		 * @see WFOCU_Common::wc_timezone_string()
-		 *
 		 */
 		public static function get_timezone_by_offset( $offset ) {
 			switch ( $offset ) {
@@ -436,7 +450,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				if ( ! empty( $operators ) ) {
 					wfocu_Input_Builder::create_input_field( $operator_args, $options['operator'] );
 				} else { ?>
-                    <input type="hidden" name="<?php echo esc_attr( $operator_args['name'] ); ?>" value="=="/>
+					<input type="hidden" name="<?php echo esc_attr( $operator_args['name'] ); ?>" value="=="/>
 					<?php
 				}
 				echo '</td>';
@@ -463,7 +477,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 			$class = 'wfocu_Rule_' . $rule_type;
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfocu_rule_rules[ $rule_type ] = new $class;
+				$woocommerce_wfocu_rule_rules[ $rule_type ] = new $class();
 
 				return $woocommerce_wfocu_rule_rules[ $rule_type ];
 			} else {
@@ -478,7 +492,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 			$class = 'wfocu_Input_' . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $input_type ) ) );
 			if ( class_exists( $class ) ) {
-				$woocommerce_wfocu_rule_inputs[ $input_type ] = new $class;
+				$woocommerce_wfocu_rule_inputs[ $input_type ] = new $class();
 			} else {
 				$woocommerce_wfocu_rule_inputs[ $input_type ] = apply_filters( 'woocommerce_wfocu_rule_get_input_object', $input_type );
 			}
@@ -617,22 +631,30 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return ( $variation_attributes );
-
 		}
 
 		public static function search_products( $term, $include_variations = false ) {
 			global $wpdb;
 			$like_term     = '%' . $wpdb->esc_like( $term ) . '%';
-			$post_types    = apply_filters( 'wfocu_allow_post_types_to_search', $include_variations ? array(
-				'product',
-				'product_variation',
-			) : array( 'product' ) );
+			$post_types    = apply_filters(
+				'wfocu_allow_post_types_to_search',
+				$include_variations ? array(
+					'product',
+					'product_variation',
+				) : array( 'product' )
+			);
 			$post_statuses = current_user_can( 'edit_private_products' ) ? array(
 				'private',
 				'publish',
 			) : array( 'publish' );
 
-			$product_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
+			// Sanitize array values before using in query
+			$post_types    = array_map( 'esc_sql', $post_types );
+			$post_statuses = array_map( 'esc_sql', $post_statuses );
+
+			$product_ids = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT DISTINCT posts.ID FROM {$wpdb->posts} posts
                     LEFT JOIN {$wpdb->postmeta} postmeta ON posts.ID = postmeta.post_id
                     WHERE (
                         posts.post_title LIKE %s
@@ -640,7 +662,11 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
                             postmeta.meta_key = '_sku' AND postmeta.meta_value LIKE %s
                         )
                     )
-                    AND posts.post_type IN ('" . implode( "','", $post_types ) . "') AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "') ORDER BY posts.post_parent ASC, posts.post_title ASC", $like_term, $like_term ) );  //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.QuotedDynamicPlaceholderGeneration
+                    AND posts.post_type IN ('" . implode( "','", $post_types ) . "') AND posts.post_status IN ('" . implode( "','", $post_statuses ) . "') ORDER BY posts.post_parent ASC, posts.post_title ASC", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.QuotedDynamicPlaceholderGeneration -- Values are sanitized with esc_sql before interpolation
+					$like_term,
+					$like_term
+				)
+			);
 
 			if ( is_numeric( $term ) ) {
 				$post_id   = absint( $term );
@@ -667,7 +693,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 			}
 			if ( isset( $data->settings ) ) {
-				$data->settings = WFOCU_Common::maybe_filter_boolean_strings( $data->settings );
+				$data->settings = self::maybe_filter_boolean_strings( $data->settings );
 			}
 
 			update_post_meta( $offer_id, '_wfocu_setting', $data );
@@ -724,10 +750,8 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		 *
 		 * @param $class_name
 		 *
-		 *
 		 * @return mixed|string
 		 * @see WFOCU_Gateways::integration_autoload();
-		 *
 		 */
 		public static function slugify_classname( $class_name ) {
 			$classname = self::custom_sanitize_title( $class_name );
@@ -738,14 +762,14 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		/**
 		 * Custom sanitize title method to avoid conflicts with WordPress hooks on sanitize_title
-		 * 
+		 *
 		 * @param string $title The title to sanitize
 		 * @return string The sanitized title
 		 */
 		private static function custom_sanitize_title( $title ) {
 			$title = remove_accents( $title );
 			$title = sanitize_title_with_dashes( $title );
-			
+
 			return $title;
 		}
 
@@ -777,7 +801,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			} else {
 				return $val;
 			}
-
 		}
 
 		public static function maybe_parse_product_tags( $content = '', $key = '', $obj = '' ) {
@@ -852,7 +875,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			$val = str_replace( '&gt;', '>', $val );
 
 			return $val;
-
 		}
 
 		public static function get_variable_league_product_types() {
@@ -911,7 +933,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				self::$customizer_fields_default = $default_values;
 
 			}
-
 		}
 
 		public static function get_post_table_data() {
@@ -926,18 +947,19 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			if ( isset( $_GET['paged'] ) && $_GET['paged'] > 0 ) {  // phpcs:ignore WordPress.Security.NonceVerification
 				$args['paged'] = absint( $_GET['paged'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
-			if ( isset( $_GET['order'] ) && '' !== $_GET['order'] && isset( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-				$args['orderby'] = wc_clean( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.NonceVerification
-				$args['order']   = wc_clean( $_GET['order'] ); // phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_GET['order'] ) && '' !== $_GET['order'] && isset( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				$args['orderby'] = bwf_clean( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				$args['order']   = bwf_clean( wp_unslash( $_GET['order'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
 			}
-			if ( isset( $_REQUEST['s'] ) && '' !== $_REQUEST['s'] ) { // phpcs:ignore WordPress.Security.NonceVerification
-				$args['s'] = wc_clean( $_REQUEST['s'] ); // phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_REQUEST['s'] ) && '' !== $_REQUEST['s'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				$args['s'] = bwf_clean( wp_unslash( $_REQUEST['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
 			}
 
-			if ( isset( $_REQUEST['status'] ) && '' !== $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification
-				if ( 'active' === wc_clean( $_REQUEST['status'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_REQUEST['status'] ) && '' !== $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				$status = bwf_clean( wp_unslash( $_REQUEST['status'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
+				if ( 'active' === $status ) {
 					$args['post_status'] = 'publish';
-				} elseif ( 'all' === $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+				} elseif ( 'all' === $status ) {
 					$args['post_status'] = array( 'publish', WFOCU_SLUG . '-disabled' );
 				} else {
 					$args['post_status'] = WFOCU_SLUG . '-disabled';
@@ -957,7 +979,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					global $post;
 
 					$steps = WFOCU_Core()->funnels->get_funnel_steps( get_the_ID() );
-					$view  = "";
+					$view  = '';
 
 					if ( ( is_array( $steps ) && count( $steps ) > 0 ) && isset( $steps[0]['id'] ) ) {
 						$offer_data = WFOCU_Core()->offers->get_offer( $steps[0]['id'] );
@@ -971,11 +993,14 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 					$status      = get_post_status( get_the_ID() );
 					$priority    = $post->menu_order;
-					$funnel_url  = add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => get_the_ID(),
-					), admin_url( 'admin.php' ) );
+					$funnel_url  = add_query_arg(
+						array(
+							'page'    => 'upstroke',
+							'section' => 'offers',
+							'edit'    => get_the_ID(),
+						),
+						admin_url( 'admin.php' )
+					);
 					$row_actions = array();
 
 					$row_actions['edit'] = array(
@@ -1032,7 +1057,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		public static function string2hex( $string ) {
 			$hex = '';
-			for ( $i = 0; $i < strlen( $string ); $i ++ ) {
+			for ( $i = 0; $i < strlen( $string ); $i++ ) {
 				$hex .= dechex( ord( $string[ $i ] ) );
 			}
 
@@ -1081,18 +1106,21 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $url;
-
 		}
 
 		public static function get_order_status_settings() {
 			$get_order_statuses = wc_get_order_statuses();
 
-			$result = array_map( function ( $short, $long ) {
-				return array(
-					'id'   => $short,
-					'name' => $long,
-				);
-			}, array_keys( $get_order_statuses ), $get_order_statuses );
+			$result = array_map(
+				function ( $short, $long ) {
+					return array(
+						'id'   => $short,
+						'name' => $long,
+					);
+				},
+				array_keys( $get_order_statuses ),
+				$get_order_statuses
+			);
 
 			return $result;
 		}
@@ -1124,7 +1152,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $cloned_option;
-
 		}
 
 		public static function get_next_funnel_priority() {
@@ -1144,14 +1171,17 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		public static function register_post_status() {
 			// acf-disabled
-			register_post_status( WFOCU_SLUG . '-disabled', array(
-				'label'                     => __( 'Disabled', 'woofunnels-upstroke-one-click-upsell' ),
-				'public'                    => true,
-				'exclude_from_search'       => false,
-				'show_in_admin_all_list'    => true,
-				'show_in_admin_status_list' => true,
-				'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'woofunnels-upstroke-one-click-upsell' ),
-			) );
+			register_post_status(
+				WFOCU_SLUG . '-disabled',
+				array(
+					'label'                     => __( 'Disabled', 'woofunnels-upstroke-one-click-upsell' ),
+					'public'                    => true,
+					'exclude_from_search'       => false,
+					'show_in_admin_all_list'    => true,
+					'show_in_admin_status_list' => true,
+					'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'woofunnels-upstroke-one-click-upsell' ),
+				)
+			);
 		}
 
 		public static function tooltip( $tip, $allow_html = false ) {
@@ -1243,10 +1273,14 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				return '';
 			}
 
-			if ( in_array( $template_name, array(
-				'single-product/tabs/description.php',
-				'single-product/tabs/additional-information.php',
-			), true ) ) {
+			if ( in_array(
+				$template_name,
+				array(
+					'single-product/tabs/description.php',
+					'single-product/tabs/additional-information.php',
+				),
+				true
+			) ) {
 				if ( self::$tabs_product_obj instanceof WC_Product ) {
 					global $product;  // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
 					$product = self::$tabs_product_obj; // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable
@@ -1352,7 +1386,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					}
 					if ( @filemtime( $woofunnels_core_dir . '/' . '' . $file ) <= $yesdate ) { //phpcs:ignore Generic.PHP.NoSilencedErrors.Forbidden
 						$file_api->delete( $woofunnels_core_dir . '/' . '' . $file );
-						$i ++;
+						++$i;
 					}
 
 					if ( true === self::time_exceeded() || true === self::memory_exceeded() ) {
@@ -1437,7 +1471,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		public static function apply_discount( $price, $options, $product = '' ) {
 			if ( is_object( $options ) && isset( $options->discount_type ) ) {
 
-				$options->discount_amount = ( float ) $options->discount_amount;
+				$options->discount_amount = (float) $options->discount_amount;
 
 				switch ( $options->discount_type ) {
 					case 'percentage_on_sale':
@@ -1519,7 +1553,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		 * Modify permalink
 		 *
 		 * @param string $post_link post link.
-		 * @param array $post post data.
+		 * @param array  $post post data.
 		 * @param string $leavename leave name.
 		 *
 		 * @return string
@@ -1529,7 +1563,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			$bwb_admin_setting = BWF_Admin_General_Settings::get_instance();
 
 			if ( isset( $post->post_type ) && self::get_offer_post_type_slug() === $post->post_type && empty( trim( $bwb_admin_setting->get_option( 'wfocu_page_base' ) ) ) ) {
-
 
 				// If elementor page preview, return post link as it is.
 				if ( isset( $_REQUEST['elementor-preview'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -1543,7 +1576,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					$post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
 
 				}
-
 			}
 
 			return $post_link;
@@ -1582,7 +1614,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				return;
 			}
 
-
 			// Bail if this query doesn't match our very specific rewrite rule.
 			if ( ! isset( $query->query['page'] ) ) {
 				return;
@@ -1613,15 +1644,15 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		public static function maybe_elementor_template( $page_id, $new_page_id ) {
 			$contents = get_post_meta( $page_id, '_elementor_data', true );
-			if ( false === WFOCU_Common::plugin_active_check( 'elementor/elementor.php' ) ) {
+			if ( false === self::plugin_active_check( 'elementor/elementor.php' ) ) {
 				return;
 			}
-			$data = [
+			$data = array(
 				'_elementor_version'       => get_post_meta( $page_id, '_elementor_version', true ),
 				'_elementor_template_type' => get_post_meta( $page_id, '_elementor_template_type', true ),
 				'_elementor_edit_mode'     => get_post_meta( $page_id, '_elementor_edit_mode', true ),
 
-			];
+			);
 			foreach ( $data as $meta_key => $meta_value ) {
 				update_post_meta( $new_page_id, $meta_key, $meta_value );
 			}
@@ -1644,8 +1675,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				}
 				$instance->single_template_import( $new_page_id, $contents );
 			}
-
-
 		}
 
 		/**
@@ -1674,10 +1703,15 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		public static function check_builder_status( $builder = '' ) {
 			// Divi Builder Plugin Exists
-			$response = [ 'found' => false, 'error' => '', 'is_old_version' => 'no', 'version' => '' ];
+			$response = array(
+				'found'          => false,
+				'error'          => '',
+				'is_old_version' => 'no',
+				'version'        => '',
+			);
 			if ( empty( $builder ) ) {
 				$response['error'] = __( 'No Builder Specified', 'woofunnels-upstroke-one-click-upsell' );
-			} else if ( 'oxy' === $builder ) {
+			} elseif ( 'oxy' === $builder ) {
 				$supported_version   = '3.0';
 				$oxy_exist           = false;
 				$oxy_builder_version = '1.0';
@@ -1696,8 +1730,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 						$response['error']          = sprintf( __( 'Site has an older version of Oxygen Classic Builder. Templates are supported for v%s or greater.<br /> Please update.', 'woofunnels-upstroke-one-click-upsell' ), $supported_version );
 					}
 				}
-
-			} else if ( 'divi' === $builder ) {
+			} elseif ( 'divi' === $builder ) {
 				$supported_version    = '4.1';
 				$divi_exist           = false;
 				$divi_builder_version = 0;
@@ -1708,9 +1741,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					if ( defined( 'ET_BUILDER_PLUGIN_VERSION' ) ) {
 						$divi_builder_version = ET_BUILDER_PLUGIN_VERSION;
 					}
-
-
-				} else if ( function_exists( 'et_setup_theme' ) ) { // Detect Theme Active
+				} elseif ( function_exists( 'et_setup_theme' ) ) { // Detect Theme Active
 					$divi_exist = true;
 					$theme      = wp_get_theme();
 					if ( $theme instanceof WP_Theme ) {
@@ -1720,7 +1751,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 						} else {
 							$divi_builder_version = $theme->get( 'Version' );
 						}
-
 					}
 				}
 				// available in Both Theme & Plugin
@@ -1728,7 +1758,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					$divi_builder_version = ET_BUILDER_PRODUCT_VERSION;
 				}
 
-				//ET_Builder_Plugin
+				// ET_Builder_Plugin
 				if ( true === $divi_exist && class_exists( 'ET_Core_Portability' ) ) {
 					$response['found']   = true;
 					$response['version'] = $divi_builder_version;
@@ -1740,7 +1770,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $response;
-
 		}
 
 		public static function default_selected_product( $key ) {
@@ -1816,6 +1845,12 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 		 */
 		public static function create_new_customer( $email, $order = false ) {
 
+			/**
+			 * Custom hook to allow plugins to bypass certain validations during WFOCU customer creation
+			 * This is particularly useful for bypassing CAPTCHA/Turnstile validation during AJAX customer creation
+			 */
+			do_action( 'wfocu_before_create_new_customer', $email, $order );
+
 			if ( empty( $email ) ) {
 				return false;
 			}
@@ -1836,11 +1871,10 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			while ( username_exists( $username ) ) {
 				$username = $o_username . $append;
 
-				++ $append;
+				++$append;
 			}
 
 			$password = wp_generate_password();
-
 
 			// Use WP_Error to handle registration errors.
 			$errors = new WP_Error();
@@ -1853,12 +1887,15 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				return $errors;
 			}
 
-			$new_customer_data = apply_filters( 'woocommerce_new_customer_data', array(
-				'user_login' => $username,
-				'user_pass'  => $password,
-				'user_email' => $email,
-				'role'       => 'customer',
-			) );
+			$new_customer_data = apply_filters(
+				'woocommerce_new_customer_data',
+				array(
+					'user_login' => $username,
+					'user_pass'  => $password,
+					'user_email' => $email,
+					'role'       => 'customer',
+				)
+			);
 
 			$customer_id = wp_insert_user( $new_customer_data );
 
@@ -1891,10 +1928,8 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 					$customer->set_billing_state( $order->get_billing_state() );
 					$customer->set_billing_postcode( $order->get_billing_postcode() );
 
-
 					$customer->save();
 				}
-
 
 				wp_set_current_user( $customer_id, $username );
 
@@ -1902,7 +1937,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $customer_id;
-
 		}
 
 
@@ -1928,6 +1962,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		/**
 		 * Create facebook advanced matching data
+		 *
 		 * @return mixed|null
 		 */
 		public static function pixel_advanced_matching_data() {
@@ -1951,7 +1986,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 			foreach ( $params as $key => &$value ) {
 				if ( ! empty( $value ) ) {
-					$params[ $key ] = WFOCU_Common::sanitize_advanced_matching_param( $value, $key );
+					$params[ $key ] = self::sanitize_advanced_matching_param( $value, $key );
 				}
 			}
 
@@ -1960,6 +1995,7 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 		/**
 		 * Create tiktok advanced matching data
+		 *
 		 * @return mixed|null
 		 */
 		public static function tiktok_advanced_matching_data() {
@@ -1971,67 +2007,87 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				return $args;
 			}
 
-			if ( isset( $params["em"] ) && $params["em"] !== "" ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
-				$args['sha256_email'] = hash( 'sha256', $params["em"] );
+			// Normalize and hash email
+			// Normalize and hash email
+			if ( isset( $params['em'] ) && '' !== $params['em'] ) {
+				if ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'normalize_tiktok_email' ) ) {
+					$normalized_email = WFFN_Common::normalize_tiktok_email( $params['em'] );
+					if ( false !== $normalized_email ) {
+						$args['sha256_email'] = hash( 'sha256', $normalized_email );
+					}
+				} else {
+					// Fallback to original behavior if normalization not available
+					$args['sha256_email'] = hash( 'sha256', $params['em'] );
+				}
 			}
-			if ( isset( $params["ph"] ) && $params["ph"] !== "" ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
-				$args['sha256_phone_number'] = hash( 'sha256', $params['ph'] );
+
+				// Normalize and hash phone
+			if ( isset( $params['ph'] ) && '' !== $params['ph'] ) {
+				$country_code = '';
+				if ( class_exists( 'WooCommerce' ) && isset( $params['country'] ) ) {
+					$country_code = $params['country'];
+				}
+				if ( class_exists( 'WFFN_Common' ) && method_exists( 'WFFN_Common', 'normalize_tiktok_phone' ) ) {
+					$normalized_phone = WFFN_Common::normalize_tiktok_phone( $params['ph'], $country_code );
+					if ( false !== $normalized_phone ) {
+						$args['sha256_phone_number'] = hash( 'sha256', $normalized_phone );
+					}
+				} else {
+					// Fallback to original behavior if normalization not available
+					$args['sha256_phone_number'] = hash( 'sha256', $params['ph'] );
+				}
 			}
 
 			return $args;
 		}
 
 		public static function advanced_matching_data() {
-			$params = array();
+			try {
+				$params = array();
 
-			$user = wp_get_current_user();
-
-			if ( ! empty( $user ) && $user->ID !== 0 ) {
-				// get user regular data
-				$params['fn']          = $user->get( 'user_firstname' );
-				$params['ln']          = $user->get( 'user_lastname' );
-				$params['em']          = $user->get( 'user_email' );
-				$params['ph']          = get_user_meta( $user->ID, 'user_phone', true );
-				$params['external_id'] = $user->ID;
-			}
-
-			/**
-			 * Add common WooCommerce Advanced Matching params
-			 */
-
-			if ( class_exists( 'woocommerce' ) ) {
+				$user = wp_get_current_user();
 
 				if ( ! empty( $user ) && $user->ID !== 0 ) {
-					// if first name is not set in regular wp user meta
-					if ( empty( $params['fn'] ) ) {
-						$params['fn'] = $user->get( 'billing_first_name' );
-					}
-
-					// if last name is not set in regular wp user meta
-					if ( empty( $params['ln'] ) ) {
-						$params['ln'] = $user->get( 'billing_last_name' );
-					}
-
-					$params['ph'] = $user->get( 'billing_phone' );
-					$params['ct'] = $user->get( 'billing_city' );
-					$params['st'] = $user->get( 'billing_state' );
-
-					$params['country'] = $user->get( 'billing_country' );
+					// get user regular data
+					$params['fn']          = $user->get( 'user_firstname' );
+					$params['ln']          = $user->get( 'user_lastname' );
+					$params['em']          = $user->get( 'user_email' );
+					$params['ph']          = get_user_meta( $user->ID, 'user_phone', true );
+					$params['external_id'] = $user->ID;
 				}
 
-			}
+				/**
+				 * Add common WooCommerce Advanced Matching params
+				 */
+				if ( class_exists( 'woocommerce' ) ) {
+					if ( ! empty( $user ) && $user->ID !== 0 ) {
+						if ( empty( $params['fn'] ) ) {
+							$params['fn'] = $user->get( 'billing_first_name' );
+						}
+						if ( empty( $params['ln'] ) ) {
+							$params['ln'] = $user->get( 'billing_last_name' );
+						}
+						$params['ph']      = $user->get( 'billing_phone' );
+						$params['ct']      = $user->get( 'billing_city' );
+						$params['st']      = $user->get( 'billing_state' );
+						$params['country'] = $user->get( 'billing_country' );
+					}
+				}
 
-			$params = apply_filters( 'wfocu_advanced_matching_data', $params );
+				$params = apply_filters( 'wfocu_advanced_matching_data', $params );
 
-			if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
-				$params['external_id'] = bwf_clean( $_COOKIE['wffn_flt'] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-			}
+				if ( empty( $params['external_id'] ) && ! empty( $_COOKIE['wffn_flt'] ) ) {
+					$params['external_id'] = bwf_clean( wp_unslash( $_COOKIE['wffn_flt'] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+				}
 
-			if ( ! is_array( $params ) || count( $params ) === 0 ) {
+				if ( ! is_array( $params ) || count( $params ) === 0 ) {
+					return array();
+				}
+
+				return $params;
+			} catch ( \Throwable $e ) {
 				return array();
 			}
-
-			return $params;
 		}
 
 		public static function sanitize_advanced_matching_param( $value, $key ) {
@@ -2046,8 +2102,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $value;
-
-
 		}
 
 
@@ -2105,7 +2159,6 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $object;
-
 		}
 
 		public static function is_hpos_enabled() {
@@ -2142,13 +2195,16 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			return get_post_meta( $order->get_id(), $key, true );
 		}
 
-		public static function wc_get_orders( $args, $meta = [] ) {
+		public static function wc_get_orders( $args, $meta = array() ) {
 			global $wpdb;
-			$args  = wp_parse_args( $args, array(
-				'post_type' => 'shop_order'
-			) );
-			$where = [ "1=1" ];
-			if ( WFOCU_Common::is_hpos_enabled() ) {
+			$args  = wp_parse_args(
+				$args,
+				array(
+					'post_type' => 'shop_order',
+				)
+			);
+			$where = array( '1=1' );
+			if ( self::is_hpos_enabled() ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
 
@@ -2159,9 +2215,12 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				}
 				if ( isset( $args['status'] ) ) {
 					if ( is_array( $args['status'] ) ) {
-						$args['status'] = array_map( function ( $s ) {
-							return 'wc-' . $s;
-						}, $args['status'] );
+						$args['status'] = array_map(
+							function ( $s ) {
+								return 'wc-' . $s;
+							},
+							$args['status']
+						);
 						$stasuses_in    = implode( ',', $args['status'] );
 						$where[]        = "AND orders.status IN ({$stasuses_in})";
 					} else {
@@ -2181,9 +2240,12 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 				if ( isset( $args['status'] ) ) {
 					if ( is_array( $args['status'] ) ) {
-						$args['status'] = array_map( function ( $s ) {
-							return 'wc-' . $s;
-						}, $args['status'] );
+						$args['status'] = array_map(
+							function ( $s ) {
+								return 'wc-' . $s;
+							},
+							$args['status']
+						);
 						$stasuses_in    = implode( ',', $args['status'] );
 						$where[]        = "AND orders.post_status IN ({$stasuses_in})";
 					} else {
@@ -2194,13 +2256,15 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 				$order = ' order by orders.post_date_gmt desc';
 
 				if ( isset( $args['customer'] ) ) {
-					$meta = [ 'key' => '_billing_email', 'value' => $args['customer'] ];
+					$meta = array(
+						'key'   => '_billing_email',
+						'value' => $args['customer'],
+					);
 				}
 				if ( ! empty( $meta ) ) {
 					$sql_query .= " JOIN {$order_meta_table} as meta ON orders.ID=meta.post_id";
 				}
 			}
-
 
 			if ( ! empty( $meta ) ) {
 				if ( isset( $meta['key'] ) ) {
@@ -2209,24 +2273,21 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 				if ( isset( $meta['value'] ) ) {
 					$operator = $meta['operator'] ?? '=';
-					if ( true === $meta['value'] ) {//Specical Handling
+					if ( true === $meta['value'] ) {// Specical Handling
 						$operator      = '!=';
 						$meta['value'] = '';
 					}
 
-
 					$where[] = "AND meta.meta_value {$operator} '{$meta['value']}'";
 				}
-
 			}
 
-
-			$sql_query .= " where " . implode( ' ', $where );
+			$sql_query .= ' where ' . implode( ' ', $where );
 			$sql_query .= ' ' . $order;
-			$limit     = $args['limit'] ?? 100;
-			$paged     = $args['paged'] ?? 0;
-			$offset    = $args['offset'] ?? 0;
-			$paged     = ( $paged > 0 ) ? ( $paged - 1 ) : $paged;
+			$limit      = $args['limit'] ?? 100;
+			$paged      = $args['paged'] ?? 0;
+			$offset     = $args['offset'] ?? 0;
+			$paged      = ( $paged > 0 ) ? ( $paged - 1 ) : $paged;
 			if ( isset( $args['offset'] ) ) {
 				$sql_query .= ' LIMIT ' . $offset . ', ' . $limit;
 			} else {
@@ -2235,20 +2296,24 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 
 			$result = $wpdb->get_results( $sql_query, ARRAY_A ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( empty( $result ) ) {
-				return [];
+				return array();
 			}
-			if ( isset( $args['return'] ) && 'ids' == $args['return'] ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			if ( isset( $args['return'] ) && 'ids' == $args['return'] ) { //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison , Universal.Operators.StrictComparisons.LooseEqual
 
-				return array_map( function ( $item ) {
-					return $item['ID'];
-				}, $result );
+				return array_map(
+					function ( $item ) {
+						return $item['ID'];
+					},
+					$result
+				);
 			}
 
-			return array_map( function ( $item ) {
-				return wc_get_order( $item['ID'] );
-			}, $result );
-
-
+			return array_map(
+				function ( $item ) {
+					return wc_get_order( $item['ID'] );
+				},
+				$result
+			);
 		}
 
 		public static function oxy_get_meta_prefix( $key ) {
@@ -2257,6 +2322,35 @@ if ( ! class_exists( 'WFOCU_Common' ) ) {
 			}
 
 			return $key;
+		}
+
+		/**
+		 * Get the version of the specified page builder plugin.
+		 *
+		 * For all the builder funnel builder support for templates,
+		 * we need to return the current version of the builder plugin from this method.
+		 *
+		 * @param string $builder The builder name (elementor, divi, or oxy).
+		 * @return string The builder version, or empty string if not found or on error.
+		 */
+		public static function get_builder_version( $builder ) {
+			try {
+				if ( $builder === 'elementor' ) {
+					return ELEMENTOR_VERSION;
+				}
+
+				if ( $builder === 'divi' || $builder === 'divi5' ) {
+					return defined( 'ET_BUILDER_PRODUCT_VERSION' ) ? ET_BUILDER_PRODUCT_VERSION : '';
+				}
+
+				if ( $builder === 'oxy' ) {
+					return CT_VERSION;
+				}
+			} catch ( Throwable $e ) {
+				// Silently fail to prevent breaking main functionality
+			}
+
+			return '';
 		}
 	}
 }

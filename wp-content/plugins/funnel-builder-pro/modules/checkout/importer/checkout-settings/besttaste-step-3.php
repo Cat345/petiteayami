@@ -2,8 +2,8 @@
 $product_field  = WFACP_Common::get_product_field();
 $advanced_field = WFACP_Common::get_advanced_fields();
 
-$settings = [
-	'show_on_next_step' => [
+$settings = array(
+	'show_on_next_step' => array(
 		'single_step' => array(
 			'billing_email'      => 'true',
 			'billing_first_name' => 'false',
@@ -13,14 +13,14 @@ $settings = [
 			'billing_phone'      => 'false',
 		),
 		'two_step'    => array(
-			'shipping_calculator' => 'true'
-		)
-	]
-];
+			'shipping_calculator' => 'true',
+		),
+	),
+);
 
-$pageLayout = [
-	'steps'     => WFACP_Common::get_default_steps_fields( true ),
-	'fieldsets' => [
+$pageLayout = array(
+	'steps'                       => WFACP_Common::get_default_steps_fields( true ),
+	'fieldsets'                   => array(
 		'single_step' => array(
 			array(
 				'name'        => __( 'Shipping Information', 'woofunnels-aero-checkout' ),
@@ -38,7 +38,7 @@ $pageLayout = [
 						'validate'     => array(
 							0 => 'email',
 						),
-						'autocomplete' => 'email username',
+						'autocomplete' => 'email',
 						'priority'     => '110',
 						'id'           => 'billing_email',
 						'field_type'   => 'billing',
@@ -73,51 +73,51 @@ $pageLayout = [
 					),
 					WFACP_Common::get_single_address_fields( 'shipping' ),
 					WFACP_Common::get_single_address_fields(),
-					[
+					array(
 						'label'        => __( 'Phone', 'woocommerce' ),
 						'type'         => 'tel',
-						'class'        => [ 'form-row-wide' ],
+						'class'        => array( 'form-row-wide' ),
 						'id'           => 'billing_phone',
 						'field_type'   => 'billing',
-						'validate'     => [ 'phone' ],
+						'validate'     => array( 'phone' ),
 						'placeholder'  => '',
 						'autocomplete' => 'tel',
 						'priority'     => 100,
-					],
+					),
 
 				),
 			),
-			[
+			array(
 				'name'        => __( 'Shipping Method', 'woocommerce' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [ 'shipping_calculator' => true ],
-				'fields'      => [
-					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : []
-				],
-			],
+				'html_fields' => array( 'shipping_calculator' => true ),
+				'fields'      => array(
+					isset( $advanced_field['shipping_calculator'] ) ? $advanced_field['shipping_calculator'] : array(),
+				),
+			),
 
 
 
 		),
-		'two_step'    => [
-			[
+		'two_step'    => array(
+			array(
 				'name'        => __( 'Your Products', 'woofunnels-aero-checkout' ),
 				'class'       => '',
 				'sub_heading' => '',
-				'html_fields' => [
+				'html_fields' => array(
 					'product_switching' => 'true',
 					'order_coupon'      => 'true',
-				],
-				'fields'      => [
+				),
+				'fields'      => array(
 					$product_field['product_switching'],
-				],
-			],
+				),
+			),
 
-		],
-	],
+		),
+	),
 
-	'product_settings'            => [
+	'product_settings'            => array(
 		'coupons'                             => '',
 		'enable_coupon'                       => 'false',
 		'disable_coupon'                      => 'false',
@@ -143,7 +143,7 @@ $pageLayout = [
 		'enable_smart_buttons'                => 'false',
 		'smart_button_position'               => 'wfacp_form_single_step_start',
 		'product_switcher_template'           => 'default',
-	],
+	),
 	'have_coupon_field'           => 'false',
 	'have_billing_address'        => 'true',
 	'have_shipping_address'       => 'true',
@@ -153,7 +153,7 @@ $pageLayout = [
 	'have_shipping_method'        => 'true',
 	'current_step'                => 'third_step',
 
-];
+);
 
 
 $pageLayout['address_order'] = array(
@@ -230,14 +230,13 @@ $pageLayout['address_order'] = array(
 );
 
 
-$product_settings                     = [];
+$product_settings                     = array();
 $product_settings['settings']         = $pageLayout['product_settings'];
-$product_settings['products']         = [];
-$product_settings['default_products'] = [];
+$product_settings['products']         = array();
+$product_settings['default_products'] = array();
 
-return [
+return array(
 	'page_layout'                    => $pageLayout,
 	'page_settings'                  => $settings,
 	'wfacp_product_switcher_setting' => $product_settings,
-];
-
+);

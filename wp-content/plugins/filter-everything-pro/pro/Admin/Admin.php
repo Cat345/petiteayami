@@ -9,6 +9,8 @@ if ( ! defined('ABSPATH') ) {
 use FilterEverything\Filter\Container;
 use FilterEverything\Filter\Pro\Settings\Tabs\SeoRulesTab;
 use FilterEverything\Filter\Pro\Settings\Tabs\IndexingDepth;
+use FilterEverything\Filter\Pro\Settings\Tabs\ImportExportTab;
+use FilterEverything\Filter\Pro\Admin\SeoRulesPreview;
 
 class Admin{
 
@@ -32,6 +34,9 @@ class Admin{
         add_filter( 'manage_edit-'.FLRT_SEO_RULES_POST_TYPE.'_columns', array( $this, 'seoRulesPostTypeCol' ) );
         add_action( 'manage_'.FLRT_SEO_RULES_POST_TYPE.'_posts_custom_column', array( $this, 'seoRulesPostTypeColContent'), 10, 2 );
 
+        add_filter( 'manage_edit-'. FLRT_SEO_RULES_POST_TYPE .'_columns', array( $this, 'seoRulesWhereFilterCol' ), 1 );
+        add_action( 'manage_' . FLRT_SEO_RULES_POST_TYPE. '_posts_custom_column', array( $this, 'seoRulesWhereFilterColContent'), 10, 2 );
+
         add_filter( 'manage_edit-'.FLRT_SEO_RULES_POST_TYPE.'_sortable_columns', array( $this, 'seoRulesSortableColumn') );
         add_action( 'pre_get_posts', array( $this, 'seoRulesOrderby' ) );
 
@@ -54,8 +59,9 @@ class Admin{
 
     public function initTabs( $renderer )
     {
-        $renderer->register(new SeoRulesTab());
-        $renderer->register(new IndexingDepth());
+        new SeoRulesTab();
+        new IndexingDepth();
+        $renderer->register(new ImportExportTab());
     }
 
     public function adminMenu()
@@ -64,6 +70,7 @@ class Admin{
         $seo = 'edit.php?post_type=' . FLRT_SEO_RULES_POST_TYPE;
 
         add_submenu_page($page, esc_html__('SEO Rules', 'filter-everything'), esc_html__('SEO Rules', 'filter-everything'), 'manage_options', $seo);
+        add_submenu_page( $page, esc_html__('Import/Export', 'filter-everything'), esc_html__('Import/Export', 'filter-everything'), 'manage_options', $page . '&page=filters-settings&tab=import_export');
     }
 
     public function seoRulesPostTypeCol( $columns )
@@ -298,5 +305,43 @@ class Admin{
     {
         $object->pushError( 90 );
         return false;
+    }
+
+    public function seoRulesWhereFilterCol( $columns )
+    {
+        $newColumns = [];
+
+        foreach ( $columns as $columnId => $columnName ) {
+
+            if( $columnId === 'date' ){
+                continue;
+            }
+
+            $newColumns[$columnId] = $columnName;
+            if( $columnId === 'title' ){
+                $newColumns['where_filter'] = "<div>" . esc_html__( 'Open', 'filter-everything' ) . flrt_open_in_new_tab_icon() . '</div>';
+            }
+        }
+
+        return $newColumns;
+    }
+
+    public function seoRulesWhereFilterColContent( $column_name, $post_id )
+    {
+        $link = '';
+
+        if( 'where_filter' == $column_name ){
+            $seoRulesPreview = new SeoRulesPreview($post_id);
+            if(empty($seoRulesPreview->error->errors)){
+                $site_url = home_url();
+                $link = $site_url . $seoRulesPreview->getFirstLink();
+            }
+            $seoRulesPreview->getFirstLink();
+            if(!empty($link)){
+                echo '<a class="wpc-location-preview" target="_blank" href="'.esc_url($link).'"><span class="dashicons dashicons-visibility"></span></a>';
+            }else{
+                echo '—';
+            }
+        }
     }
 }

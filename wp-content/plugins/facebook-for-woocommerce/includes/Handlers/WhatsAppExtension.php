@@ -59,6 +59,10 @@ class WhatsAppExtension {
 			)
 		);
 
+		$external_client_metadata = array(
+			'client_version'                        => $plugin->get_version(),
+		);
+
 		return add_query_arg(
 			array(
 				'access_client_token'   => self::CLIENT_TOKEN,
@@ -66,6 +70,7 @@ class WhatsAppExtension {
 				'app_owner_business_id' => self::TP_BUSINESS_ID,
 				'external_business_id'  => $external_wa_id,
 				'locale'                => get_user_locale() ?? self::DEFAULT_LANGUAGE,
+				'external_client_metadata' => rawurlencode( wp_json_encode( $external_client_metadata ) ),
 			),
 			self::COMMERCE_HUB_URL . 'whatsapp_utility_integration/splash/'
 		);
@@ -145,7 +150,6 @@ class WhatsAppExtension {
 	 * @param string $currency Currency code
 	 * @param string $country_code Customer country code
 	 * @param array  $order_metadata Optional order metadata used to build rich order status
-	 * @param bool   $is_rich_order_enabled Whether rich order rollout switch is enabled
 	 *
 	 * @return string
 	 * @since 3.5.0
@@ -160,8 +164,7 @@ class WhatsAppExtension {
 		$refund_value,
 		$currency,
 		$country_code,
-		$order_metadata = array(),
-		$is_rich_order_enabled = false
+		$order_metadata = array()
 	) {
 		$whatsapp_connection = $plugin->get_whatsapp_connection_handler();
 		$is_connected        = $whatsapp_connection->is_connected();
@@ -193,8 +196,8 @@ class WhatsAppExtension {
 		if ( ! empty( $event_object ) ) {
 			$event_base_object[ $event_lowercase ] = $event_object;
 		}
-		// Attach rich_order_status only when rollout switch enabled and order_metadata provided.
-		if ( $is_rich_order_enabled && ! empty( $order_metadata ) ) {
+		// Always attach rich_order_status when order_metadata is provided.
+		if ( ! empty( $order_metadata ) ) {
 			try {
 				$rich_status = self::build_rich_order_status( $order_metadata );
 				if ( ! empty( $rich_status ) ) {
@@ -282,7 +285,7 @@ class WhatsAppExtension {
 						if ( $product ) {
 							$image_id = method_exists( $product, 'get_image_id' ) ? $product->get_image_id() : null;
 							if ( $image_id ) {
-								$img = wp_get_attachment_image_url( $image_id, 'full' );
+								$img = wp_get_attachment_image_url( $image_id, 'large' );
 								$image_url = $img ? $img : wp_get_attachment_url( $image_id );
 								// Ensure HTTPS protocol for image URLs
 								$image_url = preg_replace( '/^http:/', 'https:', $image_url );

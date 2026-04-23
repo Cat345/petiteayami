@@ -5,16 +5,16 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 	 * FrontEnd flow controller class
 	 * WFOCU_Public class
 	 */
-	class  WFOCU_Public {
+	class WFOCU_Public {
 
-		private static $ins = null;
-		public $is_preview = false;
-		public $initiate_funnel = false;
-		public $new_order = null;
-		public $failed_order = null;
-		private $is_offer = null;
-		private $porder = null;
-		private $items_added = null;
+		private static $ins                 = null;
+		public $is_preview                  = false;
+		public $initiate_funnel             = false;
+		public $new_order                   = null;
+		public $failed_order                = null;
+		private $is_offer                   = null;
+		private $porder                     = null;
+		private $items_added                = null;
 		private $is_order_behavior_switched = false;
 
 		public function __construct() {
@@ -94,16 +94,16 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			add_action( 'wfocu_front_create_new_order_on_failure', array( $this, 'handle_new_order_creation_on_failure' ), 10, 1 );
 
-			add_action( 'woocommerce_before_pay_action', [ $this, 'maybe_decide_funnel_on_order' ], 10, 1 );
-			add_action( 'wfocu_get_funnel_option', [ $this, 'maybe_alter_funnel_order_behaviour' ], 10, 2 );
-			add_action( 'wfocu_get_funnel_option', [ $this, 'maybe_alter_funnel_order_behaviour_is_cancel' ], 12, 2 );
+			add_action( 'woocommerce_before_pay_action', array( $this, 'maybe_decide_funnel_on_order' ), 10, 1 );
+			add_action( 'wfocu_get_funnel_option', array( $this, 'maybe_alter_funnel_order_behaviour' ), 10, 2 );
+			add_action( 'wfocu_get_funnel_option', array( $this, 'maybe_alter_funnel_order_behaviour_is_cancel' ), 12, 2 );
 
-			add_action( 'wfocu_offer_payment_failed_event', [ $this, 'add_fkwcs_order_note' ] );
+			add_action( 'wfocu_offer_payment_failed_event', array( $this, 'add_fkwcs_order_note' ) );
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -118,8 +118,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 * @return mixed
 		 */
 		public function maybe_decide_funnel_on_fragments( $fragments = array() ) {
-
-
 
 			$arr = array();
 			if ( ! isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing , FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
@@ -141,7 +139,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			/**
 			 * Bail out here in case of auto apply coupon
 			 */
-			if ( did_action( 'wfacp_after_checkout_page_found' )   ) {
+			if ( did_action( 'wfacp_after_checkout_page_found' ) ) {
 				return;
 			}
 
@@ -204,20 +202,17 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			}
 
 			return false;
-
-
 		}
 
 		/**
 		 * @hooked into `woocommerce_get_checkout_order_received_url` conditionally
 		 * Responsible to change order received url in case we have funnel to initiate
 		 *
-		 * @param string $url existing order-received url
+		 * @param string   $url existing order-received url
 		 * @param WC_Order $order Order Getting processed
 		 *
 		 * @return string Modified order-received url on success
 		 * @see WFOCU_Public::maybe_setup_upsell()
-		 *
 		 */
 		public function maybe_redirect_to_upsell( $url, $order ) {
 
@@ -225,12 +220,11 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			$get_compatibility_class = WFOCU_Plugin_Compatibilities::get_compatibility_class( 'subscriptions' );
 			remove_filter( 'wfocu_front_payment_gateway_integration_enabled', array( $get_compatibility_class, 'maybe_disable_integration_when_subscription_in_cart' ), 10 );
 
-
 			if ( WFOCU_Core()->data->is_funnel_exists() && $this->is_gateway_integration_available( $order ) ) {
 
 				$get_offer = WFOCU_Core()->offers->get_the_first_offer();
 
-				if ( 0 === absint( $get_offer ) ) { //integer check done
+				if ( 0 === absint( $get_offer ) ) { // integer check done
 					WFOCU_Core()->log->log( 'Order #' . $this->porder . ': Skipping funnel, no offer /enabled' . $get_offer );
 					/**
 					 * At that time we possibly modified the order status, since we are not returning offer url we need to maybe normalize here to handle order status keeping in primary order
@@ -300,24 +294,26 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				}
 			}
 
-
 			if ( empty( $link ) ) {
 				WFOCU_Core()->log->log( 'Offer no longer exists offer# ' . $offer );
 
 				return WFOCU_Core()->public->get_clean_order_received_url();
 			}
 
-			return add_query_arg( array(
-				'wfocu-key' => WFOCU_Core()->data->get_funnel_key(),
-				'wfocu-si'  => WFOCU_Core()->data->get_transient_key(),
-			), $link );
+			return add_query_arg(
+				array(
+					'wfocu-key' => WFOCU_Core()->data->get_funnel_key(),
+					'wfocu-si'  => WFOCU_Core()->data->get_transient_key(),
+				),
+				$link
+			);
 		}
 
 		/**
 		 * Getting order received URL which is not affected by any offers
+		 *
 		 * @return string
 		 */
-
 		public function get_clean_order_received_url( $end_funnel = true, $append_failure_params = false ) {
 
 			$order = WFOCU_Core()->data->get_current_order();
@@ -342,7 +338,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			}
 
 			return ( $append_failure_params === false ) ? $get_received_url : add_query_arg( array( '_wfocu_process' => 'no' ), $get_received_url );
-
 		}
 
 		/**
@@ -355,10 +350,14 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 */
 		public function maybe_setup_upsell_on_cod_or_bacs( $order_id, $posted_data = array() ) {
 
-			if ( ( WC()->cart instanceof WC_Cart ) && WC()->cart->needs_payment() && is_array( $posted_data ) && isset( $posted_data['payment_method'] ) && in_array( $posted_data['payment_method'], array(
+			if ( ( WC()->cart instanceof WC_Cart ) && WC()->cart->needs_payment() && is_array( $posted_data ) && isset( $posted_data['payment_method'] ) && in_array(
+				$posted_data['payment_method'],
+				array(
 					'cheque',
-					'bacs'
-				), true ) ) {
+					'bacs',
+				),
+				true
+			) ) {
 				$this->maybe_setup_upsell( $order_id );
 			}
 		}
@@ -405,17 +404,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				}
 				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Entering: ' . __FUNCTION__ ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Backtrace for maybe_setup_upsell::' . wp_debug_backtrace_summary() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_wp_debug_backtrace_summary
-				
-				// Set transient lock when status change happens via rest_pre_dispatch to prevent duplicate setup
-				// This prevents duplicate upsell setup when webhook arrives simultaneously with user return
-				if ( 'rest_pre_dispatch' === current_action() ) {
-					$upsell_setup_lock_key = 'wfocu_mollie_upsell_setup_' . $order_id;
-					if ( ! get_transient( $upsell_setup_lock_key ) ) {
-						set_transient( $upsell_setup_lock_key, '1', 5 );
-						WFOCU_Core()->log->log( 'Order #' . $order_id . ': Set transient lock for upsell setup (rest_pre_dispatch)' );
-					}
-				}
-				
+
 				do_action( 'wfocu_front_pre_init_funnel_hooks', $wc_get_order );
 
 				$this->porder            = WFOCU_WC_Compatibility::get_order_id( $wc_get_order );
@@ -442,13 +431,11 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 					$get_payment_gateway = WFOCU_WC_Compatibility::get_payment_gateway_from_order( $wc_get_order );
 					$get_integration     = WFOCU_Core()->gateways->get_integration( $get_payment_gateway );
 
-
 					$is_funnel_exists     = WFOCU_Core()->data->is_funnel_exists();
 					$have_gateway         = $get_integration instanceof WFOCU_Gateway;
 					$have_enabled_gateway = $have_gateway && $get_integration->is_enabled( $wc_get_order );
 					$has_token            = $have_gateway && $get_integration->has_token( $wc_get_order );
 					$run_without_token    = $have_gateway && $get_integration->is_run_without_token();
-
 
 					if ( false === WFOCU_Core()->session_db->get_skip_id() ) {
 						if ( ! $have_gateway ) {
@@ -457,7 +444,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 							} else {
 								WFOCU_Core()->session_db->set_skip_id( 4 );
 							}
-
 						} elseif ( ! $have_enabled_gateway ) {
 							WFOCU_Core()->session_db->set_skip_id( 5 );
 						} elseif ( ! $has_token && ! $run_without_token ) {
@@ -475,23 +461,33 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 						$funnel       = WFFN_Core()->data->get_session_funnel();
 						$current_step = WFFN_Core()->data->get_current_step();
 
-						WFOCU_Core()->log->log( 'Order #' . $this->porder . ' WFFN funnel details for skip given below ' . print_r( array( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-								'has_valid_session'    => ( WFFN_Core()->data->has_valid_session() ),
-								'current_step'         => $current_step,
-								'wffn_is_valid_funnel' => ( wffn_is_valid_funnel( $funnel ) ),
-							), true ) );
+						WFOCU_Core()->log->log(
+							'Order #' . $this->porder . ' WFFN funnel details for skip given below ' . print_r( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Used for logging debug data
+								array(
+									'has_valid_session'    => ( WFFN_Core()->data->has_valid_session() ),
+									'current_step'         => $current_step,
+									'wffn_is_valid_funnel' => ( wffn_is_valid_funnel( $funnel ) ),
+								),
+								true
+							)
+						);
 					}
 
-					WFOCU_Core()->log->log( 'Order #' . $this->porder . ' Details for skip given below ' . print_r( array( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-							'have_funnel'          => $is_funnel_exists,
-							'have_gateway'         => $have_gateway,
-							'get_current_offer'    => $get_current_offer,
-							'have_enabled_gateway' => $have_enabled_gateway,
-							'has_token'            => $has_token,
-							'run_without_token'    => $run_without_token,
-						), true ) );
+					WFOCU_Core()->log->log(
+						'Order #' . $this->porder . ' Details for skip given below ' . print_r( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Used for logging debug data
+							array(
+								'have_funnel'          => $is_funnel_exists,
+								'have_gateway'         => $have_gateway,
+								'get_current_offer'    => $get_current_offer,
+								'have_enabled_gateway' => $have_enabled_gateway,
+								'has_token'            => $has_token,
+								'run_without_token'    => $run_without_token,
+							),
+							true
+						)
+					);
 				}
-			} catch ( Error|Exception $e ) {
+			} catch ( Error | Exception $e ) {
 				WFOCU_Core()->log->log( 'Order #' . $order_id . ': Error Found during upsell init: ' . $e->getMessage() );
 			}
 		}
@@ -559,7 +555,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 				do_action( 'wfocu_schedule_email_data_stored', $order, $args );
 			}
-
 		}
 
 		/**
@@ -586,18 +581,40 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				'time'          => time(),
 			);
 
+			$transition_from_status = $order->get_status();
+			if ( empty( $transition_from_status ) || 'wfocu-pri-order' === $transition_from_status ) {
+				$transition_from_status = $old_status;
+			}
+
 			// Avoid running the next line if payment method is bacs or cheque
 			$payment_method = $order->get_payment_method();
 			if ( ! in_array( $payment_method, array( 'bacs', 'cheque' ), true ) ) {
-				add_filter( 'woocommerce_new_order_note_data', array( $this, 'add_transition_suffix_in_note' ), 9999 );
+				$this->add_primary_order_transition_note( $order, $transition_from_status );
 			}
 			$order->update_meta_data( '_wfocu_schedule_status', $args );
 			$order->save_meta_data();
-
 		}
 
-		public function add_transition_suffix_in_note( $note ) {
+		public function add_primary_order_transition_note( $order, $old_status ) {
 			try {
+				if ( false === is_a( $order, 'WC_Order' ) ) {
+					return;
+				}
+
+				if ( ! is_string( $old_status ) ) {
+					$old_status = '';
+				}
+
+				if ( 0 === strpos( $old_status, 'wc-' ) ) {
+					$old_status = substr( $old_status, 3 );
+				}
+
+				$status_transition = sprintf(
+					__( 'Order status changed from %1$s to %2$s.', 'woocommerce' ),
+					wc_get_order_status_name( $old_status ),
+					wc_get_order_status_name( 'wfocu-pri-order' )
+				);
+
 				$get_ttl         = WFOCU_Core()->data->get_option( 'ttl_funnel' );
 				$transition_time = ( ! empty( $get_ttl ) && absint( $get_ttl ) > 0 ) ? $get_ttl . '-' . ( $get_ttl + 5 ) : '15-20';
 
@@ -607,24 +624,22 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
    					 		<li>%s</li>
 							</ul>';
 
-				$transition_note = '<p>' . __( 'This is a temporary order status.', 'woofunnels-upstroke-one-click-upsell' ) . '</p>';
+				$transition_note  = '<p>' . __( 'This is a temporary order status.', 'woofunnels-upstroke-one-click-upsell' ) . '</p>';
 				$transition_note .= sprintf( $html, __( 'The status will automatically change to Processing or Completed once the buyer reaches the Thank You page.', 'woofunnels-upstroke-one-click-upsell' ), sprintf( __( 'If the buyer abandons the upsell offer, the order status will also change to Processing or Completed after %s minutes.', 'woofunnels-upstroke-one-click-upsell' ), $transition_time ), __( 'If the status does not update automatically, please ensure that the WordPress cron is properly configured and running. <a href="https://funnelkit.com/docs/one-click-upsells/tips/check-if-wp-cron-is-running-or-not/" target="_blank">Learn more</a>', 'woofunnels-upstroke-one-click-upsell' ) );
 
-				$note['comment_content'] = $note['comment_content'] . $transition_note;
-				remove_filter( 'woocommerce_new_order_note_data', array( $this, 'add_transition_suffix_in_note' ), 9999 );
+				$full_note = $status_transition . ' ' . $transition_note;
+				$order->add_order_note( $full_note, false, false );
 			} catch ( Exception|Error $e ) {
 
 			}
-
-			return $note;
 		}
 
 		/**
 		 * @hooked over `wfocu_front_primary_order_status_change`
 		 * This method is to store order Statuses in the transition in the cookie to manage order Statuses further
 		 *
-		 * @param string $new_status
-		 * @param string $old_status
+		 * @param string   $new_status
+		 * @param string   $old_status
 		 * @param WC_Order $order
 		 */
 		public function sustain_order_status( $new_status, $old_status, $order ) {
@@ -642,12 +657,10 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			WFOCU_Core()->data->set( 'porder_status', $old_status );
 			WFOCU_Core()->data->set( 'sorder_status', $order->get_status() );
 			WFOCU_Core()->data->save();
-
 		}
 
 		public function modify_order_received_url() {
 			add_filter( 'woocommerce_get_checkout_order_received_url', array( $this, 'maybe_redirect_to_upsell' ), 99, 2 );
-
 		}
 
 		public function maybe_destroy_session() {
@@ -700,13 +713,15 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			}
 
 			if ( isset( $_GET['wfocu-key'] ) && ! empty( $_GET['wfocu-key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$maybe_get_order = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$maybe_get_order = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'post_type'   => 'shop_order',
 					'post_status' => 'any',
 					'meta_key'    => '_wfocu_funnel_key', //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					'meta_value'  => bwf_clean( $_GET['wfocu-key'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended , WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 					'fields'      => 'ids',
-				) );
+					)
+				);
 
 				if ( is_array( $maybe_get_order ) && count( $maybe_get_order ) > 0 ) {
 					$order_id = $maybe_get_order[0];
@@ -725,6 +740,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 		/**
 		 * prevent checks to validate page.
+		 *
 		 * @return bool
 		 */
 		public function can_show_upsell() {
@@ -785,7 +801,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 * Create new Orders, Cancel the Old ones and batch if required.
 		 * Handles stock management
 		 * Handles marking order as completed payment
-		 *
 		 */
 		public function handle_success_upsell() {
 			$order_behavior = WFOCU_Core()->funnels->get_funnel_option( 'order_behavior' );
@@ -825,7 +840,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			do_action( 'wfocu_before_handle_failure_upsell_package', $is_batching_on, $get_parent_order, $get_funnel_id );
 
-
 			do_action( 'wfocu_front_create_new_order_on_failure', $get_funnel_id, $get_current_offer );
 
 			$args = array(
@@ -840,7 +854,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			$args['value'] = WFOCU_Plugin_Compatibilities::get_fixed_currency_price_reverse( $get_package['total'], WFOCU_WC_Compatibility::get_order_currency( $get_parent_order ) );
 			do_action( 'wfocu_offer_payment_failed_event', $args );
-
 		}
 
 
@@ -855,7 +868,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				</script>
 				<?php
 			}
-
 		}
 
 		public function maybe_set_offer() {
@@ -872,7 +884,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			}
 		}
 
-		public function maybe_save_event_offer_accepted( $get_current_offer, $get_package, $get_parent_order, $new_order, $get_transaction_id, $items_added = [] ) {
+		public function maybe_save_event_offer_accepted( $get_current_offer, $get_package, $get_parent_order, $new_order, $get_transaction_id, $items_added = array() ) {
 
 			$args = array(
 				'order_id'    => WFOCU_WC_Compatibility::get_order_id( $get_parent_order ),
@@ -894,14 +906,17 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 					'hash'  => $product['hash'],
 				);
 
-				$args_products = array_merge( $args, array(
-					'value'            => WFOCU_Plugin_Compatibilities::get_fixed_currency_price_reverse( $product['args']['total'], WFOCU_WC_Compatibility::get_order_currency( $get_parent_order ) ),
-					'raw_value'        => $product['args']['total'],
-					'product_id'       => $product['id'],
-					'offer_product_id' => $product['hash'],
-					'product_title'    => $product['_offer_data']->name,
-					'qty'              => $product['qty'],
-				) );
+				$args_products = array_merge(
+					$args,
+					array(
+						'value'            => WFOCU_Plugin_Compatibilities::get_fixed_currency_price_reverse( $product['args']['total'], WFOCU_WC_Compatibility::get_order_currency( $get_parent_order ) ),
+						'raw_value'        => $product['args']['total'],
+						'product_id'       => $product['id'],
+						'offer_product_id' => $product['hash'],
+						'product_title'    => $product['_offer_data']->name,
+						'qty'              => $product['qty'],
+					)
+				);
 				$item_total    = $product['args']['total'] + $item_total;
 				do_action( 'wfocu_product_accepted_event', $args_products );
 
@@ -915,7 +930,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				'_total_items'     => $item_total,
 				'_total_tax'       => $get_package['taxes'],
 				'_currency'        => $get_parent_order->get_currency(),
-				'_is_diff_charged' => 'no'
+				'_is_diff_charged' => 'no',
 			);
 
 			/*
@@ -925,7 +940,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			if ( is_a( $new_order, 'WC_Order' ) && isset( $get_package['_diff_charged'] ) ) {
 				$args['payment_data']['_is_diff_charged'] = 'yes';
 			}
-
 
 			$args['value']             = WFOCU_Plugin_Compatibilities::get_fixed_currency_price_reverse( $get_package['total'], WFOCU_WC_Compatibility::get_order_currency( $get_parent_order ) );
 			$args['value_in_currency'] = $get_package['total'];
@@ -985,62 +999,78 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 		public function maybe_enqueue_assets() {
 			if ( $this->is_offer || $this->if_is_preview() ) {
-				$price_args = apply_filters( 'wc_price_args', array(
-					'ex_tax_label'       => false,
-					'currency'           => '',
-					'decimal_separator'  => wc_get_price_decimal_separator(),
-					'thousand_separator' => wc_get_price_thousand_separator(),
-					'decimals'           => wc_get_price_decimals(),
-					'price_format'       => get_woocommerce_price_format(),
-				) );
-				WFOCU_Core()->assets->localize_script( 'accounting', 'wfocu_wc_params', array(
-					'currency_format_num_decimals' => $price_args['decimals'],
-					'currency_format_symbol'       => get_woocommerce_currency_symbol(),
-					'currency_format_decimal_sep'  => esc_attr( $price_args['decimal_separator'] ),
-					'currency_format_thousand_sep' => esc_attr( $price_args['thousand_separator'] ),
-					'currency_format'              => esc_attr( str_replace( array( '%1$s', '%2$s' ), array( '%s', '%v' ), $price_args['price_format'] ) ),
+				$price_args = apply_filters(
+					'wc_price_args',
+					array(
+						'ex_tax_label'       => false,
+						'currency'           => '',
+						'decimal_separator'  => wc_get_price_decimal_separator(),
+						'thousand_separator' => wc_get_price_thousand_separator(),
+						'decimals'           => wc_get_price_decimals(),
+						'price_format'       => get_woocommerce_price_format(),
+					)
+				);
+				WFOCU_Core()->assets->localize_script(
+					'accounting',
+					'wfocu_wc_params',
+					array(
+						'currency_format_num_decimals' => $price_args['decimals'],
+						'currency_format_symbol'       => get_woocommerce_currency_symbol(),
+						'currency_format_decimal_sep'  => esc_attr( $price_args['decimal_separator'] ),
+						'currency_format_thousand_sep' => esc_attr( $price_args['thousand_separator'] ),
+						'currency_format'              => esc_attr( str_replace( array( '%1$s', '%2$s' ), array( '%s', '%v' ), $price_args['price_format'] ) ),
 
-				) );
-				WFOCU_Core()->assets->localize_script( 'wfocu-global', 'wfocu_vars', apply_filters( 'wfocu_localized_data', array(
-					'nonces'                   => array(
-						'wfocu_front_offer_skipped' => wp_create_nonce( 'wfocu_front_offer_skipped' ),
-						'wfocu_charge'              => wp_create_nonce( 'wfocu_front_charge' ),
-						'wfocu_calculate_shipping'  => wp_create_nonce( 'wfocu_front_calculate_shipping' ),
-						'wfocu_register_views'      => wp_create_nonce( 'wfocu_front_register_views' ),
-						'wfocu_offer_expired'       => wp_create_nonce( 'wfocu_front_offer_expired' ),
-						'wfocu_front_catch_error'   => wp_create_nonce( 'wfocu_front_catch_error' ),
-					),
-					'offer'                    => WFOCU_Core()->data->get( 'current_offer' ),
-					'offer_type'               => WFOCU_Core()->data->get( '_current_offer_type' ),
-					'offer_type_index'         => WFOCU_Core()->data->get( '_current_offer_type_index' ),
-					'show_variation_default'   => apply_filters( 'wfocu_show_default_variation_on_load', true ),
-					'no_variation_text'        => __( 'Choose an option', 'woocommerce' ),
-					'offer_data'               => WFOCU_Core()->data->get( '_current_offer_data' ),
-					'messages'                 => array(
+					)
+				);
+				WFOCU_Core()->assets->localize_script(
+					'wfocu-global',
+					'wfocu_vars',
+					apply_filters(
+						'wfocu_localized_data',
+						array(
+							'nonces'                   => array(
+								'wfocu_front_offer_skipped' => wp_create_nonce( 'wfocu_front_offer_skipped' ),
+								'wfocu_charge'             => wp_create_nonce( 'wfocu_front_charge' ),
+								'wfocu_calculate_shipping' => wp_create_nonce( 'wfocu_front_calculate_shipping' ),
+								'wfocu_calculate_standard_rates' => wp_create_nonce( 'wfocu_calculate_standard_rates' ),
+								'wfocu_register_views'     => wp_create_nonce( 'wfocu_front_register_views' ),
+								'wfocu_offer_expired'      => wp_create_nonce( 'wfocu_front_offer_expired' ),
+								'wfocu_front_catch_error'  => wp_create_nonce( 'wfocu_front_catch_error' ),
+							),
+							'offer'                    => WFOCU_Core()->data->get( 'current_offer' ),
+							'offer_type'               => WFOCU_Core()->data->get( '_current_offer_type' ),
+							'offer_type_index'         => WFOCU_Core()->data->get( '_current_offer_type_index' ),
+							'show_variation_default'   => apply_filters( 'wfocu_show_default_variation_on_load', true ),
+							'no_variation_text'        => __( 'Choose an option', 'woocommerce' ),
+							'offer_data'               => WFOCU_Core()->data->get( '_current_offer_data' ),
+							'messages'                 => array(
 
-						'offer_success_message_pop'        => WFOCU_Core()->funnels->get_funnel_option( 'offer_success_message_pop' ),
-						'offer_msg_pop_failure'            => WFOCU_Core()->funnels->get_funnel_option( 'offer_failure_message_pop' ),
-						'i18n_no_matching_variations_text' => esc_attr__( 'Sorry, no products matched your selection. Please choose a different combination.', 'woocommerce' ),
-						'maybe_no_product_selected'        => esc_attr__( 'Sorry, it seems no product is mapped with this offer. Please check offer or button settings.', 'woofunnels-upstroke-one-click-upsell' ),
-					),
-					'ajax_url'                 => admin_url( 'admin-ajax.php' ),
-					'wc_ajax_url'              => WC_AJAX::get_endpoint( '%%endpoint%%' ),
-					'loader'                   => plugin_dir_url( WFOCU_PLUGIN_FILE ) . 'assets/img/loader.gif',
-					'loading_text'             => WFOCU_Core()->funnels->get_funnel_option( 'offer_wait_message_pop' ),
-					'global'                   => array(
-						'flat_shipping_label' => WFOCU_Core()->data->get_option( 'flat_shipping_label' ),
-						'include_taxes'       => WFOCU_Core()->offers->show_tax_info_in_confirmation(),
-					),
-					'is_preview'               => $this->is_preview,
-					'tax_nice_name'            => WFOCU_Core()->data->get_tax_name(),
-					'is_show_price_with_tax'   => WFOCU_Core()->funnels->show_prices_including_tax(),
-					'session_id'               => ( true === $this->is_preview ) ? '' : WFOCU_Core()->data->get_transient_key(),
-					'order_received_url'       => ( true === $this->is_preview ) ? '' : $this->get_clean_order_received_url( false, true ),
-					'is_free_shipping'         => ( true === $this->is_preview ) ? false : $this->is_free_shipping_in_parent(),
-					'parent_shipping_method'   => ( true === $this->is_preview ) ? false : $this->parent_shipping_method(),
-					'parent_selected_shipping' => apply_filters( 'wfocu_default_selected_shipping_as_parent', false, $this ),
-					'exclude_fields'           => array()
-				) ) );
+								'offer_success_message_pop' => WFOCU_Core()->funnels->get_funnel_option( 'offer_success_message_pop' ),
+								'offer_msg_pop_failure' => WFOCU_Core()->funnels->get_funnel_option( 'offer_failure_message_pop' ),
+								'i18n_no_matching_variations_text' => esc_attr__( 'Sorry, no products matched your selection. Please choose a different combination.', 'woocommerce' ),
+								'maybe_no_product_selected' => esc_attr__( 'Sorry, it seems no product is mapped with this offer. Please check offer or button settings.', 'woofunnels-upstroke-one-click-upsell' ),
+							),
+							'ajax_url'                 => admin_url( 'admin-ajax.php' ),
+							'wc_ajax_url'              => WC_AJAX::get_endpoint( '%%endpoint%%' ),
+							'loader'                   => plugin_dir_url( WFOCU_PLUGIN_FILE ) . 'assets/img/loader.gif',
+							'loading_text'             => WFOCU_Core()->funnels->get_funnel_option( 'offer_wait_message_pop' ),
+							'global'                   => array(
+								'flat_shipping_label' => WFOCU_Core()->data->get_option( 'flat_shipping_label' ),
+								'include_taxes'       => WFOCU_Core()->offers->show_tax_info_in_confirmation(),
+							),
+							'is_preview'               => $this->is_preview,
+							'tax_nice_name'            => WFOCU_Core()->data->get_tax_name(),
+							'is_show_price_with_tax'   => WFOCU_Core()->funnels->show_prices_including_tax(),
+							'enable_dynamic_tax'       => WFOCU_Core()->data->is_dynamic_tax_enabled(),
+							'session_id'               => ( true === $this->is_preview ) ? '' : WFOCU_Core()->data->get_transient_key(),
+							'order_received_url'       => ( true === $this->is_preview ) ? '' : $this->get_clean_order_received_url( false, true ),
+							'is_free_shipping'         => ( true === $this->is_preview ) ? false : $this->is_free_shipping_in_parent(),
+							'parent_shipping_method'   => ( true === $this->is_preview ) ? false : $this->parent_shipping_method(),
+							'parent_selected_shipping' => apply_filters( 'wfocu_default_selected_shipping_as_parent', false, $this ),
+							'exclude_fields'           => array(),
+						)
+					)
+				);
 			}
 		}
 
@@ -1108,7 +1138,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			WFOCU_Core()->assets->print_scripts();
 			do_action( 'footer_after_print_scripts' );
 			do_action( 'wfocu_footer_after_print_scripts' );
-
 		}
 
 		public function load_confirmation_page_ui() {
@@ -1118,33 +1147,32 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			$offer_data = WFOCU_Core()->data->get( '_current_offer_data', 'funnel' );
 			/** Sidebar Bucket */
 			WFOCU_Core()->template_loader->get_template_part( 'offer-confirmations', $offer_data->products );
-
 		}
 
 		public function remove_localstorage() {
 			?>
 			<script type="text/javascript">
-                if (!String.prototype.startsWith) {
-                    String.prototype.startsWith = function (searchString, position) {
-                        position = position || 0;
-                        return this.indexOf(searchString, position) === position;
-                    };
-                }
+				if (!String.prototype.startsWith) {
+					String.prototype.startsWith = function (searchString, position) {
+						position = position || 0;
+						return this.indexOf(searchString, position) === position;
+					};
+				}
 
-                if (localStorage.length > 0) {
-                    var len = localStorage.length;
-                    var wfocuRemoveLS = [];
-                    for (var i = 0; i < len; ++i) {
-                        var storage_key = localStorage.key(i);
-                        if (storage_key.startsWith("wfocu_") === true) {
-                            wfocuRemoveLS.push(storage_key);
-                        }
-                    }
-                    for (var eachLS in wfocuRemoveLS) {
-                        localStorage.removeItem(wfocuRemoveLS[eachLS]);
-                    }
+				if (localStorage.length > 0) {
+					var len = localStorage.length;
+					var wfocuRemoveLS = [];
+					for (var i = 0; i < len; ++i) {
+						var storage_key = localStorage.key(i);
+						if (storage_key.startsWith("wfocu_") === true) {
+							wfocuRemoveLS.push(storage_key);
+						}
+					}
+					for (var eachLS in wfocuRemoveLS) {
+						localStorage.removeItem(wfocuRemoveLS[eachLS]);
+					}
 
-                }
+				}
 			</script>
 			<?php
 		}
@@ -1156,7 +1184,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 * @param string $get_transaction_id
 		 * @param $get_funnel_id
 		 * @param $get_offer_id
-		 * @param bool $should_complete whether to mark the order complete or not
+		 * @param bool   $should_complete whether to mark the order complete or not
 		 *
 		 * @throws WC_Data_Exception
 		 */
@@ -1207,7 +1235,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 				$get_parent_order = apply_filters( 'wfocu_parent_order_send_for_cancellation', $get_parent_order, $get_offer_id, $new_order, $get_parent_order, $get_funnel_id, $get_package );
 				if ( $get_parent_order->get_id() !== $get_if_cancelled ) {
-					$get_target_offers = apply_filters( 'wfocu_offers_to_cancel_primary', [ WFOCU_Core()->offers->get_the_first_offer() ] );
+					$get_target_offers = apply_filters( 'wfocu_offers_to_cancel_primary', array( WFOCU_Core()->offers->get_the_first_offer() ) );
 					if ( ! in_array( $get_offer_id, $get_target_offers ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 						return;
 					}
@@ -1267,7 +1295,6 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			}
 			$get_parent_order->add_order_note( sprintf( 'Upsell Offer Accepted | Funnel ID %s  | Offer ID %s %s', $get_funnel_id, $get_offer_id, $transaction_id_note ) );
-
 		}
 
 		/**
@@ -1291,7 +1318,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		 * @hooked over `woocommerce_get_checkout_order_received_url`
 		 * Sets Our session ID in the checkout url to detect with session user is in & which data belongs to the session.
 		 *
-		 * @param string $url Order Received URL
+		 * @param string   $url Order Received URL
 		 * @param WC_Order $order Order
 		 *
 		 * @return string
@@ -1354,12 +1381,10 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 				$get_parent_order = WFOCU_Core()->data->get( 'porder', false, '_orders' );
 				$order            = wc_get_order( $get_parent_order );
 				$payment_method   = $order->get_payment_method();
-				if ( empty( $payment_method ) || in_array( $payment_method, [ 'stripe', 'stripe_cc', 'stripe_applepay', 'stripe_googlepay', 'cpsw_stripe' ], true ) ) {
+				if ( empty( $payment_method ) || in_array( $payment_method, array( 'stripe', 'stripe_cc', 'stripe_applepay', 'stripe_googlepay', 'cpsw_stripe' ), true ) ) {
 					$order->add_order_note( __( sprintf( 'Upsell offer failed which would have been recoverable if <a href="%s">FunnelKit Stripe</a> was active and used.', self::funnelkit_stripe_link() ) ), 'woocommerce-upstroke-one-click-upsell' ); //phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					$order->save();
 				}
-
-
 			} catch ( Exception $e ) {
 
 			}
@@ -1369,7 +1394,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		/**
 		 * Handles the reason for skipping an upsell and adds an order note if applicable.
 		 *
-		 * @param WC_Order $order The order object.
+		 * @param WC_Order      $order The order object.
 		 * @param WFOCU_Gateway $get_integration The gateway integration object (optional).
 		 *
 		 * @return void
@@ -1390,7 +1415,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 
 			// Define necessary admin links
 			$upsell_s_link   = admin_url( '/admin.php?page=upstroke&tab=settings' );
-			$edit_link       = "";
+			$edit_link       = '';
 			$contact_support = 'https://funnelkit.com/support/';
 			$svg_icon        = WFOCU_PLUGIN_URL . '/admin/assets/img/icon_error.svg';
 
@@ -1448,7 +1473,7 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 			// Add the order note and log the reason
 			if ( ! empty( $order_note ) ) {
 
-				if ( in_array( $skip_key, [ 7, 8, 9, 10, 11 ], true ) ) {
+				if ( in_array( $skip_key, array( 7, 8, 9, 10, 11 ), true ) ) {
 					$should_add_note = absint( WFOCU_Core()->data->get( 'current_offer' ) ) === absint( WFOCU_Core()->offers->get_the_first_offer() );
 				} else {
 					$should_add_note = $skip_key !== 0 || ( class_exists( 'WC_Geolocation' ) && $order->get_customer_ip_address() === WC_Geolocation::get_ip_address() );
@@ -1467,12 +1492,9 @@ if ( ! class_exists( 'WFOCU_Public' ) ) {
 		public static function funnelkit_stripe_link() {
 			return 'https://wordpress.org/plugins/funnelkit-stripe-woo-payment-gateway/';
 		}
-
-
 	}
 
 	if ( class_exists( 'WFOCU_Core' ) ) {
 		WFOCU_Core::register( 'public', 'WFOCU_Public' );
 	}
-
 }

@@ -67,12 +67,23 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 			return $this->parse_shortcode_output( '', $attr );
 		}
 
-		$value = $order->get_meta( $item_key );
+		$value = $this->get_value_of_nested_key( $item_key, $order );
+
 		if ( class_exists( 'WFACP_Common' ) ) {
 			$value = $this->get_wfacp_label( $item_key, $value );
 		}
 
+		if ( empty( $value ) && strpos( $item_key, '_order' ) === 0 ) {
+			$item_key = substr( $item_key, 6 );
+			$value    = $this->get_value_of_nested_key( $item_key, $order );
+		}
+
 		$type = isset( $attr['type'] ) ? $attr['type'] : '';
+
+		// Only apply nl2br for text (non-date, non-price) fields
+		if ( empty( $type ) && ! empty( $value ) && is_string( $value ) ) {
+			$value = nl2br( $value );
+		}
 
 		switch ( $type ) {
 			case 'date':
@@ -86,6 +97,36 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 		}
 
 		return $this->parse_shortcode_output( $value, $attr );
+	}
+
+	/**
+	 * Get the value of the key from the nested array
+	 *
+	 * @param string   $item_key The meta key, potentially with dot notation for nested values.
+	 * @param WC_Order $order    The WooCommerce order object.
+	 *
+	 * @return mixed The meta value or empty string if not found.
+	 */
+	public function get_value_of_nested_key( $item_key, $order ) {
+		$keys = explode( '.', $item_key );
+
+		// Single key, no nesting
+		if ( count( $keys ) === 1 ) {
+			return $order->get_meta( $item_key );
+		}
+
+		// Get the first level meta value
+		$value = $order->get_meta( $keys[0] );
+
+		// Traverse nested keys
+		for ( $i = 1; $i < count( $keys ); $i++ ) {
+			if ( ! is_array( $value ) || ! isset( $value[ $keys[ $i ] ] ) ) {
+				return '';
+			}
+			$value = $value[ $keys[ $i ] ];
+		}
+
+		return $value;
 	}
 
 	/**
@@ -244,7 +285,7 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 				'type'        => 'text',
 				'class'       => '',
 				'placeholder' => '',
-				'hint'        => __( 'Input the correct meta key in order to get the data', 'wp-marketing-automations' ),
+				'hint'        => __( 'Input the correct meta key in order to get the data. If the meta key is nested, use dot (.) to separate the keys.', 'wp-marketing-automations' ),
 				'required'    => true,
 				'toggler'     => array(),
 			],
@@ -383,7 +424,7 @@ class BWFAN_WC_Order_Data extends BWFAN_Merge_Tag {
 				'type'        => 'text',
 				'class'       => '',
 				'placeholder' => '',
-				'hint'        => __( 'Input the correct meta key in order to get the data', 'wp-marketing-automations' ),
+				'hint'        => __( 'Input the correct meta key in order to get the data. If the meta key is nested, use dot (.) to separate the keys.', 'wp-marketing-automations' ),
 				'required'    => true,
 				'toggler'     => array(),
 			],

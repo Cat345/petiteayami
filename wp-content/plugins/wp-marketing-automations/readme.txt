@@ -2,9 +2,9 @@
 Contributors: xlplugins, amans2k
 Tags: cart abandonment, follow up emails, email marketing, newsletter, marketing automation
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 3.7.3
+Stable tag: 3.8.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -415,6 +415,46 @@ FunnelKit Automations is 100% self-hosted and fully GDPR compliant.
 
 
 == Change log ==
+
+= 3.8.0 (Apr 09, 2026) =
+* Security: Hardened plug-in security for legacy automation actions. (#4592)
+* New: Sublium Subscriptions integration done. (#4430)
+* New: RTL language support for email content editor — proper text direction for Arabic, Hebrew, and other RTL languages. (#4562)
+* New: Updated contact filters with new filtering options. (#3.8.0)
+* Added: 'Trigger When' setting for Review Received event — choose to fire automation on review submission or after approval. (#4549)
+* Added: 'Skip Existing Contacts' option to CSV import. (#4519)
+* Added: Support for shortened URLs in email audit. (#4535)
+* Added: WooCommerce Subscriptions preference columns for contacts. (#4561)
+* Added: Shipping tax calculation support in abandoned cart. (#4509)
+* Added: Third-party plugin compatibility:
+    - Linguise translation plugin. (#4492)
+    - Shield Security plugin. (#4517)
+    - Oxygen page builder. (#4579)
+    - All-In-One Security (AIOS) plugin. (#4570)
+    - Perfmatters delay/defer JS for unsubscribe and profile pages. (#4515)
+* Improved: Automation contact query performance optimization. (#4542, #4568)
+* Improved: Custom expiry time option in WooCommerce coupon create action. (#4487)
+* Improved: Nested data support in order data merge tag. (#4581)
+* Fixed: Abandoned cart recovery coupon parameter lost during restore redirect. (#4538)
+* Fixed: Aelia currency cookie corruption during abandoned cart AJAX. (#4551)
+* Fixed: Abandoned cart cleanup for empty carts. (#4483)
+* Fixed: Media drag-and-drop not working inside email editor. (#4475)
+* Fixed: Contacts not properly exiting automations under certain conditions. (#4565)
+* Fixed: Inconsistent contact sorting on automation steps. (#4482)
+* Fixed: Custom field columns showing empty values and broken remove on contact list. (#4553)
+* Fixed: Checkout consent not visible on Gutenberg checkout page. (#4472)
+* Fixed: Custom taxonomy rule matching all product attributes instead of order selection. (#4576)
+* Fixed: Subscribe redirect URL correction. (#4493)
+* Fixed: Email validation now trims whitespace before validation. (#4467)
+* Fixed: Errors when automation rules are undefined. (#4488)
+* Fixed: Line break not working in order data merge tag for non-price/date types. (#4459)
+* Fixed: WPML language switch for order confirmation page link merge tag. (#4547)
+* Fixed: Default language slug correction for multilingual sites. (#4532)
+* Fixed: Import/export table creation fallback when Pro is inactive. (#4545)
+* Fixed: Deadlock error handling in Action Scheduler. (#4514)
+* Fixed: PHP 8.x compatibility issues in Carts API. (#4586, #4590)
+* Devs: Added `bwfan_order_language` filter hook. (#4556)
+* Devs: Added action hooks for abandoned cart WooCommerce add to cart workflow. (#4567)
 
 = 3.7.3 (Feb 09, 2026) =
 * Added: Cart item meta data (variations, custom fields) is now displayed in abandoned cart email templates, enhancing personalization. (#4445)

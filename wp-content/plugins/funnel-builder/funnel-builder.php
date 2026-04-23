@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Funnel Builder
  * Plugin URI: https://funnelkit.com/wordpress-funnel-builder/
  * Description: Create high-converting sales funnels on WordPress that look professional by following a well-guided step-by-step process.
- * Version: 3.13.1.6
+ * Version: 3.15.0.2
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -11,7 +11,7 @@
  * Text Domain: funnel-builder
  *
  * Requires at least: 5.4.0
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * Requires PHP: 7.4
  * WooFunnels: true
  *
@@ -29,7 +29,7 @@
  * along with Funnel Builder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WFFN_Core' ) ) {
 
@@ -100,7 +100,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 
 		/**
 		 * @var WFFN_Funnel_Contacts
-		 *
 		 */
 		public $wffn_contacts;
 
@@ -136,7 +135,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			 * Load important variables and constants
 			 */
 			$this->define_plugin_properties();
-			require_once( __DIR__ . '/start.php' );
+			require_once __DIR__ . '/start.php';
 			require __DIR__ . '/includes/wffn-functions.php';
 			add_action( 'plugins_loaded', array( 'WooFunnel_Loader', 'include_core' ), - 1 );
 
@@ -144,8 +143,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			 * Loads hooks
 			 */
 			$this->load_hooks();
-
-
 		}
 
 		/**
@@ -153,14 +150,13 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function define_plugin_properties() {
 
-
-			define( 'WFFN_VERSION', '3.13.1.6' );
-			define( 'WFFN_BWF_VERSION', '1.10.12.70' );
+			define( 'WFFN_VERSION', '3.15.0.2' );
+			define( 'WFFN_BWF_VERSION', '1.10.12.78' );
 
 			define( 'WFFN_MIN_WC_VERSION', '3.5.0' );
 			define( 'WFFN_MIN_WP_VERSION', '5.4.0' );
 			define( 'WFFN_DB_VERSION', '4.0.0' );
-			define( 'WFFN_REVIEW_RATING_COUNT', 948 );
+			define( 'WFFN_REVIEW_RATING_COUNT', 897 );
 			define( 'WFFN_SLUG', 'wffn' );
 			define( 'WFFN_PLUGIN_FILE', __FILE__ );
 			define( 'WFFN_PLUGIN_DIR', __DIR__ );
@@ -169,7 +165,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			define( 'WFFN_TEMPLATE_UPLOAD_DIR', $this->get_content_dir() . '/wffn_templates/' );
 			( defined( 'WFFN_IS_DEV' ) && true === WFFN_IS_DEV ) ? define( 'WFFN_VERSION_DEV', time() ) : define( 'WFFN_VERSION_DEV', WFFN_VERSION );
 			( ! defined( 'WFFN_REACT_ENVIRONMENT' ) ) ? define( 'WFFN_REACT_ENVIRONMENT', 1 ) : '';
-
 		}
 
 		public function get_content_dir() {
@@ -183,8 +178,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 1 );
 
-
-			register_activation_hook( __FILE__, [ $this, 'plugin_activation_hook' ] );
+			register_activation_hook( __FILE__, array( $this, 'plugin_activation_hook' ) );
 
 			if ( ! class_exists( 'WFACP_Core' ) ) {
 
@@ -193,16 +187,14 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			if ( ! class_exists( 'WFOPP_Core' ) ) {
 				require __DIR__ . '/modules/optins/woofunnels-optins.php';
 			}
-			add_action( 'plugins_loaded', [ $this, 'init_oxygen' ], 10 );
-			add_action( 'wp_loaded', [ $this, 'load_divi_importer' ], 150 );
+			add_action( 'plugins_loaded', array( $this, 'init_oxygen' ), 10 );
+			add_action( 'wp_loaded', array( $this, 'load_divi_importer' ), 150 );
 			add_action( 'activated_plugin', array( $this, 'check_activation' ) );
-
 
 			// Define a constant for the plugin file, if not already defined.
 			define( 'FUNNELKIT_BRICKS_INTEGRATION_FILE', __DIR__ . '/includes/bricks-builder/' );
 			// Require the class file for Funnelkit Bricks Integration.
 			require_once __DIR__ . '/includes/bricks-builder/includes/class-bricks-integration.php';
-
 		}
 
 		/**
@@ -221,10 +213,9 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 				$this->load_steps();
 				$this->load_commons();
 				$this->load_analytics();
-			} catch ( Exception|Error $e ) {
-				//do nothing here
+			} catch ( Exception | Error $e ) {
+				// do nothing here
 			}
-
 		}
 
 		/**
@@ -259,20 +250,18 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-api-dashboard-endpoint.php';
 			require_once __DIR__ . '/admin/rest-api/class-wffn-api-send-test-notification.php';
 
-
 			/*
-			 * 	Order Bump Preview
+			 *  Order Bump Preview
 			 */
 
 			include_once __DIR__ . '/admin/rest-api/class-wfob-bump-rest-api.php';
 
-			/***Global settings***/
+			/***Global settings*/
 
 			include_once __DIR__ . '/admin/rest-api/class-wffn-rest-global-settings.php';
 
 			/**Global Header */
 			include_once __DIR__ . '/admin/includes/class-wffn-header.php';
-
 		}
 
 		/**
@@ -288,7 +277,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			require __DIR__ . '/includes/class-wffn-funnel.php';
 			require __DIR__ . '/includes/class-wffn-woofunnels-support.php';
 			require __DIR__ . '/merge-tags/class-bwf-contact-tags.php';
-
 		}
 
 		/**
@@ -299,7 +287,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 			require __DIR__ . '/modules/landing-pages/class-wffn-landing-pages.php';
 			require __DIR__ . '/modules/thankyou-pages/class-wffn-thank-you-wc-pages.php';
 			do_action( 'wffn_core_modules_loaded' );
-
 		}
 
 		/**
@@ -345,6 +332,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 				$response = WFFN_Common::check_builder_status( 'divi' );
 				if ( true === $response['found'] && empty( $response['error'] ) ) {
 					require __DIR__ . '/importer/class-wffn-divi-importer.php';
+					require __DIR__ . '/importer/class-wffn-divi5-importer.php';
 				}
 				$response = WFFN_Common::check_builder_status( 'oxy' );
 				if ( true === $response['found'] && empty( $response['error'] ) ) {
@@ -352,7 +340,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 				}
 				require __DIR__ . '/importer/class-wffn-gutenberg-importer.php';
 			} catch ( Exception $e ) {
-				//do nothing here
+				// do nothing here
 			}
 		}
 
@@ -376,7 +364,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -398,7 +386,7 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 					do_action( 'wffn_loaded' );
 				}
 			} catch ( Exception $e ) {
-				//do nothing here
+				// do nothing here
 			}
 		}
 
@@ -412,7 +400,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		public static function register( $short_name, $class ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 
 			self::$_registered_entity['active'][ $short_name ] = $class;
-
 		}
 
 		/**
@@ -451,7 +438,6 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 				if ( file_exists( WFFN_PLUGIN_DIR . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php' ) ) {
 					require_once WFFN_PLUGIN_DIR . '/includes/' . 'class-' . $this->slugify_classname( $class_name ) . '.php';  // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 				}
-
 			}
 		}
 
@@ -488,25 +474,20 @@ if ( ! class_exists( 'WFFN_Core' ) ) {
 		 */
 		public function check_activation( $plugin ) {
 			if ( $plugin === plugin_basename( WFFN_PLUGIN_FILE ) ) {
-				$pro_first_active = get_option( 'fk_fb_active_date', [] );
+				$pro_first_active = get_option( 'fk_fb_active_date', array() );
 				if ( empty( $pro_first_active ) || ! isset( $pro_first_active['lite'] ) ) {
 					$pro_first_active['lite'] = current_time( 'timestamp' );
 					update_option( 'fk_fb_active_date', $pro_first_active, false );
 				}
-
 			}
 			if ( ( defined( 'WFFN_PRO_FILE' ) && $plugin === plugin_basename( WFFN_PRO_FILE ) ) || ( defined( 'WFFN_BASIC_FILE' ) && $plugin === plugin_basename( WFFN_BASIC_FILE ) ) ) {
-				$pro_first_active = get_option( 'fk_fb_active_date', [] );
+				$pro_first_active = get_option( 'fk_fb_active_date', array() );
 				if ( empty( $pro_first_active ) || ! isset( $pro_first_active['pro'] ) ) {
 					$pro_first_active['pro'] = current_time( 'timestamp' );
 					update_option( 'fk_fb_active_date', $pro_first_active, false );
 				}
-
-
 			}
-
 		}
-
 	}
 }
 if ( ! function_exists( 'WFFN_Core' ) ) {

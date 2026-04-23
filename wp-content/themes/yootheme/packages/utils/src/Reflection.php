@@ -134,7 +134,7 @@ abstract class Reflection
             return new ReflectionMethod($callback[0], $callback[1]);
         }
 
-        if (is_object($callback) && !$callback instanceof \Closure) {
+        if (is_object($callback) && !($callback instanceof \Closure)) {
             return (new \ReflectionObject($callback))->getMethod('__invoke');
         }
 

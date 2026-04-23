@@ -71,5 +71,9 @@
     "Center, left and right alignment may depend on a breakpoint and require a fallback.": "قد تعتمد محاذاة الوسط واليسار واليمين على نقطة توقف وتتطلب الاستعادة.",
     "Changelog": "التغيير",
     "Choose Font": "اختر الخط",
-    "CSS": "CSS"
+    "CSS": "CSS",
+    "Functional": "وظيفي",
+    "Marketing": "التسويق",
+    "Preferences": "تفضيلات",
+    "Save": "حفظ"
 }

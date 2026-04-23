@@ -13,7 +13,7 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		public function __construct() {
 			add_action( 'wffn_design_saved', array( $this, 'set_builder' ), 10, 2 );
 			add_action( 'woofunnels_module_template_removed', array( $this, 'delete_divi_data' ) );
-			//Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
+			// Dont Need To call Parent Constructor because of some time other divi addon created fatal error Like Monarch Plugin.
 		}
 
 		protected function set_filesystem() {
@@ -34,7 +34,6 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		 *
 		 * @return WP_Filesystem_Direct
 		 * @since 4.0
-		 *
 		 */
 		protected function get_filesystem() {
 			static $filesystem = null;
@@ -54,7 +53,7 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		public function get_timestamp() {
 			et_core_nonce_verified_previously();
 
-			return isset( $_POST['timestamp'] ) && ! empty( $_POST['timestamp'] ) ? sanitize_text_field( $_POST['timestamp'] ) : current_time( 'timestamp' ); //phpcs:ignore
+			return isset( $_POST['timestamp'] ) && ! empty( $_POST['timestamp'] ) ? sanitize_text_field( $_POST['timestamp'] ) : time(); //phpcs:ignore
 		}
 
 		public function import( $module_id, $export_content = '' ) {
@@ -64,7 +63,12 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		}
 
 		public function import_template_single( $post_id, $content ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 
 			delete_post_meta( $post_id, '_elementor_edit_mode' );
 			delete_post_meta( $post_id, '_fl_builder_enabled' );
@@ -78,13 +82,17 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 				}
 			}
 
-
 			$data = $content['data'];
 			// Pass the post content and let js save the post.
 
 			$data    = reset( $data );
 			$success = true;
-			$result  = wp_update_post( [ 'ID' => $post_id, 'post_content' => $data ] );
+			$result  = wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => $data,
+				)
+			);
 
 			if ( $result instanceof WP_Error ) {
 				$success = false;
@@ -97,7 +105,6 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 			if ( 'divi' === $selected_type ) {
 				update_post_meta( $post_id, '_et_pb_use_builder', 'on' );
 			}
-
 		}
 
 		public function maybe_paginate_images( $images, $method, $timestamp ) {
@@ -107,15 +114,17 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 			}
 			et_core_nonce_verified_previously();
 
-			$page   = isset( $_POST['page'] ) ? (int) $_POST['page'] : 1; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$page   = isset( $_POST['page'] ) ? (int) $_POST['page'] : 1; //phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck
 			$result = $this->chunk_images( $images, $method, $timestamp, max( $page - 1, 0 ) );
 
 			if ( ! $result['ready'] ) {
-				wp_send_json( array(
-					'page'        => $page,
-					'total_pages' => $result['chunks'],
-					'timestamp'   => $timestamp,
-				) );
+				wp_send_json(
+					array(
+						'page'        => $page,
+						'total_pages' => $result['chunks'],
+						'timestamp'   => $timestamp,
+					)
+				);
 			}
 
 			return $result['images'];
@@ -124,14 +133,13 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		/**
 		 * Serialize images in chunks.
 		 *
-		 * @param array $images
-		 * @param string $method Method applied on images.
-		 * @param string $id Unique ID to use for temporary files.
+		 * @param array   $images
+		 * @param string  $method Method applied on images.
+		 * @param string  $id Unique ID to use for temporary files.
 		 * @param integer $chunk
 		 *
 		 * @return array
 		 * @since 4.0
-		 *
 		 */
 		protected function chunk_images( $images, $method, $id, $chunk = 0 ) {
 			$images_per_chunk = 100;
@@ -143,7 +151,6 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 			 * @param bool $paginate_images Default `true`.
 			 *
 			 * @since 3.0.99
-			 *
 			 */
 			$paginate_images = apply_filters( 'et_core_portability_paginate_images', true );
 			$et_obj          = et_core_portability_load( 'et_builder' );
@@ -185,20 +192,21 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		 *
 		 * @return array
 		 * @since 2.7.0
-		 *
 		 */
 		protected function upload_images( $images ) {
 			$filesystem = $this->set_filesystem();
 
 			foreach ( $images as $key => $image ) {
 				$basename    = sanitize_file_name( wp_basename( $image['url'] ) );
-				$attachments = get_posts( array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$attachments = get_posts(
+					array( //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
 					'posts_per_page' => - 1,
 					'post_type'      => 'attachment',
 					'meta_key'       => '_wp_attached_file',
 					'meta_value'     => pathinfo( $basename, PATHINFO_FILENAME ),
 					'meta_compare'   => 'LIKE',
-				) );
+					)
+				);
 				$id          = 0;
 				$url         = '';
 
@@ -275,7 +283,6 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		 *
 		 * @return array|mixed|object
 		 * @since 2.7.0
-		 *
 		 */
 		protected function replace_images_urls( $images, $data ) {
 			foreach ( $data as $post_id => &$post_data ) {
@@ -328,10 +335,14 @@ if ( ! class_exists( 'WFFN_Divi_Importer' ) ) {
 		}
 
 		public function delete_divi_data( $post_id ) {
-			wp_update_post( [ 'ID' => $post_id, 'post_content' => '' ] );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '',
+				)
+			);
 			delete_post_meta( $post_id, 'et_enqueued_post_fonts' );
 		}
-
 	}
 
 	if ( class_exists( 'WFFN_Template_Importer' ) ) {

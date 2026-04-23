@@ -123,7 +123,6 @@ class HtmlHelper implements HtmlHelperInterface
     /**
      * Applies transform callbacks.
      *
-     * @param HtmlElement $element
      * @param array<string, mixed> $params
      */
     public function applyTransform(HtmlElement $element, array $params = []): ?string

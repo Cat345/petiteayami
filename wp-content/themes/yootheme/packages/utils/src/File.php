@@ -113,11 +113,9 @@ abstract class File
     /**
      * List files and directories inside the specified path.
      *
-     * @param string $path
      * @param bool|string $prefix
      *
      * @return string[]|false
-     *
      * @example
      * File::listDir('/path/dir');
      * // => ['Dir1', 'Dir2', 'File.txt']
@@ -353,7 +351,7 @@ abstract class File
         $files = [];
 
         foreach (Str::expandBraces($pattern) as $file) {
-            $files = array_merge($files, glob($file, $flags | GLOB_NOSORT) ?: []);
+            array_push($files, ...glob($file, $flags | GLOB_NOSORT) ?: []);
         }
 
         return $files;

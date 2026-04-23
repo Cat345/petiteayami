@@ -24,8 +24,6 @@ use function YOOtheme\trans;
 class PostType
 {
     /**
-     * @param WP_Post_Type $type
-     *
      * @return ObjectConfig
      */
     public static function config(WP_Post_Type $type): array
@@ -50,6 +48,7 @@ class PostType
                     'args' => [
                         'show_intro_text' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                     ],
                     'metadata' => [
@@ -59,7 +58,6 @@ class PostType
                                 'label' => trans('Intro Text'),
                                 'description' => trans('Show or hide the intro text.'),
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Show intro text'),
                             ],
                         ],
@@ -75,9 +73,11 @@ class PostType
                     'args' => [
                         'show_excerpt' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                         'show_content' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                     ],
                     'metadata' => [
@@ -89,12 +89,10 @@ class PostType
                                     'Render the intro text if the read more tag is present. Otherwise, fall back to the full content. Optionally, prefer the excerpt field over the intro text.',
                                 ),
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Prefer excerpt over intro text'),
                             ],
                             'show_content' => [
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Fall back to content'),
                             ],
                         ],
@@ -143,27 +141,35 @@ class PostType
                     'args' => [
                         'format' => [
                             'type' => 'String',
+                            'defaultValue' => 'list',
                         ],
                         'separator' => [
                             'type' => 'String',
+                            'defaultValue' => '|',
                         ],
                         'link_style' => [
                             'type' => 'String',
+                            'defaultValue' => '',
                         ],
                         'show_publish_date' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                         'show_author' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                         'show_comments' => [
                             'type' => 'Boolean',
+                            'defaultValue' => true,
                         ],
                         'show_taxonomy' => [
                             'type' => 'String',
+                            'defaultValue' => $type->name === 'post' ? 'category' : '',
                         ],
                         'date_format' => [
                             'type' => 'String',
+                            'defaultValue' => '',
                         ],
                     ],
                     'metadata' => [
@@ -175,7 +181,6 @@ class PostType
                                     'Display the meta text in a sentence or a horizontal list.',
                                 ),
                                 'type' => 'select',
-                                'default' => 'list',
                                 'options' => [
                                     trans('List') => 'list',
                                     trans('Sentence') => 'sentence',
@@ -184,14 +189,12 @@ class PostType
                             'separator' => [
                                 'label' => trans('Separator'),
                                 'description' => trans('Set the separator between fields.'),
-                                'default' => '|',
                                 'enable' => 'arguments.format === "list"',
                             ],
                             'link_style' => [
                                 'label' => trans('Link Style'),
                                 'description' => trans('Set the link style.'),
                                 'type' => 'select',
-                                'default' => '',
                                 'options' => [
                                     trans('Default') => '',
                                     'Muted' => 'link-muted',
@@ -204,22 +207,18 @@ class PostType
                                 'label' => trans('Display'),
                                 'description' => trans('Show or hide fields in the meta text.'),
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Show date'),
                             ],
                             'show_author' => [
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Show author'),
                             ],
                             'show_comments' => [
                                 'type' => 'checkbox',
-                                'default' => true,
                                 'text' => trans('Show comment count'),
                             ],
                             'show_taxonomy' => [
                                 'type' => 'select',
-                                'default' => $type->name === 'post' ? 'category' : '',
                                 'show' => (bool) $taxonomies,
                                 'options' =>
                                     [
@@ -241,7 +240,6 @@ class PostType
                                     'Select a predefined date format or enter a custom format.',
                                 ),
                                 'type' => 'data-list',
-                                'default' => '',
                                 'options' => [
                                     'Aug 6, 1999 (M j, Y)' => 'M j, Y',
                                     'August 06, 1999 (F d, Y)' => 'F d, Y',
@@ -361,7 +359,7 @@ class PostType
         $fields += static::configRelatedPostsField($type, $taxonomies);
         $fields += static::configHierarchicalFields($type);
 
-        return compact('fields', 'metadata');
+        return ['fields' => $fields, 'metadata' => $metadata];
     }
 
     /**
@@ -395,15 +393,19 @@ class PostType
                 'args' => [
                     'offset' => [
                         'type' => 'Int',
+                        'defaultValue' => 0,
                     ],
                     'limit' => [
                         'type' => 'Int',
+                        'defaultValue' => 10,
                     ],
                     'order' => [
                         'type' => 'String',
+                        'defaultValue' => 'menu_order',
                     ],
                     'order_direction' => [
                         'type' => 'String',
+                        'defaultValue' => 'DESC',
                     ],
                 ],
                 'metadata' => [
@@ -422,7 +424,6 @@ class PostType
                                 'offset' => [
                                     'label' => trans('Start'),
                                     'type' => 'number',
-                                    'default' => 0,
                                     'modifier' => 1,
                                     'attrs' => [
                                         'min' => 1,
@@ -432,7 +433,6 @@ class PostType
                                 'limit' => [
                                     'label' => trans('Quantity'),
                                     'type' => 'limit',
-                                    'default' => 10,
                                     'attrs' => [
                                         'min' => 1,
                                     ],
@@ -447,7 +447,6 @@ class PostType
                                 'order' => [
                                     'label' => trans('Order'),
                                     'type' => 'select',
-                                    'default' => 'menu_order',
                                     'options' => [
                                         [
                                             'evaluate' =>
@@ -461,7 +460,6 @@ class PostType
                                 'order_direction' => [
                                     'label' => trans('Direction'),
                                     'type' => 'select',
-                                    'default' => 'DESC',
                                     'options' => [
                                         ['text' => trans('Ascending'), 'value' => 'ASC'],
                                         ['text' => trans('Descending'), 'value' => 'DESC'],
@@ -514,12 +512,15 @@ class PostType
                 'args' => [
                     'separator' => [
                         'type' => 'String',
+                        'defaultValue' => ', ',
                     ],
                     'show_link' => [
                         'type' => 'Boolean',
+                        'defaultValue' => true,
                     ],
                     'link_style' => [
                         'type' => 'String',
+                        'defaultValue' => '',
                     ],
                 ],
 
@@ -529,19 +530,16 @@ class PostType
                         'separator' => [
                             'label' => trans('Separator'),
                             'description' => trans('Set the separator between terms.'),
-                            'default' => ', ',
                         ],
                         'show_link' => [
                             'label' => trans('Link'),
                             'type' => 'checkbox',
-                            'default' => true,
                             'text' => trans('Show link'),
                         ],
                         'link_style' => [
                             'label' => trans('Link Style'),
                             'description' => trans('Set the link style.'),
                             'type' => 'select',
-                            'default' => '',
                             'options' => [
                                 'Default' => '',
                                 'Muted' => 'link-muted',
@@ -583,7 +581,6 @@ class PostType
             $arguments[strtr($id, '-', '_')] = [
                 'label' => array_first($taxonomies) === $taxonomy ? 'Relationship' : '',
                 'type' => 'select',
-                'default' => '',
                 'options' => [
                     trans('Ignore %taxonomy%', [
                         '%taxonomy%' => mb_strtolower($taxonomy->labels->singular_name),
@@ -594,7 +591,7 @@ class PostType
                     trans('Match all %taxonomies% (AND)', [
                         '%taxonomies%' => mb_strtolower($taxonomy->label),
                     ]) => 'AND',
-                    trans('Don\'t match %taxonomies% (NOR)', [
+                    trans("Don't match %taxonomies% (NOR)", [
                         '%taxonomies%' => mb_strtolower($taxonomy->label),
                     ]) => 'NOT IN',
                 ],
@@ -609,7 +606,10 @@ class PostType
                     'listOf' => Str::camelCase($type->name, true),
                 ],
 
-                'args' => array_map(fn() => ['type' => 'String'], $arguments) + [
+                'args' => array_map(
+                    fn() => ['type' => 'String', 'defaultValue' => ''],
+                    $arguments,
+                ) + [
                     'author' => [
                         'type' => 'String',
                     ],
@@ -618,18 +618,22 @@ class PostType
                     ],
                     'date_range' => [
                         'type' => 'String',
+                        'defaultValue' => 'relative',
                     ],
                     'date_relative' => [
                         'type' => 'String',
+                        'defaultValue' => 'next',
                     ],
                     'date_relative_value' => [
                         'type' => 'Int',
                     ],
                     'date_relative_unit' => [
                         'type' => 'String',
+                        'defaultValue' => 'day',
                     ],
                     'date_relative_unit_this' => [
                         'type' => 'String',
+                        'defaultValue' => 'day',
                     ],
                     'date_relative_start_today' => [
                         'type' => 'Boolean',
@@ -648,15 +652,19 @@ class PostType
                     ],
                     'offset' => [
                         'type' => 'Int',
+                        'defaultValue' => 0,
                     ],
                     'limit' => [
                         'type' => 'Int',
+                        'defaultValue' => 10,
                     ],
                     'order' => [
                         'type' => 'String',
+                        'defaultValue' => 'date',
                     ],
                     'order_direction' => [
                         'type' => 'String',
+                        'defaultValue' => 'DESC',
                     ],
                     'order_alphanum' => [
                         'type' => 'Boolean',
@@ -687,13 +695,14 @@ class PostType
                             'options' => [
                                 trans('Ignore author') => '',
                                 trans('Match author (OR)') => 'IN',
-                                trans('Don\'t match author (NOR)') => 'NOT IN',
+                                trans("Don't match author (NOR)") => 'NOT IN',
                             ],
                         ],
                         '_date' => [
                             'label' => trans('Filter by Date'),
-                            'description' =>
+                            'description' => trans(
                                 'Filter posts by a range relative to the current date or by a fixed start and end date.',
+                            ),
                             'type' => 'grid',
                             'width' => '1-2',
                             'fields' => [
@@ -712,7 +721,6 @@ class PostType
                                 ],
                                 'date_range' => [
                                     'type' => 'select',
-                                    'default' => 'relative',
                                     'options' => [
                                         trans('Relative Range') => 'relative',
                                         trans('Fixed Range') => 'fixed',
@@ -729,7 +737,6 @@ class PostType
                             'fields' => [
                                 'date_relative' => [
                                     'type' => 'select',
-                                    'default' => 'next',
                                     'options' => [
                                         trans('Is in the next') => 'next',
                                         trans('Is in this') => 'this',
@@ -743,11 +750,10 @@ class PostType
                                         'class' => 'uk-form-width-xsmall',
                                         'placeholder' => '∞',
                                     ],
-                                    'show' => 'date_relative !== \'this\'',
+                                    'show' => "date_relative !== 'this'",
                                 ],
                                 'date_relative_unit' => [
                                     'type' => 'select',
-                                    'default' => 'day',
                                     'options' => [
                                         trans('Days') => 'day',
                                         trans('Weeks') => 'week',
@@ -757,34 +763,35 @@ class PostType
                                         trans('Calendar Months') => 'month_calendar',
                                         trans('Calendar Years') => 'year_calendar',
                                     ],
-                                    'show' => 'date_relative !== \'this\'',
+                                    'show' => "date_relative !== 'this'",
                                 ],
                                 'date_relative_unit_this' => [
                                     'type' => 'select',
-                                    'default' => 'day',
                                     'options' => [
                                         trans('Day') => 'day',
                                         trans('Week') => 'week',
                                         trans('Month') => 'month',
                                         trans('Year') => 'year',
                                     ],
-                                    'show' => 'date_relative === \'this\'',
+                                    'show' => "date_relative === 'this'",
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'relative\'',
+                            'show' => "date_column && date_range === 'relative'",
                         ],
                         'date_relative_start_today' => [
                             'type' => 'checkbox',
                             'text' => trans('Start today'),
-                            'description' =>
+                            'description' => trans(
                                 'Set a range starting tomorrow or the next full calendar period. Optionally, start today, which includes the current partial period for calendar ranges. Today refers to the full calendar day.',
-                            'enable' => 'date_relative !== \'this\'',
-                            'show' => 'date_column && date_range === \'relative\'',
+                            ),
+                            'enable' => "date_relative !== 'this'",
+                            'show' => "date_column && date_range === 'relative'",
                         ],
                         '_date_range_fixed' => [
                             'type' => 'grid',
-                            'description' =>
+                            'description' => trans(
                                 'Set only one date to load all posts either before or after that date.',
+                            ),
                             'width' => '1-2',
                             'fields' => [
                                 'date_start' => [
@@ -796,12 +803,13 @@ class PostType
                                     'type' => 'datetime',
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'fixed\'',
+                            'show' => "date_column && date_range === 'fixed'",
                         ],
                         '_date_range_custom' => [
                             'type' => 'grid',
-                            'description' =>
+                            'description' => trans(
                                 'Use the <a href="https://www.php.net/manual/en/datetime.formats.php#datetime.formats.relative" target="_blank">PHP relative date formats</a> in a BNF-like syntax. Set only one date to load all articles either before or after that date.',
+                            ),
                             'width' => '1-2',
                             'fields' => [
                                 'date_start_custom' => [
@@ -824,7 +832,7 @@ class PostType
                                     ],
                                 ],
                             ],
-                            'show' => 'date_column && date_range === \'custom\'',
+                            'show' => "date_column && date_range === 'custom'",
                         ],
                         '_offset' => [
                             'type' => 'grid',
@@ -833,7 +841,6 @@ class PostType
                                 'offset' => [
                                     'label' => trans('Start'),
                                     'type' => 'number',
-                                    'default' => 0,
                                     'modifier' => 1,
                                     'attrs' => [
                                         'min' => 1,
@@ -843,7 +850,6 @@ class PostType
                                 'limit' => [
                                     'label' => trans('Quantity'),
                                     'type' => 'limit',
-                                    'default' => 10,
                                     'attrs' => [
                                         'min' => 1,
                                     ],
@@ -859,7 +865,6 @@ class PostType
                                 'order' => [
                                     'label' => trans('Order'),
                                     'type' => 'select',
-                                    'default' => 'date',
                                     'options' => [
                                         [
                                             'evaluate' =>
@@ -873,7 +878,6 @@ class PostType
                                 'order_direction' => [
                                     'label' => trans('Direction'),
                                     'type' => 'select',
-                                    'default' => 'DESC',
                                     'options' => [
                                         ['text' => trans('Ascending'), 'value' => 'ASC'],
                                         ['text' => trans('Descending'), 'value' => 'DESC'],
@@ -934,8 +938,6 @@ class PostType
     {
         global $page, $numpages, $multipage;
 
-        $args += ['show_intro_text' => true];
-
         // Hint: this returns different results depending on the current view (archive vs. single page)
         $content = get_the_content('', !$args['show_intro_text'], $post);
         $content = str_replace("<span id=\"more-{$post->ID}\"></span>", '', $content);
@@ -963,8 +965,6 @@ class PostType
      */
     public static function teaser($post, $args)
     {
-        $args += ['show_excerpt' => true, 'show_content' => true];
-
         if ($args['show_excerpt'] && has_excerpt($post)) {
             return static::excerpt($post);
         }
@@ -1063,21 +1063,10 @@ class PostType
      */
     public static function metaString($post, array $args): string
     {
-        $args += [
-            'format' => 'list',
-            'separator' => '|',
-            'link_style' => '',
-            'show_publish_date' => true,
-            'show_author' => true,
-            'show_comments' => true,
-            'show_taxonomy' => $post->post_type === 'post' ? 'category' : '',
-            'date_format' => '',
-        ];
-
-        return app(View::class)->render(
-            Path::join(__DIR__, '../../templates/meta'),
-            compact('post', 'args'),
-        );
+        return app(View::class)->render(Path::join(__DIR__, '../../templates/meta'), [
+            'post' => $post,
+            'args' => $args,
+        ]);
     }
 
     /**
@@ -1096,7 +1085,8 @@ class PostType
      */
     public static function resolveChildren($post, array $args)
     {
-        $args += ['post_parent' => $post->ID, 'post_type' => $post->post_type];
+        $args['post_parent'] = $post->ID;
+        $args['post_type'] = $post->post_type;
 
         return Helper::getPosts($args);
     }
@@ -1118,7 +1108,6 @@ class PostType
      */
     public static function resolveTermString($post, array $args)
     {
-        $args += ['separator' => ', ', 'show_link' => true, 'link_style' => ''];
         $before = $args['link_style'] ? "<span class=\"uk-{$args['link_style']}\">" : '';
         $after = $args['link_style'] ? '</span>' : '';
 

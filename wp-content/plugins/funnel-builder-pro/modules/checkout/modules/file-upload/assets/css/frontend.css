@@ -1,0 +1,576 @@
+/**
+ * FunnelKit Checkout File Upload - Frontend Styles
+ *
+ * Styles for the file upload field including drop zone, file list, and progress bars.
+ *
+ * @package FunnelKit\Checkout\Modules\File_Upload
+ */
+
+/* ==========================================================================
+   Base Container Styles
+   ========================================================================== */
+
+.wfacp-upload-dropzone,
+.wfacp-upload-button-wrapper,
+.wfacp-upload-file-list,
+.wfacp-upload-errors {
+	width: 100%;
+}
+
+/* ==========================================================================
+   Modern UI - Drop Zone
+   ========================================================================== */
+
+.wfacp-upload-dropzone {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 80px;
+	padding: 2px 20px;
+	border: 2px dashed #bfbfbf;
+	border-radius: 8px;
+	background-color: #ffffff;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.wfacp-upload-dropzone:hover {
+	border-color: #bfbfbf;
+	background-color: #ffffff;
+}
+
+.wfacp-upload-dropzone.drag-over {
+	border-color: #5b21b6;
+	background-color: #ede9fe;
+	transform: scale(1.01);
+}
+
+.wfacp-upload-dropzone.max-reached,
+.wfacp-upload-button-wrapper.max-reached {
+	opacity: 0.5;
+	pointer-events: none;
+	cursor: not-allowed;
+}
+
+.wfacp-upload-icon {
+	font-size: 48px;
+	width: 24px;
+	height: 24px;
+	color: #353030;
+	margin-bottom: 8px;
+}
+
+/* Cloud Icon for Modern UI */
+.wfacp-upload-cloud-icon {
+	width: 30px;
+	height: 30px;
+	margin-bottom: 0px;
+	color: #353030;
+}
+
+.wfacp-upload-text {
+	font-size: 16px;
+	font-weight: 500;
+	color: #969595;
+}
+
+.wfacp-upload-subtext {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+/* Select Files Button for Modern UI */
+.wfacp-upload-select-btn {
+	display: inline-block;
+	padding: 10px 20px;
+	margin-top: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #7c3aed;
+	background-color: #fff;
+	border: 1px solid #7c3aed;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.wfacp-upload-select-btn:hover {
+	color: #fff;
+	background-color: #7c3aed;
+}
+
+/* ==========================================================================
+   Button Skin UI
+   ========================================================================== */
+
+.wfacp-upload-button-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	position: relative;
+}
+
+body #wfacp-e-form #wfacp_checkout_form .wfacp-upload-button-wrapper label.wfacp-upload-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 24px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #fff;
+	background-color: #82838e;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	height: 36px;
+}
+
+.wfacp-upload-btn .wfacp-upload-btn-icon {
+	width: 18px;
+	height: 18px;
+}
+
+/* Button Skin File List positioning */
+.wfacp-upload-skin-button .wfacp-upload-file-list {
+	margin-top: 16px;
+	width: 100%;
+}
+
+.wfacp-upload-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 8px;
+	font-size: 10px;
+	line-height: 1.4;
+	color: #7f7f7f;
+	text-align: left;
+}
+
+#wfacp-e-form .wfacp-upload-meta-item {
+	min-width: 0;
+	font-weight: 400;
+	font-size: 10px;
+	line-height: 1;
+	color: #9B9B9B;
+}
+
+.wfacp-upload-meta-item-left {
+	flex: 1 1 auto;
+}
+
+.wfacp-upload-meta-item-right {
+	flex: 0 0 auto;
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* ==========================================================================
+   File List
+   ========================================================================== */
+
+.wfacp-upload-file-list {
+	display: block;
+	margin-top: 12px;
+}
+
+.wfacp-upload-file-row {
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	background-color: #F8FAFB;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	margin-bottom: 8px;
+	transition: all 0.2s ease;
+}
+
+.wfacp-upload-file-row:last-child{
+	margin-bottom: 0;
+}
+
+.wfacp-upload-file-row.uploading {
+	background-color: #F8FAFB;
+	border-color: #DEDFEA;
+}
+
+.wfacp-upload-file-row.uploaded {
+	/* background-color: #ecfdf5; */
+	/* border-color: #6ee7b7; */
+}
+
+.wfacp-upload-file-row.error {
+	background-color: #fef2f2;
+	border-color: #fca5a5;
+}
+
+.wfacp-upload-file-row.corrupted-file,
+.wfacp-upload-file-row.upload-error {
+	background-color: #fff7ed;
+	border-color: #fdba74;
+}
+
+.wfacp-upload-file-row.removing {
+	opacity: 0.5;
+	pointer-events: none;
+	background-color: #f9fafb;
+	border-color: #d1d5db;
+}
+
+.wfacp-upload-file-row.removing .wfacp-upload-file-name {
+	text-decoration: line-through;
+	color: #9ca3af;
+}
+
+.wfacp-upload-file-row.removing .wfacp-upload-percent {
+	display: none;
+}
+body #wfacp-e-form #wfacp_checkout_form .wfacp-upload-file-list .wfacp-upload-file-row.removing .wfacp-upload-file-status button[type=button].wfacp-upload-delete{
+	display: none;
+}
+
+.wfacp-upload-file-row.removing .wfacp-upload-file-status::after {
+	content: '';
+	display: block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid #d1d5db;
+	border-top-color: #6b7280;
+	border-radius: 50%;
+	animation: wfacp-spin 0.6s linear infinite;
+}
+
+@keyframes wfacp-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   File Preview / Icon
+   ========================================================================== */
+
+.wfacp-upload-file-preview {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 12px;
+	border-radius: 4px;
+	background-color: #fff;
+	border: 1px solid #e5e7eb;
+	overflow: hidden;
+}
+
+.wfacp-upload-thumbnail {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.wfacp-upload-file-preview .wfacp-file-icon {
+	width: 24px;
+	height: 24px;
+	color: #82828a;
+}
+
+/* ==========================================================================
+   File Info
+   ========================================================================== */
+
+.wfacp-upload-file-info {
+	display: block;
+	flex-grow: 1;
+	min-width: 0;
+	padding-right: 12px;
+}
+
+.wfacp-upload-file-name {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	color: #1f2937;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.wfacp-upload-file-size {
+	font-weight: 400;
+	font-size: 12px;
+	color: #6b7280;
+}
+
+#wfacp-e-form .wfacp-upload-error-msg,
+#wfacp-e-form .wfacp-upload-error-text {
+	display: block;
+	font-size: 12px;
+	color: #dc2626;
+	margin-top: 2px;
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+
+.wfacp-upload-progress-bar {
+	display: block;
+	height: 4px;
+	background-color: #e5e7eb;
+	border-radius: 2px;
+	overflow: hidden;
+	margin-top: 4px;
+}
+
+.wfacp-upload-progress-fill {
+	display: block;
+	height: 100%;
+	background-color: #0066fc;
+	border-radius: 2px;
+	transition: width 0.2s ease;
+	width: 0;
+}
+
+.wfacp-upload-file-row.uploaded .wfacp-upload-progress-fill {
+	background-color: #0066fc;
+}
+
+.wfacp-upload-file-row.error .wfacp-upload-progress-fill {
+	background-color: #ef4444;
+}
+
+/* ==========================================================================
+   File Status
+   ========================================================================== */
+
+.wfacp-upload-file-status {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wfacp-upload-percent {
+	font-size: 12px;
+	font-weight: 600;
+	color: #6b7280;
+	min-width: 36px;
+	text-align: right;
+}
+
+.wfacp-upload-file-row.uploaded .wfacp-upload-percent {
+	color: #0066fc;
+}
+
+.wfacp-upload-file-row.error .wfacp-upload-percent {
+	color: #ef4444;
+}
+
+/* ==========================================================================
+   Delete Button
+   ========================================================================== */
+
+body #wfacp-e-form #wfacp_checkout_form .wfacp-upload-file-list .wfacp-upload-file-status button[type="button"].wfacp-upload-delete {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: transparent;
+	background-color: transparent;
+}
+
+
+.wfacp-upload-delete svg {
+	width: 12px;
+	height: 12px;
+	color: #959595;
+	transition: color 0.2s ease;
+}
+
+
+/* ==========================================================================
+   Max Files Message
+   ========================================================================== */
+
+.wfacp-upload-max-message {
+	padding: 12px 16px;
+	background-color: #fef3c7;
+	border: 1px solid #fcd34d;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #92400e;
+	text-align: center;
+}
+
+/* ==========================================================================
+   Error Messages
+   ========================================================================== */
+
+.wfacp-upload-errors {
+	display: block;
+	margin-top: 8px;
+}
+
+.wfacp-upload-error {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0;
+	background-color: transparent;
+	border: none;
+	border-radius: 0;
+	font-size: 10px;
+	line-height: 1.4;
+	color: #ee3e3e;
+	margin-bottom: 0;
+}
+
+.wfacp-upload-error-text {
+	flex: 1 1 auto;
+}
+
+.wfacp-upload-error-icon {
+	width: 12px;
+	height: 12px;
+	flex: 0 0 12px;
+}
+
+#wfacp-e-form #wfacp_checkout_form .wfacp-upload-error-too-large .wfacp-upload-error-text,
+#wfacp-e-form #wfacp_checkout_form .wfacp-upload-error-corrupted-file .wfacp-upload-error-text,
+#wfacp-e-form #wfacp_checkout_form .wfacp-upload-error-max-limit .wfacp-upload-error-text {
+	color:#E15334;
+}
+
+/* ==========================================================================
+   Responsive Styles
+   ========================================================================== */
+
+@media (max-width: 480px) {
+	.wfacp-upload-dropzone {
+		min-height: 120px;
+		padding: 20px 15px;
+	}
+
+	.wfacp-upload-icon {
+		font-size: 36px;
+		width: 36px;
+		height: 36px;
+	}
+
+	.wfacp-upload-cloud-icon {
+		width: 36px;
+		height: 36px;
+	}
+
+	.wfacp-upload-text {
+		font-size: 14px;
+	}
+
+	.wfacp-upload-subtext {
+		font-size: 12px;
+	}
+
+	.wfacp-upload-select-btn {
+		padding: 8px 16px;
+		font-size: 13px;
+	}
+
+	.wfacp-upload-btn {
+		padding: 10px 18px;
+		font-size: 13px;
+	}
+
+	.wfacp-upload-file-row {
+		padding: 10px;
+	}
+
+	.wfacp-upload-meta {
+		font-size: 10px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+	}
+
+	.wfacp-upload-meta-item-right {
+		text-align: left;
+		white-space: normal;
+	}
+
+	.wfacp-upload-file-preview {
+		width: 32px;
+		height: 32px;
+		margin-right: 10px;
+	}
+
+	.wfacp-upload-file-name {
+		font-size: 13px;
+	}
+
+	.wfacp-upload-percent {
+		font-size: 11px;
+		min-width: 30px;
+	}
+
+	body #wfacp-e-form #wfacp_checkout_form .wfacp-upload-file-list .wfacp-upload-file-status button[type=button].wfacp-upload-delete,
+	.wfacp-upload-delete svg{
+		width: 24px;
+		height: 24px;
+	}
+}
+
+/* ==========================================================================
+   Form Row Integration
+   ========================================================================== */
+
+.wfacp-file-upload-wrapper {
+	width: 100%;
+}
+#wfacp-e-form .wfacp-file-upload-wrapper label.wfacp-form-control-label:not(.radio):not(.checkbox){
+    position: relative;
+    top: 0;
+    left: 0;
+    right: auto;
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wfacp-file-upload-wrapper .wfacp-form-control {
+	display: block;
+}
+
+body.wfacp_editor_active #wfacp-e-form .wfacp-file-upload-wrapper label.wfacp-form-control-label:not(.radio):not(.checkbox) {
+	bottom: auto;
+}
+
+body.wfacp_editor_active .wfacp-file-upload-wrapper .wfacp-form-control {
+	padding: 0;
+	border: 0;
+}
+
+/* Hide the file input - JS handles click via native input.click() */
+.wfacp-upload-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

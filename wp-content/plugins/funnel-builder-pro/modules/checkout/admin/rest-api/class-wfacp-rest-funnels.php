@@ -26,7 +26,7 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -41,264 +41,316 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 		public function register_routes() {
 
 			// Register routes to List Checkout.
-			register_rest_route( $this->namespace, '/' . $this->rest_base, array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base,
+				array(
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'wfacp_get_posts' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'wfacp_create_page' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'wfacp_get_posts' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'wfacp_create_page' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes to List Checkout export.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/export', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/export',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'wfacp_page_export' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'wfacp_page_export' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register route for Checkout Single Export.
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'export', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'export',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'wfacp_export_single' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'wfacp_export_single' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Checkout.
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id, array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id,
+				array(
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'  => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'wfacp_get_page' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'wfacp_remove_page' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'wfacp_get_page' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'wfacp_remove_page' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register route to duplicate Checkout.
-			register_rest_route( $this->namespace, '/' . $this->rest_base_id . 'duplicate', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base_id . 'duplicate',
 				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'wfocu_duplicate_single' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Checkout id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'wfocu_duplicate_single' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/activate-plugin', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/activate-plugin',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'activate_plugin' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => array(
-						'status' => array(
-							'description'       => __( 'Check plugin status', 'woofunnels-aero-checkout' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'slug'   => array(
-							'description'       => __( 'Check plugin slug', 'woofunnels-aero-checkout' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-						),
-						'init'   => array(
-							'description'       => __( 'Check builder status', 'woofunnels-aero-checkout' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => array( $this, 'activate_plugin' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => array(
+							'status' => array(
+								'description'       => __( 'Check plugin status', 'woofunnels-aero-checkout' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'slug'   => array(
+								'description'       => __( 'Check plugin slug', 'woofunnels-aero-checkout' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
+							'init'   => array(
+								'description'       => __( 'Check builder status', 'woofunnels-aero-checkout' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Route to Search Pages.
-			register_rest_route( $this->namespace, '/funnels/pages/search', array(
+			register_rest_route(
+				$this->namespace,
+				'/funnels/pages/search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'search_pages' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term' => array(
-							'description'       => __( 'search term', 'woofunnels-aero-checkout' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'search_pages' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term' => array(
+								'description'       => __( 'search term', 'woofunnels-aero-checkout' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+							),
 						),
 					),
 				)
-			) );
+			);
 
 			// Search for WooCommerce Products.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/product-search', array(
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/product-search',
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'product_list' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(
-						'term' => array(
-							'description'       => __( 'Product name', 'woofunnels-aero-checkout' ),
-							'type'              => 'string',
-							'validate_callback' => 'rest_validate_request_arg',
-							'required'          => true,
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'product_list' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(
+							'term' => array(
+								'description'       => __( 'Product name', 'woofunnels-aero-checkout' ),
+								'type'              => 'string',
+								'validate_callback' => 'rest_validate_request_arg',
+								'required'          => true,
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/products' . '/(?P<wfacp_id>[\d]+)', array(
-				'args' => array(
-					'wfacp_id' => array(
-						'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/products' . '/(?P<wfacp_id>[\d]+)',
+				array(
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'add_product' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_page_products' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'remove_product' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-					'args'                => $this->get_delete_steps_collection(),
-				),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'add_product' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_page_products' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::DELETABLE,
+						'callback'            => array( $this, 'remove_product' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+						'args'                => $this->get_delete_steps_collection(),
+					),
 
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes to save Step State.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/save_state' . '/(?P<wfacp_id>[\d]+)', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
-					),
-					'options'  => array(
-						'description' => __( 'Step state.', 'woofunnels-aero-checkout' ),
-						'type'        => 'string',
-						'required'    => true
-					),
-				),
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/save_state' . '/(?P<wfacp_id>[\d]+)',
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_state' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
+						'options'  => array(
+							'description' => __( 'Step state.', 'woofunnels-aero-checkout' ),
+							'type'        => 'string',
+							'required'    => true,
+						),
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_state' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for Step Settings.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/settings' . '/(?P<wfacp_id>[\d]+)', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/settings' . '/(?P<wfacp_id>[\d]+)',
+				array(
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_customsettings' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_customsettings' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'update_customsettings' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_customsettings' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Register routes for form fields.
-			register_rest_route( $this->namespace, '/' . $this->rest_base . '/form_fields' . '/(?P<wfacp_id>[\d]+)', array(
-				'args'   => array(
-					'wfacp_id' => array(
-						'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
+			register_rest_route(
+				$this->namespace,
+				'/' . $this->rest_base . '/form_fields' . '/(?P<wfacp_id>[\d]+)',
+				array(
+					'args'   => array(
+						'wfacp_id' => array(
+							'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_form_fields' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' ),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_form_fields' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			) );
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_form_fields' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_form_fields' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					'schema' => array( $this, 'get_public_item_schema' ),
+				)
+			);
 
 			// Routes for WFACP Optimizations.
-			register_rest_route( $this->namespace, '/optimizations' . '/(?P<id>[\d]+)', array(
-				'args' => array(
-					'id' => array(
-						'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
-						'type'        => 'integer',
-						'required'    => true
+			register_rest_route(
+				$this->namespace,
+				'/optimizations' . '/(?P<id>[\d]+)',
+				array(
+					'args' => array(
+						'id' => array(
+							'description' => __( 'Current step id.', 'woofunnels-aero-checkout' ),
+							'type'        => 'integer',
+							'required'    => true,
+						),
 					),
-				),
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'checkout_optimizations' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' )
-				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'save_optimizations' ),
-					'permission_callback' => array( $this, 'get_write_api_permission_check' )
-				),
-			) );
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'checkout_optimizations' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'save_optimizations' ),
+						'permission_callback' => array( $this, 'get_write_api_permission_check' ),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -328,7 +380,7 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 				$posted_data = $this->sanitize_custom( $options );
 
 				$wfacp_id         = absint( $wfacp_id );
-				$product_key      = !empty($posted_data['product_key'])?trim( $posted_data['product_key'] ):'';
+				$product_key      = ! empty( $posted_data['product_key'] ) ? trim( $posted_data['product_key'] ) : '';
 				$existing_product = WFACP_Common::get_page_product( $wfacp_id );
 				if ( isset( $existing_product[ $product_key ] ) ) {
 					unset( $existing_product[ $product_key ] );
@@ -353,7 +405,7 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 				$products = $posted_data['products'];
 				$wfacp_id = absint( $wfacp_id );
-				$settings = isset( $posted_data['settings'] ) ? $posted_data['settings'] : [];
+				$settings = isset( $posted_data['settings'] ) ? $posted_data['settings'] : array();
 				foreach ( $products as $key => $val ) {
 					if ( isset( $products[ $key ]['variable'] ) ) {
 
@@ -370,10 +422,10 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 				$old_settings = WFACP_Common::get_page_product_settings( $wfacp_id );
 				if ( isset( $old_settings['add_to_cart_setting'] ) && $old_settings['add_to_cart_setting'] !== $posted_data['settings']['add_to_cart_setting'] ) {
-					//unset default products
+					// unset default products
 					$s = get_post_meta( $wfacp_id, '_wfacp_product_switcher_setting', true );
 					if ( ! empty( $s ) ) {
-						$s['default_products'] = [];
+						$s['default_products'] = array();
 						update_post_meta( $wfacp_id, '_wfacp_product_switcher_setting', $s );
 					}
 				}
@@ -432,11 +484,14 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 					$status      = get_post_status( get_the_ID() );
 					$priority    = $post->menu_order;
-					$funnel_url  = add_query_arg( array(
-						'page'    => 'upstroke',
-						'section' => 'offers',
-						'edit'    => get_the_ID(),
-					), admin_url( 'admin.php' ) );
+					$funnel_url  = add_query_arg(
+						array(
+							'page'    => 'upstroke',
+							'section' => 'offers',
+							'edit'    => get_the_ID(),
+						),
+						admin_url( 'admin.php' )
+					);
 					$row_actions = array();
 
 					$row_actions['edit'] = array(
@@ -588,11 +643,13 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 						if ( absint( $wfacp_id ) > 0 ) {
 							$wfacp_id = absint( $wfacp_id );
 
-							$status = wp_update_post( [
-								'ID'         => $wfacp_id,
-								'post_title' => $post['post_title'],
-								'post_name'  => $post['post_name'],
-							] );
+							$status = wp_update_post(
+								array(
+									'ID'         => $wfacp_id,
+									'post_title' => $post['post_title'],
+									'post_name'  => $post['post_name'],
+								)
+							);
 
 							if ( ! is_wp_error( $status ) ) {
 								update_post_meta( $wfacp_id, '_post_description', $post_description );
@@ -609,11 +666,14 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 						if ( $wfacp_id !== 0 && ! is_wp_error( $wfacp_id ) ) {
 
 							$resp['success']      = true;
-							$resp['redirect_url'] = add_query_arg( array(
-								'page'     => 'wfacp',
-								'section'  => 'design',
-								'wfacp_id' => $wfacp_id,
-							), admin_url( 'admin.php' ) );
+							$resp['redirect_url'] = add_query_arg(
+								array(
+									'page'     => 'wfacp',
+									'section'  => 'design',
+									'wfacp_id' => $wfacp_id,
+								),
+								admin_url( 'admin.php' )
+							);
 							$resp['msg']          = __( 'Checkout Page Successfully Created', 'woofunnels-aero-checkout' );
 							update_post_meta( $wfacp_id, '_wfacp_version', WFACP_VERSION );
 							update_post_meta( $wfacp_id, '_post_description', $post_description );
@@ -701,34 +761,34 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 			$resp = array();
 
 			$resp['all_builder'] = array(
-				'funnel'      => [
+				'funnel'      => array(
 					'elementor' => 'Elementor',
 					'divi'      => 'Divi',
 					'gutenberg' => 'Block Editor',
 					'oxy'       => 'Oxygen Classic',
-					'wp_editor' => 'Other'
-				],
-				'wc_checkout' => [
+					'wp_editor' => 'Other',
+				),
+				'wc_checkout' => array(
 					'elementor'  => 'Elementor',
 					'divi'       => 'Divi',
 					'gutenberg'  => 'Block Editor',
 					'oxy'        => 'Oxygen Classic',
-					'customizer' => 'Customizer', //pre_built
-					'wp_editor'  => 'Other (Using Shortcodes)'
-				],
+					'customizer' => 'Customizer', // pre_built
+					'wp_editor'  => 'Other (Using Shortcodes)',
+				),
 			);
 
 			$resp['sub_filter_group'] = array(
-				'funnel'      => [
+				'funnel'      => array(
 					'all'   => 'All',
 					'sales' => 'Sales Funnels',
-					'optin' => 'Optin Funnels'
-				],
-				'wc_checkout' => [
+					'optin' => 'Optin Funnels',
+				),
+				'wc_checkout' => array(
 					'1' => 'One Step',
 					'2' => 'Two Step',
-					'3' => 'Three Step'
-				],
+					'3' => 'Three Step',
+				),
 			);
 
 			do_action( 'wffn_rest_before_get_templates' );
@@ -737,27 +797,26 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 			$resp['default_builder'] = ( ! empty( $default_builder ) ) ? $default_builder : 'elementor';
 
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$json_data = isset( $templates['funnel'] ) ? $templates['funnel'] : [];
+			$json_data = isset( $templates['funnel'] ) ? $templates['funnel'] : array();
 
 			if ( empty( $json_data ) ) {
 				$templates = WooFunnels_Dashboard::get_all_templates( true );
-				$json_data = isset( $templates['funnel'] ) ? $templates['funnel'] : [];
+				$json_data = isset( $templates['funnel'] ) ? $templates['funnel'] : array();
 			}
 
 			foreach ( $templates as $_t => $_template ) {
-				$wp_editor                     = [
-					'wp_editor_1' => [
+				$wp_editor                     = array(
+					'wp_editor_1' => array(
 						'type'               => 'view',
 						'import'             => 'no',
 						'show_import_popup'  => 'no',
 						'import_button_text' => 'import',
 						'slug'               => 'wp_editor_1',
-						'build_from_scratch' => true
-					]
-				];
+						'build_from_scratch' => true,
+					),
+				);
 				$templates[ $_t ]['wp_editor'] = $wp_editor;
 			}
-
 
 			$templates['funnel'] = $json_data;
 
@@ -773,15 +832,29 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 			switch ( $builder ) {
 				case 'divi':
-					$edit_url = add_query_arg( [ 'p' => $page_id, 'et_fb' => true, 'PageSpeed' => 'off' ], site_url() );
+				case 'divi5':
+					$edit_url = add_query_arg(
+						array(
+							'p'         => $page_id,
+							'et_fb'     => true,
+							'PageSpeed' => 'off',
+						),
+						site_url()
+					);
 					break;
 
 				case 'elementor':
-					$edit_url = add_query_arg( [ 'post' => $page_id, 'action' => 'elementor' ], admin_url( 'post.php' ) );
+					$edit_url = add_query_arg(
+						array(
+							'post'   => $page_id,
+							'action' => 'elementor',
+						),
+						admin_url( 'post.php' )
+					);
 					break;
 
-				case 'oxy' :
-					$edit_url = add_query_arg( [ 'ct_builder' => true ], get_the_permalink( $page_id ) );
+				case 'oxy':
+					$edit_url = add_query_arg( array( 'ct_builder' => true ), get_the_permalink( $page_id ) );
 					break;
 
 				default:
@@ -802,7 +875,6 @@ if ( ! class_exists( 'WFACP_REST_Funnels' ) ) {
 
 			return apply_filters( 'wffn_rest_delete_steps_collection', $params );
 		}
-
 	}
 
 	if ( ! function_exists( 'WFACP_REST_Funnels' ) ) {

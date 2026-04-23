@@ -25,7 +25,7 @@ class NormalizeTransform
             }
         }
 
-        foreach (array_diff_key($fields, $node->props) as $name => $value) {
+        foreach (array_keys(array_diff_key($fields, $node->props)) as $name) {
             $node->props[$name] = null;
         }
     }

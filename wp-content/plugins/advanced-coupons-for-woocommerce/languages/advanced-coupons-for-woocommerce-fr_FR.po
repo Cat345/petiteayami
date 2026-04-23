@@ -22,11 +22,11 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-2: js/lib\n"
 "X-Poedit-SearchPathExcluded-3: js/app\n"
 
-#: Models/Add_Products.php:886
+#: Models/Add_Products.php:899
 msgid "\"Add Products\" data has been cleared successfully!"
 msgstr "Les données \"Ajouter des Produits\" ont été effacées avec succès!"
 
-#: Models/Add_Products.php:837
+#: Models/Add_Products.php:850
 msgid "\"Add Products\" data has been saved successfully!"
 msgstr "Les données \"Ajouter des Produits\" ont été enregistrées avec succès!"
 
@@ -43,7 +43,7 @@ msgid "%1$sAdvanced Coupons for WooCommerce Premium%2$s plugin missing dependenc
 msgstr "Dépendance de l’extension %1$sAdvanced Coupons for WooCommerce Premium%2$s manquante."
 
 #. Translators: %1$s: Formatting tag start. %2$s: Formatting tag end.
-#: Models/Edit_Coupon.php:472
+#: Models/Edit_Coupon.php:478
 #, php-format
 msgid "%1$sNote:%2$s coupon cannot be auto applied when \"Allowed emails\", \"Usage limit per coupon\", \"Usage limit per user\" and/or \"Virtual coupons\" option is set."
 msgstr "%1$sNote:%2$s un code promo ne peut être automatiquement appliqué quand l’option \"E-mails autorisés\", \"Limite d’utilisation par code\" et/ou \"Limite d’utilisation par utilisateur\" est utilisée."
@@ -55,7 +55,7 @@ msgid "%1$sNotice:%2$s You'll need to update the coupon to properly enable/disab
 msgstr "%1$sNote:%2$s Vous aurez besoin de mettre à jour le code promo pour activer/désactiver cette fonctionnalité."
 
 #. Translators: %s: Continent name.
-#: Models/Cart_Conditions.php:1776
+#: Models/Cart_Conditions.php:1791
 #, php-format
 msgid "%s (continent)"
 msgstr "%s (continent)"
@@ -91,19 +91,19 @@ msgid "24 Hours"
 msgstr "24 heures"
 
 #. translators: %1$s: Plugin activation URL
-#: advanced-coupons-for-woocommerce.php:165
+#: advanced-coupons-for-woocommerce.php:172
 #, php-format
 msgid "<a class=\"action-button\" href=\"%1$s\" title=\"Activate this plugin\">Click here to activate &rarr;</a><span><em>Plugin Detected</em></span>"
 msgstr "<a class=\"action-button\" href=\"%1$s\" title=\"Activer cette extension\">Cliquez ici pour activer &rarr;</a><span><em>Extension détectée</em></span>"
 
 #. translators: %1$s: Install plugin URL
-#: advanced-coupons-for-woocommerce.php:171
+#: advanced-coupons-for-woocommerce.php:178
 #, php-format
 msgid "<a class=\"action-button\" href=\"%1$s\" title=\"Install this plugin\">Click here to install from WordPress.org repo &rarr;</a>"
 msgstr "<a class=\"action-button\" href=\"%1$s\" title=\"Installer cette extension\">Cliquez ici pour l’installer depuis le dépôt WordPress.org &rarr;</a>"
 
 #. translators: %1$s is the update plugin URL, %2$s is the plugin name.
-#: advanced-coupons-for-woocommerce.php:213
+#: advanced-coupons-for-woocommerce.php:220
 #, php-format
 msgid "<a href=\"%1$s\">Click here to update %2$s &rarr;</a>"
 msgstr "<a href=\"%1$s\">Cliquez ici pour mettre à jour %2$s &rarr;</a>"
@@ -122,7 +122,7 @@ msgstr "ACFW Licence"
 msgid "Action required"
 msgstr "Action requise"
 
-#: Models/Script_Loader.php:262
+#: Models/Script_Loader.php:286
 #: Models/SLMW/License.php:397
 #: views/notices/view-no-license-notice.php:92
 #: views/slmw/view-license-settings-page.php:53
@@ -133,7 +133,7 @@ msgstr "Activer la clé"
 msgid "Activating. Please wait..."
 msgstr "Activation en cours. Merci de patienter…"
 
-#: Models/Script_Loader.php:261
+#: Models/Script_Loader.php:285
 #: views/slmw/view-license-settings-page.php:49
 msgid "Activation Email:"
 msgstr "E-mail d’activation:"
@@ -142,21 +142,21 @@ msgstr "E-mail d’activation:"
 msgid "Add license key"
 msgstr "Ajouter une clé de licence"
 
-#: views/coupons/view-add-products-data-panel.php:40
+#: views/coupons/view-add-products-data-panel.php:54
 msgid "Add Product"
 msgstr "Ajouter un produit"
 
 #: Models/Edit_Coupon.php:408
 #: Models/Module_Settings.php:112
-#: views/coupons/view-add-products-data-panel.php:20
+#: views/coupons/view-add-products-data-panel.php:19
 msgid "Add Products"
 msgstr "Ajout de produits"
 
-#: views/coupons/view-shipping-overrides-data-panel.php:47
+#: views/coupons/view-shipping-overrides-data-panel.php:61
 msgid "Add Shipping Override"
 msgstr "Redéfinir les frais de port"
 
-#: views/coupons/view-add-products-data-panel.php:53
+#: views/coupons/view-add-products-data-panel.php:67
 msgid "Add undiscounted products before coupon restrictions & cart conditions."
 msgstr "Ajouter les produits sans remise avant les restrictions code promo et conditions de panier."
 
@@ -249,8 +249,8 @@ msgstr "Êtes-vous sûr de vouloir supprimer ces %s codes promo virtuels ?"
 msgid "Are you sure you want to delete this virtual coupon?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce code promo virtuel ?"
 
-#: views/coupons/view-add-products-data-panel.php:57
-#: views/coupons/view-shipping-overrides-data-panel.php:60
+#: views/coupons/view-add-products-data-panel.php:71
+#: views/coupons/view-shipping-overrides-data-panel.php:74
 msgid "Are you sure you want to do this?"
 msgstr "Êtes-vous sûr de vouloir faire ceci ?"
 
@@ -258,7 +258,7 @@ msgstr "Êtes-vous sûr de vouloir faire ceci ?"
 msgid "Auto Apply"
 msgstr "Auto application"
 
-#: Models/Edit_Coupon.php:485
+#: Models/Edit_Coupon.php:491
 msgid "Auto Apply Coupon"
 msgstr "Auto application du code promo"
 
@@ -296,7 +296,7 @@ msgstr "Générez en masse des 100aines ou des 1000iers de codes promo uniques d
 msgid "Cancel"
 msgstr "Annuler"
 
-#: Models/Script_Loader.php:264
+#: Models/Script_Loader.php:288
 #: views/slmw/view-license-settings-page.php:61
 msgid "Can’t find your key?"
 msgstr "Vous ne trouvez pas votre clé?"
@@ -339,7 +339,7 @@ msgstr "Période de latence du cashback"
 msgid "Category: %s"
 msgstr "Catégorie : %s"
 
-#: views/coupons/view-add-products-data-panel.php:60
+#: views/coupons/view-add-products-data-panel.php:74
 msgid "Clear \"Add Products\" Data"
 msgstr "Effacer les données \"Ajout de produits\""
 
@@ -347,12 +347,12 @@ msgstr "Effacer les données \"Ajout de produits\""
 msgid "Clear auto apply coupon cache"
 msgstr "Effacer le cache d’auto application des codes promo"
 
-#: Models/Script_Loader.php:297
-#: Models/Script_Loader.php:320
+#: Models/Script_Loader.php:321
+#: Models/Script_Loader.php:344
 msgid "Clear cache"
 msgstr "Vider le cache"
 
-#: views/coupons/view-shipping-overrides-data-panel.php:63
+#: views/coupons/view-shipping-overrides-data-panel.php:77
 msgid "Clear Shipping Overrides"
 msgstr "Effacer les redéfinitions de frais de port"
 
@@ -520,7 +520,7 @@ msgstr "Différer l’application"
 msgid "Disallowed"
 msgstr "Interdit"
 
-#: views/coupons/view-shipping-overrides-data-panel.php:30
+#: views/coupons/view-shipping-overrides-data-panel.php:44
 msgid "Discount"
 msgstr "Réduction"
 
@@ -540,7 +540,7 @@ msgstr "Enregistrer en CSV"
 msgid "Edit"
 msgstr "Modifier"
 
-#: Models/Edit_Coupon.php:465
+#: Models/Edit_Coupon.php:471
 msgid "Enable auto apply for this coupon."
 msgstr "Activer l’auto application pour ce code promo."
 
@@ -564,19 +564,19 @@ msgstr "entrées"
 msgid "Error"
 msgstr "Erreur"
 
-#: Models/Edit_Coupon.php:571
+#: Models/Edit_Coupon.php:583
 msgid "Every day"
 msgstr "Chaque jour"
 
-#: Models/Edit_Coupon.php:569
+#: Models/Edit_Coupon.php:581
 msgid "Every month"
 msgstr "Chaque mois"
 
-#: Models/Edit_Coupon.php:570
+#: Models/Edit_Coupon.php:582
 msgid "Every week"
 msgstr "Chaque semaine"
 
-#: Models/Edit_Coupon.php:568
+#: Models/Edit_Coupon.php:580
 msgid "Every year"
 msgstr "Chaque année"
 
@@ -592,8 +592,8 @@ msgstr "EXISTE"
 msgid "Export CSV"
 msgstr "Exporter en CSV"
 
-#: Models/Add_Products.php:891
-#: Models/Shipping_Overrides.php:731
+#: Models/Add_Products.php:904
+#: Models/Shipping_Overrides.php:755
 msgid "Failed on clearing or there were no changes to save."
 msgstr "Échec de la suppression ou il n’y avait aucun changement à enregistrer."
 
@@ -642,7 +642,7 @@ msgstr "A déjà commandé des catégories de produits"
 msgid "Have your coupon automatically apply once it's able to be applied."
 msgstr "Votre code promo s’auto applique dès qu’il est en mesure de l’être."
 
-#: Models/Edit_Coupon.php:637
+#: Models/Edit_Coupon.php:649
 msgid "High (10)"
 msgstr "Haut (10)"
 
@@ -681,13 +681,13 @@ msgstr "Info"
 
 #: Models/ACFW_Reports.php:411
 #: Models/ACFW_Reports.php:463
-#: Models/Add_Products.php:807
-#: Models/Add_Products.php:860
+#: Models/Add_Products.php:820
+#: Models/Add_Products.php:873
 #: Models/Apply_Notification.php:216
 #: Models/Auto_Apply.php:445
 #: Models/BOGO/Admin.php:332
-#: Models/Shipping_Overrides.php:659
-#: Models/Shipping_Overrides.php:706
+#: Models/Shipping_Overrides.php:683
+#: Models/Shipping_Overrides.php:730
 #: Models/Usage_Limits.php:303
 msgid "Invalid AJAX call"
 msgstr "Appel AJAX invalide"
@@ -733,13 +733,13 @@ msgstr "Vous permet d’afficher une notification WooCommerce au client si un co
 msgid "License"
 msgstr "Licence"
 
-#: Models/Script_Loader.php:239
+#: Models/Script_Loader.php:263
 #: Models/SLMW/License.php:401
 #: views/slmw/view-license-settings-page.php:21
 msgid "License is Active"
 msgstr "Licence activée"
 
-#: Models/Script_Loader.php:260
+#: Models/Script_Loader.php:284
 #: views/notices/view-no-license-notice.php:83
 #: views/slmw/view-license-settings-page.php:45
 msgid "License Key:"
@@ -749,7 +749,7 @@ msgstr "Clé de licence:"
 msgid "List of orders that had used coupon in them"
 msgstr "Liste des commandes qui ont utilisé un code promo"
 
-#: Models/Script_Loader.php:266
+#: Models/Script_Loader.php:290
 #: views/notices/view-no-license-notice.php:103
 msgid "Login to your account"
 msgstr "Connectez-vous à votre compte"
@@ -758,7 +758,7 @@ msgstr "Connectez-vous à votre compte"
 msgid "Login to your account."
 msgstr "Connectez-vous à votre compte."
 
-#: Models/Edit_Coupon.php:639
+#: Models/Edit_Coupon.php:651
 msgid "Low (50)"
 msgstr "Bas (50)"
 
@@ -770,13 +770,13 @@ msgstr "Gérer les codes promo virtuels"
 msgid "Manage virtual coupons"
 msgstr "Gérer les codes promo virtuels"
 
-#: Models/Module_Settings.php:448
-#: Models/Script_Loader.php:310
+#: Models/Module_Settings.php:465
+#: Models/Script_Loader.php:334
 msgid "Manually rebuild and validate all apply notification coupons within the cache or clear the cache entirely."
 msgstr "Reconstruit manuellement et valide toutes les notifications d’application des codes promo en cache ou efface le cache entièrement."
 
-#: Models/Module_Settings.php:441
-#: Models/Script_Loader.php:287
+#: Models/Module_Settings.php:458
+#: Models/Script_Loader.php:311
 msgid "Manually rebuild and validate all auto apply coupons within the cache or clear the cache entirely."
 msgstr "Reconstruit manuellement et valide toutes les applications automatiques des codes promo en cache ou efface le cache entièrement."
 
@@ -784,8 +784,8 @@ msgstr "Reconstruit manuellement et valide toutes les applications automatiques 
 msgid "Manually reset usage limit"
 msgstr "Réinitialiser manuellement la limite d’utilisation"
 
-#: Models/Module_Settings.php:455
-#: Models/Script_Loader.php:333
+#: Models/Module_Settings.php:472
+#: Models/Script_Loader.php:357
 msgid "Manually run cron for resetting usage limit for all applicable coupons."
 msgstr "Exécute manuellement cron pour réinitialiser la limite d’utilisation de tous les codes promo concernés."
 
@@ -799,11 +799,11 @@ msgstr "Clé Meta"
 msgid "Meta Value"
 msgstr "Valeur Meta"
 
-#: Models/Add_Products.php:820
-#: Models/Add_Products.php:870
+#: Models/Add_Products.php:833
+#: Models/Add_Products.php:883
 #: Models/BOGO/Admin.php:345
-#: Models/Shipping_Overrides.php:672
-#: Models/Shipping_Overrides.php:716
+#: Models/Shipping_Overrides.php:696
+#: Models/Shipping_Overrides.php:740
 msgid "Missing required post data"
 msgstr "Donnée post requise manquante"
 
@@ -817,12 +817,12 @@ msgstr "Modifie le libellé affiché pour ce code promo dans la table des totaux
 msgid "Monday"
 msgstr "Lundi"
 
-#: Models/Edit_Coupon.php:567
+#: Models/Edit_Coupon.php:579
 msgid "Never reset"
 msgstr "Ne jamais réinitialiser"
 
 #. Translators: %1$s: Next reset date. %2$s: Timezone.
-#: Models/Edit_Coupon.php:595
+#: Models/Edit_Coupon.php:607
 #, php-format
 msgid "Next reset for coupon usage count is on %1$s %2$s"
 msgstr "La prochaine remise à zéro du compteur d’usage du code promo est le %1$s %2$s"
@@ -835,7 +835,7 @@ msgstr "Suivant »"
 msgid "No orders found"
 msgstr "Aucune commande trouvée"
 
-#: views/coupons/view-shipping-overrides-data-panel.php:38
+#: views/coupons/view-shipping-overrides-data-panel.php:52
 msgid "No shipping overrides added"
 msgstr "Pas de redéfinition de frais de port ajouté"
 
@@ -846,21 +846,21 @@ msgstr "Pas de redéfinition de frais de port ajouté"
 msgid "No. of previous days"
 msgstr "Nb. de jours précédents"
 
-#: Models/Shipping_Overrides.php:458
+#: Models/Shipping_Overrides.php:482
 msgid "Non-shipping zone methods"
 msgstr "Méthodes de zone sans expédition"
 
-#: Models/Edit_Coupon.php:638
+#: Models/Edit_Coupon.php:650
 msgid "Normal (30)"
 msgstr "Normal (30)"
 
-#: Models/Script_Loader.php:240
+#: Models/Script_Loader.php:264
 #: Models/SLMW/License.php:402
 #: views/slmw/view-license-settings-page.php:23
 msgid "Not Activated Yet"
 msgstr "Pas encore activée"
 
-#: Models/Shipping_Overrides.php:440
+#: Models/Shipping_Overrides.php:464
 msgid "Not covered locations"
 msgstr "Lieux non desservis"
 
@@ -960,19 +960,19 @@ msgstr "Cashback en pourcentage (crédit boutique)"
 msgid "Percentage Discount Cap"
 msgstr "Plafond de la réduction en pourcentage"
 
-#: Models/Script_Loader.php:250
+#: Models/Script_Loader.php:274
 #: views/slmw/view-license-settings-page.php:33
 msgid "Plan"
 msgstr "Plan"
 
 #. translators: %1$s is Plugin URL, %2$s is Plugin name
-#: advanced-coupons-for-woocommerce.php:178
+#: advanced-coupons-for-woocommerce.php:185
 #, php-format
 msgid "Please ensure you have the <a href=\"%1$s\" target=\"_blank\">%2$s</a> plugin installed and activated.<br/>"
 msgstr "SVP assurez-vous que l’extension <a href=\"%1$s\" target=\"_blank\">%2$s</a> est installée et activée.<br/>"
 
 #. translators: %1$s is the update plugin URL, %2$s is the plugin name.
-#: advanced-coupons-for-woocommerce.php:220
+#: advanced-coupons-for-woocommerce.php:227
 #, php-format
 msgid "Please ensure you have the latest version of <a href=\"%1$s\" target=\"_blank\">%2$s</a> plugin installed and activated.<br/>"
 msgstr "SVP assurez-vous que la dernière version de l’extension <a href=\"%1$s\" target=\"_blank\">%2$s</a> est installée et activée.<br/>"
@@ -997,8 +997,8 @@ msgstr "Les données de mise à jour de l’extension ont été récupérées av
 msgid "Plugin updates transient is not yet present. Please visit Dashboard > Updates page and try again."
 msgstr "Le transient de mise à jour de l’extension n’est pas présent. Veuillez consulter la page Tableau de bord > Mises à jour puis réessayer."
 
-#: Models/Script_Loader.php:244
-#: Models/Script_Loader.php:251
+#: Models/Script_Loader.php:268
+#: Models/Script_Loader.php:275
 #: views/slmw/view-license-settings-page.php:28
 #: views/slmw/view-license-settings-page.php:37
 msgid "Premium Version"
@@ -1009,18 +1009,18 @@ msgstr "Version Premium"
 msgid "Price"
 msgstr "Prix"
 
-#: views/coupons/view-add-products-data-panel.php:30
+#: views/coupons/view-add-products-data-panel.php:44
 msgid "Price/Discount"
 msgstr "Prix/Remise"
 
 #: Models/Cart_Conditions.php:411
 #: Models/Cart_Conditions.php:463
-#: views/coupons/view-add-products-data-panel.php:28
+#: views/coupons/view-add-products-data-panel.php:42
 msgid "Product"
 msgstr "Produit"
 
 #: Models/BOGO/Admin.php:101
-#: Models/Module_Settings.php:355
+#: Models/Module_Settings.php:372
 msgid "Product Categories"
 msgstr "Catégories de produits"
 
@@ -1045,7 +1045,7 @@ msgstr "Type de produit"
 #: Models/Cart_Conditions.php:465
 #: Models/Cart_Conditions.php:517
 #: Models/Cart_Conditions.php:597
-#: views/coupons/view-add-products-data-panel.php:29
+#: views/coupons/view-add-products-data-panel.php:43
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -1053,18 +1053,18 @@ msgstr "Quantité"
 msgid "Rebuild auto apply coupon cache"
 msgstr "Reconstruire le cache d’auto application des codes promo"
 
-#: Models/Script_Loader.php:292
-#: Models/Script_Loader.php:315
+#: Models/Script_Loader.php:316
+#: Models/Script_Loader.php:339
 msgid "Rebuild cache"
 msgstr "Reconstruire le cache"
 
-#: Models/Module_Settings.php:446
-#: Models/Script_Loader.php:309
+#: Models/Module_Settings.php:463
+#: Models/Script_Loader.php:333
 msgid "Rebuild/Clear Apply Notification Coupons Cache"
 msgstr "Reconstruire/Effacer le cache de notification d’application des codes promo"
 
-#: Models/Module_Settings.php:439
-#: Models/Script_Loader.php:286
+#: Models/Module_Settings.php:456
+#: Models/Script_Loader.php:310
 msgid "Rebuild/Clear Auto Apply Coupons Cache"
 msgstr "Reconstruire/Effacer le cache d’auto application des codes"
 
@@ -1076,11 +1076,11 @@ msgstr "récent"
 msgid "Recently generated"
 msgstr "Généré récemment"
 
-#: Models/Script_Loader.php:349
+#: Models/Script_Loader.php:373
 msgid "Refetch Plugin Update Data"
 msgstr "Récupérer les données de mise à jour de l’extension"
 
-#: Models/Script_Loader.php:355
+#: Models/Script_Loader.php:379
 msgid "Refetch Update Data"
 msgstr "Récupérer les données de mise à jour"
 
@@ -1095,12 +1095,12 @@ msgstr "La répétition des offres n’est pas encore supportée pour cette comb
 msgid "Required parameters are missing."
 msgstr "Des paramètres requis sont manquants."
 
-#: Models/Module_Settings.php:453
-#: Models/Script_Loader.php:332
+#: Models/Module_Settings.php:470
+#: Models/Script_Loader.php:356
 msgid "Reset coupons usage limit"
 msgstr "Réinitialisation de la limite d’utilisation de codes promo"
 
-#: Models/Edit_Coupon.php:565
+#: Models/Edit_Coupon.php:577
 msgid "Reset usage count every:"
 msgstr "Réinitialiser le compteur d’utilisations"
 
@@ -1125,11 +1125,11 @@ msgstr ""
 msgid "Saturday"
 msgstr "Samedi"
 
-#: views/coupons/view-add-products-data-panel.php:49
+#: views/coupons/view-add-products-data-panel.php:63
 msgid "Save \"Add Products\" Data"
 msgstr "Enregistrer les données \"Ajout de produits\""
 
-#: views/coupons/view-shipping-overrides-data-panel.php:57
+#: views/coupons/view-shipping-overrides-data-panel.php:71
 msgid "Save Shipping Overrides"
 msgstr "Enregistrer les redéfinitions de frais de port"
 
@@ -1224,7 +1224,7 @@ msgstr "Sélectionnez…"
 msgid "Set priority for each coupon and automatically sort the applied coupons on cart/checkout. This will also sort coupons under auto apply and apply notifications."
 msgstr "Définit une priorité pour chaque code promo et trie automatiquement les codes promo appliqués sur les pages panier/paiement. Cela triera également les codes promo dans les notifications d’application et d’application automatique."
 
-#: Models/Edit_Coupon.php:573
+#: Models/Edit_Coupon.php:585
 msgid "Set the time period to reset the usage limit count. <strong>Yearly:</strong> resets at start of the year. <strong>Monthly:</strong> resets at start of the month. <strong>Weekly:</strong> resets at the start of every week (day depends on the <em>\"Week Starts On\"</em> setting). <strong>Daily:</strong> resets everyday. Time is always set at 12:00am of the local timezone settings."
 msgstr "Définir la période de réinitialisation du compteur de limite d’usage. <strong>Annuel:</strong> réinitialise en début d’année. <strong>Mensuel:</strong> réinitialise au début du mois. <strong>Hedomadaire:</strong> réinitialise au débtu de chaque semaine (le jour dépend du paramètre<em>\"La semaine débute le\"</em>). <strong>Quotidien:</strong> réinitialise chaque jour. L’heure est toujours 00:00 du fuseau horaire local."
 
@@ -1232,30 +1232,30 @@ msgstr "Définir la période de réinitialisation du compteur de limite d’usag
 msgid "Settings"
 msgstr "Paramètres"
 
-#: Models/Shipping_Overrides.php:269
+#: Models/Shipping_Overrides.php:293
 msgid "Shipping discount"
 msgstr "Remise de frais de port"
 
-#: views/coupons/view-shipping-overrides-data-panel.php:27
+#: views/coupons/view-shipping-overrides-data-panel.php:41
 msgid "Shipping Method"
 msgstr "Méthode d’expédition"
 
-#: Models/Shipping_Overrides.php:726
+#: Models/Shipping_Overrides.php:750
 msgid "Shipping overides has been cleared successfully!"
 msgstr "La redéfinition des frais de port a été effacée avec succès!"
 
-#: Models/Edit_Coupon.php:506
+#: Models/Edit_Coupon.php:512
 #: Models/Module_Settings.php:104
 #: views/coupons/view-shipping-overrides-data-panel.php:11
 msgid "Shipping Overrides"
 msgstr "Redéfinir les frais de port"
 
-#: Models/Shipping_Overrides.php:682
+#: Models/Shipping_Overrides.php:706
 msgid "Shipping overrides have been saved successfully!"
 msgstr "La redéfinition des frais de port a été enregistrée avec succès!"
 
 #: Models/Cart_Conditions.php:484
-#: views/coupons/view-shipping-overrides-data-panel.php:24
+#: views/coupons/view-shipping-overrides-data-panel.php:38
 msgid "Shipping Zone"
 msgstr "Zone de livraison"
 
@@ -1276,6 +1276,7 @@ msgstr "Affichez un message d’erreur personnalisé à vos client qui tentent d
 msgid "Show a WooCommerce notification on the cart page with a button to apply the coupon when the customer is eligible to apply this coupon."
 msgstr "Affiche une notification WooCommerce dans le panier avec un bouton d’application du code promo lorsque le client est éligible à l’application de ce code."
 
+#: Models/REST_API/API_Coupon_Generator_Storage.php:158
 #: Models/REST_API/API_Email_Store_Credit_Reminder.php:148
 #: Models/REST_API/API_Virtual_Coupons.php:298
 #: Models/REST_API/API_Virtual_Coupons.php:315
@@ -1334,7 +1335,7 @@ msgstr "Merci d’avoir acheté Advanced Coupons for WooCommerce - L’extension
 msgid "The %s coupon can't be applied. This coupon is not allowed to work in conjunction with the coupon(s) currently applied on the cart."
 msgstr "Le code promo %s ne peut être appliqué. Ce code promo n’est pas autorisé conjointement avec le(s) coupon(s) déjà appliqué(s) au panier."
 
-#: views/coupons/view-add-products-data-panel.php:22
+#: views/coupons/view-add-products-data-panel.php:21
 msgid "The Add Products feature can also be combined with other features like Cart Conditions and Auto Apply to make products appear in the customer's cart like magic once certain conditions are met."
 msgstr "La fonctionnalité Ajout de produits peut aussi être combinée avec d’autres fonctionnalités comme les Conditions de Panier et l’Auto-application pour faire apparaître des produits dans le panier client comme par magie lorsque certaines conditions sont satisfaites."
 
@@ -1374,7 +1375,7 @@ msgid "The provided coupon doesn't exist."
 msgstr "Le code promo fourni n’existe pas."
 
 #. Translators: %s: Product name.
-#: Models/Add_Products.php:452
+#: Models/Add_Products.php:465
 #, php-format
 msgid "The quantity of the %s can't be modified."
 msgstr "La quantité de %s ne peut être modifiée."
@@ -1422,7 +1423,7 @@ msgstr "Ceci est la version avancée du champ \"Utilisation individuelle uniquem
 msgid "This Month"
 msgstr "Ce mois"
 
-#: Models/Script_Loader.php:350
+#: Models/Script_Loader.php:374
 msgid "This will refetch the plugin update data. Useful for debugging failed plugin update operations."
 msgstr "Ceci récupèrera les données de mise à jour de l’extension. Utile pour débugger des opérations échouées de mises à jour de l’extension."
 
@@ -1448,7 +1449,7 @@ msgstr "Le total des dépenses du client est"
 msgid "Total Spend"
 msgstr "Total des dépenses"
 
-#: Models/Script_Loader.php:338
+#: Models/Script_Loader.php:362
 msgid "Trigger reset cron"
 msgstr "Déclencher le cron de réinitialisation"
 
@@ -1499,8 +1500,8 @@ msgstr "Statut d’utilisation"
 msgid "Used"
 msgstr "Utilisé"
 
-#: Models/Module_Settings.php:433
-#: Models/Script_Loader.php:381
+#: Models/Module_Settings.php:450
+#: Models/Script_Loader.php:405
 msgid "Utilities"
 msgstr "Utilitaires"
 
@@ -1509,16 +1510,16 @@ msgstr "Utilitaires"
 msgid "Value type"
 msgstr "Type de la valeur"
 
-#: Models/Script_Loader.php:254
+#: Models/Script_Loader.php:278
 #: views/slmw/view-license-settings-page.php:34
 msgid "Version"
 msgstr "Version"
 
-#: Models/Edit_Coupon.php:636
+#: Models/Edit_Coupon.php:648
 msgid "Very high (1)"
 msgstr "Très haut (1)"
 
-#: Models/Edit_Coupon.php:640
+#: Models/Edit_Coupon.php:652
 msgid "Very Low (90)"
 msgstr "Très bas (90)"
 
@@ -1528,8 +1529,8 @@ msgstr "Voir les changements"
 
 #: Models/Cashback_Coupon.php:109
 #: Models/Cashback_Coupon.php:110
-#: Models/Store_Credits.php:128
-#: Models/Store_Credits.php:129
+#: Models/Store_Credits.php:165
+#: Models/Store_Credits.php:166
 msgid "View Order"
 msgstr "Voir la commande"
 
@@ -1646,26 +1647,27 @@ msgstr "Année"
 msgid "Yes"
 msgstr "Oui"
 
-#: Models/Script_Loader.php:245
+#: Models/Script_Loader.php:269
 #: views/slmw/view-license-settings-page.php:29
 msgid "You are currently using Advanced Coupons for WooCommerce Premium version. The premium version gives you a massive range of extra extra features for your WooCommerce coupons so you can promote your store better. As the Premium version functions like an add-on, you must have Advanced Coupons for WooCommerce Free installed and activated along with WooCommerce (which is required for both)."
 msgstr "Vous utilisez actuellement la version Premium de Advanced Coupons for WooCommerce. La version premium vous offre un large éventail de fonctionnalités complémentaires pour vos codes promo WooCommerce afin que vous puissiez mieux promouvoir votre magasin. Comme la version Premium fonctionne comme un module, vous devez avoir installé et activé Advanced Coupons for WooCommerce Free ainsi que WooCommerce (qui est nécessaire pour les deux)."
 
 #: Helpers/Helper_Functions.php:581
-#: Models/Add_Products.php:815
-#: Models/Add_Products.php:865
+#: Models/Add_Products.php:828
+#: Models/Add_Products.php:878
 #: Models/Apply_Notification.php:221
 #: Models/Auto_Apply.php:450
 #: Models/BOGO/Admin.php:340
 #: Models/Emails/Emails.php:149
-#: Models/Shipping_Overrides.php:667
-#: Models/Shipping_Overrides.php:711
+#: Models/Shipping_Overrides.php:691
+#: Models/Shipping_Overrides.php:735
 #: Models/Usage_Limits.php:308
 msgid "You are not allowed to do this"
 msgstr "Vous n’êtes pas autorisé à faire cela"
 
 #: Models/ACFW_Reports.php:416
 #: Models/ACFW_Reports.php:468
+#: Models/Order_Pay.php:193
 msgid "You are not allowed to do this."
 msgstr "Vous n’êtes pas autorisé à faire cela."
 
@@ -1824,91 +1826,91 @@ msgstr ""
 msgid "When enabled, conflicting coupons that are already applied to the cart will be replaced with this coupon instead. This is useful especially if you have an auto applied coupon that you want to be removed when a conflicting coupon is applied."
 msgstr ""
 
-#: Models/Module_Settings.php:250
+#: Models/Module_Settings.php:267
 msgid "Reminder Emails"
 msgstr ""
 
-#: Models/Module_Settings.php:252
+#: Models/Module_Settings.php:269
 msgid "Send a reminder emails to your customers to get them to come back and use their store credit. Emails will be sent automatically when customers have been inactive for the given period and contain their current store credit balance along with suggested product from your store."
 msgstr ""
 
-#: Models/Module_Settings.php:257
+#: Models/Module_Settings.php:274
 msgid "How long after being inactive should a reminder be sent?"
 msgstr ""
 
-#: Models/Module_Settings.php:260
+#: Models/Module_Settings.php:277
 msgid "A customer is said to be inactive if they haven't placed any orders after the number of days set in this setting. Once inactive, the reminder email will trigger and resend after each period if they are still found to be inactive."
 msgstr ""
 
-#: Models/Module_Settings.php:266
+#: Models/Module_Settings.php:283
 msgid "What time of day should reminders be sent?"
 msgstr ""
 
-#: Models/Module_Settings.php:270
+#: Models/Module_Settings.php:287
 msgid "This is the time of day that emails are scheduled to send based on the timezone of your store (\" + timezone setting text + \"). By default, emails will be set to send at 10am."
 msgstr ""
 
-#: Models/Module_Settings.php:277
+#: Models/Module_Settings.php:294
 msgid "Suggested product/categories to include in reminder emails"
 msgstr ""
 
-#: Models/Module_Settings.php:280
+#: Models/Module_Settings.php:297
 msgid "The product/categories selected will be shown to customers at the bottom of the email."
 msgstr ""
 
-#: Models/Module_Settings.php:283
+#: Models/Module_Settings.php:300
 msgid "None"
 msgstr ""
 
-#: Models/Module_Settings.php:284
+#: Models/Module_Settings.php:301
 msgid "Random"
 msgstr ""
 
-#: Models/Module_Settings.php:285
+#: Models/Module_Settings.php:302
 msgid "Popular"
 msgstr ""
 
-#: Models/Module_Settings.php:286
+#: Models/Module_Settings.php:303
 msgid "High Rating"
 msgstr ""
 
-#: Models/Module_Settings.php:378
+#: Models/Module_Settings.php:395
 msgid "Remind"
 msgstr ""
 
-#: Models/Module_Settings.php:379
+#: Models/Module_Settings.php:396
 msgid "Loading"
 msgstr ""
 
-#: Models/Module_Settings.php:381
+#: Models/Module_Settings.php:398
 msgid "Send a Reminder"
 msgstr ""
 
-#: Models/Module_Settings.php:382
+#: Models/Module_Settings.php:399
 msgid "Manually send an email reminder to this customer to remind them about using their store credit :"
 msgstr ""
 
-#: Models/Module_Settings.php:384
+#: Models/Module_Settings.php:401
 msgid "Preview"
 msgstr ""
 
-#: Models/Module_Settings.php:385
+#: Models/Module_Settings.php:402
 msgid "Send"
 msgstr ""
 
-#: Models/Module_Settings.php:388
+#: Models/Module_Settings.php:405
 msgid "Failed to send email"
 msgstr ""
 
-#: Models/Module_Settings.php:391
+#: Models/Module_Settings.php:408
 msgid "The reminder has been successfully emailed to customer_account"
 msgstr ""
 
-#: Models/Module_Settings.php:473
+#: Models/Module_Settings.php:490
 msgid "Hide the applied coupon on the cart and checkout if it is equal to $0"
 msgstr ""
 
-#: Models/Module_Settings.php:475
+#: Models/Module_Settings.php:492
 msgid "If checked, this feature will hide coupons that have a value of $0 from view on the cart and checkout pages."
 msgstr ""
 
@@ -1999,10 +2001,6 @@ msgstr ""
 msgid "Manifest file not found. Did you run the build script from package.json file?"
 msgstr ""
 
-#: views/coupons/view-add-products-data-panel.php:21
-msgid "This feature lets you add products to a customer’s cart when a coupon is successfully applied. The products listed in the table below will be automatically added to their cart in the specified quantities and price overrides."
-msgstr ""
-
 #. Translators: %s: coupon code.
 #: Models/REST_API/Store_API_Extend_Endpoint.php:79
 #, php-format
@@ -2045,15 +2043,15 @@ msgstr ""
 msgid "ALL"
 msgstr ""
 
-#: Models/Script_Loader.php:363
+#: Models/Script_Loader.php:387
 msgid "Check license status"
 msgstr ""
 
-#: Models/Script_Loader.php:364
+#: Models/Script_Loader.php:388
 msgid "Check the current status of your Advanced Coupons premium license."
 msgstr ""
 
-#: Models/Script_Loader.php:369
+#: Models/Script_Loader.php:393
 msgid "Check License Status"
 msgstr ""
 
@@ -2305,12 +2303,12 @@ msgid "Total Customer Spend on a Certain Product Category"
 msgstr ""
 
 #: Models/Cashback_Coupon.php:221
-#: Models/Module_Settings.php:301
+#: Models/Module_Settings.php:318
 msgid "Cashback coupons are only for registered customers."
 msgstr ""
 
 #: Models/Cashback_Coupon.php:223
-#: Models/Module_Settings.php:309
+#: Models/Module_Settings.php:326
 msgid "Login"
 msgstr ""
 
@@ -2343,55 +2341,55 @@ msgstr ""
 msgid "Set the maximum percentage of the redeemable store credits amount allowed per order. When the store credits apply type is set to \"Before tax and shipping\", the percentage will be based on the order subtotal amount. When the store credits apply type is set to \"After tax and shipping\", the percentage value will be based on the order total amount."
 msgstr ""
 
-#: Models/Module_Settings.php:243
+#: Models/Module_Settings.php:251
 msgid "Automatically revoke cashback coupons from refunded orders"
 msgstr ""
 
-#: Models/Module_Settings.php:245
+#: Models/Module_Settings.php:253
 msgid "Enable this option to automatically revoke cashback coupons when an order is refunded. This ensures that customers do not retain cashback credits for orders that have been refunded."
 msgstr ""
 
-#: Models/Module_Settings.php:293
+#: Models/Module_Settings.php:310
 msgid "Cashback Coupons"
 msgstr ""
 
-#: Models/Module_Settings.php:298
+#: Models/Module_Settings.php:315
 msgid "Guest user error notification message"
 msgstr ""
 
-#: Models/Module_Settings.php:302
+#: Models/Module_Settings.php:319
 msgid "This message will be shown to users who try to use a cashback coupon without being logged in."
 msgstr ""
 
-#: Models/Module_Settings.php:306
+#: Models/Module_Settings.php:323
 msgid "Guest user error notification button text"
 msgstr ""
 
-#: Models/Module_Settings.php:310
+#: Models/Module_Settings.php:327
 msgid "Text to display on the button."
 msgstr ""
 
-#: Models/Module_Settings.php:314
+#: Models/Module_Settings.php:331
 msgid "Guest user error notification button URL"
 msgstr ""
 
-#: Models/Module_Settings.php:318
+#: Models/Module_Settings.php:335
 msgid "URL where users will be directed."
 msgstr ""
 
-#: Models/Module_Settings.php:324
+#: Models/Module_Settings.php:341
 msgid "Order status(es) for when to award cashback credits"
 msgstr ""
 
-#: Models/Module_Settings.php:327
+#: Models/Module_Settings.php:344
 msgid "Select the order status(es) that qualifies for awarding cashback as store credits to the customer."
 msgstr ""
 
-#: Models/Module_Settings.php:329
+#: Models/Module_Settings.php:346
 msgid "Processing"
 msgstr ""
 
-#: Models/Module_Settings.php:330
+#: Models/Module_Settings.php:347
 msgid "Completed"
 msgstr ""
 
@@ -2407,7 +2405,7 @@ msgstr ""
 msgid "The %s coupon can't be applied. This coupon is not allowed to be used with certain product attribute(s) present in your cart."
 msgstr ""
 
-#: Models/Store_Credits.php:124
+#: Models/Store_Credits.php:161
 msgid "Revoked Cashback"
 msgstr ""
 
@@ -2432,7 +2430,7 @@ msgstr ""
 msgid "The provided coupon ID is invalid."
 msgstr ""
 
-#: Models/Store_Credits.php:101
+#: Models/Store_Credits.php:138
 msgid "The maximum store credits redeemable amount is already applied."
 msgstr ""
 
@@ -2515,7 +2513,7 @@ msgstr ""
 msgid "List of disallowed billing email addresses. Separate multiple email addresses with commas. Wildcards like *@gmail.com are supported."
 msgstr ""
 
-#: Models/BOGO/Types/Same_Products.php:302
+#: Models/BOGO/Types/Same_Products.php:308
 msgid "Same Products"
 msgstr ""
 
@@ -2525,4 +2523,171 @@ msgstr ""
 
 #: Models/Script_Loader.php:173
 msgid "\"Same Products\" GET type is not compatible with \"Specific Products\" BUY type. Please select a different combination."
+msgstr ""
+
+#. translators: %s: Discount percentage.
+#: Models/Coupon_Generator_Template_Manager.php:361
+#, php-format
+msgid "%s%% off coupon"
+msgstr ""
+
+#. translators: %1$s: Currency symbol, %2$s: Discount amount.
+#: Models/Coupon_Generator_Template_Manager.php:364
+#, php-format
+msgid "%1$s%2$s off cart coupon"
+msgstr ""
+
+#. translators: %1$s: Currency symbol, %2$s: Discount amount.
+#: Models/Coupon_Generator_Template_Manager.php:367
+#, php-format
+msgid "%1$s%2$s off product coupon"
+msgstr ""
+
+#: Models/Coupon_Generator_Template_Manager.php:371
+msgid "AI Generated Coupon"
+msgstr ""
+
+#: Models/Module_Settings.php:243
+msgid "Minimum store credit redemption amount"
+msgstr ""
+
+#: Models/Module_Settings.php:246
+msgid "Set the minimum amount of store credits a customer must redeem per order. Customers will not be able to apply store credits below this amount. Set to 0 to disable the minimum."
+msgstr ""
+
+#: Models/Module_Settings.php:258
+msgid "Automatically apply available store credits amount"
+msgstr ""
+
+#: Models/Module_Settings.php:260
+msgid "Enable this to automatically apply the available store credits amount to the order."
+msgstr ""
+
+#: Models/Module_Settings.php:261
+msgid "When enabled, the available store credits amount will be applied to the order automatically."
+msgstr ""
+
+#: Models/Order_Pay.php:143
+msgid "Pay with store credits?"
+msgstr ""
+
+#: Models/Order_Pay.php:184
+msgid "You must be logged in to apply store credits."
+msgstr ""
+
+#: Models/Order_Pay.php:204
+#: Models/Order_Pay.php:213
+msgid "Invalid order."
+msgstr ""
+
+#: Models/Order_Pay.php:222
+msgid "This order does not need payment."
+msgstr ""
+
+#: Models/Order_Pay.php:231
+#: Models/Order_Pay.php:235
+msgid "Store credit has been removed."
+msgstr ""
+
+#: Models/Order_Pay.php:248
+msgid "The provided amount is invalid or the store credits balance is insufficient."
+msgstr ""
+
+#: Models/Order_Pay.php:277
+msgid "The store credits amount is invalid."
+msgstr ""
+
+#: Models/Order_Pay.php:317
+#: Models/Order_Pay.php:323
+#: Models/Order_Pay.php:328
+msgid "Store credit was applied successfully."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:84
+msgid "Custom template name."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:89
+msgid "Original AI prompt."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:118
+#: Models/REST_API/API_Coupon_Generator_Storage.php:136
+msgid "Unique template identifier."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:190
+msgid "No AI-generated template found to save."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:198
+msgid "Invalid template data format."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:216
+msgid "Failed to save template."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:225
+msgid "Template saved successfully."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:266
+msgid "Template not found."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:308
+msgid "Failed to delete template."
+msgstr ""
+
+#: Models/REST_API/API_Coupon_Generator_Storage.php:316
+msgid "Template deleted successfully."
+msgstr ""
+
+#: Models/Script_Loader.php:221
+msgid "Please enter a valid price"
+msgstr ""
+
+#: Models/Script_Loader.php:222
+msgid "An error occurred. Please refresh the page and try again."
+msgstr ""
+
+#. translators: %s: minimum redemption amount
+#: Models/Store_Credits.php:91
+#, php-format
+msgid "The minimum store credits redemption amount is %s."
+msgstr ""
+
+#: templates/order-pay-applied.php:22
+msgid "Apply store credit discounts?"
+msgstr ""
+
+#. Translators: %s: formatted price
+#: templates/order-pay-applied.php:31
+#, php-format
+msgid "Store credit discount applied: %s"
+msgstr ""
+
+#: templates/order-pay-applied.php:38
+msgid "Remove store credits"
+msgstr ""
+
+#: views/coupons/view-add-products-data-panel.php:20
+msgid "This feature lets you add products to a customer's cart when a coupon is successfully applied. The products listed in the table below will be automatically added to their cart in the specified quantities and price overrides."
+msgstr ""
+
+#: views/coupons/view-add-products-data-panel.php:30
+msgid "Enable Add Products"
+msgstr ""
+
+#: views/coupons/view-add-products-data-panel.php:31
+msgid "When checked, products listed below will be added to the cart when this coupon is applied."
+msgstr ""
+
+#: views/coupons/view-shipping-overrides-data-panel.php:21
+msgid "Enable Shipping Overrides"
+msgstr ""
+
+#: views/coupons/view-shipping-overrides-data-panel.php:22
+msgid "When checked, shipping costs will be overridden based on the settings below when this coupon is applied."
 msgstr ""

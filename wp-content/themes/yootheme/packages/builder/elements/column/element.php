@@ -195,9 +195,9 @@ return [
         ],
         'prevent_collapse' => [
             'label' => 'Empty Dynamic Content',
-            'description' => 'Don\'t collapse the column if dynamically loaded content is empty.',
+            'description' => "Don't collapse the column if dynamically loaded content is empty.",
             'type' => 'checkbox',
-            'text' => 'Don\'t collapse column',
+            'text' => "Don't collapse column",
         ],
         'source' => '${builder.source}',
         'id' => '${builder.id}',
@@ -245,7 +245,7 @@ return [
                         'position_blend',
                         [
                             'description' =>
-                                'Set the sticky top offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh - 50%</code>. Percent relates to the column\'s height. Set a bottom offset if the sticky content is larger than the viewport.',
+                                "Set the sticky top offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh - 50%</code>. Percent relates to the column's height. Set a bottom offset if the sticky content is larger than the viewport.",
                             'name' => '_position_sticky_offset',
                             'type' => 'grid',
                             'width' => '1-2',
@@ -354,7 +354,7 @@ return [
                     'text' => 'Edit Parallax',
                     'panel' => 'image-parallax',
                     'show' => 'image && !video',
-                    'enable' => 'image_effect == \'parallax\'',
+                    'enable' => "image_effect == 'parallax'",
                 ],
                 'media_visibility' => [
                     'label' => 'Visibility',
@@ -372,7 +372,7 @@ return [
                 'media_background' => [
                     'label' => 'Background Color',
                     'description' =>
-                        'Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn\'t cover the whole section.',
+                        "Use the background color in combination with blend modes, a transparent image or to fill the area, if the image doesn't cover the whole section.",
                     'type' => 'color',
                 ],
                 'media_blend_mode' => [

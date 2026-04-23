@@ -29,15 +29,19 @@ class FilesQueryType
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'name',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'ASC',
                         ],
                     ],
 
@@ -60,7 +64,6 @@ class FilesQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -70,7 +73,6 @@ class FilesQueryType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -87,7 +89,6 @@ class FilesQueryType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'name',
                                         'options' => [
                                             trans('Default') => 'default',
                                             trans('Alphabetical') => 'name',
@@ -97,7 +98,6 @@ class FilesQueryType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'ASC',
                                         'options' => [
                                             trans('Ascending') => 'ASC',
                                             trans('Descending') => 'DESC',

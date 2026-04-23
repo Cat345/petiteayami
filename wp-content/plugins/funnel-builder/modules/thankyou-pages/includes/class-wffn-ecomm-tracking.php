@@ -3,15 +3,16 @@
 /**
  * This class take care of ecommerce tracking setup
  * It renders necessary javascript code to fire events as well as creates dynamic data for the tracking
+ *
  * @author woofunnels.
  */
 if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Ecomm_Tracking extends WFFN_Ecomm_Tracking_Common {
-		private static $ins = null;
-		private $data = [];
-		private $general_data = [];
-		public $api_events = [];
+		private static $ins   = null;
+		private $data         = array();
+		private $general_data = array();
+		public $api_events    = array();
 
 		public function __construct() {
 			parent::__construct();
@@ -19,8 +20,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'tracking_log_js' ) );
 			add_filter( 'wfocu_print_tracking_script', array( $this, 'maybe_print_tracking_code' ) );
-
-
 		}
 
 		public static function get_instance() {
@@ -52,7 +51,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function do_track_ga_view() {
@@ -82,7 +80,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -99,7 +96,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function do_track_gad_purchase() {
@@ -134,7 +130,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 		/**
@@ -164,7 +159,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 
@@ -212,9 +206,9 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			if ( $this->should_render() ) {
 				$general_data = $this->general_data;
 				if ( is_array( $general_data ) && count( $general_data ) > 0 ) { ?>
-                    <script type="text/javascript">
-                        let wffn_tracking_data = JSON.parse('<?php echo wp_json_encode( $general_data ); ?>');
-                    </script>
+					<script type="text/javascript">
+						let wffn_tracking_data = JSON.parse('<?php echo wp_json_encode( $general_data ); ?>');
+					</script>
 					<?php
 					do_action( 'wffn_custom_purchase_tracking', $general_data );
 				}
@@ -288,6 +282,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Maybe print facebook pixel javascript
+		 *
 		 * @see WFFN_Ecomm_Tracking::render_fb();
 		 */
 		public function maybe_print_fb_script() {
@@ -295,7 +290,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			if ( $this->do_track_fb_purchase_event() ) {
 				include_once WFFN_Core()->thank_you_pages->get_module_path() . 'js-blocks/analytics-fb.phtml'; //phpcs:ignore
 			}
-
 
 			if ( $this->do_track_fb_general_event() ) {
 				global $post;
@@ -307,14 +301,17 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$params['content_name'] = get_the_title( $thank_you_id );
 				$params['post_id']      = $thank_you_id;
 				?>
-                var wffnGeneralData = <?php echo wp_json_encode( $params ); ?>;
+				var wffnGeneralData = <?php echo wp_json_encode( $params ); ?>;
 
-                wffnGeneralData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnGeneralData ):wffnGeneralData;
-                fbq('trackCustom', '<?php echo esc_js( $getEventName ); ?>', wffnGeneralData,{'eventID': '<?php echo esc_attr( $this->get_event_id( 'trackCustom' ) ); ?>'});
+				wffnGeneralData = (typeof wffnAddTrafficParamsToEvent !== "undefined")?wffnAddTrafficParamsToEvent(wffnGeneralData ):wffnGeneralData;
+				fbq('trackCustom', '<?php echo esc_js( $getEventName ); ?>', wffnGeneralData,{'eventID': '<?php echo esc_attr( $this->get_event_id( 'trackCustom' ) ); ?>'});
 				<?php
 				if ( $this->is_conversion_api() ) {
 
-					$this->api_events[] = array( 'event' => 'trackCustom', 'event_id' => $this->get_event_id( 'trackCustom' ) );
+					$this->api_events[] = array(
+						'event'    => 'trackCustom',
+						'event_id' => $this->get_event_id( 'trackCustom' ),
+					);
 
 				}
 			}
@@ -350,7 +347,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		public function is_ga4_tracking() {
 			$ga_id = $this->admin_general_settings->get_option( 'ga_key' );
-			if ( ! empty( $ga_id ) && strpos( $ga_id, "G-" ) !== false ) {
+			if ( ! empty( $ga_id ) && strpos( $ga_id, 'G-' ) !== false ) {
 				return true;
 			}
 
@@ -360,6 +357,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Maybe print google analytics javascript
+		 *
 		 * @see WFFN_Ecomm_Tracking::render_ga();
 		 * @see WFFN_Ecomm_Tracking::render_gad();
 		 */
@@ -381,6 +379,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Maybe print google analytics javascript
+		 *
 		 * @see WFFN_Ecomm_Tracking::render_ga();
 		 * @see WFFN_Ecomm_Tracking::render_gad();
 		 */
@@ -390,7 +389,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 				?>
 
-                snaptr('track', 'PURCHASE', <?php echo wp_json_encode( $data['snapchat'] ); ?>);
+				snaptr('track', 'PURCHASE', <?php echo wp_json_encode( $data['snapchat'] ); ?>);
 
 				<?php
 
@@ -411,7 +410,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		public function maybe_print_tiktok_ecomm( $id, $purchase = false ) {  //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			$data = $this->data;
 			if ( true === $this->do_track_tiktok() && is_array( $data ) ) {
-				include_once WFFN_Core()->thank_you_pages->get_module_path() . 'js-blocks/analytics-tiktok.phtml'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile,WordPressVIPMinimum.Files.IncludingFile.UsingCustomFunction
+				include WFFN_Core()->thank_you_pages->get_module_path() . 'js-blocks/analytics-tiktok.phtml'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile,WordPressVIPMinimum.Files.IncludingFile.UsingCustomFunction
 			}
 		}
 
@@ -427,13 +426,14 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Maybe print google analytics javascript
+		 *
 		 * @see WFFN_Ecomm_Tracking::render_ga();
 		 * @see WFFN_Ecomm_Tracking::render_gad();
 		 */
 		public function maybe_print_pint_ecomm() { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedParameter
 			$data = $this->data;
 			if ( true === $this->do_track_pint() && is_array( $data ) ) {
-				include_once WFFN_Core()->thank_you_pages->get_module_path() . 'js-blocks/analytics-pint.phtml'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile,WordPressVIPMinimum.Files.IncludingFile.UsingCustomFunction
+				include WFFN_Core()->thank_you_pages->get_module_path() . 'js-blocks/analytics-pint.phtml'; //phpcs:ignore WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile,WordPressVIPMinimum.Files.IncludingFile.UsingCustomFunction
 			}
 		}
 
@@ -462,15 +462,15 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			$this->maybe_save_order_data_general( $order );
 			if ( empty( $this->data ) ) {
 				$items               = $order->get_items( 'line_item' );
-				$content_ids         = [];
-				$content_name        = [];
-				$category_names      = [];
+				$content_ids         = array();
+				$content_name        = array();
+				$category_names      = array();
 				$num_qty             = 0;
-				$products            = [];
-				$google_ads_products = [];
-				$pint_products       = [];
-				$google_products     = [];
-				$tiktok_contents     = [];
+				$products            = array();
+				$google_ads_products = array();
+				$pint_products       = array();
+				$google_products     = array();
+				$tiktok_contents     = array();
 				$billing_email       = BWF_WC_Compatibility::get_order_data( $order, 'billing_email' );
 				foreach ( $items as $item ) {
 					$pid     = $item->get_product_id();
@@ -493,56 +493,68 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 								}
 							}
 						}
-						$num_qty    += $item->get_quantity();
-						$products[] = array_map( 'html_entity_decode', array(
-							'name'       => $product->get_title(),
-							'category'   => ( $category_name ),
-							'id'         => $get_content_id,
-							'quantity'   => $item->get_quantity(),
-							'item_price' => $order->get_line_subtotal( $item ),
-						) );
-
+						$num_qty   += $item->get_quantity();
+						$products[] = array_map(
+							'html_entity_decode',
+							array(
+								'name'       => $product->get_title(),
+								'category'   => ( $category_name ),
+								'id'         => $get_content_id,
+								'quantity'   => $item->get_quantity(),
+								'item_price' => $order->get_line_subtotal( $item ),
+							)
+						);
 
 						$get_content_id_pint = $this->get_content_id( $item->get_product(), 'pint' );
 
-						$pint_products[] = array_map( 'html_entity_decode', array(
-							'product_name'     => $product->get_title(),
-							'product_category' => ( $category_name ),
-							'product_id'       => $get_content_id_pint,
-							'product_quantity' => $item->get_quantity(),
-							'product_price'    => $order->get_line_total( $item ),
-						) );
-
+						$pint_products[] = array_map(
+							'html_entity_decode',
+							array(
+								'product_name'     => $product->get_title(),
+								'product_category' => ( $category_name ),
+								'product_id'       => $get_content_id_pint,
+								'product_quantity' => $item->get_quantity(),
+								'product_price'    => $order->get_line_total( $item ),
+							)
+						);
 
 						$get_content_id_gad = $this->get_content_id( $item->get_product(), 'google_ads' );
 
-						$google_ads_products[] = array_map( 'html_entity_decode', array(
-							'id'       => apply_filters( 'wffn_ga_ecomm_id', $get_content_id_gad, $product ),
-							'sku'      => empty( $product->get_sku() ) ? $product->get_id() : $product->get_sku(),
-							'category' => $category_name,
-							'name'     => $product->get_title(),
-							'quantity' => $item->get_quantity(),
-							'price'    => $order->get_line_total( $item ),
-						) );
-
+						$google_ads_products[] = array_map(
+							'html_entity_decode',
+							array(
+								'id'       => apply_filters( 'wffn_ga_ecomm_id', $get_content_id_gad, $product ),
+								'sku'      => empty( $product->get_sku() ) ? $product->get_id() : $product->get_sku(),
+								'category' => $category_name,
+								'name'     => $product->get_title(),
+								'quantity' => $item->get_quantity(),
+								'price'    => $order->get_line_total( $item ),
+							)
+						);
 
 						$get_content_id_ga = $this->get_content_id( $item->get_product(), 'google_ua' );
 
-						$google_products[] = array_map( 'html_entity_decode', array(
-							'id'       => apply_filters( 'wffn_ga_ecomm_id', $get_content_id_ga, $product ),
-							'sku'      => empty( $product->get_sku() ) ? $product->get_id() : $product->get_sku(),
-							'category' => $category_name,
-							'name'     => $product->get_title(),
-							'quantity' => $item->get_quantity(),
-							'price'    => ( $item->get_quantity() ) > 1 ? $order->get_line_total( $item ) / $item->get_quantity() : $order->get_line_total( $item ),
-							'variant'  => $item->get_product()->is_type( 'variation' ) ? implode( "/", $item->get_product()->get_variation_attributes() ) : '',
+						$google_products[] = array_map(
+							'html_entity_decode',
+							array(
+								'id'       => apply_filters( 'wffn_ga_ecomm_id', $get_content_id_ga, $product ),
+								'sku'      => empty( $product->get_sku() ) ? $product->get_id() : $product->get_sku(),
+								'category' => $category_name,
+								'name'     => $product->get_title(),
+								'quantity' => $item->get_quantity(),
+								'price'    => ( $item->get_quantity() ) > 1 ? $order->get_line_total( $item ) / $item->get_quantity() : $order->get_line_total( $item ),
+								'variant'  => $item->get_product()->is_type( 'variation' ) ? implode( '/', $item->get_product()->get_variation_attributes() ) : '',
 
-						) );
-						$tiktok_contents[] = array_map( 'html_entity_decode', array(
-							'content_id'   => $product->get_id(),
-							'quantity'     => $item->get_quantity(),
-							'content_type' => 'product'
-						) );
+							)
+						);
+						$tiktok_contents[] = array_map(
+							'html_entity_decode',
+							array(
+								'content_id'   => $product->get_id(),
+								'quantity'     => $item->get_quantity(),
+								'content_type' => 'product',
+							)
+						);
 
 					}
 				}
@@ -597,11 +609,21 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				 */
 				$tiktok_advanced = array();
 				if ( ! empty( $billing_email ) ) {
-					$tiktok_advanced['sha256_email'] = hash( 'sha256', $billing_email );
+					$normalized_email = WFFN_Common::normalize_tiktok_email( $billing_email );
+					if ( false !== $normalized_email ) {
+						$tiktok_advanced['sha256_email'] = hash( 'sha256', $normalized_email );
+					}
 				}
 				$billing_phone = BWF_WC_Compatibility::get_order_data( $order, 'billing_phone' );
 				if ( ! empty( $billing_phone ) ) {
-					$tiktok_advanced['sha256_phone_number'] = hash( 'sha256', $billing_phone );
+					$country_code = '';
+					if ( ! empty( $billing_country ) ) {
+						$country_code = $billing_country;
+					}
+					$normalized_phone = WFFN_Common::normalize_tiktok_phone( $billing_phone, $country_code );
+					if ( false !== $normalized_phone ) {
+						$tiktok_advanced['sha256_phone_number'] = hash( 'sha256', $normalized_phone );
+					}
 				}
 
 				if ( $order->get_customer_id() > 0 ) {
@@ -638,55 +660,64 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 						'page_title'     => get_the_title(),
 						'post_id'        => get_the_ID(),
 						'event_url'      => $this->getRequestUri(),
-						'eventID'        => WFFN_Core()->data->generate_transient_key()
+						'eventID'        => WFFN_Core()->data->generate_transient_key(),
 					),
 				);
 
-				$gad = apply_filters( 'wffn_ecomm_tracking_gad_params', array(
-					'event_category'   => 'ecommerce',
-					'transaction_id'   => (string) $get_order_id,
-					'value'            => $this->get_total_order_value( $order, 'order', 'gad' ),
-					'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
-					'items'            => $google_ads_products,
-					'tax'              => $order->get_total_tax(),
-					'shipping'         => BWF_WC_Compatibility::get_order_shipping_total( $order ),
-					'ecomm_prodid'     => wp_list_pluck( $google_ads_products, 'id' ),
-					'ecomm_pagetype'   => 'purchase',
-					'ecomm_totalvalue' => array_sum( wp_list_pluck( $google_ads_products, 'price' ) ),
-				) );
-				$ga  = apply_filters( 'wffn_ecomm_tracking_ga_params', array(
-					'event_category'   => 'ecommerce',
-					'transaction_id'   => (string) $get_order_id,
-					'value'            => $this->get_total_order_value( $order, 'order', 'ga' ),
-					'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
-					'items'            => $google_products,
-					'tax'              => $order->get_total_tax(),
-					'shipping'         => BWF_WC_Compatibility::get_order_shipping_total( $order ),
-					'ecomm_prodid'     => wp_list_pluck( $google_products, 'id' ),
-					'ecomm_pagetype'   => 'purchase',
-					'ecomm_totalvalue' => array_sum( wp_list_pluck( $google_products, 'price' ) ),
-				) );
+				$gad = apply_filters(
+					'wffn_ecomm_tracking_gad_params',
+					array(
+						'event_category'   => 'ecommerce',
+						'transaction_id'   => (string) $get_order_id,
+						'value'            => $this->get_total_order_value( $order, 'order', 'gad' ),
+						'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
+						'items'            => $google_ads_products,
+						'tax'              => $order->get_total_tax(),
+						'shipping'         => BWF_WC_Compatibility::get_order_shipping_total( $order ),
+						'ecomm_prodid'     => wp_list_pluck( $google_ads_products, 'id' ),
+						'ecomm_pagetype'   => 'purchase',
+						'ecomm_totalvalue' => array_sum( wp_list_pluck( $google_ads_products, 'price' ) ),
+					)
+				);
+				$ga  = apply_filters(
+					'wffn_ecomm_tracking_ga_params',
+					array(
+						'event_category'   => 'ecommerce',
+						'transaction_id'   => (string) $get_order_id,
+						'value'            => $this->get_total_order_value( $order, 'order', 'ga' ),
+						'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
+						'items'            => $google_products,
+						'tax'              => $order->get_total_tax(),
+						'shipping'         => BWF_WC_Compatibility::get_order_shipping_total( $order ),
+						'ecomm_prodid'     => wp_list_pluck( $google_products, 'id' ),
+						'ecomm_pagetype'   => 'purchase',
+						'ecomm_totalvalue' => array_sum( wp_list_pluck( $google_products, 'price' ) ),
+					)
+				);
 
-				$tiktok = apply_filters( 'wffn_ecomm_tracking_tiktok_params', [
+				$tiktok = apply_filters(
+					'wffn_ecomm_tracking_tiktok_params',
+					array(
 
-					'contents'         => $tiktok_contents,
-					'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
-					'value'            => $this->get_total_order_value( $order, 'order' ),
-					'content_name'     => implode( ', ', $content_name ),
-					'content_category' => implode( ', ', array_map( 'html_entity_decode', $category_names ) ),
-					'advanced'         => $tiktok_advanced,
-				] );
+						'contents'         => $tiktok_contents,
+						'currency'         => BWF_WC_Compatibility::get_order_currency( $order ),
+						'value'            => $this->get_total_order_value( $order, 'order' ),
+						'content_name'     => implode( ', ', $content_name ),
+						'content_category' => implode( ', ', array_map( 'html_entity_decode', $category_names ) ),
+						'advanced'         => $tiktok_advanced,
+					)
+				);
 
 				$purchase_data['ga']       = $this->update_ga4_event_data( $ga, $order, $category_names );
 				$purchase_data['gad']      = $gad;
 				$purchase_data['tiktok']   = $tiktok;
-				$purchase_data['snapchat'] = [
+				$purchase_data['snapchat'] = array(
 					'item_ids'       => $content_ids,
 					'currency'       => BWF_WC_Compatibility::get_order_currency( $order ),
 					'price'          => $this->get_total_order_value( $order, 'order' ),
 					'number_items'   => count( $products ),
 					'transaction_id' => $get_order_id,
-				];
+				);
 
 				$this->data = $purchase_data;
 			}
@@ -705,7 +736,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		 * Get the value of purchase event for the different cases of calculations.
 		 *
 		 * @param WC_Order/offer_Data $data
-		 * @param string $type type for which this function getting called, order|offer
+		 * @param string              $type type for which this function getting called, order|offer
 		 *
 		 * @return string the modified order value
 		 */
@@ -714,9 +745,9 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			$disable_shipping = $this->is_disable_shipping( $party );
 			$disable_taxes    = $this->is_disable_taxes( $party );
 			if ( 'order' === $type ) {
-				//process order
+				// process order
 				if ( ! $disable_taxes && ! $disable_shipping ) {
-					//send default total
+					// send default total
 					$total = $data->get_total();
 				} elseif ( ! $disable_taxes && $disable_shipping ) {
 
@@ -741,23 +772,23 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 					$total = $cart_subtotal - $discount_total;
 				}
 			} else {
-				//process offer
+				// process offer
 				if ( ! $disable_taxes && ! $disable_shipping ) {
 
-					//send default total
+					// send default total
 					$total = $data['total'];
 
 				} elseif ( ! $disable_taxes && $disable_shipping ) {
-					//total - shipping cost - shipping tax
+					// total - shipping cost - shipping tax
 					$total = $data['total'] - ( isset( $data['shipping']['diff'] ) && isset( $data['shipping']['diff']['cost'] ) ? $data['shipping']['diff']['cost'] : 0 ) - ( isset( $data['shipping']['diff'] ) && isset( $data['shipping']['diff']['tax'] ) ? $data['shipping']['diff']['tax'] : 0 );
 
 				} elseif ( $disable_taxes && ! $disable_shipping ) {
-					//total - taxes
+					// total - taxes
 					$total = $data['total'] - ( isset( $data['taxes'] ) ? $data['taxes'] : 0 );
 
 				} else {
 
-					//total - taxes - shipping cost
+					// total - taxes - shipping cost
 					$total = $data['total'] - ( isset( $data['taxes'] ) ? $data['taxes'] : 0 ) - ( isset( $data['shipping']['diff'] ) && isset( $data['shipping']['diff']['cost'] ) ? $data['shipping']['diff']['cost'] : 0 );
 
 				}
@@ -785,7 +816,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function is_disable_taxes( $party = 'fb' ) {
@@ -806,7 +836,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return false;
-
 		}
 
 
@@ -819,14 +848,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 			$params = array();
 
-
 			$params['town']    = $order->get_billing_city();
 			$params['state']   = $order->get_billing_state();
 			$params['country'] = $order->get_billing_country();
 
-
 			$params['payment'] = $order->get_payment_method_title();
-
 
 			// shipping method
 			$shipping_methods = $order->get_items( 'shipping' );
@@ -840,7 +866,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$params['shipping'] = implode( ', ', $labels );
 
 			}
-
 
 			$coupons = $order->get_items( 'coupon' );
 			if ( $coupons ) {
@@ -864,20 +889,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return $params;
-
 		}
 
 
 		/**
 		 * @param string $taxonomy Taxonomy name
-		 * @param int $post_id (optional) Post ID. Current will be used of not set
+		 * @param int    $post_id (optional) Post ID. Current will be used of not set
 		 *
 		 * @return string|array List of object terms
 		 */
-		public
-
-		function get_object_terms(
-			$taxonomy, $post_id = null, $implode = true
+		public function get_object_terms(
+			$taxonomy,
+			$post_id = null,
+			$implode = true
 		) {
 
 			$post_id = isset( $post_id ) ? $post_id : get_the_ID();
@@ -905,11 +929,15 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		public function get_localstorage_hash( $key = 'fb' ) {
 			$data = $this->data;
 			if ( is_array( $data ) && count( $data ) > 0 ) {
-				return md5( wp_json_encode( array(
-					'key'       => WFFN_Core()->data->get_transient_key(),
-					'data'      => $data,
-					'keyunique' => $key
-				) ) );
+				return md5(
+					wp_json_encode(
+						array(
+							'key'       => WFFN_Core()->data->get_transient_key(),
+							'data'      => $data,
+							'keyunique' => $key,
+						)
+					)
+				);
 			}
 
 			return 0;
@@ -932,13 +960,13 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 							if (!String.prototype.startsWith) {
 								String.prototype.startsWith = function (searchString, position) {
 									position = position || 0;
-	
+
 									return this.indexOf(searchString, position) === position;
 								};
 							}
 							window.addEventListener('DOMContentLoaded', (event) => {
 								$(document.body).on('updated_checkout', function () {
-									if (localStorage.length > 0) {								
+									if (localStorage.length > 0) {
 										var	len = localStorage.length;
 										var	wffnRemoveLS = [];
 										for (var i = 0; i < len; ++i) {
@@ -972,11 +1000,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		public function maybe_save_order_data_general( $order ) {
 			if ( empty( $this->general_data ) ) {
 				$items          = $order->get_items( 'line_item' );
-				$content_ids    = [];
-				$content_name   = [];
-				$category_names = [];
+				$content_ids    = array();
+				$content_name   = array();
+				$category_names = array();
 				$num_qty        = 0;
-				$products       = [];
+				$products       = array();
 				$billing_email  = BWF_WC_Compatibility::get_order_data( $order, 'billing_email' );
 				$order_id       = BWF_WC_Compatibility::get_order_id( $order );
 				foreach ( $items as $item ) {
@@ -1005,16 +1033,19 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 								}
 							}
 						}
-						$num_qty    += $item->get_quantity();
-						$products[] = array_map( 'html_entity_decode', array(
-							'name'       => $product->get_title(),
-							'category'   => ( $category_name ),
-							'id'         => $get_content_id,
-							'pid'        => $pid,
-							'sku'        => empty( $product->get_sku() ) ? $pid : $product->get_sku(),
-							'quantity'   => $item->get_quantity(),
-							'item_price' => $order->get_line_subtotal( $item ),
-						) );
+						$num_qty   += $item->get_quantity();
+						$products[] = array_map(
+							'html_entity_decode',
+							array(
+								'name'       => $product->get_title(),
+								'category'   => ( $category_name ),
+								'id'         => $get_content_id,
+								'pid'        => $pid,
+								'sku'        => empty( $product->get_sku() ) ? $pid : $product->get_sku(),
+								'quantity'   => $item->get_quantity(),
+								'item_price' => $order->get_line_subtotal( $item ),
+							)
+						);
 					}
 				}
 
@@ -1076,7 +1107,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 					'affiliation'      => esc_attr( get_bloginfo( 'name' ) ),
 					'ecomm_prodid'     => array_map( array( $this, 'gad_product_id' ), wp_list_pluck( $products, 'id' ) ),
 					'ecomm_pagetype'   => 'purchase',
-					'ecomm_totalvalue' => array_sum( wp_list_pluck( $products, 'item_price' ) )
+					'ecomm_totalvalue' => array_sum( wp_list_pluck( $products, 'item_price' ) ),
 				);
 			}
 			WFFN_Core()->logger->log( "General data tracking successfully saved for order id: $order_id" );
@@ -1112,23 +1143,24 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Check all possible UTMs value saved in cookies
+		 *
 		 * @return array
 		 */
 		public function get_utms() {
-			$wffnUtm_terms = [ "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content" ];
-			$utms          = [];
+			$wffnUtm_terms = array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' );
+			$utms          = array();
 			foreach ( $wffnUtm_terms as $term ) {
 				if ( isset( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) && ! empty( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) ) {
-					$utms[ $term ] = bwf_clean( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+					$utms[ $term ] = bwf_clean( wp_unslash( $_COOKIE[ 'wffn_fb_pixel_' . $term ] ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 				}
-
 			}
-
 			return $utms;
 		}
 
+
 		/**
 		 * Get traffic source saved in cookie for the conversion API
+		 *
 		 * @return array|false|string
 		 */
 		public function get_traffic_source() {
@@ -1137,12 +1169,10 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			$direct = empty( $referrer ) ? false : true;
 			if ( $direct ) {
 				$internal = false;
-			} else {
-				if ( false !== strpos( $referrer, site_url() ) ) {
+			} elseif ( false !== strpos( $referrer, site_url() ) ) {
 					$internal = true;
-				} else {
-					$internal = false;
-				}
+			} else {
+				$internal = false;
 			}
 
 			if ( ! ( $direct || $internal ) ) {
@@ -1151,7 +1181,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				$external = false;
 			}
 			if ( isset( $_COOKIE['wffn_fb_pixel_traffic_source'] ) && ! empty( $_COOKIE['wffn_fb_pixel_traffic_source'] ) ) {
-				$cookie = bwf_clean( $_COOKIE['wffn_fb_pixel_traffic_source'] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+				$cookie = bwf_clean( wp_unslash( $_COOKIE['wffn_fb_pixel_traffic_source'] ) ); // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE,WordPress.Security.NonceVerification.Recommended -- Reading cookie data for tracking, nonce verification not required
 			} else {
 				$cookie = false;
 			}
@@ -1161,8 +1191,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			} else {
 				return $cookie && $cookie === $referrer ? $cookie : $referrer;
 			}
-
-
 		}
 
 
@@ -1173,8 +1201,8 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		 *
 		 * @return array
 		 */
-		public function get_user_data( $type ) {
-			$user_data = [];
+		public function get_user_data( $type, $fetch_contact = false ) {
+			$user_data = array();
 			if ( $type === 'Purchase' ) {
 				$get_data_from_session = $this->data;
 				if ( isset( $get_data_from_session['fb'] ) && isset( $get_data_from_session['fb']['advanced'] ) ) {
@@ -1190,13 +1218,12 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				}
 			}
 
-
-			return array_merge( $user_data, parent::get_user_data( $type ) );
-
+			return array_merge( $user_data, parent::get_user_data( $type, $fetch_contact ) );
 		}
 
 		/**
 		 * Get generic event params for pass with the general event
+		 *
 		 * @return array
 		 */
 		public function get_generic_event_params_for_conv_api() {
@@ -1216,6 +1243,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 
 		/**
 		 * Get all purchase event params prepared using data saved in sessions
+		 *
 		 * @return array
 		 */
 		public function get_purchase_params() {
@@ -1223,12 +1251,12 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			$purchase_params       = array(
 				'value'            => $get_data_from_session['fb']['total'],
 				'currency'         => $get_data_from_session['fb']['currency'],
-				'content_name'     => ! empty( $get_data_from_session['fb']['content_name'] ) ? join( ',', $get_data_from_session['fb']['content_name'] ) : __( 'FunnelKit', 'woofunnels-upstroke-one-click-upsells' ),
+				'content_name'     => ! empty( $get_data_from_session['fb']['content_name'] ) ? join( ',', $get_data_from_session['fb']['content_name'] ) : __( 'FunnelKit', 'funnel-builder' ),
 				'content_category' => ! empty( $get_data_from_session['fb']['category_name'] ) ? join( ',', $get_data_from_session['fb']['category_name'] ) : '',
 				'content_ids'      => $get_data_from_session['fb']['content_ids'],
 				'content_type'     => 'product',
 				'contents'         => $this->get_contents_for_conv_api( $get_data_from_session['fb']['products'] ),
-				'order_id'         => $get_data_from_session['fb']['order_id']
+				'order_id'         => $get_data_from_session['fb']['order_id'],
 			);
 
 			$event_data = $this->get_event_data();
@@ -1242,15 +1270,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		public function get_event_data() {
 			$event_data = array(
 				'plugin'         => 'FunnelKit Thankyou',
-				'event_day'      => current_time( "l" ),
-				'event_month'    => current_time( "F" ),
+				'event_day'      => current_time( 'l' ),
+				'event_month'    => current_time( 'F' ),
 				'event_hour'     => $this->getHour(),
 				'traffic_source' => $this->get_traffic_source(),
 			);
-			$utms       = $this->get_utms();
-			if ( is_array( $utms ) ) {
-				$event_data = array_merge( $event_data, $utms );
-			}
 
 			return $event_data;
 		}
@@ -1317,14 +1341,11 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			if ( $product_obj->is_type( 'variation' ) && false === $this->do_treat_variable_as_simple( $mode ) ) {
 				$get_content_id = $this->get_woo_product_content_id( $product_obj->get_id(), $mode );
 
-			} else {
-				if ( $product_obj->is_type( 'variation' ) ) {
+			} elseif ( $product_obj->is_type( 'variation' ) ) {
 					$get_content_id = $this->get_woo_product_content_id( $product_obj->get_parent_id(), $mode );
 
-				} else {
-					$get_content_id = $this->get_woo_product_content_id( $product_obj->get_id(), $mode );
-
-				}
+			} else {
+				$get_content_id = $this->get_woo_product_content_id( $product_obj->get_id(), $mode );
 			}
 
 			return $get_content_id;
@@ -1333,7 +1354,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 		public function get_custom_event_params() {
 			$funnel = WFFN_Core()->data->get_session_funnel();
 			if ( wffn_is_valid_funnel( $funnel ) ) {
-				$params = [];
+				$params = array();
 				if ( is_singular() ) {
 					global $post;
 					$params['page_title'] = $post->post_title;
@@ -1362,7 +1383,6 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 			}
 
 			return $get_order;
-
 		}
 
 		/**
@@ -1395,7 +1415,7 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 							foreach ( $category_names as $cat ) {
 								$item_category             = ( 0 === $cat_count ) ? 'item_category' : 'item_category' . $cat_count;
 								$ga_item[ $item_category ] = $cat;
-								$cat_count ++;
+								++$cat_count;
 							}
 						}
 						unset( $ga_item['id'] );
@@ -1411,12 +1431,9 @@ if ( ! class_exists( 'WFFN_Ecomm_Tracking' ) ) {
 				unset( $ga['ecomm_prodid'] );
 				unset( $ga['ecomm_totalvalue'] );
 
-
 			}
 
 			return $ga;
 		}
-
-
 	}
 }

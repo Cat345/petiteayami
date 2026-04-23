@@ -250,14 +250,14 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
             apply_filters(
                 'acfwf_admin_app_localized',
                 array(
-                    'logo_alt'           => __( 'Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
-                    'admin_url'          => admin_url(),
-                    'title'              => __( 'Settings', 'advanced-coupons-for-woocommerce-free' ),
-                    'desc'               => __( 'Adjust the global settings options for Advanced Coupons for WooCommerce.', 'advanced-coupons-for-woocommerce-free' ),
-                    'logo'               => $this->_constants->IMAGES_ROOT_URL . 'acfw-logo.png',
-                    'link_logo'          => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'logo' ),
-                    'link_upgrade'       => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'upgrade' ),
-                    'coupon_nav'         => array(
+                    'logo_alt'                => __( 'Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
+                    'admin_url'               => admin_url(),
+                    'title'                   => __( 'Settings', 'advanced-coupons-for-woocommerce-free' ),
+                    'desc'                    => __( 'Adjust the global settings options for Advanced Coupons for WooCommerce.', 'advanced-coupons-for-woocommerce-free' ),
+                    'logo'                    => $this->_constants->IMAGES_ROOT_URL . 'acfw-logo.png',
+                    'link_logo'               => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'logo' ),
+                    'link_upgrade'            => $this->_helper_functions->get_utm_url( 'pricing/', 'acfwf', 'upsell', 'upgrade' ),
+                    'coupon_nav'              => array(
                         'toplevel'  => __( 'Coupons', 'advanced-coupons-for-woocommerce-free' ),
                         'dashboard' => __( 'Dashboard', 'advanced-coupons-for-woocommerce-free' ),
                         'links'     => array(
@@ -275,16 +275,16 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'validation'         => array(
+                    'validation'              => array(
                         'default' => __( 'Please enter a valid value.', 'advanced-coupons-for-woocommerce-free' ),
                     ),
-                    'app_pages'          => array_values( $this->_app_pages ),
-                    'action_notices'     => array(
+                    'app_pages'               => array_values( $this->_app_pages ),
+                    'action_notices'          => array(
                         'success' => __( 'successfully updated', 'advanced-coupons-for-woocommerce-free' ),
                         'fail'    => __( 'failed to update', 'advanced-coupons-for-woocommerce-free' ),
                     ),
-                    'premium_upsell'     => false,
-                    'dashboard_page'     => array(
+                    'premium_upsell'          => false,
+                    'dashboard_page'          => array(
                         'title'                => __( 'Dashboard', 'advanced-coupons-for-woocommerce-free' ),
                         'create_coupon'        => array(
                             'label'      => __( 'Quick Create', 'advanced-coupons-for-woocommerce-free' ),
@@ -396,7 +396,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'license_page'       => array(
+                    'license_page'            => array(
                         'title'              => __( 'Advanced Coupons License Activation', 'advanced-coupons-for-woocommerce-free' ),
                         'desc'               => __( 'Advanced Coupons comes in two versions - the free version (with feature limitations) and the Premium add-on.', 'advanced-coupons-for-woocommerce-free' ),
                         'feature_comparison' => array(
@@ -423,13 +423,13 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'license_tabs'       => array(
+                    'license_tabs'            => array(
                         array(
                             'key'   => 'ACFW',
                             'label' => __( 'Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
                         ),
                     ),
-                    'help_page'          => array(
+                    'help_page'               => array(
                         'title' => __( 'Getting Help', 'advanced-coupons-for-woocommerce-free' ),
                         'desc'  => __( 'We\'re here to help you get the most out of Advanced Coupons for WooCommerce.', 'advanced-coupons-for-woocommerce-free' ),
                         'cards' => array(
@@ -451,7 +451,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'free_guide'         => array(
+                    'free_guide'              => array(
                         'show'                => 'yes' !== get_user_meta( get_current_user_id(), '_acfwf_hide_free_guide_form', true ),
                         'tag'                 => __( 'Recommended', 'advanced-coupons-for-woocommerce-free' ),
                         'title'               => __( 'FREE GUIDE: How To Grow A WooCommerce Store Using Coupons', 'advanced-coupons-for-woocommerce-free' ),
@@ -481,7 +481,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                         'missing_form_fields' => __( 'Please fill out your name and/or email correctly.', 'advanced-coupons-for-woocommerce-free' ),
                         'failed_form_error'   => __( 'There was an error trying to process your request. Please refresh the page and try again.', 'advanced-coupons-for-woocommerce-free' ),
                     ),
-                    'about_page'         => array(
+                    'about_page'              => array(
                         'title'        => __( 'About Advanced Coupons', 'advanced-coupons-for-woocommerce-free' ),
                         'desc'         => __( 'Hello and welcome to Advanced Coupons, the plugin that makes your WooCommerce coupons better!', 'advanced-coupons-for-woocommerce-free' ),
                         'main_card'    => array(
@@ -576,7 +576,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'store_credits_page' => array(
+                    'store_credits_page'      => array(
                         'title'          => __(
                             'Store Credits Dashboard',
                             'advanced-coupons-for-woocommerce-free'
@@ -756,7 +756,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             ),
                         ),
                     ),
-                    'condition_options'  => array(
+                    'condition_options'       => array(
                         'exactly'        => __(
                             'EXACTLY',
                             'advanced-coupons-for-woocommerce-free'
@@ -790,11 +790,63 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                             'advanced-coupons-for-woocommerce-free'
                         ),
                     ),
-                    'nonces'             => array(
+                    'nonces'                  => array(
                         'search_products'       => wp_create_nonce( 'search-products' ),
                         'search_customers'      => wp_create_nonce( 'search-customers' ),
                         'search_taxonomy_terms' => wp_create_nonce( 'search-taxonomy-terms' ),
                         'install_plugin'        => wp_create_nonce( 'acfw_install_plugin' ),
+                    ),
+                    'is_acfwp_active'         => (bool) $this->_helper_functions->is_plugin_active( Plugin_Constants::PREMIUM_PLUGIN ),
+                    'is_storeagent_connected' => apply_filters( 'acfwf_is_storeagent_connected', false ),
+                    'is_storeagent_installed' => $this->_helper_functions->is_plugin_installed( Plugin_Constants::STOREAGENT_AI_PLUGIN ),
+                    'is_storeagent_active'    => $this->_helper_functions->is_plugin_active( Plugin_Constants::STOREAGENT_AI_PLUGIN ),
+                    'storeagent_plugin_slug'  => dirname( Plugin_Constants::STOREAGENT_AI_PLUGIN ),
+                    'storeagent_install_url'  => admin_url( 'plugin-install.php?s=storeagent&tab=search&type=term' ),
+                    'storeagent_connect_url'  => admin_url( 'admin.php?page=storeagent-dashboard' ),
+                    'storeagent_website_url'  => 'https://storeagent.ai/?utm_source=couponai&utm_medium=admin&utm_campaign=poweredby',
+                    'storeagent_logo_url'     => $this->_constants->IMAGES_ROOT_URL . 'storeagent-logo.png',
+                    'admin_ajax_url'          => admin_url( 'admin-ajax.php' ),
+                    'ai_generator'            => array(
+                        'title'              => __( 'Generate Coupon with AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'description'        => __( 'Describe the promotion you want to create and let AI generate a coupon template for you.', 'advanced-coupons-for-woocommerce-free' ),
+                        'placeholder'        => __( 'e.g., "20% off for first-time customers who spend over $50"', 'advanced-coupons-for-woocommerce-free' ),
+                        'generate_btn'       => __( 'Generate with AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'continue_btn'       => __( 'Continue with AI Template', 'advanced-coupons-for-woocommerce-free' ),
+                        'generating'         => __( 'Generating...', 'advanced-coupons-for-woocommerce-free' ),
+                        'limitations_notice' => __( 'Note: Currently does not support BOGO, shipping overrides, or adding products.', 'advanced-coupons-for-woocommerce-free' ),
+                        'examples_title'     => __( 'Example prompts:', 'advanced-coupons-for-woocommerce-free' ),
+                        'examples'           => array(
+                            __( '20% off for first-time customers on orders over $50', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '10% discount for VIP members on all products', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '$15 off on Electronics category for orders above $100', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '25% off for newsletter subscribers this weekend', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '30% discount on Fall collection for returning customers', 'advanced-coupons-for-woocommerce-free' ),
+                            __( 'Buy from Home Decor category and get 15% off', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '$20 off for wholesale customers on orders over $200', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '10% off site-wide for loyalty program members', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '40% discount on Clearance items for all customers', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '15% off for customers who spent over $500 in the past', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '$10 off on first purchase for new registered users', 'advanced-coupons-for-woocommerce-free' ),
+                            __( '20% discount on Apparel category this month only', 'advanced-coupons-for-woocommerce-free' ),
+                        ),
+                        'error_min_chars'    => __( 'Please provide a more detailed description (at least 10 characters).', 'advanced-coupons-for-woocommerce-free' ),
+                        'error_generate'     => __( 'Failed to generate coupon. Please try again.', 'advanced-coupons-for-woocommerce-free' ),
+                    ),
+                    'storeagent_upsell'       => array(
+                        'install_title'        => __( 'Create Coupons with AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'install_description'  => __( 'Generate ready-to-use coupons in seconds just by describing your promotion. Powered by StoreAgent AI — a free plugin that brings AI Coupon Generation, Product Descriptions, Review Summaries, and more to your WooCommerce store.', 'advanced-coupons-for-woocommerce-free' ),
+                        'install_button'       => __( 'Install StoreAgent AI (Free)', 'advanced-coupons-for-woocommerce-free' ),
+                        'install_success'      => __( 'StoreAgent AI installed and activated successfully!', 'advanced-coupons-for-woocommerce-free' ),
+                        'install_error'        => __( 'Failed to install StoreAgent AI. Please try again.', 'advanced-coupons-for-woocommerce-free' ),
+                        'activate_title'       => __( 'Almost There! Activate StoreAgent AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'activate_description' => __( 'StoreAgent AI is installed and ready to go. Activate it to start generating coupons with AI in just a few clicks.', 'advanced-coupons-for-woocommerce-free' ),
+                        'activate_button'      => __( 'Activate StoreAgent AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'activate_success'     => __( 'StoreAgent AI activated successfully!', 'advanced-coupons-for-woocommerce-free' ),
+                        'connect_title'        => __( 'One Last Step — Connect StoreAgent AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'connect_description'  => __( 'Connect your store to StoreAgent AI to unlock AI-powered coupon generation and other smart features for your WooCommerce store.', 'advanced-coupons-for-woocommerce-free' ),
+                        'connect_button'       => __( 'Connect StoreAgent AI', 'advanced-coupons-for-woocommerce-free' ),
+                        'learn_more'           => __( 'Learn More', 'advanced-coupons-for-woocommerce-free' ),
+                        'cancel'               => __( 'Cancel', 'advanced-coupons-for-woocommerce-free' ),
                     ),
                 )
             )
@@ -807,6 +859,7 @@ class Admin_App implements Model_Interface, Initializable_Interface, Deactivatab
                 'is_acfwp_active' => (int) $this->_helper_functions->is_plugin_active( Plugin_Constants::PREMIUM_PLUGIN ),
                 'is_lpfw_active'  => (int) $this->_helper_functions->is_plugin_active( Plugin_Constants::LOYALTY_PLUGIN ),
                 'is_agc_active'   => (int) $this->_helper_functions->is_plugin_active( Plugin_Constants::GIFT_CARDS_PLUGIN ),
+                'is_apk_active'   => (int) $this->_helper_functions->is_plugin_active( Plugin_Constants::PROMO_KIT_PLUGIN ),
             )
         );
 

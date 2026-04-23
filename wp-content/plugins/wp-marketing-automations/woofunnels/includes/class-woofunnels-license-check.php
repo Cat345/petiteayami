@@ -283,15 +283,15 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 			$end_point_url         = add_query_arg( $parse_data, $this->software_end_point );
 
 			$this->request_body = $this->http()->get( $end_point_url, $this->request_args );
-			$ouput              = $this->build_output();
+			$output              = $this->build_output();
 
-			if ( is_array( $ouput ) && isset( $ouput['code'] ) && 100 === absint( $ouput['code'] ) ) {
+			if ( is_array( $output ) && isset( $output['code'] ) && 100 === absint( $output['code'] ) ) {
 				/**
 				 * removed plugin license info data form db if license key not found on server and api return code 100
 				 */
 				$this->removed_plugin_info_data();
-			} else if ( false !== $ouput ) {
-				$this->mark_license_deactiavted_manually();
+			} else if ( false !== $output ) {
+				$this->mark_license_deactivated_manually();
 			}
 
 			return $this->build_output();
@@ -326,6 +326,7 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 		}
 
 		public function handle_license_check_response( $output ) {
+
 			if ( false !== $output ) {
 				/**
 				 *  $output['status_check']
@@ -359,7 +360,7 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 					$activation_domain = trim( $activation_domain, '/' );
 
 					if ( strpos( $this->get_domain(), $activation_domain ) === false ) {
-						$this->mark_license_deactiavted_manually();
+						$this->mark_license_deactivated_manually();
 					}
 				}
 			}
@@ -386,6 +387,9 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 					unset( $plugin_info[ $slug ]["manually_deactivated"] );
 					$plugin_info[ $slug ]["activated"] = 0;
 					$plugin_info[ $slug ]["expired"]   = 0;
+					if(isset($plugin_info[ $slug ]["h"])){
+						unset($plugin_info[ $slug ]["h"]);
+					}
 					$this->update_plugins( $plugin_info );
 				}
 			}
@@ -405,15 +409,12 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 			}
 		}
 
-		private function mark_license_deactiavted_manually() {
+		private function mark_license_deactivated_manually() {
 			$slug = $this->get_hash();
 			if ( '' !== $slug ) {
 				$plugin_info = self::get_plugins();
 				if ( isset( $plugin_info[ $slug ] ) ) {
-
-					$plugin_info[ $slug ]["activated"]            = 0;
-					$plugin_info[ $slug ]["expired"]              = 0;
-					$plugin_info[ $slug ]["manually_deactivated"] = 1;
+					unset($plugin_info[ $slug ]);
 					$this->update_plugins( $plugin_info );
 				}
 			}
@@ -467,7 +468,7 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 			$version_info = $this->get_cached_version_info();
 
 			/**
-			 * if we ever have the info blank it means we do not have any reponse
+			 * if we ever have the info blank it means we do not have any response
 			 */
 			if ( is_array( $version_info ) && count( $version_info ) === 0 ) {
 				return $_transient_data;
@@ -613,7 +614,7 @@ if ( ! class_exists( 'WooFunnels_License_check' ) ) {
 
 			$version_info = $this->get_cached_version_info();
 			/**
-			 * if we ever have the info blank it means we do not have any reponse
+			 * if we ever have the info blank it means we do not have any response
 			 */
 			if ( is_array( $version_info ) && count( $version_info ) === 0 ) {
 				return $_data;

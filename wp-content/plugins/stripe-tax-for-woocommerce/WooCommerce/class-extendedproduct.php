@@ -84,7 +84,7 @@ class ExtendedProduct {
 			'tax_code' => $product['tax_code'] ?? '',
 		);
 
-		wp_cache_set( 'products', $products, 'stripe-tax-for-woocommerce' );
+		wp_cache_set( 'products', $products, 'stripe-tax-for-woocommerce', 2 * HOUR_IN_SECONDS );
 	}
 
 	/**

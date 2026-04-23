@@ -8,8 +8,6 @@ use function YOOtheme\trans;
 class MailChimpProvider extends AbstractProvider
 {
     /**
-     * @param string              $apiKey
-     * @param HttpClientInterface $client
      *
      * @throws \Exception
      */

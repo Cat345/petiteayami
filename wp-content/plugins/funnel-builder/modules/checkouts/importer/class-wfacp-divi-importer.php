@@ -15,9 +15,9 @@ if ( ! class_exists( 'ET_Core_Portability' ) ) {
 if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 	#[AllowDynamicProperties]
 	class WFACP_Divi_Importer extends ET_Core_Portability {
-		private $slug = '';
-		private $post_id = 0;
-		private $settings_file = '';
+		protected $slug = '';
+		protected $post_id = 0;
+		protected $settings_file = '';
 		private $builder = 'divi';
 		public $delete_page_meta = true;
 
@@ -26,7 +26,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 		}
 
 		public function import_child( $aero_id, $slug, $is_multi = 'no' ) {
-			set_time_limit( 0 );
+			set_time_limit( 0 ); //phpcs:ignore
 			$this->slug    = $slug;
 			$this->post_id = $aero_id;
 			$this->update_product_switcher_settings();
@@ -81,7 +81,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 		}
 
 
-		private function save_data( $post_id, $content = '' ) {
+		protected function save_data( $post_id, $content = '' ) {
 			if ( true == $this->delete_page_meta ) {
 				$this->delete_template_data( $post_id );
 			}
@@ -97,7 +97,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 
 		}
 
-		private function delete_template_data( $post_id ) {
+		protected function delete_template_data( $post_id ) {
 			WFACP_Common::delete_page_layout( $post_id );
 		}
 
@@ -141,7 +141,7 @@ if ( ! class_exists( 'WFACP_Divi_Importer' ) ) {
 					'hide_you_save'                       => 'true',
 					'hide_best_value'                     => 'false',
 					'best_value_product'                  => '',
-					'best_value_text'                     => __( 'Best Value', 'woofunnels-aero-checkout' ),
+					'best_value_text'                     => __( 'Best Value', 'funnel-builder' ),
 					'best_value_position'                 => 'above',
 					'enable_custom_name_in_order_summary' => 'false',
 					'autocomplete_enable'                 => 'false',

@@ -37,7 +37,7 @@ class BWFAN_API_Get_Contact extends BWFAN_API_Base {
 		$contact = new BWFCRM_Contact( $id );
 		if ( $contact->is_contact_exists() ) {
 			try {
-				$data = $contact->get_array( false, true, true, true, true );
+				$data = $contact->get_array( false, true, ! class_exists( 'BWFCRM_WCS_Handler' ), true, true );
 			} catch ( Error $e ) {
 				$message             = $e->getMessage();
 				$this->response_code = 404;

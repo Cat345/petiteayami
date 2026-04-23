@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 	/**
 	 * Class contains all the thank you page related functionality
@@ -8,8 +8,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 	#[AllowDynamicProperties]
 	class WFFN_Step_WC_Thankyou extends WFFN_Step {
 
-		private static $ins = null;
-		public $slug = 'wc_thankyou';
+		private static $ins   = null;
+		public $slug          = 'wc_thankyou';
 		public $list_priority = 40;
 
 		/**
@@ -19,8 +19,8 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			parent::__construct();
 			add_filter( 'wffn_wfty_filter_page_ids', array( $this, 'maybe_filter_thankyou' ), 10, 2 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'maybe_add_script' ) );
-			add_action( 'bwf_funnels_funnels_display_admin_footer_text', [ $this, 'maybe_show_footer_text' ], 10, 2 );
-			add_filter( 'maybe_setup_funnel_for_breadcrumb', [ $this, 'maybe_funnel_breadcrumb' ] );
+			add_action( 'bwf_funnels_funnels_display_admin_footer_text', array( $this, 'maybe_show_footer_text' ), 10, 2 );
+			add_filter( 'maybe_setup_funnel_for_breadcrumb', array( $this, 'maybe_funnel_breadcrumb' ) );
 		}
 
 		/**
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -38,7 +38,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		 * @return array|void
 		 */
 		public function get_supports() {
-			return array_unique( array_merge( parent::get_supports(), [ 'track_views', 'track_conversions', 'close_funnel' ] ) );
+			return array_unique( array_merge( parent::get_supports(), array( 'track_views', 'track_conversions', 'close_funnel' ) ) );
 		}
 
 		/**
@@ -68,12 +68,12 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 
 		public function get_step_designs( $term, $funnel_id = 0 ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 			$active_pages    = WFFN_Core()->thank_you_pages->get_thank_you_pages( $term );
-			$inside_funnels  = [];
-			$outside_funnels = [];
+			$inside_funnels  = array();
+			$outside_funnels = array();
 			foreach ( $active_pages as $active_page ) {
 				$post_type     = get_post_type( $active_page->ID );
 				$bwf_funnel_id = get_post_meta( $active_page->ID, '_bwf_in_funnel', true );
-				$data          = [];
+				$data          = array();
 				if ( 'cartflows_step' === $post_type ) {
 					$meta = get_post_meta( $active_page->ID, 'wcf-step-type', true );
 					if ( 'thankyou' === $meta ) {
@@ -96,17 +96,25 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				$funnel = new WFFN_Funnel( $bwf_funnel_id );
 				if ( absint( $bwf_funnel_id ) > 0 && ! empty( $funnel->get_title() ) ) {
 					if ( ! isset( $inside_funnels[ $bwf_funnel_id ] ) ) {
-						$inside_funnels[ $bwf_funnel_id ] = [ 'name' => $funnel->get_title(), 'id' => $bwf_funnel_id, "steps" => [] ];
+						$inside_funnels[ $bwf_funnel_id ] = array(
+							'name'  => $funnel->get_title(),
+							'id'    => $bwf_funnel_id,
+							'steps' => array(),
+						);
 					}
 					$inside_funnels[ $bwf_funnel_id ]['steps'][] = $data;
 				} else {
 					$outside_funnels[] = $data;
 				}
-
-
 			}
 			if ( ! empty( $outside_funnels ) ) {
-				$outside_funnels = [ [ 'name' => __( 'Other Pages', 'funnel-builder' ), 'id' => 0, 'steps' => $outside_funnels ] ];
+				$outside_funnels = array(
+					array(
+						'name'  => __( 'Other Pages', 'funnel-builder' ),
+						'id'    => 0,
+						'steps' => $outside_funnels,
+					),
+				);
 			}
 
 			return array_merge( $inside_funnels, $outside_funnels );
@@ -137,7 +145,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			}
 
 			$step_data = parent::add_step( $funnel_id, $posted_data );
-
 
 			return $step_data;
 		}
@@ -207,7 +214,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				return $thankyou_page_ids;
 			}
 
-			$current_step = [];
+			$current_step = array();
 			$aero_id      = BWF_WC_Compatibility::get_order_meta( $order, '_wfacp_post_id' );
 
 			if ( empty( $aero_id ) ) {
@@ -225,7 +232,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 						$current_step['id']   = apply_filters( 'wffn_maybe_get_ab_control', $aero_id );
 						$current_step['type'] = 'wc_checkout';
 						$thankyou_page_ids    = $this->maybe_get_thankyou( $current_step, $funnel );
-						$thankyou_page_ids = apply_filters('wffn_filter_thankyou_by_language', $thankyou_page_ids, $current_step);
 					}
 				}
 			}
@@ -234,6 +240,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				$thankyou_page_ids = $this->get_store_checkout_thankyou_page( $thankyou_page_ids, $order );
 			}
 
+			$thankyou_page_ids = apply_filters( 'wffn_filter_thankyou_by_language', $thankyou_page_ids, $current_step );
 			return $thankyou_page_ids;
 		}
 
@@ -277,7 +284,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		 */
 		public function maybe_get_thankyou( $current_step, $funnel ) {
 			$found_step         = false;
-			$all_funnels        = [];
+			$all_funnels        = array();
 			$targets_step_found = false;
 			foreach ( $funnel->steps as $key => $step ) {
 
@@ -305,7 +312,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 					continue;
 				}
 
-
 				/**
 				 * if we have found the current step and type is upsell then connect
 				 */
@@ -319,7 +325,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				$all_funnels[]      = $step['id'];
 				$targets_step_found = true;
 
-
 			}
 
 			return $all_funnels;
@@ -331,10 +336,17 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		 * @return mixed
 		 */
 		public function get_entity_edit_link( $step_id ) {
-			return esc_url( BWF_Admin_Breadcrumbs::maybe_add_refs( add_query_arg( [
-				'page' => 'bwf',
-				'path' => '/funnel-thankyou/' . $step_id . '/design',
-			], admin_url( 'admin.php' ) ) ) );
+			return esc_url(
+				BWF_Admin_Breadcrumbs::maybe_add_refs(
+					add_query_arg(
+						array(
+							'page' => 'bwf',
+							'path' => '/funnel-thankyou/' . $step_id . '/design',
+						),
+						admin_url( 'admin.php' )
+					)
+				)
+			);
 		}
 
 		public function maybe_add_script() {
@@ -345,10 +357,13 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				$current_step = WFFN_Core()->data->get_current_step();
 				$order        = WFFN_Core()->thank_you_pages->data->get_order();
 				if ( WFFN_Core()->data->has_valid_session() && ! empty( $current_step ) && wffn_is_valid_funnel( $funnel ) && $this->validate_environment( $current_step, $order ) ) {
-					WFFN_Core()->data->set( 'current_step', [
-						'id'   => WFFN_Core()->thank_you_pages->thankyoupage_id,
-						'type' => $this->slug,
-					] );
+					WFFN_Core()->data->set(
+						'current_step',
+						array(
+							'id'   => WFFN_Core()->thank_you_pages->thankyoupage_id,
+							'type' => $this->slug,
+						)
+					);
 					WFFN_Core()->data->save();
 
 					/**
@@ -356,10 +371,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 					 */
 					WFFN_Core()->public->funnel_setup_result = array(
 						'success'      => true,
-						'current_step' => [
+						'current_step' => array(
 							'id'   => WFFN_Core()->thank_you_pages->thankyoupage_id,
 							'type' => $this->slug,
-						],
+						),
 						'hash'         => WFFN_Core()->data->get_transient_key(),
 						'next_link'    => '',
 					);
@@ -397,7 +412,6 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 						$new_all_meta[ $meta_key ] = $value[0];
 					}
 				}
-
 			}
 
 			return $new_all_meta;
@@ -406,7 +420,10 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 		public function _process_import( $funnel_id, $step_data ) {
 
 			$post_content = ( isset( $step_data['post_content'] ) && ! empty( $step_data['post_content'] ) ) ? $step_data['post_content'] : '';
-			$posted_data  = [ 'title' => $step_data['title'], 'post_content' => $post_content ];
+			$posted_data  = array(
+				'title'        => $step_data['title'],
+				'post_content' => $post_content,
+			);
 			$data         = $this->add_step( $funnel_id, $posted_data );
 			if ( isset( $step_data['meta'] ) ) {
 				$this->copy_metadata( $data->id, $step_data['meta'] );
@@ -442,7 +459,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			if ( ! empty( $template ) ) {
 				return array(
 					'template'      => $template,
-					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true )
+					'template_type' => get_post_meta( $id, '_tobe_import_template_type', true ),
 
 				);
 			}
@@ -524,7 +541,7 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 				$flags['has_rules'] = array(
 					'label'       => __( 'Has Rules', 'funnel-builder' ),
 					'label_class' => 'bwf-st-c-badge-green',
-					'edit'        => wffn_rest_api_helpers()->get_entity_url( 'thankyou', 'rules', $step_id )
+					'edit'        => wffn_rest_api_helpers()->get_entity_url( 'thankyou', 'rules', $step_id ),
 				);
 			}
 
@@ -565,14 +582,11 @@ if ( ! class_exists( 'WFFN_Step_WC_Thankyou' ) ) {
 			if ( is_array( $custom_id ) && count( $custom_id ) > 0 ) {
 				$thankyou_page_ids = $custom_id;
 			} elseif ( $custom_id ) {
-				$thankyou_page_ids = ( absint( $custom_id ) > 0 ) ? [ $custom_id ] : $thankyou_page_ids;
+				$thankyou_page_ids = ( absint( $custom_id ) > 0 ) ? array( $custom_id ) : $thankyou_page_ids;
 			}
-
 
 			return $thankyou_page_ids;
 		}
-
-
 	}
 
 	if ( class_exists( 'WFFN_Core' ) && ! empty( WFFN_Core()->thank_you_pages ) ) {

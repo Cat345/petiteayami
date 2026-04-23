@@ -61,7 +61,7 @@ class StringTaxRateIdFixer {
 
 		$items = wp_cache_get( self::CACHE_KEY, self::CACHE_GROUP );
 		if ( is_array( $items ) ) {
-			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP );
+			wp_cache_set( self::CACHE_KEY, $items, self::CACHE_GROUP, 2 * HOUR_IN_SECONDS );
 		}
 
 		global $wpdb;

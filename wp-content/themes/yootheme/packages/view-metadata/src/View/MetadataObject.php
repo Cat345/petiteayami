@@ -31,7 +31,7 @@ class MetadataObject
      */
     public function __construct(string $name, $value, array $attributes = [])
     {
-        $tag = substr($name, 0, strpos($name, ':'));
+        $tag = strstr($name, ':', true);
 
         $this->tag = $tag ?: $name;
         $this->name = $name;

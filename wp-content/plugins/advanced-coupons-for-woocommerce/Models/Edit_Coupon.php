@@ -430,6 +430,12 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
         $exclude         = is_array( $add_products ) ? array_column( $add_products, 'product_id' ) : array();
         $panel_data_atts = apply_filters( 'acfwp_add_products_panel_data_atts', array(), $add_products, $coupon );
 
+        // Get enable state - auto-enable if coupon already has add products data.
+        $enable_add_products = $coupon->get_advanced_prop( 'enable_add_products' );
+        if ( '' === $enable_add_products && ! empty( $add_products ) ) {
+            $enable_add_products = 'yes';
+        }
+
         include $this->_constants->VIEWS_ROOT_PATH . 'coupons' . DIRECTORY_SEPARATOR . 'view-add-products-data-panel.php';
     }
 
@@ -535,6 +541,12 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
             },
             $overrides
         );
+
+        // Get enable state - auto-enable if coupon already has shipping overrides data.
+        $enable_shipping_overrides = $coupon->get_advanced_prop( 'enable_shipping_overrides' );
+        if ( '' === $enable_shipping_overrides && ! empty( $overrides ) ) {
+            $enable_shipping_overrides = 'yes';
+        }
 
         include $this->_constants->VIEWS_ROOT_PATH . 'coupons' . DIRECTORY_SEPARATOR . 'view-shipping-overrides-data-panel.php';
     }
@@ -662,8 +674,10 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
      */
     public function save_coupon_data( $coupon_id, $coupon ) {
 
-        // Verify WP's nonce to make sure the request is valid before we save ACFW related data.
-        if ( ! isset( $_POST['_wpnonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-post_' . $coupon_id ) ) {
+        // Verify ACFW's dedicated nonce to ensure the request is valid before saving ACFW data.
+        // Uses _acfw_nonce (not _wpnonce) to avoid conflicts with plugins like WooPayments that
+        // may modify the shared _wpnonce field before form submission.
+        if ( ! isset( $_POST['_acfw_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_acfw_nonce'] ), 'acfw_save_coupon_data_' . $coupon_id ) ) {
             return;
         }
 
@@ -737,6 +751,18 @@ class Edit_Coupon implements Model_Interface, Initiable_Interface {
             if ( $coupon_sort > -1 ) {
                 $coupon->set_advanced_prop( 'coupon_sort_priority', $coupon_sort );
             }
+        }
+
+        // Add Products enable state.
+        if ( \ACFWF()->Helper_Functions->is_module( Plugin_Constants::ADD_PRODUCTS_MODULE ) ) {
+            $enable_add_products = isset( $post_data['enable_add_products'] ) && 'yes' === $post_data['enable_add_products'] ? 'yes' : 'no';
+            $coupon->set_advanced_prop( 'enable_add_products', $enable_add_products );
+        }
+
+        // Shipping Overrides enable state.
+        if ( \ACFWF()->Helper_Functions->is_module( Plugin_Constants::SHIPPING_OVERRIDES_MODULE ) ) {
+            $enable_shipping_overrides = isset( $post_data['enable_shipping_overrides'] ) && 'yes' === $post_data['enable_shipping_overrides'] ? 'yes' : 'no';
+            $coupon->set_advanced_prop( 'enable_shipping_overrides', $enable_shipping_overrides );
         }
     }
 

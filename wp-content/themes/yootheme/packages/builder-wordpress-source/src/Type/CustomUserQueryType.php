@@ -59,15 +59,19 @@ class CustomUserQueryType
                         ],
                         'offset' => [
                             'type' => 'Int',
+                            'defaultValue' => 0,
                         ],
                         'limit' => [
                             'type' => 'Int',
+                            'defaultValue' => 10,
                         ],
                         'order' => [
                             'type' => 'String',
+                            'defaultValue' => 'display_name',
                         ],
                         'order_direction' => [
                             'type' => 'String',
+                            'defaultValue' => 'ASC',
                         ],
                     ],
 
@@ -97,7 +101,6 @@ class CustomUserQueryType
                                     'offset' => [
                                         'label' => trans('Start'),
                                         'type' => 'number',
-                                        'default' => 0,
                                         'modifier' => 1,
                                         'attrs' => [
                                             'min' => 1,
@@ -107,7 +110,6 @@ class CustomUserQueryType
                                     'limit' => [
                                         'label' => trans('Quantity'),
                                         'type' => 'limit',
-                                        'default' => 10,
                                         'attrs' => [
                                             'min' => 1,
                                         ],
@@ -121,7 +123,6 @@ class CustomUserQueryType
                                     'order' => [
                                         'label' => trans('Order'),
                                         'type' => 'select',
-                                        'default' => 'display_name',
                                         'options' => [
                                             trans('Alphabetical') => 'display_name',
                                             trans('Register date') => 'user_registered',
@@ -130,7 +131,6 @@ class CustomUserQueryType
                                     'order_direction' => [
                                         'label' => trans('Direction'),
                                         'type' => 'select',
-                                        'default' => 'ASC',
                                         'options' => [
                                             trans('Ascending') => 'ASC',
                                             trans('Descending') => 'DESC',

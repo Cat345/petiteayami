@@ -12,7 +12,6 @@ class Middleware
     /**
      * Constructor.
      *
-     * @param callable   $kernel
      * @param callable[] $stack
      */
     public function __construct(callable $kernel, array $stack = [])

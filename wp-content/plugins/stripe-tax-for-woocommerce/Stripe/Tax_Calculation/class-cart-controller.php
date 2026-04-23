@@ -28,7 +28,10 @@ abstract class Cart_Controller {
 	 * @param string  $tax_behavior Tax behavior.
 	 */
 	public static function calculate_taxes( WC_Cart $cart, string $tax_behavior ) {
-		$tax_calculation_input = Cart_Input::from_cart( $cart, $tax_behavior );
+		$customer = $cart->get_customer();
+
+		$tax_calculation_input      = Cart_Input::from_cart( $cart, $tax_behavior );
+		$non_taxable_shipping_total = Cart_Input::get_non_taxable_shipping_cost_amount( $cart );
 
 		$tax_calculation_result = Calculator::calculate( $tax_calculation_input, 'cart' );
 

@@ -181,33 +181,6 @@ class WC_Payments extends Base_Model implements Model_Interface, Initializable_I
 
     /*
     |--------------------------------------------------------------------------
-    | BOGO Deals
-    |--------------------------------------------------------------------------
-     */
-
-    /**
-     * Convert the BOGO get item (discounted) price from user to store currency.
-     *
-     * @since 4.6.0
-     * @access public
-     *
-     * @param string $new_price BOGO Deal get item new price.
-     * @return string Filtered new price.
-     */
-    public function convert_bogo_get_item_price_to_store_currency( $new_price ) {
-        if ( $this->_multicurrency->get_default_currency()->get_code() === $this->_multicurrency->get_selected_currency()->get_code() ) {
-            return $new_price;
-        }
-
-        return $this->_multicurrency->get_raw_conversion(
-            $new_price,
-            $this->_multicurrency->get_default_currency()->get_code(),
-            $this->_multicurrency->get_selected_currency()->get_code(),
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
     | Dashboard
     |--------------------------------------------------------------------------
      */
@@ -316,8 +289,6 @@ class WC_Payments extends Base_Model implements Model_Interface, Initializable_I
         add_filter( 'acfw_store_credits_discount_session', array( $this, 'save_user_currency_to_store_credits_discount_session' ) );
         add_filter( 'acfw_before_apply_store_credit_discount', array( $this, 'validate_user_currency_on_apply_store_credits_discount' ), 10, 2 );
         add_filter( 'acfw_override_store_credit_coupon_data', array( $this, 'convert_override_store_credit_coupon_amount' ), 10, 2 );
-        add_filter( 'acfw_bogo_get_item_new_price', array( $this, 'convert_bogo_get_item_price_to_store_currency' ) );
-
         // Dashboard.
         add_filter( 'acfw_query_report_data_order_total', array( $this, 'query_report_data_order_total' ), 10, 2 );
         add_filter( 'acfw_query_report_get_discount', array( $this, 'query_report_get_discount' ), 10, 3 );

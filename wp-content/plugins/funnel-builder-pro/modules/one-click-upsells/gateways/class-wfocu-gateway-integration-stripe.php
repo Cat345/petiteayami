@@ -13,10 +13,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 	class WFOCU_Gateway_Integration_Stripe extends WFOCU_Gateway {
 
 
-		protected static $ins = null;
-		public $key = 'stripe';
-		public $token = false;
-		public $has_intent_secret = [];
+		protected static $ins     = null;
+		public $key               = 'stripe';
+		public $token             = false;
+		public $has_intent_secret = array();
 		public $current_intent;
 
 		/**
@@ -25,7 +25,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		public function __construct() {
 
 			parent::__construct();
-			add_filter( 'wc_stripe_force_save_source', array( $this, 'should_tokenize_stripe' ), 999 );
+			// Use new hook for Stripe Gateway >= 9.6.0, fallback to old hook for backward compatibility.
+			if ( defined( 'WC_STRIPE_VERSION' ) && version_compare( WC_STRIPE_VERSION, '9.6.0', '>=' ) ) {
+				add_filter( 'wc_stripe_force_save_payment_method', array( $this, 'should_tokenize_stripe' ), 999 );
+			} else {
+				add_filter( 'wc_stripe_force_save_source', array( $this, 'should_tokenize_stripe' ), 999 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+			}
 			add_filter( 'wc_stripe_display_save_payment_method_checkbox', array( $this, 'maybe_hide_save_payment' ), 999 );
 			add_filter( 'wc_stripe_3ds_source', array( $this, 'maybe_modify_3ds_prams' ), 10, 2 );
 
@@ -50,12 +55,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			add_action( 'woocommerce_review_order_after_submit', array( $this, 'add_input_hidden' ), 9999 );
 
 			$this->refund_supported = true;
-
 		}
 
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -102,7 +106,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			}
 
 			return false;
-
 		}
 
 		public function maybe_render_in_offer_transaction_scripts() {
@@ -116,189 +119,189 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				return;
 			}
 			?>
-            <script src="https://js.stripe.com/v3/?ver=3.0"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script src="https://js.stripe.com/v3/?ver=3.0"></script> <?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 
-            <script>
+			<script>
 
-                (
-                    function ($) {
-                        "use strict";
-                        var wfocuStripe = Stripe('<?php echo esc_js( $this->get_wc_gateway()->publishable_key ); ?>');
+				(
+					function ($) {
+						"use strict";
+						var wfocuStripe = Stripe('<?php echo esc_js( $this->get_wc_gateway()->publishable_key ); ?>');
 
-                        var wfocuStripeJS = {
-                            bucket: null,
-                            initCharge: function () {
-                                var getBucketData = this.bucket.getBucketSendData();
+						var wfocuStripeJS = {
+							bucket: null,
+							initCharge: function () {
+								var getBucketData = this.bucket.getBucketSendData();
 
-                                var postData = $.extend(getBucketData, {action: 'wfocu_front_handle_stripe_payments'});
+								var postData = $.extend(getBucketData, {action: 'wfocu_front_handle_stripe_payments'});
 
-                                var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_stripe_payments'), postData);
+								var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_stripe_payments'), postData);
 
-                                action.done(function (data) {
+								action.done(function (data) {
 
-                                    /**
-                                     * Process the response for the call to handle client stripe payments
-                                     * first handle error state to show failure notice and redirect to thank you
-                                     * */
-                                    if (data.result !== "success") {
+									/**
+									 * Process the response for the call to handle client stripe payments
+									 * first handle error state to show failure notice and redirect to thank you
+									 * */
+									if (data.result !== "success") {
 
-                                        wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                        if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+										wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+										if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
 
-                                            setTimeout(function () {
-                                                window.location = data.response.redirect_url;
-                                            }, 1500);
-                                        } else {
-                                            /** move to order received page */
-                                            if (typeof wfocu_vars.order_received_url !== 'undefined') {
+											setTimeout(function () {
+												window.location = data.response.redirect_url;
+											}, 1500);
+										} else {
+											/** move to order received page */
+											if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                                window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
+												window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
 
-                                            }
-                                        }
-                                    } else {
+											}
+										}
+									} else {
 
-                                        /**
-                                         * There could be two states --
-                                         * 1. intent confirmed
-                                         * 2. requires action
-                                         * */
+										/**
+										 * There could be two states --
+										 * 1. intent confirmed
+										 * 2. requires action
+										 * */
 
-                                        /**
-                                         * handle scenario when authentication requires for the payment intent
-                                         * In this case we need to trigger stripe payment intent popups
-                                         * */
-                                        if (typeof data.intent_secret !== "undefined" && '' !== data.intent_secret) {
+										/**
+										 * handle scenario when authentication requires for the payment intent
+										 * In this case we need to trigger stripe payment intent popups
+										 * */
+										if (typeof data.intent_secret !== "undefined" && '' !== data.intent_secret) {
 
-                                            wfocuStripe.handleCardPayment(data.intent_secret)
-                                                .then(function (response) {
-                                                    if (response.error) {
-                                                        throw response.error;
-                                                    }
+											wfocuStripe.handleCardPayment(data.intent_secret)
+												.then(function (response) {
+													if (response.error) {
+														throw response.error;
+													}
 
-                                                    if ('requires_capture' !== response.paymentIntent.status && 'succeeded' !== response.paymentIntent.status) {
-                                                        return;
-                                                    }
-                                                    $(document).trigger('wfocuStripeOnAuthentication', [response, true]);
-                                                    return;
+													if ('requires_capture' !== response.paymentIntent.status && 'succeeded' !== response.paymentIntent.status) {
+														return;
+													}
+													$(document).trigger('wfocuStripeOnAuthentication', [response, true]);
+													return;
 
-                                                })
-                                                .catch(function (error) {
-                                                    $(document).trigger('wfocuStripeOnAuthentication', [false, false]);
-                                                    return;
+												})
+												.catch(function (error) {
+													$(document).trigger('wfocuStripeOnAuthentication', [false, false]);
+													return;
 
-                                                });
-                                            return;
-                                        }
-                                        /**
-                                         * If code reaches here means it no longer require any authentication from the client and we process success
-                                         * */
+												});
+											return;
+										}
+										/**
+										 * If code reaches here means it no longer require any authentication from the client and we process success
+										 * */
 
-                                        wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
-                                        if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+										wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
+										if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
 
-                                            setTimeout(function () {
-                                                window.location = data.response.redirect_url;
-                                            }, 1500);
-                                        } else {
-                                            /** move to order received page */
-                                            if (typeof wfocu_vars.order_received_url !== 'undefined') {
+											setTimeout(function () {
+												window.location = data.response.redirect_url;
+											}, 1500);
+										} else {
+											/** move to order received page */
+											if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                                window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
+												window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
 
-                                            }
-                                        }
-                                    }
-                                });
-                                action.fail(function (data) {
+											}
+										}
+									}
+								});
+								action.fail(function (data) {
 
-                                    /**
-                                     * In case of failure of ajax, process failure
-                                     * */
-                                    wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                    if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+									/**
+									 * In case of failure of ajax, process failure
+									 * */
+									wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+									if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
 
-                                        setTimeout(function () {
-                                            window.location = data.response.redirect_url;
-                                        }, 1500);
-                                    } else {
-                                        /** move to order received page */
-                                        if (typeof wfocu_vars.order_received_url !== 'undefined') {
+										setTimeout(function () {
+											window.location = data.response.redirect_url;
+										}, 1500);
+									} else {
+										/** move to order received page */
+										if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                            window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
+											window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
 
-                                        }
-                                    }
-                                });
-                            }
-                        }
+										}
+									}
+								});
+							}
+						}
 
-                        /**
-                         * Handle popup authentication results
-                         */
-                        $(document).on('wfocuStripeOnAuthentication', function (e, response, is_success) {
+						/**
+						 * Handle popup authentication results
+						 */
+						$(document).on('wfocuStripeOnAuthentication', function (e, response, is_success) {
 
-                            if (is_success) {
-                                var postData = $.extend(wfocuStripeJS.bucket.getBucketSendData(), {
-                                    action: 'wfocu_front_handle_stripe_payments',
-                                    intent: 1,
-                                    intent_secret: response.paymentIntent.client_secret
-                                });
+							if (is_success) {
+								var postData = $.extend(wfocuStripeJS.bucket.getBucketSendData(), {
+									action: 'wfocu_front_handle_stripe_payments',
+									intent: 1,
+									intent_secret: response.paymentIntent.client_secret
+								});
 
-                            } else {
-                                var postData = $.extend(wfocuStripeJS.bucket.getBucketSendData(), {action: 'wfocu_front_handle_stripe_payments', intent: 1, intent_secret: ''});
+							} else {
+								var postData = $.extend(wfocuStripeJS.bucket.getBucketSendData(), {action: 'wfocu_front_handle_stripe_payments', intent: 1, intent_secret: ''});
 
-                            }
-                            var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_stripe_payments'), postData);
-                            action.done(function (data) {
-                                if (data.result !== "success") {
-                                    wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
-                                } else {
-                                    wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
-                                }
-                                if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
+							}
+							var action = $.post(wfocu_vars.wc_ajax_url.toString().replace('%%endpoint%%', 'wfocu_front_handle_stripe_payments'), postData);
+							action.done(function (data) {
+								if (data.result !== "success") {
+									wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_msg_pop_failure, 'type': 'warning'});
+								} else {
+									wfocuStripeJS.bucket.swal.show({'text': wfocu_vars.messages.offer_success_message_pop, 'type': 'success'});
+								}
+								if (typeof data.response !== "undefined" && typeof data.response.redirect_url !== 'undefined') {
 
-                                    setTimeout(function () {
-                                        window.location = data.response.redirect_url;
-                                    }, 1500);
-                                } else {
-                                    /** move to order received page */
-                                    if (typeof wfocu_vars.order_received_url !== 'undefined') {
+									setTimeout(function () {
+										window.location = data.response.redirect_url;
+									}, 1500);
+								} else {
+									/** move to order received page */
+									if (typeof wfocu_vars.order_received_url !== 'undefined') {
 
-                                        window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
+										window.location = wfocu_vars.order_received_url + '&ec=stripe_error';
 
-                                    }
-                                }
-                            });
-                        });
+									}
+								}
+							});
+						});
 
-                        /**
-                         * Save the bucket instance at several
-                         */
-                        $(document).on('wfocuBucketCreated', function (e, Bucket) {
-                            wfocuStripeJS.bucket = Bucket;
+						/**
+						 * Save the bucket instance at several
+						 */
+						$(document).on('wfocuBucketCreated', function (e, Bucket) {
+							wfocuStripeJS.bucket = Bucket;
 
-                        });
-                        $(document).on('wfocu_external', function (e, Bucket) {
-                            /**
-                             * Check if we need to mark inoffer transaction to prevent default behavior of page
-                             */
-                            if (0 !== Bucket.getTotal()) {
-                                Bucket.inOfferTransaction = true;
-                                wfocuStripeJS.initCharge();
-                            }
-                        });
+						});
+						$(document).on('wfocu_external', function (e, Bucket) {
+							/**
+							 * Check if we need to mark inoffer transaction to prevent default behavior of page
+							 */
+							if (0 !== Bucket.getTotal()) {
+								Bucket.inOfferTransaction = true;
+								wfocuStripeJS.initCharge();
+							}
+						});
 
-                        $(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
-                            wfocuStripeJS.bucket = Bucket;
+						$(document).on('wfocuBucketConfirmationRendered', function (e, Bucket) {
+							wfocuStripeJS.bucket = Bucket;
 
-                        });
-                        $(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
-                            wfocuStripeJS.bucket = Bucket;
+						});
+						$(document).on('wfocuBucketLinksConverted', function (e, Bucket) {
+							wfocuStripeJS.bucket = Bucket;
 
-                        });
-                    })(jQuery);
-            </script>
+						});
+					})(jQuery);
+			</script>
 			<?php
 		}
 
@@ -309,10 +312,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		}
 
 		public function verify_intent( $intent_id ) {
-			add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 
 			$intent = WC_Stripe_API::request( array(), "payment_intents/$intent_id", 'GET' );
-			remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 			$this->current_intent = $intent;
 			if ( empty( $intent ) ) {
 				return false;
@@ -333,17 +336,18 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 			$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 			WFOCU_Core()->data->set( '_offer_result', true );
-			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$posted_data = WFOCU_Core()->process_offer->parse_posted_data( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- AJAX endpoint for frontend checkout process, capability check handled via nonce validation.
 
 			/**
 			 * return if found error in the charge request
 			 */
 			if ( false === WFOCU_AJAX_Controller::validate_charge_request( $posted_data ) ) {
-				wp_send_json( array(
-					'result' => 'error',
-				) );
+				wp_send_json(
+					array(
+						'result' => 'error',
+					)
+				);
 			}
-
 
 			/**
 			 * Setup the upsell to initiate the charge process
@@ -363,15 +367,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$source = $this->prepare_order_source( $get_order );
 			}
 
-
 			$intent_from_posted = filter_input( INPUT_POST, 'intent', FILTER_SANITIZE_NUMBER_INT );
 
 			/**
 			 * If intent flag set found in the posted data from the client then it means we just need to verify the intent status
-			 *
 			 */
 			if ( ! empty( $intent_from_posted ) ) {
-
 
 				/**
 				 * process response when user either failed or approve the auth.
@@ -401,10 +402,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 					$response = end( $intent->charges->data );
 					WFOCU_Core()->data->set( '_transaction_id', $response->id );
 					$this->update_stripe_fees( $get_order, is_string( $response->balance_transaction ) ? $response->balance_transaction : $response->balance_transaction->id );
-					wp_send_json( array(
-						'result'   => 'success',
-						'response' => WFOCU_Core()->process_offer->_handle_upsell_charge( true ),
-					) );
+					wp_send_json(
+						array(
+							'result'   => 'success',
+							'response' => WFOCU_Core()->process_offer->_handle_upsell_charge( true ),
+						)
+					);
 				}
 				$this->handle_api_error( esc_attr__( 'Offer payment failed. Reason: Intent was not authenticated properly.', 'woofunnels-upstroke-one-click-upsell' ), 'Intent was not authenticated properly.', $get_order, true );
 
@@ -459,10 +462,12 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 						/**
 						 * return intent_secret as the data to the client so that necesary next operations could taken care.
 						 */
-						wp_send_json( array(
-							'result'        => 'success',
-							'intent_secret' => $intent->client_secret,
-						) );
+						wp_send_json(
+							array(
+								'result'        => 'success',
+								'intent_secret' => $intent->client_secret,
+							)
+						);
 
 					}
 
@@ -471,22 +476,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 						WFOCU_Core()->data->set( '_transaction_id', $response->id );
 
 						$this->update_stripe_fees( $get_order, is_string( $response->balance_transaction ) ? $response->balance_transaction : $response->balance_transaction->id );
-					} catch ( Exception|Error $e ) {
+					} catch ( Exception | Error $e ) {
 						$this->handle_api_error( $e->getMessage(), 'Error occurred during validating payment, error is: ' . $e->getMessage(), $get_order, true );
 
 					}
-
-
 				}
 			}
 
-
 			$data = WFOCU_Core()->process_offer->_handle_upsell_charge( true );
 
-			wp_send_json( array(
-				'result'   => 'success',
-				'response' => $data,
-			) );
+			wp_send_json(
+				array(
+					'result'   => 'success',
+					'response' => $data,
+				)
+			);
 		}
 
 		/**
@@ -523,7 +527,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				}
 
 				$is_successful = false;
-				throw new WFOCU_Payment_Gateway_Exception( "Stripe : " . $localized_message, 102, $this->get_key() );
+				throw new WFOCU_Payment_Gateway_Exception( 'Stripe : ' . $localized_message, 102, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not directly output.
 
 			}
 			if ( ! empty( $intent ) ) {
@@ -531,23 +535,21 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				// If the intent requires a 3DS flow, redirect to it.
 				if ( 'requires_action' === $intent->status ) {
 					$is_successful = false;
-					throw new WFOCU_Payment_Gateway_Exception( "Stripe : Auth required for the charge but unable to complete.", 102, $this->get_key() );
+					throw new WFOCU_Payment_Gateway_Exception( 'Stripe : Auth required for the charge but unable to complete.', 102, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not directly output.
 				}
 			}
 
 			$response = end( $intent->charges->data );
 			if ( is_wp_error( $response ) ) {
 				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $order ) . ': Payment Failed For Stripe' );
-			} else {
-				if ( ! empty( $response->error ) ) {
+			} elseif ( ! empty( $response->error ) ) {
 					$is_successful = false;
-					throw new WFOCU_Payment_Gateway_Exception( $response->error->message, 102, $this->get_key() );
+					throw new WFOCU_Payment_Gateway_Exception( $response->error->message, 102, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not directly output.
 
-				} else {
-					WFOCU_Core()->data->set( '_transaction_id', $response->id );
+			} else {
+				WFOCU_Core()->data->set( '_transaction_id', $response->id );
 
-					$is_successful = true;
-				}
+				$is_successful = true;
 			}
 
 			if ( true === $is_successful ) {
@@ -558,16 +560,15 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		}
 
 		public function update_stripe_fees( $order, $balance_transaction_id ) {
-			add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 			$balance_transaction = WC_Stripe_API::retrieve( 'balance/history/' . $balance_transaction_id );
-			remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 
 			if ( ! empty( $balance_transaction->error ) ) {
 				return;
 			}
 
 			if ( isset( $balance_transaction ) && isset( $balance_transaction->fee ) ) {
-
 
 				$fee      = ! empty( $balance_transaction->fee ) ? WC_Stripe_Helper::format_balance_fee( $balance_transaction, 'fee' ) : 0;
 				$net      = ! empty( $balance_transaction->net ) ? WC_Stripe_Helper::format_balance_fee( $balance_transaction, 'net' ) : 0;
@@ -594,12 +595,11 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			// The request for a charge contains metadata for the intent.
 			$full_request = $this->generate_payment_request( $order, $prepared_source );
 
-
 			$request = array(
-				'amount'      => $full_request['amount'],
-				'currency'    => $full_request['currency'],
-				'description' => $full_request['description'],
-				'metadata'    => $full_request['metadata'],
+				'amount'               => $full_request['amount'],
+				'currency'             => $full_request['currency'],
+				'description'          => $full_request['description'],
+				'metadata'             => $full_request['metadata'],
 
 				'capture_method'       => ( 'true' === $full_request['capture'] ) ? 'automatic' : 'manual',
 				'payment_method_types' => array(
@@ -615,7 +615,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$request['payment_method'] = $prepared_source->source;
 			}
 
-
 			if ( isset( $full_request['statement_descriptor'] ) ) {
 				$request['statement_descriptor'] = $full_request['statement_descriptor'];
 			}
@@ -623,13 +622,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$request['customer'] = $prepared_source->customer;
 			}
 
-			add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 			// Create an intent that awaits an action.
 			$intent = WC_Stripe_API::request( $request, 'payment_intents' );
-			remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 
 			if ( ! empty( $intent->error ) ) {
-				WFOCU_Core()->log->log( 'Order #' . $order->get_id() . " - Offer payment intent create failed, Reason: " . print_r( $intent->error, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				WFOCU_Core()->log->log( 'Order #' . $order->get_id() . ' - Offer payment intent create failed, Reason: ' . print_r( $intent->error, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 				return $intent;
 			}
@@ -645,7 +644,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			if ( 'requires_confirmation' !== $intent->status ) {
 				return $intent;
 			}
-			$confirm_request = [];
+			$confirm_request = array();
 			// Try to confirm the intent & capture the charge (if 3DS is not required).
 
 			if ( 0 === strpos( $prepared_source->source, 'src_' ) ) {
@@ -654,9 +653,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$confirm_request['payment_method'] = $prepared_source->source;
 			}
 
-			add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 			$confirmed_intent = WC_Stripe_API::request( $confirm_request, "payment_intents/$intent->id/confirm" );
-			remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+			remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 
 			if ( ! empty( $confirmed_intent->error ) ) {
 				return $confirmed_intent;
@@ -683,7 +682,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		 * Generate the request for the payment.
 		 *
 		 * @param WC_Order $order
-		 * @param object $source
+		 * @param object   $source
 		 *
 		 * @return array()
 		 */
@@ -697,7 +696,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 
 			if ( $get_package['total'] * 100 < WC_Stripe_Helper::get_minimum_amount() ) {
 				/* translators: 1) dollar amount */
-				throw new WFOCU_Payment_Gateway_Exception( sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'woocommerce-gateway-stripe' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ), 101, $this->get_key() );
+				throw new WFOCU_Payment_Gateway_Exception( sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'woocommerce-gateway-stripe' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ), 101, $this->get_key() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not directly output.
 			}
 			$post_data['amount']      = $total;
 			$post_data['description'] = sprintf( __( '%1$s - Order %2$s - 1 click upsell: %3$s', 'woocommerce-gateway-stripe' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ), $order->get_order_number(), 1211 );
@@ -721,9 +720,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$post_data['receipt_email'] = $billing_email;
 			}
 			$metadata              = array(
-				__( 'customer_name', 'woocommerce-gateway-stripe' )  => sanitize_text_field( $billing_first_name ) . ' ' . sanitize_text_field( $billing_last_name ),
+				__( 'customer_name', 'woocommerce-gateway-stripe' ) => sanitize_text_field( $billing_first_name ) . ' ' . sanitize_text_field( $billing_last_name ),
 				__( 'customer_email', 'woocommerce-gateway-stripe' ) => sanitize_email( $billing_email ),
-				'order_id'                                           => $this->get_order_number( $order ),
+				'order_id' => $this->get_order_number( $order ),
 			);
 			$post_data['expand[]'] = 'balance_transaction';
 			$post_data['metadata'] = apply_filters( 'wc_stripe_payment_metadata', $metadata, $order, $source );
@@ -785,7 +784,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				wp_redirect( $get_url );
 				exit();
 			}
-
 		}
 
 		public function maybe_log_process_redirect() {
@@ -794,7 +792,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 
 		/**
 		 * @param WC_Order $order
-		 * @param Integer $transaction
+		 * @param Integer  $transaction
 		 */
 		public function add_stripe_payouts_to_new_order( $order ) {
 			$fee = WFOCU_Core()->data->get( 'wfocu_stripe_fee' );
@@ -813,7 +811,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 		 * @throws WC_Stripe_Exception
 		 */
 		public function process_refund_offer( $order ) {
-			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$refund_data = $_POST;  // phpcs:ignore WordPress.Security.NonceVerification.Missing, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin refund function, capability check handled by AJAX controller.
 
 			$txn_id = isset( $refund_data['txn_id'] ) ? $refund_data['txn_id'] : '';
 			$amnt   = isset( $refund_data['amt'] ) ? $refund_data['amt'] : '';
@@ -833,11 +831,10 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			WFOCU_Core()->log->log( 'Stripe offer refund request data' . print_r( $request, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 
 			if ( class_exists( 'WC_Stripe_API' ) ) {
-				add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+				add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 				$response = WC_Stripe_API::request( $request, 'refunds' );
-				remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+				remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 			}
-
 
 			if ( ! empty( $response->error ) || ! $response ) {
 				return false;
@@ -907,7 +904,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				$this->has_intent_secret = $result;
 			}
 
-
 			return $result;
 		}
 
@@ -923,11 +919,13 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			}
 
 			// Put the final thank you page redirect into the verification URL.
-			$verification_url = add_query_arg( array(
-				'order' => $order_id,
-				'nonce' => wp_create_nonce( 'wc_stripe_confirm_pi' ),
-			), WC_AJAX::get_endpoint( 'wc_stripe_verify_intent' ) );
-
+			$verification_url = add_query_arg(
+				array(
+					'order' => $order_id,
+					'nonce' => wp_create_nonce( 'wc_stripe_confirm_pi' ),
+				),
+				WC_AJAX::get_endpoint( 'wc_stripe_verify_intent' )
+			);
 
 			if ( isset( $this->has_intent_secret['payment_intent_secret'] ) ) {
 				$redirect = sprintf( '#confirm-pi-%s:%s', $this->has_intent_secret['payment_intent_secret'], rawurlencode( $verification_url ) );
@@ -937,7 +935,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			} elseif ( isset( $this->has_intent_secret['setup_intent_secret'] ) ) {
 				$redirect = sprintf( '#confirm-si-%s:%s', $this->has_intent_secret['setup_intent_secret'], rawurlencode( $verification_url ) );
 			}
-			$this->has_intent_secret = [];
+			$this->has_intent_secret = array();
 
 			return array(
 				'result'   => 'success',
@@ -968,7 +966,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 
 			if ( $order ) {
 
-				$stripe_customer_id = WFOCU_Common::get_order_meta( $order, '_stripe_customer_id' );;
+				$stripe_customer_id = WFOCU_Common::get_order_meta( $order, '_stripe_customer_id' );
 
 				if ( $stripe_customer_id ) {
 					$stripe_customer->set_id( $stripe_customer_id );
@@ -989,9 +987,9 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 
 				if ( $source_id ) {
 					$stripe_source = $source_id;
-					add_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+					add_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 					$source_object = WC_Stripe_API::retrieve( 'sources/' . $source_id );
-					remove_filter( 'woocommerce_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
+					remove_filter( 'wc_stripe_request_headers', array( $this, 'maybe_modify_version' ) );
 
 				} elseif ( apply_filters( 'wc_stripe_use_default_customer_source', true ) ) {
 					/*
@@ -1017,7 +1015,6 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 			}
 			$this->get_wc_gateway()->save_intent_to_order( $order, $this->current_intent );
 			$order->update_meta_data( '_stripe_charge_captured', 'yes' );
-
 		}
 
 		public function maybe_modify_version( $headers ) {
@@ -1034,15 +1031,19 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				if ( 'yes' === $captured ) {
 					if ( 'succeeded' === $response->status ) {
 						if ( 'manual_review' !== $this->get_risk_outcome( $response ) ) {
-							add_action( 'woocommerce_payment_successful_result', function ( $response, $order_id ) {
-								$response['redirect'] = $this->get_wc_gateway()->get_return_url( wc_get_order( $order_id ) );
+							add_action(
+								'woocommerce_payment_successful_result',
+								function ( $response, $order_id ) {
+									$response['redirect'] = $this->get_wc_gateway()->get_return_url( wc_get_order( $order_id ) );
 
-								return $response;
-							}, 10, 2 );
+									return $response;
+								},
+								10,
+								2
+							);
 						}
 					}
 				}
-
 			}
 		}
 
@@ -1060,6 +1061,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 
 		/**
 		 * Add a hidden field in stripe to allow plugin to tokenize the payment method
+		 *
 		 * @return void
 		 */
 		public function add_input_hidden() {
@@ -1068,10 +1070,7 @@ if ( ! class_exists( 'WFOCU_Gateway_Integration_Stripe' ) ) {
 				echo '<input type="hidden" name="wc-stripe-new-payment-method" value="1">';
 
 			}
-
 		}
-
-
 	}
 
 	WFOCU_Gateway_Integration_Stripe::get_instance();

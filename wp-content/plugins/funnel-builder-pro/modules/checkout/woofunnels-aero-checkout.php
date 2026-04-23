@@ -3,7 +3,7 @@
  * Plugin Name: FunnelKit Checkout
  * Plugin URI: https://funnelkit.com
  * Description: FunnelKit Checkout lets you build highly optimized checkout page. Choose from list of growing templates to create dedicated order pages or swap your native checkout with conversion friendly checkout template.
- * Version: 3.13.3.3
+ * Version: 3.15.0.2
  * Author: FunnelKit
  * Author URI: https://funnelkit.com
  * License: GPLv3 or later
@@ -32,14 +32,14 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-if ( ! class_exists( 'WFACP_Core' ) ):
+if ( ! class_exists( 'WFACP_Core' ) ) :
 	#[AllowDynamicProperties]
 	final class WFACP_Core {
 
-		private static $ins = null;
-		private static $_registered_entity = [];
-		public $is_dependency_exists = true;
-		private $dir = '';
+		private static $ins                = null;
+		private static $_registered_entity = array();
+		public $is_dependency_exists       = true;
+		private $dir                       = '';
 
 		private $url = '';
 		/**
@@ -110,7 +110,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function definition() {
 
-			define( 'WFACP_VERSION', '3.13.3.3' );
+			define( 'WFACP_VERSION', '3.15.0.2' );
 			define( 'WFACP_BWF_VERSION', '1.10.12.69' );
 
 			define( 'WFACP_MIN_WP_VERSION', '4.9' );
@@ -143,7 +143,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function load_core_classes() {
 			/** Setting Up WooFunnels Core */
-			require_once( 'start.php' );
+			require_once 'start.php';
 		}
 
 		private function load_commons() {
@@ -153,7 +153,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-optimizations.php';
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-support.php';
 			require WFACP_PLUGIN_DIR . '/includes/class-compatibilities.php';
-
 
 			require WFACP_PLUGIN_DIR . '/includes/class-wfacp-ajax-controller.php';
 			// Include REST API
@@ -172,11 +171,11 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			add_action( 'plugins_loaded', array( $this, 'load_classes' ), 1 );
 			add_action( 'plugins_loaded', array( $this, 'register_classes' ), 2 );
 			add_action( 'activated_plugin', array( $this, 'redirect_on_activation' ) );
-			add_action( 'wfacp_before_loaded', [ $this, 'init_elementor' ] );
+			add_action( 'wfacp_before_loaded', array( $this, 'init_elementor' ) );
 			add_action( 'plugins_loaded', array( $this, 'elementor_importer' ), 10 );
-			add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
+			add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 
-			register_activation_hook( __FILE__, [ $this, 'plugin_activation_hook' ] );
+			register_activation_hook( __FILE__, array( $this, 'plugin_activation_hook' ) );
 		}
 
 		/**
@@ -198,7 +197,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		}
 
 		public function localization() {
-			load_plugin_textdomain( 'woofunnels-aero-checkout', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'woofunnels-aero-checkout', false, plugin_basename( __DIR__ ) . '/languages' );
 		}
 
 		public function load_classes() {
@@ -254,6 +253,8 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		private function load_modules() {
 			include WFACP_PLUGIN_DIR . '/modules/login-flow/index.php';
+			include WFACP_PLUGIN_DIR . '/modules/conditional-fields/index.php';
+			include WFACP_PLUGIN_DIR . '/modules/file-upload/index.php';
 		}
 
 		public static function get_registered_class() {
@@ -271,15 +272,20 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 			update_option( 'bwf_needs_rewrite', 'yes', true );
 
-			$g_setting = get_option( '_wfacp_global_settings', [] );
+			$g_setting = get_option( '_wfacp_global_settings', array() );
 			if ( is_array( $g_setting ) && count( $g_setting ) > 0 ) {
 				return;
 			}
 
 			update_option( '_wfacp_global_settings', $g_setting );
-			wp_redirect( add_query_arg( array(
-				'page' => 'wfacp',
-			), admin_url( 'admin.php' ) ) );
+			wp_redirect(
+				add_query_arg(
+					array(
+						'page' => 'wfacp',
+					),
+					admin_url( 'admin.php' )
+				)
+			);
 			exit;
 		}
 
@@ -290,40 +296,40 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 		public function wc_version_check_notice() {
 			?>
-            <div class="error">
-                <p>
+			<div class="error">
+				<p>
 					<?php
 					/* translators: %1$s: Min required woocommerce version */
 					printf( __( '<strong> Attention: </strong>FunnelKit Checkout requires WooCommerce version %1$s or greater. Kindly update the WooCommerce plugin.', 'woofunnels-aero-checkout' ), WFACP_MIN_WC_VERSION );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
 		public function wp_version_check_notice() {
 			?>
-            <div class="error">
-                <p>
+			<div class="error">
+				<p>
 					<?php
 					/* translators: %1$s: Min required woocommerce version */
 					printf( __( '<strong> Attention: </strong>FunnelKit Checkout requires WordPress version %1$s or greater. Kindly update the WordPress.', 'woofunnels-aero-checkout' ), WFACP_MIN_WP_VERSION );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
 
 		public function wc_not_installed_notice() {
 			?>
-            <div class="error">
-                <p>
+			<div class="error">
+				<p>
 					<?php
 					_e( '<strong> Attention: </strong>WooCommerce is not installed or activated. FunnelKit Checkout is a WooCommerce Extension and would only work if WooCommerce is activated. Please install the WooCommerce Plugin first.', 'woofunnels-aero-checkout' );
 					?>
-                </p>
-            </div>
+				</p>
+			</div>
 			<?php
 		}
 
@@ -337,7 +343,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		private function remove_embed_form() {
 			if ( class_exists( 'WFACPEF_Core' ) ) {
 				$embed_form_instance = WFACPEF_Core();
-				remove_action( 'wfacp_loaded', [ $embed_form_instance, 'wfacp_loaded' ] );
+				remove_action( 'wfacp_loaded', array( $embed_form_instance, 'wfacp_loaded' ) );
 
 			}
 		}
@@ -348,7 +354,7 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			require WFACP_PLUGIN_DIR . '/importer/class-wfacp-template-importer.php';
 			require WFACP_PLUGIN_DIR . '/importer/class-wfacp-customizer-importer.php';
 			require WFACP_PLUGIN_DIR . '/importer/class-wfacp-customizer-embed-form-importer.php';
-			add_action( 'wp_loaded', [ $this, 'load_divi_importer' ], 150 );
+			add_action( 'wp_loaded', array( $this, 'load_divi_importer' ), 150 );
 			do_action( 'wfacp_importer' );
 		}
 
@@ -358,8 +364,8 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 
 			if ( true === $response['found'] && empty( $response['error'] ) ) {
 				require WFACP_PLUGIN_DIR . '/importer/class-wfacp-divi-importer.php';
+				require WFACP_PLUGIN_DIR . '/importer/class-wfacp-divi5-importer.php';
 			}
-
 
 			$response = WFACP_Common::check_builder_status( 'oxy' );
 
@@ -409,7 +415,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 			require_once WFACP_PLUGIN_DIR . '/builder/divi/class-wfacp-divi.php';
 			require_once WFACP_PLUGIN_DIR . '/builder/oxygen/class-wfacp-oxy.php';
 			require_once WFACP_PLUGIN_DIR . '/builder/gutenberg/class-wfacp-gutenberg.php';
-
 		}
 
 		/**
@@ -443,7 +448,6 @@ if ( ! class_exists( 'WFACP_Core' ) ):
 		 */
 		protected function __clone() {
 		}
-
 	}
 endif;
 

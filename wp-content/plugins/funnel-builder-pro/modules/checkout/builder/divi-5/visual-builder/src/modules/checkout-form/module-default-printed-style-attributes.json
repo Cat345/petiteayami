@@ -1,0 +1,42 @@
+{
+  "module": {
+    "decoration": {}
+  },
+  "form_background_color": {
+    "decoration": {
+      "background": {
+        "desktop": {
+          "value": {
+            "color": "#ffffff"
+          }
+        }
+      }
+    }
+  },
+  "wfacp_collapsible_margin": {
+    "decoration": {
+      "spacing": {
+        "desktop": {
+          "value": {
+            "margin": {
+              "bottom": "10px"
+            }
+          }
+        }
+      }
+    }
+  },
+  "wfacp_tab_margin": {
+    "decoration": {
+      "spacing": {
+        "desktop": {
+          "value": {
+            "margin": {
+              "bottom": "15px"
+            }
+          }
+        }
+      }
+    }
+  }
+}

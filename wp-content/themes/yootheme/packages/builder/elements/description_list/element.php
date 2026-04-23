@@ -94,7 +94,7 @@ return [
                 'Primary' => 'primary',
                 'Secondary' => 'secondary',
             ],
-            'enable' => 'list_marker != \'bullet\'',
+            'enable' => "list_marker != 'bullet'",
         ],
         'list_style' => [
             'label' => 'Style',
@@ -150,7 +150,7 @@ return [
         ],
         'list_element' => [
             'label' => 'HTML Element',
-            'description' => 'Set whether it\'s an ordered or unordered list.',
+            'description' => "Set whether it's an ordered or unordered list.",
             'type' => 'select',
             'options' => [
                 'ul' => 'ul',
@@ -211,7 +211,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -236,12 +236,12 @@ return [
                 'Medium' => 'medium',
                 'Expand' => 'expand',
             ],
-            'enable' => 'show_title && layout != \'stacked\'',
+            'enable' => "show_title && layout != 'stacked'",
         ],
         'title_leader' => [
             'type' => 'checkbox',
             'text' => 'Add a leader',
-            'enable' => 'layout == \'grid-2-m\' && title_grid_width == \'expand\'',
+            'enable' => "layout == 'grid-2-m' && title_grid_width == 'expand'",
         ],
         'title_grid_column_gap' => [
             'label' => 'Grid Column Gap',
@@ -254,7 +254,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && layout != \'stacked\'',
+            'enable' => "show_title && layout != 'stacked'",
         ],
         'title_grid_row_gap' => [
             'label' => 'Grid Row Gap',
@@ -267,7 +267,7 @@ return [
                 'Large' => 'large',
                 'None' => 'collapse',
             ],
-            'enable' => 'show_title && layout != \'stacked\'',
+            'enable' => "show_title && layout != 'stacked'",
         ],
         'title_grid_breakpoint' => [
             'label' => 'Grid Breakpoint',
@@ -280,7 +280,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'show_title && layout != \'stacked\'',
+            'enable' => "show_title && layout != 'stacked'",
         ],
         'title_element' => [
             'label' => 'HTML Element',
@@ -344,7 +344,7 @@ return [
                 'Above Content' => 'above-content',
                 'Below Content' => 'below-content',
             ],
-            'enable' => 'show_meta && layout != \'grid-2-m\'',
+            'enable' => "show_meta && layout != 'grid-2-m'",
         ],
         'content_style' => [
             'label' => 'Style',
@@ -369,7 +369,7 @@ return [
         'link_style' => [
             'label' => 'Style',
             'description' =>
-                'This option doesn\'t apply unless a URL has been added to the item. Only the item content will be linked.',
+                "This option doesn't apply unless a URL has been added to the item. Only the item content will be linked.",
             'type' => 'select',
             'options' => [
                 'None' => '',

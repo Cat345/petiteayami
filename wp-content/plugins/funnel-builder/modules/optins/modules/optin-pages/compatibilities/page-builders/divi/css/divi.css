@@ -269,7 +269,7 @@ body.et-db #et-boc .bwf_pp_opt_sub_head {
     font-style: normal;
 }
 
-#et-boc .et-l .hentry, #et-boc .et-l a, #et-boc .et-l a:active, #et-boc .et-l blockquote, #et-boc .et-l em, #et-boc .et-l form, #et-boc .et-l h1, #et-boc .et-l h2, #et-boc .et-l h3, #et-boc .et-l h4, #et-boc .et-l h5, #et-boc .et-l h6, #et-boc .et-l hr, #et-boc .et-l iframe, #et-boc .et-l img, #et-boc .et-l input, #et-boc .et-l label, #et-boc .et-l li, #et-boc .et-l object, #et-boc .et-l ol, #et-boc .et-l p, #et-boc .et-l span, #et-boc .et-l strong, #et-boc .et-l textarea, #et-boc .et-l ul, #et-boc .et-l video {
+#et-boc .et-l .hentry, #et-boc .et-l a, #et-boc .et-l a:active, #et-boc .et-l blockquote, #et-boc .et-l em, #et-boc .et-l form, #et-boc .et-l h1, #et-boc .et-l h2, #et-boc .et-l h3, #et-boc .et-l h4, #et-boc .et-l h5, #et-boc .et-l h6, #et-boc .et-l hr, #et-boc .et-l iframe:not(#et-vb-app-frame), #et-boc .et-l img, #et-boc .et-l input, #et-boc .et-l label, #et-boc .et-l li, #et-boc .et-l object, #et-boc .et-l ol, #et-boc .et-l p, #et-boc .et-l span, #et-boc .et-l strong, #et-boc .et-l textarea, #et-boc .et-l ul, #et-boc .et-l video {
     text-align: inherit;
     margin: 0;
     border: 0;
@@ -350,4 +350,10 @@ body.et-db #et-boc .et-l .et_pb_module.et_wfop_optin_form #et_wfop_optin_form .b
 
 body.et-db #et-boc .et-l .et_pb_module.et_wfop_optin_form #et_wfop_optin_form .bwfac_forms_outer [type="radio"]  + label:after {
     top: 7px;
+}
+
+/* Divi 5: heading/subheading spans need block display for text-align to work */
+.bwf-custom-button span.bwf-text-wrapper span.bwf_heading,
+.bwf-custom-button span.bwf-text-wrapper span.bwf_subheading {
+    display: block;
 }

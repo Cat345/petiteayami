@@ -131,12 +131,12 @@ return [
             'label' => 'Play Icon',
             'description' => 'Select an optional play icon for the video loaded on click.',
             'type' => 'image',
-            'enable' => 'video && video_loading == \'click\'',
+            'enable' => "video && video_loading == 'click'",
         ],
         'link_aria_label' => [
             'label' => 'ARIA Label',
             'description' => 'Enter a descriptive text label to make it accessible if the video is loaded on click.',
-            'enable' => 'video && video_loading == \'click\'',
+            'enable' => "video && video_loading == 'click'",
         ],
         'video_width' => [
             'type' => 'number',
@@ -214,7 +214,7 @@ return [
                 'Hover' => 'hover',
             ],
             'enable' =>
-                '(video_loading != \'click\') && !yootheme.builder.helpers.Media.isIframeVideo(video)',
+                "(video_loading != 'click') && !yootheme.builder.helpers.Media.isIframeVideo(video)",
         ],
         'video_autoplay_restart' => [
             'type' => 'checkbox',
@@ -277,7 +277,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'video_loading == \'click\'',
+            'enable' => "video_loading == 'click'",
         ],
         'video_box_decoration' => [
             'label' => 'Box Decoration',

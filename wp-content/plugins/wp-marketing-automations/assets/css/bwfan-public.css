@@ -140,6 +140,7 @@ body.bwfan-manage-profile-page-body.is-rtl{
     background: #fff;
     border: 1px solid #DEDFEA;
     border-radius: 12px;
+    padding-left: 10px;
 }
 .bwfan-manage-profile-contact-details a.bwf-manage-profile-link {
     height: 36px;

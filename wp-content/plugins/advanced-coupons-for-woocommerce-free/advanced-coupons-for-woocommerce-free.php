@@ -4,13 +4,13 @@
  * Plugin Name: Advanced Coupons for WooCommerce Free
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.
- * Version: 4.7.1.1
+ * Version: 4.7.2
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au
  * Requires at least: 5.8
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * WC requires at least: 4.0
- * WC tested up to: 10.3
+ * WC tested up to: 10.6
  *
  * Text Domain: advanced-coupons-for-woocommerce-free
  * Domain Path: /languages/
@@ -41,6 +41,7 @@ use ACFWF\Models\Editor_Blocks;
 use ACFWF\Models\Edit_Coupon;
 use ACFWF\Models\Help_Links;
 use ACFWF\Models\Notices;
+use ACFWF\Models\Notices\SaveTo_Wishlist_Notice;
 use ACFWF\Models\Order_Details;
 use ACFWF\Models\Role_Restrictions;
 use ACFWF\Models\Emails;
@@ -445,6 +446,7 @@ class ACFWF extends Abstract_Main_Plugin_Class { // phpcs:ignore
         ACFWF\Models\WC_Blocks::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         ACFWF\Models\Coupon_Templates::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         ACFWF\Models\Send_Coupon::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        SaveTo_Wishlist_Notice::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         General::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 

@@ -734,6 +734,15 @@ abstract class Importer {
 		/** Check if contact exists first */
 		$contact_exists = $contact->already_exists;
 
+		/** Skip existing contacts entirely if skip_existing is enabled */
+		$skip_existing = $this->get_import_meta( 'skip_existing' );
+		if ( ! empty( $contact_exists ) && ! empty( $skip_existing ) ) {
+			return array(
+				'id'      => $contact->get_id(),
+				'skipped' => true,
+			);
+		}
+
 		/** Add a disable events flag if needed */
 		if ( true === $disable_events ) {
 			$contact_data['data']['disable_events'] = true;
@@ -777,6 +786,7 @@ abstract class Importer {
 			if ( empty( $contact_exists ) || $update_existing ) {
 				/** Handle unsubscribe status */
 				if ( $do_unsubscribe ) {
+					$contact->set_unsubscribe_context( 0, 0, BWFCRM_Contact::UNSUBSCRIBE_SOURCE_IMPORTER );
 					$contact->unsubscribe( $disable_events );
 				} else {
 					$contact->remove_unsubscribe_status();

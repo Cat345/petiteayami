@@ -619,6 +619,11 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 			global $wpdb;
 
+			$sess_id = absint( $sess_id );
+			if ( $sess_id <= 0 ) {
+				return;
+			}
+
 			$all_event_ids = WFOCU_Core()->track->query_results( array(
 				'data'         => array(
 					'id' => array(
@@ -641,10 +646,12 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 			) );
 
 			if ( count( $all_event_ids ) > 0 ) {
-				$wpdb->query( "DELETE FROM `" . $this->get_table_name( true ) . "` WHERE event_id IN( '" . implode( "','", $all_event_ids ) . "' )" ); //db call ok; no-cache ok; phpcs:ignore unprepared SQL ok.
+				$all_event_ids  = array_map( 'absint', $all_event_ids );
+				$placeholders   = implode( ',', array_fill( 0, count( $all_event_ids ), '%d' ) );
+				$wpdb->query( $wpdb->prepare( "DELETE FROM `" . $this->get_table_name( true ) . "` WHERE event_id IN( $placeholders )", $all_event_ids ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 
-			$wpdb->delete( $this->get_table_name(), array( 'sess_id' => $sess_id ) ); //db call ok; no-cache ok; WPCS: unprepared SQL ok.
+			$wpdb->delete( $this->get_table_name(), array( 'sess_id' => $sess_id ) );
 
 
 		}
@@ -774,10 +781,14 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 
 		public function update_analytics_after_refund( $event_id, $refund_amount, $full_refund = false ) {
 			global $wpdb;
-			$event = $wpdb->get_row( "SELECT * FROM " . $wpdb->prefix . "wfocu_event WHERE id = " . $event_id . " AND object_type = 'offer'" );//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$event_id = absint( $event_id );
+			if ( $event_id <= 0 ) {
+				return;
+			}
+			$event = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wfocu_event WHERE id = %d AND object_type = 'offer'", $event_id ) );
 			if ( ! empty( $event ) ) {
 				$event_refund = ( ( $event->value ) <= $refund_amount ) ? 0 : $event->value - $refund_amount;
-				$sess_total   = $wpdb->get_var( "SELECT total FROM " . $wpdb->prefix . "wfocu_session WHERE id = " . $event->sess_id ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$sess_total   = $wpdb->get_var( $wpdb->prepare( "SELECT total FROM {$wpdb->prefix}wfocu_session WHERE id = %d", absint( $event->sess_id ) ) );
 				$sess_refund  = ( $sess_total <= $refund_amount ) ? 0 : $sess_total - $refund_amount;
 
 				if ( $full_refund ) {
@@ -786,7 +797,7 @@ if ( ! class_exists( 'WFOCU_DB_Track' ) ) {
 				}
 
 				$wpdb->update( $wpdb->prefix . "wfocu_event", [ 'value' => $event_refund ], [ 'id' => $event_id, 'object_type' => 'offer' ] );
-				$wpdb->update( $wpdb->prefix . "wfocu_session", [ 'total' => $sess_refund ], [ 'id' => $event->sess_id ] );
+				$wpdb->update( $wpdb->prefix . "wfocu_session", [ 'total' => $sess_refund ], [ 'id' => absint( $event->sess_id ) ] );
 			}
 
 		}

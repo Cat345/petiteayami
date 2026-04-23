@@ -29,6 +29,9 @@ class StripeTaxTaxRateHooks extends Hook_Handlers {
 	 * @param array $args  Args passed.
 	 */
 	public static function find_rates( $rates, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+		if ( ! self::is_enabled() ) {
+			return $rates;
+		}
 		return array();
 	}
 

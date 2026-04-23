@@ -267,7 +267,7 @@ return [
                 'X-Large' => 'xlarge',
                 'None' => 'remove',
             ],
-            'enable' => 'show_image && image_align == \'bottom\'',
+            'enable' => "show_image && image_align == 'bottom'",
         ],
         'image_svg_inline' => [
             'label' => 'Inline SVG',
@@ -301,7 +301,7 @@ return [
         ],
         'link_target' => [
             'label' => 'Attributes',
-            'description'  => 'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+            'description'  => "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',

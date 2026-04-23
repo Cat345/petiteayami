@@ -76,10 +76,8 @@ class FilterPriceHtml
     }
 
     /**
-     * @param string $price
      * @param string|int $minPrice
      * @param string|int $maxPrice
-     * @return string
      */
     protected function fromPrice(string $price, $minPrice, $maxPrice): string
     {

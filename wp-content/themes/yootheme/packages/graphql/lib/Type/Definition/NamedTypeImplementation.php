@@ -4,7 +4,9 @@ namespace YOOtheme\GraphQL\Type\Definition;
 
 use YOOtheme\GraphQL\Error\InvariantViolation;
 
-/** @see NamedType */
+/**
+ * @see NamedType
+ */
 trait NamedTypeImplementation
 {
     public string $name;

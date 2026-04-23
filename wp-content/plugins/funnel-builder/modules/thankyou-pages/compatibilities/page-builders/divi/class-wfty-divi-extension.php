@@ -10,7 +10,7 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 		 *
 		 * @var string
 		 */
-		public $gettext_domain = 'wffn-woofunnels-ty-divi';
+		public $gettext_domain          = 'wffn-woofunnels-ty-divi';
 		public static $field_color_type = 'color';
 
 		/**
@@ -33,22 +33,21 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 
 		private $module_path = '';
 
-		public $modules_instance = [];
+		public $modules_instance    = array();
 		private $builder_setup_done = false;
 
 		/**
 		 * WFTY_Divi_Extension constructor.
 		 *
 		 * @param string $name
-		 * @param array $args
+		 * @param array  $args
 		 */
 		public function __construct( $name = 'woofunnels-ty-divi', $args = array() ) {
 			$this->plugin_dir     = plugin_dir_path( __FILE__ );
 			$this->module_path    = $this->plugin_dir . 'modules/';
 			$this->plugin_dir_url = plugin_dir_url( __FILE__ );
 			parent::__construct( $name, $args );
-			add_filter( 'et_theme_builder_template_layouts', [ $this, 'disable_header_footer' ], 99 );
-
+			add_filter( 'et_theme_builder_template_layouts', array( $this, 'disable_header_footer' ), 99 );
 		}
 
 		protected function _enqueue_bundles() {
@@ -65,30 +64,30 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 			if ( ! WFFN_Core()->thank_you_pages->is_wfty_page() ) {
 				return;
 			}
-			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', [], true );
-			wp_enqueue_style( "{$this->name}-wfty-divi", "{$this->plugin_dir_url}css/divi.css", [], $this->version );
+			wp_enqueue_script( 'flickity', WFFN_PLUGIN_URL . '/assets/flickity/flickity.pkgd.js', array(), true );
+			// divi.css is enqueued by WFFN_ThankYou_WC_Pages_Divi::enqueue_divi_css() for both Divi 4 and 5.
 			if ( et_core_is_fb_enabled() ) {
-				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.js", [ 'react-dom' ], $this->version, true );
+				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.js", array( 'react-dom' ), $this->version, true );
 			}
 		}
 
 
 		private function get_modules() {
-			$modules = [
-				'customer_details' => [
+			$modules = array(
+				'customer_details' => array(
 					'name' => __( 'WF Customer Details', 'funnel-builder' ),
 					'path' => $this->module_path . 'customer-details.php',
-				],
-				'order_details'    => [
+				),
+				'order_details'    => array(
 					'name' => __( 'WF Order Details', 'funnel-builder' ),
 					'path' => $this->module_path . 'order-details.php',
-				],
-			];
+				),
+			);
 
 			return apply_filters( 'wffn_ty_divi_modules', $modules, $this );
 		}
 
-// This function run upto divi builder 4.9.*
+		// This function run upto divi builder 4.9.*
 		public function hook_et_builder_modules_loaded() {
 			$this->setup_builder_module();
 		}
@@ -111,7 +110,6 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 				self::$field_color_type = 'color-alpha';
 			}
 
-
 			if ( ! empty( $modules ) ) {
 				include_once __DIR__ . '/class-abstract-wfty-divi-fields.php';
 				include_once __DIR__ . '/class-wfty-divi-html-block.php';
@@ -126,7 +124,6 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 					$this->builder_setup_done = true;
 				}
 			}
-
 		}
 
 		public function disable_header_footer( $layouts ) {
@@ -151,8 +148,7 @@ if ( ! class_exists( 'WFTY_Divi_Extension' ) ) {
 
 			return $layouts;
 		}
-
 	}
 
-	new WFTY_Divi_Extension;
+	new WFTY_Divi_Extension();
 }

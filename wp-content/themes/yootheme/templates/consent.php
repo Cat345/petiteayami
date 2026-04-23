@@ -9,7 +9,7 @@ $props = $config('~theme.consent');
 [$props['banner_type'], $props['banner_position']] = explode('-', $props['banner_layout'], 2);
 
 foreach (['banner_button_accept_title', 'banner_button_reject_title', 'banner_button_settings_title', 'banner_content', 'button_width', 'modal_accordion_icon_width', 'modal_button_accept_title', 'modal_button_reject_title', 'modal_button_save_title', 'modal_button_width', 'modal_categories_checkbox_large', 'modal_categories_description', 'modal_categories_right', 'modal_content', 'modal_sections', 'modal_title', 'privacy_policy_link'] as $key) {
-    $props[$key] = $props[$key] ?? '';
+    $props[$key] ??= '';
 }
 
 /** @var ConsentHelper $consent */

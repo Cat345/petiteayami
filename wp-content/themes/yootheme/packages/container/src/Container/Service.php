@@ -68,7 +68,6 @@ class Service
     /**
      * Sets a service factory.
      *
-     * @param callable $factory
      *
      * @return $this
      */
@@ -120,7 +119,6 @@ class Service
     /**
      * Resolves a new instance.
      *
-     * @param Container $container
      *
      * @throws LogicException
      * @throws \ReflectionException

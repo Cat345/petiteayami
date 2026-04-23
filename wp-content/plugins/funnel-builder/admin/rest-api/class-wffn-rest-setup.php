@@ -31,7 +31,7 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 
 		public static function get_instance() {
 			if ( null === self::$_instance ) {
-				self::$_instance = new self;
+				self::$_instance = new self();
 			}
 
 			return self::$_instance;
@@ -42,16 +42,19 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 		 */
 		public function register_routes() {
 
-
-			register_rest_route( $this->namespace, '' . $this->rest_base, array(
-
+			register_rest_route(
+				$this->namespace,
+				'' . $this->rest_base,
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_status_responses' ),
-					'permission_callback' => array( $this, 'get_read_api_permission_check' ),
-					'args'                => array(),
-				),
-			) );
+
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => array( $this, 'get_status_responses' ),
+						'permission_callback' => array( $this, 'get_read_api_permission_check' ),
+						'args'                => array(),
+					),
+				)
+			);
 		}
 
 		public function get_read_api_permission_check() {
@@ -59,15 +62,19 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 		}
 
 		public function get_status_responses( $is_rest = true ) {
-			$statuses                             = [];
-			$statuses['override_global_checkout'] = [];
-			$statuses['funnels']                  = [];
+			$statuses                             = array();
+			$statuses['override_global_checkout'] = array();
+			$statuses['funnels']                  = array();
 			$statuses['is_checkout']              = false;
 			$statuses['is_orderbump']             = false;
 			$statuses['is_upsells']               = false;
 			$statuses['tracking']                 = false;
-			$statuses['stripe']                   = [ 'status' => 'not_installed' ];
-
+			$statuses['stripe']                   = array( 'status' => 'not_installed' );
+			$statuses['square']                   = array(
+				'status'     => 'gate_not_met',
+				'show_pitch' => false,
+			);
+			$statuses['is_wc_square_active']      = WFFN_Common::is_wc_square_active();
 
 			$global_funnel_id = WFFN_Common::get_store_checkout_id();
 			if ( absint( $global_funnel_id ) > 0 ) {
@@ -81,7 +88,6 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 				}
 			}
 
-
 			$args    = array(
 				'offset'  => 0,
 				'limit'   => 1,
@@ -93,7 +99,7 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 			);
 			$funnels = WFFN_Core()->admin->get_funnels( $args );
 			if ( is_array( $funnels ) && isset( $funnels['items'] ) && is_array( $funnels['items'] ) && count( $funnels['items'] ) > 0 ) {
-				$statuses['funnels'] = [ absint( $funnels['items'][0]['id'] ) ];
+				$statuses['funnels'] = array( absint( $funnels['items'][0]['id'] ) );
 			} else {
 				$statuses['funnels'] = 0;
 
@@ -115,7 +121,7 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 					'meta'    => array(
 						'key'     => '_is_global',
 						'compare' => '=',
-						'value'   => 'yes'
+						'value'   => 'yes',
 					),
 					'context' => 'listing',
 				);
@@ -139,19 +145,15 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 						);
 						WFFN_Common::update_store_checkout_meta( $item['id'], 1 );
 
-
 					}
 				}
-
 			}
-
 
 			$sql_query     = "SELECT count(id) as ids FROM {table_name} WHERE `steps` LIKE '%wc_checkout%'";
 			$found_funnels = WFFN_Core()->get_dB()->get_results( $sql_query );
 			if ( is_array( $found_funnels ) && count( $found_funnels ) > 0 && isset( $found_funnels[0]['ids'] ) && absint( $found_funnels[0]['ids'] ) > 0 ) {
 				$statuses['is_checkout'] = true;
 			}
-
 
 			$sql_query     = "SELECT count(id) as ids FROM {table_name} WHERE `steps` LIKE '%wc_upsells%'";
 			$found_funnels = WFFN_Core()->get_dB()->get_results( $sql_query );
@@ -181,36 +183,54 @@ if ( ! class_exists( 'WFFN_REST_Setup' ) ) {
 				$statuses['tracking'] = true;
 			}
 
-
 			$all_plugins = get_plugins();
 
 			$other_stripe_exists = ( defined( 'WC_STRIPE_VERSION' ) || defined( 'WC_STRIPE_PLUGIN_FILE_PATH' ) );
 
 			if ( isset( $all_plugins['funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php'] ) ) {
 
-				$statuses['stripe'] = [ 'status' => 'not_activated', 'other_exists' => $other_stripe_exists ];
+				$statuses['stripe'] = array(
+					'status'       => 'not_activated',
+					'other_exists' => $other_stripe_exists,
+				);
 				if ( is_plugin_active( 'woocommerce/woocommerce.php' ) && is_plugin_active( 'funnelkit-stripe-woo-payment-gateway/funnelkit-stripe-woo-payment-gateway.php' ) ) {
-					$statuses['stripe'] = [ 'status' => 'not_connected', 'link' => \FKWCS\Gateway\Stripe\Admin::get_instance()->get_connect_url(), 'other_exists' => $other_stripe_exists ];
+					$statuses['stripe'] = array(
+						'status'       => 'not_connected',
+						'link'         => \FKWCS\Gateway\Stripe\Admin::get_instance()->get_connect_url(),
+						'other_exists' => $other_stripe_exists,
+					);
 					if ( \FKWCS\Gateway\Stripe\Admin::get_instance()->is_stripe_connected() ) {
-						$statuses['stripe'] = [ 'status' => 'connected' ];
+						$statuses['stripe'] = array( 'status' => 'connected' );
 
 					}
-
 				}
 			} else {
-				$statuses['stripe'] = [ 'status' => 'not_installed', 'other_exists' => $other_stripe_exists ];
+				$statuses['stripe'] = array(
+					'status'       => 'not_installed',
+					'other_exists' => $other_stripe_exists,
+				);
+			}
+
+			if ( $statuses['is_wc_square_active'] ) {
+				$statuses['stripe']               = array(
+					'status'     => 'connected',
+					'show_pitch' => false,
+				);
+				$statuses['square']               = WFFN_Common::square_state();
+				$statuses['square']['show_pitch'] = true;
 			}
 
 			if ( $is_rest === true ) {
-				return rest_ensure_response( array( 'success' => true, 'statuses' => $statuses ) );
+				return rest_ensure_response(
+					array(
+						'success'  => true,
+						'statuses' => $statuses,
+					)
+				);
 			}
 
 			return $statuses;
-
-
 		}
-
-
 	}
 
 }

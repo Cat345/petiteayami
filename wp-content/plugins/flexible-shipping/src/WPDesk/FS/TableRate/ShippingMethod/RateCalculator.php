@@ -32,6 +32,8 @@ class RateCalculator {
 	const FS_METHOD                 = '_fs_method';
 	const DESCRIPTION               = 'description';
 	const DESCRIPTION_BASE64ENCODED = 'description_base64encoded';
+	const METHOD_LOGO_URL           = 'method_logo_url';
+	const METHOD_LOGO_ALT           = 'method_logo_alt';
 
 	/**
 	 * @var LoggerInterface
@@ -292,11 +294,11 @@ class RateCalculator {
 			$logger->debug( sprintf( __( 'Shipping method title: %1$s', 'flexible-shipping' ), $method_title ), $logger->get_results_context() );
 
 			$rate = [
-				'id'        => $rate_id,
-				'label'     => $method_title,
-				'cost'      => $cost,
-				'package'   => $this->package,
-				'meta_data' => $this->prepare_meta_data( $method_settings ),
+				'id'          => $rate_id,
+				'label'       => $method_title,
+				'cost'        => $cost,
+				'package'     => $this->package,
+				'meta_data'   => $this->prepare_meta_data( $method_settings ),
 			];
 		} else {
 			$rate = [];
@@ -326,7 +328,8 @@ class RateCalculator {
 	 * @return array
 	 */
 	private function prepare_meta_data( MethodSettingsImplementation $method_settings ) {
-		$description = wpdesk__( $method_settings->get_description(), 'flexible-shipping' );
+		$description = $this->get_method_description( $method_settings );
+		$logo_data   = MethodLogo::get_logo_data( $method_settings->get_raw_settings() );
 
 		$meta_data = [
 			WPDesk_Flexible_Shipping::META_DEFAULT => $method_settings->get_default(),
@@ -343,6 +346,11 @@ class RateCalculator {
 			$meta_data[ self::DESCRIPTION_BASE64ENCODED ] = base64_encode( $description );
 		}
 
+		if ( '' !== $logo_data['url'] ) {
+			$meta_data[ self::METHOD_LOGO_URL ] = $logo_data['url'];
+			$meta_data[ self::METHOD_LOGO_ALT ] = $logo_data['alt'];
+		}
+
 		/**
 		 * Rate metadata.
 		 *
@@ -352,6 +360,15 @@ class RateCalculator {
 		 * @return array
 		 */
 		return apply_filters( 'flexible-shipping/rate/meta_data', $meta_data, $method_settings->get_raw_settings() );
+	}
+
+	/**
+	 * @param MethodSettingsImplementation $method_settings .
+	 *
+	 * @return string
+	 */
+	private function get_method_description( MethodSettingsImplementation $method_settings ) {
+		return wp_kses_post( wpdesk__( $method_settings->get_description(), 'flexible-shipping' ) );
 	}
 
 	/**

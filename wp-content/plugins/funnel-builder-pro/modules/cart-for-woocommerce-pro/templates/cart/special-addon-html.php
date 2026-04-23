@@ -46,7 +46,7 @@ if ( empty( $special_addon_product_id ) ) {
 if ( ! isset( $settings['special_addon_product']['is_dummy'] ) ) {
 
 	$product_obj   = wc_get_product( $special_addon_product_id );
-	$product_types = array( 'subscription', 'variable-subscription', 'bundle' );
+	$product_types = apply_filters( 'fkcart_special_addon_excluded_product_types', array( 'subscription', 'variable-subscription', 'bundle' ), $product_obj );
 
 
 	if ( ! $product_obj || ! is_a( $product_obj, 'WC_Product' ) ) {
@@ -55,7 +55,8 @@ if ( ! isset( $settings['special_addon_product']['is_dummy'] ) ) {
 	if ( ! fkcart_is_preview() && ( ! $product_obj->is_in_stock() || 'publish' !== $product_obj->get_status() ) ) {
 		return;
 	}
-	if ( ! fkcart_is_preview() && ( in_array( $product_obj->get_type(), $product_types ) ) ) {
+	// Exclude variable subscriptions and bundles, but allow simple subscription products
+	if ( ! fkcart_is_preview() && ( in_array( $product_obj->get_type(), $product_types, true ) ) ) {
 		return;
 	}
 	$special_addon_product_price       = $product_obj->get_price_html();
@@ -204,37 +205,37 @@ if ( $special_addon_selection_type == 'toggle' ) {
 \FKCart\Includes\cart::get_instance()->update_addon_views( $special_addon_product_id );
 ?>
 
-<div class="<?php echo esc_attr( implode( ' ', $base_class ) ); ?>" id="fkcart-spl-addon" data-fkcart-product-cart-key='<?php echo $fkspl_cart_item_key; ?>' data-fkcart-product-id='<?php echo $special_addon_product_id; ?>'>
+<div class="<?php echo esc_attr( implode( ' ', $base_class ) ); ?>" id="fkcart-spl-addon" data-fkcart-product-cart-key="<?php echo esc_attr( $fkspl_cart_item_key ); ?>" data-fkcart-product-id="<?php echo esc_attr( $special_addon_product_id ); ?>">
     <div class="fkcart--item">
         <div class="fkcart-d-flex fkcart-gap-12 fkcart-align-items-center">
             <div class="fkcart-d-col-flex fkcart-spl-addon-image-wrap">
                 <div class="fkcart-product-image">
-                    <img src="<?php echo $special_addon_product_image_src; ?>" alt="">
+                    <img src="<?php echo esc_url( $special_addon_product_image_src ); ?>" alt="">
                 </div>
             </div>
             <div class="fkcart-d-col-flex fkcart-item-meta-wrap">
                 <div class="fkcart-item-meta">
-                    <a target="_blank" href="<?php echo get_the_permalink( $special_addon_product_id ); ?>" class="fkcart-item-title">
-						<?php echo $special_addon_heading; ?>
+                    <a target="_blank" href="<?php echo esc_url( get_the_permalink( $special_addon_product_id ) ); ?>" class="fkcart-item-title">
+						<?php echo esc_html( $special_addon_heading ); ?>
                     </a>
 
                     <div class="fkcart-item-meta-content">
-                        <p><?php echo $special_addon_desc; ?></p>
-                        <a href="javascript:void(0)" class="fkcart-learn-more"><?php echo apply_filters( 'fkcart_shipping_protection_learn_more', __( 'Learn More', 'woocommerce' ) ) ?></a>
+                        <p><?php echo wp_kses_post( $special_addon_desc ); ?></p>
+                        <a href="javascript:void(0)" class="fkcart-learn-more"><?php echo esc_html( apply_filters( 'fkcart_shipping_protection_learn_more', __( 'Learn More', 'woocommerce' ) ) ); ?></a>
                     </div>
-                    <div class="fkcart-item-meta-content-wrap"><?php echo $variable_meta; ?></div>
-                    <a href="javascript:void(0)" class="fkcart-select-product fkcart-spl-addon-select" data-id="<?php echo $special_addon_product_id; ?>" data-action-type="special_addon"><?php echo $special_addon_product_button; ?></a>
+                    <div class="fkcart-item-meta-content-wrap"><?php echo wp_kses_post( $variable_meta ); ?></div>
+                    <a href="javascript:void(0)" class="fkcart-select-product fkcart-spl-addon-select" data-id="<?php echo esc_attr( $special_addon_product_id ); ?>" data-action-type="special_addon"><?php echo esc_html( $special_addon_product_button ); ?></a>
 
                 </div>
             </div>
             <div class="fkcart-d-col-flex">
                 <div class="fkcart-toggle-switcher">
-                    <input type="checkbox" name="fkcart_spl_addon_checkbox" id="fkcart-spl-addon-checkbox" class="fkcart-spl-checkbox fkcart-switch" <?php echo '' != $fkspl_cart_item_key ? 'checked' : ''; ?> <?php echo $disabled; ?> data-fkcart-product-id="<?php echo $special_addon_product_id; ?>">
+                    <input type="checkbox" name="fkcart_spl_addon_checkbox" id="fkcart-spl-addon-checkbox" class="fkcart-spl-checkbox fkcart-switch" <?php echo '' != $fkspl_cart_item_key ? 'checked' : ''; ?> <?php echo esc_attr( $disabled ); ?> data-fkcart-product-id="<?php echo esc_attr( $special_addon_product_id ); ?>">
                     <label for="fkcart-spl-addon-checkbox"><span class="sw"></span></label>
                 </div>
 
                 <div class="fkcart-price-wrap">
-					<?php echo $special_addon_product_price; ?>
+					<?php echo wp_kses_post( $special_addon_product_price ); ?>
                 </div>
 
             </div>

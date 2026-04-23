@@ -9,12 +9,11 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WPML' ) ) {
 		public function __construct() {
 
 			/* checkout page */
-			add_filter( 'wfacp_wpml_checkout_page_id', [ $this, 'wfacp_wpml_checkout_page_id_function' ], 10, 1 );
-			add_action( 'admin_head', [ $this, 'add_admin_css' ] );
+			add_filter( 'wfacp_wpml_checkout_page_id', array( $this, 'wfacp_wpml_checkout_page_id_function' ), 10, 1 );
+			add_action( 'admin_head', array( $this, 'add_admin_css' ) );
 			add_filter( 'wfacp_disabled_elementor_duplicate_template', '__return_true' );
-			add_action( 'wfacp_disabled_elementor_duplicate_template_placeholder', [ $this, 'duplicate_template' ], 10, 2 );
-			add_action( 'elementor/editor/before_enqueue_scripts', [ $this, 'remove_action' ], 9 );
-
+			add_action( 'wfacp_disabled_elementor_duplicate_template_placeholder', array( $this, 'duplicate_template' ), 10, 2 );
+			add_action( 'elementor/editor/before_enqueue_scripts', array( $this, 'remove_action' ), 9 );
 		}
 
 		public function wfacp_wpml_checkout_page_id_function( $override_checkout_page_id ) {
@@ -33,9 +32,8 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WPML' ) ) {
 					$override_checkout_page_id = empty( $element_id ) ? $override_checkout_page_id : $element_id;
 				}
 			} catch ( Exception $e ) {
-				//echo $e->getMessage();
+				// echo $e->getMessage();
 			}
-
 
 			return $override_checkout_page_id;
 		}
@@ -46,17 +44,16 @@ if ( ! class_exists( 'WFACP_Compatibility_With_WPML' ) ) {
 
 		public function add_admin_css() {
 
-			echo "<style>";
-			echo "body.woofunnels_page_wfacp{position: initial;}";
-			echo "</style>";
-
+			echo '<style>';
+			echo 'body.woofunnels_page_wfacp{position: initial;}';
+			echo '</style>';
 		}
 
 		public function remove_action() {
 			if ( ! class_exists( 'WPML_Elementor_Adjust_Global_Widget_ID' ) || ! WFACP_Common::is_theme_builder() || ! isset( $_GET['post'] ) ) {
 				return;
 			}
-			$elementor_data = get_post_meta( $_GET['post'], '_elementor_data', true );
+			$elementor_data = get_post_meta( absint( wp_unslash( $_GET['post'] ) ), '_elementor_data', true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification not required for admin page identification
 			if ( is_array( $elementor_data ) ) {
 				WFACP_Common::remove_actions( 'elementor/editor/before_enqueue_scripts', 'WPML_Elementor_Adjust_Global_Widget_ID', 'adjust_ids' );
 			}

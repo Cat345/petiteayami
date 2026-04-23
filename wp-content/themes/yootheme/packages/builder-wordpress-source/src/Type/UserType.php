@@ -126,7 +126,7 @@ class UserType
                     'args' => [
                         'size' => [
                             'type' => 'String',
-                            'default' => '96',
+                            'defaultValue' => '96',
                         ],
                     ],
                     'metadata' => [
@@ -138,7 +138,6 @@ class UserType
                                     'Set the size for the Gravatar image in pixels.',
                                 ),
                                 'type' => 'text',
-                                'default' => '96',
                                 'attrs' => [
                                     'min' => 1,
                                     'required' => true,
@@ -156,6 +155,7 @@ class UserType
                     'args' => [
                         'separator' => [
                             'type' => 'String',
+                            'defaultValue' => ', ',
                         ],
                     ],
                     'metadata' => [
@@ -164,7 +164,6 @@ class UserType
                             'separator' => [
                                 'label' => trans('Separator'),
                                 'description' => trans('Set the separator between user roles.'),
-                                'default' => ', ',
                             ],
                         ],
                     ],

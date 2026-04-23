@@ -337,21 +337,7 @@ class WidgetsListener
         );
 
         // Ignore wpautop filter for text-widgets in header position
-        if (
-            in_array($sidebar, [
-                'navbar',
-                'navbar-split',
-                'navbar-push',
-                'navbar-mobile',
-                'header',
-                'header-split',
-                'header-mobile',
-                'toolbar-left',
-                'toolbar-right',
-                'logo',
-                'logo-mobile',
-            ])
-        ) {
+        if (preg_match('/^(navbar|header|toolbar|logo)($|-)/', $sidebar ?? '')) {
             $restore = FilterHelper::remove('widget_text_content', 'wpautop');
         }
 
@@ -407,7 +393,7 @@ class WidgetsListener
         $this->widgets[$sidebar][] = $this->createWidget([
             'id' => $widget->id,
             'type' => $type,
-            'title' => $title ? $title[1] : '',
+            'title' => $title[1] ?? '',
             'content' => $content,
             'instance' => $instance,
             'attrs' => [
@@ -423,8 +409,6 @@ class WidgetsListener
 
     /**
      * @param array<string, mixed>|object $widget
-     *
-     * @return object
      */
     protected function createWidget($widget): object
     {
@@ -523,8 +507,6 @@ class WidgetsListener
 
     /**
      * @param array<string, mixed> $instance
-     *
-     * @return object
      */
     protected function getWidget(
         string $sidebar,

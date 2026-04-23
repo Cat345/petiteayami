@@ -4,9 +4,9 @@
  */
 if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 	class BWF_Ecomm_Tracking_Common {
-		public $api_events = [];
+		public $api_events    = array();
 		public $gtag_rendered = false;
-		private static $ins = null;
+		private static $ins   = null;
 
 		private $conv_table = 'bwf_conversion_tracking';
 
@@ -26,7 +26,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			add_action( 'woocommerce_order_status_changed', array( $this, 'maybe_insert_pending_tracking_data' ), 9, 4 );
 			add_action( 'woocommerce_order_status_processing_to_cancelled', array( $this, 'removed_cod_order_after_canceled' ), 10, 2 );
 
-
 			/***
 			 * conversion delete row process on order delete and fully refunded
 			 */
@@ -37,12 +36,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			add_action( 'woocommerce_delete_order', array( $this, 'delete_conversion_row' ) );
 
-
 			add_action( 'bwf_conversion_tracking_index_completed', array( $this, 'update_conversion_table' ), 10, 2 );
 
-
 			add_action( 'fk_fb_every_4_minute', array( $this, 'maybe_execute_thankyou_hook' ), 999 );
-
 		}
 
 		/**
@@ -50,7 +46,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -76,25 +72,34 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 
-			$data = apply_filters( 'wffn_conversion_tracking_localize_data', [
-				'utc_offset'         => esc_attr( $this->get_timezone_offset() ),
-				'site_url'           => esc_url( site_url() ),
-				'genericParamEvents' => wp_json_encode( $this->get_generic_event_params() ),
-				'cookieKeys'         => [ "flt", "timezone", "is_mobile", "browser", "fbclid", "gclid", "referrer", "fl_url" ],
-				'excludeDomain'      => [ 'paypal.com', 'klarna.com', 'quickpay.net' ]
+			$data = apply_filters(
+				'wffn_conversion_tracking_localize_data',
+				array(
+					'utc_offset'         => esc_attr( $this->get_timezone_offset() ),
+					'site_url'           => esc_url( site_url() ),
+					'genericParamEvents' => wp_json_encode( $this->get_generic_event_params() ),
+					'cookieKeys'         => array( 'flt', 'timezone', 'is_mobile', 'browser', 'fbclid', 'gclid', 'referrer', 'fl_url' ),
+					'excludeDomain'      => array( 'paypal.com', 'klarna.com', 'quickpay.net' ),
 
-			] );
+				)
+			);
 
-			wp_enqueue_script( 'wfco-utm-tracking', plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/utm-tracker' . $min . '.js', array(), WooFunnel_Loader::$version, array(
-				'is_footer' => false,
-				'strategy'  => 'defer'
-			) );
+			wp_enqueue_script(
+				'wfco-utm-tracking',
+				plugin_dir_url( WooFunnel_Loader::$ultimate_path ) . 'woofunnels/assets/js/utm-tracker' . $min . '.js',
+				array(),
+				WooFunnel_Loader::$version,
+				array(
+					'in_footer' => false,
+					'strategy'  => 'defer',
+				)
+			);
 			wp_localize_script( 'wfco-utm-tracking', 'wffnUtm', $data );
-
 		}
 
 		/**
 		 * Add Generic event params to the data in events
+		 *
 		 * @return array
 		 */
 		public function get_generic_event_params() {
@@ -109,7 +114,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'user_roles' => $user_roles,
 				'plugin'     => 'Funnel Builder',
 			);
-
 		}
 
 
@@ -120,10 +124,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		public function create_db_tables( $args, $tables ) {
 
 			if ( $tables['version'] !== BWF_DB_VERSION || ! in_array( $this->conv_table, $tables['tables'], true ) ) {
-				$args[] = [
+				$args[] = array(
 					'name'   => $this->conv_table,
 					'schema' => $this->conversion_table_schema(),
-				];
+				);
 			}
 
 			return $args;
@@ -131,6 +135,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 		/**
 		 * update conversion table after migration
+		 *
 		 * @return void
 		 */
 		public function update_conversion_table() {
@@ -159,7 +164,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( function_exists( 'wffn_update_currency_switcher_data' ) ) {
 				wffn_update_currency_switcher_data();
 			}
-
 		}
 
 		/**
@@ -174,7 +178,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$url    = str_replace( array( 'http://', 'https://' ), '', $url );
 			$domain = str_replace( array( 'http://', 'https://' ), '', $domain );
-
 
 			/**
 			 * if its a same site referrer then return empty
@@ -195,7 +198,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$max_index_length = 191;
 			$blank            = "NOT NULL DEFAULT ''";
 
-			return "CREATE TABLE `{table_prefix}" . $this->conv_table . "` (
+			return 'CREATE TABLE `{table_prefix}' . $this->conv_table . "` (
 						`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 						`contact_id` bigint(20) unsigned NOT NULL default 0,
 						`funnel_id` bigint(20) unsigned NOT NULL default 0,
@@ -210,27 +213,27 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						`checkout_total` double DEFAULT 0 NOT NULL,
 						`bump_total` double DEFAULT 0 NOT NULL,
 						`offer_total` double DEFAULT 0 NOT NULL,
-						`bump_accepted` varchar(255)" . $blank . ",
-						`bump_rejected` varchar(255) " . $blank . ",
-						`offer_accepted` varchar(255) " . $blank . ",
-						`offer_rejected` varchar(255) " . $blank . ",
+						`bump_accepted` varchar(255)" . $blank . ',
+						`bump_rejected` varchar(255) ' . $blank . ',
+						`offer_accepted` varchar(255) ' . $blank . ',
+						`offer_rejected` varchar(255) ' . $blank . ',
 						`first_click` DateTime NOT NULL,
-						`device` varchar(100) " . $blank . ",
-						`browser` varchar(100) " . $blank . ",
-						`first_landing_url` varchar(255) " . $blank . ",
-						`referrer` varchar(255) " . $blank . ",
-						`utm_source` varchar(255) " . $blank . ",
-						`utm_medium` varchar(255) " . $blank . ",
-						`utm_campaign` varchar(255) " . $blank . ",
-						`utm_term` varchar(255) " . $blank . ",
-						`utm_content` varchar(255) " . $blank . ",
-						`referrer_last` varchar(255) " . $blank . ",
-						`utm_source_last` varchar(255) " . $blank . ",
-						`utm_medium_last` varchar(255) " . $blank . ",
-						`utm_campaign_last` varchar(255) " . $blank . ",
-						`utm_term_last` varchar(255) " . $blank . ",
-						`utm_content_last` varchar(255) " . $blank . ",
-						`click_id` varchar(255) " . $blank . ",
+						`device` varchar(100) ' . $blank . ',
+						`browser` varchar(100) ' . $blank . ',
+						`first_landing_url` varchar(255) ' . $blank . ',
+						`referrer` varchar(255) ' . $blank . ',
+						`utm_source` varchar(255) ' . $blank . ',
+						`utm_medium` varchar(255) ' . $blank . ',
+						`utm_campaign` varchar(255) ' . $blank . ',
+						`utm_term` varchar(255) ' . $blank . ',
+						`utm_content` varchar(255) ' . $blank . ',
+						`referrer_last` varchar(255) ' . $blank . ',
+						`utm_source_last` varchar(255) ' . $blank . ',
+						`utm_medium_last` varchar(255) ' . $blank . ',
+						`utm_campaign_last` varchar(255) ' . $blank . ',
+						`utm_term_last` varchar(255) ' . $blank . ',
+						`utm_content_last` varchar(255) ' . $blank . ',
+						`click_id` varchar(255) ' . $blank . ",
 						`journey` longtext,
 						`timestamp` DateTime NOT NULL,
 						PRIMARY KEY (`id`),
@@ -274,7 +277,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$funnel_id = get_post_meta( $optin_id, '_bwf_in_funnel', true );
 
-			$args = [
+			$args = array(
 				'contact_id'     => ! empty( $posted_data['cid'] ) ? $posted_data['cid'] : 0,
 				'type'           => 1,
 				'value'          => 0,
@@ -283,7 +286,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'automation_id'  => 0,
 				'source'         => isset( $posted_data['optin_entry_id'] ) ? $posted_data['optin_entry_id'] : 0,
 				'country'        => isset( $get_data['country'] ) ? $get_data['country'] : '',
-				'timestamp'      => current_time( 'mysql' ),//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				'timestamp'      => current_time( 'mysql' ), //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				'checkout_total' => 0,
 				'bump_total'     => 0,
 				'offer_total'    => 0,
@@ -291,7 +294,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'bump_rejected'  => '',
 				'offer_accepted' => '',
 				'offer_rejected' => '',
-			];
+			);
 
 			$get_data = array_merge( $get_data, $args );
 
@@ -313,7 +316,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$get_data = $this->get_common_tracking_data();
 			$order->update_meta_data( '_wffn_tracking_data', $get_data );
-
 		}
 
 		/**
@@ -353,7 +355,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						$get_data['bump_accepted']  = '';
 						$get_data['bump_rejected']  = '';
 						$get_data['offer_total']    = ! empty( $package['total'] ) ? $this->get_price_value_for_db( $package['total'], $parent_order->get_currency() ) : 0;
-						$get_data['offer_accepted'] = wp_json_encode( array( ( string ) $offer_id ) );
+						$get_data['offer_accepted'] = wp_json_encode( array( (string) $offer_id ) );
 						$get_data['offer_rejected'] = '';
 						$get_data['timestamp']      = current_time( 'mysql' );
 						$this->insert_tracking_data( $get_data );
@@ -366,7 +368,14 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						/**
 						 * Copy data form parent row and modify and insert offer data
 						 */
-						$wpdb->update( "{$wpdb->prefix}{$this->conv_table}", $get_data, [ 'type' => 2, 'source' => $parent_order->get_id() ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->update(
+							"{$wpdb->prefix}{$this->conv_table}",
+							$get_data,
+							array(
+								'type'   => 2,
+								'source' => $parent_order->get_id(),
+							)
+						); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					}
 
 					return;
@@ -408,7 +417,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$source_id = class_exists( 'WFFN_Core' ) ? WFFN_Core()->data->get( 'source_id', 0 ) : 0;
 
-			$args = [
+			$args = array(
 				'contact_id'     => ! empty( $parent_order->get_meta( '_woofunnel_cid' ) ) ? $parent_order->get_meta( '_woofunnel_cid' ) : 0,
 				'type'           => 2,
 				'value'          => ! empty( $package['total'] ) ? $this->get_price_value_for_db( $package['total'], $parent_order->get_currency() ) : 0,
@@ -424,10 +433,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'offer_total'    => ! empty( $package['total'] ) ? $this->get_price_value_for_db( $package['total'], $parent_order->get_currency() ) : 0,
 				'bump_accepted'  => '',
 				'bump_rejected'  => '',
-				'offer_accepted' => wp_json_encode( array( ( string ) $offer_id ) ),
+				'offer_accepted' => wp_json_encode( array( (string) $offer_id ) ),
 				'offer_rejected' => '',
 				'source_id'      => $source_id,
-			];
+			);
 
 			$tracking_data = array_merge( $tracking_data, $args );
 
@@ -470,7 +479,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$tracking_data = BWF_WC_Compatibility::get_order_meta( $order, '_wffn_tracking_data' );
 
-			if ( ! empty ( $tracking_data ) && is_array( $tracking_data ) ) {
+			if ( ! empty( $tracking_data ) && is_array( $tracking_data ) ) {
 				$this->insert_tracking_order( $order, $tracking_data );
 			}
 		}
@@ -530,7 +539,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 				}
 			}
-
 		}
 
 		/**
@@ -544,7 +552,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 		 * @return void
 		 */
 		public function removed_cod_order_after_canceled( $order_id, $order ) {
-
 
 			if ( ! $order instanceof WC_Order ) {
 				return;
@@ -572,7 +579,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( class_exists( 'WFOCU_Core' ) ) {
 				WFOCU_Core()->admin->clear_session_record_on_shop_order_delete( $order_id );
 			}
-
 		}
 
 		/**
@@ -589,8 +595,30 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$wfacp_report_data = BWF_WC_Compatibility::get_order_meta( $order, '_wfacp_report_data' );
 			$step_id           = BWF_WC_Compatibility::get_order_meta( $order, '_wfacp_post_id' );
 			$funnel_id         = get_post_meta( $step_id, '_bwf_in_funnel', true );
-			$cid               = BWF_WC_Compatibility::get_order_meta( $order, '_woofunnel_cid' );
-			$checkout_total    = ( is_array( $wfacp_report_data ) && isset( $wfacp_report_data['wfacp_total'] ) ) ? abs( $wfacp_report_data['wfacp_total'] ) : 0;
+
+			// Cart checkout: no wfacp_id. Use store checkout first checkout if configured.
+			if ( empty( $step_id ) && class_exists( 'WFFN_Common' ) && ( $store_id = WFFN_Common::get_store_checkout_id() ) > 0 && true === wffn_string_to_bool( WFFN_Core()->get_dB()->get_meta( $store_id, 'status' ) ) ) {
+				$funnel = new WFFN_Funnel( $store_id );
+				if ( wffn_is_valid_funnel( $funnel ) ) {
+					foreach ( $funnel->get_steps() as $step ) {
+						if ( isset( $step['type'] ) && 'wc_checkout' === $step['type'] && ! empty( $step['id'] ) && 'publish' === get_post_status( $step['id'] ) ) {
+							$step_id   = $step['id'];
+							$funnel_id = get_post_meta( $step_id, '_bwf_in_funnel', true );
+							break;
+						}
+					}
+					if ( empty( $step_id ) ) {
+						$step_id   = apply_filters( 'wfacp_global_checkout_page_id', 0 );
+						$funnel_id = $store_id;
+					}
+				}
+			}
+
+			$cid            = BWF_WC_Compatibility::get_order_meta( $order, '_woofunnel_cid' );
+			$checkout_total = ( is_array( $wfacp_report_data ) && isset( $wfacp_report_data['wfacp_total'] ) ) ? abs( $wfacp_report_data['wfacp_total'] ) : 0;
+			if ( empty( $checkout_total ) && ! empty( $step_id ) ) {
+				$checkout_total = $this->get_price_value_for_db( $order->get_total(), $order->get_currency() );
+			}
 
 			/**
 			 * prepare bump data for insert
@@ -604,9 +632,9 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				foreach ( $bump_data as $id => $b_item ) {
 					if ( 1 == absint( $b_item['converted'] ) ) {
 						$bump_total      = floatval( $bump_total ) + floatval( $b_item['total'] );
-						$bump_accepted[] = ( string ) $id;
+						$bump_accepted[] = (string) $id;
 					} else {
-						$bump_rejected[] = ( string ) $id;
+						$bump_rejected[] = (string) $id;
 					}
 				}
 			}
@@ -618,7 +646,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$date_created = $date_created->format( 'Y-m-d H:i:s' );
 			}
 
-			$args = [
+			$args = array(
 				'contact_id'     => ! ( empty( $cid ) ) ? $cid : 0,
 				'type'           => 2,
 				'value'          => $this->get_price_value_for_db( $order->get_total(), $order->get_currency() ),
@@ -636,12 +664,11 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'bump_rejected'  => ! empty( $bump_rejected ) ? wp_json_encode( $bump_rejected ) : '',
 				'offer_accepted' => '',
 				'offer_rejected' => '',
-			];
+			);
 
 			$tracking_data = array_merge( $tracking_data, $args );
 
 			$tracking_data = $this->maybe_get_offer_data( $tracking_data, $order );
-
 
 			if ( empty( $tracking_data['funnel_id'] ) && ( ! class_exists( 'WFFN_Common' ) || ! method_exists( 'WFFN_Common', 'get_store_checkout_id' ) || 0 === WFFN_Common::get_store_checkout_id() || false === wffn_string_to_bool( WFFN_Core()->get_dB()->get_meta( WFFN_Common::get_store_checkout_id(), 'status' ) ) ) ) {
 				// No valid funnel ID found, set to 0 and return
@@ -697,7 +724,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 */
 			$source_id = class_exists( 'WFFN_Core' ) ? WFFN_Core()->data->get( 'source_id', 0 ) : 0;
 
-			$args = [
+			$args = array(
 				'utm_source'        => isset( $get_data['wffn_utm_source'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_source'] ) ) ) : '',
 				'utm_medium'        => isset( $get_data['wffn_utm_medium'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_medium'] ) ) ) : '',
 				'utm_campaign'      => isset( $get_data['wffn_utm_campaign'] ) ? $this->string_length( $this->strip_emojis( bwf_clean( $get_data['wffn_utm_campaign'] ) ) ) : '',
@@ -711,7 +738,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'referrer'          => isset( $get_data['wffn_referrer'] ) ? $this->filter_referrer( $get_data['wffn_referrer'] ) : '',
 				'journey'           => '',
 				'source_id'         => $source_id,
-			];
+			);
 
 			if ( true === $is_optin ) {
 				$timezone        = isset( $get_data['wffn_timezone'] ) ? $this->string_length( bwf_clean( $get_data['wffn_timezone'] ) ) : '';
@@ -720,7 +747,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 
 			return $args;
-
 		}
 
 		/**
@@ -739,77 +765,77 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return '';
 			}
 
-		$utm_source = strtolower( trim( $utm_source ) );
+			$utm_source = strtolower( trim( $utm_source ) );
 
-		// Map of known UTM sources to their referrer domains (only known URLs)
-		// Split into short keys (≤4 letters) and long keys (>4 letters) for different matching logic
-		$utm_to_referrer_map_short = array(
-			// Short keys (≤4 letters): Allow partial matches with delimiters
-			'fb'               => 'facebook.com',
-			'ig'               => 'instagram.com',
-			'tw'               => 'twitter.com',
-			'yt'               => 'youtube.com',
-			'pin'              => 'pinterest.com',
-			'snap'             => 'snapchat.com',
-			'gclid'            => 'google.com',
-			'bing'             => 'bing.com',
-		);
+			// Map of known UTM sources to their referrer domains (only known URLs)
+			// Split into short keys (≤4 letters) and long keys (>4 letters) for different matching logic
+			$utm_to_referrer_map_short = array(
+				// Short keys (≤4 letters): Allow partial matches with delimiters
+				'fb'    => 'facebook.com',
+				'ig'    => 'instagram.com',
+				'tw'    => 'twitter.com',
+				'yt'    => 'youtube.com',
+				'pin'   => 'pinterest.com',
+				'snap'  => 'snapchat.com',
+				'gclid' => 'google.com',
+				'bing'  => 'bing.com',
+			);
 
-		$utm_to_referrer_map_long = array(
-			// Long keys (>4 letters): Must be exact whole word match
-			'google'           => 'google.com',
-			'googleads'        => 'google.com',
-			'facebook'         => 'facebook.com',
-			'fbclid'           => 'facebook.com',
-			'instagram'        => 'instagram.com',
-			'twitter'          => 'twitter.com',
-			'linkedin'         => 'linkedin.com',
-			'youtube'          => 'youtube.com',
-			'tiktok'           => 'tiktok.com',
-			'pinterest'        => 'pinterest.com',
-			'snapchat'         => 'snapchat.com',
-			'reddit'           => 'reddit.com',
-			'quora'            => 'quora.com',
-			'yahoo'            => 'yahoo.com',
-			'duckduckgo'       => 'duckduckgo.com',
-			'whatsapp'         => 'whatsapp.com',
-		);
+			$utm_to_referrer_map_long = array(
+				// Long keys (>4 letters): Must be exact whole word match
+				'google'     => 'google.com',
+				'googleads'  => 'google.com',
+				'facebook'   => 'facebook.com',
+				'fbclid'     => 'facebook.com',
+				'instagram'  => 'instagram.com',
+				'twitter'    => 'twitter.com',
+				'linkedin'   => 'linkedin.com',
+				'youtube'    => 'youtube.com',
+				'tiktok'     => 'tiktok.com',
+				'pinterest'  => 'pinterest.com',
+				'snapchat'   => 'snapchat.com',
+				'reddit'     => 'reddit.com',
+				'quora'      => 'quora.com',
+				'yahoo'      => 'yahoo.com',
+				'duckduckgo' => 'duckduckgo.com',
+				'whatsapp'   => 'whatsapp.com',
+			);
 
-		// Check for exact match first in both maps
-		if ( isset( $utm_to_referrer_map_short[ $utm_source ] ) ) {
-			return $utm_to_referrer_map_short[ $utm_source ];
-		}
-		if ( isset( $utm_to_referrer_map_long[ $utm_source ] ) ) {
-			return $utm_to_referrer_map_long[ $utm_source ];
-		}
-
-		// For short keys (≤4 letters): Allow partial matches with delimiters
-		// Match if key appears at start, end, or surrounded by delimiters (hyphen, underscore, space, or word boundary)
-		// This prevents false matches (e.g., "activecampaign" matching "ig") while allowing valid cases like "fb_mob"
-		foreach ( $utm_to_referrer_map_short as $utm_key => $referrer ) {
-			$escaped_key = preg_quote( $utm_key, '/' );
-			// Match: (start of string OR delimiter OR word boundary) + key + (delimiter OR word boundary OR end of string)
-			// Delimiters: hyphen, underscore, space
-			$pattern = '/(?:^|[-_\s]|\b)' . $escaped_key . '(?:[-_\s]|\b|$)/';
-			if ( preg_match( $pattern, $utm_source ) ) {
-				return $referrer;
+			// Check for exact match first in both maps
+			if ( isset( $utm_to_referrer_map_short[ $utm_source ] ) ) {
+				return $utm_to_referrer_map_short[ $utm_source ];
 			}
-		}
-
-		// For long keys (>4 letters): Must be exact whole word match
-		// Match only if key is surrounded by spaces or at start/end of string
-		// This allows "mobile facebook" but prevents "facebook-ads" or "facebook_ads"
-		foreach ( $utm_to_referrer_map_long as $utm_key => $referrer ) {
-			$escaped_key = preg_quote( $utm_key, '/' );
-			// Match: (start of string OR space) + key + (space OR end of string)
-			// This ensures it's a standalone word, not part of a compound with delimiters
-			$pattern = '/(?:^|\s)' . $escaped_key . '(?:\s|$)/';
-			if ( preg_match( $pattern, $utm_source ) ) {
-				return $referrer;
+			if ( isset( $utm_to_referrer_map_long[ $utm_source ] ) ) {
+				return $utm_to_referrer_map_long[ $utm_source ];
 			}
-		}
 
-		return '';
+			// For short keys (≤4 letters): Allow partial matches with delimiters
+			// Match if key appears at start, end, or surrounded by delimiters (hyphen, underscore, space, or word boundary)
+			// This prevents false matches (e.g., "activecampaign" matching "ig") while allowing valid cases like "fb_mob"
+			foreach ( $utm_to_referrer_map_short as $utm_key => $referrer ) {
+				$escaped_key = preg_quote( $utm_key, '/' );
+				// Match: (start of string OR delimiter OR word boundary) + key + (delimiter OR word boundary OR end of string)
+				// Delimiters: hyphen, underscore, space
+				$pattern = '/(?:^|[-_\s]|\b)' . $escaped_key . '(?:[-_\s]|\b|$)/';
+				if ( preg_match( $pattern, $utm_source ) ) {
+					return $referrer;
+				}
+			}
+
+			// For long keys (>4 letters): Must be exact whole word match
+			// Match only if key is surrounded by spaces or at start/end of string
+			// This allows "mobile facebook" but prevents "facebook-ads" or "facebook_ads"
+			foreach ( $utm_to_referrer_map_long as $utm_key => $referrer ) {
+				$escaped_key = preg_quote( $utm_key, '/' );
+				// Match: (start of string OR space) + key + (space OR end of string)
+				// This ensures it's a standalone word, not part of a compound with delimiters
+				$pattern = '/(?:^|\s)' . $escaped_key . '(?:\s|$)/';
+				if ( preg_match( $pattern, $utm_source ) ) {
+					return $referrer;
+				}
+			}
+
+			return '';
 		}
 
 		/**
@@ -874,7 +900,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$get_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$conv_table} WHERE type = %d AND source = %d", intval($args['type']), $args['source'] ) ); //phpcs:ignore
 				if ( ! empty( $get_id ) && absint( $get_id ) > 0 ) {
 					$lastId = $get_id;
-					$wpdb->update( $conv_table, $args, [ 'id' => $get_id ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $conv_table, $args, array( 'id' => $get_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				} else {
 					$inserted = $wpdb->insert( $conv_table, $args ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 					if ( $inserted ) {
@@ -922,12 +948,12 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			$country_list = wp_list_pluck( $list, 'timezone' );
 
-			//check valid timezone
+			// check valid timezone
 			foreach ( $country_list as $key => $item ) {
 				if ( false !== array_search( $timezone, $item, true ) ) {
 					$result = array(
 						'country_code' => $key,
-						'timezone'     => $timezone
+						'timezone'     => $timezone,
 					);
 					break;
 				}
@@ -938,11 +964,12 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 		/**
 		 * get the timezone offset in minutes
+		 *
 		 * @return float|int
 		 */
 		public function get_timezone_offset() {
 			$offset                 = 0;
-			$offset_diff_in_seconds = current_time( 'timestamp' ) - current_time( 'timestamp', true );
+			$offset_diff_in_seconds = current_time( 'timestamp' ) - time();
 			if ( absint( $offset_diff_in_seconds ) > 0 ) {
 				$offset = $offset_diff_in_seconds / 60;
 			}
@@ -981,7 +1008,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			 * @todo we will update code showing for funnel meta box currently not have exact mata for check order create by funnel
 			 * so we run query in conversion table and check order created by funnel
 			 */ global $wpdb;
-			$query    = $wpdb->prepare( "SELECT * from " . $wpdb->prefix . $this->conv_table . " WHERE type = %s AND source = %d", 2, $order_id );
+			$query    = $wpdb->prepare( 'SELECT * from ' . $wpdb->prefix . $this->conv_table . ' WHERE type = %s AND source = %d', 2, $order_id );
 			$get_data = $wpdb->get_row( $query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 			if ( empty( $get_data ) ) {
 				return;
@@ -991,10 +1018,18 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				'bwf_meta_data' => $get_data,
 			);
 
-			add_meta_box( 'bwfan_utm_info_box', __( 'Conversion Tracking', 'woofunnels' ), array( // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			add_meta_box(
+				'bwfan_utm_info_box',
+				__( 'Conversion Tracking', 'woofunnels' ),
+				array( // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				$this,
-				'order_meta_box_data'
-			), function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order', 'side', 'default', $data );
+				'order_meta_box_data',
+				),
+				function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+				'side',
+				'default',
+				$data
+			);
 		}
 
 		public function is_order_renewal( $order ) {
@@ -1028,9 +1063,11 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$offer_rejected = array();
 			$offer_total    = 0;
 
-
-			$offer_query = $wpdb->prepare( "SELECT events.object_type as object_type, events.id as event_id, events.object_id as object_id, events.action_type_id as action_type_id, events.value as total FROM " . $wpdb->prefix . "wfocu_event AS events
-                  LEFT JOIN " . $wpdb->prefix . "wfocu_session AS session ON ( events.sess_id = session.id ) WHERE 1=1 AND events.object_type = 'offer' AND (events.action_type_id = '4' OR events.action_type_id = '6' ) AND session.order_id = %s", $order_id );
+			$offer_query = $wpdb->prepare(
+				'SELECT events.object_type as object_type, events.id as event_id, events.object_id as object_id, events.action_type_id as action_type_id, events.value as total FROM ' . $wpdb->prefix . 'wfocu_event AS events
+                  LEFT JOIN ' . $wpdb->prefix . "wfocu_session AS session ON ( events.sess_id = session.id ) WHERE 1=1 AND events.object_type = 'offer' AND (events.action_type_id = '4' OR events.action_type_id = '6' ) AND session.order_id = %s",
+				$order_id
+			);
 
 			$offer_data = $wpdb->get_results( $offer_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -1038,7 +1075,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				foreach ( $offer_data as $o_item ) {
 					if ( 4 === absint( $o_item['action_type_id'] ) ) {
 						$offer_total      = floatval( $offer_total ) + floatval( $o_item['total'] );
-						$offer_accepted[] = ( string ) $o_item['object_id'];
+						$offer_accepted[] = (string) $o_item['object_id'];
 						/**
 						 * remove from reject offer array
 						 */
@@ -1047,8 +1084,8 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 							unset( $offer_rejected[ $reject_key ] );
 							$offer_rejected = array_values( $offer_rejected );
 						}
-					} else if ( 6 == absint( $o_item['action_type_id'] ) ) {
-						$offer_rejected[] = ( string ) $o_item['object_id'];
+					} elseif ( 6 == absint( $o_item['action_type_id'] ) ) {
+						$offer_rejected[] = (string) $o_item['object_id'];
 					}
 				}
 			}
@@ -1060,7 +1097,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$is_sibling = BWF_WC_Compatibility::get_order_meta( $order, '_wfocu_sibling_order' );
 
 			if ( ! empty( $is_sibling ) ) {
-				$offer_accepted = [];
+				$offer_accepted = array();
 			}
 
 			$args['offer_total']    = $this->get_price_value_for_db( $offer_total, $order->get_currency() );
@@ -1068,7 +1105,6 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			$args['offer_rejected'] = ! empty( $offer_rejected ) ? wp_json_encode( $offer_rejected ) : '';
 
 			return $args;
-
 		}
 
 		public function order_meta_box_data( $post, $meta_data ) {
@@ -1091,11 +1127,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					$funnel_title = ! empty( $funnel_obj->get_title() ) ? $funnel_obj->get_title() : $funnel_obj->get_id();
 					$funnel       = '<a href="' . $link . '" target="_blank">' . $funnel_title . '</a>';
 				}
-
 			}
 			$diff = '';
 			$ref  = '';
-			$data = [];
+			$data = array();
 			if ( ! empty( $first_click ) ) {
 				$d1   = strtotime( $timestamp );
 				$d2   = strtotime( $first_click );
@@ -1107,12 +1142,12 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 			$data['funnel'] = array(
 				'name'  => __( 'Funnel', 'woofunnels' ),  // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-				'value' => $funnel
+				'value' => $funnel,
 			);
 			if ( '' !== $first_click ) {
 				$data['first_click'] = array(
 					'name'  => __( 'First Interaction', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => $first_click
+					'value' => $first_click,
 				);
 			}
 			if ( '' !== $diff ) {
@@ -1154,7 +1189,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( isset( $get_data['referrer'] ) && '' !== $get_data['referrer'] ) {
 				$data['referrer'] = array(
 					'name'  => __( 'Referrer', 'woofunnels' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . $ref[0] . '" target="_blank">' . $ref[0] . '</a>' : ''
+					'value' => ( is_array( $ref ) && isset( $ref[0] ) ) ? '<a href="' . $ref[0] . '" target="_blank">' . $ref[0] . '</a>' : '',
 				);
 			}
 			if ( isset( $get_data['click_id'] ) ) {
@@ -1182,30 +1217,30 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			}
 			?>
 			<style>
-                .bwf-utm-box-data {
-                    margin: 10px 0;
-                }
+				.bwf-utm-box-data {
+					margin: 10px 0;
+				}
 
-                .bwf-utm-box-data > div > span:nth-child(1) {
-                    font-weight: 500;
-                    width: 80px;
-                    display: inline-block;
-                    min-width: 105px;
-                }
+				.bwf-utm-box-data > div > span:nth-child(1) {
+					font-weight: 500;
+					width: 80px;
+					display: inline-block;
+					min-width: 105px;
+				}
 
-                .bwf-utm-box-data > div {
-                    margin-bottom: 8px;
-                    display: flex;
-                    word-break: break-all;
-                }
+				.bwf-utm-box-data > div {
+					margin-bottom: 8px;
+					display: flex;
+					word-break: break-all;
+				}
 
-                .bwf-utm-box-data .bwf-utm-data-gap {
-                    display: block;
-                    clear: both;
-                    height: 1px;
-                    border-bottom: 1px solid #eee;
-                    margin-bottom: 10px;
-                }
+				.bwf-utm-box-data .bwf-utm-data-gap {
+					display: block;
+					clear: both;
+					height: 1px;
+					border-bottom: 1px solid #eee;
+					margin-bottom: 10px;
+				}
 			</style>
 			<div class="bwf-utm-box-data">
 				<div class="bwf-utm-data-gap"></div>
@@ -1213,10 +1248,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				foreach ( $data as $item ) {
 					?>
 
-                    <div>
-                        <span class="bwf-utm-lable"><?php echo esc_html($item['name']) . ': '; ?></span>
-                        <span class="bwf-utm-text"><?php echo $item['value']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-                    </div>
+					<div>
+						<span class="bwf-utm-lable"><?php echo esc_html( $item['name'] ) . ': '; ?></span>
+						<span class="bwf-utm-text"><?php echo $item['value']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+					</div>
 
 					<?php
 				}
@@ -1265,7 +1300,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( is_array( $get_referrer ) ) {
 				if ( ! $is_journey && isset( $get_referrer['host'] ) ) {
 					$referrer_url = $get_referrer['host'] . ( isset( $get_referrer['path'] ) ? $get_referrer['path'] : '' );
-				} else if ( isset( $get_referrer['path'] ) ) {
+				} elseif ( isset( $get_referrer['path'] ) ) {
 					$referrer_url = $get_referrer['path'];
 
 				}
@@ -1294,7 +1329,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				}
 			}
 			global $wpdb;
-			$wpdb->query( $wpdb->prepare( "DELETE FROM " . $wpdb->prefix . $this->conv_table . " WHERE type= 2 AND source = %1s ", $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
+			$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->prefix . $this->conv_table . ' WHERE type= 2 AND source = %1s ', $order_id ) ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL
 		}
 
 		public function partially_refunded_process( $order_id, $refund_id ) {
@@ -1307,7 +1342,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return;
 			}
 
-			if ( ! in_array( absint( wffn_conversion_tracking_migrator()->get_upgrade_state() ), [ 3, 4 ], true ) ) {
+			if ( ! in_array( absint( wffn_conversion_tracking_migrator()->get_upgrade_state() ), array( 3, 4 ), true ) ) {
 				return;
 			}
 
@@ -1326,14 +1361,16 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				return;
 			}
 
-
-			$types = apply_filters( 'wfacp_order_type_to_group', array(
-				'line_item',
-				'tax',
-				'shipping',
-				'fee',
-				'coupon',
-			) );
+			$types = apply_filters(
+				'wfacp_order_type_to_group',
+				array(
+					'line_item',
+					'tax',
+					'shipping',
+					'fee',
+					'coupon',
+				)
+			);
 			if ( 0 < count( $refund->get_items( $types ) ) ) {
 				foreach ( $refund->get_items( $types ) as $refund_item ) {
 					$item_id = $refund_item->get_meta( '_refunded_item_id', true );
@@ -1346,16 +1383,15 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					}
 					$_bump_purchase     = $item->get_meta( '_bump_purchase' );
 					$_upstroke_purchase = $item->get_meta( '_upstroke_purchase' );
-					$total_refund       += abs( $refund_item->get_total() );
+					$total_refund      += abs( $refund_item->get_total() );
 
 					if ( '' !== $_bump_purchase ) {
 						$bump_refund += abs( $refund_item->get_total() );
-					} else if ( '' !== $_upstroke_purchase ) {
+					} elseif ( '' !== $_upstroke_purchase ) {
 						$offer_refund += abs( $refund_item->get_total() );
 					} else {
 						$checkout_refund += abs( $refund_item->get_total() );
 					}
-
 				}
 			} else {
 				$total_refund = BWF_WC_Compatibility::get_order_meta( $refund, '_refund_amount' );
@@ -1369,23 +1405,30 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					 * get save totals amount from conversion table
 					 * Set 0 for checkout, bump and upsell amount if total refund amount is 0
 					 */
-					$total_value    = ! empty( $get_totals['value'] ) ? ( float ) $get_totals['value'] : 0;
-					$checkout_total = ! empty( $get_totals['checkout_total'] ) ? ( float ) $get_totals['checkout_total'] : 0;
-					$bump_total     = ! empty( $get_totals['bump_total'] ) ? ( float ) $get_totals['bump_total'] : 0;
-					$offer_total    = ! empty( $get_totals['offer_total'] ) ? ( float ) $get_totals['offer_total'] : 0;
+					$total_value    = ! empty( $get_totals['value'] ) ? (float) $get_totals['value'] : 0;
+					$checkout_total = ! empty( $get_totals['checkout_total'] ) ? (float) $get_totals['checkout_total'] : 0;
+					$bump_total     = ! empty( $get_totals['bump_total'] ) ? (float) $get_totals['bump_total'] : 0;
+					$offer_total    = ! empty( $get_totals['offer_total'] ) ? (float) $get_totals['offer_total'] : 0;
 
 					$update_args = array(
 						'value'          => ( $total_value <= $total_refund ) ? 0 : $total_value - $total_refund,
 						'checkout_total' => ( $total_refund === 0 || $checkout_total <= $checkout_refund ) ? 0 : $checkout_total - $checkout_refund,
 						'bump_total'     => ( $total_refund === 0 || $bump_total <= $bump_refund ) ? 0 : $bump_total - $bump_refund,
-						'offer_total'    => ( $total_refund === 0 || $offer_total <= $offer_refund ) ? 0 : $offer_total - $offer_refund
+						'offer_total'    => ( $total_refund === 0 || $offer_total <= $offer_refund ) ? 0 : $offer_total - $offer_refund,
 					);
 
 					if ( 0 === $update_args['bump_total'] && 0 === $update_args['offer_total'] ) {
 						$update_args['checkout_total'] = $update_args['value'];
 					}
 
-					$wpdb->update( $wpdb->prefix . $this->conv_table, $update_args, [ 'type' => 2, 'source' => absint( $order_id ) ] ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update(
+						$wpdb->prefix . $this->conv_table,
+						$update_args,
+						array(
+							'type'   => 2,
+							'source' => absint( $order_id ),
+						)
+					); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				}
 			}
@@ -1393,7 +1436,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 		public function get_ipn_gateways() {
 			if ( ! class_exists( 'WFACP_Core' ) ) {
-				return [];
+				return array();
 			}
 
 			return WFACP_Core()->reporting->get_ipn_gateways();
@@ -1401,12 +1444,10 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 		public function conversion_table_name() {
 			return $this->conv_table;
-
 		}
 
 		public function get_price_value_for_db( $total, $currency ) {
 			return class_exists( 'BWF_Plugin_Compatibilities' ) ? round( BWF_Plugin_Compatibilities::get_fixed_currency_price_reverse( $total, $currency ), 2 ) : $total;
-
 		}
 
 		/**
@@ -1422,9 +1463,15 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 
 			// Get paid statuses for WooCommerce orders
 			$status_to_query = wc_get_is_paid_statuses();
-			$status_in       = implode( ',', array_map( function ( $a ) {
-				return "'wc-{$a}'";
-			}, $status_to_query ) );
+			$status_in       = implode(
+				',',
+				array_map(
+					function ( $a ) {
+						return "'wc-{$a}'";
+					},
+					$status_to_query
+				)
+			);
 
 			// Set the start time for the batch process
 			WFOCU_Common::$start_time = time();
@@ -1432,33 +1479,44 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 			if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 				$order_table      = $wpdb->prefix . 'wc_orders';
 				$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-				$query            = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
+				$query            = $wpdb->prepare(
+					"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wffn_tracking_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
+					'shop_order'
+				);
 
 			} else {
-				$query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
+				$query = $wpdb->prepare(
+					"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wffn_tracking_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
-                                ORDER BY p.post_date DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY p.post_date DESC LIMIT 0, 10",
+					'shop_order'
+				);
 			}
 
 			$query_results = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			if ( ! empty( $query_results ) && is_array( $query_results ) ) {
 
-				$get_orders = array_filter( array_map( function ( $query_instance ) {
-					return wc_get_order( $query_instance->ID );
-				}, $query_results ) );
+				$get_orders = array_filter(
+					array_map(
+						function ( $query_instance ) {
+							return wc_get_order( $query_instance->ID );
+						},
+						$query_results
+					)
+				);
 
 				$i = 0;
 
 				while ( ! ( WFOCU_Common::time_exceeded() || WFOCU_Common::memory_exceeded() ) && ! empty( $get_orders ) ) {
 					$order = $get_orders[ $i ] ?? null;
-					$i ++;
+					++$i;
 
 					// Skip if the order is invalid
 					if ( empty( $order ) || ! $order instanceof WC_Order ) {
@@ -1482,8 +1540,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						} else {
 							$this->insert_data_without_thankyou( $order, $tracking_data );
 						}
-
-					} catch ( Error|Exception $e ) {
+					} catch ( Error | Exception $e ) {
 
 						WFOCU_Core()->log->log( 'Upsell schedule Error occurred on insert funnel analytics - order id #' . $order->get_id() . ' error ' . $e->getMessage() );
 					}
@@ -1505,18 +1562,24 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$order_table      = $wpdb->prefix . 'wc_orders';
 						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-						$wfacp_query      = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
+						$wfacp_query      = $wpdb->prepare(
+							"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfacp_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
+							'shop_order'
+						);
 
 					} else {
-						$wfacp_query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
+						$wfacp_query = $wpdb->prepare(
+							"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfacp_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
-                                ORDER BY p.post_date DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY p.post_date DESC LIMIT 0, 10",
+							'shop_order'
+						);
 					}
 
 					$wfacp_results = $wpdb->get_results( $wfacp_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1554,18 +1617,24 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 					if ( BWF_WC_Compatibility::is_hpos_enabled() ) {
 						$order_table      = $wpdb->prefix . 'wc_orders';
 						$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
-						$ob_query         = $wpdb->prepare( "SELECT ord.id as ID FROM {$order_table} ord
+						$ob_query         = $wpdb->prepare(
+							"SELECT ord.id as ID FROM {$order_table} ord
                                 INNER JOIN {$order_meta_table} om ON (ord.id = om.order_id AND om.meta_key = '_wfob_report_data')
                                 WHERE ord.type = %s
                                 AND ord.status IN ({$status_in})
-                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY ord.date_created_gmt DESC LIMIT 0, 10",
+							'shop_order'
+						);
 
 					} else {
-						$ob_query = $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p
+						$ob_query = $wpdb->prepare(
+							"SELECT p.ID FROM {$wpdb->posts} p
                                 INNER JOIN {$wpdb->postmeta} pm ON (p.ID = pm.post_id AND pm.meta_key = '_wfob_report_data')
                                 WHERE p.post_type = %s
                                 AND p.post_status IN ({$status_in})
-                                ORDER BY p.post_date DESC LIMIT 0, 10", 'shop_order' );
+                                ORDER BY p.post_date DESC LIMIT 0, 10",
+							'shop_order'
+						);
 					}
 
 					$ob_results = $wpdb->get_results( $ob_query, ARRAY_A ); //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1589,7 +1658,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 						}
 					}
 				}
-			} catch ( Error|Exception $e ) {
+			} catch ( Error | Exception $e ) {
 				WFOCU_Core()->log->log( 'Upsell schedule Error occurred on insert funnel analytics - order id # error ' . $e->getMessage() );
 
 				if ( isset( $ob_order ) ) {
@@ -1624,9 +1693,7 @@ if ( ! class_exists( 'BWF_Ecomm_Tracking_Common' ) ) {
 				$order->delete_meta_data( '_wffn_need_normalize' );
 				$order->save_meta_data();
 			}
-
 		}
-
 	}
 
 	BWF_Ecomm_Tracking_Common::get_instance();

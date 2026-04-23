@@ -247,6 +247,6 @@ class FileType
 
     public static function url(string $file): string
     {
-        return Url::relative(Url::to($file));
+        return rawurldecode(Url::relative(Url::to($file)));
     }
 }

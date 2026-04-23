@@ -30,7 +30,9 @@ class BuilderWidget extends WP_Widget
         $settings = array_merge($this->widget_options['settings'], $instance);
 
         if ($settings['title']) {
-            array_push($output, $args['before_title'], $settings['title'], $args['after_title']);
+            $output[] = $args['before_title'];
+            $output[] = $settings['title'];
+            $output[] = $args['after_title'];
         }
 
         $settings['content'] = app(Builder::class)->render($settings['content'], [
@@ -44,10 +46,10 @@ class BuilderWidget extends WP_Widget
                 $settings['content'],
             );
         }
+        $output[] = $settings['content'];
+        $output[] = $args['after_widget'];
 
-        array_push($output, $settings['content'], $args['after_widget']);
-
-        echo implode($output);
+        echo implode('', $output);
     }
 
     /**
@@ -80,7 +82,7 @@ class BuilderWidget extends WP_Widget
                 <?php foreach ($elements as $element): ?>
                     <?php
                     $title = Str::titleCase($element);
-                    $value = $element == 'div' ? '' : $element;
+                    $value = $element === 'div' ? '' : $element;
                     $selected = $settings['element'] == $value ? 'selected' : '';
                     ?>
                     <option value="<?= $value ?>"<?= $selected ?>><?= $title ?></option>

@@ -70,4 +70,66 @@ $close-button-hover-color: black;
     color: #82838E;
   }
 
+  &.wfacp-shake-animation {
+    animation: wfacp-shake 0.4s;
+    border-color: #e15334 !important;
+    background: #fef5f5 !important;
+  }
+
+  // Keep red color after shake animation
+  &.wfacp-login-required {
+    border-color: #e15334 !important;
+    background: #fef5f5 !important;
+  }
+
 }
+
+// Shake animation keyframes - 2 shakes only
+@keyframes wfacp-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-8px);
+  }
+}
+
+// Respect user's motion preferences for accessibility
+@media (prefers-reduced-motion: reduce) {
+  #funnelkitLoginAction.wfacp-shake-animation {
+    animation: none;
+  }
+}
+
+// Next button disabled state when login is required (guest checkout disabled)
+button.wfacp_next_page_button.wfacp-login-blocked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #999 !important;
+  border-color: #999 !important;
+  pointer-events: none;
+}
+
+// Next button disabled state during email check
+button.wfacp_next_page_button.wfacp-checking-user {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// Rotation animation for loading spinner
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

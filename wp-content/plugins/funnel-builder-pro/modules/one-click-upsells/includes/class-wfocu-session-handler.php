@@ -21,12 +21,12 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 		/**
 		 * @var null $transient_key
 		 */
-		public $transient_key = null;
+		public $transient_key    = null;
 		public $transient_object = null;
-		private $default_group = 'funnel';
-		private $groups = array( 'funnel', 'orders', 'rules', 'track', 'paypal', 'variations', 'gateway' );
-		private $data_groups = array( '_orders' );
-		private $_data = array();
+		private $default_group   = 'funnel';
+		private $groups          = array( 'funnel', 'orders', 'rules', 'track', 'paypal', 'variations', 'gateway' );
+		private $data_groups     = array( '_orders' );
+		private $_data           = array();
 
 		/**
 		 * Constructor for the session class.
@@ -45,7 +45,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 		public static function get_instance() {
 			if ( self::$ins === null ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -73,7 +73,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 			}
 
 			foreach ( $this->groups as $group ) {
-				$cookie_value = isset( $data[ $group ] ) ? wp_unslash( $data[ $group ] ) : [];
+				$cookie_value = isset( $data[ $group ] ) ? wp_unslash( $data[ $group ] ) : array();
 
 				$cookie_value          = maybe_unserialize( $cookie_value );
 				$this->_data[ $group ] = apply_filters( 'wfocu_front_funnel_data', $cookie_value, $group );
@@ -94,7 +94,6 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 			}
 
 			do_action( 'wfocu_session_loaded' );
-
 		}
 
 		public function get_transient_key() {
@@ -112,7 +111,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 				 * Serve the transient from the wc_session if exists
 				 */
 
-				if ( ! is_null( WC()->session ) && WC()->session->has_session() ) {
+				if ( ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 					WC()->session->set( '_wfocu_session_id', $get_hash );
 				}
 				if ( defined( 'DOING_CRON' ) && true === DOING_CRON ) {
@@ -131,8 +130,8 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 		 * Set a session variable.
 		 *
 		 * @param string $key Key to set.
-		 * @param mixed $value Value to set.
-		 * @param mixed $group Value to set.
+		 * @param mixed  $value Value to set.
+		 * @param mixed  $group Value to set.
 		 */
 		public function set( $key, $value, $group = null ) {
 			if ( null === $group ) {
@@ -141,7 +140,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 			if ( ! isset( $this->_data[ $group ] ) || ! is_array( $this->_data[ $group ] ) ) {
 
-				$this->_data[ $group ] = [];
+				$this->_data[ $group ] = array();
 			}
 			if ( $value !== $this->get( $key, null, $group ) ) {
 
@@ -152,14 +151,13 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 				}
 			}
-
 		}
 
 		/**
 		 * Get a session variable.
 		 *
 		 * @param string $key Key to get.
-		 * @param mixed $default used if the session variable isn't set.
+		 * @param mixed  $default used if the session variable isn't set.
 		 *
 		 * @return array|string value of session variable
 		 */
@@ -194,7 +192,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 			$this->transient_key = null;
 
-			if ( ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 				WC()->session->set( '_wfocu_session_id', '' );
 			}
 			if ( ! empty( $get_key ) ) {
@@ -205,7 +203,6 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 				return;
 			}
 			wc_setcookie( 'wfocu_si', '', time() - DAY_IN_SECONDS );
-
 		}
 
 		public function save( $group = null ) {
@@ -236,7 +233,6 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 			$existing[ $group ] = $clean_data;
 
 			$this->transient_object->set_transient( $this->transient_key, $existing, HOUR_IN_SECONDS * 24, 'upstroke-funnel' );
-
 		}
 
 		public function maybe_load_from_transient() {
@@ -253,29 +249,29 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 					}
 				}
 			}
-
 		}
 
 		public function load_transient_from_cookie() {
 			$cookie_value = '';
-			if ( isset( $_GET['wfocu-si'] ) ) {   // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$cookie_value = wc_clean( $_GET['wfocu-si'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Frontend session ID parameter
+			if ( isset( $_GET['wfocu-si'] ) ) {
+				$cookie_value = bwf_clean( wp_unslash( $_GET['wfocu-si'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Missing , WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend functionality
 			} elseif ( WFOCU_AJAX_Controller::is_wfocu_front_ajax() ) {
-				$cookie_value = isset( $_POST['wfocu-si'] ) ? wc_clean( $_POST['wfocu-si'] ) : false;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$cookie_value = isset( $_POST['wfocu-si'] ) ? bwf_clean( wp_unslash( $_POST['wfocu-si'] ) ) : false;// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended,FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Public AJAX endpoint for frontend functionality
 			}
 
 			/**
 			 * Serve the transient from the wc_session if exists
 			 */
 
-			if ( empty( $cookie_value ) && ! is_null( WC()->session ) && WC()->session->has_session() ) {
+			if ( empty( $cookie_value ) && ! is_null( WC()->session ) && method_exists( WC()->session, 'has_session' ) && WC()->session->has_session() ) {
 
 				$cookie_value = WC()->session->get( '_wfocu_session_id', '' );
 			}
 
 			if ( empty( $cookie_value ) ) {
-				$cookie_value = isset( $_COOKIE['wfocu_si'] ) ? wc_clean( $_COOKIE['wfocu_si'] ) : false; //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+				// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- Reading cookie value for session handling
+				$cookie_value = isset( $_COOKIE['wfocu_si'] ) ? bwf_clean( wp_unslash( $_COOKIE['wfocu_si'] ) ) : false;
 			}
 			if ( $cookie_value && $cookie_value !== false && '' !== $cookie_value ) {
 				$this->transient_key = $cookie_value;
@@ -291,7 +287,6 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 
 				return md5( $hasher->get_random_bytes( 32 ) );
 			}
-
 		}
 
 		public function maybe_pass_no_cache_header() {
@@ -329,11 +324,11 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 			if ( true === apply_filters( 'wfocu_no_index_pages_by_upstroke', true ) ) {
 				echo '<meta name="robots" content="noindex,nofollow">';
 			}
-
 		}
 
 		/**
 		 * detect whether we have a valid session running
+		 *
 		 * @return bool
 		 * @since 2.0
 		 */
@@ -347,10 +342,7 @@ if ( ! class_exists( 'WFOCU_Session_Handler' ) ) {
 			}
 
 			return false;
-
 		}
-
-
 	}
 
 }

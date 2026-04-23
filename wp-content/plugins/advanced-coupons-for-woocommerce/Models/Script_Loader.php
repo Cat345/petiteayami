@@ -199,6 +199,30 @@ class Script_Loader extends Base_Model implements Model_Interface {
             );
             $cart_vite->enqueue();
         }
+
+        // Load order pay js for store credits feature.
+        if ( is_checkout_pay_page() && \ACFWF()->Helper_Functions->is_module( \ACFWF()->Plugin_Constants::STORE_CREDITS_MODULE ) ) {
+            $order_id = absint( get_query_var( 'order-pay', 0 ) );
+
+            $order_pay_vite = new Vite_App(
+                'acfwp-order-pay',
+                'packages/acfwp-order-pay/index.ts',
+                array( 'jquery' ),
+            );
+            $order_pay_vite->enqueue();
+
+            wp_localize_script(
+                'acfwp-order-pay',
+                'acfwpOrderPay',
+                array(
+                    'ajax_url'          => admin_url( 'admin-ajax.php' ),
+                    'order_id'          => $order_id,
+                    'nonce'             => wp_create_nonce( 'acfwp_store_credits_order_pay' ),
+                    'enter_valid_price' => __( 'Please enter a valid price', 'advanced-coupons-for-woocommerce' ),
+                    'ajax_error'        => __( 'An error occurred. Please refresh the page and try again.', 'advanced-coupons-for-woocommerce' ),
+                )
+            );
+        }
     }
 
     /*

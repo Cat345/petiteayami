@@ -9,20 +9,20 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 	final class WFACP_Template_loader {
 
 		public static $is_checkout = false;
-		private static $ins = null;
+		private static $ins        = null;
 		/**
 		 * @var WFACP_Template_Common
 		 */
 		protected $checkout_post = null;
 		private $current_template;
 
-		protected $template_type = [];
-		protected $template_type_data = [];
-		protected $templates = [];
-		protected $template = '';
+		protected $template_type             = array();
+		protected $template_type_data        = array();
+		protected $templates                 = array();
+		protected $template                  = '';
 		protected $override_checkout_page_id = 0;
-		protected $aero_post_data = [];
-		private $installed_plugins = null;
+		protected $aero_post_data            = array();
+		private $installed_plugins           = null;
 
 		protected function __construct() {
 			if ( WFACP_Common::is_theme_builder() ) {
@@ -30,7 +30,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				add_action( 'init', array( $this, 'is_wfacp_checkout_page' ), 1 );
 				add_action( 'init', array( $this, 'maybe_setup_page' ), 20 );
 			}
-			add_action( 'wfacp_loaded', [ $this, 'add_default_template' ], 20 );
+			add_action( 'wfacp_loaded', array( $this, 'add_default_template' ), 20 );
 			$this->public_include();
 			add_filter( 'template_redirect', array( $this, 'setup_preview' ), 99 );
 			add_filter( 'template_include', array( $this, 'assign_template' ), 95 );
@@ -41,7 +41,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 			if ( true === $force || ( ( ( isset( $_REQUEST['page'] ) && 'wfacp' === sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) ) || ( isset( $_REQUEST['action'] ) && 'wfacp_import_template' === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) ) && isset( $_REQUEST['wfacp_id'] ) && $_REQUEST['wfacp_id'] > 0 ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Admin page detection for template loading
 				do_action( 'wfacp_register_template_types', $this );
-				$designs = apply_filters( 'wfacp_register_templates', [], $this );
+				$designs = apply_filters( 'wfacp_register_templates', array(), $this );
 
 				if ( ! empty( $designs ) ) {
 					foreach ( $designs as $d_key => $templates ) {
@@ -59,9 +59,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 						}
 					}
 				}
-
 			}
-
 		}
 
 		public function register_template_type( $data ) {
@@ -74,7 +72,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 					$this->template_type_data[ $slug ] = $data;
 				}
 			}
-
 		}
 
 		public function register_template( $slug, $data, $type = 'pre_built' ) {
@@ -91,7 +88,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			if ( isset( $this->template_type[ $type ] ) ) {
 				unset( $this->template_type[ $type ] );
 			}
-
 		}
 
 		public function remove_all_templates( $type ) {
@@ -102,18 +98,18 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			if ( isset( $this->templates[ $type ] ) ) {
 				unset( $this->templates[ $type ] );
 			}
-
 		}
 
 		/**
 		 * This function use for initialize template on public end
+		 *
 		 * @return
 		 */
 		private function public_include() {
 			if ( WFACP_Common::is_edit_screen_open() || ! WFACP_Common::is_frontend_request() ) {
 				return;
 			}
-			//allow setup data for front end checkout page
+			// allow setup data for front end checkout page
 			add_action( 'wp', array( $this, 'is_wfacp_checkout_page' ), 5 );
 			add_action( 'wp', array( $this, 'maybe_setup_page' ), 7 );
 		}
@@ -129,7 +125,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		private function page_located( $post ) {
 			$status = false;
 
-			if ( ! is_null( $post ) && $post->post_type == WFACP_Common::get_post_type_slug() ) {
+			if ( ! is_null( $post ) && $post instanceof WP_Post && $post->post_type === WFACP_Common::get_post_type_slug() ) {
 				if ( ! is_null( WC()->session ) ) {
 					WC()->session->set( 'wfacp_is_override_checkout', 0 );
 				}
@@ -156,8 +152,9 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				return false;
 			}
 			do_action( 'wfacp_start_page_detection' );
-			// Do not aero order pay page if is_order_pay function return false
-			if ( is_checkout_pay_page() && false == WFACP_Core()->pay->is_order_pay() ) {
+			// Do not aero order pay page if is_order_pay function return false.
+			// Allow change-payment-method pages through for WC Subscriptions support.
+			if ( is_checkout_pay_page() && false == WFACP_Core()->pay->is_order_pay() && false == WFACP_Core()->pay->is_change_payment() ) {
 				return false;
 			}
 
@@ -165,17 +162,16 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				return false;
 			}
 
-			/* remove divi theme customizer setting */
-			remove_action( 'wp', 'et_divi_add_customizer_css' );
-
 			if ( self::$is_checkout ) {
+				/* remove divi theme customizer setting */
+				remove_action( 'wp', 'et_divi_add_customizer_css' );
 
 				return true;
 			}
 
 			global $post;
 			if ( WFACP_Common::is_checkout_process() ) {
-				$post_id = absint( $_REQUEST['_wfacp_post_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checkout process post ID retrieval
+				$post_id = isset( $_REQUEST['_wfacp_post_id'] ) ? absint( wp_unslash( $_REQUEST['_wfacp_post_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, FunnelBuilder.CodeAnalysis.FunnelBuilderSpecific.MissingCapabilityCheck -- Checkout process post ID retrieval
 				$post    = get_post( $post_id );
 			}
 
@@ -184,6 +180,8 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			$is_located = $this->page_located( $post );
 
 			if ( true == $is_located ) {
+				/* remove divi theme customizer setting */
+				remove_action( 'wp', 'et_divi_add_customizer_css' );
 				return true;
 			}
 
@@ -210,12 +208,12 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				}
 
 				// get post return $current post data when you pass post_id=0;
-				//this cause redirection issue
+				// this cause redirection issue
 				$may_be_post = get_post( $this->override_checkout_page_id );
-				if ( ! is_null( $may_be_post ) ) {
+				if ( ! is_null( $may_be_post ) && $may_be_post instanceof WP_Post ) {
 
 					$design_data = WFACP_Common::get_page_design( $may_be_post->ID );
-					if ( ( ( 'embed_forms' == $design_data['selected_type'] && WFACP_Common::get_post_type_slug() == $may_be_post->post_type ) || ( WFACP_Common::get_post_type_slug() !== $may_be_post->post_type ) ) && apply_filters( 'wfacp_redirect_embed_global_checkout_url', true, $this->override_checkout_page_id, $may_be_post, $design_data ) ) {
+					if ( ( ( 'embed_forms' === $design_data['selected_type'] && WFACP_Common::get_post_type_slug() === $may_be_post->post_type ) || ( WFACP_Common::get_post_type_slug() !== $may_be_post->post_type ) ) && apply_filters( 'wfacp_redirect_embed_global_checkout_url', true, $this->override_checkout_page_id, $may_be_post, $design_data ) ) {
 
 						$global_embed_form_url = apply_filters( 'wfacp_global_embed_form_redirect_url', get_the_permalink( $this->override_checkout_page_id ), $this->override_checkout_page_id, $may_be_post );
 
@@ -223,9 +221,8 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 						exit;
 					}
 
-
-					if ( $may_be_post->post_status == 'publish' ) {
-						//wfacp pages
+					if ( 'publish' === $may_be_post->post_status ) {
+						// wfacp pages
 						$this->override_checkout_page_id = apply_filters( 'wfacp_wpml_checkout_page_id', $this->override_checkout_page_id );
 						do_action( 'wfacp_changed_default_woocommerce_page', $this->override_checkout_page_id );
 						WFACP_Common::set_id( $this->override_checkout_page_id );
@@ -238,10 +235,11 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 						add_filter( 'woocommerce_is_checkout', '__return_true' );
 
 						do_action( 'wfacp_checkout_page_found', $this->override_checkout_page_id );
+						/* remove divi theme customizer setting */
+						remove_action( 'wp', 'et_divi_add_customizer_css' );
 
 						return true;
 					}
-
 				}
 			}
 			if ( ! is_null( $post ) ) {
@@ -262,11 +260,9 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			}
 
 			return $content;
-
 		}
 
 		public function setup_preview() {
-
 
 			add_filter( 'template_include', array( $this, 'maybe_load' ), 99 );
 		}
@@ -274,6 +270,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		/**
 		 * Finds out if its safe to initiate data setup for the current request.
 		 * Checks for the environmental conditions and provide results.
+		 *
 		 * @return bool true on success| false otherwise
 		 * @see WFACP_Template_loader::maybe_setup_page()
 		 */
@@ -319,7 +316,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			} else {
 				WFACP_Common::pc( 'May be setup page Layout class is not found ' );
 			}
-
 		}
 
 
@@ -369,14 +365,14 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				do_action( 'wfacp_after_template_found', $this->current_template );
 
 				return $this->current_template;
-			} catch ( Exception|Error $e ) {
+			} catch ( Exception | Error $e ) {
 
 			}
 		}
 
 		public function assign_template( $template ) {
 			global $post;
-			if ( is_null( $post ) || ( $post->post_type !== WFACP_Common::get_post_type_slug() && is_null( $this->current_template ) ) ) {
+			if ( is_null( $post ) || ! ( $post instanceof WP_Post ) || ( $post->post_type !== WFACP_Common::get_post_type_slug() && is_null( $this->current_template ) ) ) {
 				return $template;
 			}
 
@@ -384,7 +380,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			if ( is_null( $this->current_template ) ) {
 				return $template;
 			}
-
 
 			$wfacp_id = WFACP_Common::get_id();
 			if ( 0 == $wfacp_id ) {
@@ -456,28 +451,28 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			if ( $template_type === 'pre_built' || empty( $template_type ) ) {
 				$path = $this->get_template_path_by_template( $slug );
 
-				//handle_customizer
+				// handle_customizer
 				$template_data = array(
 					'path' => WFACP_BUILDER_DIR . '/customizer/templates/' . $path . '/template.php',
 					'slug' => $slug,
 				);
-			} else if ( $template_type === 'embed_forms' ) {
-				//handle_customizer
+			} elseif ( $template_type === 'embed_forms' ) {
+				// handle_customizer
 				$template_data = array(
 					'path' => WFACP_BUILDER_DIR . '/customizer/templates/embed_forms_1/template.php',
 					'slug' => $slug,
 				);
-			} else if ( $template_type === 'elementor' ) {
+			} elseif ( $template_type === 'elementor' ) {
 				$template_data = array(
 					'path' => WFACP_BUILDER_DIR . '/elementor/template/template.php',
 					'slug' => $slug,
 				);
-			} else if ( $template_type === 'divi' ) {
+			} elseif ( $template_type === 'divi' || $template_type === 'divi5' ) {
 				$template_data = array(
 					'path' => WFACP_BUILDER_DIR . '/divi/template/template.php',
 					'slug' => $slug,
 				);
-			} else if ( $template_type === 'gutenberg' ) {
+			} elseif ( $template_type === 'gutenberg' ) {
 				$template_data = array(
 					'path'          => WFACP_BUILDER_DIR . '/gutenberg/template/template.php',
 					'slug'          => 'gutenberg',
@@ -493,7 +488,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 					'template_type' => $template_type,
 				);
 			}
-
 
 			return apply_filters( 'wfacp_locate_template', $template_data, $this );
 		}
@@ -513,7 +507,7 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				'marketer-step-2'     => 'layout_4',
 				'marketer-step-3'     => 'layout_4',
 				'royale-step-2'       => 'layout_9',
-				'royale-step-3'       => 'layout_9'
+				'royale-step-3'       => 'layout_9',
 			);
 
 			return $config[ $slug ];
@@ -534,13 +528,13 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 
 		public function get_single_template( $template = '', $type = 'pre_built' ) {
 			if ( empty( $template ) ) {
-				return [];
+				return array();
 			}
 			if ( isset( $this->templates[ $type ] ) && isset( $this->templates[ $type ][ $template ] ) ) {
 				return $this->templates[ $type ][ $template ];
 			}
 
-			return [];
+			return array();
 		}
 
 
@@ -566,7 +560,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		 * To avoid cloning of current template class
 		 */
 		protected function __clone() {
-
 		}
 
 		/**
@@ -574,7 +567,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		 *
 		 * @return array Required Plugins list.
 		 * @since 1.1.4
-		 *
 		 */
 		public function get_plugins_groupby_page_builders() {
 
@@ -677,7 +669,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		 *
 		 * @return mixed
 		 * @since 1.0.0
-		 *
 		 */
 		public function get_plugin_status( $plugin_init_file ) {
 
@@ -730,8 +721,8 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 		}
 
 		public function localize_page_builder_texts() {
-			$pageBuildersTexts           = [];
-			$get_all_opted_page_builders = [ 'gutenberg', 'elementor', 'divi', 'oxy' ];
+			$pageBuildersTexts           = array();
+			$get_all_opted_page_builders = array( 'gutenberg', 'elementor', 'divi', 'oxy' );
 			if ( empty( $get_all_opted_page_builders ) ) {
 				return $pageBuildersTexts;
 			}
@@ -760,16 +751,16 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 						$plugin_string .= $string;
 					} else {
 						$plugin_string .= $install;
-						$button_text   = __( 'Install Divi Builder', 'funnel-builder' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://www.elegantthemes.com/' );
+						$button_text    = __( 'Install Divi Builder', 'funnel-builder' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://www.elegantthemes.com/' );
 					}
-				} else if ( 'oxy' === $builder ) {
+				} elseif ( 'oxy' === $builder ) {
 					if ( 'install' === $plugin_status ) {
 						$plugin_string .= $string;
-						$button_text   = __( 'Install Oxygen Classic Builder', 'funnel-builder' );
-						$no_install    = 'yes';
-						$builder_link  = esc_url( 'https://oxygenbuilder.com/' );
+						$button_text    = __( 'Install Oxygen Classic Builder', 'funnel-builder' );
+						$no_install     = 'yes';
+						$builder_link   = esc_url( 'https://oxygenbuilder.com/' );
 					} else {
 						$plugin_string .= $install;
 					}
@@ -820,7 +811,6 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 			}
 
 			return $template;
-
 		}
 
 		/**
@@ -844,11 +834,9 @@ if ( ! class_exists( 'WFACP_Template_loader' ) ) {
 				WFACP_Common::remove_actions( 'wc_get_template', 'Automattic\WooCommerce\Blocks\Domain\Services\Notices', 'get_notices_template' );
 			}
 		}
-
 	}
 
 	if ( class_exists( 'WFACP_Core' ) && ! WFACP_Common::is_disabled() ) {
 		WFACP_Core::register( 'template_loader', 'WFACP_Template_loader' );
 	}
 }
-

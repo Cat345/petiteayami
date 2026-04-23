@@ -7,20 +7,20 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 	abstract class WFACP_Analytics {
 		protected $slug = '';
 
-		protected $checkout_data = [];
-		protected $add_to_cart_data = [];
-		protected $id = [];
-		protected static $available_services = [];
-		protected static $global_settings = [];
-		protected static $page_settings = [];
-		protected static $tag_manager_enqueued = [];
+		protected $checkout_data               = array();
+		protected $add_to_cart_data            = array();
+		protected $id                          = array();
+		protected static $available_services   = array();
+		protected static $global_settings      = array();
+		protected static $page_settings        = array();
+		protected static $tag_manager_enqueued = array();
 
-		protected $variable_as_simple = false;
-		protected $id_prefix = '';
-		protected $id_suffix = '';
-		protected $exclude_tax = false;
-		protected $content_id_type = '';
-		public $admin_general_settings = [];
+		protected $variable_as_simple  = false;
+		protected $id_prefix           = '';
+		protected $id_suffix           = '';
+		protected $exclude_tax         = false;
+		protected $content_id_type     = '';
+		public $admin_general_settings = array();
 
 		protected function __construct() {
 		}
@@ -120,29 +120,29 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			$pixel_id = $this->get_key();
 
 			$override_global_track_event = wc_string_to_bool( isset( $page_settings['override_global_track_event'] ) ? $page_settings['override_global_track_event'] : false );
-			$locals                      = [];
+			$locals                      = array();
 			$pixel_id                    = apply_filters( 'wfacp_' . $this->slug . '_id', $pixel_id );
 
 			if ( '' === $pixel_id ) {
 				return $locals;
 			}
 
-			$add_to_cart  = false === $this->is_global_add_to_cart_enabled() ? $this->admin_general_settings->get_option( $this->slug . '_add_to_cart_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_to_cart_event' ) : 'false' : 'true';
-			$checkout_ev  = $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) : 'false';
-			$page_view    = false === $this->is_global_pageview_enabled() ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) : 'false' : 'true';
-			$payment_info = $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) : 'false';
+			$add_to_cart   = false === $this->is_global_add_to_cart_enabled() ? $this->admin_general_settings->get_option( $this->slug . '_add_to_cart_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_to_cart_event' ) : 'false' : 'true';
+			$checkout_ev   = $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_initiate_checkout_event' ) : 'false';
+			$page_view     = false === $this->is_global_pageview_enabled() ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) ? $this->admin_general_settings->get_option( $this->slug . '_is_page_view' ) : 'false' : 'true';
+			$payment_info  = $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_payment_info_event' ) : 'false';
 			$shipping_info = $this->admin_general_settings->get_option( $this->slug . '_add_shipping_info_event' ) ? $this->admin_general_settings->get_option( $this->slug . '_add_shipping_info_event' ) : 'false';
 
-			$custom_event         = $this->enable_custom_event();
-			$add_to_cart_position = 'load';
-			$checkout_ev_position = 'load';
+			$custom_event           = $this->enable_custom_event();
+			$add_to_cart_position   = 'load';
+			$checkout_ev_position   = 'load';
 			$shipping_info_position = 'load';
 			if ( true == $override_global_track_event ) {
-				$add_to_cart  = isset( $page_settings[ $this->slug . '_add_to_cart_event' ] ) ? $page_settings[ $this->slug . '_add_to_cart_event' ] : false;
-				$checkout_ev  = isset( $page_settings[ $this->slug . '_initiate_checkout_event' ] ) ? $page_settings[ $this->slug . '_initiate_checkout_event' ] : false;
-				$payment_info = isset( $page_settings[ $this->slug . '_add_payment_info_event' ] ) ? $page_settings[ $this->slug . '_add_payment_info_event' ] : false;
+				$add_to_cart   = isset( $page_settings[ $this->slug . '_add_to_cart_event' ] ) ? $page_settings[ $this->slug . '_add_to_cart_event' ] : false;
+				$checkout_ev   = isset( $page_settings[ $this->slug . '_initiate_checkout_event' ] ) ? $page_settings[ $this->slug . '_initiate_checkout_event' ] : false;
+				$payment_info  = isset( $page_settings[ $this->slug . '_add_payment_info_event' ] ) ? $page_settings[ $this->slug . '_add_payment_info_event' ] : false;
 				$shipping_info = isset( $page_settings[ $this->slug . '_add_shipping_info_event' ] ) ? $page_settings[ $this->slug . '_add_shipping_info_event' ] : false;
-				$page_view    = isset( $page_settings[ $this->slug . '_is_page_view' ] ) ? $page_settings[ $this->slug . '_is_page_view' ] : false;
+				$page_view     = isset( $page_settings[ $this->slug . '_is_page_view' ] ) ? $page_settings[ $this->slug . '_is_page_view' ] : false;
 
 				if ( wc_string_to_bool( $add_to_cart ) ) {
 					$add_to_cart_position = isset( $page_settings[ $this->slug . '_add_to_cart_event_position' ] ) ? $page_settings[ $this->slug . '_add_to_cart_event_position' ] : $add_to_cart_position;
@@ -156,23 +156,23 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 				}
 			}
 
-			$locals = [
+			$locals = array(
 				'id'          => $pixel_id,
 				'cart_labels' => $this->get_add_to_cart_label(),
-				'positions'   => [
-					'add_to_cart' => $add_to_cart_position,
-					'checkout'    => $checkout_ev_position,
+				'positions'   => array(
+					'add_to_cart'   => $add_to_cart_position,
+					'checkout'      => $checkout_ev_position,
 					'shipping_info' => $shipping_info_position,
-				],
-				'settings'    => [
+				),
+				'settings'    => array(
 					'add_to_cart' => wc_string_to_bool( $add_to_cart ) ? 'true' : 'false',
 					'page_view'   => wc_string_to_bool( $page_view ) ? 'true' : 'false',
 					'checkout'    => wc_string_to_bool( $checkout_ev ) ? 'true' : 'false',
 					'payment'     => wc_string_to_bool( $payment_info ) ? 'true' : 'false',
 					'shipping'    => wc_string_to_bool( $shipping_info ) ? 'true' : 'false',
 					'custom'      => wc_string_to_bool( $custom_event ) ? 'true' : 'false',
-				]
-			];
+				),
+			);
 
 			return apply_filters( 'wfacp_tracking_options_data', $locals, $this );
 		}
@@ -188,7 +188,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 		 * @return array
 		 */
 		public function get_item( $product_obj, $cart_item ) {
-			return [];
+			return array();
 		}
 
 		public function get_prepare_data() {
@@ -207,7 +207,6 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 				$options['checkout'] = $this->checkout_data;
 			}
 
-
 			return $options;
 		}
 
@@ -225,7 +224,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			$terms   = get_the_terms( $post_id, $taxonomy );
 			$results = array();
 
-			if ( is_wp_error( $terms ) || empty ( $terms ) ) {
+			if ( is_wp_error( $terms ) || empty( $terms ) ) {
 				return array();
 			}
 
@@ -235,11 +234,9 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			}
 
 			return $results;
-
 		}
 
 		function getWooCartTotal() {
-
 
 			if ( wc_string_to_bool( $this->exclude_tax ) ) {
 				$total = WC()->cart->cart_contents_total;
@@ -249,7 +246,6 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			}
 
 			return $total;
-
 		}
 
 		public function get_key() {
@@ -281,7 +277,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 			$ga_ids                     = explode( ',', $pixel_id );
 			if ( is_array( $ga_ids ) && count( $ga_ids ) > 0 ) {
 				// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Google Tag Manager script must be loaded directly for proper initialization
-				echo sprintf( "<script defer src='https://www.googletagmanager.com/gtag/js?id=%s'></script>", esc_attr( $ga_ids[0] ) );
+				printf( "<script defer src='https://www.googletagmanager.com/gtag/js?id=%s'></script>", esc_attr( $ga_ids[0] ) );
 
 			}
 		}
@@ -296,7 +292,7 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 		}
 
 		public function getEventRequestUri() {
-			$request_uri = "";
+			$request_uri = '';
 			if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
 				$request_uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; //phpcs:ignore
 			}
@@ -322,6 +318,5 @@ if ( ! class_exists( 'WFACP_Analytics' ) ) {
 
 			return false;
 		}
-
 	}
 }

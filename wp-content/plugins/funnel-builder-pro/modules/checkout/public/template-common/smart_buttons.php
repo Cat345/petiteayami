@@ -131,6 +131,16 @@ if ( ! $show_smart_button_shimmer ) {
             height: 40px;
             margin-top: 8px;
         }
+		span.wfacp_single_btn_shimmer {
+    display: none;
+    position: absolute;
+    background: #ececec;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000000;
+}
     }
 
 </style>

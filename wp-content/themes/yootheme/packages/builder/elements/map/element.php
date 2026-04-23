@@ -210,13 +210,13 @@ return [
                 'step' => 10,
                 'class' => 'uk-form-width-xsmall',
             ],
-            'enable' => 'height_viewport == \'viewport\'',
+            'enable' => "height_viewport == 'viewport'",
         ],
         'height_viewport_offset' => [
             'type' => 'checkbox',
             'text' => 'Subtract height above',
             'enable' =>
-                'height_viewport == \'viewport\' && (height_viewport_height || 0) <= 100 || height_viewport == \'section\'',
+                "height_viewport == 'viewport' && (height_viewport_height || 0) <= 100 || height_viewport == 'section'",
         ],
         'type' => [
             'label' => 'Type',
@@ -424,7 +424,7 @@ return [
         'title_color' => [
             'label' => 'Color',
             'description' =>
-                'Select the text color. If the Background option is selected, styles that don\'t apply a background image use the primary color instead.',
+                "Select the text color. If the Background option is selected, styles that don't apply a background image use the primary color instead.",
             'type' => 'select',
             'options' => [
                 'None' => '',
@@ -671,7 +671,7 @@ return [
         'link_target' => [
             'label' => 'Attributes',
             'description' =>
-                'Optionally, open the link in a new window, treat it as download, don\'t endorse the linked page or don\'t include the referrer header.',
+                "Optionally, open the link in a new window, treat it as download, don't endorse the linked page or don't include the referrer header.",
             'type' => 'checkbox',
             'text' => 'Open in a new window',
             'enable' => 'show_link',
@@ -782,7 +782,7 @@ return [
                 'Large (Desktop)' => 'l',
                 'X-Large (Large Screens)' => 'xl',
             ],
-            'enable' => 'item_text_align && item_text_align != \'justify\'',
+            'enable' => "item_text_align && item_text_align != 'justify'",
         ],
         'item_text_align_fallback' => [
             'label' => 'Text Alignment Fallback',
@@ -796,7 +796,7 @@ return [
                 'Justify' => 'justify',
             ],
             'enable' =>
-                'item_text_align && item_text_align != \'justify\' && item_text_align_breakpoint',
+                "item_text_align && item_text_align != 'justify' && item_text_align_breakpoint",
         ],
         'animation' => '${builder.animation}',
         '_parallax_button' => '${builder._parallax_button}',

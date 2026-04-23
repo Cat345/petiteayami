@@ -80,7 +80,7 @@ return [
                 'parallax_transform_origin' => [
                     'label' => 'Transform Origin',
                     'description' =>
-                        'Define the origin of the element\'s transformation when scaling or rotating the element.',
+                        "Define the origin of the element's transformation when scaling or rotating the element.",
                     'type' => 'select',
                     'options' => [
                         'Top Left' => 'top-left',
@@ -115,12 +115,12 @@ return [
                         'Column' => '!.tm-grid-expand>*',
                         'Row' => '!.tm-grid-expand',
                         'Section' => '!.uk-section',
-                        'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                        'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
                     ],
                 ],
                 'parallax_start_end' => [
                     'description' =>
-                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                     'type' => 'grid',
                     'width' => '1-2',
                     'fields' => [
@@ -201,7 +201,7 @@ return [
                 ],
                 'background_parallax_start_end' => [
                     'description' =>
-                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                     'type' => 'grid',
                     'width' => '1-2',
                     'fields' => [
@@ -260,12 +260,12 @@ return [
                     'type' => 'select',
                     'options' => [
                         'Section' => '',
-                        'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                        'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
                     ],
                 ],
                 'image_parallax_start_end' => [
                     'description' =>
-                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                     'type' => 'grid',
                     'width' => '1-2',
                     'fields' => [
@@ -328,12 +328,12 @@ return [
                     'type' => 'select',
                     'options' => [
                         'Section' => '',
-                        'Next Section' => '![class*=\'uk-section-\'] ~ [class*=\'uk-section-\']',
+                        'Next Section' => "![class*='uk-section-'] ~ [class*='uk-section-']",
                     ],
                 ],
                 'media_overlay_parallax_start_end' => [
                     'description' =>
-                        'The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target\'s height.',
+                        "The animation starts when the element enters the viewport and ends when it leaves the viewport. Optionally, set a start and end offset, e.g. <code>100px</code>, <code>50vh</code> or <code>50vh + 50%</code>. Percent relates to the target's height.",
                     'type' => 'grid',
                     'width' => '1-2',
                     'fields' => [

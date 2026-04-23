@@ -9,75 +9,72 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WFOB_Public {
 
-	private static $ins = null;
-	public $posted_data = [];
+	private static $ins       = null;
+	public $posted_data       = array();
 	private $is_footer_loaded = false;
 
 	private $setup_bump_runs = false;
-	public $shown_bump_ids = [];
+	public $shown_bump_ids   = array();
 
 	protected function __construct() {
-		add_action( 'wp_loaded', [ $this, 'make_cart_empty' ], 99 );
-		add_action( 'wp', [ $this, 'attach_hooks' ] );
-		add_action( 'woocommerce_before_calculate_totals', [ $this, 'calculate_totals' ] );
-		add_action( 'woocommerce_cart_loaded_from_session', [ $this, 'calculate_totals' ], 2 );
-		add_action( 'wp', [ $this, 'reset_wc_session' ] );
-
+		add_action( 'wp_loaded', array( $this, 'make_cart_empty' ), 99 );
+		add_action( 'wp', array( $this, 'attach_hooks' ) );
+		add_action( 'woocommerce_before_calculate_totals', array( $this, 'calculate_totals' ), 11 );
+		add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'calculate_totals' ), 2 );
+		add_action( 'wp', array( $this, 'reset_wc_session' ) );
 
 		// for first we display bump in payment.php and leve div container for further fragment of orderbump
-		add_action( 'woocommerce_before_template_part', [ $this, 'add_order_bump' ], 11 );
-		add_action( 'woocommerce_before_template_part', [ $this, 'add_order_bump_above_the_gateway' ], 999 );
+		add_action( 'woocommerce_before_template_part', array( $this, 'add_order_bump' ), 11 );
+		add_action( 'woocommerce_before_template_part', array( $this, 'add_order_bump_above_the_gateway' ), 999 );
 
-		add_action( 'wfacp_after_gateway_list', [ $this, 'print_below_gateway' ] );
+		add_action( 'wfacp_after_gateway_list', array( $this, 'print_below_gateway' ) );
 
-		add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'send_cart_total_fragment' ], 12 );
-		add_filter( 'wfacp_show_item_quantity', [ $this, 'wfacp_skip_global_switcher_item' ], 10, 2 );
-		add_filter( 'woocommerce_cart_item_quantity', [ $this, 'remove_quantity_selector_from_cart' ], 10, 3 );
-		add_action( 'template_redirect', [ $this, 'execute_bump_action' ], 20 );
-		add_action( 'woocommerce_add_to_cart_sold_individually_found_in_cart', [ $this, 'restrict_sold_individual' ], 10, 2 );
-		add_action( 'woocommerce_before_checkout_process', [ $this, 'capture_posted_data' ] );
-		add_filter( 'wfacp_display_quantity_increment', [ $this, 'do_not_display_order_bump_quantity' ], 10, 2 );
-		add_action( 'woocommerce_checkout_before_customer_details', [ $this, 'add_input_hidden' ] );
-		add_action( 'init', [ $this, 'execute_bump_fragments' ] );
+		add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'send_cart_total_fragment' ), 12 );
+		add_filter( 'wfacp_show_item_quantity', array( $this, 'wfacp_skip_global_switcher_item' ), 10, 2 );
+		add_filter( 'woocommerce_cart_item_quantity', array( $this, 'remove_quantity_selector_from_cart' ), 10, 3 );
+		add_action( 'template_redirect', array( $this, 'execute_bump_action' ), 20 );
+		add_action( 'woocommerce_add_to_cart_sold_individually_found_in_cart', array( $this, 'restrict_sold_individual' ), 10, 2 );
+		add_action( 'woocommerce_before_checkout_process', array( $this, 'capture_posted_data' ) );
+		add_filter( 'wfacp_display_quantity_increment', array( $this, 'do_not_display_order_bump_quantity' ), 10, 2 );
+		add_action( 'woocommerce_checkout_before_customer_details', array( $this, 'add_input_hidden' ) );
+		add_action( 'init', array( $this, 'execute_bump_fragments' ) );
 
-		add_action( 'woocommerce_remove_cart_item', [ $this, 'woocommerce_remove_cart_item' ] );
-		add_filter( 'wfacp_show_undo_message_for_item', [ $this, 'hide_undo_message' ], 10, 2 );
+		add_action( 'woocommerce_remove_cart_item', array( $this, 'woocommerce_remove_cart_item' ) );
+		add_filter( 'wfacp_show_undo_message_for_item', array( $this, 'hide_undo_message' ), 10, 2 );
 
-
-		add_filter( 'wfacp_cart_item_thumbnail', [ $this, 'apply_custom_url' ], 10, 2 );
-		add_filter( 'wfacp_enable_delete_item', [ $this, 'show_mini_cart_delete_icon' ], 10, 3 );
-		add_filter( 'wfacp_delete_item_from_order_summary', [ $this, 'show_order_summary_delete_icon' ], 10, 3 );
-		add_filter( 'wfob_exclude_cart_item_in_rule', [ $this, 'hide_undo_message' ], 10, 2 );
-		add_filter( 'wfob_exclude_cart_item_in_rule', [ $this, 'unset_replace_by_key' ], 11, 2 );
-		add_filter( 'wfob_do_not_remove_failed_product', [ $this, 'do_not_remove_failed_product' ], 10, 2 );
-		add_filter( 'wfob_dont_allow_bump_item_in_rule', [ $this, 'do_not_apply_rules_on_swap_bump' ], 10, 2 );
-
+		add_filter( 'wfacp_cart_item_thumbnail', array( $this, 'apply_custom_url' ), 10, 2 );
+		add_filter( 'wfacp_enable_delete_item', array( $this, 'show_mini_cart_delete_icon' ), 10, 3 );
+		add_filter( 'wfacp_delete_item_from_order_summary', array( $this, 'show_order_summary_delete_icon' ), 10, 3 );
+		add_filter( 'wfob_exclude_cart_item_in_rule', array( $this, 'hide_undo_message' ), 10, 2 );
+		add_filter( 'wfob_exclude_cart_item_in_rule', array( $this, 'unset_replace_by_key' ), 11, 2 );
+		add_filter( 'wfob_do_not_remove_failed_product', array( $this, 'do_not_remove_failed_product' ), 10, 2 );
+		add_filter( 'wfob_dont_allow_bump_item_in_rule', array( $this, 'do_not_apply_rules_on_swap_bump' ), 10, 2 );
 
 		add_filter( 'woocommerce_product_get_price', array( $this, 'handle_discount_product_price' ), 99, 2 );
 		add_filter( 'woocommerce_product_variation_get_price', array( $this, 'handle_discount_product_price' ), 99, 2 );
 
-		add_action( 'wfob_after_add_to_cart', [ $this, 're_run_rules_after_bump_removed' ], 10 );
-		add_action( 'wfob_after_remove_bump_from_cart', [ $this, 're_run_rules_after_bump_removed' ], 10 );
-		add_action( 'wfacp_order_bump_restored_end', [ $this, 're_run_rules_after_bump_removed' ], 10 );
+		add_action( 'wfob_after_add_to_cart', array( $this, 're_run_rules_after_bump_removed' ), 10 );
+		add_action( 'wfob_after_remove_bump_from_cart', array( $this, 're_run_rules_after_bump_removed' ), 10 );
+		add_action( 'wfacp_order_bump_restored_end', array( $this, 're_run_rules_after_bump_removed' ), 10 );
 
-		add_filter( 'woocommerce_add_cart_item', [ $this, 'set_selected_bump_in_session' ], 997, 2 );
-		add_action( 'woocommerce_remove_cart_item', [ $this, 'unset_selected_bump_in_session' ], 25, 2 );
-		add_action( 'wfacp_before_update_cart_multiple_page', [ $this, 're_add_bump_to_cart' ], 10, 3 );
-		add_action( 'wfacp_reset_checkout_session_data', [ $this, 'unset_checkout_session_data' ] );
-		add_action( 'wfacp_after_checkout_page_found', [ $this, 'unset_current_checkout_session_data' ] );
+		add_filter( 'woocommerce_add_cart_item', array( $this, 'set_selected_bump_in_session' ), 997, 2 );
+		add_action( 'woocommerce_remove_cart_item', array( $this, 'unset_selected_bump_in_session' ), 25, 2 );
+		add_action( 'wfacp_before_update_cart_multiple_page', array( $this, 're_add_bump_to_cart' ), 10, 3 );
+		add_action( 'wfacp_reset_checkout_session_data', array( $this, 'unset_checkout_session_data' ) );
+		add_action( 'wfacp_after_checkout_page_found', array( $this, 'unset_current_checkout_session_data' ) );
 	}
 
 	public function add_input_hidden() {
 		?>
-        <input type="hidden" name="wfob_input_hidden_data" id="wfob_input_hidden_data">
-        <input type="hidden" name="wfob_input_bump_shown_ids" id="wfob_input_bump_shown_ids">
-        <input type="hidden" name="wfob_input_bump_global_data" id="wfob_input_bump_global_data">
+		<input type="hidden" name="wfob_input_hidden_data" id="wfob_input_hidden_data">
+		<input type="hidden" name="wfob_input_bump_shown_ids" id="wfob_input_bump_shown_ids">
+		<input type="hidden" name="wfob_input_bump_global_data" id="wfob_input_bump_global_data">
 		<?php
 	}
 
 	public static function get_instance() {
 		if ( null == self::$ins ) {
-			self::$ins = new self;
+			self::$ins = new self();
 		}
 
 		return self::$ins;
@@ -88,20 +85,17 @@ class WFOB_Public {
 			return;
 		}
 
-
 		add_action( 'woocommerce_checkout_update_order_review', array( $this, 'get_cart_choosed_gateway' ), - 1 );
-		add_action( 'woocommerce_after_calculate_totals', [ $this, 'setup_order_bumps' ], 999 );
+		add_action( 'woocommerce_after_calculate_totals', array( $this, 'setup_order_bumps' ), 999 );
 
-		add_action( 'wfob_before_add_to_cart', [ $this, 'wfob_before_add_to_cart' ] );
-		add_action( 'wfob_after_add_to_cart', [ $this, 'wfob_after_add_to_cart' ] );
+		add_action( 'wfob_before_add_to_cart', array( $this, 'wfob_before_add_to_cart' ) );
+		add_action( 'wfob_after_add_to_cart', array( $this, 'wfob_after_add_to_cart' ) );
 
 		if ( is_checkout() ) {
-			add_action( 'wfacp_after_checkout_page_found', [ $this, 'wfacp_hooks' ] );
-			add_action( 'wp_enqueue_scripts', [ $this, 'enqueue' ] );
-			add_filter( 'wp_footer', [ $this, 'footer' ], 9, 2 );
+			add_action( 'wfacp_after_checkout_page_found', array( $this, 'wfacp_hooks' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+			add_filter( 'wp_footer', array( $this, 'footer' ), 9, 2 );
 		}
-
-
 	}
 
 	/**
@@ -130,7 +124,6 @@ class WFOB_Public {
 	 *
 	 * @return mixed
 	 */
-
 	public function modify_calculate_price_per_session( $item, $key ) {
 
 		if ( ! isset( $item['_wfob_product'] ) ) {
@@ -149,17 +142,26 @@ class WFOB_Public {
 		$regular_price   = apply_filters( 'wfob_discount_regular_price_data', $raw_data['regular_price'], $key );
 		$price           = apply_filters( 'wfob_discount_price_data', $raw_data['price'], $key );
 		$discount_amount = apply_filters( 'wfob_discount_amount_data', $item['_wfob_options']['discount_amount'], $item['_wfob_options']['discount_type'], $key );
-		$discount_data   = [
+		$discount_data   = array(
 			'wfob_product_rp'      => $regular_price,
 			'wfob_product_p'       => $price,
 			'wfob_discount_amount' => $discount_amount,
 			'wfob_discount_type'   => $item['_wfob_options']['discount_type'],
-		];
+		);
 		$new_price       = WFOB_Common::calculate_discount( $discount_data );
 		if ( is_null( $new_price ) ) {
 			return $item;
 		} else {
-			$parse_data = apply_filters( 'wfob_discounted_price_data', [ 'regular_price' => $regular_price, 'price' => $new_price ], '', $product, $raw_data );
+			$parse_data = apply_filters(
+				'wfob_discounted_price_data',
+				array(
+					'regular_price' => $regular_price,
+					'price'         => $new_price,
+				),
+				'',
+				$product,
+				$raw_data
+			);
 			if ( apply_filters( 'wfob_set_bump_product_price_params', true, $item['data'] ) ) {
 				$item['data']->update_meta_data( '_wfob_regular_price', $parse_data['regular_price'] );
 				$item['data']->update_meta_data( '_wfob_price', $parse_data['price'] );
@@ -216,7 +218,6 @@ class WFOB_Public {
 
 			return;
 		}
-
 	}
 
 	private function empty_cart() {
@@ -226,7 +227,7 @@ class WFOB_Public {
 	}
 
 
-	public function setup_order_bumps( $postdata = [], $rematch_group = false ) {
+	public function setup_order_bumps( $postdata = array(), $rematch_group = false ) {
 		if ( true == $this->setup_bump_runs || is_customize_preview() || ( class_exists( 'WFACP_Common' ) && WFACP_Common::is_theme_builder() ) || ( ! wp_doing_ajax() && false == $this->show_on_load() ) ) {
 			return;
 		}
@@ -238,16 +239,14 @@ class WFOB_Public {
 			return;
 		}
 
-
 		if ( isset( $_POST['post_data'] ) && empty( $this->posted_data ) ) {
 			$postdata  = $_POST['post_data'];
-			$post_data = [];
+			$post_data = array();
 			parse_str( $postdata, $post_data );
 			if ( isset( $post_data['_wfacp_post_id'] ) ) {
 				$this->posted_data = $post_data;
 			}
 		}
-
 
 		$wfob_transient_obj = WooFunnels_Transient::get_instance();
 		$wfob_cache_obj     = WooFunnels_Cache::get_instance();
@@ -309,14 +308,12 @@ class WFOB_Public {
 				}
 				do_action( 'wfob_after_query' );
 			}
-
-
 		} else {
 			$contents = $bumps_from_base;
 		}
 
-		$passed_rules = [];
-		$failed_rules = [];
+		$passed_rules = array();
+		$failed_rules = array();
 		if ( is_array( $contents ) && count( $contents ) > 0 ) {
 			foreach ( $contents as $content_single ) {
 				/**
@@ -332,7 +329,7 @@ class WFOB_Public {
 			}
 		}
 
-		$add_to_cart_bump = WC()->session->get( 'wfob_added_bump_product', [] );
+		$add_to_cart_bump = WC()->session->get( 'wfob_added_bump_product', array() );
 		if ( ! empty( $failed_rules ) ) {
 			if ( ! did_action( 'woocommerce_before_checkout_process' ) ) {
 				foreach ( $failed_rules as $failed_id ) {
@@ -351,6 +348,24 @@ class WFOB_Public {
 		}
 		$this->setup_bump_runs = true;
 		$final_bumps           = apply_filters( 'wfob_filter_final_bumps', $final_bumps, $this->posted_data );
+
+		// Apply global "number of bumps per checkout" limit after rules evaluation
+		// This ensures only eligible bumps (that passed rules) are considered for the limit
+		// Note: Bumps without rules automatically pass (match_groups returns true), so they are included here
+		$global_settings = WFOB_Common::get_global_setting();
+		$max_bumps_limit = isset( $global_settings['number_bump_per_checkout'] ) ? absint( $global_settings['number_bump_per_checkout'] ) : 0;
+
+		// Allow customization of the limit via filter (maintains backward compatibility)
+		$max_bumps_limit = apply_filters( 'wfob_maximum_bump_print', $max_bumps_limit );
+
+		// If limit is set and greater than 0, apply it to eligible bumps
+		// Bumps are already ordered by menu_order from the query, so we preserve that order
+		// This works for both bumps with rules and bumps without rules (simple bumps)
+		if ( $max_bumps_limit > 0 && count( $final_bumps ) > $max_bumps_limit ) {
+			// Slice the array to keep only the first N bumps (preserving order)
+			$final_bumps = array_slice( $final_bumps, 0, $max_bumps_limit, true );
+		}
+
 		do_action( 'wfob_before_bump_created', $this, $final_bumps );
 		WFOB_Common::store_removed_bump_items();
 		WFOB_Common::get_pre_checked_bumps();
@@ -369,10 +384,10 @@ class WFOB_Public {
 
 	public function enqueue() {
 		// Use new WooCommerce handles for WC >= 10.3.0, fallback to legacy handles for older versions
-		$photoswipe_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-photoswipe' : 'photoswipe';
+		$photoswipe_handle    = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-photoswipe' : 'photoswipe';
 		$photoswipe_ui_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-photoswipe-ui-default' : 'photoswipe-ui-default';
-		$zoom_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-zoom' : 'zoom';
-		$flexslider_handle = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-flexslider' : 'flexslider';
+		$zoom_handle          = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-zoom' : 'zoom';
+		$flexslider_handle    = ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '10.3.0', '>=' ) ) ? 'wc-flexslider' : 'flexslider';
 
 		wp_enqueue_style( $photoswipe_handle );
 		wp_enqueue_style( 'photoswipe-default-skin' );
@@ -389,21 +404,24 @@ class WFOB_Public {
 			wp_enqueue_style( 'wfob-public-rtl', WFOB_PLUGIN_URL . '/assets/css/wfob-public-rtl.css', false, WFOB_VERSION_DEV );
 		}
 
-		wp_enqueue_script( 'wfob-bump', WFOB_PLUGIN_URL . '/assets/js/public.min.js', [ 'jquery' ], WFOB_VERSION_DEV, true );
-		wp_localize_script( 'wfob-bump', 'wfob_frontend', [
-			'admin_ajax'      => admin_url( 'admin-ajax.php' ),
-			'wc_endpoints'    => WFOB_AJAX_Controller::get_public_endpoints(),
-			'wfob_nonce'      => wp_create_nonce( 'wfob_secure_key' ),
-			'cart_total'      => ! is_null( WC()->cart ) ? WC()->cart->get_total( 'edit' ) : 0,
-			'cart_is_virtual' => ! is_null( WC()->cart ) ? WFOB_Common::is_cart_is_virtual() : false,
-			'quick_popup'     => [
-				'choose_an_option' => __( 'Choose an option', 'woocommerce' ),
-				'add_to_cart_text' => __( 'Add to cart', 'woocommerce' ),
-				'update'           => __( 'Update', 'woocommerce' ),
-			],
-			'track'           => $this->track_events()
-		] );
-
+		wp_enqueue_script( 'wfob-bump', WFOB_PLUGIN_URL . '/assets/js/public.min.js', array( 'jquery' ), WFOB_VERSION_DEV, true );
+		wp_localize_script(
+			'wfob-bump',
+			'wfob_frontend',
+			array(
+				'admin_ajax'      => admin_url( 'admin-ajax.php' ),
+				'wc_endpoints'    => WFOB_AJAX_Controller::get_public_endpoints(),
+				'wfob_nonce'      => wp_create_nonce( 'wfob_secure_key' ),
+				'cart_total'      => ! is_null( WC()->cart ) ? WC()->cart->get_total( 'edit' ) : 0,
+				'cart_is_virtual' => ! is_null( WC()->cart ) ? WFOB_Common::is_cart_is_virtual() : false,
+				'quick_popup'     => array(
+					'choose_an_option' => __( 'Choose an option', 'woocommerce' ),
+					'add_to_cart_text' => __( 'Add to cart', 'woocommerce' ),
+					'update'           => __( 'Update', 'woocommerce' ),
+				),
+				'track'           => $this->track_events(),
+			)
+		);
 	}
 
 	public function is_global_pageview_enabled() {
@@ -421,33 +439,33 @@ class WFOB_Public {
 	public function track_events() {
 		$admin_general = BWF_Admin_General_Settings::get_instance();
 
-		$tracks = [
-			'pixel'      => [
+		$tracks = array(
+			'pixel'      => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_fb_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_fb_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_fb_add_to_cart_bump' ) ),
 				'custom_bump' => wc_string_to_bool( $admin_general->get_option( 'is_fb_custom_bump' ) ),
-			],
-			'google_ua'  => [
+			),
+			'google_ua'  => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_ga_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_ga_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_ga_add_to_cart_bump' ) ),
 				'custom_bump' => wc_string_to_bool( $admin_general->get_option( 'is_ga_custom_bump' ) ),
-			],
-			'google_ads' => [
+			),
+			'google_ads' => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_gad_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_gad_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_gad_add_to_cart_bump' ) ),
 				'custom_bump' => wc_string_to_bool( $admin_general->get_option( 'is_gad_custom_bump' ) ),
 				'cart_labels' => $admin_general->get_option( 'gad_addtocart_bump_conversion_label' ),
-			],
-			'pint'       => [
+			),
+			'pint'       => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_pint_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_pint_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_pint_add_to_cart_bump' ) ),
 				'custom_bump' => $admin_general->get_option( 'is_pint_custom_bump' ),
-			],
-			'tiktok'     => [
+			),
+			'tiktok'     => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_tiktok_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_tiktok_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_tiktok_add_to_cart_bump' ) ),
 				'custom_bump' => $admin_general->get_option( 'is_tiktok_custom_bump' ),
-			],
-			'snapchat'   => [
+			),
+			'snapchat'   => array(
 				'add_to_cart' => wc_string_to_bool( $admin_general->get_option( 'is_snapchat_add_to_cart_global' ) ) ? wc_string_to_bool( $admin_general->get_option( 'is_snapchat_add_to_cart_global' ) ) : wc_string_to_bool( $admin_general->get_option( 'is_snapchat_add_to_cart_bump' ) ),
 				'custom_bump' => $admin_general->get_option( 'is_snapchat_custom_bump' ),
-			]
-		];
+			),
+		);
 
 		return $tracks;
 	}
@@ -461,7 +479,7 @@ class WFOB_Public {
 			// print div container when at time page load
 			do_action( 'wfob_below_payment_gateway' );
 		}
-		remove_action( 'woocommerce_before_template_part', [ $this, 'add_order_bump' ], 11 );
+		remove_action( 'woocommerce_before_template_part', array( $this, 'add_order_bump' ), 11 );
 	}
 
 	public function add_order_bump( $template_name ) {
@@ -473,7 +491,7 @@ class WFOB_Public {
 				// print div container when at time page load
 				do_action( 'wfob_below_payment_gateway' );
 			}
-			remove_action( 'woocommerce_before_template_part', [ $this, 'add_order_bump' ], 11 );
+			remove_action( 'woocommerce_before_template_part', array( $this, 'add_order_bump' ), 11 );
 		}
 	}
 
@@ -508,7 +526,7 @@ class WFOB_Public {
 		if ( false == $this->is_footer_loaded ) {
 			$this->is_footer_loaded = true;
 			woocommerce_photoswipe();
-			include( __DIR__ . '/quick-view/quick-view-container.php' );
+			include __DIR__ . '/quick-view/quick-view-container.php';
 		}
 	}
 
@@ -551,7 +569,6 @@ class WFOB_Public {
 
 	public function woocommerce_simple_add_to_cart() {
 		include __DIR__ . '/quick-view/add-to-cart/simple.php';
-
 	}
 
 	public function woocommerce_subscription_add_to_cart() {
@@ -564,12 +581,12 @@ class WFOB_Public {
 
 	public function reset_wc_session() {
 		if ( ! is_admin() && ! wp_doing_ajax() && ! is_null( WC()->session ) ) {
-			WC()->session->set( 'wfob_added_bump_product', [] );
+			WC()->session->set( 'wfob_added_bump_product', array() );
 		}
 	}
 
 	public function wfacp_hooks() {
-		add_action( 'wfacp_header_print_in_head', [ $this, 'footer' ] );
+		add_action( 'wfacp_header_print_in_head', array( $this, 'footer' ) );
 	}
 
 	/**
@@ -589,7 +606,7 @@ class WFOB_Public {
 		return $status;
 	}
 
-	public function remove_quantity_selector_from_cart( $product_quantity, $cart_item_key, $cart_item = [] ) {
+	public function remove_quantity_selector_from_cart( $product_quantity, $cart_item_key, $cart_item = array() ) {
 		if ( empty( $cart_item ) ) {
 			$cart_item = WC()->cart->get_cart_item( $cart_item_key );
 		}
@@ -612,13 +629,15 @@ class WFOB_Public {
 			$hook        = $position['hook'];
 			$priority    = $position['priority'];
 			$position_id = $position['id'];
-			add_action( $hook, function () use ( $position_id ) {
-				$this->print_bump_placeholder( $position_id );
-			}, $priority );
+			add_action(
+				$hook,
+				function () use ( $position_id ) {
+					$this->print_bump_placeholder( $position_id );
+				},
+				$priority
+			);
 
 		}
-
-
 	}
 
 	public function print_bump_placeholder( $position_id ) {
@@ -633,12 +652,14 @@ class WFOB_Public {
 		foreach ( $available_position as $position ) {
 			$priority    = $position['priority'];
 			$position_id = $position['id'];
-			add_filter( 'woocommerce_update_order_review_fragments', function ( $fragments ) use ( $position_id ) {
-				return $this->get_bump_fragment_html( $fragments, $position_id );
-			}, $priority );
+			add_filter(
+				'woocommerce_update_order_review_fragments',
+				function ( $fragments ) use ( $position_id ) {
+					return $this->get_bump_fragment_html( $fragments, $position_id );
+				},
+				$priority
+			);
 		}
-
-
 	}
 
 	public function get_bump_fragment_html( $fragments, $position_id ) {
@@ -648,7 +669,7 @@ class WFOB_Public {
 	private function print_position_bump( $position ) {
 
 		try {
-			WC()->session->set( 'wfob_no_of_bump_shown', [] );
+			WC()->session->set( 'wfob_no_of_bump_shown', array() );
 			if ( empty( $position ) ) {
 				return '';
 			}
@@ -659,7 +680,7 @@ class WFOB_Public {
 			if ( empty( $bumps ) ) {
 				return '';
 			}
-			$shown_bump_ids = [];
+			$shown_bump_ids = array();
 			/**
 			 * @var $bump WFOB_Bump
 			 */
@@ -681,7 +702,7 @@ class WFOB_Public {
 			WC()->session->set( 'wfob_no_of_bump_shown', $shown_bump_ids );
 
 			return ob_get_clean();
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 			return '';
 		}
 	}
@@ -711,7 +732,6 @@ class WFOB_Public {
 		$slug = 'woocommerce_before_checkout_form_above_the_form';
 
 		return $this->get_bump_html( $fragments, $slug );
-
 	}
 
 	public function wfacp_below_mini_cart_coupon_frg( $fragments ) {
@@ -730,7 +750,6 @@ class WFOB_Public {
 			printf( "<div id='wfob_wrap' class='wfob_bump_wrapper %s'>%s</div>", $slug, $html );
 
 		}
-
 	}
 
 	public function woocommerce_checkout_order_review_below_payment_gateway() {
@@ -756,7 +775,6 @@ class WFOB_Public {
 				WC()->cart->remove_cart_item( $index );
 			}
 		}
-
 	}
 
 	/**
@@ -781,17 +799,17 @@ class WFOB_Public {
 				continue;
 			}
 			if ( isset( $item['_wfob_options'] ) ) {
-				$bump_count ++;
+				++$bump_count;
 			}
 
 			$child_item_key = '';
 			if ( isset( $item['bundled_by'] ) || isset( $item['bundled_by'] ) ) {
 				$child_item_key = $item['bundled_by'];
-			} else if ( isset( $item['chained_item_of'] ) ) {
+			} elseif ( isset( $item['chained_item_of'] ) ) {
 				$child_item_key = $item['chained_item_of'];
 			}
 			if ( ! empty( $child_item_key ) && isset( $cart[ $child_item_key ] ) && isset( $cart[ $child_item_key ]['_wfob_options'] ) && $cart[ $child_item_key ]['_wfob_options'] ) {
-				$other_child_product ++;
+				++$other_child_product;
 			}
 		}
 
@@ -804,7 +822,6 @@ class WFOB_Public {
 			$status = true;
 		}
 
-
 		return apply_filters( 'wfob_allow_order_bump_item_as_last_item', $status, $this );
 	}
 
@@ -812,7 +829,6 @@ class WFOB_Public {
 		if ( class_exists( 'WFACP_Core' ) ) {
 			return $status;
 		}
-
 
 		$cart_content = WC()->cart->get_cart_contents();
 		if ( ! empty( $cart_content ) ) {
@@ -874,7 +890,6 @@ class WFOB_Public {
 	}
 
 	public function show_mini_cart_delete_icon( $status, $cart_item, $cart_item_key ) {
-
 
 		if ( ! isset( $cart_item['_wfob_options'] ) ) {
 			return $status;
@@ -941,7 +956,7 @@ class WFOB_Public {
 
 	public function re_run_rules_after_bump_removed() {
 		$this->setup_bump_runs = false;
-		$this->setup_order_bumps( [], true );
+		$this->setup_order_bumps( array(), true );
 	}
 
 
@@ -958,14 +973,14 @@ class WFOB_Public {
 			if ( ! class_exists( 'WFACP_Common' ) || ! isset( $cart_item_data['_wfob_product_key'] ) ) {
 				return $cart_item_data;
 			}
-			$bumps       = WC()->session->get( '_wfob_selected_bump', [] );
+			$bumps       = WC()->session->get( '_wfob_selected_bump', array() );
 			$checkout_id = WFACP_Common::get_id();
 			if ( ! isset( $bumps[ $checkout_id ] ) ) {
 				$key                           = $cart_item_data['_wfob_product_key'];
-				$bumps[ $checkout_id ][ $key ] = [ $cart_item_key, $cart_item_data ];
+				$bumps[ $checkout_id ][ $key ] = array( $cart_item_key, $cart_item_data );
 				WC()->session->set( '_wfob_selected_bump', $bumps );
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 		}
 
 		return $cart_item_data;
@@ -988,13 +1003,13 @@ class WFOB_Public {
 			$cart_item = $instance->removed_cart_contents[ $cart_item_key ];
 			if ( isset( $cart_item['_wfob_product_key'] ) ) {
 				$key   = $cart_item['_wfob_product_key'];
-				$bumps = WC()->session->get( '_wfob_selected_bump', [] );
+				$bumps = WC()->session->get( '_wfob_selected_bump', array() );
 				if ( isset( $bumps[ $key ] ) ) {
 					unset( $bumps );
 				}
 				WC()->session->set( '_wfob_selected_bump', $bumps );
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 		}
 	}
 
@@ -1010,17 +1025,21 @@ class WFOB_Public {
 	 */
 	public function re_add_bump_to_cart( $post, $success, $wfacp_id ) {
 		try {
-			$bumps = WC()->session->get( '_wfob_selected_bump', [] );
+			$bumps = WC()->session->get( '_wfob_selected_bump', array() );
 			if ( ! isset( $bumps[ $wfacp_id ] ) ) {
 				return;
 			}
 			$items = $bumps[ $wfacp_id ];
 			foreach ( $items as $data ) {
 				$item_data      = $data[1];
-				$bump_item_data = [ '_wfob_product' => true, '_wfob_options' => $item_data['_wfob_options'], '_wfob_product_key' => $item_data['_wfob_product_key'] ];
+				$bump_item_data = array(
+					'_wfob_product'     => true,
+					'_wfob_options'     => $item_data['_wfob_options'],
+					'_wfob_product_key' => $item_data['_wfob_product_key'],
+				);
 				WC()->cart->add_to_cart( $item_data['product_id'], $item_data['quantity'], $item_data['variation_id'], $item_data['variation'], $bump_item_data );
 			}
-		} catch ( Exception|Error $e ) {
+		} catch ( Exception | Error $e ) {
 		}
 	}
 
@@ -1029,13 +1048,12 @@ class WFOB_Public {
 	}
 
 	public function unset_current_checkout_session_data() {
-		$bumps = WC()->session->get( '_wfob_selected_bump', [] );
+		$bumps = WC()->session->get( '_wfob_selected_bump', array() );
 		if ( ! isset( $bumps[ WFACP_Common::get_id() ] ) ) {
 			return;
 		}
 		unset( $bumps[ WFACP_Common::get_id() ] );
 		WC()->session->set( '_wfob_selected_bump', $bumps );
-
 	}
 
 	public function license_data( $hash ) {
@@ -1058,20 +1076,14 @@ class WFOB_Public {
 						'license'                 => ! empty( $license_data ) ? $license_data : false,
 						'is_manually_deactivated' => ( isset( $license['_data']['manually_deactivated'] ) && true === bwf_string_to_bool( $license['_data']['manually_deactivated'] ) ) ? 1 : 0,
 						'activated'               => ( isset( $license['_data']['activated'] ) && true === bwf_string_to_bool( $license['_data']['activated'] ) ) ? 1 : 0,
-						'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0
+						'expired'                 => ( isset( $license['_data']['expired'] ) && true === bwf_string_to_bool( $license['_data']['expired'] ) ) ? 1 : 0,
 					);
 				}
-
-
 			}
-
-
 		}
 
-		return [];
-
+		return array();
 	}
-
 }
 
 if ( class_exists( 'WFOB_Core' ) ) {

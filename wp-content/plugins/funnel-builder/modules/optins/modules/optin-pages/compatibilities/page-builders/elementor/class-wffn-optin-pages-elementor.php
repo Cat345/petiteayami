@@ -2,7 +2,7 @@
 
 use Elementor\Plugin;
 
-defined( 'ABSPATH' ) || exit; //Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 /**
  * Class WFFN_Optin_Pages_Elementor
@@ -10,14 +10,14 @@ defined( 'ABSPATH' ) || exit; //Exit if accessed directly
 if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 	#[AllowDynamicProperties]
 
-  class WFFN_Optin_Pages_Elementor {
+	class WFFN_Optin_Pages_Elementor {
 
-		private static $ins = null;
-		protected $template_type = [];
-		protected $design_template_data = [];
-		protected $templates = [];
-		private $edit_id = 0;
-		private $url = '';
+		private static $ins             = null;
+		protected $template_type        = array();
+		protected $design_template_data = array();
+		protected $templates            = array();
+		private $edit_id                = 0;
+		private $url                    = '';
 
 		/**
 		 * WFFN_Optin_Pages_Elementor constructor.
@@ -36,8 +36,10 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 				add_action( 'elementor/widgets/widgets_registered', array( $this, 'register_widgets' ) );
 			}
 
-			add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
-			add_action( 'init', [ $this, 'setup' ] );
+			add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
+			add_action( 'init', array( $this, 'setup' ) );
+
+			add_action( 'wffn_optin_page_setup_completed', array( $this, 'clear_elementor_cache_when_optin_page_loads' ), 5 );
 		}
 
 		private function process_url() {
@@ -48,25 +50,26 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 			if ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === $_REQUEST['action'] && isset( $_REQUEST['editor_post_id'] ) && $_REQUEST['editor_post_id'] > 0 ) {  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$this->edit_id = absint( $_REQUEST['editor_post_id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
-
 		}
 
 		public function add_default_templates() {
 			$templates = WooFunnels_Dashboard::get_all_templates();
-			$designs   = isset( $templates['optin'] ) ? $templates['optin'] : [];
-			$template  = [
+			$designs   = isset( $templates['optin'] ) ? $templates['optin'] : array();
+			$template  = array(
 				'slug'        => 'elementor',
 				'title'       => __( 'Elementor', 'funnel-builder' ),
 				'button_text' => __( 'Edit', 'funnel-builder' ),
-				'edit_url'    => add_query_arg( [
-					'post'   => $this->edit_id,
-					'action' => 'elementor',
-				], admin_url( 'post.php' ) ),
-			];
+				'edit_url'    => add_query_arg(
+					array(
+						'post'   => $this->edit_id,
+						'action' => 'elementor',
+					),
+					admin_url( 'post.php' )
+				),
+			);
 			WFOPP_Core()->optin_pages->register_template_type( $template );
 
-
-			if(isset($designs['elementor']) && is_array($designs['elementor'])) {
+			if ( isset( $designs['elementor'] ) && is_array( $designs['elementor'] ) ) {
 				foreach ( $designs['elementor'] as $d_key => $templates ) {
 
 					if ( isset( $templates['pro'] ) && 'yes' === $templates['pro'] ) {
@@ -75,23 +78,23 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 					WFOPP_Core()->optin_pages->register_template( $d_key, $templates, 'elementor' );
 
 				}
-			}else{
+			} else {
 
-				$empty_template = [
-					"type"               => "view",
-					"import"             => "no",
-					"show_import_popup"  => "no",
-					"slug"               => "elementor_1",
-					"build_from_scratch" => true,
-					"group"              => [
-						"inline",
-						"popup"
-					],
-				];
+				$empty_template = array(
+					'type'               => 'view',
+					'import'             => 'no',
+					'show_import_popup'  => 'no',
+					'slug'               => 'elementor_1',
+					'build_from_scratch' => true,
+					'group'              => array(
+						'inline',
+						'popup',
+					),
+				);
 				WFOPP_Core()->optin_pages->register_template( 'elementor_1', $empty_template, 'elementor' );
 			}
 
-			return [];
+			return array();
 		}
 
 		/**
@@ -99,7 +102,7 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
@@ -142,10 +145,13 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 		public function add_wffn_elementor_category() {
 			$design = WFOPP_Core()->optin_pages->get_page_design( WFOPP_Core()->optin_pages->edit_id );
 			if ( 'elementor' === $design['selected_type'] && class_exists( '\Elementor\Plugin' ) ) {
-				\Elementor\Plugin::instance()->elements_manager->add_category( 'wffn-flex', array(
-					'title' => __( 'FunnelKit', 'funnel-builder' ),
-					'icon'  => 'fa fa-plug',
-				) );
+				\Elementor\Plugin::instance()->elements_manager->add_category(
+					'wffn-flex',
+					array(
+						'title' => __( 'FunnelKit', 'funnel-builder' ),
+						'icon'  => 'fa fa-plug',
+					)
+				);
 			}
 		}
 
@@ -161,11 +167,11 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 
 			if ( WFOPP_Core()->optin_pages->get_post_type_slug() === get_post_type( $optinPageId ) ) {
 
-				require_once( __DIR__ . '/widgets/class-elementor-wffn-optin-form-widget.php' );
+				require_once __DIR__ . '/widgets/class-elementor-wffn-optin-form-widget.php';
 
 				if ( defined( 'ELEMENTOR_VERSION' ) && version_compare( ELEMENTOR_VERSION, '3.5.0', '>=' ) ) {
 					\Elementor\Plugin::instance()->widgets_manager->register( new \Elementor_WFFN_Optin_Form_Widget() );
-				}else{
+				} else {
 					\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor_WFFN_Optin_Form_Widget() );
 				}
 
@@ -184,26 +190,48 @@ if ( ! class_exists( 'WFFN_Optin_Pages_Elementor' ) ) {
 					wp_enqueue_style( 'flag_style', plugin_dir_url( WFOPP_PRO_PLUGIN_FILE ) . 'assets/phone/css/phone-flag.css', array(), WFFN_VERSION_DEV );
 
 				}
-
 			}
 		}
 
 		public function setup() {
 			if ( did_action( 'elementor/loaded' ) ) {
-				add_action( 'elementor/theme/register_conditions', [ $this, 'register_conditions' ] );
+				add_action( 'elementor/theme/register_conditions', array( $this, 'register_conditions' ) );
 			}
-
 		}
 
 		public function register_conditions( $conditions_manager ) {
 			require plugin_dir_path( WFFN_PLUGIN_FILE ) . 'modules/optins/modules/optin-pages/compatibilities/page-builders/elementor/conditions/class-wffn-op-pages.php';
-			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OP_Pages( [
-				'post_type' => WFOPP_Core()->optin_pages->get_post_type_slug(),
-			] );
+			$new_condition = new ElementorPro\Modules\ThemeBuilder\Conditions\WFFN_OP_Pages(
+				array(
+					'post_type' => WFOPP_Core()->optin_pages->get_post_type_slug(),
+				)
+			);
 			$conditions_manager->get_condition( 'singular' )->register_sub_condition( $new_condition );
 		}
 
-
+		/**
+		 * Invalidate Elementor document cache for this optin page only (not site-wide) so widgets render fresh.
+		 * Mirrors UpStroke wfocu_offer_setup_completed + Document::CACHE_META_KEY handling.
+		 *
+		 * @param int $page_id Optin page post ID.
+		 */
+		public function clear_elementor_cache_when_optin_page_loads( $page_id ) {
+			$page_id = absint( $page_id );
+			if ( $page_id <= 0 || ! function_exists( 'WFOPP_Core' ) ) {
+				return;
+			}
+			$design = WFOPP_Core()->optin_pages->get_page_design( $page_id );
+			if ( ! is_array( $design ) || empty( $design['selected_type'] ) || 'elementor' !== $design['selected_type'] ) {
+				return;
+			}
+			if ( ! class_exists( '\Elementor\Core\Base\Document' ) ) {
+				return;
+			}
+			$cache_meta_key = \Elementor\Core\Base\Document::CACHE_META_KEY;
+			if ( ! empty( $cache_meta_key ) ) {
+				delete_post_meta( $page_id, $cache_meta_key );
+			}
+		}
 	}
 
 	WFFN_Optin_Pages_Elementor::get_instance();

@@ -81,7 +81,7 @@ return [
         'nav_divider' => [
             'type' => 'checkbox',
             'text' => 'Show dividers',
-            'enable' => 'nav_style != \'navbar-dropdown-nav\'',
+            'enable' => "nav_style != 'navbar-dropdown-nav'",
         ],
         'nav_size' => [
             'label' => 'Primary Size',
@@ -93,7 +93,7 @@ return [
                 'Large' => 'large',
                 'X-Large' => 'xlarge',
             ],
-            'enable' => 'nav_style == \'primary\'',
+            'enable' => "nav_style == 'primary'",
         ],
         'html_element' => [
             'label' => 'HTML Element',

@@ -18,24 +18,28 @@ if ( ! class_exists( 'WFFN_Pro_Upsells_PRO_Support' ) ) {
 		 */
 		public static function get_instance() {
 			if ( null === self::$ins ) {
-				self::$ins = new self;
+				self::$ins = new self();
 			}
 
 			return self::$ins;
 		}
 
 		public static function setup_hooks() {
-			add_action( 'plugins_loaded', function () {
-				if ( class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
-					$inst = WooFunnels_Support_WFOCU_PowerPack::get_instance();
-					remove_filter( 'woofunnels_plugins_license_needed', array( $inst, 'add_license_support' ), 10 );
-					remove_action( 'init', array( $inst, 'init_licensing' ), 12 );
-					remove_action( 'woofunnels_licenses_submitted', array( $inst, 'process_licensing_form' ) );
-					remove_action( 'woofunnels_deactivate_request', array( $inst, 'maybe_process_deactivation' ) );
-					remove_action( 'before_woocommerce_init', array( WooFunnels_UpStroke_PowerPack::instance(), 'declare_hpos_compatibility' ) );
+			add_action(
+				'plugins_loaded',
+				function () {
+					if ( class_exists( 'WooFunnels_Support_WFOCU_PowerPack' ) ) {
+						$inst = WooFunnels_Support_WFOCU_PowerPack::get_instance();
+						remove_filter( 'woofunnels_plugins_license_needed', array( $inst, 'add_license_support' ), 10 );
+						remove_action( 'init', array( $inst, 'init_licensing' ), 12 );
+						remove_action( 'woofunnels_licenses_submitted', array( $inst, 'process_licensing_form' ) );
+						remove_action( 'woofunnels_deactivate_request', array( $inst, 'maybe_process_deactivation' ) );
+						remove_action( 'before_woocommerce_init', array( WooFunnels_UpStroke_PowerPack::instance(), 'declare_hpos_compatibility' ) );
 
-				}
-			}, 999999 );
+					}
+				},
+				999999
+			);
 		}
 
 		public static function maybe_load() {
@@ -43,7 +47,10 @@ if ( ! class_exists( 'WFFN_Pro_Upsells_PRO_Support' ) ) {
 				return;
 			}
 			self::setup_hooks();
-			require_once plugin_dir_path( WFFN_PRO_FILE ) . 'modules/one-click-upsells-powerpack/woofunnels-upstroke-power-pack.php';
+			$powerpack_file = plugin_dir_path( WFFN_PRO_FILE ) . 'modules/one-click-upsells-powerpack/woofunnels-upstroke-power-pack.php';
+			if ( file_exists( $powerpack_file ) ) {
+				require_once $powerpack_file;
+			}
 		}
 
 		public static function is_module_exists() {
@@ -54,8 +61,6 @@ if ( ! class_exists( 'WFFN_Pro_Upsells_PRO_Support' ) ) {
 			}
 
 			return in_array( 'woofunnels-upstroke-power-pack/woofunnels-upstroke-power-pack.php', $active_plugins, true ) || array_key_exists( 'woofunnels-upstroke-power-pack/woofunnels-upstroke-power-pack.php', $active_plugins );
-
-
 		}
 	}
 

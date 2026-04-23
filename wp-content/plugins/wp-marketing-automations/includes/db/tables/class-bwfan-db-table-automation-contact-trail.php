@@ -34,6 +34,7 @@ class BWFAN_DB_Table_Automation_Contact_Trail extends BWFAN_DB_Tables_Base {
 				'cid'    => [ 'cid' ],
 				'sid'    => [ 'sid' ],
 				'status' => [ 'status' ],
+				'c_time' => [ 'c_time' ],
 			],
 			'unique_keys' => [],
 		];
@@ -61,7 +62,8 @@ class BWFAN_DB_Table_Automation_Contact_Trail extends BWFAN_DB_Tables_Base {
 			KEY `tid` (`tid`(40)),
 			KEY `cid` (`cid`),
 			KEY `sid` (`sid`),
-			KEY `status` (`status`)
+			KEY `status` (`status`),
+			KEY `c_time` (`c_time`)
 		) $collate;";
 	}
 }

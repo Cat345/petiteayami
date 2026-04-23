@@ -1,0 +1,56 @@
+{
+  "module": {
+    "selected_product": "selectedProduct",
+    "wfocu_product_short_desc_text_align": "textAlign.*",
+
+    "wfocu_product_short_desc_title_color": "description.decoration.font.font.*.color",
+    "wfocu_product_short_desc_title_bg_color": "wfocu_product_short_desc_title_bg_color.decoration.background.color.*.hex",
+
+    "wfocu_product_short_desc_text_margin": "wfocu_product_short_desc_margin_padding.decoration.spacing.*.margin",
+    "wfocu_product_short_desc_text_padding": "wfocu_product_short_desc_margin_padding.decoration.spacing.*.padding",
+
+    "wfocu_product_short_desc_typography_typograhy": "description.decoration.font.font.*"
+  },
+  "advanced": {
+    "admin_label": "module.meta.adminLabel",
+    "disabled_on": "module.decoration.disabledOn",
+    "module": "module.advanced.htmlAttributes",
+    "background": "module.decoration.background",
+    "animation": "module.decoration.animation",
+    "max_width": "module.decoration.sizing",
+    "height": "module.decoration.sizing",
+    "margin_padding": "module.decoration.spacing",
+    "overflow": "module.decoration.overflow",
+    "position_fields": "module.decoration.position",
+    "scroll": "module.decoration.scroll",
+    "sticky": "module.decoration.sticky",
+    "transform": "module.decoration.transform",
+    "transition": "module.decoration.transition",
+    "z_index": "module.decoration.zIndex",
+    "filters": {
+      "default": "module.decoration.filters"
+    },
+    "borders": {
+      "default": "module.decoration.border",
+      "wfocu_product_short_desc_border": "description.decoration.border"
+    },
+    "box_shadow": {
+      "default": "module.decoration.boxShadow",
+      "wfocu_product_short_desc_box_shadow": "wfocu_product_short_desc_box_shadow.decoration.boxShadow"
+    },
+    "fonts": {
+      "wfocu_product_short_desc_typography": "description.decoration.font"
+    }
+  },
+  "css": {
+    "before": "css.*.before",
+    "main_element": "css.*.mainElement",
+    "after": "css.*.after",
+    "free_form": "css.*.freeForm"
+  },
+  "valueExpansionFunctionMap": {
+    "wfocu_product_short_desc_text_margin": "convertSpacing",
+    "wfocu_product_short_desc_text_padding": "convertSpacing",
+    "wfocu_product_short_desc_typography_typograhy": "ET\\Builder\\Packages\\Conversion\\AdvancedOptionConversion::convertFont"
+  }
+}

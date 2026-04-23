@@ -9,7 +9,7 @@ if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
 		 *
 		 * @var string
 		 */
-		public $gettext_domain = 'wfacp-woofunnels-aero-divi';
+		public $gettext_domain          = 'wfacp-woofunnels-aero-divi';
 		public static $field_color_type = 'color';
 
 		/**
@@ -32,27 +32,25 @@ if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
 
 		private $module_path = '';
 
-		public $modules_instance = [];
+		public $modules_instance    = array();
 		private $builder_setup_done = false;
 
 		/**
 		 * WFACP_Divi_Extension constructor.
 		 *
 		 * @param string $name
-		 * @param array $args
+		 * @param array  $args
 		 */
 		public function __construct( $name = 'woofunnels-upstroke-divi', $args = array() ) {
 			$this->plugin_dir     = plugin_dir_path( __FILE__ );
 			$this->module_path    = $this->plugin_dir . 'modules/';
 			$this->plugin_dir_url = plugin_dir_url( __FILE__ );
 			parent::__construct( $name, $args );
-			add_filter( 'et_theme_builder_template_layouts', [ $this, 'disable_header_footer' ], 99 );
-
+			add_filter( 'et_theme_builder_template_layouts', array( $this, 'disable_header_footer' ), 99 );
 		}
 
 		protected function _enqueue_bundles() {
 			$this->enqueue_module_js();
-
 		}
 
 		public function wp_hook_enqueue_scripts() {
@@ -62,60 +60,65 @@ if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
 
 		private function enqueue_module_js() {
 			// Frontend Bundle
-			global $post;
-			if ( ! is_null( $post ) && $post->post_type === 'wfocu_offer' ) {
-				wp_enqueue_style( "{$this->name}-wfocu-divi", "{$this->plugin_dir_url}css/divi.css", [], $this->version );
-			}
+			// Note: CSS is now enqueued via common method in class-wfocu-compatibility-with-divi.php
+			// to work for both Divi 4 and Divi 5
 			if ( et_core_is_fb_enabled() ) {
-				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.min.js", [ 'react-dom' ], $this->version, true );
+				wp_enqueue_script( "{$this->name}-builder-bundle", "{$this->plugin_dir_url}scripts/loader.min.js", array( 'react-dom' ), $this->version, true );
+				wp_localize_script(
+					"{$this->name}-builder-bundle",
+					'wfocu_divi_data',
+					array(
+						'nonce' => wp_create_nonce( 'wfocu_divi_ajax' ),
+					)
+				);
 			}
 		}
 
 
 		private function get_modules() {
-			$modules = [
-				'accept_button'      => [
+			$modules = array(
+				'accept_button'      => array(
 					'name' => __( 'WF Accept Button', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'accept-button.php',
-				],
-				'reject_button'      => [
+				),
+				'reject_button'      => array(
 					'name' => __( 'WF Reject Button', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'reject-button.php',
-				],
-				'accept_link'        => [
+				),
+				'accept_link'        => array(
 					'name' => __( 'WF Accept Link', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'accept-link.php',
-				],
-				'reject_link'        => [
+				),
+				'reject_link'        => array(
 					'name' => __( 'WF Reject Link', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'reject-link.php',
-				],
-				'product_title'      => [
+				),
+				'product_title'      => array(
 					'name' => __( 'WF Product Title', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-title.php',
-				],
-				'product_images'     => [
+				),
+				'product_images'     => array(
 					'name' => __( 'WF Product Images', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-images.php',
-				],
-				'product_short_desc' => [
+				),
+				'product_short_desc' => array(
 					'name' => __( 'WF Product Short Description', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'product-short-desc.php',
-				],
-				'variation_selector' => [
+				),
+				'variation_selector' => array(
 					'name' => __( 'WF Variation Selector', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'variation-selector.php',
-				],
-				'qty_selector'       => [
+				),
+				'qty_selector'       => array(
 					'name' => __( 'WF Quantity Selector', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'qty-selector.php',
-				],
-				'offer_price'        => [
+				),
+				'offer_price'        => array(
 					'name' => __( 'WF Offer Price', 'woofunnels-upstroke-one-click-upsell' ),
 					'path' => $this->module_path . 'offer-price.php',
-				],
+				),
 
-			];
+			);
 
 			return apply_filters( 'wfacp_divi_modules', $modules, $this );
 		}
@@ -159,6 +162,7 @@ if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
 		}
 
 		public function disable_header_footer( $layouts ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checking Divi builder URL parameter, read-only operation
 			if ( ! isset( $_GET['et_fb'] ) || ! defined( 'ET_THEME_BUILDER_HEADER_LAYOUT_POST_TYPE' ) ) {
 				return $layouts;
 			}
@@ -180,9 +184,7 @@ if ( ! class_exists( 'WFOCU_Divi_Extension' ) ) {
 
 			return $layouts;
 		}
-
-
 	}
 
-	new WFOCU_Divi_Extension;
+	new WFOCU_Divi_Extension();
 }

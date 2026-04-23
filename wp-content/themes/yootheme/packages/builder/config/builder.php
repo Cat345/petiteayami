@@ -111,7 +111,7 @@ return [
     'position_left' => [
         'label' => 'Left',
         'description' =>
-            'Set the horizontal position of the element\'s left edge in pixels. A different unit like % or vw can also be entered.',
+            "Set the horizontal position of the element's left edge in pixels. A different unit like % or vw can also be entered.",
         'type' => 'range',
         'attrs' => [
             'min' => -600,
@@ -123,7 +123,7 @@ return [
     'position_right' => [
         'label' => 'Right',
         'description' =>
-            'Set the horizontal position of the element\'s right edge in pixels. A different unit like % or vw can also be entered.',
+            "Set the horizontal position of the element's right edge in pixels. A different unit like % or vw can also be entered.",
         'type' => 'range',
         'attrs' => [
             'min' => -600,
@@ -135,7 +135,7 @@ return [
     'position_top' => [
         'label' => 'Top',
         'description' =>
-            'Set the horizontal position of the element\'s top edge in pixels. A different unit like % or vw can also be entered.',
+            "Set the horizontal position of the element's top edge in pixels. A different unit like % or vw can also be entered.",
         'type' => 'range',
         'attrs' => [
             'min' => -600,
@@ -147,7 +147,7 @@ return [
     'position_bottom' => [
         'label' => 'Bottom',
         'description' =>
-            'Set the horizontal position of the element\'s bottom edge in pixels. A different unit like % or vw can also be entered.',
+            "Set the horizontal position of the element's bottom edge in pixels. A different unit like % or vw can also be entered.",
         'type' => 'range',
         'attrs' => [
             'min' => -600,
@@ -191,7 +191,7 @@ return [
             'Remove' => 'remove',
             'Auto' => 'auto',
         ],
-        'enable' => 'position != \'absolute\'',
+        'enable' => "position != 'absolute'",
     ],
     'margin_bottom' => [
         'label' => 'Margin Bottom',
@@ -208,7 +208,7 @@ return [
             'Remove' => 'remove',
             'Auto' => 'auto',
         ],
-        'enable' => 'position != \'absolute\'',
+        'enable' => "position != 'absolute'",
     ],
     'maxwidth' => [
         'label' => 'Max Width',
@@ -246,7 +246,7 @@ return [
             'Center' => 'center',
             'Right' => 'right',
         ],
-        'enable' => 'position != \'absolute\' && maxwidth',
+        'enable' => "position != 'absolute' && maxwidth",
     ],
     'block_align_breakpoint' => [
         'label' => 'Block Alignment Breakpoint',
@@ -259,7 +259,7 @@ return [
             'Large (Desktop)' => 'l',
             'X-Large (Large Screens)' => 'xl',
         ],
-        'enable' => 'position != \'absolute\' && maxwidth',
+        'enable' => "position != 'absolute' && maxwidth",
     ],
     'block_align_fallback' => [
         'label' => 'Block Alignment Fallback',
@@ -270,7 +270,7 @@ return [
             'Center' => 'center',
             'Right' => 'right',
         ],
-        'enable' => 'position != \'absolute\' && maxwidth && block_align_breakpoint',
+        'enable' => "position != 'absolute' && maxwidth && block_align_breakpoint",
     ],
     'text_align' => [
         'label' => 'Text Alignment',
@@ -308,7 +308,7 @@ return [
             'Large (Desktop)' => 'l',
             'X-Large (Large Screens)' => 'xl',
         ],
-        'enable' => 'text_align && text_align != \'justify\'',
+        'enable' => "text_align && text_align != 'justify'",
     ],
     'text_align_fallback' => [
         'label' => 'Text Alignment Fallback',
@@ -333,12 +333,12 @@ return [
             'Right' => 'right',
             'Justify' => 'justify',
         ],
-        'enable' => 'text_align && text_align != \'justify\' && text_align_breakpoint',
+        'enable' => "text_align && text_align != 'justify' && text_align_breakpoint",
     ],
     'animation' => [
         'label' => 'Animation',
         'description' =>
-            'Override the section animation setting. This option won\'t have any effect unless animations are enabled for this section.',
+            "Override the section animation setting. This option won't have any effect unless animations are enabled for this section.",
         'type' => 'select',
         'options' => [
             [
@@ -429,7 +429,7 @@ return [
         'type' => 'button-panel',
         'text' => 'Edit Parallax',
         'panel' => 'builder-parallax',
-        'enable' => 'animation == \'parallax\'',
+        'enable' => "animation == 'parallax'",
     ],
     'visibility' => [
         'label' => 'Visibility',
@@ -454,7 +454,7 @@ return [
             'If a section or row has a max width, and one side is expanding to the left or right, the default padding can be removed from the expanding side.',
         'type' => 'checkbox',
         'text' => 'Remove left or right padding',
-        'enable' => 'position != \'absolute\'',
+        'enable' => "position != 'absolute'",
     ],
     'image' => [
         'label' => 'Image',

@@ -128,6 +128,7 @@ class Same_Products extends Base_Model implements Model_Interface {
         $cart_items = \WC()->cart->get_cart_contents();
 
         foreach ( $cart_items as $cart_item ) {
+
             $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
 
             // Create deal for this product.
@@ -162,8 +163,10 @@ class Same_Products extends Base_Model implements Model_Interface {
      * @return int|boolean The cart item compare value if matched, false otherwise.
      */
     public function same_products_bogo_is_cart_item_match_entries( $matched, $cart_item, $entry, $is_deal, $type, $bogo_deal ) {
-        // Only handle deal entries with 'same-products' type.
-        if ( 'same-products' !== $type ) {
+        // Handle both trigger and deal matching for same-products BOGO deals.
+        // Triggers use the trigger_type (e.g., 'product-categories'), but the prepared trigger data
+        // already contains resolved product/variation IDs, so we match them the same way as deals.
+        if ( 'same-products' !== $bogo_deal->deal_type ) {
             return $matched;
         }
 
@@ -214,10 +217,9 @@ class Same_Products extends Base_Model implements Model_Interface {
 
         // Get trigger quantity from RAW coupon data (not from processed triggers which are already decremented).
         $raw_bogo_deals = $coupon->get_advanced_prop( 'bogo_deals' );
-        $trigger_qty    = isset( $raw_bogo_deals[0]['trigger_quantity'] ) ? absint( $raw_bogo_deals[0]['trigger_quantity'] ) : 1;
-        $deal_qty       = isset( $raw_bogo_deals[0]['deal_quantity'] ) ? absint( $raw_bogo_deals[0]['deal_quantity'] ) : 1;
-
-        $sorted_deals = array();
+        $trigger_qty    = isset( $raw_bogo_deals['conditions']['quantity'] ) ? absint( $raw_bogo_deals['conditions']['quantity'] ) : 1;
+        $deal_qty       = isset( $raw_bogo_deals['deals']['quantity'] ) ? absint( $raw_bogo_deals['deals']['quantity'] ) : 1;
+        $sorted_deals   = array();
         foreach ( $cart_contents as $cart_item ) {
             $item_id = isset( $cart_item['variation_id'] ) && $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
 
@@ -259,18 +261,22 @@ class Same_Products extends Base_Model implements Model_Interface {
             if ( $qty_to_add > 0 ) {
                 // Get product and variation id values.
                 if ( ! empty( $cart_item ) ) {
-                    $product_id   = $cart_item['product_id'];
-                    $variation_id = $cart_item['variation_id'];
+                    $product_id     = $cart_item['product_id'];
+                    $variation_id   = $cart_item['variation_id'];
+                    $variation_data = isset( $cart_item['variation'] ) ? $cart_item['variation'] : array();
                 } elseif ( 'product_variation' === get_post_type( $product_id_to_match ) ) {
-                    $variation_id = $product_id_to_match;
-                    $product_id   = wp_get_post_parent_id( $variation_id );
+                    $variation_id   = $product_id_to_match;
+                    $product_id     = wp_get_post_parent_id( $variation_id );
+                    $variation      = wc_get_product( $variation_id );
+                    $variation_data = $variation ? $variation->get_variation_attributes() : array();
                 } else {
-                    $product_id   = $product_id_to_match;
-                    $variation_id = 0;
+                    $product_id     = $product_id_to_match;
+                    $variation_id   = 0;
+                    $variation_data = array();
                 }
 
                 // Add product to cart.
-                $variation_data = apply_filters( 'acfw_bogo_auto_add_product_variation_data', array(), $variation_id );
+                $variation_data = apply_filters( 'acfw_bogo_auto_add_product_variation_data', $variation_data, $variation_id );
                 $cart_key       = \WC()->cart->add_to_cart( $product_id, $qty_to_add, $variation_id, $variation_data );
                 $cart_item      = \WC()->cart->get_cart_item( $cart_key );
             }

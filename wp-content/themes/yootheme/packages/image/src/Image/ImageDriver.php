@@ -43,11 +43,10 @@ class ImageDriver extends ImageResizable
         $width = $this->parseValue($width, $this->width);
         $height = $this->parseValue($height, $this->height);
 
-        if ($ratio > $width / $height) {
-            $image = $this->resize(round($height * $ratio), $height);
-        } else {
-            $image = $this->resize($width, round($width / $ratio));
-        }
+        $image =
+            $ratio > $width / $height
+                ? $this->resize($height * $ratio, $height)
+                : $this->resize($width, $width / $ratio);
 
         if ($x === 'left') {
             $x = 0;
@@ -80,7 +79,7 @@ class ImageDriver extends ImageResizable
      */
     public function resize($width = null, $height = null, string $background = 'crop'): self
     {
-        if ($background == 'cover') {
+        if ($background === 'cover') {
             return $this->crop($width, $height);
         }
 

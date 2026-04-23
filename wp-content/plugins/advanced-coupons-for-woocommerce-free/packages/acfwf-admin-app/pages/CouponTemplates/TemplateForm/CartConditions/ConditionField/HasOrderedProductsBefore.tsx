@@ -50,14 +50,16 @@ const HasOrderedProductsBefore = (props: IProps) => {
   const { field, onChange } = props;
   const { labels } = acfwAdminApp.coupon_templates_page;
 
-  const [numberLabel, setNumberLabel] = useState(field.i18n.within_a_period);
+  const i18n = field.i18n;
+
+  const [numberLabel, setNumberLabel] = useState(i18n.within_a_period);
 
   const handleChange = (dataKey: string, value: any) => {
     const data = { ...field.data, [dataKey]: value };
     onChange(data);
 
     if (dataKey === 'condition') {
-      setNumberLabel(value === 'within-a-period' ? field.i18n.within_a_period : field.i18n.number_of_orders);
+      setNumberLabel(value === 'within-a-period' ? i18n.within_a_period : i18n.number_of_orders);
     }
   };
 
@@ -115,10 +117,10 @@ const HasOrderedProductsBefore = (props: IProps) => {
 
   return (
     <div className="condition-field">
-      <h3>{field.i18n.title}</h3>
+      <h3>{i18n.title}</h3>
       <div className="condition-field-form">
         <div className="field-control">
-          <label>{field.i18n.type}</label>
+          <label>{i18n.type}</label>
           <Select
             value={field.data.condition}
             options={getConditionOptions('period')}

@@ -35,7 +35,7 @@ class MatchTemplate
         if ($query->is_home()) {
             return [
                 'type' => 'archive-post',
-                'query' => compact('pages', 'locale'),
+                'query' => ['pages' => $pages, 'locale' => $locale],
             ];
         }
 
@@ -54,14 +54,14 @@ class MatchTemplate
         if ($object && $query->is_post_type_archive()) {
             return [
                 'type' => "archive-{$object->name}",
-                'query' => compact('pages', 'locale'),
+                'query' => ['pages' => $pages, 'locale' => $locale],
             ];
         }
 
         if ($query->is_author()) {
             return [
                 'type' => 'author-archive',
-                'query' => compact('pages', 'locale'),
+                'query' => ['pages' => $pages, 'locale' => $locale],
             ];
         }
 
@@ -85,14 +85,14 @@ class MatchTemplate
         if ($query->is_search()) {
             return [
                 'type' => $this->request->getParam('live-search') ? '_search' : 'search',
-                'query' => compact('pages', 'locale'),
+                'query' => ['pages' => $pages, 'locale' => $locale],
             ];
         }
 
         if ($query->is_404()) {
             return [
                 'type' => 'error-404',
-                'query' => compact('locale'),
+                'query' => ['locale' => $locale],
             ];
         }
 
@@ -119,7 +119,7 @@ class MatchTemplate
     {
         if (str_contains($locale, '_')) {
             // Fallback to language code, if e.g. WPML changed the locale
-            $locale = [$locale, substr($locale, 0, strpos($locale, '_'))];
+            $locale = [$locale, strstr($locale, '_', true)];
         }
 
         return $locale;

@@ -21,8 +21,9 @@ class RelationshipFieldsType
     public static function config(Source $source, string $name, array $relationships): array
     {
         return [
-            'fields' => array_filter(
-                array_map(function ($relationship) use ($source, $name) {
+            'fields' => array_reduce(
+                $relationships,
+                function ($fields, $relationship) use ($source, $name) {
                     // determine role in relationship
                     $isParent = $relationship['roles']['parent']['types'][0] === $name;
 
@@ -48,7 +49,7 @@ class RelationshipFieldsType
                     );
 
                     if (!$type) {
-                        return false;
+                        return $fields;
                     }
 
                     if (
@@ -65,15 +66,16 @@ class RelationshipFieldsType
 
                         $source->objectType(
                             $relationshipName,
-                            RelationshipType::config($type->name, $relationship),
+                            fn() => RelationshipType::config($type->name, $relationship),
                         );
 
                         $config['type'] = ['listOf' => $relationshipName];
                         $config['extensions']['call']['func'] = __CLASS__ . '::resolveManyToMany';
                     }
 
-                    return $config;
-                }, $relationships),
+                    return $fields + [$config['name'] => $config];
+                },
+                [],
             ),
         ];
     }

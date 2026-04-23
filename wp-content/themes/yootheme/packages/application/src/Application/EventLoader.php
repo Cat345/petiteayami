@@ -22,7 +22,6 @@ class EventLoader
     /**
      * Load event listeners.
      *
-     * @param Container $container
      * @param list<array<string, array<class-string, string|list{string, ?int}|list<list{string, ?int}>>>>  $configs
      */
     public function __invoke(Container $container, array $configs): void
