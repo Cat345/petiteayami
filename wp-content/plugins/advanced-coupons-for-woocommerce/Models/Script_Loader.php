@@ -411,6 +411,191 @@ class Script_Loader extends Base_Model implements Model_Interface {
          * END: Help Page.
          */
 
+        /**
+         * START: Bulk Adjust tab (Store Credits page).
+         *
+         * @since 4.0.8
+         */
+        $date_from_label = __( 'From', 'advanced-coupons-for-woocommerce' );
+        $date_to_label   = __( 'To', 'advanced-coupons-for-woocommerce' );
+
+        // Limit the role picker to roles that can realistically own a store
+        // credit balance. Without this filter the dropdown also lists every
+        // staff role (administrator/editor/etc.), which is technically valid
+        // but rarely what a shop owner means when they "bulk adjust customers".
+        $default_bulk_adjust_roles = array( 'customer', 'subscriber' );
+        /**
+         * Filter the list of role keys offered in the Bulk Adjust role picker.
+         *
+         * @since 4.0.8
+         *
+         * @param string[] $role_keys Default role keys eligible for bulk adjustment.
+         */
+        $allowed_role_keys = apply_filters( 'acfwp_bulk_adjust_role_options', $default_bulk_adjust_roles );
+
+        $wp_roles       = wp_roles();
+        $role_options   = array();
+        $editable_roles = $wp_roles->roles;
+        if ( is_array( $editable_roles ) && is_array( $allowed_role_keys ) ) {
+            foreach ( $allowed_role_keys as $role_key ) {
+                $role_key = (string) $role_key;
+                if ( ! isset( $editable_roles[ $role_key ] ) ) {
+                    continue;
+                }
+                $role_data      = $editable_roles[ $role_key ];
+                $role_options[] = array(
+                    'value' => $role_key,
+                    'label' => isset( $role_data['name'] ) ? translate_user_role( $role_data['name'] ) : $role_key,
+                );
+            }
+        }
+
+        $data['store_credits_page']['bulk_adjust'] = array(
+            'filter_form'        => array(
+                'title'              => __( 'Filter Users', 'advanced-coupons-for-woocommerce' ),
+                'description'        => __( 'Set the criteria to find users whose store credit balances you want to adjust.', 'advanced-coupons-for-woocommerce' ),
+                'user_roles'         => __( 'User Roles', 'advanced-coupons-for-woocommerce' ),
+                'user_roles_holder'  => __( 'Select roles...', 'advanced-coupons-for-woocommerce' ),
+                'balance'            => __( 'Balance', 'advanced-coupons-for-woocommerce' ),
+                'balance_min'        => __( 'Min', 'advanced-coupons-for-woocommerce' ),
+                'balance_max'        => __( 'Max', 'advanced-coupons-for-woocommerce' ),
+                'registered'         => __( 'Registered', 'advanced-coupons-for-woocommerce' ),
+                'last_order'         => __( 'Last Order', 'advanced-coupons-for-woocommerce' ),
+                'date_from'          => $date_from_label,
+                'date_to'            => $date_to_label,
+                'include_users'      => __( 'Include Users', 'advanced-coupons-for-woocommerce' ),
+                'exclude_users'      => __( 'Exclude Users', 'advanced-coupons-for-woocommerce' ),
+                'user_search_holder' => __( 'Search by name or email...', 'advanced-coupons-for-woocommerce' ),
+                'preview_button'     => __( 'Preview Users', 'advanced-coupons-for-woocommerce' ),
+                'reset_button'       => __( 'Reset Filters', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'preview_table'      => array(
+                /* translators: %s: number of users matched. */
+                'matched_count'     => __( '%s users matched', 'advanced-coupons-for-woocommerce' ),
+                'no_results'        => __( 'No users matched the selected filters.', 'advanced-coupons-for-woocommerce' ),
+                'empty_state'       => __( 'Set your filters and click "Preview Users" to see the matched customers.', 'advanced-coupons-for-woocommerce' ),
+                'name'              => __( 'Name', 'advanced-coupons-for-woocommerce' ),
+                'email'             => __( 'Email', 'advanced-coupons-for-woocommerce' ),
+                'balance'           => __( 'Current Balance', 'advanced-coupons-for-woocommerce' ),
+                'role'              => __( 'Role', 'advanced-coupons-for-woocommerce' ),
+                'adjustment_amount' => __( 'Adjustment Amount', 'advanced-coupons-for-woocommerce' ),
+                'new_balance'       => __( 'New Balance', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'adjustment_form'    => array(
+                'title'            => __( 'Configure Adjustment', 'advanced-coupons-for-woocommerce' ),
+                'adjustment_type'  => __( 'Adjustment Type', 'advanced-coupons-for-woocommerce' ),
+                'increase'         => __( 'Increase', 'advanced-coupons-for-woocommerce' ),
+                'decrease'         => __( 'Decrease', 'advanced-coupons-for-woocommerce' ),
+                'amount_mode'      => __( 'Amount Mode', 'advanced-coupons-for-woocommerce' ),
+                'fixed'            => __( 'Fixed', 'advanced-coupons-for-woocommerce' ),
+                'percentage'       => __( 'Percentage', 'advanced-coupons-for-woocommerce' ),
+                'amount'           => __( 'Amount', 'advanced-coupons-for-woocommerce' ),
+                'note'             => __( 'Note', 'advanced-coupons-for-woocommerce' ),
+                'note_placeholder' => __( 'e.g. Q2 loyalty bonus', 'advanced-coupons-for-woocommerce' ),
+                'send_email'       => __( 'Send email to users', 'advanced-coupons-for-woocommerce' ),
+                'apply_button'     => __( 'Apply Adjustment', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'operation_type'     => array(
+                'label'   => __( 'Operation', 'advanced-coupons-for-woocommerce' ),
+                'options' => array(
+                    'adjust' => __( 'Adjust', 'advanced-coupons-for-woocommerce' ),
+                    'reset'  => __( 'Reset to Zero', 'advanced-coupons-for-woocommerce' ),
+                    'delete' => __( 'Delete All Entries', 'advanced-coupons-for-woocommerce' ),
+                ),
+                'help'    => array(
+                    'adjust' => __( 'Increase or decrease balances by a fixed or percentage amount.', 'advanced-coupons-for-woocommerce' ),
+                    'reset'  => __( 'Set balance to zero, keep history.', 'advanced-coupons-for-woocommerce' ),
+                    'delete' => __( 'Remove all entries for matched users — history will be lost.', 'advanced-coupons-for-woocommerce' ),
+                ),
+            ),
+            'confirmation_modal' => array(
+                'title'             => __( 'Confirm Bulk Adjustment', 'advanced-coupons-for-woocommerce' ),
+                'users_affected'    => __( 'Users affected', 'advanced-coupons-for-woocommerce' ),
+                'adjustment_label'  => __( 'Adjustment', 'advanced-coupons-for-woocommerce' ),
+                'operation_label'   => __( 'Operation', 'advanced-coupons-for-woocommerce' ),
+                /* translators: 1: increase/decrease, 2: formatted amount, 3: fixed/percentage */
+                'adjustment_format' => __( '%1$s %2$s (%3$s)', 'advanced-coupons-for-woocommerce' ),
+                'total_credits'     => __( 'Total credits', 'advanced-coupons-for-woocommerce' ),
+                'email_notify'      => __( 'Email notify', 'advanced-coupons-for-woocommerce' ),
+                'yes'               => __( 'Yes', 'advanced-coupons-for-woocommerce' ),
+                'no'                => __( 'No', 'advanced-coupons-for-woocommerce' ),
+                'cancel_button'     => __( 'Cancel', 'advanced-coupons-for-woocommerce' ),
+                'confirm_button'    => __( 'Confirm', 'advanced-coupons-for-woocommerce' ),
+                'warning'           => array(
+                    'reset'  => __( 'This will set every matched user\'s store credit balance to zero. The ledger history is preserved, but the operation cannot be reversed.', 'advanced-coupons-for-woocommerce' ),
+                    'delete' => __( 'This will permanently delete every store credit entry for the matched users. Both the balance and the full ledger history will be wiped, and the operation cannot be reversed.', 'advanced-coupons-for-woocommerce' ),
+                ),
+            ),
+            'progress_view'      => array(
+                'title_queued'              => __( 'Bulk Adjustment Queued', 'advanced-coupons-for-woocommerce' ),
+                'title_in_progress'         => __( 'Bulk Adjustment In Progress', 'advanced-coupons-for-woocommerce' ),
+                'title_completed'           => __( 'Bulk Adjustment Completed', 'advanced-coupons-for-woocommerce' ),
+                'title_failed'              => __( 'Bulk Adjustment Failed', 'advanced-coupons-for-woocommerce' ),
+                'processed_label'           => __( 'Progress', 'advanced-coupons-for-woocommerce' ),
+                /* translators: 1: processed count, 2: total count. */
+                'processed_running'         => __( '%1$s / %2$s', 'advanced-coupons-for-woocommerce' ),
+                /* translators: 1: processed count, 2: total count. */
+                'processed_completed'       => __( '%1$s of %2$s users processed', 'advanced-coupons-for-woocommerce' ),
+                'status_label'              => __( 'Status', 'advanced-coupons-for-woocommerce' ),
+                'started_label'             => __( 'Started', 'advanced-coupons-for-woocommerce' ),
+                'failed_label'              => __( 'Failed', 'advanced-coupons-for-woocommerce' ),
+                'failed_message'            => __( 'The bulk adjustment did not finish successfully. Some users may not have been processed.', 'advanced-coupons-for-woocommerce' ),
+                'navigate_away_note'        => __( 'You can navigate away and return later.', 'advanced-coupons-for-woocommerce' ),
+                'start_new_button'          => __( 'Start New Adjustment', 'advanced-coupons-for-woocommerce' ),
+                // Surfaced inline when GET /bulk/status fails — see ProgressView (during a running operation) and
+                // BulkAdjustContent (above the filter form when the mount-time poll fails).
+                'status_error_prefix'       => __( 'Status refresh failed:', 'advanced-coupons-for-woocommerce' ),
+                'status_error_form_message' => __( 'Could not verify whether a bulk operation is already running.', 'advanced-coupons-for-woocommerce' ),
+                'status_error_retry'        => __( 'Retry', 'advanced-coupons-for-woocommerce' ),
+                'dismiss_failed_message'    => __( 'Could not dismiss the completed operation. Please try again.', 'advanced-coupons-for-woocommerce' ),
+                // moment.js format string for rendering the operation start time. Kept
+                // as a sensible default rather than converting WP's PHP date_format/time_format
+                // tokens to moment tokens — the two grammars diverge (PHP `Y` = year vs moment
+                // `Y` = week-year), so converting would risk silently rendering the wrong year
+                // on ISO weeks 53/01.
+                'datetime_format'           => 'MMMM D, YYYY h:mm A',
+                'status_labels'             => array(
+                    'queued'      => __( 'Queued', 'advanced-coupons-for-woocommerce' ),
+                    'in_progress' => __( 'In Progress', 'advanced-coupons-for-woocommerce' ),
+                    'completed'   => __( 'Completed', 'advanced-coupons-for-woocommerce' ),
+                    'failed'      => __( 'Failed', 'advanced-coupons-for-woocommerce' ),
+                    'idle'        => __( 'Idle', 'advanced-coupons-for-woocommerce' ),
+                ),
+            ),
+            'export_csv'         => array(
+                'button_label'   => __( 'Export CSV', 'advanced-coupons-for-woocommerce' ),
+                'error_failed'   => __( 'Failed to export users. Please try again.', 'advanced-coupons-for-woocommerce' ),
+                'error_over_cap' => __( 'Too many users matched to export at once. Please narrow your filters and try again.', 'advanced-coupons-for-woocommerce' ),
+                'filename'       => __( 'store-credits-users', 'advanced-coupons-for-woocommerce' ),
+                'headers'        => array(
+                    'user_id'       => __( 'User ID', 'advanced-coupons-for-woocommerce' ),
+                    'email'         => __( 'Email', 'advanced-coupons-for-woocommerce' ),
+                    'display_name'  => __( 'Display Name', 'advanced-coupons-for-woocommerce' ),
+                    'balance'       => __( 'Current Balance', 'advanced-coupons-for-woocommerce' ),
+                    'registered_at' => __( 'Registered At', 'advanced-coupons-for-woocommerce' ),
+                ),
+            ),
+            'errors'             => array(
+                'preview_failed'  => __( 'Failed to load preview. Please try again.', 'advanced-coupons-for-woocommerce' ),
+                'invalid_balance' => __( 'Min balance cannot be greater than Max balance.', 'advanced-coupons-for-woocommerce' ),
+                'invalid_dates'   => sprintf(
+                    /* translators: 1: From-date label, 2: To-date label. */
+                    __( '%1$s date cannot be after %2$s date.', 'advanced-coupons-for-woocommerce' ),
+                    $date_from_label,
+                    $date_to_label
+                ),
+                'schedule_failed' => __( 'Failed to schedule the bulk adjustment. Please try again.', 'advanced-coupons-for-woocommerce' ),
+                'invalid_amount'  => __( 'Please enter a valid amount greater than zero.', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'success'            => array(
+                'scheduled' => __( 'Bulk adjustment scheduled successfully.', 'advanced-coupons-for-woocommerce' ),
+            ),
+            'role_options'       => $role_options,
+        );
+        /**
+         * END: Bulk Adjust tab.
+         */
+
         return $data;
     }
 

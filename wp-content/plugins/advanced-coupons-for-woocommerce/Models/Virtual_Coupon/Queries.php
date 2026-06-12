@@ -141,7 +141,7 @@ class Queries implements Activatable_Interface {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
 
-        update_option( $this->_constants->VIRTUAL_COUPONS_DB_CREATED, 'yes' );
+        update_option( $this->_constants->VIRTUAL_COUPONS_DB_CREATED, 'yes', false );
     }
 
     /*

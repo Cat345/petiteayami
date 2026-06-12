@@ -188,7 +188,7 @@ class Notices extends Base_Model implements Model_Interface, Activatable_Interfa
         if ( version_compare( $this->_constants->VERSION, $this->_constants->NEW_UPDATE_NOTICE_VERSION, '>=' ) ) {
             delete_option( $this->_constants->SHOW_NEW_UPDATE_NOTICE );
         } else {
-            update_option( $this->_constants->SHOW_NEW_UPDATE_NOTICE, 'yes' );
+            update_option( $this->_constants->SHOW_NEW_UPDATE_NOTICE, 'yes', false );
         }
     }
 

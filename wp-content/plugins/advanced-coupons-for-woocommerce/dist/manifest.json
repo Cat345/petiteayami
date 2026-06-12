@@ -35,6 +35,18 @@
       "_antd.f3b3f9db.js"
     ]
   },
+  "_index-legacy.00e5c537.js": {
+    "file": "common/index-legacy.00e5c537.js",
+    "imports": [
+      "_reactLib-legacy.2652cc1e.js"
+    ]
+  },
+  "_index.579028f2.js": {
+    "file": "common/index.579028f2.js",
+    "imports": [
+      "_reactLib.f3158acd.js"
+    ]
+  },
   "_reactLib-legacy.2652cc1e.js": {
     "file": "common/reactLib-legacy.2652cc1e.js"
   },
@@ -54,19 +66,27 @@
     ]
   },
   "packages/acfwp-admin-app/index-legacy.tsx": {
-    "file": "packages/acfwp-admin-app/index-legacy.fa725653.js",
+    "file": "packages/acfwp-admin-app/index-legacy.efcc7944.js",
+    "imports": [
+      "_index-legacy.00e5c537.js",
+      "_reactLib-legacy.2652cc1e.js"
+    ],
     "isEntry": true,
     "src": "packages/acfwp-admin-app/index-legacy.tsx"
   },
   "packages/acfwp-admin-app/index.css": {
-    "file": "assets/index-54248b6f.css",
+    "file": "assets/index-0dd2389d.css",
     "src": "packages/acfwp-admin-app/index.css"
   },
   "packages/acfwp-admin-app/index.tsx": {
     "css": [
-      "assets/index-54248b6f.css"
+      "assets/index-0dd2389d.css"
     ],
-    "file": "packages/acfwp-admin-app/index.fda44409.js",
+    "file": "packages/acfwp-admin-app/index.74dbe226.js",
+    "imports": [
+      "_index.579028f2.js",
+      "_reactLib.f3158acd.js"
+    ],
     "isEntry": true,
     "src": "packages/acfwp-admin-app/index.tsx"
   },
@@ -130,12 +150,13 @@
     "src": "packages/acfwp-edit-advanced-coupon/index.ts"
   },
   "packages/acfwp-edit-coupon-app/index-legacy.tsx": {
-    "file": "packages/acfwp-edit-coupon-app/index-legacy.d87b529b.js",
+    "file": "packages/acfwp-edit-coupon-app/index-legacy.2e7c7a31.js",
     "imports": [
       "_reactLib-legacy.2652cc1e.js",
       "_redux-legacy.ed2e897f.js",
       "_antd-legacy.0e500be6.js",
-      "_antdIcons-legacy.830e54f1.js"
+      "_antdIcons-legacy.830e54f1.js",
+      "_index-legacy.00e5c537.js"
     ],
     "isEntry": true,
     "src": "packages/acfwp-edit-coupon-app/index-legacy.tsx"
@@ -148,12 +169,13 @@
     "css": [
       "assets/index-c1dac9e2.css"
     ],
-    "file": "packages/acfwp-edit-coupon-app/index.d58a8d18.js",
+    "file": "packages/acfwp-edit-coupon-app/index.b09bfa8b.js",
     "imports": [
       "_reactLib.f3158acd.js",
       "_redux.9ef80311.js",
       "_antd.f3b3f9db.js",
-      "_antdIcons.3524afd6.js"
+      "_antdIcons.3524afd6.js",
+      "_index.579028f2.js"
     ],
     "isEntry": true,
     "src": "packages/acfwp-edit-coupon-app/index.tsx"
@@ -213,7 +235,7 @@
     "src": "packages/acfwp-order-pay/index.ts"
   },
   "vite/legacy-polyfills-legacy": {
-    "file": "polyfills-legacy.2213d714.js",
+    "file": "polyfills-legacy.bc368877.js",
     "isEntry": true,
     "src": "vite/legacy-polyfills-legacy"
   }

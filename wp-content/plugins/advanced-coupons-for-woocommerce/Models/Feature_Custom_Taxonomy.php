@@ -163,6 +163,46 @@ class Feature_Custom_Taxonomy extends Base_Model implements Model_Interface, Act
     }
 
     /**
+     * Refresh feature taxonomy terms for the given coupon IDs.
+     * Triggered after the auto apply / apply notification caches are cleared or rebuilt
+     * so the Features column on the All Coupons admin table reflects the current state
+     * (i.e. no longer shows a stale "Auto Apply" or "Apply Notification" badge).
+     *
+     * @since 4.0.8
+     * @access public
+     *
+     * @param array $coupon_ids Coupon IDs whose cache-backed feature state may have changed.
+     */
+    public function refresh_features_for_coupons( $coupon_ids ) {
+        if ( empty( $coupon_ids ) || ! is_array( $coupon_ids ) ) {
+            return;
+        }
+
+        if ( ! file_exists( WP_PLUGIN_DIR . '/advanced-coupons-for-woocommerce-free/Models/Feature_Custom_Taxonomy.php' ) ) {
+            return;
+        }
+
+        if ( ! function_exists( 'ACFWF' ) ) {
+            return;
+        }
+
+        $feature_taxonomy = \ACFWF()->Feature_Custom_Taxonomy;
+
+        if ( ! is_callable( array( $feature_taxonomy, 'update_coupon_features' ) ) ) {
+            return;
+        }
+
+        foreach ( $coupon_ids as $coupon_id ) {
+            $coupon_id = absint( $coupon_id );
+            if ( ! $coupon_id ) {
+                continue;
+            }
+
+            $feature_taxonomy->update_coupon_features( $coupon_id );
+        }
+    }
+
+    /**
      * Filter feature count option prefix for premium plugin.
      *
      * @since 4.0.5
@@ -227,5 +267,9 @@ class Feature_Custom_Taxonomy extends Base_Model implements Model_Interface, Act
         add_filter( 'acfw_feature_custom_taxonomy_coupon', array( $this, 'add_premium_coupon_feature_checks_for_taxonomy' ), 10, 1 );
         add_filter( 'acfw_feature_taxonomy_get_property_value', array( $this, 'handle_wp_option_property_values' ), 10, 3 );
         add_filter( 'acfw_feature_count_option_prefix', array( $this, 'filter_feature_count_option_prefix' ), 10, 2 );
+
+        // Refresh feature terms when option-backed caches change (e.g. cleared/rebuilt via Help page).
+        add_action( 'acfw_after_auto_apply_cache_changed', array( $this, 'refresh_features_for_coupons' ), 10, 1 );
+        add_action( 'acfw_after_apply_notification_cache_changed', array( $this, 'refresh_features_for_coupons' ), 10, 1 );
     }
 }

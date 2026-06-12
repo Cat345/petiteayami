@@ -259,9 +259,9 @@ class Migration {
     public function clear_migration_status_on_complete() {
         if ( false === as_next_scheduled_action( self::BOGO_PRODUCT_CAT_MIGRATION_CRON ) ) {
             update_option( $this->_constants->BOGO_PRODUCT_CAT_MIGRATION_STATUS, 'completed-v3.4' );
-            update_option( self::BOGO_MIGRATION_NOTICE, 'dismissed' );
+            update_option( self::BOGO_MIGRATION_NOTICE, 'dismissed', false );
         } else {
-            update_option( self::BOGO_MIGRATION_NOTICE, 'yes' );
+            update_option( self::BOGO_MIGRATION_NOTICE, 'yes', false );
         }
     }
 
@@ -327,10 +327,12 @@ class Migration {
 
             if ( 'product-categories' === $bogo_deals['conditions_type'] || 'product-categories' === $bogo_deals['deals_type'] ) {
                 throw new \Exception(
-                    sprintf(
-                        /* Translators: %s: Coupon code. */
-                        __( 'The coupon "%s" cannot be applied to the cart temporarily. Please try again in a few minutes.', 'advanced-coupons-for-woocommerce' ),
-                        $coupon->get_code()
+                    esc_html(
+                        sprintf(
+                            /* Translators: %s: Coupon code. */
+                            __( 'The coupon "%s" cannot be applied to the cart temporarily. Please try again in a few minutes.', 'advanced-coupons-for-woocommerce' ),
+                            $coupon->get_code()
+                        )
                     )
                 );
             }
@@ -356,8 +358,8 @@ class Migration {
      */
     public function register_bogo_migration_notice( $notice_options ) {
         $priority_notices = array(
-			'bogo_migration_notice' => self::BOGO_MIGRATION_NOTICE,
-		);
+            'bogo_migration_notice' => self::BOGO_MIGRATION_NOTICE,
+        );
 
         return array_merge( $priority_notices, $notice_options );
     }

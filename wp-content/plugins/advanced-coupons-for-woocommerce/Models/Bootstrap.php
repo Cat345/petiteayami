@@ -241,8 +241,51 @@ class Bootstrap implements Model_Interface {
 
         // Set initial value of 'no' for the option that sets the option that specify whether to delete the options on plugin uninstall. Optionception.
         if ( ! get_option( $this->_constants->OPTION_CLEAN_UP_PLUGIN_OPTIONS, false ) ) {
-            update_option( $this->_constants->OPTION_CLEAN_UP_PLUGIN_OPTIONS, 'no' );
+            update_option( $this->_constants->OPTION_CLEAN_UP_PLUGIN_OPTIONS, 'no', false );
         }
+    }
+
+    /**
+     * Reconcile the autoload flag on plugin-managed options that should not be autoloaded.
+     *
+     * `update_option()` only honors the $autoload argument on insert, so updating the
+     * call sites alone does not fix existing installs. This runs on activation and on
+     * every version mismatch (via Bootstrap::initialize()).
+     *
+     * @since 4.0.8
+     *
+     * @return void
+     */
+    private function _set_plugin_options_autoload() {
+        $autoload_map = array(
+            $this->_constants->OPTION_CLEAN_UP_PLUGIN_OPTIONS => 'no',
+            $this->_constants->SHOW_GETTING_STARTED_NOTICE => 'no',
+            $this->_constants->GETTING_STARTED_PREMIUM_SHOWN => 'no',
+            $this->_constants->SHOW_NEW_UPDATE_NOTICE      => 'no',
+            $this->_constants->VIRTUAL_COUPONS_DB_CREATED  => 'no',
+            // Literal mirrors BOGO\Migration::BOGO_MIGRATION_NOTICE — keep in sync if renamed.
+            'acfwp_bogo_migration_notice'                  => 'no',
+        );
+
+        if ( function_exists( 'wp_set_option_autoload_values' ) ) {
+            wp_set_option_autoload_values( $autoload_map );
+            return;
+        }
+
+        // Fallback for WP < 6.4: group option names by autoload value and run one batched UPDATE per group.
+        $names_by_autoload = array();
+        foreach ( $autoload_map as $option_name => $autoload ) {
+            $names_by_autoload[ $autoload ][] = $option_name;
+        }
+
+        global $wpdb;
+        foreach ( $names_by_autoload as $autoload => $option_names ) {
+            $placeholders = implode( ', ', array_fill( 0, count( $option_names ), '%s' ) );
+            // Placeholder count is variable; the IN-clause mask is built from a fixed format string with no user input. Safe to interpolate.
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET autoload = %s WHERE option_name IN ({$placeholders})", array_merge( array( $autoload ), $option_names ) ) );
+        }
+        wp_cache_delete( 'alloptions', 'options' );
     }
 
     /**
@@ -257,10 +300,13 @@ class Bootstrap implements Model_Interface {
         // Initialize settings options.
         $this->_initialize_plugin_settings_options();
 
+        // Reconcile autoload flags for plugin-managed options (handles existing installs).
+        $this->_set_plugin_options_autoload();
+
         // show the getting started notice when plugin is activated for the first time.
         if ( get_option( $this->_constants->INSTALLED_VERSION, false ) === false && get_option( $this->_constants->GETTING_STARTED_PREMIUM_SHOWN ) !== 'yes' ) {
-            update_option( $this->_constants->SHOW_GETTING_STARTED_NOTICE, 'yes' );
-            update_option( $this->_constants->GETTING_STARTED_PREMIUM_SHOWN, 'yes' );
+            update_option( $this->_constants->SHOW_GETTING_STARTED_NOTICE, 'yes', false );
+            update_option( $this->_constants->GETTING_STARTED_PREMIUM_SHOWN, 'yes', false );
         }
 
         // Execute 'activate' contract of models implementing ACFWP\Interfaces\Activatable_Interface.

@@ -52,34 +52,48 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
      */
 
     /**
-     * Implement shipping overrides.
+     * Filter package rates to apply shipping override discounts directly to rate costs.
      *
-     * @since 2.0
+     * Instead of adding negative fees, this adjusts the shipping rate cost so the
+     * discounted amount appears on the shipping line itself.
+     *
+     * @since 4.0.8
      * @access public
+     *
+     * @param array $rates   Array of WC_Shipping_Rate objects.
+     * @param array $package Shipping package data.
+     * @return array Filtered rates with discounts applied.
      */
-    public function implement_shipping_overrides() {
-        foreach ( \WC()->cart->get_applied_coupons() as $code ) {
-            $is_applied = $this->_implement_shipping_overrides_for_coupon( $code );
+    public function filter_package_rates( $rates, $package ) {
+        if ( empty( $rates ) || ! \WC()->cart ) {
+            return $rates;
+        }
 
-            // don't proceed with other applied coupons if a discount was already applied.
+        foreach ( \WC()->cart->get_applied_coupons() as $code ) {
+            $is_applied = $this->_apply_shipping_overrides_to_rates( $rates, $code );
+
+            // Don't proceed with other applied coupons if a discount was already applied.
             if ( $is_applied ) {
                 break;
             }
         }
+
+        return $rates;
     }
 
     /**
-     * Implement shipping overrides for coupon.
+     * Apply shipping overrides for a coupon directly to the package rates.
      *
-     * @since 2.0
-     * @access public
+     * @since 4.0.8
+     * @access private
      *
+     * @param array  $rates       Array of WC_Shipping_Rate objects.
      * @param string $coupon_code Coupon code.
+     * @return bool True if any discount was applied, false otherwise.
      */
-    private function _implement_shipping_overrides_for_coupon( $coupon_code ) {
+    private function _apply_shipping_overrides_to_rates( $rates, $coupon_code ) {
         $coupon    = new Advanced_Coupon( $coupon_code );
         $overrides = $coupon->get_advanced_prop( 'shipping_overrides', array() );
-        $discounts = array();
 
         // For backward compatibility, if enable_shipping_overrides is not set but has data, consider it enabled.
         $enable_state = $coupon->get_advanced_prop( 'enable_shipping_overrides' );
@@ -91,59 +105,65 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
             return false;
         }
 
-        $classnames = \WC()->shipping->get_shipping_method_class_names();
-        $cart_fees  = \WC()->cart->get_fees();
-
-        // get chosen shipping methods.
-        $chosen_methods = \WC()->cart->calculate_shipping();
-
-        // detect shipping classes found in cart.
+        $classnames       = \WC()->shipping->get_shipping_method_class_names();
         $shipping_classes = $this->_find_shipping_classes_from_cart();
+        $has_discount     = false;
 
-        foreach ( $chosen_methods as $shipping_rate ) {
+        foreach ( $rates as $rate_key => $shipping_rate ) {
 
-            $instance_id = $shipping_rate->get_instance_id();
-            $method_id   = $shipping_rate->get_method_id();
+            $method_id = $shipping_rate->get_method_id();
 
-            // get the classname of the shipping method of current shipping rate.
-            // added filter to allow 3rd party shipping plugins to override the classname value.
+            // Get the classname of the shipping method of current shipping rate.
+            // Added filter to allow 3rd party shipping plugins to override the classname value.
             $classname = isset( $classnames[ $method_id ] ) ? $classnames[ $method_id ] : '';
             $classname = apply_filters( 'acfwp_shipping_overrides_classname_support', $classname, $shipping_rate );
 
-            // skip if class doesn't exist.
+            // Skip if class doesn't exist.
             if ( ! class_exists( $classname ) ) {
                 continue;
             }
 
-            // filter the valid overrides.
+            // Filter the valid overrides.
             $valid_overrides = $this->_get_valid_shipping_overrides( $overrides, $shipping_rate, $shipping_classes );
 
             if ( empty( $valid_overrides ) || ! $classname ) {
                 continue;
             }
 
-            // Calculatet the discounts based on the valid overrides detected in the cart.
-            $this->_calculate_shipping_overrides_discount( $discounts, $classname, $valid_overrides, $shipping_rate, $coupon );
+            // Calculate the total discount for this rate.
+            $discount = $this->_calculate_rate_discount( $classname, $valid_overrides, $shipping_rate, $coupon );
+
+            if ( $discount <= 0 ) {
+                continue;
+            }
+
+            // Apply discount directly to rate cost.
+            $original_cost = (float) $shipping_rate->get_cost();
+            $new_cost      = max( 0, $original_cost - $discount );
+
+            $shipping_rate->set_cost( $new_cost );
+
+            // Recalculate taxes proportionally based on the new cost.
+            $taxes = $shipping_rate->get_taxes();
+            if ( ! empty( $taxes ) && $original_cost > 0 ) {
+                $ratio = $new_cost / $original_cost;
+                foreach ( $taxes as $tax_id => $tax_amount ) {
+                    $taxes[ $tax_id ] = (float) $tax_amount * $ratio;
+                }
+                $shipping_rate->set_taxes( $taxes );
+            }
+
+            // Store discount metadata on the rate for order processing.
+            // Underscore-prefix the keys so WooCommerce treats them as hidden — without
+            // it, item meta is rendered to customers in My Account → Order details.
+            $shipping_rate->add_meta_data( '_acfw_shipping_override_discount', min( $discount, $original_cost ) );
+            $shipping_rate->add_meta_data( '_acfw_shipping_override_coupon', $coupon->get_code() );
+            $shipping_rate->add_meta_data( '_acfw_shipping_override_original_cost', $original_cost );
+
+            $has_discount = true;
         }
 
-        // return false if there are no discounts to apply.
-        if ( empty( $discounts ) ) {
-            return false;
-        }
-
-        // add valid discounts via Fees API.
-        foreach ( $discounts as $instance_id => $discount ) {
-            \WC()->cart->fees_api()->add_fee(
-                array(
-                    'id'      => $discount['id'],
-                    'name'    => $discount['name'],
-                    'taxable' => $discount['taxable'],
-                    'amount'  => $discount['amount'] * -1,
-                )
-            );
-        }
-
-        return true;
+        return $has_discount;
     }
 
     /**
@@ -241,28 +261,23 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
     }
 
     /**
-     * Calculate the discounts based on the valid overrides detected in the cart.
+     * Calculate the total discount amount for a shipping rate based on valid overrides.
      *
-     * @since 3.5.2
+     * @since 4.0.8
      * @access private
      *
-     * @param array             $discounts       Discounts data.
      * @param string            $classname       Shipping method classname.
      * @param array             $valid_overrides Valid overrides data.
      * @param \WC_Shipping_Rate $shipping_rate   Shipping rate object.
      * @param Advanced_Coupon   $coupon          Coupon object.
+     * @return float Total discount amount.
      */
-    private function _calculate_shipping_overrides_discount( &$discounts, $classname, $valid_overrides, $shipping_rate, $coupon ) {
-        // get shipping method object.
-        $method      = new $classname( $shipping_rate->get_instance_id() );
-        $instance_id = $shipping_rate->get_instance_id();
-
-        // check if shipping rate is taxable or not.
-        $taxable = ! empty( $shipping_rate->get_taxes() ) && array_sum( $shipping_rate->get_taxes() ) > 0;
+    private function _calculate_rate_discount( $classname, $valid_overrides, $shipping_rate, $coupon ) {
+        $total_discount = 0;
 
         foreach ( $valid_overrides as $override ) {
 
-            // calculate discount amount.
+            // Calculate discount amount.
             $type                = $override['discount_type'];
             $value               = $override['discount_value'];
             $shipping_class_cost = null;
@@ -272,7 +287,7 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
                 $override_instance_id = absint( $matches[1] );
                 $shipping_class_id    = absint( $matches[2] );
 
-                if ( $override_instance_id === $instance_id ) {
+                if ( $override_instance_id === $shipping_rate->get_instance_id() ) {
                     $shipping_class_cost = $this->_get_shipping_class_total_cost( $shipping_class_id, $shipping_rate );
                 }
             }
@@ -282,83 +297,32 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
 
             $amount = \ACFWF()->Helper_Functions->calculate_discount_by_type( $type, $value, $base_amount );
 
-            if ( $amount <= 0 ) {
-                continue;
-            }
-
-            // get discount id and name.
-            $fee_id   = sprintf( 'acfw-shipping-discount::%s::%s::%s', $coupon->get_code(), $shipping_rate->get_method_id(), $instance_id );
-            $fee_name = apply_filters(
-                'acfw_shipping_override_fee_name',
-                __( 'Shipping discount', 'advanced-coupons-for-woocommerce' ),
-                $method,
-                $instance_id,
-                $override,
-                $coupon
-            );
-
-            if ( isset( $discounts[ $instance_id ] ) ) {
-                $discounts[ $instance_id ]['amount'] += $amount;
-            } else {
-                $discounts[ $instance_id ] = array(
-                    'id'      => $fee_id,
-                    'name'    => $fee_name,
-                    'amount'  => $amount,
-                    'taxable' => $taxable,
-                );
+            if ( $amount > 0 ) {
+                $total_discount += $amount;
             }
         }
-    }
 
-    /**
-     * Remove tax data for non-taxable shipping discounts.
-     *
-     * @since 2.6.1
-     * @access public
-     *
-     * @param array  $taxes Fee taxes data.
-     * @param object $fee  Fee object data in cart.
-     * @return array Filtered fee taxes data.
-     */
-    public function remove_taxes_for_non_taxable_shipping_discounts( $taxes, $fee ) {
-        if ( strpos( $fee->object->id, 'acfw-shipping-discount' ) !== false && ! $fee->taxable ) {
-            return array();
-        }
-
-        return $taxes;
-    }
-
-    /**
-     * Save shipping discount meta data on checkout process.
-     *
-     * @since 2.6.1
-     * @access public
-     *
-     * @param WC_Order_Item_Fee $item    Fee item object.
-     * @param string            $fee_key Loop key.
-     * @param object            $fee     Fee data available in cart.
-     */
-    public function save_shipping_discount_metadata( $item, $fee_key, $fee ) {
-        if ( strpos( $fee->id, 'acfw-shipping-discount' ) === false ) {
-            return;
-        }
-
-        $data = explode( '::', $fee->id );
-        $item->add_meta_data( 'acfw_fee_cart_id', $fee->id, true );
-        $item->add_meta_data(
-            'acfw_fee_data',
-            array(
-                'coupon_code'          => isset( $data[1] ) ? $data[1] : '',
-                'shipping_method_id'   => isset( $data[2] ) ? $data[2] : '',
-                'shipping_instance_id' => isset( $data[3] ) ? $data[3] : '',
-            )
-        );
+        /**
+         * Filter the calculated shipping override discount for a rate.
+         *
+         * @since 4.0.8
+         *
+         * @param float             $total_discount  Total discount amount.
+         * @param \WC_Shipping_Rate $shipping_rate   Shipping rate object.
+         * @param array             $valid_overrides Valid overrides data.
+         * @param Advanced_Coupon   $coupon          Coupon object.
+         */
+        return (float) apply_filters( 'acfwp_shipping_override_rate_discount', $total_discount, $shipping_rate, $valid_overrides, $coupon );
     }
 
     /**
      * Save shipping overrides discounts to the relative coupon order item meta.
      *
+     * Reads discount data from shipping line item meta (set via rate meta_data
+     * copied by WooCommerce during order creation) instead of fee items.
+     *
      * @since 3.5.2
+     * @since 4.0.8 Updated to read from shipping items instead of fee items.
      * @access public
      *
      * @param int      $order_id    Order id.
@@ -369,33 +333,36 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
 
         $discount_totals = array();
 
-        foreach ( $order->get_fees() as $fee ) {
+        foreach ( $order->get_shipping_methods() as $shipping ) {
 
-            $data = $fee->get_meta( 'acfw_fee_data', true );
+            $coupon_code = $shipping->get_meta( '_acfw_shipping_override_coupon', true );
+            $discount    = $shipping->get_meta( '_acfw_shipping_override_discount', true );
 
-            // skip if fee item is not for shipping overrides.
-            if ( ! is_array( $data ) || ! isset( $data['coupon_code'] ) || ! $data['coupon_code'] ) {
+            // Skip if shipping item has no override discount data. `is_numeric()` is used
+            // rather than `! $discount` so a legitimate 0-discount on a 0-cost rate (i.e.
+            // the meta key is set but the resolved amount is 0) still gets recorded —
+            // `! $discount` would falsely swallow `'0'`, `0`, and `0.0`. `! is_numeric()`
+            // correctly skips `''`, `null`, and `false` while accepting any numeric value.
+            if ( ! $coupon_code || ! is_numeric( $discount ) ) {
                 continue;
             }
 
-            $coupon_code = $data['coupon_code'];
-
-            // set default total to 0 for coupon that is not yet set on the array.
-            if ( ! isset( $discount_totals [ $coupon_code ] ) ) {
+            // Set default total to 0 for coupon that is not yet set on the array.
+            if ( ! isset( $discount_totals[ $coupon_code ] ) ) {
                 $discount_totals[ $coupon_code ] = 0;
             }
 
-            $discount_totals[ $coupon_code ] += wc_add_number_precision( (float) abs( $fee->get_amount( 'edit' ) ) );
+            $discount_totals[ $coupon_code ] += wc_add_number_precision( (float) $discount );
         }
 
-        // skip if order has no shipping override discounts from coupon.
+        // Skip if order has no shipping override discounts from coupon.
         if ( empty( $discount_totals ) ) {
             return;
         }
 
         foreach ( $discount_totals as $key => $discount_total ) {
 
-            // get the matching coupon order item.
+            // Get the matching coupon order item.
             $order_coupon = current(
                 array_filter(
                     $order->get_coupons(),
@@ -405,10 +372,72 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
                 )
             );
 
-            // save total shipping override discount to coupon order item meta.
+            if ( ! $order_coupon ) {
+                continue;
+            }
+
+            // Save total shipping override discount to coupon order item meta.
             $order_coupon->update_meta_data( $this->_constants->ORDER_COUPON_SHIPPING_OVERRIDES_DISCOUNT, wc_remove_number_precision( $discount_total ) );
             $order_coupon->save_meta_data();
         }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Deprecated functions (kept for backward compatibility).
+    |--------------------------------------------------------------------------
+     */
+
+    /**
+     * Implement shipping overrides.
+     *
+     * @since      2.0
+     * @deprecated 4.0.8 Replaced by `filter_package_rates()` which adjusts shipping rate
+     *             cost directly via the `woocommerce_package_rates` filter instead of
+     *             adding negative fees on `woocommerce_cart_calculate_fees`.
+     * @access     public
+     */
+    public function implement_shipping_overrides() {
+        _deprecated_function( __METHOD__, '4.0.8', __CLASS__ . '::filter_package_rates' );
+    }
+
+    /**
+     * Remove tax data for non-taxable shipping discounts.
+     *
+     * No-op stub: shipping discounts are no longer applied as fee items, so the
+     * tax-stripping filter is unnecessary. Retained to avoid fatals in third-party
+     * code that references this callback.
+     *
+     * @since      2.6.1
+     * @deprecated 4.0.8 Shipping discounts are now applied directly to rate cost.
+     * @access     public
+     *
+     * @param array  $taxes Fee taxes data.
+     * @param object $fee  Fee object data in cart.
+     * @return array Unmodified fee taxes data.
+     */
+    public function remove_taxes_for_non_taxable_shipping_discounts( $taxes, $fee ) {
+        _deprecated_function( __METHOD__, '4.0.8' );
+        return $taxes;
+    }
+
+    /**
+     * Save shipping discount meta data on checkout process.
+     *
+     * No-op stub: shipping override metadata is now stored directly on the
+     * shipping line item via `WC_Shipping_Rate::add_meta_data()`. Retained to
+     * avoid fatals in third-party code that references this callback.
+     *
+     * @since      2.6.1
+     * @deprecated 4.0.8 Metadata is now stored on the shipping rate directly.
+     * @access     public
+     *
+     * @param mixed $item    Fee item object.
+     * @param mixed $fee_key Loop key.
+     * @param mixed $fee     Fee data available in cart.
+     */
+    public function save_shipping_discount_metadata( $item, $fee_key, $fee ) {
+        _deprecated_function( __METHOD__, '4.0.8' );
     }
 
     /*
@@ -824,11 +853,16 @@ class Shipping_Overrides extends Base_Model implements Model_Interface, Initiabl
             return;
         }
 
-        add_action( 'woocommerce_cart_calculate_fees', array( $this, 'implement_shipping_overrides' ) );
-        add_filter( 'woocommerce_cart_totals_get_fees_from_cart_taxes', array( $this, 'remove_taxes_for_non_taxable_shipping_discounts' ), 10, 2 );
-        add_action( 'woocommerce_checkout_create_order_fee_item', array( $this, 'save_shipping_discount_metadata' ), 10, 3 );
+        // Apply shipping overrides by adjusting package rate costs directly.
+        add_filter( 'woocommerce_package_rates', array( $this, 'filter_package_rates' ), 10, 2 );
+
+        // Save shipping override discount data to coupon order item meta.
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'save_shipping_discounts_to_coupon_order_item' ), 10, 3 );
+
+        // Admin: selectable options for coupon editor.
         add_filter( 'acfw_shipping_override_selectable_options', array( $this, 'populate_selectable_options' ), 10, 1 );
+
+        // Backward compat: recalculate shipping total for old orders with fee-based discounts.
         add_action( 'admin_init', array( $this, 'recalculate_shipping_total_with_discount' ), 10 );
     }
 }

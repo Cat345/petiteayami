@@ -3,14 +3,14 @@
  * Plugin Name: Advanced Coupons for WooCommerce Premium
  * Plugin URI: https://advancedcouponsplugin.com
  * Description: Advanced Coupons for WooCommerce (Premium Add-on) adds even more advanced features to WooCommerce coupons so store owners can market their stores better.
- * Version: 4.0.7
+ * Version: 4.0.8
  * Author: Rymera Web Co
  * Author URI: https://rymera.com.au/
  * Update URI: advancedcouponsplugin.com
  * Requires at least: 5.8
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * WC requires at least: 4.0
- * WC tested up to: 10.6.1
+ * WC tested up to: 10.7.0
  *
  * Text Domain: advanced-coupons-for-woocommerce
  * Domain Path: /languages/
@@ -402,6 +402,8 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
         \ACFWP\Models\WC_Blocks::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\Allowed_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\Store_Credits::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        \ACFWP\Models\Store_Credits\Bulk_Adjust::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        \ACFWP\Models\Store_Credits\CLI\Bulk_Adjust_Command::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         \ACFWP\Models\BOGO\Types\Same_Products::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         $bogo_admin              = BOGO_Admin::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
@@ -417,6 +419,7 @@ class ACFWP extends Abstract_Main_Plugin_Class { // phpcs:ignore
         Payment_Methods_Restrict::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         API_Virtual_Coupons::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         API_Coupon_Generator_Storage::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
+        \ACFWP\Models\REST_API\API_Bulk_Adjust::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
         Template_Field_Enrichment::get_instance( $this, $this->Plugin_Constants, $this->Helper_Functions );
 
         $activatables   = array( $bogo_admin, $usage_limits, $admin_notices, $virtual_coupon_queries, $slmw_license, $feature_custom_taxonomy );

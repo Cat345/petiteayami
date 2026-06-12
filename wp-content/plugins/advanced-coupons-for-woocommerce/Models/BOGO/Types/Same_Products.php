@@ -252,10 +252,23 @@ class Same_Products extends Base_Model implements Model_Interface {
                 )
             );
 
-            // Calculate required total quantity (trigger + deal).
-            $required_qty = $trigger_qty + $deal_qty;
-            $current_qty  = ! empty( $cart_item ) ? absint( $cart_item['quantity'] ) : 0;
-            $qty_to_add   = max( 0, $required_qty - $current_qty );
+            // Calculate how many items to auto-add to complete a trigger+deal cycle.
+            $cycle_size  = $trigger_qty + $deal_qty;
+            $current_qty = ! empty( $cart_item ) ? absint( $cart_item['quantity'] ) : 0;
+
+            if ( $cycle_size <= 0 ) {
+                $qty_to_add = 0;
+            } elseif ( $bogo_deal->is_repeat && $current_qty >= $cycle_size ) {
+                // Repeat mode past the first cycle: the cart already has >=1 complete cycle,
+                // so only complete the partial trailing cycle if it has enough trigger items.
+                // E.g. qty=3 with buy-1-get-1: one complete cycle uses 2, leaving 1 trigger
+                // item → auto-add 1 deal item → qty=4.
+                $remainder  = $current_qty % $cycle_size;
+                $qty_to_add = ( $remainder >= $trigger_qty ) ? ( $cycle_size - $remainder ) : 0;
+            } else {
+                // Non-repeat, or repeat mode below one cycle: fill up to one complete cycle.
+                $qty_to_add = max( 0, $cycle_size - $current_qty );
+            }
 
             // Add missing quantity to cart.
             if ( $qty_to_add > 0 ) {

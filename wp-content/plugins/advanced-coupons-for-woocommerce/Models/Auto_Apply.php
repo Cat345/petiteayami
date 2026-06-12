@@ -395,7 +395,20 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
      * @since 2.0
      */
     private function _clear_auto_apply_cache() {
+        $previous_ids = get_option( $this->_constants->AUTO_APPLY_COUPONS, array() );
         update_option( $this->_constants->AUTO_APPLY_COUPONS, array() );
+
+        /**
+         * Fires after the auto apply coupons cache is cleared or rebuilt.
+         * Affected coupon IDs are passed so listeners (e.g. Feature taxonomy)
+         * can refresh derived state that depends on this cache.
+         *
+         * @since 4.0.8
+         *
+         * @param array  $affected_ids List of coupon IDs whose auto apply state may have changed.
+         * @param string $action       Either 'clear' or 'rebuild'.
+         */
+        do_action( 'acfw_after_auto_apply_cache_changed', (array) $previous_ids, 'clear' );
     }
 
     /**
@@ -414,6 +427,10 @@ class Auto_Apply extends Base_Model implements Model_Interface, Initiable_Interf
         );
 
         update_option( $this->_constants->AUTO_APPLY_COUPONS, array_unique( $verified ) );
+
+        $removed = array_diff( (array) $auto_coupons, $verified );
+        do_action( 'acfw_after_auto_apply_cache_changed', array_values( $removed ), 'rebuild' );
+
         return $verified;
     }
 

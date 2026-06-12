@@ -61,6 +61,20 @@ class Force_Apply extends Base_Model implements Model_Interface {
      */
     private $_apply_coupon_store_api = false;
 
+    /**
+     * Reapply depth counter.
+     * Tracks how many levels of reapply_coupons_removed_by_force_apply are currently
+     * executing. Prevents checkpoint_before_reapply_coupons from triggering a new
+     * implement_force_apply_coupons call while we are already reapplying coupons,
+     * which would otherwise cause an infinite loop when both the force-applied coupon
+     * and the removed coupon have Force Apply = "all" enabled.
+     *
+     * @since 4.0.8
+     * @access private
+     * @var int
+     */
+    private $_reapplying_depth = 0;
+
     /*
     |--------------------------------------------------------------------------
     | Class Methods
@@ -179,7 +193,14 @@ class Force_Apply extends Base_Model implements Model_Interface {
     public function checkpoint_before_reapply_coupons( $is_valid, $coupon ) {
         /**
          * Only run this checkpoint if the action being run is for applying the coupon to the cart/checkout.
+         * Skip entirely if we are already inside reapply_coupons_removed_by_force_apply — running force
+         * apply for a removed coupon during reapply would reset _applied_coupons and clear the cart,
+         * causing an infinite loop when both coupons have Force Apply = "all" enabled.
          */
+        if ( $this->_reapplying_depth > 0 ) {
+            return $is_valid;
+        }
+
         if ( ( did_action( 'wc_ajax_apply_coupon' ) || $this->_apply_coupon_store_api || apply_filters( 'acfw_should_force_apply_run', false, $coupon ) )
             && ! did_action( 'acfwp_before_auto_apply_coupons' ) // Don't run force apply if the coupon is being applied via the "Auto Apply" feature.
             && ! in_array( $coupon->get_code(), WC()->cart->get_applied_coupons(), true )
@@ -265,8 +286,16 @@ class Force_Apply extends Base_Model implements Model_Interface {
             return;
         }
 
+        // Increment depth counter so checkpoint_before_reapply_coupons skips force-apply
+        // logic while we are reapplying. Prevents infinite loops when removed coupons also
+        // have Force Apply = "all" enabled.
+        ++$this->_reapplying_depth;
+
         // Clear applied coupons if the coupon is applied via Store API.
-        if ( $this->_apply_coupon_store_api ) {
+        // Only on the outermost call (depth=1) — re-entrant calls must not clear the cart,
+        // as that would remove coupons just re-added and defeat the has_discount guard,
+        // causing an infinite loop in the Checkout Block even with only one Force Apply coupon.
+        if ( $this->_apply_coupon_store_api && 1 === $this->_reapplying_depth ) {
             \WC()->cart->set_applied_coupons( array( $this->_force_applied_coupon->get_code() ) );
         }
 
@@ -289,6 +318,14 @@ class Force_Apply extends Base_Model implements Model_Interface {
                 $coupon = new Advanced_Coupon( $applied_coupon );
                 \ACFWP()->Auto_Apply->add_coupon_to_cart( $coupon );
             }
+        }
+
+        // Decrement depth counter now that reapply is complete.
+        --$this->_reapplying_depth;
+
+        // Clear the stored coupons once the outermost reapply call finishes.
+        if ( 0 === $this->_reapplying_depth ) {
+            $this->_applied_coupons = array();
         }
     }
 

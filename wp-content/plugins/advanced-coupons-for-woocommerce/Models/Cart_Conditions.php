@@ -891,6 +891,22 @@ class Cart_Conditions extends Base_Model implements Model_Interface, Initiable_I
         $conditions      = array_column( $products, 'condition_id', 'product_id' );
         $quantities      = array_column( $products, 'quantity', 'product_id' );
 
+        // Filter to product IDs that still exist (e.g. deleted product or orphaned
+        // variation would otherwise fatal on `wc_get_product()->get_id()`). Fail-closed
+        // when none remain — semantically, products that don't exist cannot exist in the
+        // cart, and silently passing here would let an auto-apply coupon trigger on every
+        // cart once its referenced SKUs are deleted.
+        $product_ids = array_filter(
+            $product_ids,
+            static function ( $pid ) {
+                return wc_get_product( $pid ) instanceof \WC_Product;
+            }
+        );
+
+        if ( empty( $product_ids ) ) {
+            return false;
+        }
+
         // loop through all products coupon condition.
         foreach ( $product_ids as $product_id ) {
             $product        = wc_get_product( $product_id );

@@ -85,7 +85,7 @@ class Plugin_Constants {
             // Configuration Constants.
             'TOKEN'                                      => 'acfwp',
             'INSTALLED_VERSION'                          => 'acfwp_installed_version',
-            'VERSION'                                    => '4.0.7',
+            'VERSION'                                    => '4.0.8',
             'TEXT_DOMAIN'                                => 'advanced-coupons-for-woocommerce',
             'THEME_TEMPLATE_PATH'                        => 'advanced-coupons-for-woocommerce',
             'META_PREFIX'                                => '_acfw_',
@@ -224,6 +224,17 @@ class Plugin_Constants {
             'AUTO_REVOKE_CASHBACK_COUPON_STORE_CREDITS'  => 'acfw_auto_revoke_cashback_coupon_store_credits',
             'STORE_CREDITS_AUTO_APPLY_AVAILABLE_AMOUNT'  => 'acfw_store_credits_auto_apply_available_amount',
             'STORE_CREDITS_MANUALLY_REMOVED'             => 'acfw_store_credits_manually_removed',
+
+            // Bulk Store Credit Adjustment.
+            'BULK_ADJUST_ACTION'                         => 'bulk_adjustment',
+            'BULK_RESET_ACTION'                          => 'bulk_reset',
+            'BULK_DELETE_ACTION'                         => 'bulk_delete',
+            'BULK_OPERATION_TYPE_ADJUST'                 => 'adjust',
+            'BULK_OPERATION_TYPE_RESET'                  => 'reset',
+            'BULK_OPERATION_TYPE_DELETE'                 => 'delete',
+            'BULK_ADJUST_SCHEDULE_HOOK'                  => 'acfwp_bulk_adjust_store_credits',
+            'BULK_ADJUST_IN_PROGRESS'                    => 'acfwp_bulk_adjust_in_progress',
+            'BULK_ADJUST_LAST_COMPLETED'                 => 'acfwp_bulk_adjust_last_completed',
         );
 
         if ( $main_plugin ) {

@@ -83,13 +83,21 @@ class Store_Credits extends Base_Model implements Model_Interface {
 
         $min_redemption_amount = (float) get_option( $this->_constants->MIN_STORE_CREDITS_AMOUNT_REDEEM, 0 );
 
-        if ( $min_redemption_amount > 0 && $amount < $min_redemption_amount ) {
+        if ( $min_redemption_amount > 0 && $amount > 0 && $amount < $min_redemption_amount ) {
+            $min_price = wc_price( $min_redemption_amount );
+
+            // Strip HTML tags for block checkout context where notices are rendered as plain text.
+            $is_block_checkout = defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_POST['is_cart_checkout_block'] ) && sanitize_text_field( wp_unslash( $_POST['is_cart_checkout_block'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            if ( $is_block_checkout ) {
+                $min_price = html_entity_decode( wp_strip_all_tags( $min_price ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
+            }
+
             return new \WP_Error(
                 'acfw_store_credits_below_minimum_redeem_amount',
                 sprintf(
                     /* translators: %s: minimum redemption amount */
                     __( 'The minimum store credits redemption amount is %s.', 'advanced-coupons-for-woocommerce' ),
-                    wc_price( $min_redemption_amount )
+                    $min_price
                 ),
                 array(
                     'status'                => 400,

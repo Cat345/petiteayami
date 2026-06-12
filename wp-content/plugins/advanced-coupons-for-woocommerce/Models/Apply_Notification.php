@@ -159,7 +159,20 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
      * @since 2.0
      */
     private function _clear_apply_notification_cache() {
+        $previous_ids = get_option( $this->_constants->APPLY_NOTIFICATION_CACHE, array() );
         update_option( $this->_constants->APPLY_NOTIFICATION_CACHE, array() );
+
+        /**
+         * Fires after the apply notification coupons cache is cleared or rebuilt.
+         * Affected coupon IDs are passed so listeners (e.g. Feature taxonomy)
+         * can refresh derived state that depends on this cache.
+         *
+         * @since 4.0.8
+         *
+         * @param array  $affected_ids List of coupon IDs whose apply notification state may have changed.
+         * @param string $action       Either 'clear' or 'rebuild'.
+         */
+        do_action( 'acfw_after_apply_notification_cache_changed', (array) $previous_ids, 'clear' );
     }
 
     /**
@@ -179,6 +192,10 @@ class Apply_Notification extends Base_Model implements Model_Interface, Initiabl
         );
 
         update_option( $this->_constants->APPLY_NOTIFICATION_CACHE, array_unique( $verified ) );
+
+        $removed = array_diff( (array) $apply_notifications, $verified );
+        do_action( 'acfw_after_apply_notification_cache_changed', array_values( $removed ), 'rebuild' );
+
         return $verified;
     }
 
