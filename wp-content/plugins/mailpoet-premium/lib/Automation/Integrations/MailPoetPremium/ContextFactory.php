@@ -39,9 +39,10 @@ class ContextFactory {
         return [
           'id' => $newsletter->getId(),
           'subject' => $newsletter->getSubject(),
+          'type' => $newsletter->getType(),
           'sent_at' => $newsletter->getSentAt(),
         ];
-      }, $this->newslettersRepository->getStandardNewsletterList()),
+      }, $this->newslettersRepository->getStandardAndAutomationNewsletterList()),
       'custom_fields' => array_map(function (CustomFieldEntity $customField) {
         return $this->buildCustomField($customField);
       }, $this->customFieldsRepository->findAll()),

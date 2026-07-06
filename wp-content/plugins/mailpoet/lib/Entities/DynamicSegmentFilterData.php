@@ -23,6 +23,7 @@ class DynamicSegmentFilterData {
 
   public const CONNECT_TYPE_AND = 'and';
   public const CONNECT_TYPE_OR = 'or';
+  public const CONNECT_TYPE_NONE = 'none';
 
   public const OPERATOR_ALL = 'all';
   public const OPERATOR_ANY = 'any';
@@ -51,6 +52,18 @@ class DynamicSegmentFilterData {
 
   public const TIMEFRAME_ALL_TIME = 'allTime';
   public const TIMEFRAME_IN_THE_LAST = 'inTheLast';
+  public const TIMEFRAME_BEFORE = 'before';
+  public const TIMEFRAME_AFTER = 'after';
+  public const TIMEFRAME_ON = 'on';
+  public const TIMEFRAME_BETWEEN = 'between';
+  public const TIMEFRAMES = [
+    self::TIMEFRAME_ALL_TIME,
+    self::TIMEFRAME_IN_THE_LAST,
+    self::TIMEFRAME_BEFORE,
+    self::TIMEFRAME_AFTER,
+    self::TIMEFRAME_ON,
+    self::TIMEFRAME_BETWEEN,
+  ];
 
   /**
    * @ORM\Column(type="serialized_array")

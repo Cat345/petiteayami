@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) exit;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 /**
  * @extends Repository<StatisticsClickEntity>
@@ -62,6 +64,32 @@ class StatisticsClicksRepository extends Repository {
 
     /** @var array<int, array{cnt: int, url: string, link_id: string}> $result */
     $result = $query->getQuery()->getArrayResult();
+    return $result;
+  }
+
+  /**
+   * @param string[] $urls
+   * @return string[]
+   */
+  public function findClickedUrlsBySubscriberAndNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter, array $urls): array {
+    if (!$urls) {
+      return [];
+    }
+
+    $result = $this->doctrineRepository
+      ->createQueryBuilder('clicks')
+      ->select('DISTINCT links.url')
+      ->join('clicks.link', 'links')
+      ->where('clicks.subscriber = :subscriber')
+      ->andWhere('clicks.newsletter = :newsletter')
+      ->andWhere('links.url IN (:urls)')
+      ->setParameter('subscriber', $subscriber)
+      ->setParameter('newsletter', $newsletter)
+      ->setParameter('urls', $urls, ArrayParameterType::STRING)
+      ->getQuery()
+      ->getSingleColumnResult();
+
+    /** @var string[] $result */
     return $result;
   }
 }

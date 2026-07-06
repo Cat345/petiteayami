@@ -21,6 +21,8 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\TimeZoneCampaignScheduler;
+use MailPoet\Newsletter\Sharing\ShareVisibility;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\NotFoundException;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -81,6 +83,12 @@ class NewsletterSaveController {
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
 
+  /** @var TimeZoneCampaignScheduler */
+  private $timeZoneCampaignScheduler;
+
+  /** @var ShareVisibility */
+  private $shareVisibility;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -97,7 +105,9 @@ class NewsletterSaveController {
     WPFunctions $wp,
     ApiDataSanitizer $dataSanitizer,
     Scheduler $scheduler,
-    NewsletterCoupon $newsletterCoupon
+    NewsletterCoupon $newsletterCoupon,
+    TimeZoneCampaignScheduler $timeZoneCampaignScheduler,
+    ShareVisibility $shareVisibility
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -115,6 +125,8 @@ class NewsletterSaveController {
     $this->dataSanitizer = $dataSanitizer;
     $this->scheduler = $scheduler;
     $this->newsletterCoupon = $newsletterCoupon;
+    $this->timeZoneCampaignScheduler = $timeZoneCampaignScheduler;
+    $this->shareVisibility = $shareVisibility;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -128,7 +140,8 @@ class NewsletterSaveController {
     if (!empty($data['body'])) {
       $newslettersTableName = $this->newslettersRepository->getTableName();
       $body = $this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']);
-      $body = $this->dataSanitizer->sanitizeBody(json_decode($body, true));
+      $decodedBody = json_decode($body, true);
+      $body = $this->dataSanitizer->sanitizeBody(is_array($decodedBody) ? $decodedBody : []);
       $data['body'] = json_encode($body);
     }
 
@@ -159,6 +172,13 @@ class NewsletterSaveController {
     if ($this->isNewEditor($data)) {
       $this->ensureWpPost($newsletter);
     }
+    return $newsletter;
+  }
+
+  public function updateShareVisibility(NewsletterEntity $newsletter, string $visibility): NewsletterEntity {
+    $this->updateOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY => $visibility,
+    ]);
     return $newsletter;
   }
 
@@ -265,6 +285,7 @@ class NewsletterSaveController {
     $ignoredOptions = [
       NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
       NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+      NewsletterOptionFieldEntity::NAME_EXCLUDE_FROM_ARCHIVE,
     ];
     foreach ($newsletter->getOptions() as $newsletterOption) {
       $optionField = $newsletterOption->getOptionField();
@@ -286,12 +307,12 @@ class NewsletterSaveController {
 
   private function getNewsletter(array $data): NewsletterEntity {
     if (!isset($data['id'])) {
-      throw new UnexpectedValueException();
+      throw new UnexpectedValueException('Missing newsletter ID in data');
     }
 
     $newsletter = $this->newslettersRepository->findOneById((int)$data['id']);
     if (!$newsletter) {
-      throw new NotFoundException();
+      throw new NotFoundException('Newsletter not found');
     }
     return $newsletter;
   }
@@ -333,7 +354,8 @@ class NewsletterSaveController {
     }
 
     if (array_key_exists('body', $data)) {
-      $newsletter->setBody(json_decode($data['body'], true));
+      $decodedBody = json_decode($data['body'], true);
+      $newsletter->setBody(is_array($decodedBody) ? $decodedBody : null);
     }
 
     if (array_key_exists('ga_campaign', $data)) {
@@ -364,7 +386,7 @@ class NewsletterSaveController {
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {
     $newsletterSegments = [];
     foreach ($segments as $segmentData) {
-      if (!is_array($segmentData) || !isset($segmentData['id'])) {
+      if (!is_array($segmentData) || !isset($segmentData['id']) || !is_numeric($segmentData['id'])) {
         continue;
       }
 
@@ -403,7 +425,8 @@ class NewsletterSaveController {
   private function updateOptions(NewsletterEntity $newsletter, array $options) {
     $optionFields = $this->newsletterOptionFieldsRepository->findBy(['newsletterType' => $newsletter->getType()]);
     foreach ($optionFields as $optionField) {
-      if (!isset($options[$optionField->getName()])) {
+      $name = $optionField->getName();
+      if (!isset($options[$name])) {
         continue;
       }
 
@@ -416,7 +439,11 @@ class NewsletterSaveController {
         $option = new NewsletterOptionEntity($newsletter, $optionField);
         $this->newsletterOptionsRepository->persist($option);
       }
-      $option->setValue($options[$optionField->getName()]);
+      $value = $options[$name];
+      if ($name === NewsletterOptionFieldEntity::NAME_SHARE_VISIBILITY) {
+        $value = $this->shareVisibility->sanitize((string)$value);
+      }
+      $option->setValue($value);
 
       if (!$newsletter->getOptions()->contains($option)) {
         $newsletter->getOptions()->add($option);
@@ -464,9 +491,27 @@ class NewsletterSaveController {
 
     // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
     if ($newsletter->getStatus() === NewsletterEntity::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
+      if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+        $this->timeZoneCampaignScheduler->deleteScheduledCampaignQueues($newsletter);
+        $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+        $this->entityManager->flush();
+        return;
+      }
       $this->entityManager->remove($queue);
       $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     } else {
+      if ($this->timeZoneCampaignScheduler->isTimeZoneQueue($queue)) {
+        if (!$this->timeZoneCampaignScheduler->canReplaceScheduledCampaign($newsletter)) {
+          throw new InvalidStateException(__('This email can no longer be edited because one or more time zone batches have already started.', 'mailpoet'));
+        }
+        foreach ($this->timeZoneCampaignScheduler->getCampaignQueues($queue) as $campaignQueue) {
+          $campaignQueue->setNewsletterRenderedSubject(null);
+          $campaignQueue->setNewsletterRenderedBody(null);
+          $this->entityManager->persist($campaignQueue);
+        }
+        $this->entityManager->flush();
+        return;
+      }
       $queue->setNewsletterRenderedSubject(null);
       $queue->setNewsletterRenderedBody(null);
       $this->entityManager->persist($queue);
@@ -475,7 +520,7 @@ class NewsletterSaveController {
       $task = $queue->getTask();
 
       if (!$task instanceof ScheduledTaskEntity) {
-        throw new InvalidStateException();
+        throw new InvalidStateException('Newsletter queue has no associated scheduled task');
       }
 
       $newsletterQueueTask->preProcessNewsletter($newsletter, $task);

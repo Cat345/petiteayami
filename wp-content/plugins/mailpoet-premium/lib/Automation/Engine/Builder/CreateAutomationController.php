@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) exit;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Engine\Validation\AutomationValidator;
 
@@ -18,12 +19,17 @@ class CreateAutomationController {
   /** @var AutomationValidator */
   private $automationValidator;
 
+  /** @var Hooks */
+  private $hooks;
+
   public function __construct(
     AutomationStorage $storage,
-    AutomationValidator $automationValidator
+    AutomationValidator $automationValidator,
+    Hooks $hooks
   ) {
     $this->storage = $storage;
     $this->automationValidator = $automationValidator;
+    $this->hooks = $hooks;
   }
 
   /**
@@ -44,6 +50,7 @@ class CreateAutomationController {
     if (!$automation) {
       throw new InvalidStateException("Could not find automation $automationId");
     }
+    $this->hooks->doAutomationAfterCreate($automation);
     return $automation;
   }
 }

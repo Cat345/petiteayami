@@ -17,15 +17,22 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
+use Throwable;
 
 /**
  * @phpstan-type NewsletterArray array{subject: string, body: array{html: string, text: string}}
  */
 
 class NotificationEmailAction implements Action {
-
-
   const KEY = 'mailpoet:notification-email';
+
+  private const PLACEHOLDER_FIELDS = [
+    '[review:product_name]' => 'woocommerce:review:product:name',
+    '[review:admin_url]' => 'woocommerce:review:admin-url',
+    '[review:rating]' => 'woocommerce:review:rating',
+    '[review:text]' => 'woocommerce:review:text',
+    '[review:reviewer_name]' => 'woocommerce:review:reviewer:name',
+  ];
 
   /** @var MailerFactory */
   private $mailer;
@@ -48,7 +55,6 @@ class NotificationEmailAction implements Action {
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $emails = $args->getStep()->getArgs()['emails'] ?? [];
-
 
     $mailer = $this->mailer->buildMailer(
       null,
@@ -122,14 +128,52 @@ class NotificationEmailAction implements Action {
    * @return NewsletterArray
    */
   private function constructNewsletter(StepRunArgs $args): array {
-    $args = $args->getStep()->getArgs();
+    $stepArgs = $args->getStep()->getArgs();
     return [
-      'subject' => $args['subject'],
+      'subject' => $this->sanitizeSubject($this->renderPlaceholders($stepArgs['subject'], $args, false)),
       'body' => [
-        'html' => $args['email_text'],
-        'text' => $args['email_text'],
+        'html' => $this->renderPlaceholders($stepArgs['email_text'], $args, true),
+        'text' => $this->renderPlaceholders($stepArgs['email_text'], $args, false),
       ],
     ];
+  }
+
+  private function renderPlaceholders(string $content, StepRunArgs $args, bool $escapeHtml): string {
+    if (strpos($content, '[review:') === false) {
+      return $content;
+    }
+
+    $placeholderKeys = array_map(function(string $placeholder): string {
+      return preg_quote($placeholder, '/');
+    }, array_keys(self::PLACEHOLDER_FIELDS));
+    $pattern = '/(' . implode('|', $placeholderKeys) . ')/';
+
+    return preg_replace_callback(
+      $pattern,
+      function(array $matches) use ($args, $escapeHtml): string {
+        return $this->getPlaceholderValue($args, self::PLACEHOLDER_FIELDS[$matches[1]], $escapeHtml);
+      },
+      $content
+    ) ?? $content;
+  }
+
+  private function getPlaceholderValue(StepRunArgs $args, string $fieldKey, bool $escapeHtml): string {
+    try {
+      $value = $args->getFieldValue($fieldKey);
+    } catch (Throwable $e) {
+      return '';
+    }
+
+    if ($value === null || !is_scalar($value)) {
+      return '';
+    }
+
+    $value = is_bool($value) ? ($value ? '1' : '') : (string)$value;
+    return $escapeHtml ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : $value;
+  }
+
+  private function sanitizeSubject(string $subject): string {
+    return str_replace(["\r", "\n"], '', $subject);
   }
 
   /**

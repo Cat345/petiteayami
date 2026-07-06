@@ -65,6 +65,23 @@ class BookingFields {
         ]
       ),
       new Field(
+        'woocommerce-bookings:customer:booking-count',
+        Field::TYPE_INTEGER,
+        __('Woo Booking customer booking count', 'mailpoet-premium'),
+        function(WooCommerceBookingPayload $payload, array $params = []) {
+          $booking = $payload->getBooking();
+          $customerId = (int)$booking->get_customer_id();
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
+          if ($customerId <= 0 || $inTheLastSeconds === null) {
+            return 0;
+          }
+          return $this->wcBookings->countRecentCustomerBookings($customerId, $inTheLastSeconds, (int)$booking->get_id());
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
+      ),
+      new Field(
         'woocommerce-bookings:booking:persons',
         Field::TYPE_NUMBER,
         __('Woo Booking persons count', 'mailpoet-premium'),

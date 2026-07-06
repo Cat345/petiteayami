@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Preview;
 if (!defined('ABSPATH')) exit;
 
 
+use MailPoet\WooCommerce\NonPersistablePreviewData;
 use MailPoet\WP\Functions as WPFunctions;
 
 /**
@@ -31,8 +32,20 @@ class WooCommerceDummyData {
     }
 
     try {
-      $order = new \WC_Order();
-      $order->set_id(12345);
+      // Keep the id at 0 so the order can't read from or write to a real order;
+      // get_order_number() provides the display number.
+      $order = new class extends \WC_Order {
+        use NonPersistablePreviewData;
+
+        public function get_order_number() { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- overrides WC_Order::get_order_number().
+          return '12345';
+        }
+
+        /** @return array<int, \stdClass> */
+        public function get_customer_order_notes() { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- overrides WC_Order::get_customer_order_notes(), at id 0 the parent would return every order note on the site.
+          return [];
+        }
+      };
 
       $this->setOrderAddress($order);
       $this->addOrderItems($order);
@@ -56,7 +69,9 @@ class WooCommerceDummyData {
 
     try {
       $address = $this->getAddress();
-      $customer = new \WC_Customer();
+      $customer = new class extends \WC_Customer {
+        use NonPersistablePreviewData;
+      };
       $customer->set_id(0);
 
       // Set basic info
@@ -117,18 +132,14 @@ class WooCommerceDummyData {
       return $default;
     }
 
-    return [
-      'first_name' => (string)($address['first_name'] ?? $default['first_name']),
-      'last_name' => (string)($address['last_name'] ?? $default['last_name']),
-      'company' => (string)($address['company'] ?? $default['company']),
-      'email' => (string)($address['email'] ?? $default['email']),
-      'phone' => (string)($address['phone'] ?? $default['phone']),
-      'address_1' => (string)($address['address_1'] ?? $default['address_1']),
-      'city' => (string)($address['city'] ?? $default['city']),
-      'postcode' => (string)($address['postcode'] ?? $default['postcode']),
-      'country' => (string)($address['country'] ?? $default['country']),
-      'state' => (string)($address['state'] ?? $default['state']),
-    ];
+    $result = $default;
+    foreach ($default as $key => $defaultValue) {
+      $value = $address[$key] ?? null;
+      if (is_scalar($value)) {
+        $result[$key] = (string)$value;
+      }
+    }
+    return $result;
   }
 
   /**
@@ -227,7 +238,9 @@ class WooCommerceDummyData {
     }
 
     // Fallback: create default dummy product
-    $product = new \WC_Product();
+    $product = new class extends \WC_Product {
+      use NonPersistablePreviewData;
+    };
     $product->set_name(__('Dummy Product', 'woocommerce'));
     $product->set_price('25');
 
@@ -250,7 +263,9 @@ class WooCommerceDummyData {
     }
 
     // Fallback: create default dummy variation
-    $variation = new \WC_Product_Variation();
+    $variation = new class extends \WC_Product_Variation {
+      use NonPersistablePreviewData;
+    };
     $variation->set_name(__('Dummy Product Variation', 'woocommerce'));
     $variation->set_price('20');
 

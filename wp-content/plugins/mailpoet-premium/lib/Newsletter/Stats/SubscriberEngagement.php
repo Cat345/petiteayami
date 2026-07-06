@@ -18,6 +18,7 @@ use MailPoet\Listing;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\NotFoundException;
 use MailPoet\Premium\Newsletter\StatisticsClicksRepository;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -43,18 +44,23 @@ class SubscriberEngagement {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var UnsubscribeReasonTracker */
+  private $unsubscribeReasonTracker;
+
   public function __construct(
     Listing\Handler $listingHandler,
     EntityManager $entityManager,
     StatisticsClicksRepository $statisticsClicksRepository,
     NewsletterLinkRepository $newsletterLinkRepository,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    UnsubscribeReasonTracker $unsubscribeReasonTracker
   ) {
     $this->listingHandler = $listingHandler;
     $this->entityManager = $entityManager;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterLinkRepository = $newsletterLinkRepository;
+    $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
   }
 
   /**
@@ -81,7 +87,7 @@ class SubscriberEngagement {
   }
 
   /**
-   * @param array{sort_order?: string, sort_by?: string, params?: array<string, int|null>, group?: string, filter?: array{link: int|null}} $data
+   * @param array{sort_order?: string, sort_by?: string|null, params?: array<string, int|null>, group?: string|null, filter?: array<string, mixed>} $data
    *
    * @return array{
    *   count: int,
@@ -125,6 +131,10 @@ class SubscriberEngagement {
           'search' => ParameterType::STRING,
         ])
         ->fetchAllAssociative();
+      $reasonLabels = $this->unsubscribeReasonTracker->getReasonLabels();
+      $items = array_map(function (array $item) use ($reasonLabels): array {
+        return $this->addUnsubscribeReasonLabel($item, $reasonLabels);
+      }, $items);
     } else {
       $count = 0;
       $items = [];
@@ -159,7 +169,12 @@ class SubscriberEngagement {
     $fields = [
       'opens.subscriber_id',
       'opens.newsletter_id',
+      'opens.id as source_id',
+      'NULL as link_id',
       "'" . self::STATUS_OPENED . "' as status",
+      'NULL as reason',
+      'NULL as reason_text',
+      'NULL as reason_submitted_at',
       'opens.created_at',
       'subscribers.email',
       'subscribers.first_name',
@@ -176,7 +191,12 @@ class SubscriberEngagement {
     $fields = [
       'opens.subscriber_id',
       'opens.newsletter_id',
+      'opens.id as source_id',
+      'NULL as link_id',
       "'" . self::STATUS_MACHINE_OPENED . "' as status",
+      'NULL as reason',
+      'NULL as reason_text',
+      'NULL as reason_submitted_at',
       'opens.created_at',
       'subscribers.email',
       'subscribers.first_name',
@@ -193,7 +213,12 @@ class SubscriberEngagement {
     $fields = [
       'clicks.subscriber_id',
       'clicks.newsletter_id',
+      'clicks.id as source_id',
+      'clicks.link_id',
       "'" . self::STATUS_CLICKED . "' as status",
+      'NULL as reason',
+      'NULL as reason_text',
+      'NULL as reason_submitted_at',
       'clicks.created_at',
       'subscribers.email',
       'subscribers.first_name',
@@ -210,7 +235,12 @@ class SubscriberEngagement {
     $fields = [
       'unsubscribes.subscriber_id',
       'unsubscribes.newsletter_id',
+      'unsubscribes.id as source_id',
+      'NULL as link_id',
       "'" . self::STATUS_UNSUBSCRIBED . "' as status",
+      'unsubscribes.reason',
+      'unsubscribes.reason_text',
+      'unsubscribes.reason_submitted_at',
       'unsubscribes.created_at',
       'subscribers.email',
       'subscribers.first_name',
@@ -226,7 +256,12 @@ class SubscriberEngagement {
     $fields = [
       'sent.subscriber_id',
       'sent.newsletter_id',
+      'sent.id as source_id',
+      'NULL as link_id',
       "'" . self::STATUS_UNOPENED . "' as status",
+      'NULL as reason',
+      'NULL as reason_text',
+      'NULL as reason_submitted_at',
       'sent.sent_at as created_at',
       'subscribers.email',
       'subscribers.first_name',
@@ -258,6 +293,32 @@ class SubscriberEngagement {
     }
 
     return $statsQuery;
+  }
+
+  /**
+   * @param array<string, mixed> $item
+   * @param array<string, string> $reasonLabels
+   *
+   * @return array<string, mixed>
+   */
+  private function addUnsubscribeReasonLabel(array $item, array $reasonLabels): array {
+    if (($item['status'] ?? null) !== self::STATUS_UNSUBSCRIBED) {
+      $item['reason_label'] = null;
+      return $item;
+    }
+
+    $reason = $item['reason'] ?? null;
+    if (
+      !is_string($reason)
+      || $reason === ''
+      || $reason === StatisticsUnsubscribeEntity::REASON_UNSPECIFIED
+    ) {
+      $item['reason_label'] = __('No reason provided', 'mailpoet-premium');
+      return $item;
+    }
+
+    $item['reason_label'] = $reasonLabels[$reason] ?? $reason;
+    return $item;
   }
 
   private function getFilterConstraint(Listing\ListingDefinition $definition): string {
@@ -350,7 +411,7 @@ class SubscriberEngagement {
    * @param Listing\ListingDefinition $definition
    * @param NewsletterEntity $newsletter
    *
-   * @return array<int, array{name: string, label: string, count: int}>]
+   * @return array<int, array{name: string, label: string, count: int}>
    */
   private function groups(Listing\ListingDefinition $definition, NewsletterEntity $newsletter): array {
     $groups = [

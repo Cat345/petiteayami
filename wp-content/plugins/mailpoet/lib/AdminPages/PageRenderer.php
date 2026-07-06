@@ -152,7 +152,7 @@ class PageRenderer {
     }
 
     $defaults = [
-      'current_page' => sanitize_text_field(wp_unslash($_GET['page'] ?? '')),
+      'current_page' => sanitize_text_field(wp_unslash(is_string($_GET['page'] ?? null) ? $_GET['page'] : '')),
       'site_name' => $this->wp->wpSpecialcharsDecode($this->wp->getOption('blogname'), ENT_QUOTES),
       'main_page' => Menu::MAIN_PAGE_SLUG,
       'site_url' => $this->wp->siteUrl(),
@@ -171,6 +171,7 @@ class PageRenderer {
       'transactional_emails_opt_in_notice_dismissed' => (bool)$this->userFlags->get('transactional_emails_opt_in_notice_dismissed'),
       'track_wizard_loaded_via_woocommerce' => (bool)$this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME),
       'track_wizard_loaded_via_woocommerce_marketing_dashboard' => (bool)$this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_MARKETING_DASHBOARD_SETTING_NAME),
+      // @phpstan-ignore-next-line function.alreadyNarrowedType -- is_callable() detects functions disabled at runtime via disable_functions
       'mail_function_enabled' => function_exists('mail') && is_callable('mail'),
       'admin_plugins_url' => WPFunctions::get()->adminUrl('plugins.php'),
 
@@ -215,7 +216,6 @@ class PageRenderer {
       'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
       'is_woocommerce_bookings_active' => $this->wooCommerceBookingsHelper->isWooCommerceBookingsActive(),
       'cron_trigger_method' => $this->settings->get('cron_trigger.method'),
-      'use_block_email_editor_for_automation_emails' => $this->useBlockEmailEditorForAutomationNewsletter(),
     ];
 
     if (!$defaults['premium_plugin_active']) {
@@ -229,7 +229,7 @@ class PageRenderer {
       ) {
         DIPanel::init();
       }
-      if (is_admin() && $this->subscribersCountCacheRecalculation->shouldBeScheduled()) {
+      if ($this->wp->isAdmin() && $this->subscribersCountCacheRecalculation->shouldBeScheduled()) {
         $this->subscribersCountCacheRecalculation->schedule();
       }
 
@@ -250,11 +250,5 @@ class PageRenderer {
   public function displayChatBotWidget(): bool {
     $display = $this->wp->applyFilters('mailpoet_display_docsbot_widget', $this->settings->get('3rd_party_libs.enabled') === '1');
     return (bool)$display;
-  }
-
-  public function useBlockEmailEditorForAutomationNewsletter(): bool {
-    $default = $this->settings->get('use_block_email_editor_for_automation_emails.enabled') === '1';
-    $status = $this->wp->applyFilters('mailpoet_use_block_email_editor_for_automation_emails', $default);
-    return (bool)$status;
   }
 }

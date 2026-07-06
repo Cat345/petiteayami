@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\AddTagAction;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\AddToListAction;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\CustomAction;
@@ -20,6 +21,8 @@ use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Subjects\CustomData
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Subjects\TagSubject;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Subjects\UserRoleChangeSubject;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Templates\PremiumTemplatesFactory;
+use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\AnnualDateTrigger;
+use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\AnnualDateTriggerHooks;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\ClicksEmailLinkTrigger;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\CustomTrigger;
 use MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\TagAddedTrigger;
@@ -81,6 +84,12 @@ class MailPoetPremiumIntegration implements Integration {
   /** @var PremiumTemplatesFactory */
   private $premiumTemplatesFactory;
 
+  /** @var AnnualDateTrigger */
+  private $annualDateTrigger;
+
+  /** @var AnnualDateTriggerHooks */
+  private $annualDateTriggerHooks;
+
   /** @var Analytics */
   private $analytics;
 
@@ -103,7 +112,9 @@ class MailPoetPremiumIntegration implements Integration {
     UserRoleChangeSubject $userRoleChangeSubject,
     UserRoleChangedTrigger $userRoleChangedTrigger,
     PremiumTemplatesFactory $premiumTemplatesFactory,
-    Analytics $analytics
+    Analytics $analytics,
+    AnnualDateTrigger $annualDateTrigger,
+    AnnualDateTriggerHooks $annualDateTriggerHooks
   ) {
     $this->contextFactory = $contextFactory;
     $this->unsubscribeAction = $unsubscribeAction;
@@ -124,6 +135,8 @@ class MailPoetPremiumIntegration implements Integration {
     $this->userRoleChangedTrigger = $userRoleChangedTrigger;
     $this->premiumTemplatesFactory = $premiumTemplatesFactory;
     $this->analytics = $analytics;
+    $this->annualDateTrigger = $annualDateTrigger;
+    $this->annualDateTriggerHooks = $annualDateTriggerHooks;
   }
 
   public function register(Registry $registry): void {
@@ -138,6 +151,8 @@ class MailPoetPremiumIntegration implements Integration {
     $registry->addAction($this->removeFromListAction);
     $registry->addAction($this->updateSubscriberAction);
     $registry->addAction($this->notificationEmailAction);
+    $registry->addTrigger($this->annualDateTrigger);
+    $this->annualDateTriggerHooks->init();
     $registry->addTrigger($this->customTrigger);
     $registry->addSubject($this->customDataSubject);
     $registry->addAction($this->customAction);
@@ -150,7 +165,12 @@ class MailPoetPremiumIntegration implements Integration {
 
     // add/overwrite by premium templates
     foreach ($this->premiumTemplatesFactory->createTemplates() as $template) {
-      $registry->addTemplate($template);
+      $registry->removeTemplate($template->getSlug());
+      try {
+        $registry->addTemplate($template);
+      } catch (\Throwable $e) {
+        LoggerFactory::getInstance()->getLogger(LoggerFactory::TOPIC_PREMIUM)->error('Failed to register template "{slug}": {message}', ['slug' => $template->getSlug(), 'message' => $e->getMessage()]);
+      }
     }
 
     $this->analytics->register();

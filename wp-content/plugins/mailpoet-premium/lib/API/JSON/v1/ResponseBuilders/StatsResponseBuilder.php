@@ -22,6 +22,7 @@ class StatsResponseBuilder {
    * @param NewsletterStatistics $statistics
    * @param array<array<string, int|string>> $clickedLinks
    * @param NewsletterUrl $newsletterUrl
+   * @param array<array<string, int|string>> $unsubscribeReasons
    *
    * @return array<string, int|string|array<string, mixed>|null>
    */
@@ -29,9 +30,13 @@ class StatsResponseBuilder {
     NewsletterEntity $newsletter,
     NewsletterStatistics $statistics,
     array $clickedLinks,
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    array $unsubscribeReasons = []
   ): array {
     $segments = $newsletter->getNewsletterSegments();
+
+    $statisticsArray = $statistics->asArray();
+    $statisticsArray['unsubscribeReasons'] = $unsubscribeReasons;
 
     $result = [
       'id' => (string)$newsletter->getId(),
@@ -44,7 +49,7 @@ class StatsResponseBuilder {
       'segments' => $this->buildSegments($segments),
       'hash' => $newsletter->getHash(),
       'type' => $newsletter->getType(),
-      'statistics' => $statistics->asArray(),
+      'statistics' => $statisticsArray,
       'total_sent' => $statistics->getTotalSentCount(),
       'ga_campaign' => $newsletter->getGaCampaign(),
       'clicked_links' => $clickedLinks,

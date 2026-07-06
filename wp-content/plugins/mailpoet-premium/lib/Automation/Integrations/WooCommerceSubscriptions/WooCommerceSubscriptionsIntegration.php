@@ -7,6 +7,10 @@ if (!defined('ABSPATH')) exit;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\AddProductToSubscriptionAction;
+use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\ChangeSubscriptionStatusAction;
+use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\RemoveProductFromSubscriptionAction;
+use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\UpdateProductOnSubscriptionAction;
 use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Subjects\WooCommerceSubscriptionStatusChangeSubject;
 use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Subjects\WooCommerceSubscriptionSubject;
 use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Triggers\SubscriptionCreatedTrigger;
@@ -50,6 +54,18 @@ class WooCommerceSubscriptionsIntegration implements Integration {
   /** @var WooCommerceSubscriptionStatusChangeSubject */
   private $wooCommerceSubscriptionStatusChangeSubject;
 
+  /** @var ChangeSubscriptionStatusAction */
+  private $changeSubscriptionStatusAction;
+
+  /** @var AddProductToSubscriptionAction */
+  private $addProductToSubscriptionAction;
+
+  /** @var RemoveProductFromSubscriptionAction */
+  private $removeProductFromSubscriptionAction;
+
+  /** @var UpdateProductOnSubscriptionAction */
+  private $updateProductOnSubscriptionAction;
+
   public function __construct(
     ContextFactory $contextFactory,
     SubscriptionCreatedTrigger $subscriptionCreatedTrigger,
@@ -60,7 +76,11 @@ class WooCommerceSubscriptionsIntegration implements Integration {
     SubscriptionPaymentFailedTrigger $subscriptionPaymentFailedTrigger,
     SubscriptionExpiredTrigger $subscriptionExpiredTrigger,
     WooCommerceSubscriptionSubject $wooCommerceSubscriptionSubject,
-    WooCommerceSubscriptionStatusChangeSubject $wooCommerceSubscriptionStatusChangeSubject
+    WooCommerceSubscriptionStatusChangeSubject $wooCommerceSubscriptionStatusChangeSubject,
+    ChangeSubscriptionStatusAction $changeSubscriptionStatusAction,
+    AddProductToSubscriptionAction $addProductToSubscriptionAction,
+    RemoveProductFromSubscriptionAction $removeProductFromSubscriptionAction,
+    UpdateProductOnSubscriptionAction $updateProductOnSubscriptionAction
   ) {
     $this->contextFactory = $contextFactory;
     $this->subscriptionCreatedTrigger = $subscriptionCreatedTrigger;
@@ -72,6 +92,10 @@ class WooCommerceSubscriptionsIntegration implements Integration {
     $this->subscriptionExpiredTrigger = $subscriptionExpiredTrigger;
     $this->wooCommerceSubscriptionSubject = $wooCommerceSubscriptionSubject;
     $this->wooCommerceSubscriptionStatusChangeSubject = $wooCommerceSubscriptionStatusChangeSubject;
+    $this->changeSubscriptionStatusAction = $changeSubscriptionStatusAction;
+    $this->addProductToSubscriptionAction = $addProductToSubscriptionAction;
+    $this->removeProductFromSubscriptionAction = $removeProductFromSubscriptionAction;
+    $this->updateProductOnSubscriptionAction = $updateProductOnSubscriptionAction;
   }
 
   public function register(Registry $registry): void {
@@ -88,5 +112,9 @@ class WooCommerceSubscriptionsIntegration implements Integration {
     $registry->addTrigger($this->subscriptionExpiredTrigger);
     $registry->addSubject($this->wooCommerceSubscriptionSubject);
     $registry->addSubject($this->wooCommerceSubscriptionStatusChangeSubject);
+    $registry->addAction($this->changeSubscriptionStatusAction);
+    $registry->addAction($this->addProductToSubscriptionAction);
+    $registry->addAction($this->removeProductFromSubscriptionAction);
+    $registry->addAction($this->updateProductOnSubscriptionAction);
   }
 }

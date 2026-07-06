@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
 {
     public static $prefixLengthsPsr4 = array (
-        'M' => 
+        'M' =>
         array (
             'MailPoet\\Premium\\' => 17,
             'MailPoetGenerated\\' => 18,
@@ -18,11 +18,11 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
     );
 
     public static $prefixDirsPsr4 = array (
-        'MailPoet\\Premium\\' => 
+        'MailPoet\\Premium\\' =>
         array (
             0 => __DIR__ . '/../..' . '/lib',
         ),
-        'MailPoetGenerated\\' => 
+        'MailPoetGenerated\\' =>
         array (
             0 => __DIR__ . '/../..' . '/generated',
         ),
@@ -31,7 +31,6 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'MailPoetGenerated\\PremiumCachedContainer' => __DIR__ . '/../..' . '/generated/PremiumCachedContainer.php',
-        'MailPoet\\Premium\\API\\JSON\\v1\\Bounces' => __DIR__ . '/../..' . '/lib/API/JSON/v1/Bounces.php',
         'MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\StatsResponseBuilder' => __DIR__ . '/../..' . '/lib/API/JSON/v1/ResponseBuilders/StatsResponseBuilder.php',
         'MailPoet\\Premium\\API\\JSON\\v1\\ResponseBuilders\\SubscriberDetailedStatsResponseBuilder' => __DIR__ . '/../..' . '/lib/API/JSON/v1/ResponseBuilders/SubscriberDetailedStatsResponseBuilder.php',
         'MailPoet\\Premium\\API\\JSON\\v1\\Stats' => __DIR__ . '/../..' . '/lib/API/JSON/v1/Stats.php',
@@ -68,6 +67,8 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Subjects\\UserRoleChangeSubject' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Subjects/UserRoleChangeSubject.php',
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumEmailFactory' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Templates/PremiumEmailFactory.php',
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Templates\\PremiumTemplatesFactory' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Templates/PremiumTemplatesFactory.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Triggers\\AnnualDateTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Triggers/AnnualDateTrigger.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Triggers\\AnnualDateTriggerHooks' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Triggers/AnnualDateTriggerHooks.php',
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Triggers\\ClicksEmailLinkTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Triggers/ClicksEmailLinkTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Triggers\\CustomTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Triggers/CustomTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\MailPoetPremium\\Triggers\\TagAddedTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/MailPoetPremium/Triggers/TagAddedTrigger.php',
@@ -87,6 +88,11 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceBookings\\Triggers\\BookingStatusChangedTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceBookings/Triggers/BookingStatusChangedTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceBookings\\WooCommerceBookingProvider' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceBookings/WooCommerceBookingProvider.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceBookings\\WooCommerceBookingsIntegration' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceBookings/WooCommerceBookingsIntegration.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Actions\\AbstractSubscriptionAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Actions/AbstractSubscriptionAction.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Actions\\AddProductToSubscriptionAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Actions/AddProductToSubscriptionAction.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Actions\\ChangeSubscriptionStatusAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Actions/ChangeSubscriptionStatusAction.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Actions\\RemoveProductFromSubscriptionAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Actions/RemoveProductFromSubscriptionAction.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Actions\\UpdateProductOnSubscriptionAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Actions/UpdateProductOnSubscriptionAction.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\ContextFactory' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/ContextFactory.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Fields\\SubscriptionFields' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Fields/SubscriptionFields.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Payloads\\WooCommerceSubscriptionPayload' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Payloads/WooCommerceSubscriptionPayload.php',
@@ -101,11 +107,25 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Triggers\\SubscriptionTrialEndedTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionTrialEndedTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\Triggers\\SubscriptionTrialStartedTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/Triggers/SubscriptionTrialStartedTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerceSubscriptions\\WooCommerceSubscriptionsIntegration' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerceSubscriptions/WooCommerceSubscriptionsIntegration.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Actions\\AddOrderNoteAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Actions/AddOrderNoteAction.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Actions\\ChangeOrderStatusAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Actions/ChangeOrderStatusAction.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Actions\\Extenders\\ReviewCrossSellHandler' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Actions/Extenders/ReviewCrossSellHandler.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Fields\\SavedCardFieldsFactory' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Fields/SavedCardFieldsFactory.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Payloads\\CustomerWinBackPayload' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Payloads/CustomerWinBackPayload.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Payloads\\ReviewPayload' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Payloads/ReviewPayload.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Payloads\\SavedCardPayload' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Payloads/SavedCardPayload.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\SubjectTransformers\\SavedCardSubjectToWordPressUserSubjectTransformer' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/SubjectTransformers/SavedCardSubjectToWordPressUserSubjectTransformer.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Subjects\\CustomerWinBackSubject' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Subjects/CustomerWinBackSubject.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Subjects\\ReviewSubject' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Subjects/ReviewSubject.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Subjects\\SavedCardSubject' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Subjects/SavedCardSubject.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\CustomerWinBackScheduler' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/CustomerWinBackScheduler.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\CustomerWinBackTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/CustomerWinBackTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\MadeAReviewTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/MadeAReviewTrigger.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\OrderPaidTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/OrderPaidTrigger.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\SavedCardExpiresTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/SavedCardExpiresTrigger.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\Triggers\\SavedCardExpiresTriggerHooks' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/Triggers/SavedCardExpiresTriggerHooks.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WooCommerce\\WooCommerceIntegration' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WooCommerce/WooCommerceIntegration.php',
+        'MailPoet\\Premium\\Automation\\Integrations\\WordPress\\Actions\\ChangeUserRoleAction' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WordPress/Actions/ChangeUserRoleAction.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WordPress\\Triggers\\MadeACommentTrigger' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WordPress/Triggers/MadeACommentTrigger.php',
         'MailPoet\\Premium\\Automation\\Integrations\\WordPress\\WordPressIntegration' => __DIR__ . '/../..' . '/lib/Automation/Integrations/WordPress/WordPressIntegration.php',
         'MailPoet\\Premium\\Config\\Env' => __DIR__ . '/../..' . '/lib/Config/Env.php',
@@ -123,10 +143,14 @@ class ComposerStaticInit2dee3b0833494b1dd1346aef15ddcdf0
         'MailPoet\\Premium\\Newsletter\\StatisticsUnsubscribesRepository' => __DIR__ . '/../..' . '/lib/Newsletter/StatisticsUnsubscribesRepository.php',
         'MailPoet\\Premium\\Newsletter\\Stats\\Bounces' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/Bounces.php',
         'MailPoet\\Premium\\Newsletter\\Stats\\PurchasedProducts' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/PurchasedProducts.php',
+        'MailPoet\\Premium\\Newsletter\\Stats\\RecipientsExporter' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/RecipientsExporter.php',
+        'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\AbstractNewsletterStatsListingEndpoint' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/RestApi/Endpoints/AbstractNewsletterStatsListingEndpoint.php',
+        'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\BouncesEndpoint' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/RestApi/Endpoints/BouncesEndpoint.php',
+        'MailPoet\\Premium\\Newsletter\\Stats\\RestApi\\Endpoints\\EngagementEndpoint' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/RestApi/Endpoints/EngagementEndpoint.php',
         'MailPoet\\Premium\\Newsletter\\Stats\\SubscriberEngagement' => __DIR__ . '/../..' . '/lib/Newsletter/Stats/SubscriberEngagement.php',
         'MailPoet\\Premium\\Segments\\DynamicSegments\\Filters\\SubscriberTag' => __DIR__ . '/../..' . '/lib/Segments/DynamicSegments/Filters/SubscriberTag.php',
         'MailPoet\\Premium\\Segments\\DynamicSegments\\SegmentCombinations' => __DIR__ . '/../..' . '/lib/Segments/DynamicSegments/SegmentCombinations.php',
-        'MailPoet\\Premium\\Subscriber\\Stats\\SubscriberNewsletterStats' => __DIR__ . '/../..' . '/lib/Subscriber/Stats/SubscriberNewsletterStats.php',
+        'MailPoet\\Premium\\Subscriber\\Stats\\SubscriberActivityEvent' => __DIR__ . '/../..' . '/lib/Subscriber/Stats/SubscriberActivityEvent.php',
         'MailPoet\\Premium\\Subscriber\\Stats\\SubscriberNewsletterStatsRepository' => __DIR__ . '/../..' . '/lib/Subscriber/Stats/SubscriberNewsletterStatsRepository.php',
     );
 

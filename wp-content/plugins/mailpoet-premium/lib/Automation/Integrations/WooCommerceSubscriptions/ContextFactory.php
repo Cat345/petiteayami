@@ -23,11 +23,10 @@ class ContextFactory {
    * @return mixed[]
    */
   public function getContextData(): array {
-    if (!$this->wcs->isWooCommerceSubscriptionsActive()) {
-      return [];
-    }
+    $isActive = $this->wcs->isWooCommerceSubscriptionsActive();
     return [
-      'subscription_statuses' => $this->getSubscriptionStatuses(),
+      'is_active' => $isActive,
+      'subscription_statuses' => $isActive ? $this->getSubscriptionStatuses() : [],
     ];
   }
 

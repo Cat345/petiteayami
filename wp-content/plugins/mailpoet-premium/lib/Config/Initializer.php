@@ -6,9 +6,11 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
+use MailPoet\Newsletter\Statistics\Export\StatisticsExporter;
 use MailPoet\Premium\Automation\Engine\Engine;
 use MailPoet\Premium\Config\Hooks as ConfigHooks;
 use MailPoet\Premium\EmailEditor\Integrations\MailPoet\PersonalizationTagManager;
+use MailPoet\Premium\Newsletter\Stats\RecipientsExporter;
 use MailPoet\Premium\Segments\DynamicSegments\Filters\SubscriberTag;
 use MailPoet\Premium\Segments\DynamicSegments\SegmentCombinations;
 use MailPoet\Util\License\Features\Subscribers;
@@ -41,6 +43,9 @@ class Initializer {
 
   private PersonalizationTagManager $personalizationTagManager;
 
+  /** @var RecipientsExporter */
+  private $recipientsExporter;
+
   const INITIALIZED = 'MAILPOET_PREMIUM_INITIALIZED';
 
   public function __construct(
@@ -51,7 +56,8 @@ class Initializer {
     Engine $automationEngine,
     RendererFactory $rendererFactory,
     Subscribers $subscribers,
-    PersonalizationTagManager $personalizationTagManager
+    PersonalizationTagManager $personalizationTagManager,
+    RecipientsExporter $recipientsExporter
   ) {
     $this->wp = $wp;
     $this->hooks = $hooks;
@@ -61,6 +67,7 @@ class Initializer {
     $this->rendererFactory = $rendererFactory;
     $this->subscribers = $subscribers;
     $this->personalizationTagManager = $personalizationTagManager;
+    $this->recipientsExporter = $recipientsExporter;
   }
 
   public function init(
@@ -97,6 +104,7 @@ class Initializer {
     );
 
     $this->setupStatsPages();
+    $this->setupStatisticsExport();
     $this->setupSegmentCombinations();
     $this->setupSegmentFilters();
     $this->setupEmailEditor();
@@ -142,6 +150,15 @@ class Initializer {
     );
   }
 
+  public function setupStatisticsExport(): void {
+    $this->wp->addFilter(
+      StatisticsExporter::FILTER_RECIPIENT_ROWS,
+      [$this->recipientsExporter, 'getRows'],
+      10,
+      2
+    );
+  }
+
   public function setupSegmentCombinations() {
     $this->wp->addFilter(
       'mailpoet_dynamic_segments_filters_map',
@@ -154,10 +171,6 @@ class Initializer {
       [$this->segmentCombinations, 'saveMultipleFilters'],
       10,
       2
-    );
-    $this->wp->addAction(
-      'mailpoet_segments_translations_after',
-      [$this, 'dynamicSegmentCombinations']
     );
   }
 
@@ -188,10 +201,6 @@ class Initializer {
     $data['shortcode_links'] = Worker::getShortcodeLinksMapping();
 
     $this->renderView('subscribers/stats.html', $data);
-  }
-
-  public function dynamicSegmentCombinations() {
-    $this->renderView('segments/dynamic_premium_translations.html');
   }
 
   public function includePremiumStyles() {

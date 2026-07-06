@@ -27,7 +27,7 @@ class WooCommerceSubscription {
       return '';
     }
     $dateCreated = $subscription->get_date_created();
-    return $dateCreated ? $dateCreated->date_i18n(get_option('date_format') . ' ' . get_option('time_format')) : '';
+    return $dateCreated ? $dateCreated->date_i18n($this->getDateTimeFormat()) : '';
   }
 
   /**
@@ -40,7 +40,13 @@ class WooCommerceSubscription {
       return '';
     }
     $dateModified = $subscription->get_date_modified();
-    return $dateModified ? $dateModified->date_i18n(get_option('date_format') . ' ' . get_option('time_format')) : '';
+    return $dateModified ? $dateModified->date_i18n($this->getDateTimeFormat()) : '';
+  }
+
+  private function getDateTimeFormat(): string {
+    $dateFormat = get_option('date_format');
+    $timeFormat = get_option('time_format');
+    return (is_string($dateFormat) ? $dateFormat : '') . ' ' . (is_string($timeFormat) ? $timeFormat : '');
   }
 
   /**

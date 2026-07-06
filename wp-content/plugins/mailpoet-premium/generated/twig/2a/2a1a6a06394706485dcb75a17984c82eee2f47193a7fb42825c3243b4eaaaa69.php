@@ -44,12 +44,6 @@ class __TwigTemplate_433ace6ed49496dfe58add646f3f8b4967f2f8b598646d755944101d4e4
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["shortcode_links"] ?? null));
         yield ";
 </script>
-
-";
-        // line 5
-        yield $this->extensions['MailPoet\Twig\I18n']->localize(["loadingSubscriberStats" => $this->extensions['MailPoet\Twig\I18n']->translate("Loading stats"), "noStatsForSubscriber" => $this->extensions['MailPoet\Twig\I18n']->translate("No stats"), "orderNumberPrefix" => $this->extensions['MailPoet\Twig\I18n']->translateWithContext("Order", "Prefix for order number e.g. Order #123")]);
-        // line 9
-        yield "
 ";
         return; yield '';
     }
@@ -75,7 +69,7 @@ class __TwigTemplate_433ace6ed49496dfe58add646f3f8b4967f2f8b598646d755944101d4e4
      */
     public function getDebugInfo()
     {
-        return array (  49 => 9,  47 => 5,  41 => 2,  38 => 1,);
+        return array (  41 => 2,  38 => 1,);
     }
 
     public function getSourceContext()

@@ -1,9 +1,9 @@
 === MailPoet - Newsletters, Email Marketing, and Automation ===
 Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
-Requires at least: 6.8
-Tested up to: 6.9
-Stable tag: 5.23.2
+Requires at least: 6.9
+Tested up to: 7.0
+Stable tag: 5.33.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,7 +227,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.23.2 - 2026-04-15 =
-* Updated: Bump the minimum required WooCommerce version to 10.6 and tested up to version to 10.7.
+= 5.33.0 - 2026-06-30 =
+* Improved: minor changes and fixes.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

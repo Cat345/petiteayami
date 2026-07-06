@@ -57,7 +57,7 @@ class WooCommerceBooking {
       return '';
     }
 
-    $format = get_option('date_format') . ' ' . get_option('time_format');
+    $format = $this->getDateTimeFormat();
 
     // Handle integer timestamp
     if (is_int($date)) {
@@ -75,6 +75,12 @@ class WooCommerceBooking {
     }
 
     return '';
+  }
+
+  private function getDateTimeFormat(): string {
+    $dateFormat = get_option('date_format');
+    $timeFormat = get_option('time_format');
+    return (is_string($dateFormat) ? $dateFormat : '') . ' ' . (is_string($timeFormat) ? $timeFormat : '');
   }
 
   /**
@@ -112,7 +118,7 @@ class WooCommerceBooking {
       return '';
     }
     $start = $booking->get_start();
-    return $start ? date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $start) : '';
+    return $start ? date_i18n($this->getDateTimeFormat(), $start) : '';
   }
 
   /**
@@ -126,7 +132,7 @@ class WooCommerceBooking {
       return '';
     }
     $end = $booking->get_end();
-    return $end ? date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $end) : '';
+    return $end ? date_i18n($this->getDateTimeFormat(), $end) : '';
   }
 
   /**

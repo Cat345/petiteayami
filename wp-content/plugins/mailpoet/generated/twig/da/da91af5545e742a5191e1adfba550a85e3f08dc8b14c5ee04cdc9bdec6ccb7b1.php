@@ -69,13 +69,13 @@ class __TwigTemplate_8a6f0398fffc82506ba46e70538b728a453c02bea83ac685560c22b44c4
   </div>
 
   <script type=\"text/javascript\">
-    var mailpoet_listing_per_page = ";
-        // line 17
-        yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["items_per_page"] ?? null), "html", null, true);
-        yield ";
     var mailpoet_segments = ";
-        // line 18
+        // line 17
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["segments"] ?? null));
+        yield ";
+    var mailpoet_forms_api = ";
+        // line 18
+        yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["api"] ?? null));
         yield ";
     var mailpoet_form_template_selection_url =
       \"";

@@ -49,6 +49,8 @@ class Helper {
   public function isWooCommerceCustomOrdersTableEnabled(): bool {
     if (
       $this->isWooCommerceActive()
+      // Stubs reflect the current WC version; the runtime check guards older WooCommerce installs that lack this helper.
+      // @phpstan-ignore-next-line function.alreadyNarrowedType
       && method_exists('\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled')
       && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()
     ) {
@@ -62,12 +64,91 @@ class Helper {
     return WC();
   }
 
+  public function isWooCommerceRestApiRequest(): bool {
+    $wc = $this->WC();
+    return $wc instanceof \WooCommerce && $wc->is_rest_api_request();
+  }
+
+  public function isWooCommerceStoreApiRequest(): bool {
+    $wc = $this->WC();
+    return $wc instanceof \WooCommerce && $wc->is_store_api_request();
+  }
+
   public function wcGetCustomerOrderCount($userId) {
     return wc_get_customer_order_count($userId);
   }
 
+  public function wcGetCustomer(int $userId): ?\WC_Customer {
+    if (!class_exists(\WC_Customer::class)) {
+      return null;
+    }
+    try {
+      return new \WC_Customer($userId);
+    } catch (\Throwable $e) {
+      return null;
+    }
+  }
+
   public function wcGetOrder($order = false) {
     return wc_get_order($order);
+  }
+
+  public function wcGetReviewOrderUrl(\WC_Order $order): string {
+    $callback = $this->getCallableFunction('wc_get_review_order_url');
+    if (!$callback) {
+      return '';
+    }
+
+    $url = $callback($order);
+    return is_string($url) ? $url : '';
+  }
+
+  public function wcSupportsOrderReviewUrl(): bool {
+    if ($this->getCallableFunction('wc_get_review_order_url') === null) {
+      return false;
+    }
+
+    if ($this->getOrderReviewItemEligibilityCallback() === null) {
+      return false;
+    }
+
+    if (!$this->isCustomerReviewRequestFeatureEnabled()) {
+      return false;
+    }
+
+    $pageId = $this->wcGetPageId('review_order');
+    if (!$pageId || $pageId < 1) {
+      return false;
+    }
+
+    $permalink = $this->wp->getPermalink($pageId);
+    return is_string($permalink) && $permalink !== '';
+  }
+
+  public function wcOrderHasActionableReviewItems(\WC_Order $order): bool {
+    $callback = $this->getOrderReviewItemEligibilityCallback();
+    if ($callback === null) {
+      return false;
+    }
+
+    return (bool)call_user_func($callback, $order);
+  }
+
+  private function getOrderReviewItemEligibilityCallback(): ?callable {
+    $callback = ['\Automattic\WooCommerce\Internal\OrderReviews\ItemEligibility', 'has_actionable_items'];
+    return is_callable($callback) ? $callback : null;
+  }
+
+  private function getCallableFunction(string $functionName): ?callable {
+    return is_callable($functionName) ? $functionName : null;
+  }
+
+  private function isCustomerReviewRequestFeatureEnabled(): bool {
+    if (!$this->canUseWooCommerceFeatureUtilities()) {
+      return false;
+    }
+
+    return \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled('customer_review_request');
   }
 
   public function wcGetOrders(array $args) {
@@ -90,6 +171,10 @@ class Helper {
     return wc_get_products($args);
   }
 
+  public function wcGetFormattedVariation(\WC_Product_Variation $variation, bool $flat = false, bool $includeNames = true, bool $skipAttributesInName = false): string {
+    return wc_get_formatted_variation($variation, $flat, $includeNames, $skipAttributesInName);
+  }
+
   public function wcGetPageId(string $page): ?int {
     if ($this->isWooCommerceActive()) {
       return (int)wc_get_page_id($page);
@@ -101,7 +186,7 @@ class Helper {
     return wc_get_price_decimals();
   }
 
-  public function wcGetPriceDecimalSeperator(): string {
+  public function wcGetPriceDecimalSeparator(): string {
     return wc_get_price_decimal_separator();
   }
 
@@ -184,6 +269,7 @@ class Helper {
   }
 
   public function getOrdersTableName() {
+    // @phpstan-ignore function.impossibleType (WC stub omits this method; the runtime check is meaningful for older WC versions)
     if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_orders_table_name')) {
       throw new RuntimeException('Cannot get orders table name when running a WooCommerce version that doesn\'t support custom order tables.');
     }
@@ -192,6 +278,7 @@ class Helper {
   }
 
   public function getAddressesTableName() {
+    // @phpstan-ignore function.impossibleType (WC stub omits this method; the runtime check is meaningful for older WC versions)
     if (!method_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore', 'get_addresses_table_name')) {
       throw new RuntimeException('Cannot get addresses table name when running a WooCommerce version that doesn\'t support custom order tables.');
     }
@@ -205,6 +292,10 @@ class Helper {
 
   public function wcGetCouponCodeById(int $id): string {
     return wc_get_coupon_code_by_id($id);
+  }
+
+  public function wcGetCouponIdByCode(string $code): int {
+    return (int)wc_get_coupon_id_by_code($code);
   }
 
   /**
@@ -258,10 +349,6 @@ class Helper {
     $result = array_merge($includeCoupons, $this->wp->getPosts($args));
     $result = array_unique($result, SORT_REGULAR);
     return array_values($result);
-  }
-
-  public function wcGetPriceDecimalSeparator() {
-    return wc_get_price_decimal_separator();
   }
 
   public function getLatestCoupon(): ?string {
@@ -319,7 +406,7 @@ class Helper {
   public function getWoocommerceStoreConfig(): array {
     return [
       'precision' => $this->wcGetPriceDecimals(),
-      'decimalSeparator' => $this->wcGetPriceDecimalSeperator(),
+      'decimalSeparator' => $this->wcGetPriceDecimalSeparator(),
       'thousandSeparator' => $this->wcGetPriceThousandSeparator(),
       'code' => $this->getWoocommerceCurrency(),
       'symbol' => html_entity_decode($this->getWoocommerceCurrencySymbol(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401),
@@ -353,7 +440,9 @@ class Helper {
    * @return bool
    */
   public function isCheckoutRequest(): bool {
-    $requestUri = !empty($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    $requestUri = is_string($_SERVER['REQUEST_URI'] ?? null) && $_SERVER['REQUEST_URI'] !== ''
+      ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']))
+      : '';
     $isRegularCheckout = is_checkout();
     $isBlockCheckout = WC()->is_rest_api_request()
       && (strpos($requestUri, 'wc/store/checkout') !== false || strpos($requestUri, 'wc/store/v1/checkout') !== false);
@@ -362,10 +451,22 @@ class Helper {
   }
 
   public function isWooCommerceEmailImprovementsEnabled(): bool {
-    if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+    if (!$this->canUseWooCommerceFeatureUtilities()) {
       return false;
     }
     return \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled('email_improvements');
+  }
+
+  private function canUseWooCommerceFeatureUtilities(): bool {
+    if (!$this->isWooCommerceActive()) {
+      return false;
+    }
+
+    if (!class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+      return false;
+    }
+
+    return function_exists('wc_get_container');
   }
 
   public function wcPlaceholderImgSrc(string $size = 'woocommerce_thumbnail'): string {

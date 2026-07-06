@@ -55,49 +55,49 @@ class __TwigTemplate_756448057f537f5715d1a262e5a4bc2ae04cea7f694f005ae4bcfe6c686
         yield "  <div id=\"dynamic_segments_container\"></div>
 
   <script type=\"text/javascript\">
-    var mailpoet_dynamic_segment_count = ";
+    var mailpoet_segments_api = ";
         // line 7
-        yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["dynamic_segment_count"] ?? null), "html", null, true);
-        yield ";
-    var mailpoet_listing_per_page = ";
-        // line 8
-        yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["items_per_page"] ?? null), "html", null, true);
+        yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["api"] ?? null));
         yield ";
     var mailpoet_custom_fields = ";
-        // line 9
+        // line 8
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["custom_fields"] ?? null));
         yield ";
     var mailpoet_static_segments_list = ";
-        // line 10
+        // line 9
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["static_segments_list"] ?? null));
         yield ";
     var wordpress_editable_roles_list = ";
-        // line 11
+        // line 10
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["wordpress_editable_roles_list"] ?? null));
         yield ";
     var mailpoet_newsletters_list = ";
-        // line 12
+        // line 11
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["newsletters_list"] ?? null));
         yield ";
     var mailpoet_product_attributes = ";
-        // line 13
+        // line 12
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["product_attributes"] ?? null));
         yield ";
     var mailpoet_local_product_attributes = ";
-        // line 14
+        // line 13
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["local_product_attributes"] ?? null));
         yield ";
     var mailpoet_product_categories = ";
-        // line 15
+        // line 14
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["product_categories"] ?? null));
         yield ";
     var mailpoet_product_tags = ";
-        // line 16
+        // line 15
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["product_tags"] ?? null));
         yield ";
     var mailpoet_products = ";
-        // line 17
+        // line 16
         yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["products"] ?? null));
+        yield ";
+    var mailpoet_variable_products = ";
+        // line 17
+        yield $this->extensions['MailPoet\Twig\Functions']->jsonEncode(($context["variable_products"] ?? null));
         yield ";
     var mailpoet_membership_plans = ";
         // line 18

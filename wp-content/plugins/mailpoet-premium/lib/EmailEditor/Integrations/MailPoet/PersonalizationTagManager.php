@@ -13,6 +13,7 @@ use MailPoet\Premium\Automation\Integrations\WooCommerceBookings\Payloads\WooCom
 use MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Payloads\WooCommerceSubscriptionPayload;
 use MailPoet\Premium\EmailEditor\Integrations\MailPoet\PersonalizationTags\WooCommerceBooking;
 use MailPoet\Premium\EmailEditor\Integrations\MailPoet\PersonalizationTags\WooCommerceSubscription;
+use MailPoet\WooCommerce\NonPersistablePreviewData;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PersonalizationTagManager {
@@ -449,7 +450,9 @@ class PersonalizationTagManager {
 
     try {
       // Create a dummy subscription using WooCommerce Subscriptions
-      $subscription = new \WC_Subscription();
+      $subscription = new class extends \WC_Subscription {
+        use NonPersistablePreviewData;
+      };
       // Set a dummy ID for preview (not saved to database)
       $subscription->set_id(12345);
       $subscription->set_status('active');
@@ -513,7 +516,9 @@ class PersonalizationTagManager {
 
     try {
       // Create a dummy booking using WooCommerce Bookings
-      $booking = new \WC_Booking();
+      $booking = new class extends \WC_Booking {
+        use NonPersistablePreviewData;
+      };
       // Set a dummy ID for preview (not saved to database)
       $booking->set_id(54321);
       $booking->set_status('confirmed');
@@ -524,7 +529,8 @@ class PersonalizationTagManager {
       $booking->set_date_created(time() - (7 * DAY_IN_SECONDS)); // 7 days ago
       $booking->set_date_modified(time() - DAY_IN_SECONDS); // 1 day ago
 
-      // Set persons count if the method exists
+      // Set persons count if the method exists.
+      /** @phpstan-ignore-next-line function.alreadyNarrowedType -- WC Bookings stub is optimistic about minimum version that ships set_persons(). */
       if (method_exists($booking, 'set_persons')) {
         $booking->set_persons(2);
       }
@@ -534,7 +540,9 @@ class PersonalizationTagManager {
 
       // Set a product for preview (required since get_product() loads from database)
       if (class_exists(\WC_Product_Booking::class)) {
-        $product = new \WC_Product_Booking();
+        $product = new class extends \WC_Product_Booking {
+          use NonPersistablePreviewData;
+        };
         $product->set_id(99999);
         $product->set_name('Sample Booking Product');
         $payload->setPreviewProduct($product);

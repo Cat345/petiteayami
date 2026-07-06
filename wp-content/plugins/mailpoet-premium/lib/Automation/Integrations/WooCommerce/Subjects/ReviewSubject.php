@@ -62,6 +62,26 @@ class ReviewSubject implements Subject {
         }
       ),
       new Field(
+        'woocommerce:review:text',
+        Field::TYPE_STRING,
+        __('Review text', 'mailpoet-premium'),
+        function (ReviewPayload $payload) {
+          $comment = $payload->getComment();
+          //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          return $comment ? $comment->comment_content : null;
+        }
+      ),
+      new Field(
+        'woocommerce:review:admin-url',
+        Field::TYPE_STRING,
+        __('Review admin URL', 'mailpoet-premium'),
+        function (ReviewPayload $payload) {
+          $comment = $payload->getComment();
+          //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          return $comment ? $this->wp->adminUrl('comment.php?action=editcomment&c=' . (int)$comment->comment_ID) : null;
+        }
+      ),
+      new Field(
         'woocommerce:review:product:id',
         Field::TYPE_INTEGER,
         __('Product ID', 'mailpoet-premium'),

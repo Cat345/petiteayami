@@ -9,9 +9,12 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Premium\Subscriber\Stats\SubscriberNewsletterStats;
+use MailPoet\Premium\Subscriber\Stats\SubscriberActivityEvent;
+use MailPoet\Statistics\UnsubscribeReasonTracker;
 use MailPoet\WooCommerce\Helper as WCHelper;
 
 class SubscriberDetailedStatsResponseBuilder {
@@ -23,43 +26,78 @@ class SubscriberDetailedStatsResponseBuilder {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var UnsubscribeReasonTracker */
+  private $unsubscribeReasonTracker;
+
   public function __construct(
     NewsletterUrl $newsletterUrl,
-    WCHelper $wooCommerce
+    WCHelper $wooCommerce,
+    UnsubscribeReasonTracker $unsubscribeReasonTracker
   ) {
     $this->newsletterUrl = $newsletterUrl;
     $this->wooCommerce = $wooCommerce;
+    $this->unsubscribeReasonTracker = $unsubscribeReasonTracker;
   }
 
   /**
-   * @param SubscriberNewsletterStats[] $newslettersStats
+   * @param SubscriberActivityEvent[] $events
    * @return array<int, array<string, mixed>>
    */
-  public function build(array $newslettersStats): array {
+  public function buildEvents(array $events): array {
+    $reasonLabels = $this->unsubscribeReasonTracker->getReasonLabels();
     $response = [];
-
-    foreach ($newslettersStats as $stats) {
-      $item = $this->buildNewsletter($stats->getNewsletter());
-      $openStats = $stats->getOpen();
-
-      if ($openStats instanceof StatisticsOpenEntity) {
-        $item['actions'][] = $this->buildOpen($openStats);
-      }
-
-      foreach ($stats->getClicks() as $click) {
-        $item['actions'][] = $this->buildClick($click);
-      }
-      $response[] = $item;
+    foreach ($events as $event) {
+      $response[] = $this->buildEvent($event, $reasonLabels);
     }
     return $response;
   }
 
   /**
-   * @param NewsletterEntity $newsletter
-   *
-   * @return array{id: int|null, preview_url: string, subject: string, sent_at: non-empty-string|null, actions: array{}}
+   * @param array<string, string> $reasonLabels
+   * @return array<string, mixed>
    */
-  private function buildNewsletter(NewsletterEntity $newsletter): array {
+  private function buildEvent(SubscriberActivityEvent $event, array $reasonLabels): array {
+    $base = [
+      'created_at' => $event->getCreatedAt()->format(self::DATE_FORMAT),
+      'newsletter' => $this->buildNewsletter($event->getNewsletter()),
+    ];
+
+    $open = $event->getOpen();
+    if ($open instanceof StatisticsOpenEntity) {
+      return array_merge($base, $this->buildOpen($open));
+    }
+    $click = $event->getClick();
+    if ($click instanceof StatisticsClickEntity) {
+      return array_merge($base, $this->buildClick($click));
+    }
+    $purchase = $event->getPurchase();
+    if ($purchase instanceof StatisticsWooCommercePurchaseEntity) {
+      return array_merge($base, $this->buildPurchase($purchase));
+    }
+    $unsubscribe = $event->getUnsubscribe();
+    if ($unsubscribe instanceof StatisticsUnsubscribeEntity) {
+      return array_merge($base, $this->buildUnsubscribe($unsubscribe, $reasonLabels));
+    }
+
+    throw new \InvalidArgumentException('Activity event has no associated statistic entity.');
+  }
+
+  /**
+   * @param NewsletterEntity|null $newsletter
+   *
+   * @return array{
+   *   id: int|null,
+   *   preview_url: string,
+   *   subject: string,
+   *   campaign_name: string|null,
+   *   sent_at: non-empty-string|null
+   * }|null
+   */
+  private function buildNewsletter(?NewsletterEntity $newsletter): ?array {
+    if (!$newsletter instanceof NewsletterEntity) {
+      return null;
+    }
+
     $sentAt = $newsletter->getSentAt();
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl(
       $newsletter,
@@ -74,55 +112,81 @@ class SubscriberDetailedStatsResponseBuilder {
       'subject' => $newsletter->getSubject(),
       'campaign_name' => $newsletter->getCampaignName(),
       'sent_at' => $sentAt ? $sentAt->format(self::DATE_FORMAT) : null,
-      'actions' => [],
     ];
   }
 
   /**
-   * @param StatisticsOpenEntity $open
-   *
    * @return array<string, int|string|null>
    */
   private function buildOpen(StatisticsOpenEntity $open): array {
     return [
-      'id' => $open->getId(),
+      'id' => 'open-' . $open->getId(),
       'type' => $open->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE ? 'machine-open' : 'open',
-      'created_at' => ($createdAt = $open->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
     ];
   }
 
   /**
-   * @param StatisticsClickEntity $click
-   *
-   * @return array<string, array<int, array<string, mixed>>|int|string|null>
+   * @return array<string, int|string|null>
    */
   private function buildClick(StatisticsClickEntity $click): array {
     $link = $click->getLink();
     $linkUrl = ($link instanceof NewsletterLinkEntity) ? $link->getUrl() : '';
-    $purchases = [];
-    foreach ($click->getWooCommercePurchases() as $purchase) {
-      if (!in_array($purchase->getStatus(), $this->wooCommerce->getPurchaseStates(), true)) {
-        continue;
-      }
-      $order = $this->wooCommerce->wcGetOrder($purchase->getOrderId());
-      $purchases[] = [
-        'id' => $purchase->getId(),
-        'created_at' => ($createdAt = $purchase->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
-        'order_id' => $purchase->getOrderId(),
-        'order_url' => $order instanceof \WC_Order ? $order->get_edit_order_url() : null,
-        'revenue' => $this->wooCommerce->getRawPrice(
-          $purchase->getOrderPriceTotal(),
-          ['currency' => $purchase->getOrderCurrency()]
-        ),
-      ];
-    }
     return [
-      'id' => $click->getId(),
+      'id' => 'click-' . $click->getId(),
       'type' => 'click',
-      'created_at' => ($createdAt = $click->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'count' => $click->getCount(),
       'url' => $linkUrl,
-      'purchases' => $purchases,
     ];
+  }
+
+  /**
+   * @return array<string, int|string|null>
+   */
+  private function buildPurchase(StatisticsWooCommercePurchaseEntity $purchase): array {
+    $order = $this->wooCommerce->wcGetOrder($purchase->getOrderId());
+    return [
+      'id' => 'purchase-' . $purchase->getId(),
+      'type' => 'purchase',
+      'order_id' => $purchase->getOrderId(),
+      'order_url' => $order instanceof \WC_Order ? $order->get_edit_order_url() : null,
+      'revenue' => $this->wooCommerce->getRawPrice(
+        $purchase->getOrderPriceTotal(),
+        ['currency' => $purchase->getOrderCurrency()]
+      ),
+    ];
+  }
+
+  /**
+   * @param array<string, string> $reasonLabels
+   * @return array<string, int|string|null>
+   */
+  private function buildUnsubscribe(StatisticsUnsubscribeEntity $unsubscribe, array $reasonLabels): array {
+    $reasonText = $unsubscribe->getReasonText();
+    $reasonText = $reasonText !== null ? trim($reasonText) : null;
+    $reasonSubmittedAt = $unsubscribe->getReasonSubmittedAt();
+
+    return [
+      'id' => 'unsubscribe-' . $unsubscribe->getId(),
+      'type' => 'unsubscribe',
+      'reason' => $unsubscribe->getReason(),
+      'reason_label' => $this->getUnsubscribeReasonLabel($unsubscribe->getReason(), $reasonLabels),
+      'reason_text' => $reasonText !== null && $reasonText !== '' ? $reasonText : null,
+      'reason_submitted_at' => $reasonSubmittedAt instanceof \DateTimeInterface
+        ? $reasonSubmittedAt->format(self::DATE_FORMAT)
+        : null,
+    ];
+  }
+
+  /**
+   * @param array<string, string> $reasonLabels
+   */
+  private function getUnsubscribeReasonLabel(?string $reason, array $reasonLabels): string {
+    if ($reason === null) {
+      return __('No reason provided', 'mailpoet-premium');
+    }
+    if ($reason === '' || $reason === StatisticsUnsubscribeEntity::REASON_UNSPECIFIED) {
+      return __('No reason provided', 'mailpoet-premium');
+    }
+    return $reasonLabels[$reason] ?? $reason;
   }
 }

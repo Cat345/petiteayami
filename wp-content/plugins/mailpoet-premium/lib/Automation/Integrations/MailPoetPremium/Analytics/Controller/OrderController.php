@@ -53,7 +53,7 @@ class OrderController {
    */
   public function getOrdersForAutomation(Automation $automation, Query $query): array {
 
-    $allEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore());
+    $allEmails = $this->automationTimeSpanController->getAutomationEmailsInTimeSpan($automation, $query->getAfter(), $query->getBefore(), $query->getVersionId());
     if (!$allEmails) {
       return [
         'results' => 0,
@@ -91,9 +91,13 @@ class OrderController {
       'post__in' => $allOrderIds,
       'limit' => count($allOrderIds),
     ]);
+    // wc_get_orders results are routed through the woocommerce_order_query
+    // filter; 3rd-party plugins can swap the entries with WP_Post or other
+    // shapes. The stub claims WC_Order[] but reality is broader -- guard.
     $allOrders = array_values(array_filter(
       is_array($allOrders) ? $allOrders : [],
-      function($order): bool {
+      function ($order): bool {
+        /** @phpstan-ignore-next-line instanceof.alwaysTrue -- defends against 3rd-party filters on wc_get_orders. */
         return $order instanceof WC_Order;
       }
     ));

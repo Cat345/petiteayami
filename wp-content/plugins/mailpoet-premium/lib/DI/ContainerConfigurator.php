@@ -57,17 +57,21 @@ class ContainerConfigurator implements IContainerConfigurator {
     $this->registerFreeService($container, \MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
     $this->registerFreeService($container, \MailPoet\Segments\SegmentsRepository::class);
     $this->registerFreeService($container, \MailPoet\Settings\TrackingConfig::class);
+    $this->registerFreeService($container, \MailPoet\Statistics\StatisticsUnsubscribesRepository::class);
     $this->registerFreeService($container, \MailPoet\Statistics\StatisticsWooCommercePurchasesRepository::class);
     $this->registerFreeService($container, \MailPoet\Statistics\Track\Unsubscribes::class);
+    $this->registerFreeService($container, \MailPoet\Statistics\UnsubscribeReasonTracker::class);
     $this->registerFreeService($container, \MailPoet\Subscribers\SubscriberCustomFieldRepository::class);
     $this->registerFreeService($container, \MailPoet\Subscribers\SubscriberSegmentRepository::class);
     $this->registerFreeService($container, \MailPoet\Subscribers\SubscribersRepository::class);
     $this->registerFreeService($container, \MailPoet\WooCommerce\Helper::class);
+    $this->registerFreeService($container, \MailPoet\WooCommerce\OrderAttributionRevenueReader::class);
     $this->registerFreeService($container, \MailPoet\WooCommerce\WooCommerceSubscriptions\Helper::class);
     $this->registerFreeService($container, \MailPoet\WooCommerce\WooCommerceBookings\Helper::class);
     $this->registerFreeService($container, \MailPoet\WP\Functions::class);
     $this->registerFreeService($container, \MailPoetVendor\Doctrine\ORM\EntityManager::class);
     $this->registerFreeService($container, \MailPoet\Util\CdnAssetUrl::class);
+    $this->registerFreeService($container, \MailPoet\Util\License\Features\CapabilitiesManager::class);
     $this->registerFreeService($container, \MailPoet\Util\License\Features\Subscribers::class);
     $this->registerFreeService($container, \MailPoet\Mailer\MailerFactory::class);
     $this->registerFreeService($container, \MailPoet\Settings\SettingsController::class);
@@ -84,7 +88,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $this->registerFreeService($container, \MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController::class);
 
     // API
-    $container->autowire(\MailPoet\Premium\API\JSON\v1\Bounces::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\API\JSON\v1\Stats::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\API\JSON\v1\SubscriberDetailedStats::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder::class)->setPublic(true);
@@ -109,6 +112,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\RemoveFromListAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\UpdateSubscriberAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Actions\NotificationEmailAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\AnnualDateTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\AnnualDateTriggerHooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\TagAddedTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Triggers\TagRemovedTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\MailPoetPremium\Subjects\TagSubject::class)->setPublic(true);
@@ -134,13 +139,25 @@ class ContainerConfigurator implements IContainerConfigurator {
 
     // Automation - WordPress integration
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WordPress\WordPressIntegration::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WordPress\Actions\ChangeUserRoleAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WordPress\Triggers\MadeACommentTrigger::class)->setPublic(true);
 
     // Automation - WooCommerce integration
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Actions\Extenders\ReviewCrossSellHandler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Actions\ChangeOrderStatusAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Actions\AddOrderNoteAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\WooCommerceIntegration::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Subjects\ReviewSubject::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Subjects\CustomerWinBackSubject::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\MadeAReviewTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\OrderPaidTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\CustomerWinBackTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\CustomerWinBackScheduler::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Subjects\SavedCardSubject::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Fields\SavedCardFieldsFactory::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\SavedCardExpiresTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\Triggers\SavedCardExpiresTriggerHooks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerce\SubjectTransformers\SavedCardSubjectToWordPressUserSubjectTransformer::class)->setPublic(true)->setShared(false);
 
     // Automation - WooCommerce Subscriptions integration
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\WooCommerceSubscriptionsIntegration::class)->setPublic(true);
@@ -152,6 +169,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Triggers\SubscriptionExpiredTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Triggers\SubscriptionPaymentFailedTrigger::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Triggers\SubscriptionTrialEndedTrigger::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\ChangeSubscriptionStatusAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\AddProductToSubscriptionAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\RemoveProductFromSubscriptionAction::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Actions\UpdateProductOnSubscriptionAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Subjects\WooCommerceSubscriptionSubject::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Subjects\WooCommerceSubscriptionStatusChangeSubject::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Automation\Integrations\WooCommerceSubscriptions\Fields\SubscriptionFields::class)->setPublic(true);
@@ -189,7 +210,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Stats
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\Bounces::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\PurchasedProducts::class);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RecipientsExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\Stats\SubscriberEngagement::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\BouncesEndpoint::class)->setPublic(true);
+    $container->autowire(\MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsClicksRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsOpensRepository::class);
     $container->autowire(\MailPoet\Premium\Newsletter\StatisticsUnsubscribesRepository::class);

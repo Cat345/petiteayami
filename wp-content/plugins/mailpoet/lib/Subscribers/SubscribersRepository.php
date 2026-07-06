@@ -16,6 +16,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Entities\TagEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\Source;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -142,6 +143,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }
@@ -163,6 +165,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }
@@ -171,6 +174,11 @@ class SubscribersRepository extends Repository {
    * @return int - number of processed ids
    */
   public function bulkDelete(array $ids): int {
+    if (empty($ids)) {
+      return 0;
+    }
+
+    $ids = $this->findPermanentlyDeletableIds($ids);
     if (empty($ids)) {
       return 0;
     }
@@ -216,6 +224,501 @@ class SubscribersRepository extends Repository {
   }
 
   /**
+   * @param int[] $ids
+   * @return int[]
+   */
+  private function findPermanentlyDeletableIds(array $ids): array {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $deletableIds = $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`
+       FROM $subscriberTable
+       WHERE `id` IN (:ids)
+       AND `is_woocommerce_user` = false
+       AND `wp_user_id` IS NULL",
+      ['ids' => $ids],
+      ['ids' => ArrayParameterType::INTEGER]
+    )->fetchFirstColumn();
+
+    $ids = [];
+    foreach ($deletableIds as $id) {
+      $ids[] = $this->toInt($id);
+    }
+    return $ids;
+  }
+
+  public function sendPublicConfirmationEmailWithCap(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    callable $sendConfirmationEmail
+  ): bool {
+    if (!$subscriber->getId()) {
+      return false;
+    }
+
+    $connection = $this->entityManager->getConnection();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $claimedRows = (int)$connection->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` + 1
+       WHERE `id` = :id
+       AND `count_confirmations` < :max_confirmation_emails",
+      [
+        'id' => $subscriber->getId(),
+        'max_confirmation_emails' => $maxConfirmationEmails,
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'max_confirmation_emails' => ParameterType::INTEGER,
+      ]
+    );
+
+    if ($claimedRows !== 1) {
+      $this->entityManager->refresh($subscriber);
+      return false;
+    }
+
+    try {
+      if (!$sendConfirmationEmail()) {
+        $this->releasePublicConfirmationEmailClaim($subscriberTable, (int)$subscriber->getId());
+        $this->entityManager->refresh($subscriber);
+        return false;
+      }
+    } catch (\Throwable $throwable) {
+      $this->releasePublicConfirmationEmailClaim($subscriberTable, (int)$subscriber->getId());
+      $this->entityManager->refresh($subscriber);
+      throw $throwable;
+    }
+
+    $connection->executeStatement(
+      "UPDATE $subscriberTable
+       SET `last_confirmation_email_sent_at` = :sent_at
+       WHERE `id` = :id",
+      [
+        'id' => $subscriber->getId(),
+        'sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'sent_at' => ParameterType::STRING,
+      ]
+    );
+
+    $this->entityManager->refresh($subscriber);
+    return true;
+  }
+
+  /**
+   * @return array{claimed: bool, reason?: string, claim_time?: string, previous_last_confirmation_email_sent_at?: string|null, previous_count_confirmations?: int}
+   */
+  public function claimAdminConfirmationEmailResend(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate = null
+  ): array {
+    if (!$subscriber->getId()) {
+      return ['claimed' => false, 'reason' => 'not_found'];
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+    $reason = $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate);
+    if ($reason !== null) {
+      $this->entityManager->refresh($subscriber);
+      return ['claimed' => false, 'reason' => $reason];
+    }
+
+    $previousCountConfirmations = $this->toInt($row['count_confirmations'] ?? 0);
+    $previousLastConfirmationEmailSentAt = $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null);
+    $claimTime = Carbon::now()->millisecond(0)->format('Y-m-d H:i:s');
+    $ageCondition = $oldestLifecycleDate instanceof DateTimeInterface
+      ? 'AND COALESCE(`last_subscribed_at`, `created_at`) >= :oldest_lifecycle_date'
+      : '';
+    $lastConfirmationEmailSentAtCondition = $previousLastConfirmationEmailSentAt === null
+      ? 'AND `last_confirmation_email_sent_at` IS NULL'
+      : 'AND `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at';
+    $parameters = [
+      'id' => $subscriber->getId(),
+      'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+      'max_confirmation_emails' => $maxConfirmationEmails,
+      'recent_cutoff' => $recentCutoff->format('Y-m-d H:i:s'),
+      'claim_time' => $claimTime,
+      'previous_count_confirmations' => $previousCountConfirmations,
+    ];
+    $types = [
+      'id' => ParameterType::INTEGER,
+      'max_confirmation_emails' => ParameterType::INTEGER,
+      'recent_cutoff' => ParameterType::STRING,
+      'claim_time' => ParameterType::STRING,
+      'previous_count_confirmations' => ParameterType::INTEGER,
+    ];
+    if ($previousLastConfirmationEmailSentAt !== null) {
+      $parameters['previous_last_confirmation_email_sent_at'] = $previousLastConfirmationEmailSentAt;
+      $types['previous_last_confirmation_email_sent_at'] = ParameterType::STRING;
+    }
+    if ($oldestLifecycleDate instanceof DateTimeInterface) {
+      $parameters['oldest_lifecycle_date'] = $oldestLifecycleDate->format('Y-m-d H:i:s');
+      $types['oldest_lifecycle_date'] = ParameterType::STRING;
+    }
+
+    $claimedRows = (int)$this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` + 1,
+         `last_confirmation_email_sent_at` = :claim_time
+       WHERE `id` = :id
+       AND `status` = :status
+       AND `deleted_at` IS NULL
+       AND `count_confirmations` < :max_confirmation_emails
+       AND (`last_confirmation_email_sent_at` IS NULL OR `last_confirmation_email_sent_at` <= :recent_cutoff)
+       AND `count_confirmations` = :previous_count_confirmations
+       $lastConfirmationEmailSentAtCondition
+       $ageCondition",
+      $parameters,
+      $types
+    );
+
+    $this->entityManager->refresh($subscriber);
+    if ($claimedRows !== 1) {
+      $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+      return [
+        'claimed' => false,
+        'reason' => $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate) ?? 'not_found',
+      ];
+    }
+
+    return [
+      'claimed' => true,
+      'claim_time' => $claimTime,
+      'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+      'previous_count_confirmations' => $previousCountConfirmations,
+    ];
+  }
+
+  public function releaseAdminConfirmationEmailResendClaim(
+    SubscriberEntity $subscriber,
+    string $claimTime,
+    ?string $previousLastConfirmationEmailSentAt,
+    int $previousCountConfirmations
+  ): void {
+    if (!$subscriber->getId()) {
+      return;
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = :previous_count_confirmations,
+         `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at
+       WHERE `id` = :id
+       AND `last_confirmation_email_sent_at` = :claim_time
+       AND `count_confirmations` = :claimed_count_confirmations",
+      [
+        'id' => $subscriber->getId(),
+        'claim_time' => $claimTime,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+        'previous_count_confirmations' => $previousCountConfirmations,
+        'claimed_count_confirmations' => $previousCountConfirmations + 1,
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'claim_time' => ParameterType::STRING,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt === null ? ParameterType::NULL : ParameterType::STRING,
+        'previous_count_confirmations' => ParameterType::INTEGER,
+        'claimed_count_confirmations' => ParameterType::INTEGER,
+      ]
+    );
+    $this->entityManager->refresh($subscriber);
+  }
+
+  public function completeAdminConfirmationEmailResendClaim(
+    SubscriberEntity $subscriber,
+    string $claimTime,
+    ?string $previousLastConfirmationEmailSentAt,
+    int $previousCountConfirmations
+  ): void {
+    if (!$subscriber->getId()) {
+      return;
+    }
+
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `last_confirmation_email_sent_at` = :previous_last_confirmation_email_sent_at
+       WHERE `id` = :id
+       AND `last_confirmation_email_sent_at` = :claim_time
+       AND `count_confirmations` = :claimed_count_confirmations",
+      [
+        'id' => $subscriber->getId(),
+        'claim_time' => $claimTime,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt,
+        'claimed_count_confirmations' => $previousCountConfirmations + 1,
+      ],
+      [
+        'id' => ParameterType::INTEGER,
+        'claim_time' => ParameterType::STRING,
+        'previous_last_confirmation_email_sent_at' => $previousLastConfirmationEmailSentAt === null ? ParameterType::NULL : ParameterType::STRING,
+        'claimed_count_confirmations' => ParameterType::INTEGER,
+      ]
+    );
+    $this->entityManager->refresh($subscriber);
+  }
+
+  public function getAdminConfirmationEmailResendIneligibilityReason(
+    SubscriberEntity $subscriber,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate = null
+  ): ?string {
+    if (!$subscriber->getId()) {
+      return 'not_found';
+    }
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $row = $this->getConfirmationResendState($subscriberTable, (int)$subscriber->getId());
+    return $this->getConfirmationResendIneligibilityReasonFromRow($row, $maxConfirmationEmails, $recentCutoff, $oldestLifecycleDate);
+  }
+
+  /**
+   * @return array<string, mixed>|false
+   */
+  private function getConfirmationResendState(string $subscriberTable, int $subscriberId) {
+    return $this->entityManager->getConnection()->executeQuery(
+      "SELECT `id`, `status`, `deleted_at`, `count_confirmations`, `last_confirmation_email_sent_at`,
+         COALESCE(`last_subscribed_at`, `created_at`) AS lifecycle_date
+       FROM $subscriberTable
+       WHERE `id` = :id",
+      ['id' => $subscriberId],
+      ['id' => ParameterType::INTEGER]
+    )->fetchAssociative();
+  }
+
+  /**
+   * @param array<string, mixed>|false $row
+   */
+  private function getConfirmationResendIneligibilityReasonFromRow(
+    $row,
+    int $maxConfirmationEmails,
+    DateTimeInterface $recentCutoff,
+    ?DateTimeInterface $oldestLifecycleDate
+  ): ?string {
+    if (!$row) {
+      return 'not_found';
+    }
+    if (!empty($row['deleted_at'])) {
+      return 'deleted';
+    }
+    if (($row['status'] ?? null) !== SubscriberEntity::STATUS_UNCONFIRMED) {
+      return 'not_unconfirmed';
+    }
+    if ($this->toInt($row['count_confirmations'] ?? 0) >= $maxConfirmationEmails) {
+      return 'max_confirmations_reached';
+    }
+    $lastConfirmationEmailSentAt = $this->toStringOrNull($row['last_confirmation_email_sent_at'] ?? null);
+    if ($lastConfirmationEmailSentAt !== null && strtotime($lastConfirmationEmailSentAt) > $recentCutoff->getTimestamp()) {
+      return 'recently_sent';
+    }
+    $lifecycleDate = $this->toStringOrNull($row['lifecycle_date'] ?? null);
+    if ($oldestLifecycleDate instanceof DateTimeInterface && $lifecycleDate !== null && strtotime($lifecycleDate) < $oldestLifecycleDate->getTimestamp()) {
+      return 'too_old';
+    }
+    return null;
+  }
+
+  private function toInt($value): int {
+    if (is_int($value)) {
+      return $value;
+    }
+    if (is_string($value) || is_float($value) || is_bool($value)) {
+      return (int)$value;
+    }
+    return 0;
+  }
+
+  private function toStringOrNull($value): ?string {
+    if ($value === null || $value === '') {
+      return null;
+    }
+    if (is_scalar($value)) {
+      return (string)$value;
+    }
+    return null;
+  }
+
+  private function releasePublicConfirmationEmailClaim(string $subscriberTable, int $subscriberId): void {
+    $this->entityManager->getConnection()->executeStatement(
+      "UPDATE $subscriberTable
+       SET `count_confirmations` = `count_confirmations` - 1
+       WHERE `id` = :id
+       AND `count_confirmations` > 0",
+      ['id' => $subscriberId],
+      ['id' => ParameterType::INTEGER]
+    );
+  }
+
+  /**
+   * @return int[]
+   */
+  public function deleteUnconfirmedSubscribersForCleanup(DateTimeInterface $cutoff, int $limit): array {
+    if ($limit <= 0) {
+      return [];
+    }
+
+    $deletedIds = [];
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($cutoff, $limit, &$deletedIds) {
+      $subscriberTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+      $subscriberCustomFieldTable = $entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+      $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
+
+      $confirmationDateIds = $this->findUnconfirmedSubscriberIdsForCleanup(
+        $subscriberTable,
+        's.`last_confirmation_email_sent_at` <= :cutoff',
+        $cutoff,
+        $limit
+      );
+
+      $legacyCreatedAtIds = $this->findUnconfirmedSubscriberIdsForCleanup(
+        $subscriberTable,
+        's.`last_confirmation_email_sent_at` IS NULL AND COALESCE(s.`last_subscribed_at`, s.`created_at`) <= :cutoff',
+        $cutoff,
+        $limit
+      );
+
+      $deletedIds = array_values(array_unique(array_merge($confirmationDateIds, $legacyCreatedAtIds)));
+      sort($deletedIds);
+      $deletedIds = array_slice($deletedIds, 0, $limit);
+
+      if (empty($deletedIds)) {
+        return;
+      }
+
+      $markedAt = Carbon::now()->format('Y-m-d H:i:s');
+      $entityManager->getConnection()->executeStatement(
+        "UPDATE $subscriberTable
+         SET `deleted_at` = :marked_at
+         WHERE `id` IN (:ids)
+         AND `status` = :status
+         AND `deleted_at` IS NULL
+         AND `wp_user_id` IS NULL
+         AND `is_woocommerce_user` = 0
+         AND (
+           `last_confirmation_email_sent_at` <= :cutoff
+           OR (
+             `last_confirmation_email_sent_at` IS NULL
+             AND COALESCE(`last_subscribed_at`, `created_at`) <= :cutoff
+           )
+         )",
+        [
+          'ids' => $deletedIds,
+          'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+          'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+          'marked_at' => $markedAt,
+        ],
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'cutoff' => ParameterType::STRING,
+          'marked_at' => ParameterType::STRING,
+        ]
+      );
+
+      $deletedIds = array_map(static function($id): int {
+        if (is_int($id)) {
+          return $id;
+        }
+        return is_string($id) ? (int)$id : 0;
+      }, $entityManager->getConnection()->executeQuery(
+        "SELECT `id`
+         FROM $subscriberTable
+         WHERE `id` IN (:ids)
+         AND `deleted_at` = :marked_at",
+        [
+          'ids' => $deletedIds,
+          'marked_at' => $markedAt,
+        ],
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'marked_at' => ParameterType::STRING,
+        ]
+      )->fetchFirstColumn());
+
+      if (empty($deletedIds)) {
+        return;
+      }
+
+      $this->removeSubscribersFromAllSegments($deletedIds);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE scs FROM $subscriberCustomFieldTable scs
+         WHERE scs.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $entityManager->getConnection()->executeStatement("
+         DELETE st FROM $subscriberTagTable st
+         WHERE st.`subscriber_id` IN (:ids)
+      ", ['ids' => $deletedIds], ['ids' => ArrayParameterType::INTEGER]);
+
+      $deletedCount = (int)$entityManager->getConnection()->executeStatement(
+        "DELETE FROM $subscriberTable
+         WHERE `id` IN (:ids)
+         AND `deleted_at` = :marked_at",
+        [
+          'ids' => $deletedIds,
+          'marked_at' => $markedAt,
+        ],
+        [
+          'ids' => ArrayParameterType::INTEGER,
+          'marked_at' => ParameterType::STRING,
+        ]
+      );
+
+      if ($deletedCount !== count($deletedIds)) {
+        throw new \RuntimeException('Unconfirmed subscribers cleanup deleted an unexpected number of rows.');
+      }
+    });
+
+    if (!empty($deletedIds)) {
+      $this->changesNotifier->subscribersDeleted($deletedIds);
+      $this->invalidateTotalSubscribersCache();
+    }
+    return $deletedIds;
+  }
+
+  /**
+   * @return int[]
+   */
+  private function findUnconfirmedSubscriberIdsForCleanup(
+    string $subscriberTable,
+    string $datePredicate,
+    DateTimeInterface $cutoff,
+    int $limit
+  ): array {
+    return array_map(static function($id): int {
+      if (is_int($id)) {
+        return $id;
+      }
+      return is_string($id) ? (int)$id : 0;
+    }, $this->entityManager->getConnection()->executeQuery(
+      "SELECT s.`id`
+       FROM $subscriberTable s
+       WHERE s.`status` = :status
+       AND s.`deleted_at` IS NULL
+       AND s.`wp_user_id` IS NULL
+       AND s.`is_woocommerce_user` = 0
+       AND $datePredicate
+       ORDER BY s.`id` ASC
+       LIMIT :limit",
+      [
+        'status' => SubscriberEntity::STATUS_UNCONFIRMED,
+        'cutoff' => $cutoff->format('Y-m-d H:i:s'),
+        'limit' => $limit,
+      ],
+      [
+        'cutoff' => ParameterType::STRING,
+        'limit' => ParameterType::INTEGER,
+      ]
+    )->fetchFirstColumn());
+  }
+
+  /**
    * @return int - number of processed ids
    */
   public function bulkRemoveFromSegment(SegmentEntity $segment, array $ids): int {
@@ -252,23 +755,6 @@ class SubscribersRepository extends Repository {
     return $count;
   }
 
-  public function woocommerceUserExists(): bool {
-    $subscribers = $this->entityManager
-      ->createQueryBuilder()
-      ->select('s')
-      ->from(SubscriberEntity::class, 's')
-      ->join('s.subscriberSegments', 'ss')
-      ->join('ss.segment', 'segment')
-      ->where('segment.type = :segmentType')
-      ->setParameter('segmentType', SegmentEntity::TYPE_WC_USERS)
-      ->andWhere('s.isWoocommerceUser = true')
-      ->getQuery()
-      ->setMaxResults(1)
-      ->execute();
-
-    return count($subscribers) > 0;
-  }
-
    /**
    * @return int - number of processed ids
    */
@@ -294,6 +780,7 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     $this->changesNotifier->subscribersUpdated($ids);
+    $this->changesNotifier->subscribersCountChanged($ids);
     $this->invalidateTotalSubscribersCache();
     return count($ids);
   }
@@ -349,13 +836,14 @@ class SubscribersRepository extends Repository {
    * @return int[]
    */
   public function findIdsOfDeletedByEmails(array $emails): array {
-    return $this->entityManager->createQueryBuilder()
+    $rows = $this->entityManager->createQueryBuilder()
     ->select('s.id')
     ->from(SubscriberEntity::class, 's')
     ->where('s.email IN (:emails)')
     ->andWhere('s.deletedAt IS NOT NULL')
     ->setParameter('emails', $emails)
     ->getQuery()->getResult();
+    return array_values(array_map('intval', array_column(is_array($rows) ? $rows : [], 'id')));
   }
 
   public function getCurrentWPUser(): ?SubscriberEntity {
@@ -432,21 +920,6 @@ class SubscribersRepository extends Repository {
     $subscriberEntity->setLastPageViewAt($now);
     $subscriberEntity->setLastEngagementAt($now);
     $this->flush();
-  }
-
-  /**
-   * @param array $ids
-   * @return string[]
-   */
-  public function getUndeletedSubscribersEmailsByIds(array $ids): array {
-    return $this->entityManager->createQueryBuilder()
-      ->select('s.email')
-      ->from(SubscriberEntity::class, 's')
-      ->where('s.deletedAt IS NULL')
-      ->andWhere('s.id IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()
-      ->getArrayResult();
   }
 
   public function getMaxSubscriberId(): int {
@@ -569,16 +1042,99 @@ class SubscribersRepository extends Repository {
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $deletedAt = $this->getCurrentDateTime()->format('Y-m-d H:i:s');
 
-    $this->entityManager->getConnection()->executeStatement(
-      "DELETE s
-       FROM {$subscribersTable} s
-       INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
-       LEFT JOIN {$wpdb->users} u ON s.wp_user_id = u.id
-       WHERE ss.segment_id = :segmentId AND (u.id IS NULL OR s.email = '')",
-      ['segmentId' => $segmentId],
-      ['segmentId' => ParameterType::INTEGER]
-    );
+    $this->entityManager->wrapInTransaction(function () use ($segmentId, $subscribersTable, $subscriberSegmentsTable, $segmentsTable, $deletedAt, $wpdb): void {
+      // Hard-delete broken subscribers in the WP-Users segment when they have no
+      // email, or when they have no WP user ID and no other list to belong to.
+      $this->entityManager->getConnection()->executeStatement(
+        "DELETE s
+         FROM {$subscribersTable} s
+         INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
+         WHERE ss.segment_id = :segmentId
+           AND (
+             s.email = ''
+             OR (
+               s.wp_user_id IS NULL
+               AND s.is_woocommerce_user = 0
+               AND NOT EXISTS (
+                 SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+                 INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+                 WHERE ss_other.subscriber_id = s.id
+                   AND seg.type != :wpType
+                   AND seg.deleted_at IS NULL
+               )
+             )
+           )",
+        [
+          'segmentId' => $segmentId,
+          'wpType' => SegmentEntity::TYPE_WP_USERS,
+        ],
+        [
+          'segmentId' => ParameterType::INTEGER,
+          'wpType' => ParameterType::STRING,
+        ]
+      );
+
+      // Trash subscribers whose WP user is gone, who are only on the WP-Users list,
+      // and who are not WC customers — they have nowhere left to belong, but we keep
+      // them as soft-deleted so admins can recover them if needed.
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$subscribersTable} s
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         SET s.deleted_at = :deletedAt, s.status = :unconfirmed
+         WHERE s.deleted_at IS NULL
+           AND s.is_woocommerce_user = 0
+           AND s.wp_user_id IS NOT NULL
+           AND u.id IS NULL
+           AND EXISTS (
+             SELECT 1 FROM {$subscriberSegmentsTable} ss_wp
+             WHERE ss_wp.subscriber_id = s.id AND ss_wp.segment_id = :segmentId
+           )
+           AND NOT EXISTS (
+             SELECT 1 FROM {$subscriberSegmentsTable} ss_other
+             INNER JOIN {$segmentsTable} seg ON seg.id = ss_other.segment_id
+             WHERE ss_other.subscriber_id = s.id
+               AND seg.type != :wpType
+               AND seg.deleted_at IS NULL
+           )",
+        [
+          'segmentId' => $segmentId,
+          'unconfirmed' => SubscriberEntity::STATUS_UNCONFIRMED,
+          'wpType' => SegmentEntity::TYPE_WP_USERS,
+          'deletedAt' => $deletedAt,
+        ],
+        [
+          'segmentId' => ParameterType::INTEGER,
+          'unconfirmed' => ParameterType::STRING,
+          'wpType' => ParameterType::STRING,
+          'deletedAt' => ParameterType::STRING,
+        ]
+      );
+
+      // Remove WP-Users segment memberships for orphans.
+      $this->entityManager->getConnection()->executeStatement(
+        "DELETE ss
+         FROM {$subscriberSegmentsTable} ss
+         INNER JOIN {$subscribersTable} s ON s.id = ss.subscriber_id
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         WHERE ss.segment_id = :segmentId
+           AND (s.wp_user_id IS NULL OR u.id IS NULL)",
+        ['segmentId' => $segmentId],
+        ['segmentId' => ParameterType::INTEGER]
+      );
+
+      // Detach subscribers from non-existent WP users and mark the source.
+      $this->entityManager->getConnection()->executeStatement(
+        "UPDATE {$subscribersTable} s
+         LEFT JOIN {$wpdb->users} u ON u.id = s.wp_user_id
+         SET s.wp_user_id = NULL, s.source = :source
+         WHERE s.wp_user_id IS NOT NULL AND u.id IS NULL",
+        ['source' => Source::WORDPRESS_USER_DELETED],
+        ['source' => ParameterType::STRING]
+      );
+    });
   }
 
   public function removeByWpUserIds(array $wpUserIds) {
@@ -645,6 +1201,10 @@ class SubscribersRepository extends Repository {
       ->setParameter('ids', $ids)
       ->setParameter('segment', $segment)
       ->getQuery()->execute();
+
+    $subscribers = is_array($subscribers) ? array_values(array_filter($subscribers, function ($s) {
+      return $s instanceof SubscriberEntity;
+    })) : [];
 
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($subscribers, $segment) {
       foreach ($subscribers as $subscriber) {

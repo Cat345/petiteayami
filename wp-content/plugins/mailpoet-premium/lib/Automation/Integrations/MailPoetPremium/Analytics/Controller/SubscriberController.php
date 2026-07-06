@@ -49,7 +49,7 @@ class SubscriberController {
    * }
    */
   public function getSubscribersForAutomation(Automation $automation, Query $query): array {
-    $automations = $this->automationTimeSpanController->getAutomationsInTimespan($automation, $query->getAfter(), $query->getBefore());
+    $automations = $this->automationTimeSpanController->getAutomationsInTimespan($automation, $query->getAfter(), $query->getBefore(), $query->getVersionId());
     if (!count($automations)) {
       return [
         'results' => 0,

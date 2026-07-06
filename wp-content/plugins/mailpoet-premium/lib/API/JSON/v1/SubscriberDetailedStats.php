@@ -49,12 +49,12 @@ class SubscriberDetailedStats extends APIEndpoint {
       );
     }
     $definition = $this->listingHandler->getListingDefinition($data);
-    $data = $this->subscriberStatsRepository->getData($definition);
-    $statsData = $this->responseBuilder->build($data);
+    $events = $this->subscriberStatsRepository->getActivityData($definition);
+    $statsData = $this->responseBuilder->buildEvents($events);
     return $this->successResponse(
       $statsData,
       [
-        'count' => $this->subscriberStatsRepository->getCount($definition),
+        'count' => $this->subscriberStatsRepository->getActivityCount($definition),
         'filters' => [],
         'groups' => [],
       ]

@@ -36,9 +36,18 @@ class SegmentSaveController {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
-    $displayInManageSubPage = isset($data['showInManageSubscriptionPage']) ? (int)$data['showInManageSubscriptionPage'] : false;
+    $displayInManageSubPage = isset($data['show_in_manage_subscription_page']) ? (int)$data['show_in_manage_subscription_page'] : false;
+    $confirmationEmailId = isset($data['confirmation_email_id']) ? (int)$data['confirmation_email_id'] : null;
+    if ($confirmationEmailId === 0) {
+      $confirmationEmailId = null;
+    }
+    $confirmationPageId = isset($data['confirmation_page_id']) ? (int)$data['confirmation_page_id'] : null;
+    if ($confirmationPageId === 0) {
+      $confirmationPageId = null;
+    }
+    $publicDescription = array_key_exists('public_description', $data) ? (string)$data['public_description'] : null;
 
-    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, (bool)$displayInManageSubPage);
+    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id, (bool)$displayInManageSubPage, $confirmationEmailId, $confirmationPageId, $publicDescription);
   }
 
   /**

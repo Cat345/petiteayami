@@ -7,13 +7,17 @@ if (!defined('ABSPATH')) exit;
 
 use MailPoet\Captcha\CaptchaHooks;
 use MailPoet\Captcha\ReCaptchaHooks;
+use MailPoet\Captcha\TurnstileHooks;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockGenerator;
+use MailPoet\EmailEditor\Integrations\MailPoet\ProductCollection\ProductCollectionEmailRendererRegistrar;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberHandler;
+use MailPoet\Subscribers\SubscriberLimitNotificationScheduler;
 use MailPoet\Subscription\AdminUserSubscription;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
@@ -81,6 +85,9 @@ class Hooks {
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
+  /** @var SubscriberLimitNotificationScheduler */
+  private $subscriberLimitNotificationScheduler;
+
   /** @var DotcomLicenseProvisioner */
   private $dotcomLicenseProvisioner;
 
@@ -93,6 +100,9 @@ class Hooks {
   /** @var ReCaptchaHooks */
   private $reCaptchaHooks;
 
+  /** @var TurnstileHooks */
+  private $turnstileHooks;
+
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
 
@@ -104,6 +114,10 @@ class Hooks {
 
   /** @var AdminUserSubscription */
   private $adminUserSubscription;
+
+  private CouponBlockGenerator $couponBlockGenerator;
+
+  private ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar;
 
   public function __construct(
     Form $subscriptionForm,
@@ -119,14 +133,18 @@ class Hooks {
     SubscriberHandler $subscriberHandler,
     HooksWooCommerce $hooksWooCommerce,
     SubscriberChangesNotifier $subscriberChangesNotifier,
+    SubscriberLimitNotificationScheduler $subscriberLimitNotificationScheduler,
     DotcomLicenseProvisioner $dotcomLicenseProvisioner,
     AutomateWooHooks $automateWooHooks,
     CaptchaHooks $captchaHooks,
     ReCaptchaHooks $reCaptchaHooks,
+    TurnstileHooks $turnstileHooks,
     WooSystemInfoController $wooSystemInfoController,
     CronTrigger $cronTrigger,
     WooHelper $wooHelper,
-    AdminUserSubscription $adminUserSubscription
+    AdminUserSubscription $adminUserSubscription,
+    CouponBlockGenerator $couponBlockGenerator,
+    ProductCollectionEmailRendererRegistrar $productCollectionEmailRendererRegistrar
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -142,31 +160,38 @@ class Hooks {
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->captchaHooks = $captchaHooks;
     $this->reCaptchaHooks = $reCaptchaHooks;
+    $this->turnstileHooks = $turnstileHooks;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
+    $this->subscriberLimitNotificationScheduler = $subscriberLimitNotificationScheduler;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
     $this->automateWooHooks = $automateWooHooks;
     $this->wooSystemInfoController = $wooSystemInfoController;
     $this->cronTrigger = $cronTrigger;
     $this->wooHelper = $wooHelper;
     $this->adminUserSubscription = $adminUserSubscription;
+    $this->couponBlockGenerator = $couponBlockGenerator;
+    $this->productCollectionEmailRendererRegistrar = $productCollectionEmailRendererRegistrar;
   }
 
   public function init() {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
     $this->setupWooCommercePurchases();
+    $this->setupWooCommerceOrderAttribution();
     $this->setupWooCommerceSubscriberEngagement();
     $this->setupWooCommerceTracking();
-    $this->setupListing();
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
     $this->setupAutomateWooSubscriptionEvents();
     $this->setupPostNotifications();
     $this->setupWooCommerceSettings();
+    $this->couponBlockGenerator->init();
+    $this->productCollectionEmailRendererRegistrar->init();
     $this->setupWoocommerceSystemInfo();
     $this->setupFooter();
     $this->setupSettingsLinkInPluginPage();
     $this->setupChangeNotifications();
+    $this->setupSubscriberLimitNotifications();
     $this->setupLicenseProvisioning();
     $this->setupCaptchaOnRegisterForm();
     $this->adminUserSubscription->setupHooks();
@@ -507,6 +532,41 @@ class Hooks {
     );
   }
 
+  public function setupWooCommerceOrderAttribution() {
+    // The reconciliation boundary must be persisted before any post-activation
+    // order exists, and on the init hook because this setup runs on
+    // plugins_loaded, where WooCommerce may not be loaded yet
+    $this->wp->addAction(
+      'init',
+      [$this->hooksWooCommerce, 'markAttributionWritesStarted']
+    );
+    // After Woo's own priority-10 handler so the resolved values overwrite
+    // the empty placeholders Woo persists from the checkout form
+    $this->wp->addAction(
+      'woocommerce_order_save_attribution_data',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      20
+    );
+    // Admin and REST orders; gated inside to stay out of storefront checkout
+    $this->wp->addAction(
+      'woocommerce_new_order',
+      [$this->hooksWooCommerce, 'writeOrderAttributionForNewOrder'],
+      20
+    );
+    $this->wp->addAction(
+      'woocommerce_order_status_changed',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      10,
+      1
+    );
+    // After WC_Meta_Box_Order_Data::save (priority 40) so the billing email is saved
+    $this->wp->addAction(
+      'woocommerce_process_shop_order_meta',
+      [$this->hooksWooCommerce, 'writeOrderAttribution'],
+      50
+    );
+  }
+
   public function setupWooCommerceSubscriberEngagement() {
     $this->wp->addAction(
       'woocommerce_new_order',
@@ -527,23 +587,6 @@ class Hooks {
       [$this->hooksWooCommerce, 'addTrackingData'],
       10
     );
-  }
-
-  public function setupListing() {
-    $this->wp->addFilter(
-      'set-screen-option',
-      [$this, 'setScreenOption'],
-      10,
-      3
-    );
-  }
-
-  public function setScreenOption($status, $option, $value) {
-    if (preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
-      return $value;
-    } else {
-      return $status;
-    }
   }
 
   public function setupPostNotifications() {
@@ -649,7 +692,7 @@ class Hooks {
       );
     }
 
-    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    $nonce = isset($_POST['nonce']) && is_string($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
     if (!$this->wp->wpVerifyNonce($nonce, 'mailpoet-rated')) {
       $this->wp->wpDie(
@@ -687,6 +730,10 @@ class Hooks {
       'shutdown',
       [$this->subscriberChangesNotifier, 'notify']
     );
+  }
+
+  public function setupSubscriberLimitNotifications(): void {
+    $this->subscriberLimitNotificationScheduler->setupHooks();
   }
 
   public function setupLicenseProvisioning(): void {
@@ -758,6 +805,40 @@ class Hooks {
         $this->wp->addAction(
           'woocommerce_process_registration_errors',
           [$this->reCaptchaHooks, 'validate']
+        );
+      }
+    } else if ($this->turnstileHooks->isEnabled()) {
+      $this->wp->addAction(
+        'login_enqueue_scripts',
+        [$this->turnstileHooks, 'enqueueScripts']
+      );
+
+      $this->wp->addAction(
+        'register_form',
+        [$this->turnstileHooks, 'render']
+      );
+
+      $this->wp->addFilter(
+        'registration_errors',
+        [$this->turnstileHooks, 'validate'],
+        10,
+        3
+      );
+
+      if ($this->wooHelper->isWooCommerceActive()) {
+        $this->wp->addAction(
+          'woocommerce_before_customer_login_form',
+          [$this->turnstileHooks, 'enqueueScripts']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_register_form',
+          [$this->turnstileHooks, 'render']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_process_registration_errors',
+          [$this->turnstileHooks, 'validate']
         );
       }
     }

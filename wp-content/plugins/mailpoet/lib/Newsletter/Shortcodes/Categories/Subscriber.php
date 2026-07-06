@@ -22,12 +22,17 @@ class Subscriber implements CategoryInterface {
   /** @var SubscriberCustomFieldRepository */
   private $subscriberCustomFieldRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    SubscriberCustomFieldRepository $subscriberCustomFieldRepository
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
+    WPFunctions $wp
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
+    $this->wp = $wp;
   }
 
   public function process(
@@ -73,13 +78,24 @@ class Subscriber implements CategoryInterface {
           }
           $customFieldDefinition = $customField->getCustomField();
           if (
+            $shortcodeDetails['action_argument'] === 'format'
+            && $customFieldDefinition instanceof CustomFieldEntity
+            && $customFieldDefinition->getType() === CustomFieldEntity::TYPE_DATE
+          ) {
+            $timestamp = strtotime($customField->getValue());
+            if ($timestamp !== false) {
+              return $this->wp->dateI18n($shortcodeDetails['action_argument_value'], $timestamp);
+            }
+            return $defaultValue;
+          }
+          if (
             $customFieldDefinition instanceof CustomFieldEntity &&
             $customFieldDefinition->getType() === CustomFieldEntity::TYPE_CHECKBOX &&
             $customField->getValue() === '1'
           ) {
             $params = $customFieldDefinition->getParams();
             $label = (is_array($params) && isset($params['values'][0]['value'])) ? (string)$params['values'][0]['value'] : '';
-            return ($label !== '' && $label !== null) ? htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
+            return $label !== '' ? htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $defaultValue;
           }
           return htmlspecialchars($customField->getValue(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
         }

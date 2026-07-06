@@ -12,6 +12,8 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\Coupons\CouponBlockDetector;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\OrderReviewUrl;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -24,14 +26,15 @@ use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\NewsletterReplayMetadata;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\NewsletterProcessingException;
 use MailPoet\RuntimeException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -86,6 +89,9 @@ class Newsletter {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
+  private CouponBlockDetector $couponBlockDetector;
+  private OrderReviewUrl $orderReviewUrl;
+
   public function __construct(
     ?WPFunctions $wp = null,
     ?PostsTask $postsTask = null,
@@ -121,6 +127,8 @@ class Newsletter {
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
     $this->personalizer = Email_Editor_Container::container()->get(Personalizer::class);
     $this->automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
+    $this->couponBlockDetector = ContainerWrapper::getInstance()->get(CouponBlockDetector::class);
+    $this->orderReviewUrl = ContainerWrapper::getInstance()->get(OrderReviewUrl::class);
   }
 
   public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
@@ -128,10 +136,20 @@ class Newsletter {
     $queue = $task->getSendingQueue();
     $newsletter = $queue ? $queue->getNewsletter() : null;
 
+    $allowedStatuses = [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING];
+    if (
+      $queue
+      && NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())
+      && $newsletter
+      && $newsletter->getType() === NewsletterEntity::TYPE_STANDARD
+    ) {
+      $allowedStatuses[] = NewsletterEntity::STATUS_SENT;
+    }
+
     if (
       is_null($newsletter)
       || $newsletter->getDeletedAt() !== null
-      || !in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
+      || !in_array($newsletter->getStatus(), $allowedStatuses, true)
     ) {
       $this->recoverFromInvalidState($task);
       return null;
@@ -179,13 +197,14 @@ class Newsletter {
     );
 
     $campaignId = null;
+    $this->preflightCouponBlockGeneration($newsletter, $queue);
 
     // if tracking is enabled, do additional processing
     if ($this->trackingEnabled) {
       // hook to the newsletter post-processing filter and add tracking image
       $this->trackingImageInserted = OpenTracking::addTrackingImage();
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $queue);
+      $renderedNewsletter = $this->renderNewsletterOrStop($newsletter, $queue);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
@@ -199,7 +218,7 @@ class Newsletter {
       $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $queue);
     } else {
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $queue);
+      $renderedNewsletter = $this->renderNewsletterOrStop($newsletter, $queue);
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
@@ -264,6 +283,73 @@ class Newsletter {
       $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $queue->getId()));
     }
     return $newsletter;
+  }
+
+  private function preflightCouponBlockGeneration(NewsletterEntity $newsletter, SendingQueueEntity $queue): void {
+    $wpPostEntity = $newsletter->getWpPost();
+    $wpPost = $wpPostEntity ? $wpPostEntity->getWpPostInstance() : null;
+    if (!$wpPost instanceof \WP_Post) {
+      return;
+    }
+
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!$this->couponBlockDetector->hasCreateNewCouponBlock($wpPost->post_content)) {
+      return;
+    }
+
+    $isAutomationSingleRecipient = $this->isAutomationType($newsletter) && $this->getTaskSubscriberCount($queue) === 1;
+    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $hasRecipientRestriction = $this->couponBlockDetector->hasRecipientRestrictedCreateNewCouponBlock($wpPost->post_content);
+    if ($isAutomationSingleRecipient || ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD && !$hasRecipientRestriction)) {
+      return;
+    }
+
+    $message = $hasRecipientRestriction
+      ? __('Recipient-restricted generated coupons are only supported in automation emails sent to one subscriber at a time. Disable recipient restriction, remove the generated coupon block, or use an existing coupon before sending this email.', 'mailpoet')
+      : __('Auto-generated coupon codes are only supported in regular newsletters and automation emails sent to one subscriber at a time. Remove the generated coupon block or use an existing coupon before sending this email.', 'mailpoet');
+    $this->failCouponBlockSend($newsletter, $queue, $message);
+    throw NewsletterProcessingException::create()->withMessage($message);
+  }
+
+  private function renderNewsletterOrStop(NewsletterEntity $newsletter, SendingQueueEntity $queue): array {
+    try {
+      return $this->renderer->render($newsletter, $queue);
+    } catch (NewsletterProcessingException $e) {
+      $this->failCouponBlockSend($newsletter, $queue, $e->getMessage());
+      throw NewsletterProcessingException::create($e)->withMessage($e->getMessage());
+    }
+  }
+
+  private function failCouponBlockSend(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    string $message
+  ): void {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
+      $message,
+      [
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue->getId(),
+      ]
+    );
+    if (!NewsletterReplayMetadata::isLatestNewsletterReplayMeta($queue->getMeta())) {
+      $this->newslettersRepository->setAsCorrupt($newsletter);
+    }
+    $this->sendingQueuesRepository->pause($queue);
+  }
+
+  private function isAutomationType(NewsletterEntity $newsletter): bool {
+    return in_array($newsletter->getType(), [
+      NewsletterEntity::TYPE_AUTOMATION,
+      NewsletterEntity::TYPE_AUTOMATION_NOTIFICATION,
+      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+    ], true);
+  }
+
+  private function getTaskSubscriberCount(SendingQueueEntity $queue): int {
+    $task = $queue->getTask();
+    $subscribers = $task ? $task->getSubscribers() : null;
+    return $subscribers ? count($subscribers) : 0;
   }
 
   /**
@@ -356,9 +442,19 @@ class Newsletter {
         }
       }
 
+      $this->guardOrderReviewUrlPersonalization($newsletter, $queue, $preparedNewsletter, $context);
+
       $this->personalizer->set_context($context);
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
+      }
+      $personalizedHtml = $this->wp->applyFilters('mailpoet_automation_email_personalize_html_after', $preparedNewsletter[1], $context);
+      if (is_string($personalizedHtml)) {
+        $preparedNewsletter[1] = $personalizedHtml;
+      }
+      $personalizedText = $this->wp->applyFilters('mailpoet_automation_email_personalize_text_after', $preparedNewsletter[2], $context);
+      if (is_string($personalizedText)) {
+        $preparedNewsletter[2] = $personalizedText;
       }
     }
     return [
@@ -369,6 +465,63 @@ class Newsletter {
         'text' => $preparedNewsletter[2],
       ],
     ];
+  }
+
+  /**
+   * @param array<int|string, mixed> $contentParts
+   * @param array<string, mixed> $context
+   */
+  private function guardOrderReviewUrlPersonalization(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    array $contentParts,
+    array $context
+  ): void {
+    if (!$this->contentContainsOrderReviewUrlToken($contentParts)) {
+      return;
+    }
+
+    if ($this->orderReviewUrl->getUrl($context) !== '') {
+      return;
+    }
+
+    $message = __('Cannot send the email because WooCommerce cannot generate an order review link for this order.', 'mailpoet');
+    $this->failOrderReviewUrlSend($newsletter, $queue, $message);
+    throw NewsletterProcessingException::create()->withMessage($message);
+  }
+
+  /** @param mixed $content */
+  private function contentContainsOrderReviewUrlToken($content): bool {
+    if (is_array($content)) {
+      foreach ($content as $contentPart) {
+        if ($this->contentContainsOrderReviewUrlToken($contentPart)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (!is_string($content)) {
+      return false;
+    }
+
+    $normalizedContent = rawurldecode(str_replace('\\/', '/', $content));
+    return strpos($normalizedContent, '[woocommerce/order-review-url]') !== false;
+  }
+
+  private function failOrderReviewUrlSend(
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    string $message
+  ): void {
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+      $message,
+      [
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue->getId(),
+      ]
+    );
+    $this->sendingQueuesRepository->pause($queue);
   }
 
   public function markNewsletterAsSent(NewsletterEntity $newsletter) {
@@ -412,12 +565,10 @@ class Newsletter {
     // campaign IDs change when images change, we should consider all image URLs.
     if (isset($renderedNewsletters['html'])) {
       $html = pQuery::parseStr($renderedNewsletters['html']);
-      if ($html instanceof DomNode) {
-        foreach ($html->query('img') as $imageNode) {
-          $src = $imageNode->getAttribute('src');
-          if (is_string($src)) {
-            $relevantContent[] = $src;
-          }
+      foreach ($html->query('img') as $imageNode) {
+        $src = $imageNode->getAttribute('src');
+        if (is_string($src)) {
+          $relevantContent[] = $src;
         }
       }
     }

@@ -38,9 +38,7 @@ class AbandonedCartWithDiscountPattern extends AbstractAbandonedCartPattern {
       <p>' . __('Use this code at checkout to redeem your discount:', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:woocommerce/coupon-code {"align":"left"} -->
-      <div class="wp-block-woocommerce-coupon-code alignleft"></div>
-      <!-- /wp:woocommerce/coupon-code -->
+      ' . $this->getGeneratedCouponBlock('left', 10, 1) . '
 
       <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
       <div class="wp-block-buttons">

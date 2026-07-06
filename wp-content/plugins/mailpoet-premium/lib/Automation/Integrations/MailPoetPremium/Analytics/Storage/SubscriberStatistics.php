@@ -49,6 +49,7 @@ class SubscriberStatistics {
     $order = $query->getOrderDirection() === 'asc' ? 'asc' : 'desc';
     $filter = $query->getFilter();
     $search = $query->getSearch();
+    $versionId = $query->getVersionId();
 
     if (!in_array($orderBy, $this->validOrderByValues, true)) {
       throw new InvalidArgumentException('Invalid orderBy parameter');
@@ -56,7 +57,7 @@ class SubscriberStatistics {
     if (!count($automations)) {
       throw new InvalidArgumentException('No automation given');
     }
-    $result = $this->query($automations, $from, $to, $filter, $search, $limit, $offset, $orderBy, $order);
+    $result = $this->query($automations, $from, $to, $filter, $search, $limit, $offset, $orderBy, $order, false, $versionId);
     return is_array($result) ? $result : [];
   }
 
@@ -78,7 +79,8 @@ class SubscriberStatistics {
     $to = $query->getBefore();
     $filter = $query->getFilter();
     $search = $query->getSearch();
-    $result = $this->query($automations, $from, $to, $filter, $search, 0, 0, '', '', true);
+    $versionId = $query->getVersionId();
+    $result = $this->query($automations, $from, $to, $filter, $search, 0, 0, '', '', true, $versionId);
     return !is_int($result) ? 0 : $result;
   }
 
@@ -93,6 +95,7 @@ class SubscriberStatistics {
    * @param string $orderBy
    * @param string $order
    * @param bool $count
+   * @param int|null $versionId
    * @return RawSubscriberType[] | int
    */
   private function query(
@@ -105,7 +108,8 @@ class SubscriberStatistics {
     int $offset = 0,
     string $orderBy = 'updated_at',
     string $order = 'desc',
-    bool $count = false
+    bool $count = false,
+    ?int $versionId = null
   ) {
     global $wpdb;
 
@@ -149,6 +153,9 @@ class SubscriberStatistics {
         '%' . $wpdb->esc_like($search) . '%',
         '%' . $wpdb->esc_like($search) . '%',
       );
+    }
+    if ($versionId !== null) {
+      $filters .= $wpdb->prepare(' AND `run`.`version_id` = %d', $versionId);
     }
 
     $sqlSelect = $count

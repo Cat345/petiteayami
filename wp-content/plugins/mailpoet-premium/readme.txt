@@ -1,10 +1,10 @@
 === MailPoet - Premium ===
 Contributors: mailpoet
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
-Requires at least: 6.8
-Tested up to: 6.9
+Requires at least: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 5.23.0
+Stable tag: 5.33.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -57,6 +57,61 @@ Our [support site](https://kb.mailpoet.com/) has plenty of articles. You can wri
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 5.33.0 - 2026-06-30 =
+* Fixed: Birthday and saved-card-expires automations now keep running every hour instead of stopping after the first run, and previously stopped automations resume automatically.
+
+= 5.32.0 - 2026-06-25 =
+* Added: Native event-type and date filters with sorting on the subscriber activity feed.
+
+= 5.31.0 - 2026-06-23 =
+* Added: Subscription email content for automation templates;
+* Added: Booking confirmation email content for automation templates;
+* Added: Preview of an automation template's pre-built email content before starting to build;
+* Improved: Linked the Birthday trigger empty state to the custom fields page.
+
+= 5.30.0 - 2026-06-16 =
+* Added: Email content for loyalty, win-back, and birthday automations;
+* Added: Email content for win-back inactive customer automation;
+* Added: Pre-built email content for review follow-up and reviewer reward automation templates;
+* Added: Listing preferences for premium statistics tables;
+* Improved: Improve WooCommerce order analytics with order attribution data;
+* Improved: WooCommerce product stats now read from Woo order attribution data.
+
+= 5.29.0 - 2026-06-09 =
+* Added: Pre-built automation templates for customer win-back, review follow-up, review alerts, and unpaid order cancellation;
+* Added: Email content for welcome series automation templates;
+* Added: Email content for abandoned cart campaign automation;
+* Fixed: Prevent the email preview from overwriting or reading from an existing subscriptions and bookings.
+
+= 5.28.0 - 2026-05-25 =
+* Updated: WordPress compatibility to version 7.0;
+* Improved: WooCommerce review automation trigger support for review notifications;
+* Improved: Improve campaign statistics list views.
+
+= 5.27.0 - 2026-05-18 =
+* Added: Customer's saved card expires automation trigger;
+* Added: WooCommerce Order Paid automation trigger;
+* Added: WordPress Change user role automation action;
+* Added: WooCommerce order status and order note automation actions;
+* Added: WooCommerce subscription product and status automation actions;
+* Added: Customer win-back automation trigger for inactive WooCommerce customers;
+* Added: Combine segment filter conditions into groups with mixed AND/OR logic;
+* Fixed: Automation editor step deletion stability;
+* Fixed: Date and time formatting regressions caused by respecting WordPress date settings.
+
+= 5.26.0 - 2026-05-12 =
+* Improved: It's now possible to select automation email links in the clicked-link automation trigger;
+* Improved: Respect WordPress date format settings in MailPoet UIs.
+
+= 5.25.0 - 2026-05-04 =
+* Added: "None of the conditions" option for segments with multiple conditions;
+* Added: Unsubscribe reason display in email and subscriber statistics.
+
+= 5.24.0 - 2026-04-27 =
+* Added: Export per-recipient email statistics as CSV or XLSX;
+* Added: Bulk export statistics for multiple emails from the listing screen;
+* Improved: Redesign the subscriber statistics page.
 
 = 5.23.0 - 2026-04-06 =
 * Added: Automation templates for WooCommerce Bookings;

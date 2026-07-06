@@ -22,7 +22,10 @@ class WordPress {
     return remove_action($hookName, $callback, $priority);
   }
 
-  /** @param mixed ...$arg */
+  /**
+   * @param non-empty-string $hookName
+   * @param mixed ...$arg
+   */
   public function doAction(string $hookName, ...$arg): void {
     do_action($hookName, ...$arg);
   }
@@ -36,6 +39,7 @@ class WordPress {
   }
 
   /**
+   * @param non-empty-string $hookName
    * @param mixed $value
    * @param mixed ...$args
    * @return mixed
@@ -61,6 +65,10 @@ class WordPress {
     return register_rest_route($namespace, $route, $args, $override);
   }
 
+  public function adminUrl(string $path = '', string $scheme = 'admin'): string {
+    return admin_url($path, $scheme);
+  }
+
   public function getWpLocale(): WP_Locale {
     global $wp_locale;
     return $wp_locale;
@@ -80,10 +88,11 @@ class WordPress {
   }
 
   /**
-   * @param string|array $args
+   * @param string|array<string, mixed> $args
    * @return WP_Comment[]|int[]|int
    */
   public function getComments($args = '') {
+    /* @phpstan-ignore-next-line argument.type -- thin pass-through; WP stub declares a closed array shape that we do not enforce in this wrapper. */
     return get_comments($args);
   }
 
@@ -104,10 +113,11 @@ class WordPress {
   }
 
   /**
-   * @param array|string $args
+   * @param array<string, mixed>|string $args
    * @return WP_Term[]|int[]|string[]|string|WP_Error
    */
   public function getTerms($args = []) {
+    /* @phpstan-ignore-next-line argument.type -- thin pass-through; WP stub declares a closed array shape that we do not enforce in this wrapper. */
     return get_terms($args);
   }
 
@@ -130,6 +140,36 @@ class WordPress {
   }
 
   /**
+   * @param mixed $value
+   */
+  public function setTransient(string $transient, $value, int $expiration = 0): bool {
+    return set_transient($transient, $value, $expiration);
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getTransient(string $transient) {
+    return get_transient($transient);
+  }
+
+  public function deleteTransient(string $transient): bool {
+    return delete_transient($transient);
+  }
+
+  /**
+   * @param mixed $data
+   */
+  public function wpCacheAdd(string $key, $data, string $group = '', int $expire = 0): bool {
+    // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.CacheTimeUndetermined -- Thin wrapper passes the caller-provided TTL.
+    return wp_cache_add($key, $data, $group, $expire);
+  }
+
+  public function wpCacheDelete(string $key, string $group = ''): bool {
+    return wp_cache_delete($key, $group);
+  }
+
+  /**
    * @param int|\WP_Post $post
    * @param bool $leavename
    * @return string|false
@@ -143,6 +183,14 @@ class WordPress {
    */
   public function getCommentStatuses(): array {
     return get_comment_statuses();
+  }
+
+  public function getEditableRoles(): array {
+    return get_editable_roles();
+  }
+
+  public function isRole(string $role): bool {
+    return wp_roles()->is_role($role);
   }
 
   public function getPostStatuses(): array {

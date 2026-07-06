@@ -17,8 +17,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Premium\API\JSON\v1\ResponseBuilders\StatsResponseBuilder;
 use MailPoet\Premium\Newsletter\StatisticsClicksRepository;
 use MailPoet\Premium\Newsletter\Stats as CampaignStats;
-use MailPoet\Premium\Newsletter\Stats\SubscriberEngagement;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 
 class Stats extends APIEndpoint {
   public $permissions = [
@@ -40,28 +39,28 @@ class Stats extends APIEndpoint {
   /** @var StatisticsClicksRepository */
   private $statisticsClicksRepository;
 
-  /** @var SubscriberEngagement */
-  private $listings;
-
   /** @var NewsletterUrl */
   private $newsletterUrl;
+
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
 
   public function __construct(
     CampaignStats\PurchasedProducts $purchasedProducts,
     NewslettersRepository $newslettersRepository,
     StatsResponseBuilder $statsResponseBuilder,
     StatisticsClicksRepository $statisticsClicksRepository,
-    SubscriberEngagement $listings,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    StatisticsUnsubscribesRepository $statisticsUnsubscribesRepository
   ) {
     $this->purchasedProducts = $purchasedProducts;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->statsResponseBuilder = $statsResponseBuilder;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
-    $this->listings = $listings;
     $this->newsletterUrl = $newsletterUrl;
+    $this->statisticsUnsubscribesRepository = $statisticsUnsubscribesRepository;
   }
 
   public function get($data = []) {
@@ -93,48 +92,17 @@ class Stats extends APIEndpoint {
 
     $clickedLinksWithAggregatedUnsubscribes = $isNewsletterSent ? $this->getClickedLinksWithAggregatedUnsubscribes($clickedLinks) : [];
 
+    $unsubscribeReasons = $isNewsletterSent ? $this->statisticsUnsubscribesRepository->getReasonCountsForNewsletter($newsletter) : [];
+
     return $this->successResponse(
       $this->statsResponseBuilder->build(
         $newsletter,
         $statistics,
         $clickedLinksWithAggregatedUnsubscribes,
-        $this->newsletterUrl
+        $this->newsletterUrl,
+        $unsubscribeReasons
       )
     );
-  }
-
-  public function listing($data = []) {
-    $newsletter = isset($data['params']['id'])
-      ? $this->newslettersRepository->findOneById((int)$data['params']['id'])
-      : null;
-    if (!$newsletter instanceof NewsletterEntity) {
-      return $this->errorResponse([
-        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet-premium'),
-      ]);
-    }
-
-    if (!$this->isNewsletterSent($newsletter)) {
-      return $this->errorResponse(
-        [
-          APIError::NOT_FOUND => __('This newsletter is not sent yet.', 'mailpoet-premium'),
-        ]
-      );
-    }
-
-    $listingData = $this->listings->get($data);
-
-    foreach ($listingData['items'] as &$item) {
-      $item['subscriber_url'] = WPFunctions::get()->adminUrl(
-        'admin.php?page=mailpoet-subscribers#/edit/' . $item['subscriber_id']
-      );
-    }
-    unset($item);
-
-    return $this->successResponse($listingData['items'], [
-      'count' => (int)$listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
-    ]);
   }
 
   public function isNewsletterSent(NewsletterEntity $newsletter): bool {
@@ -172,7 +140,8 @@ class Stats extends APIEndpoint {
     $associativeClickedLinks = array_reduce($clickedLinks, function ($allCounts, $item): array {
       if (in_array($item['url'], NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORTCODES)) {
         $existingUnsubscribe = $allCounts[NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE] ?? null;
-        $cnt = $item['cnt'] + (is_array($existingUnsubscribe) ? $existingUnsubscribe['cnt'] : 0);
+        $existingCnt = is_array($existingUnsubscribe) && is_int($existingUnsubscribe['cnt'] ?? null) ? $existingUnsubscribe['cnt'] : 0;
+        $cnt = (int)$item['cnt'] + $existingCnt;
         $allCounts[NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE] = [
           'cnt' => $cnt,
           'url' => NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE,

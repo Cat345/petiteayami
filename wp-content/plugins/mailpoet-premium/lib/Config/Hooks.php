@@ -6,7 +6,10 @@ if (!defined('ABSPATH')) exit;
 
 
 use MailPoet\API\JSON\API;
+use MailPoet\API\REST\API as RestApi;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\BouncesEndpoint;
+use MailPoet\Premium\Newsletter\Stats\RestApi\Endpoints\EngagementEndpoint;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -27,6 +30,11 @@ class Hooks {
     );
 
     $this->wp->addAction(
+      RestApi::REST_API_INIT_ACTION,
+      [$this, 'addPremiumRestAPIEndpoints']
+    );
+
+    $this->wp->addAction(
       'in_plugin_update_message-mailpoet-premium/mailpoet-premium.php',
       [$this, 'pluginUpdateMessage']
     );
@@ -39,6 +47,22 @@ class Hooks {
 
   public function addPremiumAPIEndpoints(API $api) {
     $api->addEndpointNamespace('MailPoet\Premium\API\JSON\v1', 'v1');
+  }
+
+  /**
+   * @param RestApi|array{0?: RestApi} $api
+   */
+  public function addPremiumRestAPIEndpoints($api): void {
+    if (is_array($api)) {
+      $api = $api[0] ?? null;
+    }
+
+    if (!$api instanceof RestApi) {
+      return;
+    }
+
+    $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/engagement', EngagementEndpoint::class);
+    $api->registerGetRoute('newsletter-stats/(?P<id>\d+)/bounces', BouncesEndpoint::class);
   }
 
   public function pluginUpdateMessage() {
